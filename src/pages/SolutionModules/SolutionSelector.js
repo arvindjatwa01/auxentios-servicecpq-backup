@@ -3,6 +3,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Modal } from 'react-bootstrap';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
+import { SOLUTION_BUILDER_SERVICE_PORTFOLIO } from '../../navigation/CONSTANTS'
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
@@ -20,6 +21,7 @@ import Buttonarrow from '../../assets/icons/svg/Button-arrow.svg'
 import searchstatusIcon from '../../assets/icons/svg/search-status.svg'
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
+import { getAllPortfolios } from '../../services/index'
 const colourOptions = [
     {
         "value": 1,
@@ -131,6 +133,8 @@ export function SolutionSelector(props) {
         } else {
             setBuildEnable(true)
             setSearchByVisible(true)
+            //API CALL
+            const portfoliosData = getAllPortfolios()
         }
         setSearchOptions(e)
     }
@@ -232,7 +236,7 @@ export function SolutionSelector(props) {
                                 <button className="btn btn-primary w-100" onClick={() => setOpen(true)} style={{ cursor: 'pointer' }}>Error<img className='ml-2' src={Buttonarrow}></img></button>
                             </div> */}
                                     <div className="col-md-12">
-                                        <button className="btn btn-primary w-100" >Add<img className='ml-2' src={Buttonarrow}></img></button>
+                                        <button onClick={() => window.location.href = SOLUTION_BUILDER_SERVICE_PORTFOLIO} className="btn btn-primary w-100" >Add<img className='ml-2' src={Buttonarrow}></img></button>
                                     </div>
                                 </div>
                             </div>

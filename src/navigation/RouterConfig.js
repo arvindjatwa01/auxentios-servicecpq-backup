@@ -2,8 +2,9 @@ import React from "react";
 import { Switch, Route } from "react-router-dom";
 import Dashboard from "pages/Dashboard";
 import { NotFound } from "navigation/NotFound";
-import { ROOT, DASHBOARD, PAGE1, AUTH_PAGE1, SOLUTION_BUILDER_ANALYTICS, SOLUTION_BUILDER_SERVICE_PORTFOLIO } from "navigation/CONSTANTS";
+import { ROOT, DASHBOARD, PAGE1, AUTH_PAGE1, PORTFOLIO_AND_BUILDER_NEW, SOLUTION_BUILDER_ANALYTICS, SOLUTION_BUILDER_SERVICE_PORTFOLIO } from "navigation/CONSTANTS";
 import { Analytics, ServicePortfolio } from "../pages/SolutionModules/index"
+import { CreatePortfolio } from "../pages/PortfolioAndBundle/index"
 import { AuthorizedPage1 } from "pages/AuthorizedPage1";
 import PrivateRoute from "./Auth/PrivateRoute";
 import { Startup } from './../pages/LoginSignUp/index'
@@ -17,6 +18,7 @@ export const RouterConfig = () => {
         {/* <Route exact path={ROOT} component={Home} /> */}
         <Route exact path={ROOT} component={Dashboard} />
         <Route exact path={SOLUTION_BUILDER_ANALYTICS} component={Analytics} />
+        <Route exact path={PORTFOLIO_AND_BUILDER_NEW} component={CreatePortfolio} />
         <Route exact path={SOLUTION_BUILDER_SERVICE_PORTFOLIO} component={ServicePortfolio} />
         {/* <Route exact path={PAGE1} component={Page1} /> */}
         <Route path="/gettingStart">

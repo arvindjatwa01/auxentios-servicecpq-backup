@@ -6,7 +6,7 @@ import Step from '@mui/material/Step';
 import StepButton from '@mui/material/StepButton';
 import auxentionlogo from '../../assets/icons/png/auxentionlogo.png'
 import erroricon from '../../assets/icons/png/error.png'
-
+import { signup, signIn } from '../../services/index'
 export function Startup() {
     // let auth = useAuth();
     const steps = [
@@ -14,6 +14,37 @@ export function Startup() {
         'Verification',
         'Get Started',
     ];
+
+    const [signUpInputData, setSignUpInputData] = useState({
+        firstName: '',
+        lastName: '',
+        workEmail: '',
+        password: ''
+    })
+    const [signInInputData, setSignInInputData] = useState({
+        emailId: '',
+        password: ''
+    })
+
+    const handleSignUp = () => {
+        var dict = {
+            "firstName": signUpInputData.firstName,
+            "lastName": signUpInputData.lastName,
+            "emailId": signUpInputData.workEmail,
+            "password": signUpInputData.password
+        }
+        const signUpResponse = signup(dict);
+        console.log(signUpResponse)
+    }
+    const handleSignIn = () => {
+        var dict = {
+            "emailId": signInInputData.emailId,
+            "password": signInInputData.password
+        }
+        const signInResponse = signIn(dict);
+        console.log(signInResponse)
+    }
+
     const [activeStep, setActiveStep] = useState(0)
 
     const handleStep = (step) => {
@@ -27,7 +58,7 @@ export function Startup() {
 
     return (
         <div className="content-body" style={{ minHeight: '884px' }}>
-            <div class="container mt-4">
+            <div className="container mt-4">
                 <div className="row">
                     <div className="col-md-8 col-sm-12 mx-auto">
                         <Box sx={{ width: '100%' }}>
@@ -74,24 +105,24 @@ export function Startup() {
                                     <h4 className="ml-3">Log In</h4>
                                     <div className="row m-0">
                                         <div className="col-md-12 col-sm-12">
-                                            <div class="form-group mt-3">
+                                            <div className="form-group mt-3">
                                                 <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">USER ID</label>
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Email Address" />
+                                                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Email Address" />
                                             </div>
                                         </div>
                                         <div className="col-md-12 col-sm-12">
-                                            <div class="form-group mt-3">
+                                            <div className="form-group mt-3">
                                                 <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">PASSWORD</label>
-                                                <input type="password" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="password" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div className="col-md-12 col-sm-12">
-                                            <div class="form-group mt-3">
+                                            <div className="form-group mt-3">
                                                 <a onClick={handleLogin} className="btn bg-violet text-white d-block cursor">Log in</a>
                                             </div>
                                         </div>
                                         <div className="col-md-12 col-sm-12">
-                                            <div class="form-group mt-3">
+                                            <div className="form-group mt-3">
                                                 <p>Keep me logged in</p>
                                             </div>
                                         </div>
@@ -129,32 +160,44 @@ export function Startup() {
                                     <h4 className="ml-3">Sign up</h4>
                                     <div className="row m-0">
                                         <div className="col-md-6 col-sm-6">
-                                            <div class="form-group mt-3">
+                                            <div className="form-group mt-3">
                                                 <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">FIRST NAME</label>
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" value={signUpInputData.firstName} onChange={(e) => setSignUpInputData({
+                                                    ...signUpInputData,
+                                                    firstName: e.target.value
+                                                })} />
                                             </div>
                                         </div>
                                         <div className="col-md-6 col-sm-6">
-                                            <div class="form-group mt-3">
+                                            <div className="form-group mt-3">
                                                 <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">LAST NAME</label>
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" value={signUpInputData.lastName} onChange={(e) => setSignUpInputData({
+                                                    ...signUpInputData,
+                                                    lastName: e.target.value
+                                                })} />
                                             </div>
                                         </div>
                                         <div className="col-md-6 col-sm-6">
-                                            <div class="form-group mt-3">
+                                            <div className="form-group mt-3">
                                                 <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">WORK EMAIL</label>
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Email Address" />
+                                                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Email Address" value={signUpInputData.workEmail} onChange={(e) => setSignUpInputData({
+                                                    ...signUpInputData,
+                                                    workEmail: e.target.value
+                                                })} />
                                             </div>
                                         </div>
                                         <div className="col-md-12 col-sm-12">
-                                            <div class="form-group mt-3">
+                                            <div className="form-group mt-3">
                                                 <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">CREATE PASSWORD</label>
-                                                <input type="password" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder=" Create Password" />
+                                                <input type="password" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder=" Create Password" value={signUpInputData.password} onChange={(e) => setSignUpInputData({
+                                                    ...signUpInputData,
+                                                    password: e.target.value
+                                                })} />
                                             </div>
                                         </div>
                                         <div className="col-md-12 col-sm-12">
-                                            <div class="form-group mt-3">
-                                                <a href="#" className="btn bg-violet text-white d-block">Sign Up</a>
+                                            <div className="form-group mt-3">
+                                                <a onClick={handleSignUp} className="btn bg-violet text-white d-block cursor">Sign Up</a>
                                             </div>
                                         </div>
                                     </div>

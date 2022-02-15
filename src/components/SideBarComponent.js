@@ -421,7 +421,7 @@ export function SideBarComponent(props) {
                     <span className="span-icon"><img src={Disassemble}></img></span>
                     <span class="nav-text">
                       <span className="ml-2 " style={{ display: 'inline-grid' }}>
-                        <span className="font-size-14 font-weight-600 text-dark">Portfolio and Bundles</span>
+                        <span className="font-size-14 font-weight-600 text-dark" onClick={() => window.location.href = "/portfolioBuilder/new"}>Portfolio and Bundles</span>
                       </span>
                     </span>
                   </a>

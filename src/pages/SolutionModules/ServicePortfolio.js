@@ -374,30 +374,77 @@ export function ServicePortfolio(props) {
                         </Box>
 
                     </div>
-                    <div className="card mt-5">
-                        <div className="fileheader p-4 border-bottom">
-                            <h6 className="font-weight-600 text-light mb-0">Table Name<span> <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faPen} /></a></span></h6>
-                        </div>
-                        <div className="p-4  row">
-                            <div className="col-md-6 col-sm-6">
-                                <a href="#" className="add-new-recod">
-                                    <div>
-                                        <FontAwesomeIcon icon={faPlus} />
-                                        <p className="font-weight-600">Add new record</p>
-                                    </div>
-                                </a>
+                    <div className="card px-4 pb-4 mt-5 pt-0">
+                        <div className="row align-items-center">
+                            <div className="col-3">
+                                <div className="d-flex ">
+                                    <h5 className="mr-4 mb-0"><span>Bundle Item</span></h5>
+                                    <p className="ml-4 mb-0">
+                                        <a href="#" className="ml-3 "><img src={editIcon}></img></a>
+                                        <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
+                                    </p>
+                                </div>
                             </div>
-                            <div className="col-md-6 col-sm-6">
-                                <div className="add-new-recod">
+                            <div className="col-6">
+                                <div className="d-flex align-items-center" style={{ background: '#F9F9F9', padding: '10px 15px', borderRadius: '10px' }}>
+                                    <div className="search-icon mr-2" style={{ lineHeight: '24px' }}>
+                                        <img src={searchstatusIcon}></img>
+                                    </div>
+                                    <div className="w-100 mx-2">
+                                        <div className="machine-drop d-flex align-items-center">
+                                            {/* <div><lable className="label-div">Search By</lable></div> */}
+                                            <FormControl className="" sx={{ m: 1, }}>
+                                                <Select
+                                                    placeholder="Search By"
+                                                    id="demo-simple-select-autowidth"
+                                                    value={age}
+                                                    onChange={handleChangedrop}
+                                                    autoWidth
+                                                >
+                                                    <MenuItem value="5">
+                                                        <em>Engine</em>
+                                                    </MenuItem>
+                                                    <MenuItem value={10}>Twenty</MenuItem>
+                                                    <MenuItem value={21}>Twenty one</MenuItem>
+                                                    <MenuItem value={22}>Twenty one and a half</MenuItem>
+                                                </Select>
+                                            </FormControl>
+                                        </div>
+                                    </div>
 
-                                    <div>
-                                        <FontAwesomeIcon className="cloudupload" icon={faCloudUploadAlt} />
-                                        <h6 className="font-weight-500 mt-3">Drag and drop files to upload <br /> or</h6>
-                                        <a onClick={() => setOpen(true)} style={{ cursor: 'pointer' }} className="btn text-light border-light font-weight-500 border-radius-10 mt-3"><span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Select files to upload</a>
-                                        <p className="mt-3">Single upload file should not be more than <br />10MB. Only the  .xls, .xlsx file types are allowed</p>
+                                </div>
+
+                            </div>
+                            <div className="col-3">
+                                <div className="d-flex align-items-center">
+                                    <div className="col-8 text-center">
+                                        <a href="#" className="p-1 more-btn">+ 3 more
+                                            <span className="c-btn">C</span>
+                                            <span className="b-btn">B</span>
+                                            <span className="a-btn">A</span>
+                                        </a>
+                                    </div>
+                                    <div className="col-4 text-center border-left py-4">
+                                        <a href="#" className="p-1 ">+ Add Part</a>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
+                            <DataGrid
+                                sx={{
+                                    '& .MuiDataGrid-columnHeaders': {
+                                        backgroundColor: '#7380E4', color: '#fff'
+                                    }
+                                }}
+                                rows={rows}
+                                columns={columns}
+                                pageSize={5}
+                                rowsPerPageOptions={[5]}
+                                checkboxSelection
+
+
+                            />
                         </div>
                     </div>
                     <Modal show={open1} onHide={handleClose1} size="lg"
