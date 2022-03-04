@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Web site created using create-react-app" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@100;200;300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+  <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+  <title>Auxentios</title>
+  <link href="%PUBLIC_URL%/assets/plugins/pg-calendar/css/pignose.calendar.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="%PUBLIC_URL%/assets/plugins/chartist/css/chartist.min.css">
+  <link rel="stylesheet" href="%PUBLIC_URL%/assets/plugins/chartist-plugin-tooltips/css/chartist-plugin-tooltip.css">
+  <link href="%PUBLIC_URL%/assets/css/style.css" rel="stylesheet">
+  <style type="text/css">
+    /* Chart.js */
+    @-webkit-keyframes chartjs-render-animation {
+      from {
+        opacity: 0.99
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    @keyframes chartjs-render-animation {
+      from {
+        opacity: 0.99
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .chartjs-render-monitor {
+      -webkit-animation: chartjs-render-animation 0.001s;
+      animation: chartjs-render-animation 0.001s;
+    }
+  </style>
+  <style class="datamaps-style-block">
+    .datamap path.datamaps-graticule {
+      fill: none;
+      stroke: #777;
+      stroke-width: 0.5px;
+      stroke-opacity: .5;
+      pointer-events: none;
+    }
+
+    .datamap .labels {
+      pointer-events: none;
+    }
+
+    .datamap path:not(.datamaps-arc),
+    .datamap circle,
+    .datamap line {
+      stroke: #FFFFFF;
+      vector-effect: non-scaling-stroke;
+      stroke-width: 1px;
+    }
+
+    .datamaps-legend dt,
+    .datamaps-legend dd {
+      float: left;
+      margin: 0 3px 0 0;
+    }
+
+    .datamaps-legend dd {
+      width: 20px;
+      margin-right: 6px;
+      border-radius: 3px;
+    }
+
+    .datamaps-legend {
+      padding-bottom: 20px;
+      z-index: 1001;
+      position: absolute;
+      left: 4px;
+      font-size: 12px;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    .datamaps-hoverover {
+      display: none;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    .hoverinfo {
+      padding: 4px;
+      border-radius: 1px;
+      background-color: #FFF;
+      box-shadow: 1px 1px 5px #CCC;
+      font-size: 12px;
+      border: 1px solid #CCC;
+    }
+
+    .hoverinfo hr {
+      border: 1px dotted #CCC;
+    }
+  </style>
+
+</head>
+
+<body data-theme-version="light" data-layout="vertical" data-nav-headerbg="color_1" data-headerbg="color_1"
+  data-sidebar-style="full" data-sibebarbg="color_1" data-sidebar-position="static" data-header-position="static"
+  data-container="wide" direction="ltr">
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root"></div>
+  <!--**********************************
+        Scripts
+    ***********************************-->
+  <script src="%PUBLIC_URL%/assets/plugins/common/common.min.js"></script>
+  <script src="%PUBLIC_URL%/assets/js/custom.min.js"></script>
+  <script src="%PUBLIC_URL%/assets/js/settings.js"></script>
+  <script src="%PUBLIC_URL%/assets/js/gleek.js"></script>
+  <script src="%PUBLIC_URL%/assets/js/styleSwitcher.js"></script>
+
+  <!-- Chartjs -->
+  <script src="%PUBLIC_URL%/assets/plugins/chart.js/Chart.bundle.min.js"></script>
+  <!-- Circle progress -->
+  <!-- <script src=%PUBLIC_URL%/assets/plugins/circle-progress/circle-progress.min.js"></script> -->
+  <!-- Datamap -->
+  <script src="%PUBLIC_URL%/assets/plugins/d3v3/index.js"></script>
+  <script src="%PUBLIC_URL%/assets/plugins/topojson/topojson.min.js"></script>
+  <!-- <script src="%PUBLIC_URL%/assets/plugins/datamaps/datamaps.world.min.js"></script> -->
+  <!-- Morrisjs -->
+  <script src="%PUBLIC_URL%/assets/plugins/raphael/raphael.min.js"></script>
+  <script src="%PUBLIC_URL%/assets/plugins/morris/morris.min.js"></script>
+  <!-- Pignose Calender -->
+  <script src="%PUBLIC_URL%/assets/plugins/moment/moment.min.js"></script>
+  <script src="%PUBLIC_URL%/assets/plugins/pg-calendar/js/pignose.calendar.min.js"></script>
+  <!-- ChartistJS -->
+  <script src="%PUBLIC_URL%/assets/plugins/chartist/js/chartist.min.js"></script>
+  <script src="%PUBLIC_URL%/assets/plugins/chartist-plugin-tooltips/js/chartist-plugin-tooltip.min.js"></script>
+
+  <!-- <script src="%PUBLIC_URL%/assets/js/dashboard/dashboard-1.js"></script> -->
+  <i title="Raphaël Colour Picker" style="display: none; color: transparent;"></i>
+</body>
+
+</html>

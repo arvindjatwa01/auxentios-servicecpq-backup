@@ -1,0 +1,1 @@
+export { MuiMenuComponent } from "./MuiMenuComponent";
