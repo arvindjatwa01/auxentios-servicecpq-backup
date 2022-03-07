@@ -13,7 +13,8 @@
  * Toggle this basePath variable between "actual-domain.com/" or "/data/".
  */
 
-const SOLUTION_BASE_URL = "http://13.58.83.209:8080/";
+// const SOLUTION_BASE_URL = "http://13.58.83.209:8080/";
+const SOLUTION_BASE_URL = "http://35.200.157.237/";
 const USER_SERVICE_BASE_URL = "http://3.15.204.38:8080/";
 const SOLUTION_BUILDER_URI = SOLUTION_BASE_URL + "solution-builder-svc/v1/"
 const USER_SERVICE_URI = USER_SERVICE_BASE_URL + "user-svc/v1/user/"

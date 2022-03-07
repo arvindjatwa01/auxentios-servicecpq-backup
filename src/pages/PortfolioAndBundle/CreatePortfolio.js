@@ -2,7 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Modal } from 'react-bootstrap';
 import { DataGrid } from '@mui/x-data-grid';
 import FormGroup from '@mui/material/FormGroup';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Select from 'react-select';
+import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined'
+import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined';
+import AccessAlarmOutlinedIcon from '@mui/icons-material/AccessAlarmOutlined';
+import SellOutlinedIcon from '@mui/icons-material/SellOutlined';
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import shearchIcon from '../../assets/icons/svg/search.svg'
+import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined';
+import makeAnimated from 'react-select/animated';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import * as ENUM from './CONSTS.js';
@@ -40,6 +50,8 @@ import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DataTable from 'react-data-table-component';
 import boxicon from '../../assets/icons/png/box.png'
 import PartIcons from '../../assets/icons/png/PartIcons.png'
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import { createPortfolio, getPortfolio, updatePortfolio, getUsageCategoryKeyValue, getStrategyTaskKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getTypeKeyValue } from '../../services/index'
 
@@ -60,6 +72,7 @@ const CustomTitle = ({ row }) => (
         </div>
     </div>
 );
+const animatedComponents = makeAnimated();
 
 const data = [
     {
@@ -133,49 +146,160 @@ const conditionalRowStyles = [
 var HTMLLi = React.createElement('li', { className: 'bar' }, 'foo');
 
 const columns = [
+    // {
+    //   name: <><div>
+    //     <div>
+    //     <Checkbox {...label} />
+    //   </div>
+    //     </div></>,
+    //   selector: row => row.title,
+    //   sortable: true,
+    //   maxWidth: '600px', // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
+    //   cell: row => <CustomTitle row={row} />,
+    // },
     {
-        name: <><div><img className='mr-2' src={boxicon}></img>Item Type</div></>,
-        selector: row => row.itemType,
+        name: <><div><img className='mr-2' src={boxicon}></img>Bundle ID</div></>,
+        selector: row => row.bundleId,
         sortable: true,
         maxWidth: '300px', // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
-        cell: row => row.itemType,
+        cell: row => row.bundleId,
     },
     {
-        name: <><div><img className='mr-2' src={boxicon}></img>Item Number</div></>,
-        selector: row => row.itemNumber,
+        name: <><div><img className='mr-2' src={boxicon}></img>Bundle Description</div></>,
+        selector: row => row.bundleDescription,
         wrap: true,
         sortable: true,
-        format: row => row.itemNumber,
+        format: row => row.bundleDescription,
     },
     {
-        name: <><div>Special Price
+        name: <><div>Strategy
         </div></>,
-        selector: row => row.specialPrice,
+        selector: row => row.strategy,
         wrap: true,
         sortable: true,
-        format: row => row.specialPrice,
+        format: row => row.strategy,
     },
     {
-        name: <><div>Discount%
+        name: <><div>Standard Job Ids
         </div></>,
-        selector: row => row.discount,
+        selector: row => row.standardJobId,
         wrap: true,
         sortable: true,
-        format: row => row.discount,
+        format: row => row.standardJobId,
     },
     {
-        name: <><div>Absolute Discount
+        name: <><div>Frequency
         </div></>,
-        selector: row => row.absoluteDiscount,
+        selector: row => row.frequency,
         wrap: true,
         sortable: true,
-        format: row => row.absoluteDiscount,
+        format: row => row.frequency,
     },
     {
-        name: 'Actions',
-        button: true,
-        cell: () => <Button>Download Poster</Button>,
+        name: <><div>Qunatity
+        </div></>,
+        selector: row => row.quantity,
+        wrap: true,
+        sortable: true,
+        format: row => row.quantity,
     },
+    {
+        name: <><div>Part $
+        </div></>,
+        selector: row => row.part,
+        wrap: true,
+        sortable: true,
+        format: row => row.part
+        ,
+    },
+    {
+        name: <><div>Service $
+        </div></>,
+        selector: row => row.service,
+        wrap: true,
+        sortable: true,
+        format: row => row.service
+        ,
+    },
+    {
+        name: <><div>Total $
+        </div></>,
+        selector: row => row.total,
+        wrap: true,
+        sortable: true,
+        format: row => row.total
+    },
+    {
+        name: <><div>Action
+        </div></>,
+        selector: row => row.action,
+        wrap: true,
+        sortable: true,
+        format: row => row.action
+    }
+
+    // {
+    //   name:<><div>Progress
+    //   </div></>,
+    //   selector: row => row.plot,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: row => `${row.plot.slice(0, 200)}...`,
+    // },
+    // {
+    //   name:<><div>Status
+    //   </div></>,
+    //   selector: row => row.plot,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: row => `${row.plot.slice(0, 200)}...`,
+    // },
+    // {
+    //   name:<><div>Consistency status
+    //   </div></>,
+    //   selector: row => row.plot,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: row => `${row.plot.slice(0, 200)}...`,
+    // },
+    // {
+    //   name:<><div>Description
+    //   </div></>,
+    //   selector: row => row.plot,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: row => `${row.plot.slice(0, 200)}...`,
+    // },
+    // {
+    //   name: 'Actions',
+
+    //   cell: row => (
+    //     <div>
+    //       {row.genres.map((genre, i) => (
+    //         <div key={i}>{genre}</div>
+    //       ))}
+    //     </div>
+    //   ),
+    // },
+    // {
+    //   name: 'Thumbnail',
+    //   grow: 0,
+    //   cell: row => <img height="84px" width="56px" alt={row.name} src={row.posterUrl} />,
+    // },
+    // {
+    //   name: 'Poster Link',
+    //   button: true,
+    //   cell: row => (
+    //     <a href={row.posterUrl} target="_blank" rel="noopener noreferrer">
+    //       Download
+    //     </a>
+    //   ),
+    // },
+    // {
+    //     name: 'Actions',
+    //     button: true,
+    //     cell: () => <Button>Download Poster</Button>,
+    // },
 ];
 
 
@@ -190,6 +314,14 @@ export function CreatePortfolio() {
     const [age, setAge] = React.useState('5');
     const [isView, setIsView] = useState(false) //Use for show data into label format
     const [showExitPrompt, setShowExitPrompt] = useState(true);
+    const [createNewBundle, setCreateNewBundle] = useState(false)
+    const [openSearchSolution, setOpenSearchSolution] = useState(false)
+    const [columnSearch, setColumnSearch] = useState(null)
+    const [columnSearchKeyValue, setColumnSearchKeyValue] = useState([{ label: "Bundle", value: 'bundle' }, { label: "Service", value: 'service' }, { label: "Bundle Item", value: 'bundleItem' }])
+    const [columnSearchText, setColumnSearchText] = useState('');
+    const [openAddBundleItem, setOpenAddBundleItem] = useState(false)
+    const [bundleItems, setBundleItems] = useState([])
+
 
 
     const [coverageData, setCoverageData] = useState({
@@ -223,6 +355,63 @@ export function CreatePortfolio() {
         customerSegment: ""
     })
     const [portfolioId, setPortfolioId] = useState(4);
+    const [alignment, setAlignment] = React.useState('Portfolio');
+    const [prefixLabelGeneral, setPrefixLabelGeneral] = useState("PORTFOLIO")
+    const [open2, setOpen2] = React.useState(false);
+    const handleOpen2 = () => setOpen2(true);
+    const handleClose2 = () => setOpen2(false);
+
+
+    const handleChangeToggle = (event, newAlignment) => {
+        setAlignment(newAlignment);
+        setPrefixLabelGeneral(newAlignment.toUpperCase())
+    };
+
+
+    const handleColumnSearch = (e) => {
+        setColumnSearch(e)
+    }
+
+    const handleBundleItemSaveAndContinue = () => {
+        // alert("Save And Continue")
+        var temp = [];
+        var dict = {
+            id: 1,
+            bundleId: "PM125",
+            bundleDescription: 'Preventive Maintenance 125',
+            strategy: 'Preventive Maintenance',
+            standardJobId: 'SJ1034',
+            frequency: '125 hours',
+            quantity: '4',
+            part: '$1250',
+            service: '$350',
+            total: '$1575',
+            action: "-"
+        }
+        temp.push(dict)
+        setBundleItems(temp)
+        setOpenAddBundleItem(false)
+        setOpenSearchSolution(false)
+        toast('👏 Item Added', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
+    }
+
+    const handleNewBundleItem = () => {
+        setOpenAddBundleItem(true)
+        setOpenSearchSolution(false)
+        setCreateNewBundle(false)
+    }
+    const handleCreateNewServiceBundle = () => {
+        setCreateNewBundle(true)
+        setOpenSearchSolution(false)
+    }
 
     const handleDropdownChange = (type, e) => {
         if (type == ENUM.STRATEGY_TASK) {
@@ -377,6 +566,7 @@ export function CreatePortfolio() {
     }
 
     const initFetch = () => {
+
         getStrategyTaskKeyValue().then((res) => {
             console.log(res)
             const options = res.map((d) => ({
@@ -461,7 +651,7 @@ export function CreatePortfolio() {
     };
 
     window.onload = function () {
-        initBeforeUnLoad(showExitPrompt)
+        // initBeforeUnLoad(showExitPrompt)
     };
 
 
@@ -537,7 +727,7 @@ export function CreatePortfolio() {
                             <div className="input-group icons border-radius-10 border">
                                 <div className="input-group-prepend">
                                     <span className="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
-                                        <img src="/static/media/search.14487ffa.svg" /></span>
+                                        <img src={shearchIcon} /></span>
                                 </div>
                                 <input type="search" className="form-control search-form-control" aria-label="Search Dashboard" />
                             </div>
@@ -559,19 +749,31 @@ export function CreatePortfolio() {
                                     <div className="row mt-4">
                                         <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500" >PORTFOLIO ID</label>
-                                                <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponetData.portfolioName} onChange={handleGeneralInputChange} />
+                                                <label className="text-light-dark font-size-12 font-weight-500" >SELECT TYPE</label>
+                                                <div>
+                                                    <ToggleButtonGroup
+                                                        color="primary"
+                                                        value={alignment}
+                                                        exclusive
+                                                        onChange={handleChangeToggle}
+                                                    >
+                                                        <ToggleButton value="Portfolio">Portfolio</ToggleButton>
+                                                        <ToggleButton value="Program">Program</ToggleButton>
+                                                    </ToggleButtonGroup>
+                                                </div>
+
+                                                {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponetData.portfolioName} onChange={handleGeneralInputChange} /> */}
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500" >PORTFOLIO DESCRIPTION</label>
+                                                <label className="text-light-dark font-size-12 font-weight-500" >{prefixLabelGeneral} DESCRIPTION</label>
                                                 <input type="email" className="form-control border-radius-10" name="portfolioDescription" placeholder="Placeholder" value={generalComponetData.portfolioDescription} onChange={handleGeneralInputChange} />
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500" >SERVICE PROGRAM DESCRIPTION (IF ANY)</label>
+                                                <label className="text-light-dark font-size-12 font-weight-500" >SERVICE {prefixLabelGeneral} DESCRIPTION (IF ANY)</label>
                                                 <input type="email" className="form-control border-radius-10" name="serviceProgramDescription" placeholder="Placeholder" value={generalComponetData.serviceProgramDescription} onChange={handleGeneralInputChange} />
                                             </div>
                                         </div>
@@ -584,7 +786,15 @@ export function CreatePortfolio() {
                                         <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" >CUSTOMER SEGMENT</label>
-                                                <input type="email" className="form-control border-radius-10" name="customerSegment" placeholder="Placeholder" value={generalComponetData.customerSegment} onChange={handleGeneralInputChange} />
+                                                <Select
+                                                    onChange={(e) => handleDropdownChange(ENUM.STRATEGY_TASK, e)}
+                                                    isClearable={true}
+                                                    value={strategyData.strategyTask}
+                                                    isLoading={strategyTaskKeyValue.length > 0 ? false : true}
+                                                    options={strategyTaskKeyValue}
+                                                    placeholder="Strategy Task"
+                                                />
+                                                {/* <input type="email" className="form-control border-radius-10" name="customerSegment" placeholder="Placeholder" value={generalComponetData.customerSegment} onChange={handleGeneralInputChange} /> */}
                                             </div>
                                         </div>
                                     </div>
@@ -903,12 +1113,21 @@ export function CreatePortfolio() {
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ADDITIONAL</label>
                                                 <div className=" d-flex">
-                                                    <Select className="select-input"
+                                                    {/* <Select className="select-input"
                                                         defaultValue={selectedOption}
                                                         onChange={setSelectedOption}
                                                         options={options}
                                                         placeholder="placeholder "
-                                                    />
+                                                    /> */}
+                                                    <div className="customselect customselectPortfolio">
+                                                        <Select
+                                                            onChange={setSelectedOption}
+                                                            isClearable={true}
+                                                            // value={options}
+                                                            options={options}
+                                                            placeholder="Select"
+                                                        />
+                                                    </div>
                                                     <input type="email" className="form-control rounded-top-left-0 rounded-bottom-left-0" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="10%" />
                                                 </div>
                                             </div>
@@ -1098,10 +1317,113 @@ export function CreatePortfolio() {
 
                     </div>
                     <div className="card mt-5">
-                        <div className="fileheader p-4 border-bottom">
+                        <div className="fileheader p-4 border-bottom d-flex justify-content-between align-items-center">
                             <h6 className="font-weight-600 text-light mb-0">Bundle Items<span> <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faPen} /></a></span></h6>
+                            <h6 className="font-weight-600 text-light mb-0 cursor" onClick={() => setOpenSearchSolution(true)}><span className="mr-2">+</span>Add Solution</h6>
                         </div>
+                        {bundleItems.length > 0 ?
+                            <div>
+                                {/* <div className="row align-items-center">
+                                    <div className="col-4">
+                                        <div className="d-flex align-items-center pl-2">
+                                            <h6 className="mr-2 mb-0 font-size-12"><span>Repair Option</span></h6>
+                                            <p className="mb-0">Version 1</p>
+                                            <p className="ml-2 mb-0">
+                                                <a href="#" className="ml-3 "><img src={editIcon}></img></a>
+                                                <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="col-5">
+                                        <div className="d-flex align-items-center" style={{ background: '#F9F9F9', padding: '5px 10px 5px 35px', borderRadius: '10px' }}>
+                                            <div className="search-icon1 mr-2" style={{ lineHeight: '24px' }}>
+                                                <img src={searchstatusIcon}></img>
+                                            </div>
+                                            <div className=" mx-2">
+                                                <div className="machine-drop">
+                                                    <FormControl className="" sx={{ m: 1, }}>
+                                                        <Select
+                                                            id="demo-simple-select-autowidth"
+                                                            value={age}
+                                                            onChange={handleChangedrop}
+                                                            autoWidth
+                                                        >
+                                                            <MenuItem value="5">
+                                                                <em>Engine</em>
+                                                            </MenuItem>
+                                                            <MenuItem value={10}>Twenty</MenuItem>
+                                                            <MenuItem value={21}>Twenty one</MenuItem>
+                                                            <MenuItem value={22}>Twenty one and a half</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
+                                                </div>
+                                            </div>
+                                        </div>
 
+                                    </div>
+                                    <div className="col-3  text-right">
+                                        <div className="">
+                                            <a href="#" className="border-left  btn">+ Add Part</a>
+                                        </div>
+                                    </div>
+                                </div> */}
+                                <div className="custom-table  card " style={{ height: 400, width: '100%' }}>
+                                    <DataTable title="" columns={columns} data={bundleItems} customStyles={customStyles} pagination />
+                                </div>
+                            </div>
+                            :
+                            <div className="p-4  row">
+                                <div className="col-md-6 col-sm-6" onClick={handleNewBundleItem}>
+                                    <a href="#" className="add-new-recod">
+                                        <div>
+                                            <FontAwesomeIcon icon={faPlus} />
+                                            <p className="font-weight-600">Add new record</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div className="col-md-6 col-sm-6">
+                                    <div className="add-new-recod">
+
+                                        <div>
+                                            <FontAwesomeIcon className="cloudupload" icon={faCloudUploadAlt} />
+                                            <h6 className="font-weight-500 mt-3">Drag and drop files to upload <br /> or</h6>
+                                            <a onClick={() => setOpen(true)} style={{ cursor: 'pointer' }} className="btn text-light border-light font-weight-500 border-radius-10 mt-3"><span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Select files to upload</a>
+                                            <p className="mt-3">Single upload file should not be more than <br />10MB. Only the  .xls, .xlsx file types are allowed</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+
+                    </div>
+                </div>
+            </div>
+            <Modal show={open1} onHide={handleClose1} size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+
+                <Modal.Body className="">
+                    <div className="d-flex align-items-center justify-content-between mt-2">
+                        <h5 className="font-weight-600 mb-0">Coverage</h5>
+                        <div className="d-flex justify-content-center align-items-center">
+                            <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
+                            <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+
+                        </div>
+                    </div>
+                    <div className="card mt-4">
+                        <div className="fileheader border-bottom d-flex align-items-center justify-content-between">
+                            <h6 className="font-weight-600 text-light mb-0 ml-3">Table Name<span> <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faPen} /></a></span></h6>
+                            <div>
+                                <a href="#" className="btn">+Add</a>
+                            </div>
+                        </div>
                         <div className="p-4  row">
                             <div className="col-md-6 col-sm-6">
                                 <a href="#" className="add-new-recod">
@@ -1124,224 +1446,494 @@ export function CreatePortfolio() {
                             </div>
                         </div>
                     </div>
-                    <Modal show={open1} onHide={handleClose1} size="lg"
-                        aria-labelledby="contained-modal-title-vcenter"
-                        centered>
-
-                        <Modal.Body className="">
-                            <div className="d-flex align-items-center justify-content-between mt-2">
-                                <h5 className="font-weight-600 mb-0">Coverage</h5>
-                                <div className="d-flex justify-content-center align-items-center">
-                                    <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
-                                    <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
-
-                                </div>
-                            </div>
-                            <div className="card mt-4">
-                                <div className="fileheader border-bottom d-flex align-items-center justify-content-between">
-                                    <h6 className="font-weight-600 text-light mb-0 ml-3">Table Name<span> <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faPen} /></a></span></h6>
-                                    <div>
-                                        <a href="#" className="btn">+Add</a>
-                                    </div>
-                                </div>
-                                <div className="p-4  row">
-                                    <div className="col-md-6 col-sm-6">
-                                        <a href="#" className="add-new-recod">
-                                            <div>
-                                                <FontAwesomeIcon icon={faPlus} />
-                                                <p className="font-weight-600">Add new record</p>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <div className="col-md-6 col-sm-6">
-                                        <div className="add-new-recod">
-
-                                            <div>
-                                                <FontAwesomeIcon className="cloudupload" icon={faCloudUploadAlt} />
-                                                <h6 className="font-weight-500 mt-3">Drag and drop files to upload <br /> or</h6>
-                                                <a onClick={() => setOpen(true)} style={{ cursor: 'pointer' }} className="btn text-light border-light font-weight-500 border-radius-10 mt-3"><span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Select files to upload</a>
-                                                <p className="mt-3">Single upload file should not be more than <br />10MB. Only the  .xls, .xlsx file types are allowed</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </Modal.Body>
-                    </Modal>
-                    <Modal show={open} onHide={handleClose} size="md"
-                        aria-labelledby="contained-modal-title-vcenter"
-                        centered>
-                        <Modal.Header closeButton>
-                            <Modal.Title>Import Files</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body className="p-0">
-                            <div className="p-3">
-                                <div className="add-new-recod">
-                                    <div>
-                                        <FontAwesomeIcon className="cloudupload" icon={faCloudUploadAlt} />
-                                        <h6 className="font-weight-500 mt-3">Drag and drop files to upload <br /> or</h6>
-                                        <FileUploader handleChange={handleChange} name="file" types={fileTypes} />
-                                    </div>
-                                </div>
-                                <p className="mt-3">Single upload file should not be more than 10MB. Only the  .xls, .xlsx file types are allowed</p>
-                            </div>
-                            <div className="recent-div p-3">
-                                <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
-                                <div className="recent-items mt-3">
-                                    <div className="d-flex justify-content-between align-items-center ">
-                                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Engine Partlist</span></p>
-                                        <div className="d-flex align-items-center">
-                                            <div className="white-space custom-checkbox">
-                                                <FormGroup>
-                                                    <FormControlLabel control={<Checkbox defaultChecked />} label="" />
-                                                </FormGroup>
-                                            </div>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                            <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div className="d-flex justify-content-between align-items-center mt-2">
-                                    <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                                    <p className="font-size-12 mb-0">Part List </p>
-                                </div>
-                                <div className="recent-items mt-3">
-                                    <div className="d-flex justify-content-between align-items-center ">
-                                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Engine Partlist</span></p>
-                                        <div className="d-flex align-items-center">
-                                            <div className="white-space custom-checkbox">
-                                                <FormGroup>
-                                                    <FormControlLabel control={<Checkbox />} label="" />
-                                                </FormGroup>
-                                            </div>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                            <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div className="d-flex justify-content-between align-items-center mt-2">
-                                    <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                                    <p className="font-size-12 mb-0">Part List </p>
-                                </div>
-                            </div>
-
-
-                        </Modal.Body>
-                        <div className="row m-0 p-3">
-                            <div className="col-md-6 col-sm-6">
-                                <button className="btn border w-100 bg-white" onClick={handleClose}>Cancel</button>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                                <button className="btn btn-primary w-100" onClick={() => setOpenCoveragetable(true)} style={{ cursor: 'pointer' }}><FontAwesomeIcon className="mr-2" icon={faCloudUploadAlt} />Upload</button>
+                </Modal.Body>
+            </Modal>
+            <Modal show={open} onHide={handleClose} size="md"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Import Files</Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="p-0">
+                    <div className="p-3">
+                        <div className="add-new-recod">
+                            <div>
+                                <FontAwesomeIcon className="cloudupload" icon={faCloudUploadAlt} />
+                                <h6 className="font-weight-500 mt-3">Drag and drop files to upload <br /> or</h6>
+                                <FileUploader handleChange={handleChange} name="file" types={fileTypes} />
                             </div>
                         </div>
-
-
-                    </Modal>
-                    <Modal show={openCoverage} onHide={handleCoveragetable} size="xl"
-                        aria-labelledby="contained-modal-title-vcenter"
-                        centered>
-
-                        <Modal.Body className="">
-                            <div className="d-flex align-items-center justify-content-between mt-2">
-                                <h5 className="font-weight-600 mb-0">Coverage</h5>
-                                <div className="d-flex justify-content-center align-items-center">
-                                    <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
+                        <p className="mt-3">Single upload file should not be more than 10MB. Only the  .xls, .xlsx file types are allowed</p>
+                    </div>
+                    <div className="recent-div p-3">
+                        <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
+                        <div className="recent-items mt-3">
+                            <div className="d-flex justify-content-between align-items-center ">
+                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Engine Partlist</span></p>
+                                <div className="d-flex align-items-center">
+                                    <div className="white-space custom-checkbox">
+                                        <FormGroup>
+                                            <FormControlLabel control={<Checkbox defaultChecked />} label="" />
+                                        </FormGroup>
+                                    </div>
+                                    <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                    <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                    <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
                                     <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
-
                                 </div>
                             </div>
-                            <div className="card px-4 pb-4 mt-5 pt-0">
-                                <div className="row align-items-center">
-                                    <div className="col-3">
-                                        <div className="d-flex ">
-                                            <h5 className=" mb-0"><span>Coverage123</span></h5>
-                                            <p className=" mb-0">
-                                                <a href="#" className="ml-3 "><img src={editIcon}></img></a>
-                                                <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="col-5">
-                                        <div className="d-flex align-items-center" style={{ background: '#F9F9F9', padding: '10px 15px', borderRadius: '10px' }}>
-                                            <div className="search-icon mr-2" style={{ lineHeight: '24px' }}>
-                                                <img src={searchstatusIcon}></img>
-                                            </div>
-                                            <div className="w-100 mx-2">
-                                                <div className="machine-drop d-flex align-items-center">
-                                                    <div><lable className="label-div">Machine</lable></div>
-                                                    <FormControl className="" sx={{ m: 1, }}>
-                                                        <Select
-                                                            id="demo-simple-select-autowidth"
-                                                            value={age}
-                                                            onChange={handleChangedrop}
-                                                            autoWidth
-                                                        >
-                                                            <MenuItem value="5">
-                                                                <em>Engine</em>
-                                                            </MenuItem>
-                                                            <MenuItem value={10}>Twenty</MenuItem>
-                                                            <MenuItem value={21}>Twenty one</MenuItem>
-                                                            <MenuItem value={22}>Twenty one and a half</MenuItem>
-                                                        </Select>
-                                                    </FormControl>
-                                                </div>
-                                            </div>
-                                        </div>
 
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center mt-2">
+                            <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                            <p className="font-size-12 mb-0">Part List </p>
+                        </div>
+                        <div className="recent-items mt-3">
+                            <div className="d-flex justify-content-between align-items-center ">
+                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Engine Partlist</span></p>
+                                <div className="d-flex align-items-center">
+                                    <div className="white-space custom-checkbox">
+                                        <FormGroup>
+                                            <FormControlLabel control={<Checkbox />} label="" />
+                                        </FormGroup>
                                     </div>
-                                    <div className="col-4">
-                                        <div className="d-flex align-items-center">
-                                            <div className="col-7 text-center">
-                                                <a href="#" className="p-1 more-btn">+ 3 more
-                                                    <span className="c-btn">C</span>
-                                                    <span className="b-btn">B</span>
-                                                    <span className="a-btn">A</span>
-                                                </a>
-                                            </div>
-                                            <div className="col-5 text-center border-left py-4">
-                                                <a href="#" className=" ">+ Add Part</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
-                                    <DataGrid
-                                        sx={{
-                                            '& .MuiDataGrid-columnHeaders': {
-                                                backgroundColor: '#7380E4', color: '#fff'
-                                            }
-                                        }}
-                                        rows={rows}
-                                        columns={columns}
-                                        pageSize={5}
-                                        rowsPerPageOptions={[5]}
-                                        checkboxSelection
-
-
-                                    />
+                                    <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                    <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                    <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                    <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
                                 </div>
                             </div>
-                        </Modal.Body>
-                    </Modal>
+
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center mt-2">
+                            <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                            <p className="font-size-12 mb-0">Part List </p>
+                        </div>
+                    </div>
+
+
+                </Modal.Body>
+                <div className="row m-0 p-3">
+                    <div className="col-md-6 col-sm-6">
+                        <button className="btn border w-100 bg-white" onClick={handleClose}>Cancel</button>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                        <button className="btn btn-primary w-100" onClick={() => setOpenCoveragetable(true)} style={{ cursor: 'pointer' }}><FontAwesomeIcon className="mr-2" icon={faCloudUploadAlt} />Upload</button>
+                    </div>
                 </div>
-            </div>
+
+
+            </Modal>
+            <Modal show={openCoverage} onHide={handleCoveragetable} size="xl"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+
+                <Modal.Body className="">
+                    <div className="d-flex align-items-center justify-content-between mt-2">
+                        <h5 className="font-weight-600 mb-0">Coverage</h5>
+                        <div className="d-flex justify-content-center align-items-center">
+                            <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
+                            <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+
+                        </div>
+                    </div>
+                    <div className="card px-4 pb-4 mt-5 pt-0">
+                        <div className="row align-items-center">
+                            <div className="col-3">
+                                <div className="d-flex ">
+                                    <h5 className=" mb-0"><span>Coverage123</span></h5>
+                                    <p className=" mb-0">
+                                        <a href="#" className="ml-3 "><img src={editIcon}></img></a>
+                                        <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="col-5">
+                                <div className="d-flex align-items-center" style={{ background: '#F9F9F9', padding: '10px 15px', borderRadius: '10px' }}>
+                                    <div className="search-icon mr-2" style={{ lineHeight: '24px' }}>
+                                        <img src={searchstatusIcon}></img>
+                                    </div>
+                                    <div className="w-100 mx-2">
+                                        <div className="machine-drop d-flex align-items-center">
+                                            <div><lable className="label-div">Machine</lable></div>
+                                            <FormControl className="" sx={{ m: 1, }}>
+                                                <Select
+                                                    id="demo-simple-select-autowidth"
+                                                    value={age}
+                                                    onChange={handleChangedrop}
+                                                    autoWidth
+                                                >
+                                                    <MenuItem value="5">
+                                                        <em>Engine</em>
+                                                    </MenuItem>
+                                                    <MenuItem value={10}>Twenty</MenuItem>
+                                                    <MenuItem value={21}>Twenty one</MenuItem>
+                                                    <MenuItem value={22}>Twenty one and a half</MenuItem>
+                                                </Select>
+                                            </FormControl>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div className="col-4">
+                                <div className="d-flex align-items-center">
+                                    <div className="col-7 text-center">
+                                        <a href="#" className="p-1 more-btn">+ 3 more
+                                            <span className="c-btn">C</span>
+                                            <span className="b-btn">B</span>
+                                            <span className="a-btn">A</span>
+                                        </a>
+                                    </div>
+                                    <div className="col-5 text-center border-left py-4">
+                                        <a href="#" className=" ">+ Add Part</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
+                            <DataGrid
+                                sx={{
+                                    '& .MuiDataGrid-columnHeaders': {
+                                        backgroundColor: '#7380E4', color: '#fff'
+                                    }
+                                }}
+                                rows={rows}
+                                columns={columns}
+                                pageSize={5}
+                                rowsPerPageOptions={[5]}
+                                checkboxSelection
+
+
+                            />
+                        </div>
+                    </div>
+                </Modal.Body>
+            </Modal>
+            <Modal show={openSearchSolution} onHide={() => setOpenSearchSolution(false)} size="xl"
+                aria-labelledby="contained-modal-title-vcenter">
+                <Modal.Body className="">
+                    Search Solution
+                    <div className="maintableheader bg-white mt-3 border-radius-10">
+                        <div className="d-flex justify-content-between align-items-center pl-2">
+                            <div className="d-flex align-items-center">
+                                <div className="customselect d-flex ml-3">
+                                    <span>
+                                        <a href="#" className="btn-sm">+</a>
+                                    </span>
+                                    <Select
+                                        onChange={handleColumnSearch}
+                                        isClearable={true}
+                                        value={columnSearch}
+                                        options={columnSearchKeyValue}
+                                        placeholder="Add by"
+                                    />
+                                    {columnSearch != null
+                                        ?
+                                        <input type="email" class="" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter text" style={{ border: 'none', background: 'transparent', width: '80px', fontWeight: '600', paddingLeft: '10px' }} value={columnSearchText} onChange={(e) => setColumnSearchText(e.target.value)}></input>
+                                        : <></>
+                                    }
+                                </div>
+
+                            </div>
+                            <div>
+                                <div className="">
+                                    <a href="#" style={{ cursor: 'pointer' }} className="btn border-left"><span>+</span> Add</a>
+                                    <a href="#" className="btn border-left">Cancel</a>
+                                </div>
+                            </div>
+                        </div>
+                        {columnSearchText.trim() != ""
+                            ?
+                            <div className="tableheader">
+                                <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
+                                    <li><a className="cursor" className="result">RESULTS</a></li>
+                                    <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM125</a></li>
+                                    <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM2</a></li>
+                                    <li><a className="cursor" onClick={handleCreateNewServiceBundle} className="lastOption text-violet"><span className="mr-2">+</span>Create New Service Bundle</a></li>
+                                </ul>
+                            </div>
+                            :
+                            <></>}
+                    </div>
+                </Modal.Body>
+            </Modal>
+
+            <Modal show={createNewBundle} onHide={() => setCreateNewBundle(false)} size="xl"
+                aria-labelledby="contained-modal-title-vcenter">
+                <Modal.Body className="">
+                    <div className="container-fluid ">
+                        <div className="d-flex align-items-center justify-content-between mt-2">
+                            <h5 className="font-weight-600 mb-0">Service Bundle</h5>
+                            <div className="d-flex justify-content-center align-items-center">
+                                <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
+                                <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
+                                <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>
+                                <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
+                                <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
+                                <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
+                                <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+
+                            </div>
+                        </div>
+                        <div className="card p-4 mt-5">
+                            <h5 className="d-flex align-items-center mb-0">
+                                <div className="" style={{ display: 'contents' }}><span className="mr-3">Header</span><a href="#" className="btn-sm"><i className="fa fa-pencil" aria-hidden="true"></i></a>
+                                    <a href="#" className="btn-sm"><i className="fa fa-bookmark-o" aria-hidden="true"></i></a>
+                                    <a href="#" className="btn-sm"><img style={{ width: '14px' }} src={folderaddIcon}></img></a></div>
+                                <div className="input-group icons border-radius-10 border">
+                                    <div className="input-group-prepend">
+                                        <span className="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
+                                            <img src={shearchIcon} /></span>
+                                    </div>
+                                    <input type="search" className="form-control search-form-control" aria-label="Search Dashboard" />
+                                </div>
+                            </h5>
+                            <div className="row mt-4">
+                                <div className="col-md-4 col-sm-3">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-12 font-weight-500" >PORTFOLIO ID</label>
+                                        <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponetData.portfolioName} onChange={handleGeneralInputChange} />
+                                    </div>
+                                </div>
+                                <div className="col-md-4 col-sm-3">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-12 font-weight-500" >PORTFOLIO DESCRIPTION</label>
+                                        <input type="email" className="form-control border-radius-10" name="portfolioDescription" placeholder="Placeholder" value={generalComponetData.portfolioDescription} onChange={handleGeneralInputChange} />
+                                    </div>
+                                </div>
+                                <div className="col-md-4 col-sm-3">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-12 font-weight-500" >SERVICE PROGRAM DESCRIPTION (IF ANY)</label>
+                                        <input type="email" className="form-control border-radius-10" name="serviceProgramDescription" placeholder="Placeholder" value={generalComponetData.serviceProgramDescription} onChange={handleGeneralInputChange} />
+                                    </div>
+                                </div>
+                                <div className="col-md-4 col-sm-3">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-12 font-weight-500" >REFERENCE</label>
+                                        <input type="email" className="form-control border-radius-10" name="reference" placeholder="Placeholder" value={generalComponetData.reference} onChange={handleGeneralInputChange} />
+                                    </div>
+                                </div>
+                                <div className="col-md-4 col-sm-3">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-12 font-weight-500" >CUSTOMER SEGMENT</label>
+                                        <input type="email" className="form-control border-radius-10" name="customerSegment" placeholder="Placeholder" value={generalComponetData.customerSegment} onChange={handleGeneralInputChange} />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row" style={{ justifyContent: 'right' }}>
+                                <button type="button" onClick={() => handleNextClick(portfolioId != null ? "Update" : "CREATE")} className="btn btn-light">Next</button>
+                            </div>
+                            {isView ?
+                                <div className="row mt-4">
+                                    <div className="col-md-4 col-sm-3">
+                                        <div className="form-group">
+                                            <p className="font-size-12 font-weight-500 mb-2">PORTFOLIO ID</p>
+                                            <h6 className="font-weight-600">CVA - Premium plan</h6>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4 col-sm-3">
+                                        <div className="form-group">
+                                            <p className="font-size-12 font-weight-500 mb-2">PORTFOLIO DESCRIPTION</p>
+                                            <h6 className="font-weight-600">Premium Customer Value Agreement D8T and D6T</h6>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4 col-sm-3">
+                                        <div className="form-group">
+                                            <p className="font-size-12 font-weight-500 mb-2">SERVICE PROGRAM DESCRIPTION (IF ANY)</p>
+                                            <h6 className="font-weight-600">NA</h6>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4 col-sm-3">
+                                        <div className="form-group">
+                                            <p className="font-size-12 font-weight-500 mb-2">REFERENCE</p>
+                                            <h6 className="font-weight-600">NA</h6>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4 col-sm-3">
+                                        <div className="form-group">
+                                            <p className="font-size-12 font-weight-500 mb-2">CUSTOMER SEGMENT</p>
+                                            <h6 className="font-weight-600">Construction</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                :
+                                <></>}
+
+                        </div>
+                        <div className="card mt-5">
+                            <div className="fileheader p-4 border-bottom d-flex justify-content-between align-items-center">
+                                <h6 className="font-weight-600 text-light mb-0">Bundle Items<span> <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faPen} /></a></span></h6>
+                            </div>
+                            <div className="p-4  row">
+                                <div className="col-md-6 col-sm-6">
+                                    <a href="#" className="add-new-recod" onClick={handleNewBundleItem}>
+                                        <div>
+                                            <FontAwesomeIcon icon={faPlus} />
+                                            <p className="font-weight-600">Add new record</p>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div className="col-md-6 col-sm-6">
+                                    <div className="add-new-recod">
+
+                                        <div>
+                                            <FontAwesomeIcon className="cloudupload" icon={faCloudUploadAlt} />
+                                            <h6 className="font-weight-500 mt-3">Drag and drop files to upload <br /> or</h6>
+                                            <a onClick={() => setOpen(true)} style={{ cursor: 'pointer' }} className="btn text-light border-light font-weight-500 border-radius-10 mt-3"><span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Select files to upload</a>
+                                            <p className="mt-3">Single upload file should not be more than <br />10MB. Only the  .xls, .xlsx file types are allowed</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </Modal.Body>
+            </Modal>
+
+            <Modal show={openAddBundleItem} onHide={() => setOpenAddBundleItem(false)} size="xl"
+                aria-labelledby="contained-modal-title-vcenter">
+                <Modal.Body className="">
+                    Add New Solution
+                    <Modal.Body className="p-0 bg-white">
+                        <div className="ligt-greey-bg p-3">
+                            <div>
+                                <span className="mr-3">
+                                    <i class="fa fa-pencil font-size-12" aria-hidden="true"></i><span className="ml-2">Edit</span>
+                                </span>
+                                <span className="mr-3">
+                                    < MonetizationOnOutlinedIcon className=" font-size-16" />
+                                    <span className="ml-2"> Adjudt price</span>
+                                </span>
+                                <span className="mr-3">
+                                    <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                                    <span className="ml-2">Related part list(s)</span>
+                                </span>
+                                <span className="mr-3">
+                                    <AccessAlarmOutlinedIcon className=" font-size-16" />
+                                    <span className="ml-2">Related service estimate(s)</span>
+                                </span>
+                                <span>
+                                    <SellOutlinedIcon className=" font-size-16" />
+                                    <span className="ml-2">Split price</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div className="px-3">
+                            {/* <Box className="" sx={{ width: '100%', typography: 'body1' }}>
+                                <TabContext value={1}>
+                                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                                        <TabList onChange={handleChange} aria-label="lab API tabs example">
+                                            <Tab label="General" value="1" />
+                                            <Tab label="Price " value="2" disabled />
+
+                                        </TabList>
+                                    </Box>
+                                    <TabPanel value="1"> */}
+                            <div>
+                                <a href="#" className="btn-sm border" onClick={() => setOpenAddBundleItem(false)}>Cancel</a>
+                                <a href="#" className="btn-sm bg-primary text-white ml-3" onClick={handleBundleItemSaveAndContinue}>Save & Continue</a>
+                            </div>
+                            <p className="mt-4">SUMMARY</p>
+                            <div class="row mt-4">
+                                <div className="col-md-6 col-sm-6">
+                                    <div class="form-group w-100">
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOLUTION ID</label>
+                                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="10" />
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-sm-6">
+                                    <div class="form-group w-100">
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOLUTION DESCRIPTION</label>
+                                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace Cranskshaft" />
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-sm-6">
+                                    <div class="form-group w-100">
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">USAGE IN</label>
+                                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Overhaul" />
+                                    </div>
+                                </div>
+                            </div>
+                            <p className="mt-4">STRATEGY</p>
+                            <div class="row mt-4">
+                                <div className="col-md-6 col-sm-6">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">TASK TYPE</label>
+                                        <div className="icon-defold">
+                                            <div className="form-control">
+                                                <Select
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                    options={options}
+                                                    placeholder="Preventive Maintenance"
+                                                />
+                                                <span className="search-icon searchIcon"><SearchOutlinedIcon className="font-size-16" /></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-sm-6">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">FREQUENCY</label>
+                                        <div className="icon-defold">
+                                            <div className="form-control">
+                                                <Select
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                    options={options}
+                                                    placeholder="Cyclical"
+                                                />
+                                                <span className="search-icon searchIcon"><SearchOutlinedIcon className="font-size-16" /></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-sm-6">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">TIME/HOURS</label>
+                                        <Select
+                                            defaultValue={selectedOption}
+                                            onChange={setSelectedOption}
+                                            options={options}
+                                            placeholder="HOURS"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-sm-6">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">VALUE</label>
+                                        <Select
+                                            defaultValue={selectedOption}
+                                            onChange={setSelectedOption}
+                                            options={options}
+                                            placeholder="250"
+                                        />
+                                    </div>
+                                </div>
+
+                            </div>
+                            {/* <div className="text-right">
+                                <a href="#" className="btn-sm border mr-3" onClick={() => setOpenAddBundleItem(true)} style={{ cursor: 'pointer' }}>Review</a>
+                                <a href="#" className="btn-sm bg-primary text-white" onClick={() => setOpen1(true)} style={{ cursor: 'pointer' }} >Copy to Solution</a>
+                            </div> */}
+
+                            {/* </TabPanel>
+                                    <TabPanel value="2">
+                                        <p>Data not found</p>
+                                    </TabPanel>
+                                </TabContext>
+                            </Box> */}
+                        </div>
+                    </Modal.Body>
+                </Modal.Body>
+            </Modal>
+            <ToastContainer />
         </>
 
     )

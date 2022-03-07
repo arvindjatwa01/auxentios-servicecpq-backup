@@ -218,7 +218,7 @@ h5{
 .text-dark{ color: #646464;}
 .text-light{color: #837fef !important;}
 .text-light-dark{ color: #58595B;}
-.text-violet{ color: #872FF7;}
+.text-violet{ color: #872FF7 !important;}
 .bg-violet{ background-color:#872FF7 ;}
 .bg-light-pink{ background: #F8F3FF;}
 .bg-light-dark{ background: #ECF6FE;}
@@ -702,4 +702,282 @@ height: 100%;
 .css-1h9z7r5-MuiButtonBase-root-MuiTab-root{text-transform: capitalize !important;}
 .cursor{
   cursor: pointer;
+}
+.tableheader{}
+.tableheader .accordion {
+  width: 100%;
+  margin: 30px auto 20px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 0 0 10px 10px !important;
+  overflow: hidden;
+}
+
+.tableheader .accordion .link {
+  cursor: pointer;
+  display: inline-block;
+  color: #4D4D4D;
+  font-size: 12px;
+  position: relative;
+  transition: all 0.4s ease;
+  border: 1px solid #7D8ADF;
+  padding: 3px 15px;
+  background: #F8F9FD;
+  border-radius: 8px;
+  margin: 10px;
+}
+.tableheader .accordion li{position: relative;
+  background: #fff;
+}
+.tableheader .accordion li:last-child{
+  margin-bottom: 0 !important;
+}
+.tableheader .accordion li:first-child{
+  background-color: #FAFAFA !important;
+}
+.tableheader .accordion .lastOption{
+  background-color: #FAFAFA !important;
+}
+.tableheader .accordion .lastOption:hover{
+  color: #000 !important;
+}
+.tableheader .accordion .result:hover{
+  background-color: transparent !important;
+  color: #000 !important;
+}
+.tableheader .submenu a:hover {
+  background: #7482DD;
+  color: #FFF;
+}
+.tableheader .accordion li .right-btn-box{position: absolute;
+  right: 0;
+  top: 0;}
+.tableheader .accordion li:last-child .link {
+  
+}
+
+.tableheader .accordion li i {
+  top: 16px;
+  left: 12px;
+  font-size: 18px;
+  color: #595959;
+  -webkit-transition: all 0.4s ease;
+  -o-transition: all 0.4s ease;
+  transition: all 0.4s ease;
+}
+
+.tableheader .accordion li i.fa-chevron-down {
+  right: 12px; 
+  left: auto;
+  font-size: 8px;
+  margin-left: 10px;
+}
+
+.tableheader .accordion li.open .link { color: #000; }
+
+.tableheader .accordion li.open i { color: #000; }
+
+.tableheader .accordion li.open i.fa-chevron-down {
+  -webkit-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+/**
+ * Submenu
+ -----------------------------*/
+
+
+ .tableheader .submenu {
+  display: none;
+  background: #ffffff;
+  font-size: 12px;
+  border-top: 1px solid #eee;
+}
+
+.tableheader .submenu li {border-bottom: 1px solid #f7f7f7; }
+
+.tableheader .submenu a {
+  display: block;
+  text-decoration: none;
+  color: #000000;
+  padding: 12px;
+  padding-left:15px;
+  -webkit-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+}
+
+.tableheader .submenu a:hover {
+  background: #7482DD;
+  color: #FFF;
+}
+
+
+/* .tableheader .bootstrap-select>.dropdown-toggle { position: unset;} */
+.tableheader .dropup, .dropright, .dropdown, .dropleft {
+  position: unset;
+}
+.tableheader .maintableheader{ position: relative;}
+.tableheader  .inner{ overflow-y: hidden !important;overflow: hidden;}
+.tableheader .bootstrap-select>.dropdown-toggle{
+  padding: 3px 15px;
+  background: transparent;
+  color: #4D4D4D !important;
+  font-size: 12px;}
+  .tableheader .bootstrap-select .dropdown-toggle:focus, .bootstrap-select>select.mobile-device:focus+.dropdown-toggle {
+    outline: thin dotted #333!important;
+    outline: 5px auto -webkit-focus-ring-color!important;
+    outline-offset: -2px;
+    outline: none !important;
+}
+.dropdown-toggle::after {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left:0;
+  vertical-align:0;
+  border-top:0;
+  border-right: 0;
+  border-bottom: 0;
+  border-left:0;
+  content: "\f078";
+  font: normal normal normal 14px/1 FontAwesome;
+  font-weight: 100;
+  font-size: 10px;
+  margin-right: 10px;
+}
+.dropup .dropdown-toggle::after {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left:0;
+  vertical-align:0;
+  border-top:0;
+  border-right: 0;
+  border-bottom: 0;
+  border-left:0;
+  content: "\f078";
+  font: normal normal normal 14px/1 FontAwesome;
+  font-weight: 100;
+  font-size: 10px;
+  margin-right: 10px;
+}
+.dropdown-menu.show{transform: none !important;
+  top: 43px !important;
+  width: 100% !important;
+  min-width: auto !important;}
+.customselect{border: 1px solid #7D8ADF;
+    background: #F8F9FD;
+    border-radius: 8px;
+    color: #4D4D4D !important;
+    font-size: 12px;
+    }
+.customselectPortfolio{border: 1px solid #ced4da !important;
+    background: #F8F9FD;
+    border-radius: 8px;
+    color: #4D4D4D !important;
+    font-size: 12px;
+    }
+    .customselect .css-1s2u09g-control{
+      background: transparent;
+      border: none;
+      min-height: 20px !important;
+      max-width: 120px !important;
+      width: 130px !important;
+    }
+    .customselectPortfolio .css-1s2u09g-control{
+      background: transparent;
+      border: none;
+      min-height: 40px !important;
+      max-width: 120px !important;
+      width: 130px !important;
+    }
+    .customselect .css-6j8wv5-Input{
+      margin: 0 !important;
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+    }
+    .customselect .css-tlfecz-indicatorContainer{
+      padding: 0 !important;
+    }
+    .customselect .css-1gtu0rj-indicatorContainer{
+      padding: 0 !important;
+    }
+    .customselect .css-1pahdxg-control{
+      background: transparent;
+      border: none;
+      min-height: 20px !important;
+      box-shadow:none !important;
+      max-width: 120px !important;
+      width: 130px !important;
+    }
+    .customselectPortfolio .css-1pahdxg-control{
+      background: transparent;
+      border: none;
+      min-height: 40px !important;
+      box-shadow:none !important;
+      max-width: 120px !important;
+      width: 130px !important;
+    }
+    .customselect .css-1pahdxg-control:hover{
+      border: none !important;
+      box-shadow:none !important
+    }
+    .customselect .css-1pndypt-Input{
+      padding: 0 !important;
+      margin:0 !important
+    }
+.customselect .bootstrap-select>select {
+      position: unset !important;
+    margin: 0;
+    display: unset !important;
+  }   
+  .customselect .bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn) {
+    width: auto !important;
+}
+.customselect .tableid{}
+.customselect .tableid .dropdown-toggle::after{ display:  none !important;} 
+.customselect .tableid .dropdown-toggle{ padding-right: 0 !important; width: 90px !important;}
+.customselect .pmselect{ }
+.customselect .pmselect .dropdown-toggle{width: 120px !important;
+  border-left: 1px solid #e8ecff;
+  border-radius: 0;
+  padding-left: 5px;font-weight: 600;}
+.tableheader .dropdown-toggle:hover{border-color: transparent !important;}
+.tableheader .dropdown-toggle:focus{border-color: transparent !important;}
+.btn-light:not(:disabled):not(.disabled):active, .btn-light:not(:disabled):not(.disabled).active, .show > .btn-light.dropdown-toggle {
+  color: #212529;
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+.icon-defold{
+  position: relative;
+}
+.icon-defold .css-1s2u09g-control{    border: none;
+  padding-left: 28px;
+  }
+.icon-defold .form-control {padding: 0;
+  height: 40px;position: relative;}
+  .icon-defold .css-1pahdxg-control{   border: none;
+    padding-left: 28px;}
+.search-icon1{position: absolute;
+    top: 12px;
+    left:27px;}
+  .solution-table{}   
+  .solution-table .css-13xfq8m-MuiTabPanel-root{
+    padding:0px;
+}   
+.searchIcon{
+  position: absolute;
+  top: 8px;
+  left: 2px;
+}
+.custom-table{
+
+}
+.custom-table .rdt_TableHeadRow {
+  background: #7380E4 !important;
+  color: white !important;
 }

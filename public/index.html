@@ -151,6 +151,36 @@
   <!-- ChartistJS -->
   <script src="%PUBLIC_URL%/assets/plugins/chartist/js/chartist.min.js"></script>
   <script src="%PUBLIC_URL%/assets/plugins/chartist-plugin-tooltips/js/chartist-plugin-tooltip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+  <script>
+    $(function () {
+      var Accordion = function (el, multiple) {
+        this.el = el || {};
+        this.multiple = multiple || false;
+
+        // Variables privadas
+        var links = this.el.find('.link');
+        // Evento
+        links.on('click', { el: this.el, multiple: this.multiple }, this.dropdown)
+      }
+
+      Accordion.prototype.dropdown = function (e) {
+        var $el = e.data.el;
+        $this = $(this),
+          $next = $this.next();
+
+        $next.slideToggle();
+        $this.parent().toggleClass('open');
+
+        if (!e.data.multiple) {
+          $el.find('.submenu').not($next).slideUp().parent().removeClass('open');
+        };
+      }
+
+      var accordion = new Accordion($('#accordion'), false);
+    });
+
+  </script>
 
   <!-- <script src="%PUBLIC_URL%/assets/js/dashboard/dashboard-1.js"></script> -->
   <i title="Raphaël Colour Picker" style="display: none; color: transparent;"></i>
