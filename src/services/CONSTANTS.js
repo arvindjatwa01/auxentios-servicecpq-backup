@@ -33,3 +33,4 @@ export const GET_ALL_SOLUTION_PORTFOLIOS = () => SOLUTION_BUILDER_URI + `portfol
 
 export const PORTFOLIO_URL = () => SOLUTION_BUILDER_URI + "portfolio"
 export const Common_SOLUTION_BUILDER_URL = () => SOLUTION_BUILDER_URI + "common-config"
+export const COVERAGE_REST = () => SOLUTION_BUILDER_URI + "coverage"

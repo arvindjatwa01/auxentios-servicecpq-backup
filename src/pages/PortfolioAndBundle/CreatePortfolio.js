@@ -53,7 +53,19 @@ import PartIcons from '../../assets/icons/png/PartIcons.png'
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
-import { createPortfolio, getPortfolio, updatePortfolio, getUsageCategoryKeyValue, getStrategyTaskKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getTypeKeyValue } from '../../services/index'
+import Portfoliosicon from '../../assets/icons/svg/Portfolios-icon.svg'
+import Buttonarrow from '../../assets/icons/svg/Button-arrow.svg'
+import contract from '../../assets/icons/svg/contract.svg'
+import repairicon from '../../assets/icons/svg/repair-icon.svg'
+import { SOLUTION_BUILDER_ANALYTICS } from 'navigation/CONSTANTS'
+
+
+
+import {
+    createPortfolio, getPortfolio,
+    getMakeKeyValue, getModelKeyValue, getPrefixKeyValue,
+    updatePortfolio, getUsageCategoryKeyValue, getTaskTypeKeyValue, getResponseTimeTaskKeyValue, getValidityKeyValue, getStrategyTaskKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getTypeKeyValue
+} from '../../services/index'
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 const Button = () => <button type="button" className="btn bg-primary text-white"><span><img className='mr-2' src={PartIcons}></img></span>Build</button>;
@@ -301,11 +313,78 @@ const columns = [
     //     cell: () => <Button>Download Poster</Button>,
     // },
 ];
+const coverageFleetsColumns = [
+    // {
+    //   name: <><div>
+    //     <div>
+    //     <Checkbox {...label} />
+    //   </div>
+    //     </div></>,
+    //   selector: row => row.title,
+    //   sortable: true,
+    //   maxWidth: '600px', // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
+    //   cell: row => <CustomTitle row={row} />,
+    // },
+    {
+        name: <><div><img className='mr-2' src={boxicon}></img>Fleet#</div></>,
+        selector: row => row.fleet,
+        sortable: true,
+        maxWidth: '300px', // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
+        cell: row => row.fleet,
+    },
+    {
+        name: <><div><img className='mr-2' src={boxicon}></img>Make</div></>,
+        selector: row => row.make,
+        wrap: true,
+        sortable: true,
+        format: row => row.make,
+    },
+    {
+        name: <><div>Products
+        </div></>,
+        selector: row => row.products,
+        wrap: true,
+        sortable: true,
+        format: row => row.products,
+    },
+    {
+        name: <><div>Services
+        </div></>,
+        selector: row => row.services,
+        wrap: true,
+        sortable: true,
+        format: row => row.services,
+    },
+    {
+        name: <><div>Bundles
+        </div></>,
+        selector: row => row.bundles,
+        wrap: true,
+        sortable: true,
+        format: row => row.bundles,
+    },
+    {
+        name: <><div>Action
+        </div></>,
+        selector: row => row.action,
+        wrap: true,
+        sortable: true,
+        format: row => row.action,
+    }
+];
 
 
 export function CreatePortfolio() {
 
+    const [makeKeyValue, setMakeKeyValue] = useState([])
+    const [modelKeyValue, setModelKeyValue] = useState([])
+    const [prefixKeyValue, setPrefixKeyValue] = useState([])
+    const [validityKeyValue, setValidityKeyValue] = useState([])
+    const [customerSegmentKeyValue, setCustomerSegmentKeyValue] = useState([])
+    const [responseTimeTaskKeyValue, setResponseTimeTaskKeyValue] = useState([])
     const [strategyTaskKeyValue, setStrategyTaskKeyValue] = useState([])
+    const [taskTypeKeyValue, setTaskTypeKeyValue] = useState([])
+    const [bundleItemTaskTypeKeyValue, setBundleItemTaskTypeKeyValue] = useState([])
     const [categoryUsageKeyValue, setCategoryUsageKeyValue] = useState([])
     const [productHierarchyKeyValue, setProductHierarchyKeyValue] = useState([])
     const [geographicKeyValue, setGeographicKeyValue] = useState([])
@@ -321,13 +400,19 @@ export function CreatePortfolio() {
     const [columnSearchText, setColumnSearchText] = useState('');
     const [openAddBundleItem, setOpenAddBundleItem] = useState(false)
     const [bundleItems, setBundleItems] = useState([])
-
+    const [coverageItems, setCoverageItems] = useState([])
+    const [showAddSolutionModal, setShowAddSolutionModal] = useState(false)
+    const [showAvailableCoverage, setShowAvailableCoverage] = useState(false)
+    const [openAddBundleItemHeader, setOpenAddBundleItemHeader] = useState("")
 
 
     const [coverageData, setCoverageData] = useState({
         make: '',
         modal: '',
         prefix: '',
+        makeSelect: null,
+        modelSelect: null,
+        prefixSelect: null,
         machineComponent: null,
         machineType: null,
         marchineDate: new Date()
@@ -336,6 +421,7 @@ export function CreatePortfolio() {
 
     const [strategyData, setStrategyData] = useState({
         strategyTask: null,
+        taskType: null,
         categoryUsage: null,
         options: null,
         responseTime: null,
@@ -345,14 +431,25 @@ export function CreatePortfolio() {
 
     const [validityData, setValidityData] = useState({
         fromDate: new Date(),
-        toDate: new Date()
+        toDate: new Date(),
+        from: null,
+        fromInput: "",
+        to: null,
+        toInput: ""
     })
     const [generalComponetData, setGeneralComponetData] = useState({
         portfolioName: "",
-        portfolioDescription: "",
-        serviceProgramDescription: "",
+        description: "",
+        serviceDescription: "",
         reference: "",
-        customerSegment: ""
+        customerSegment: null
+    })
+    const [newBundle, setNewBundle] = useState({
+        serviceDescription: "",
+        bundleFlag: "",
+        reference: "",
+        customerSegment: null,
+        machineComponent: null
     })
     const [portfolioId, setPortfolioId] = useState(4);
     const [alignment, setAlignment] = React.useState('Portfolio');
@@ -360,6 +457,37 @@ export function CreatePortfolio() {
     const [open2, setOpen2] = React.useState(false);
     const handleOpen2 = () => setOpen2(true);
     const handleClose2 = () => setOpen2(false);
+
+    const handleCustomerSegmentChange = (e) => {
+        setGeneralComponetData({
+            ...generalComponetData,
+            customerSegment: e
+        })
+    }
+
+    const handleShowAddSolution = () => {
+        setShowAddSolutionModal(!showAddSolutionModal)
+    }
+
+    const handleCreateSolution = (event) => {
+        if (event == 'bundle') {
+            setCreateNewBundle(true)
+            setOpenAddBundleItem(false)
+            setOpenSearchSolution(false)
+            setOpenAddBundleItemHeader("Add New Bundle Item")
+
+        } else if (event == 'service') {
+            setCreateNewBundle(false)
+            setOpenSearchSolution(false)
+            setOpenAddBundleItem(true)
+            setOpenAddBundleItemHeader("Add New Service")
+        } else if (event == 'bundleItem') {
+            setCreateNewBundle(false)
+            setOpenSearchSolution(false)
+            setOpenAddBundleItem(true)
+            setOpenAddBundleItemHeader("Add New Bundle Item")
+        }
+    }
 
 
     const handleChangeToggle = (event, newAlignment) => {
@@ -407,6 +535,7 @@ export function CreatePortfolio() {
         setOpenAddBundleItem(true)
         setOpenSearchSolution(false)
         setCreateNewBundle(false)
+        setOpenAddBundleItemHeader("Add New Bundle Item")
     }
     const handleCreateNewServiceBundle = () => {
         setCreateNewBundle(true)
@@ -419,12 +548,38 @@ export function CreatePortfolio() {
                 ...strategyData,
                 strategyTask: e
             })
-        } else if (type == ENUM.CATEGORY_USAGE) {
+            if (e == null) {
+                setTaskTypeKeyValue([])
+                setStrategyData({
+                    ...strategyData,
+                    taskType: null,
+                    strategyTask: null
+                })
+            } else {
+                const options = e.second.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setTaskTypeKeyValue(options)
+            }
+        } else if (type == ENUM.TASK_TYPE) {
+            setStrategyData({
+                ...strategyData,
+                taskType: e
+            })
+        }
+        else if (type == ENUM.CATEGORY_USAGE) {
             setStrategyData({
                 ...strategyData,
                 categoryUsage: e
             })
-        } else if (type == ENUM.PRODUCT_HIERARCHY) {
+        } else if (type == ENUM.RESPONSE_TIME) {
+            setStrategyData({
+                ...strategyData,
+                responseTime: e
+            })
+        }
+        else if (type == ENUM.PRODUCT_HIERARCHY) {
             setStrategyData({
                 ...strategyData,
                 productHierarchy: e
@@ -444,79 +599,120 @@ export function CreatePortfolio() {
                 ...coverageData,
                 machineType: e
             })
-        }
-    }
-
-    const handleNextClick = (type) => {
-        var request;
-        if (type == 'CREATE') {
-            if (portfolioId != null) {
-
-            } else {
-                request = {
-                    "name": generalComponetData.portfolioName,
-                    "description": generalComponetData.portfolioDescription,
-                    "externalReference": generalComponetData.reference,
-                    "machineType": "NEW",
-                    "searchTerm": "",
-                    "lubricant": false,
-                    "strategyTask": "PREVENTIVE_MAINTENANCE",
-                    "taskType": "PREVENTIVE_MAINTENANCE",
-                    "usageCategory": "CONTRACT",
-                    "productHierarchy": "END_PRODUCT",
-                    "geographic": "END_PRODUCT",
-                    "type": "MACHINE",
-                    "items": [],
-                    "coverages": [],
-                    "saveState": false,
-                    "userId": ""
-                }
-                const apiResponse = createPortfolio(request);
-                console.log(apiResponse)
-            }
-
-        } else if (type == 'Update') {
-            var tempValidFromMonth = ((validityData.fromDate.getMonth() + 1) + "").length > 1 ? (validityData.fromDate.getMonth() + 1) : "0" + (validityData.fromDate.getMonth() + 1)
-            var tempValidToMonth = ((validityData.toDate.getMonth() + 1) + "").length > 1 ? (validityData.toDate.getMonth() + 1) : "0" + (validityData.toDate.getMonth() + 1)
-            var tempValidFromDate = (validityData.fromDate.getDate() + "").length > 1 ? validityData.fromDate.getDate() : "0" + validityData.fromDate.getDate()
-            var tempValidToDate = (validityData.toDate.getDate() + "").length > 1 ? validityData.toDate.getDate() : "0" + validityData.toDate.getDate()
-            const tempValidFrom = validityData.fromDate.getFullYear() + "-" + tempValidFromMonth + "-" + tempValidFromDate;
-            const tempValidTo = validityData.toDate.getFullYear() + "-" + tempValidToMonth + "-" + tempValidToDate;
-            request = {
-                "name": generalComponetData.portfolioName,
-                "description": generalComponetData.portfolioDescription,
-                "externalReference": generalComponetData.reference,
-                "validFrom": tempValidFrom,
-                "validTo": tempValidTo,
-                "machineType": "NEW",
-                "searchTerm": "",
-                "lubricant": false,
-                "strategyTask": "PREVENTIVE_MAINTENANCE",
-                "taskType": "PREVENTIVE_MAINTENANCE",
-                "usageCategory": "CONTRACT",
-                "productHierarchy": "END_PRODUCT",
-                "geographic": "END_PRODUCT",
-                "type": "MACHINE",
-                "items": [],
-                "coverages": [],
-                "saveState": false,
-                "userId": ""
-            }
-            updatePortfolio(portfolioId, request).then((res) => {
-                alert("Update Success")
-                setValue(value + 1)
+        } else if (type == ENUM.MAKE) {
+            setCoverageData({
+                ...coverageData,
+                makeSelect: e
             })
-                .catch((err) => {
-                    alert(err)
-                })
+        } else if (type == ENUM.MODEL) {
+            setCoverageData({
+                ...coverageData,
+                modelSelect: e
+            })
+        } else if (type == ENUM.PREFIX) {
+            setCoverageData({
+                ...coverageData,
+                prefixSelect: e
+            })
         }
     }
+    const handleAddBundleDropdownChange = (type, e) => {
+        if (type == ENUM.MACHINE_COMPONENT) {
+            setNewBundle({
+                ...newBundle,
+                machineComponent: e
+            })
+        } else if (type == ENUM.MACHINE_TYPE) {
+            setCoverageData({
+                ...coverageData,
+                machineType: e
+            })
+        }
+    }
+
+    const handleNextClick = () => {
+        setValue(value + 1)
+    }
+
+
+    // const handleNextClick = (type) => {
+    //     var request;
+    //     if (type == 'CREATE') {
+    //         if (portfolioId != null) {
+
+    //         } else {
+    //             request = {
+    //                 "name": generalComponetData.portfolioName,
+    //                 "description": generalComponetData.portfolioDescription,
+    //                 "externalReference": generalComponetData.reference,
+    //                 "machineType": "NEW",
+    //                 "searchTerm": "",
+    //                 "lubricant": false,
+    //                 "strategyTask": "PREVENTIVE_MAINTENANCE",
+    //                 "taskType": "PREVENTIVE_MAINTENANCE",
+    //                 "usageCategory": "CONTRACT",
+    //                 "productHierarchy": "END_PRODUCT",
+    //                 "geographic": "END_PRODUCT",
+    //                 "type": "MACHINE",
+    //                 "items": [],
+    //                 "coverages": [],
+    //                 "saveState": false,
+    //                 "userId": ""
+    //             }
+    //             const apiResponse = createPortfolio(request);
+    //             console.log(apiResponse)
+    //         }
+
+    //     } else if (type == 'Update') {
+    //         var tempValidFromMonth = ((validityData.fromDate.getMonth() + 1) + "").length > 1 ? (validityData.fromDate.getMonth() + 1) : "0" + (validityData.fromDate.getMonth() + 1)
+    //         var tempValidToMonth = ((validityData.toDate.getMonth() + 1) + "").length > 1 ? (validityData.toDate.getMonth() + 1) : "0" + (validityData.toDate.getMonth() + 1)
+    //         var tempValidFromDate = (validityData.fromDate.getDate() + "").length > 1 ? validityData.fromDate.getDate() : "0" + validityData.fromDate.getDate()
+    //         var tempValidToDate = (validityData.toDate.getDate() + "").length > 1 ? validityData.toDate.getDate() : "0" + validityData.toDate.getDate()
+    //         const tempValidFrom = validityData.fromDate.getFullYear() + "-" + tempValidFromMonth + "-" + tempValidFromDate;
+    //         const tempValidTo = validityData.toDate.getFullYear() + "-" + tempValidToMonth + "-" + tempValidToDate;
+    //         request = {
+    //             "name": generalComponetData.portfolioName,
+    //             "description": generalComponetData.portfolioDescription,
+    //             "externalReference": generalComponetData.reference,
+    //             "validFrom": tempValidFrom,
+    //             "validTo": tempValidTo,
+    //             "machineType": "NEW",
+    //             "searchTerm": "",
+    //             "lubricant": false,
+    //             "strategyTask": "PREVENTIVE_MAINTENANCE",
+    //             "taskType": "PREVENTIVE_MAINTENANCE",
+    //             "usageCategory": "CONTRACT",
+    //             "productHierarchy": "END_PRODUCT",
+    //             "geographic": "END_PRODUCT",
+    //             "type": "MACHINE",
+    //             "items": [],
+    //             "coverages": [],
+    //             "saveState": false,
+    //             "userId": ""
+    //         }
+    //         updatePortfolio(portfolioId, request).then((res) => {
+    //             alert("Update Success")
+    //             setValue(value + 1)
+    //         })
+    //             .catch((err) => {
+    //                 alert(err)
+    //             })
+    //     }
+    // }
 
     const handleGeneralInputChange = (e) => {
         var value = e.target.value;
         var name = e.target.name;
         setGeneralComponetData({
             ...generalComponetData,
+            [name]: value
+        })
+    }
+    const handleAddBundleInputChange = (e) => {
+        var value = e.target.value;
+        var name = e.target.name;
+        setNewBundle({
+            ...newBundle,
             [name]: value
         })
     }
@@ -567,13 +763,92 @@ export function CreatePortfolio() {
 
     const initFetch = () => {
 
+        setCoverageItems([{
+            id: 1,
+            fleet: "Spare Part 1",
+            make: 'P',
+            products: '$20',
+            services: '100%',
+            bundles: '%',
+            quantity: '4',
+            part: '$1250',
+            service: '$350',
+            total: '$1575',
+            action: "-"
+        }])
+
+        // setBundleItemTaskTypeKeyValue
+
+
+        getTaskTypeKeyValue().then((res) => {
+            console.log(res)
+            const options = res.map((d) => ({
+                value: d.key,
+                label: d.value
+            }));
+            setBundleItemTaskTypeKeyValue(options)
+        }).catch((err) => {
+            alert(err)
+        })
+        getPrefixKeyValue().then((res) => {
+            console.log(res)
+            const options = res.map((d) => ({
+                value: d.key,
+                label: d.value
+            }));
+            setPrefixKeyValue(options)
+        }).catch((err) => {
+            alert(err)
+        })
+        getModelKeyValue().then((res) => {
+            console.log(res)
+            const options = res.map((d) => ({
+                value: d.key,
+                label: d.value
+            }));
+            setModelKeyValue(options)
+        }).catch((err) => {
+            alert(err)
+        })
+        getMakeKeyValue().then((res) => {
+            console.log(res)
+            const options = res.map((d) => ({
+                value: d.key,
+                label: d.value
+            }));
+            setMakeKeyValue(options)
+        }).catch((err) => {
+            alert(err)
+        })
+
+        getValidityKeyValue().then((res) => {
+            console.log(res)
+            const options = res.map((d) => ({
+                value: d.key,
+                label: d.value
+            }));
+            setValidityKeyValue(options)
+        }).catch((err) => {
+            alert(err)
+        })
         getStrategyTaskKeyValue().then((res) => {
             console.log(res)
             const options = res.map((d) => ({
                 value: d.key,
                 label: d.value,
+                second: d.nestedKeyValues
             }));
             setStrategyTaskKeyValue(options)
+        }).catch((err) => {
+            alert(err)
+        })
+        getResponseTimeTaskKeyValue().then((res) => {
+            console.log(res)
+            const options = res.map((d) => ({
+                value: d.key,
+                label: d.value
+            }));
+            setResponseTimeTaskKeyValue(options)
         }).catch((err) => {
             alert(err)
         })
@@ -787,11 +1062,11 @@ export function CreatePortfolio() {
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" >CUSTOMER SEGMENT</label>
                                                 <Select
-                                                    onChange={(e) => handleDropdownChange(ENUM.STRATEGY_TASK, e)}
+                                                    onChange={handleCustomerSegmentChange}
                                                     isClearable={true}
-                                                    value={strategyData.strategyTask}
-                                                    isLoading={strategyTaskKeyValue.length > 0 ? false : true}
-                                                    options={strategyTaskKeyValue}
+                                                    value={generalComponetData.customerSegment}
+                                                    isLoading={customerSegmentKeyValue.length > 0 ? false : true}
+                                                    options={customerSegmentKeyValue}
                                                     placeholder="Strategy Task"
                                                 />
                                                 {/* <input type="email" className="form-control border-radius-10" name="customerSegment" placeholder="Placeholder" value={generalComponetData.customerSegment} onChange={handleGeneralInputChange} /> */}
@@ -799,7 +1074,7 @@ export function CreatePortfolio() {
                                         </div>
                                     </div>
                                     <div className="row" style={{ justifyContent: 'right' }}>
-                                        <button type="button" onClick={() => handleNextClick(portfolioId != null ? "Update" : "CREATE")} className="btn btn-light">Next</button>
+                                        <button type="button" onClick={handleNextClick} className="btn btn-light">Next</button>
                                     </div>
                                     {isView ?
                                         <div className="row mt-4">
@@ -859,21 +1134,56 @@ export function CreatePortfolio() {
                                                     </MuiPickersUtilsProvider>
                                                     {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
                                                 </div>
-                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" for="exampleInputEmail1">TO</label>
-                                                <div className="form-group w-100">
-                                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                                        <DatePicker
-                                                            variant="inline"
-                                                            className="form-control border-radius-10"
-                                                            label=""
-                                                            value={validityData.toDate}
-                                                            onChange={(e) => setValidityData({
-                                                                ...validityData,
-                                                                toDate: e
-                                                            })}
-                                                        />
-                                                    </MuiPickersUtilsProvider>
-                                                    {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
+                                            </div>
+                                            <div className="row">
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="d-flex align-items-center">
+                                                        <div className="d-flex align-items-center date-box w-100">
+                                                            <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" for="exampleInputEmail1"><span className="mr-2">FROM</span></label>
+                                                            <div className="form-group w-100">
+                                                                <div className=" d-flex form-control-date ">
+                                                                    <Select className="select-input"
+                                                                        value={validityData.from}
+                                                                        onChange={(e) => setValidityData({
+                                                                            ...validityData,
+                                                                            from: e
+                                                                        })}
+                                                                        options={validityKeyValue}
+                                                                        placeholder="Select "
+                                                                    />
+                                                                    <div>
+                                                                        <input type="email" className="form-control rounded-top-left-0 rounded-bottom-left-0" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="" value={validityData.fromInput} onChange={(e) => setValidityData({
+                                                                            ...validityData,
+                                                                            fromInput: e.target.value
+                                                                        })} />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="d-flex align-items-center date-box w-100">
+                                                            <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" for="exampleInputEmail1"><span className="">TO</span></label>
+                                                            <div className="form-group w-100">
+                                                                <div className=" d-flex form-control-date">
+                                                                    <Select className="select-input"
+                                                                        value={validityData.to}
+                                                                        defaultValue={selectedOption}
+                                                                        onChange={(e) => setValidityData({
+                                                                            ...validityData,
+                                                                            to: e
+                                                                        })}
+                                                                        options={validityKeyValue}
+                                                                        placeholder="Select "
+                                                                    />
+                                                                    <div>
+                                                                        <input type="email" className="form-control rounded-top-left-0 rounded-bottom-left-0" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="" value={validityData.toInput} onChange={(e) => setValidityData({
+                                                                            ...validityData,
+                                                                            toInput: e.target.value
+                                                                        })} />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -931,7 +1241,7 @@ export function CreatePortfolio() {
                                         </div>
                                     </div> */}
                                     <div className="row" style={{ justifyContent: 'right' }}>
-                                        <button type="button" onClick={() => handleNextClick(portfolioId != null ? "Update" : "CREATE")} className="btn btn-light">Next</button>
+                                        <button type="button" onClick={handleNextClick} className="btn btn-light">Next</button>
                                     </div>
                                 </TabPanel>
                                 <TabPanel value={3}>
@@ -946,6 +1256,20 @@ export function CreatePortfolio() {
                                                     isLoading={strategyTaskKeyValue.length > 0 ? false : true}
                                                     options={strategyTaskKeyValue}
                                                     placeholder="Strategy Task"
+                                                />
+                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TASK TYPE</label>
+                                                <Select
+                                                    onChange={(e) => handleDropdownChange(ENUM.TASK_TYPE, e)}
+                                                    isClearable={true}
+                                                    value={strategyData.taskType}
+                                                    isLoading={taskTypeKeyValue.length > 0 ? false : true}
+                                                    options={taskTypeKeyValue}
+                                                    placeholder="Task Type"
                                                 />
                                                 {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
@@ -1220,25 +1544,69 @@ export function CreatePortfolio() {
                                         <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" >MAKE</label>
-                                                <input type="email" className="form-control border-radius-10" name="make" placeholder="" value={coverageData.make} onChange={handleCoverageInputChange} />
+                                                {makeKeyValue.length > 0
+                                                    ?
+                                                    <Select
+                                                        onChange={(e) => handleDropdownChange(ENUM.MAKE, e)}
+                                                        isClearable={true}
+                                                        value={coverageData.makeSelect}
+                                                        isLoading={makeKeyValue.length > 0 ? false : true}
+                                                        options={makeKeyValue}
+                                                    />
+                                                    :
+                                                    <input type="email" className="form-control border-radius-10" name="make" placeholder="" value={coverageData.make} onChange={handleCoverageInputChange} />
+                                                }
+
+                                                {/* <input type="email" className="form-control border-radius-10" name="make" placeholder="" value={coverageData.make} onChange={handleCoverageInputChange} /> */}
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" >MODEL(S)</label>
-                                                <input type="email" className="form-control border-radius-10" name="modal" placeholder="" value={coverageData.modal} onChange={handleCoverageInputChange} />
+                                                {/* <Select
+                                                    onChange={(e) => handleDropdownChange(ENUM.MACHINE_COMPONENT, e)}
+                                                    isClearable={true}
+                                                    value={coverageData.machineComponent}
+                                                    isLoading={typeKeyValue.length > 0 ? false : true}
+                                                    options={typeKeyValue}
+                                                /> */}
+                                                {modelKeyValue.length > 0
+                                                    ?
+                                                    <Select
+                                                        onChange={(e) => handleDropdownChange(ENUM.MODEL, e)}
+                                                        isClearable={true}
+                                                        value={coverageData.modelSelect}
+                                                        isLoading={modelKeyValue.length > 0 ? false : true}
+                                                        options={modelKeyValue}
+                                                    />
+                                                    :
+                                                    <input type="email" className="form-control border-radius-10" name="modal" placeholder="" value={coverageData.modal} onChange={handleCoverageInputChange} />
+                                                }
+
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" >PREFIX(S)</label>
-                                                <input type="email" className="form-control border-radius-10" name="prefix" placeholder="" value={coverageData.prefix} onChange={handleCoverageInputChange} />
+                                                {prefixKeyValue.length > 0
+                                                    ?
+                                                    <Select
+                                                        onChange={(e) => handleDropdownChange(ENUM.PREFIX, e)}
+                                                        isClearable={true}
+                                                        value={coverageData.prefixSelect}
+                                                        isLoading={prefixKeyValue.length > 0 ? false : true}
+                                                        options={prefixKeyValue}
+                                                    />
+                                                    :
+                                                    <input type="email" className="form-control border-radius-10" name="prefix" placeholder="" value={coverageData.prefix} onChange={handleCoverageInputChange} />
+                                                }
+
                                             </div>
                                         </div>
 
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">MACHINE/COMPOMENT</label>
+                                                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MACHINE/COMPOMENT</label>
                                                 <Select
                                                     onChange={(e) => handleDropdownChange(ENUM.MACHINE_COMPONENT, e)}
                                                     isClearable={true}
@@ -1250,7 +1618,7 @@ export function CreatePortfolio() {
                                         </div>
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">MACHINE TYPE</label>
+                                                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MACHINE TYPE</label>
                                                 <Select
                                                     onChange={(e) => handleDropdownChange(ENUM.MACHINE_TYPE, e)}
                                                     isClearable={true}
@@ -1260,12 +1628,18 @@ export function CreatePortfolio() {
                                                 />
                                             </div>
                                         </div>
+                                        {/* <div className="col-md-4 col-sm-4"> */}
+                                        {/* <div className="form-group">
+                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">COVERAGE DATA</label>
+                                            </div> */}
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">COVERAGE DATA</label>
+                                                <label className="text-light-dark font-size-12 font-weight-500">COVERAGE DATA</label>
+                                                <h6 >Coverage123<span className="ml-3 cursor" onClick={() => setShowAvailableCoverage(true)}><i className="fa fa-external-link"></i></span></h6>
                                             </div>
-                                            {/* <a href="#" className="btn btn-primary w-100" onClick={() => setOpen1(true)}> Create New</a> */}
                                         </div>
+                                        {/* <a href="#" className="btn btn-primary w-100" onClick={() => setShowAvailableCoverage(true)}> Create New</a> */}
+                                        {/* </div> */}
                                     </div>
 
                                     {isView ?
@@ -1319,7 +1693,8 @@ export function CreatePortfolio() {
                     <div className="card mt-5">
                         <div className="fileheader p-4 border-bottom d-flex justify-content-between align-items-center">
                             <h6 className="font-weight-600 text-light mb-0">Bundle Items<span> <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faPen} /></a></span></h6>
-                            <h6 className="font-weight-600 text-light mb-0 cursor" onClick={() => setOpenSearchSolution(true)}><span className="mr-2">+</span>Add Solution</h6>
+                            <h6 className="font-weight-600 text-light mb-0 cursor" onClick={handleShowAddSolution}><span className="mr-2">+</span>Add Solution</h6>
+                            {/* <h6 className="font-weight-600 text-light mb-0 cursor" onClick={() => setOpenSearchSolution(true)}><span className="mr-2">+</span>Add Solution</h6> */}
                         </div>
                         {bundleItems.length > 0 ?
                             <div>
@@ -1402,7 +1777,6 @@ export function CreatePortfolio() {
             <Modal show={open1} onHide={handleClose1} size="lg"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered>
-
                 <Modal.Body className="">
                     <div className="d-flex align-items-center justify-content-between mt-2">
                         <h5 className="font-weight-600 mb-0">Coverage</h5>
@@ -1445,6 +1819,57 @@ export function CreatePortfolio() {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </Modal.Body>
+            </Modal>
+            <Modal show={showAvailableCoverage} onHide={() => setShowAvailableCoverage(!showAvailableCoverage)} size="xl"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <Modal.Body className="">
+                    <div className="d-flex align-items-center justify-content-between mt-2">
+                        <h5 className="font-weight-600 mb-0">Coverage</h5>
+                        <div className="d-flex justify-content-center align-items-center">
+                            <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
+                            <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+
+                        </div>
+                    </div>
+                    <div className="card mt-4">
+                        <div className="fileheader border-bottom d-flex align-items-center justify-content-between">
+                            <h6 className="font-weight-600 text-light mb-0 ml-3">Fleets<span> <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faPen} /></a></span></h6>
+                            <div>
+                                <a href="#" className="btn">+Add</a>
+                            </div>
+                        </div>
+                        <div className="custom-table  card " style={{ height: 400, width: '100%' }}>
+                            <DataTable title="" columns={coverageFleetsColumns} data={coverageItems} customStyles={customStyles} pagination />
+                        </div>
+                        {/* <div className="p-4  row">
+                            <div className="col-md-6 col-sm-6">
+                                <a href="#" className="add-new-recod">
+                                    <div>
+                                        <FontAwesomeIcon icon={faPlus} />
+                                        <p className="font-weight-600">Add new record</p>
+                                    </div>
+                                </a>
+                            </div>
+                            <div className="col-md-6 col-sm-6">
+                                <div className="add-new-recod">
+
+                                    <div>
+                                        <FontAwesomeIcon className="cloudupload" icon={faCloudUploadAlt} />
+                                        <h6 className="font-weight-500 mt-3">Drag and drop files to upload <br /> or</h6>
+                                        <a onClick={() => setOpen(true)} style={{ cursor: 'pointer' }} className="btn text-light border-light font-weight-500 border-radius-10 mt-3"><span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Select files to upload</a>
+                                        <p className="mt-3">Single upload file should not be more than <br />10MB. Only the  .xls, .xlsx file types are allowed</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> */}
                     </div>
                 </Modal.Body>
             </Modal>
@@ -1669,7 +2094,7 @@ export function CreatePortfolio() {
                 <Modal.Body className="">
                     <div className="container-fluid ">
                         <div className="d-flex align-items-center justify-content-between mt-2">
-                            <h5 className="font-weight-600 mb-0">Service Bundle</h5>
+                            <h5 className="font-weight-600 mb-0">Add Bundle</h5>
                             <div className="d-flex justify-content-center align-items-center">
                                 <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
                                 <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
@@ -1727,7 +2152,7 @@ export function CreatePortfolio() {
                                 </div>
                             </div>
                             <div className="row" style={{ justifyContent: 'right' }}>
-                                <button type="button" onClick={() => handleNextClick(portfolioId != null ? "Update" : "CREATE")} className="btn btn-light">Next</button>
+                                <button type="button" className="btn btn-light">Save</button>
                             </div>
                             {isView ?
                                 <div className="row mt-4">
@@ -1799,7 +2224,7 @@ export function CreatePortfolio() {
             <Modal show={openAddBundleItem} onHide={() => setOpenAddBundleItem(false)} size="xl"
                 aria-labelledby="contained-modal-title-vcenter">
                 <Modal.Body className="">
-                    Add New Solution
+                    {openAddBundleItemHeader}
                     <Modal.Body className="p-0 bg-white">
                         <div className="ligt-greey-bg p-3">
                             <div>
@@ -1844,7 +2269,7 @@ export function CreatePortfolio() {
                                 <div className="col-md-6 col-sm-6">
                                     <div class="form-group w-100">
                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOLUTION ID</label>
-                                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="10" />
+                                        <input type="email" class="form-control border-radius-10" disabled id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(AUTO GENERATE)" />
                                     </div>
                                 </div>
                                 <div className="col-md-6 col-sm-6">
@@ -1868,10 +2293,10 @@ export function CreatePortfolio() {
                                         <div className="icon-defold">
                                             <div className="form-control">
                                                 <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="Preventive Maintenance"
+                                                    // defaultValue={selectedOption}
+                                                    // onChange={setSelectedOption}
+                                                    options={bundleItemTaskTypeKeyValue}
+                                                    placeholder="Select Or Search"
                                                 />
                                                 <span className="search-icon searchIcon"><SearchOutlinedIcon className="font-size-16" /></span>
                                             </div>
@@ -1933,6 +2358,73 @@ export function CreatePortfolio() {
                     </Modal.Body>
                 </Modal.Body>
             </Modal>
+
+            <Modal show={showAddSolutionModal} onHide={handleShowAddSolution} size="xl"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                {/* <Modal.Header closeButton>
+          <Modal.Title>Modal heading</Modal.Title>
+        </Modal.Header> */}
+                <Modal.Body>
+                    <div className='d-flex align-items-center justify-content-between'>
+                        <div><h5 class="">Choose what solution you want to build</h5></div>
+                        {/* <div>
+                        <a href='#' className='btn border-light font-weight-500 bg-light-grey font-size-18'>Explore available solution</a>
+                    </div> */}
+                    </div>
+                    <div className='card mt-4 p-4'>
+                        <div className='row'>
+                            <div className='col-md-6 my-3 '>
+                                <div className='d-flex'>
+                                    <div className='mr-2'><img src={Portfoliosicon}></img></div>
+                                    <div>
+                                        <h5 className='text-light'>Bundle</h5>
+                                        <p><b>You build Bundle here. </b>
+                                            Examples of Portfolios are Premium Maintenance Plan, Value added plan etc. A service program is a marketing or product improvement program.
+                                        </p>
+                                        <div className=''>
+                                            <a onClick={() => handleCreateSolution("bundle")} className='btn bg-primary text-white cursor'>Create <img className='ml-2' src={Buttonarrow}></img></a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='col-md-6 my-3'>
+                                <div className='d-flex'>
+                                    <div className='mr-2'><img src={contract}></img></div>
+                                    <div>
+                                        <h5 className='text-light'>Service</h5>
+                                        <p><b>You build Service & maintenance solutions for your customer segment here. </b>
+                                            Examples of pre-built template are Level I contracts like subscriptions or Level IV contract for Total Maintenance and Repair.
+                                        </p>
+                                        <div className=''>
+                                            <a onClick={() => handleCreateSolution("service")} className='btn bg-primary text-white cursor'>Create <img className='ml-2' src={Buttonarrow}></img></a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='col-md-6 my-3'>
+                                <div className='d-flex'>
+                                    <div className='mr-2'><img src={repairicon}></img></div>
+                                    <div>
+                                        <h5 className='text-light'>Bundle Item</h5>
+                                        <p><b>You build Bundle Item here. </b>
+                                            Examples of repair solutions are complex engine overhaul, engine reconditioning, componenet replacment , assembly of comlex
+                                        </p>
+                                        <div className=''>
+                                            <a onClick={() => handleCreateSolution("bundleItem")} className='btn bg-primary text-white cursor'>Create <img className='ml-2' src={Buttonarrow}></img></a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </Modal.Body>
+            </Modal>
+
+
             <ToastContainer />
         </>
 

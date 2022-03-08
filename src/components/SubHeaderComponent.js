@@ -12,7 +12,7 @@ export function SubHeaderComponent(props) {
               <ul>
                 <li>Date:21-Jul-2021</li>
                 <li>Time:06:55pm</li>
-                <li>Uaer ID:1269JG80</li>
+                <li>User ID:1269JG80</li>
 
               </ul>
             </div>

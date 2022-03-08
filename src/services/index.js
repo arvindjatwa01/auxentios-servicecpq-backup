@@ -9,5 +9,6 @@ export { getAllUsers } from './userServices';
 export { getUserDetails, signup, signIn } from './userServices';
 export { getAllPortfolios } from './solutionBuilderServices'
 export { createPortfolio, getPortfolio, updatePortfolio } from './servicePortfolioServices'
-export { getUsageCategoryKeyValue, getStrategyTaskKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getTypeKeyValue } from './commonSolutionBuilderServices'
+export { getMakeKeyValue, getModelKeyValue, getPrefixKeyValue } from './coverageService'
+export { getUsageCategoryKeyValue, getStrategyTaskKeyValue, getTaskTypeKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getTypeKeyValue, getResponseTimeTaskKeyValue, getValidityKeyValue } from './commonSolutionBuilderServices'
 
