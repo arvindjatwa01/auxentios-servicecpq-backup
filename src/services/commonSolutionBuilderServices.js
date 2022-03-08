@@ -51,6 +51,75 @@ export const getStrategyTaskKeyValue = () => {
   });
 };
 /**
+ * Function to fetch response Time keyvalue.
+ */
+export const getResponseTimeTaskKeyValue = () => {
+  console.log("commonSolutionBuilder > getResponseTimeTaskKeyValue called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(Common_SOLUTION_BUILDER_URL() + "/response-time")
+        .then((res) => {
+          console.log("getResponseTimeTaskKeyValue > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("getResponseTimeTaskKeyValue > axios err=", err);
+          reject("Error in getResponseTimeTaskKeyValue axios!");
+        });
+    } catch (error) {
+      console.error("in userServices > getResponseTimeTaskKeyValue, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+/**
+ * Function to Validity keyvalue.
+ */
+export const getValidityKeyValue = () => {
+  console.log("commonSolutionBuilder > getValidityKeyValue called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(Common_SOLUTION_BUILDER_URL() + "/validity")
+        .then((res) => {
+          console.log("getValidityKeyValue > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("getValidityKeyValue > axios err=", err);
+          reject("Error in getValidityKeyValue axios!");
+        });
+    } catch (error) {
+      console.error("in userServices > getValidityKeyValue, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+/**
+ * Function to Fetch Task Type keyvalue.
+ */
+export const getTaskTypeKeyValue = () => {
+  console.log("commonSolutionBuilder > getTaskTypeKeyValue called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(Common_SOLUTION_BUILDER_URL() + "/task-type")
+        .then((res) => {
+          console.log("getTaskTypeKeyValue > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("getTaskTypeKeyValue > axios err=", err);
+          reject("Error in getTaskTypeKeyValue axios!");
+        });
+    } catch (error) {
+      console.error("in commonSoltutionBuilderService > getTaskTypeKeyValue, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+/**
  * Function to fetch product hierarchy keyvalue.
  */
 export const getProductHierarchyKeyValue = () => {

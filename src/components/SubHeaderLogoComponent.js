@@ -5,8 +5,8 @@ export function SubHeaderLogoComponent(props) {
     <>
       <div class="nav-headerrepairbuilder">
         <div>
-          <h5 className="mb-0">Repair Builder</h5>
-          <span className="text-violet">RTB1234</span>
+          {/* <h5 className="mb-0">Repair Builder</h5>
+          <span className="text-violet">RTB1234</span> */}
         </div>
       </div>
     </>
