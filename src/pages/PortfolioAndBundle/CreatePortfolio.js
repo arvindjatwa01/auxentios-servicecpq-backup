@@ -1043,19 +1043,19 @@ export function CreatePortfolio() {
                                         <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" >{prefixLabelGeneral} DESCRIPTION</label>
-                                                <input type="email" className="form-control border-radius-10" name="portfolioDescription" placeholder="Placeholder" value={generalComponetData.portfolioDescription} onChange={handleGeneralInputChange} />
+                                                <input type="email" className="form-control border-radius-10" name="description" placeholder="Description" value={generalComponetData.portfolioDescription} onChange={handleGeneralInputChange} />
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" >SERVICE {prefixLabelGeneral} DESCRIPTION (IF ANY)</label>
-                                                <input type="email" className="form-control border-radius-10" name="serviceProgramDescription" placeholder="Placeholder" value={generalComponetData.serviceProgramDescription} onChange={handleGeneralInputChange} />
+                                                <input type="email" className="form-control border-radius-10" name="serviceDescription" placeholder="Description" value={generalComponetData.serviceProgramDescription} onChange={handleGeneralInputChange} />
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" >REFERENCE</label>
-                                                <input type="email" className="form-control border-radius-10" name="reference" placeholder="Placeholder" value={generalComponetData.reference} onChange={handleGeneralInputChange} />
+                                                <input type="email" className="form-control border-radius-10" name="reference" placeholder="Reference" value={generalComponetData.reference} onChange={handleGeneralInputChange} />
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-3">
@@ -1115,24 +1115,43 @@ export function CreatePortfolio() {
                                 </TabPanel>
                                 <TabPanel value={2}>
                                     <div className="row mt-4">
-                                        <div className="col-md-6 col-sm-6">
-
-                                            <div className="d-flex align-items-center">
-                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" for="exampleInputEmail1">FROM</label>
-                                                <div className="form-group w-100">
-                                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                                        <DatePicker
-                                                            variant="inline"
-                                                            className="form-control border-radius-10"
-                                                            label=""
-                                                            value={validityData.fromDate}
-                                                            onChange={(e) => setValidityData({
-                                                                ...validityData,
-                                                                fromDate: e
-                                                            })}
-                                                        />
-                                                    </MuiPickersUtilsProvider>
-                                                    {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
+                                        <div className="col-md-12">
+                                            <div className="row">
+                                                <div className="col-md-6 col-sm-6">
+                                                    <div className="d-flex align-items-center date-box">
+                                                        <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" for="exampleInputEmail1"><span className=" mr-2">FROM</span></label>
+                                                        <div className="form-group w-100">
+                                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                                <DatePicker
+                                                                    variant="inline"
+                                                                    className="form-control border-radius-10"
+                                                                    label=""
+                                                                    value={validityData.fromDate}
+                                                                    onChange={(e) => setValidityData({
+                                                                        ...validityData,
+                                                                        fromDate: e
+                                                                    })}
+                                                                />
+                                                            </MuiPickersUtilsProvider>
+                                                            {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
+                                                        </div>
+                                                        <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" for="exampleInputEmail1">TO</label>
+                                                        <div className="form-group w-100">
+                                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                                <DatePicker
+                                                                    variant="inline"
+                                                                    className="form-control border-radius-10"
+                                                                    label=""
+                                                                    value={validityData.toDate}
+                                                                    onChange={(e) => setValidityData({
+                                                                        ...validityData,
+                                                                        toDate: e
+                                                                    })}
+                                                                />
+                                                            </MuiPickersUtilsProvider>
+                                                            {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div className="row">
@@ -1187,9 +1206,7 @@ export function CreatePortfolio() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="col-md-6 col-sm-6">
 
-                                        </div>
                                         {/* <div className="col-md-6 col-sm-6">
                                             <div className="d-flex align-items-center">
                                                 <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" for="exampleInputEmail1">FROM</label>
@@ -1291,13 +1308,21 @@ export function CreatePortfolio() {
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">OPTIONALS</label>
-                                                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" />
+                                                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Optionais" />
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">RESPONSE TIME</label>
-                                                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" />
+                                                <Select
+                                                    onChange={(e) => handleDropdownChange(ENUM.RESPONSE_TIME, e)}
+                                                    isClearable={true}
+                                                    value={strategyData.responseTime}
+                                                    isLoading={responseTimeTaskKeyValue.length > 0 ? false : true}
+                                                    options={responseTimeTaskKeyValue}
+                                                    placeholder="Response Time"
+                                                />
+                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Response Time" /> */}
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -1434,16 +1459,16 @@ export function CreatePortfolio() {
                                     </div>
                                     <div className="row">
                                         <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
+                                            <div className="form-group date-box">
                                                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ADDITIONAL</label>
-                                                <div className=" d-flex">
+                                                <div className=" d-flex form-control-date">
                                                     {/* <Select className="select-input"
                                                         defaultValue={selectedOption}
                                                         onChange={setSelectedOption}
                                                         options={options}
                                                         placeholder="placeholder "
                                                     /> */}
-                                                    <div className="customselect customselectPortfolio">
+                                                    <div className="">
                                                         <Select
                                                             onChange={setSelectedOption}
                                                             isClearable={true}
@@ -1457,9 +1482,9 @@ export function CreatePortfolio() {
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
+                                            <div className="form-group date-box">
                                                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PRICE ESCALATON</label>
-                                                <div className=" d-flex">
+                                                <div className=" d-flex align-items-center form-control-date">
                                                     <Select className="select-input"
                                                         defaultValue={selectedOption}
                                                         onChange={setSelectedOption}
@@ -1480,9 +1505,9 @@ export function CreatePortfolio() {
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
+                                            <div className="form-group date-box">
                                                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PRICE BREAK DOWN</label>
-                                                <div className=" d-flex">
+                                                <div className=" d-flex form-control-date">
                                                     <Select className="select-input"
                                                         defaultValue={selectedOption}
                                                         onChange={setSelectedOption}
@@ -1494,9 +1519,9 @@ export function CreatePortfolio() {
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
+                                            <div className="form-group date-box">
                                                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PRICE BREAK DOWN</label>
-                                                <div className=" d-flex">
+                                                <div className=" d-flex form-control-date">
                                                     <Select className="select-input"
                                                         defaultValue={selectedOption}
                                                         onChange={setSelectedOption}
@@ -1531,7 +1556,7 @@ export function CreatePortfolio() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
+                                        <div className="custom-table" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
                                             <DataTable title="" columns={columns} data={data} customStyles={customStyles} pagination selectableRows />
                                         </div>
                                     </div>
@@ -2122,32 +2147,85 @@ export function CreatePortfolio() {
                             <div className="row mt-4">
                                 <div className="col-md-4 col-sm-3">
                                     <div className="form-group">
-                                        <label className="text-light-dark font-size-12 font-weight-500" >PORTFOLIO ID</label>
-                                        <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponetData.portfolioName} onChange={handleGeneralInputChange} />
+                                        <label className="text-light-dark font-size-12 font-weight-500" >SERVICE ID</label>
+                                        <input type="email" className="form-control border-radius-10" disabled name="portfolioName" placeholder="Service ID(AUTO)" value={generalComponetData.portfolioName} onChange={handleGeneralInputChange} />
                                     </div>
                                 </div>
                                 <div className="col-md-4 col-sm-3">
                                     <div className="form-group">
-                                        <label className="text-light-dark font-size-12 font-weight-500" >PORTFOLIO DESCRIPTION</label>
-                                        <input type="email" className="form-control border-radius-10" name="portfolioDescription" placeholder="Placeholder" value={generalComponetData.portfolioDescription} onChange={handleGeneralInputChange} />
+                                        <label className="text-light-dark font-size-12 font-weight-500" >SERVICE DESCRIPTION</label>
+                                        <input type="email" className="form-control border-radius-10" name="serviceDescription" placeholder="Service Description" value={newBundle.serviceDescription} onChange={handleAddBundleInputChange} />
                                     </div>
                                 </div>
                                 <div className="col-md-4 col-sm-3">
                                     <div className="form-group">
-                                        <label className="text-light-dark font-size-12 font-weight-500" >SERVICE PROGRAM DESCRIPTION (IF ANY)</label>
-                                        <input type="email" className="form-control border-radius-10" name="serviceProgramDescription" placeholder="Placeholder" value={generalComponetData.serviceProgramDescription} onChange={handleGeneralInputChange} />
+                                        <label className="text-light-dark font-size-12 font-weight-500" >BUNDLE FLAG</label>
+                                        <input type="email" className="form-control border-radius-10" name="bundleFlag" placeholder="Bundle Flag" value={newBundle.bundleFlag} onChange={handleAddBundleInputChange} />
                                     </div>
                                 </div>
                                 <div className="col-md-4 col-sm-3">
                                     <div className="form-group">
-                                        <label className="text-light-dark font-size-12 font-weight-500" >REFERENCE</label>
-                                        <input type="email" className="form-control border-radius-10" name="reference" placeholder="Placeholder" value={generalComponetData.reference} onChange={handleGeneralInputChange} />
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REFERENCE</label>
+                                        <input type="email" className="form-control border-radius-10" name="reference" placeholder="Reference" value={newBundle.reference} onChange={handleAddBundleInputChange} />
+                                        {/* <Select
+                                            defaultValue={selectedOption}
+                                            onChange={setSelectedOption}
+                                            options={options}
+                                            placeholder="Preventive Maintenance"
+                                        /> */}
                                     </div>
                                 </div>
                                 <div className="col-md-4 col-sm-3">
                                     <div className="form-group">
                                         <label className="text-light-dark font-size-12 font-weight-500" >CUSTOMER SEGMENT</label>
+                                        <Select
+                                            defaultValue={selectedOption}
+                                            onChange={setSelectedOption}
+                                            options={options}
+                                            placeholder="Customer Segment"
+                                        />
+                                        {/* <input type="email" className="form-control border-radius-10" name="reference" placeholder="Customer Segment" value={generalComponetData.reference} onChange={handleGeneralInputChange} /> */}
+                                    </div>
+                                </div>
+                                <div className="col-md-4 col-sm-3">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-12 font-weight-500" >MAKE</label>
                                         <input type="email" className="form-control border-radius-10" name="customerSegment" placeholder="Placeholder" value={generalComponetData.customerSegment} onChange={handleGeneralInputChange} />
+                                    </div>
+                                </div>
+                                <div className="col-md-4 col-sm-3">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-12 font-weight-500" >MODEL(S)</label>
+                                        <input type="email" className="form-control border-radius-10" name="customerSegment" placeholder="Placeholder" value={generalComponetData.customerSegment} onChange={handleGeneralInputChange} />
+                                    </div>
+                                </div>
+                                <div className="col-md-4 col-sm-3">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-12 font-weight-500" >PREFIX(S)</label>
+                                        <input type="email" className="form-control border-radius-10" name="customerSegment" placeholder="Placeholder" value={generalComponetData.customerSegment} onChange={handleGeneralInputChange} />
+                                    </div>
+                                </div>
+                                <div className="col-md-4 col-sm-3">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MACHINE/COMPONENT</label>
+                                        <Select
+                                            onChange={(e) => handleAddBundleDropdownChange(ENUM.MACHINE_COMPONENT, e)}
+                                            isClearable={true}
+                                            value={newBundle.machineComponent}
+                                            isLoading={typeKeyValue.length > 0 ? false : true}
+                                            options={typeKeyValue}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-md-4 col-sm-3">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ADDITIONALS</label>
+                                        <Select
+                                            defaultValue={selectedOption}
+                                            onChange={setSelectedOption}
+                                            options={options}
+                                            placeholder="Preventive Maintenance"
+                                        />
                                     </div>
                                 </div>
                             </div>

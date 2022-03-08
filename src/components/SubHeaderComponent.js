@@ -9,23 +9,23 @@ export function SubHeaderComponent(props) {
         <div class="header-content clearfix">
           <div className="row h-100">
             <div className="col-6 h-100">
-              <ul>
+              <ul className=" ">
+                <li><img src={repeateIcon}></img></li>
+                <li><img src={peopleIcon}></img></li>
+
+              </ul>
+            </div>
+            <div className="col-6 h-100 ">
+              <ul className="   justify-content-end">
                 <li>Date:21-Jul-2021</li>
                 <li>Time:06:55pm</li>
                 <li>User ID:1269JG80</li>
 
               </ul>
             </div>
-            <div className="col-6 h-100">
-              <ul className="    justify-content-end">
-                <li><img src={repeateIcon}></img></li>
-                <li><img src={peopleIcon}></img></li>
-
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+          </div >
+        </div >
+      </div >
     </>
   );
 }
