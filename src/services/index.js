@@ -6,6 +6,8 @@
  */
 
 export { getAllUsers } from './userServices';
+export { getPortfolioSchema } from './schemaConfigServices';
+export { getGuidedSolution } from './guidedSolutionServices';
 export { getUserDetails, signup, signIn } from './userServices';
 export { getAllPortfolios } from './solutionBuilderServices'
 export { createPortfolio, getPortfolio, updatePortfolio } from './servicePortfolioServices'

@@ -11,6 +11,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Chart1 } from '../Common/index'
 
 import { getAllUsers } from "services";
 
@@ -35,22 +36,22 @@ export const DashboardContainer = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
-    getAllUsers()
-      .then((res) => {
-        console.log("Dashboard > getAllUsers > res=", res);
-        setUsers(res);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.log("axios err=", err);
-        setUsers([]);
-        setIsLoading(false);
-      });
+    // setIsLoading(true);
+    // getAllUsers()
+    //   .then((res) => {
+    //     console.log("Dashboard > getAllUsers > res=", res);
+    //     setUsers(res);
+    //     setIsLoading(false);
+    //   })
+    //   .catch((err) => {
+    //     console.log("axios err=", err);
+    //     setUsers([]);
+    //     setIsLoading(false);
+    //   });
 
-    return () => {
-      console.log("axios cleanup.");
-    };
+    // return () => {
+    //   console.log("axios cleanup.");
+    // };
   }, []);
 
   const NoUserList = <Typography variant="body2">No users found!</Typography>;
@@ -158,20 +159,20 @@ export const DashboardContainer = () => {
             </div>
             <div className="col-md-4 col-sm-6">
               <div>
-                <Accordion className="Accordion-div">
+                <Accordion className="Accordion-div" onClick={() => window.location.href = "/workList"}>
                   <AccordionSummary className="Accordion-btn"
                     expandIcon={<ExpandMoreIcon sx={{ color: '#54ACA7' }} />}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
                   >
-                    <Typography><CottageOutlinedIcon className="home-icon" />Accordion 1</Typography>
+                    <Typography><CottageOutlinedIcon className="home-icon" />Work List</Typography>
                   </AccordionSummary>
-                  <AccordionDetails>
+                  {/* <AccordionDetails>
                     <Typography>
                       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
                       malesuada lacus ex, sit amet blandit leo lobortis eget.
                     </Typography>
-                  </AccordionDetails>
+                  </AccordionDetails> */}
                 </Accordion>
                 <Accordion className="Accordion-div">
                   <AccordionSummary className="Accordion-btn2"
@@ -179,7 +180,7 @@ export const DashboardContainer = () => {
                     aria-controls="panel2a-content"
                     id="panel2a-header"
                   >
-                    <Typography><CottageOutlinedIcon className="home-icon" />Accordion 2</Typography>
+                    <Typography><CottageOutlinedIcon className="home-icon" />Saved Tasks</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
                     <Typography>
@@ -194,7 +195,7 @@ export const DashboardContainer = () => {
                     aria-controls="panel2a-content"
                     id="panel2a-header"
                   >
-                    <Typography><CottageOutlinedIcon className="home-icon" />Accordion 3</Typography>
+                    <Typography><CottageOutlinedIcon className="home-icon" />Items to review</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
                     <Typography>
@@ -220,8 +221,10 @@ export const DashboardContainer = () => {
                   <div class="span4 collapse-group">
                     <div>
                       <a href="#" data-toggle="collapse" data-target="#bysoluction"><span><i class="fa fa-angle-down f-s-16 mr-2" aria-hidden="true"></i></span><span className="font-weight-500">By Soluction</span></a>
-                      <p class="collapse show" id="bysoluction"> Discount has been changed from 797 to 700 for</p>
-
+                      <div class="collapse show" id="bysoluction">
+                        <p > Bars represent solutions</p>
+                        <Chart1 />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -231,8 +234,10 @@ export const DashboardContainer = () => {
                   <div class="span4 collapse-group">
                     <div>
                       <a href="#" data-toggle="collapse" data-target="#bystatus"><span><i class="fa fa-angle-down f-s-16 mr-2" aria-hidden="true"></i></span><span className="font-weight-500">By Status</span></a>
-                      <p class="collapse show" id="bystatus"> Discount has been changed from 797 to 700 for</p>
-
+                      <div class="collapse show" id="bystatus">
+                        <p > Bars represent solutions</p>
+                        <Chart1 />
+                      </div>
                     </div>
                   </div>
                 </div>

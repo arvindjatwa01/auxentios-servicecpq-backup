@@ -42,6 +42,9 @@ export function SolutionSelector(props) {
     const [searchByVisible, setSearchByVisible] = React.useState(false);
     const [buildEnable, setBuildEnable] = React.useState(true);
     const [searchOptions, setSearchOptions] = React.useState(null);
+
+    const [selectTypeOfSolution, setSelectTypeOfSolution] = useState(-1)
+
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
@@ -139,6 +142,15 @@ export function SolutionSelector(props) {
         setSearchOptions(e)
     }
 
+    const handleTypeOfSolution = (e) => {
+        setSelectTypeOfSolution(e.target.value)
+    }
+
+
+    useEffect(() => {
+        setSelectTypeOfSolution(props.defaultValue)
+    }, [props.defaultValue]);
+
 
     return (
         <>
@@ -161,20 +173,22 @@ export function SolutionSelector(props) {
                             aria-labelledby="demo-form-control-label-placement"
                             name="position"
                             defaultValue="top"
+                            value={selectTypeOfSolution}
+                            onChange={handleTypeOfSolution}
                         >
 
                             <FormControlLabel
                                 className="col-md-6 m-0 card py-4 align-itemsstart"
-                                value="top"
+                                value="0"
                                 control={<Radio />}
                                 label="Portfolio"
                                 labelPlacement="bottom"
                             />
                             <FormControlLabel
                                 className="col-md-6 m-0 card py-4 align-itemsstart"
-                                value="bottom"
+                                value="1"
                                 control={<Radio />}
-                                label="Maintenance and Repair Tamplatesttom"
+                                label="Maintenance and Repair Templates"
                                 labelPlacement="bottom"
                             />
                         </RadioGroup>

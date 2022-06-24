@@ -9,17 +9,17 @@ const LoaderComponent = props => {
     // }
     return (
         <div id="preloader" style={{ display: 'none' }}>
-            <div class="loader">
-                <svg class="circular" viewBox="25 25 50 50">
-                    <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10"></circle>
+            <div className="loader">
+                <svg className="circular" viewBox="25 25 50 50">
+                    <circle className="path" cx="50" cy="50" r="20" fill="none" strokeWidth="3" strokeMiterlimit="10"></circle>
                 </svg>
             </div>
         </div>
     )
 }
 
-LoaderComponent.propTypes = {
-    title: PropTypes.string.isRequired
-}
+// LoaderComponent.propTypes = {
+//     title: PropTypes.string.isRequired
+// }
 
 export default LoaderComponent

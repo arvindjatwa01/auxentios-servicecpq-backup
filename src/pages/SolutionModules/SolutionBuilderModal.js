@@ -15,6 +15,14 @@ export function SolutionBuilderModal(props) {
     }
     const handleShow = () => setShow(true);
 
+    const continueClick = (data) => {
+        props.continueParentCallback(data)
+    }
+
+    const handleShowSearch = () => {
+        props.showSearchParentCallback(true)
+    }
+
     useEffect(() => {
         setShow(true)
     }, [props.open]);
@@ -28,7 +36,7 @@ export function SolutionBuilderModal(props) {
             <Modal.Body>
                 <div className='d-flex align-items-center justify-content-between'>
                     <div><h5 class="">Choose what solution you want to build</h5></div>
-                    <div>
+                    <div onClick={handleShowSearch}>
                         <a href='#' className='btn border-light font-weight-500 bg-light-grey font-size-18'>Explore available solution</a>
                     </div>
                 </div>
@@ -43,7 +51,7 @@ export function SolutionBuilderModal(props) {
                                         Examples of Portfolios are Premium Maintenance Plan, Value added plan etc. A service program is a marketing or product improvement program.
                                     </p>
                                     <div className=''>
-                                        <a href={SOLUTION_BUILDER_ANALYTICS} className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></a>
+                                        <a onClick={() => continueClick(true)} className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></a>
                                     </div>
 
                                 </div>
@@ -58,7 +66,7 @@ export function SolutionBuilderModal(props) {
                                         Examples of pre-built template are Level I contracts like subscriptions or Level IV contract for Total Maintenance and Repair.
                                     </p>
                                     <div className=''>
-                                        <a href={SOLUTION_BUILDER_ANALYTICS} className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></a>
+                                        <a onClick={() => continueClick(false)} className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></a>
                                     </div>
 
                                 </div>
@@ -73,7 +81,7 @@ export function SolutionBuilderModal(props) {
                                         Examples of repair solutions are complex engine overhaul, engine reconditioning, componenet replacment , assembly of comlex
                                     </p>
                                     <div className=''>
-                                        <a href={SOLUTION_BUILDER_ANALYTICS} className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></a>
+                                        <a onClick={() => continueClick(false)} className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></a>
                                     </div>
 
                                 </div>

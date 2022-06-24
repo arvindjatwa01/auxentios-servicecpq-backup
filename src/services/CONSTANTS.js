@@ -15,7 +15,7 @@
 
 // const SOLUTION_BASE_URL = "http://13.58.83.209:8080/";
 const SOLUTION_BASE_URL = "http://35.200.157.237/";
-const USER_SERVICE_BASE_URL = "http://3.15.204.38:8080/";
+const USER_SERVICE_BASE_URL = "http://35.200.157.237/";
 const SOLUTION_BUILDER_URI = SOLUTION_BASE_URL + "solution-builder-svc/v1/"
 const USER_SERVICE_URI = USER_SERVICE_BASE_URL + "user-svc/v1/user/"
 // Local endpoints. Uncomment below section to use dummy local data.
@@ -34,3 +34,13 @@ export const GET_ALL_SOLUTION_PORTFOLIOS = () => SOLUTION_BUILDER_URI + `portfol
 export const PORTFOLIO_URL = () => SOLUTION_BUILDER_URI + "portfolio"
 export const Common_SOLUTION_BUILDER_URL = () => SOLUTION_BUILDER_URI + "common-config"
 export const COVERAGE_REST = () => SOLUTION_BUILDER_URI + "coverage"
+export const GET_STRATEGY_TASK = () => SOLUTION_BUILDER_URI + "common-config/strategy-task"
+export const GET_TASK_TYPE = () => SOLUTION_BUILDER_URI + "common-config/task-type"
+export const GET_CATEGORY_USAGE = () => SOLUTION_BUILDER_URI + "common-config/usage-category"
+export const GET_RESPONSE_TIME = () => SOLUTION_BUILDER_URI + "common-config/response-time"
+export const GET_PRODUCT_HIERARCHY = () => SOLUTION_BUILDER_URI + "common-config/product-hierarchy"
+export const GET_GEOGRAPHIC = () => SOLUTION_BUILDER_URI + "common-config/geographic"
+
+//Schema Config
+export const SCHEMA_CONFIG = () => SOLUTION_BUILDER_URI + "schema"
+export const GUIDED_SOLUTIONS = () => SOLUTION_BUILDER_URI + "/guided-solution"

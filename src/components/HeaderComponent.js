@@ -5,87 +5,89 @@ import notificationIcon from '../assets/icons/svg/notification-bing.svg'
 import profileIcon from '../assets/icons/svg/profile.svg'
 import messageIcon from '../assets/icons/svg/message-text.svg'
 import supportIcon from '../assets/icons/svg/24-support.svg'
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import { Link } from "react-router-dom";
 
 export function HeaderComponent(props) {
 
 
   const handleLogout = () => {
     localStorage.clear();
-    window.location.reload(true)
+    window.location.href = "/login"
   }
   return (
     <>
-      <div class="header">
-        <div class="header-content clearfix">
+      <div className="header">
+        <div className="header-content clearfix" style={{display:"none"}}>
 
-          {/* <div class="nav-control">
-                    <div class="hamburger">
-                        <span class="toggle-icon"><i class="icon-menu"></i></span>
+          {/* <div className="nav-control">
+                    <div className="hamburger">
+                        <span className="toggle-icon"><i className="icon-menu"></i></span>
                     </div>
                 </div> */}
-          <div class="header-left">
-            <div class="input-group icons">
-              <div class="input-group-prepend">
-                <span class="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1"><img src={shearchIcon}></img></span>
+          <div className="header-left">
+            <div className="input-group icons">
+              <div className="input-group-prepend">
+                <span className="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1"><img src={shearchIcon}></img></span>
               </div>
-              <input type="search" class="form-control search-form-control" placeholder="Search" aria-label="Search Dashboard" />
-              <div class="drop-down animated flipInX d-md-none">
+              <input type="search" className="form-control search-form-control" placeholder="Search" aria-label="Search Dashboard" />
+              <div className="drop-down animated flipInX d-md-none">
                 <form action="#">
-                  <input type="text" class="form-control" placeholder="Search" />
+                  <input type="text" className="form-control" placeholder="Search" />
                 </form>
               </div>
             </div>
           </div>
-          <div class="header-right">
-            <ul class="clearfix">
+          <div className="header-right">
+            <ul className="clearfix">
 
-              <li class="icons dropdown"><a className="header-li-text" href="javascript:void(0)" data-toggle="dropdown">
+              <li className="icons dropdown"><a className="header-li-text" href="javascript:void(0)" data-toggle="dropdown">
                 <img src={notificationIcon}></img>
-                {/* <span class="badge badge-pill gradient-2">3</span> */}
+                {/* <span className="badge badge-pill gradient-2">3</span> */}
                 <div className="li-contant">Notifications</div>
               </a>
-                <div class="drop-down animated fadeIn dropdown-menu dropdown-notfication">
-                  <div class="dropdown-content-heading d-flex justify-content-between">
-                    <span class="">2 New Notifications</span>
-                    <a href="javascript:void()" class="d-inline-block">
-                      <span class="badge badge-pill gradient-2">5</span>
+                <div className="drop-down animated fadeIn dropdown-menu dropdown-notfication">
+                  <div className="dropdown-content-heading d-flex justify-content-between">
+                    <span className="">2 New Notifications</span>
+                    <a href="javascript:void()" className="d-inline-block">
+                      <span className="badge badge-pill gradient-2">5</span>
                     </a>
                   </div>
-                  <div class="dropdown-content-body">
+                  <div className="dropdown-content-body">
                     <ul>
                       <li>
                         <a href="javascript:void()">
-                          <span class="mr-3 avatar-icon bg-success-lighten-2"><i class="icon-present"></i></span>
-                          <div class="notification-content">
-                            <h6 class="notification-heading">Events near you</h6>
-                            <span class="notification-text">Within next 5 days</span>
+                          <span className="mr-3 avatar-icon bg-success-lighten-2"><i className="icon-present"></i></span>
+                          <div className="notification-content">
+                            <h6 className="notification-heading">Events near you</h6>
+                            <span className="notification-text">Within next 5 days</span>
                           </div>
                         </a>
                       </li>
                       <li>
                         <a href="javascript:void()">
-                          <span class="mr-3 avatar-icon bg-danger-lighten-2"><i class="icon-present"></i></span>
-                          <div class="notification-content">
-                            <h6 class="notification-heading">Event Started</h6>
-                            <span class="notification-text">One hour ago</span>
+                          <span className="mr-3 avatar-icon bg-danger-lighten-2"><i className="icon-present"></i></span>
+                          <div className="notification-content">
+                            <h6 className="notification-heading">Event Started</h6>
+                            <span className="notification-text">One hour ago</span>
                           </div>
                         </a>
                       </li>
                       <li>
                         <a href="javascript:void()">
-                          <span class="mr-3 avatar-icon bg-success-lighten-2"><i class="icon-present"></i></span>
-                          <div class="notification-content">
-                            <h6 class="notification-heading">Event Ended Successfully</h6>
-                            <span class="notification-text">One hour ago</span>
+                          <span className="mr-3 avatar-icon bg-success-lighten-2"><i className="icon-present"></i></span>
+                          <div className="notification-content">
+                            <h6 className="notification-heading">Event Ended Successfully</h6>
+                            <span className="notification-text">One hour ago</span>
                           </div>
                         </a>
                       </li>
                       <li>
                         <a href="javascript:void()">
-                          <span class="mr-3 avatar-icon bg-danger-lighten-2"><i class="icon-present"></i></span>
-                          <div class="notification-content">
-                            <h6 class="notification-heading">Events to Join</h6>
-                            <span class="notification-text">After two days</span>
+                          <span className="mr-3 avatar-icon bg-danger-lighten-2"><i className="icon-present"></i></span>
+                          <div className="notification-content">
+                            <h6 className="notification-heading">Events to Join</h6>
+                            <span className="notification-text">After two days</span>
                           </div>
                         </a>
                       </li>
@@ -94,57 +96,57 @@ export function HeaderComponent(props) {
                   </div>
                 </div>
               </li>
-              <li class="icons dropdown"><a className="header-li-text" href="javascript:void(0)" data-toggle="dropdown">
+              <li className="icons dropdown"><a className="header-li-text" href="javascript:void(0)" data-toggle="dropdown">
                 <img src={messageIcon}></img>
-                {/* <span class="badge badge-pill gradient-1">3</span> */}
+                {/* <span className="badge badge-pill gradient-1">3</span> */}
                 <div className="li-contant">Messages</div>
               </a>
-                <div class="drop-down animated fadeIn dropdown-menu">
-                  <div class="dropdown-content-heading d-flex justify-content-between">
-                    <span class="">3 New Messages</span>
-                    <a href="javascript:void()" class="d-inline-block">
-                      <span class="badge badge-pill gradient-1">3</span>
+                <div className="drop-down animated fadeIn dropdown-menu">
+                  <div className="dropdown-content-heading d-flex justify-content-between">
+                    <span className="">3 New Messages</span>
+                    <a href="javascript:void()" className="d-inline-block">
+                      <span className="badge badge-pill gradient-1">3</span>
                     </a>
                   </div>
-                  <div class="dropdown-content-body">
+                  <div className="dropdown-content-body">
                     <ul>
-                      <li class="notification-unread">
+                      <li className="notification-unread">
                         <a href="javascript:void()">
-                          <img class="float-left mr-3 avatar-img" src="images/avatar/1.jpg" alt="" />
-                          <div class="notification-content">
-                            <div class="notification-heading">Saiful Islam</div>
-                            <div class="notification-timestamp">08 Hours ago</div>
-                            <div class="notification-text">Hi Teddy, Just wanted to let you ...</div>
+                          <img className="float-left mr-3 avatar-img" src="images/avatar/1.jpg" alt="" />
+                          <div className="notification-content">
+                            <div className="notification-heading">Saiful Islam</div>
+                            <div className="notification-timestamp">08 Hours ago</div>
+                            <div className="notification-text">Hi Teddy, Just wanted to let you ...</div>
                           </div>
                         </a>
                       </li>
-                      <li class="notification-unread">
+                      <li className="notification-unread">
                         <a href="javascript:void()">
-                          <img class="float-left mr-3 avatar-img" src="images/avatar/2.jpg" alt="" />
-                          <div class="notification-content">
-                            <div class="notification-heading">Adam Smith</div>
-                            <div class="notification-timestamp">08 Hours ago</div>
-                            <div class="notification-text">Can you do me a favour?</div>
-                          </div>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="javascript:void()">
-                          <img class="float-left mr-3 avatar-img" src="images/avatar/3.jpg" alt="" />
-                          <div class="notification-content">
-                            <div class="notification-heading">Barak Obama</div>
-                            <div class="notification-timestamp">08 Hours ago</div>
-                            <div class="notification-text">Hi Teddy, Just wanted to let you ...</div>
+                          <img className="float-left mr-3 avatar-img" src="images/avatar/2.jpg" alt="" />
+                          <div className="notification-content">
+                            <div className="notification-heading">Adam Smith</div>
+                            <div className="notification-timestamp">08 Hours ago</div>
+                            <div className="notification-text">Can you do me a favour?</div>
                           </div>
                         </a>
                       </li>
                       <li>
                         <a href="javascript:void()">
-                          <img class="float-left mr-3 avatar-img" src="images/avatar/4.jpg" alt="" />
-                          <div class="notification-content">
-                            <div class="notification-heading">Hilari Clinton</div>
-                            <div class="notification-timestamp">08 Hours ago</div>
-                            <div class="notification-text">Hello</div>
+                          <img className="float-left mr-3 avatar-img" src="images/avatar/3.jpg" alt="" />
+                          <div className="notification-content">
+                            <div className="notification-heading">Barak Obama</div>
+                            <div className="notification-timestamp">08 Hours ago</div>
+                            <div className="notification-text">Hi Teddy, Just wanted to let you ...</div>
+                          </div>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="javascript:void()">
+                          <img className="float-left mr-3 avatar-img" src="images/avatar/4.jpg" alt="" />
+                          <div className="notification-content">
+                            <div className="notification-heading">Hilari Clinton</div>
+                            <div className="notification-timestamp">08 Hours ago</div>
+                            <div className="notification-text">Hello</div>
                           </div>
                         </a>
                       </li>
@@ -154,12 +156,12 @@ export function HeaderComponent(props) {
                 </div>
               </li>
 
-              {/* <li class="icons dropdown d-none d-md-flex">
-                            <a href="javascript:void(0)" class="log-user" data-toggle="dropdown">
-                                <span>English</span>  <i class="fa fa-angle-down f-s-14" aria-hidden="true"></i>
+              {/* <li className="icons dropdown d-none d-md-flex">
+                            <a href="javascript:void(0)" className="log-user" data-toggle="dropdown">
+                                <span>English</span>  <i className="fa fa-angle-down f-s-14" aria-hidden="true"></i>
                             </a>
-                            <div class="drop-down dropdown-language animated fadeIn  dropdown-menu">
-                                <div class="dropdown-content-body">
+                            <div className="drop-down dropdown-language animated fadeIn  dropdown-menu">
+                                <div className="dropdown-content-body">
                                     <ul>
                                         <li><a href="javascript:void()">English</a></li>
                                         <li><a href="javascript:void()">Dutch</a></li>
@@ -168,32 +170,32 @@ export function HeaderComponent(props) {
                             </div>
                         </li> */}
 
-              <li class="icons dropdown">
-                <div class="header-li-text c-pointer position-relative" data-toggle="dropdown">
+              <li className="icons dropdown">
+                <div className="header-li-text c-pointer position-relative" data-toggle="dropdown">
 
-                  {/* <span class="activity active"></span> */}
+                  {/* <span className="activity active"></span> */}
                   <img src={profileIcon}></img>
 
-                  <div className="li-contant"><span className="mr-2 ">Profile</span><i class="fa fa-angle-down f-s-14" aria-hidden="true"></i></div>
+                  <div className="li-contant"><span className="mr-2 ">Profile</span><i className="fa fa-angle-down f-s-14" aria-hidden="true"></i></div>
 
                 </div>
-                <div class="drop-down dropdown-profile animated fadeIn dropdown-menu">
-                  <div class="dropdown-content-body">
+                <div className="drop-down dropdown-profile animated fadeIn dropdown-menu">
+                  <div className="dropdown-content-body">
                     <ul>
                       <li>
-                        <a href="app-profile.html"><i class="icon-user"></i> <span>Profile</span></a>
+                        <a href="/profile"><i className="icon-user"></i> <span>Profile</span></a>
                       </li>
                       <li>
                         <a href="javascript:void()">
-                          <i class="icon-envelope-open"></i> <span>Inbox</span> <div class="badge gradient-3 badge-pill gradient-1">3</div>
+                          <i className="icon-envelope-open"></i> <span>Inbox</span> <div className="badge gradient-3 badge-pill gradient-1">3</div>
                         </a>
                       </li>
 
-                      <hr class="my-2" />
+                      <hr className="my-2" />
                       <li>
-                        <a href="page-lock.html"><i class="icon-lock"></i> <span>Lock Screen</span></a>
+                        <a href="page-lock.html"><i className="icon-lock"></i> <span>Lock Screen</span></a>
                       </li>
-                      <li><a className="cursor" onClick={handleLogout}><i class="icon-key"></i> <span>Logout</span></a></li>
+                      <li><a className="cursor" onClick={handleLogout}><i className="icon-key"></i> <span>Logout</span></a></li>
                     </ul>
                   </div>
                 </div>
@@ -203,6 +205,192 @@ export function HeaderComponent(props) {
                   <img src={supportIcon}></img>
                   <div className="li-contant">Help</div>
                 </a>
+              </li>
+
+            </ul>
+          </div>
+        </div>
+        <div className="header-content clearfix">
+          <div className="header-right">
+            <ul className="clearfix">
+            <li className="icons" style={{border:'none'}}>
+            <div className="input-group" style={{border:'1px solid #cfcfcf', borderRadius:'50px', overflow:'hidden', width:'500px'}}>
+              <div className="input-group-prepend">
+                <span className="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1"><img src={shearchIcon}></img></span>
+              </div>
+              <input type="search" className="form-control search-form-control" placeholder="Search" aria-label="Search Dashboard" />
+              <div className="drop-down animated flipInX d-md-none">
+                <form action="#">
+                  <input type="text" className="form-control" placeholder="Search" />
+                </form>
+              </div>
+            </div>
+            </li>
+              <li className="icons dropdown"><a className="header-li-text" href="javascript:void(0)" data-toggle="dropdown">
+                <img src={notificationIcon}></img>
+                {/* <span className="badge badge-pill gradient-2">3</span> */}
+                <div className="li-contant">Notifications</div>
+              </a>
+                <div className="drop-down animated fadeIn dropdown-menu dropdown-notfication">
+                  <div className="dropdown-content-heading d-flex justify-content-between">
+                    <span className="">2 New Notifications</span>
+                    <a href="javascript:void()" className="d-inline-block">
+                      <span className="badge badge-pill gradient-2">5</span>
+                    </a>
+                  </div>
+                  <div className="dropdown-content-body">
+                    <ul>
+                      <li>
+                        <a href="javascript:void()">
+                          <span className="mr-3 avatar-icon bg-success-lighten-2"><i className="icon-present"></i></span>
+                          <div className="notification-content">
+                            <h6 className="notification-heading">Events near you</h6>
+                            <span className="notification-text">Within next 5 days</span>
+                          </div>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="javascript:void()">
+                          <span className="mr-3 avatar-icon bg-danger-lighten-2"><i className="icon-present"></i></span>
+                          <div className="notification-content">
+                            <h6 className="notification-heading">Event Started</h6>
+                            <span className="notification-text">One hour ago</span>
+                          </div>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="javascript:void()">
+                          <span className="mr-3 avatar-icon bg-success-lighten-2"><i className="icon-present"></i></span>
+                          <div className="notification-content">
+                            <h6 className="notification-heading">Event Ended Successfully</h6>
+                            <span className="notification-text">One hour ago</span>
+                          </div>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="javascript:void()">
+                          <span className="mr-3 avatar-icon bg-danger-lighten-2"><i className="icon-present"></i></span>
+                          <div className="notification-content">
+                            <h6 className="notification-heading">Events to Join</h6>
+                            <span className="notification-text">After two days</span>
+                          </div>
+                        </a>
+                      </li>
+                    </ul>
+
+                  </div>
+                </div>
+              </li>
+              {/* <li className="icons dropdown"><a className="header-li-text" href="javascript:void(0)" data-toggle="dropdown"></a> */}
+              <li className="icons dropdown"><a className="header-li-text" href="javascript:void(0)" data-toggle="modal" data-target="#messegespopup">
+                <img src={messageIcon}></img>
+                {/* <span className="badge badge-pill gradient-1">3</span> */}
+                <div className="li-contant">Messages</div>
+              </a>
+                <div className="drop-down animated fadeIn dropdown-menu">
+                  <div className="dropdown-content-heading d-flex justify-content-between">
+                    <span className="">3 New Messages</span>
+                    <a href="javascript:void()" className="d-inline-block">
+                      <span className="badge badge-pill gradient-1">3</span>
+                    </a>
+                  </div>
+                  <div className="dropdown-content-body">
+                    <ul>
+                      <li className="notification-unread">
+                        <a href="javascript:void()">
+                          <img className="float-left mr-3 avatar-img" src="images/avatar/1.jpg" alt="" />
+                          <div className="notification-content">
+                            <div className="notification-heading">Saiful Islam</div>
+                            <div className="notification-timestamp">08 Hours ago</div>
+                            <div className="notification-text">Hi Teddy, Just wanted to let you ...</div>
+                          </div>
+                        </a>
+                      </li>
+                      <li className="notification-unread">
+                        <a href="javascript:void()">
+                          <img className="float-left mr-3 avatar-img" src="images/avatar/2.jpg" alt="" />
+                          <div className="notification-content">
+                            <div className="notification-heading">Adam Smith</div>
+                            <div className="notification-timestamp">08 Hours ago</div>
+                            <div className="notification-text">Can you do me a favour?</div>
+                          </div>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="javascript:void()">
+                          <img className="float-left mr-3 avatar-img" src="images/avatar/3.jpg" alt="" />
+                          <div className="notification-content">
+                            <div className="notification-heading">Barak Obama</div>
+                            <div className="notification-timestamp">08 Hours ago</div>
+                            <div className="notification-text">Hi Teddy, Just wanted to let you ...</div>
+                          </div>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="javascript:void()">
+                          <img className="float-left mr-3 avatar-img" src="images/avatar/4.jpg" alt="" />
+                          <div className="notification-content">
+                            <div className="notification-heading">Hilari Clinton</div>
+                            <div className="notification-timestamp">08 Hours ago</div>
+                            <div className="notification-text">Hello</div>
+                          </div>
+                        </a>
+                      </li>
+                    </ul>
+
+                  </div>
+                </div>
+              </li>
+
+              {/* <li className="icons dropdown d-none d-md-flex">
+                            <a href="javascript:void(0)" className="log-user" data-toggle="dropdown">
+                                <span>English</span>  <i className="fa fa-angle-down f-s-14" aria-hidden="true"></i>
+                            </a>
+                            <div className="drop-down dropdown-language animated fadeIn  dropdown-menu">
+                                <div className="dropdown-content-body">
+                                    <ul>
+                                        <li><a href="javascript:void()">English</a></li>
+                                        <li><a href="javascript:void()">Dutch</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li> */}
+
+              
+              <li className="icons">
+                <Link className="header-li-text" to="/workList">
+                <img src={profileIcon}></img>
+                  <div className="li-contant">Worklist</div>
+                </Link>
+              </li>
+              <li className="icons dropdown">
+                <div className="header-li-text c-pointer position-relative" data-toggle="dropdown">
+
+                  <span className="activity active"></span>
+                  <i class="fa"><SettingsOutlinedIcon style={{color:'#bec0d0'}} /></i>
+
+                  <div className="li-contant"><span className="mr-2 ">Settings</span><i className="fa fa-angle-down f-s-14" aria-hidden="true"></i></div>
+
+                </div>
+                <div className="drop-down dropdown-profile animated fadeIn dropdown-menu">
+                  <div className="dropdown-content-body">
+                    <ul>
+                      <li>
+                        <a href="/profile"><i className="icon-user"></i> <span>Profile</span></a>
+                      </li>
+                      <li>
+                        <a href="#"><i className="icon-user"></i> <span>Help</span></a>
+                      </li>
+                      <li>
+                        <a href="/account"><i className="icon-user"></i> <span>Account</span></a>
+                      </li>
+                      {/* <li>
+                        <a href="page-lock.html"><i className="icon-lock"></i> <span>Lock Screen</span></a>
+                      </li> */}
+                      <li><a className="cursor" onClick={handleLogout}><i className="icon-key"></i> <span>Logout</span></a></li>
+                    </ul>
+                  </div>
+                </div>
               </li>
 
             </ul>

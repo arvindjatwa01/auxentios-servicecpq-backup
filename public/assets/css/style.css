@@ -4536,6 +4536,10 @@ button.bg-dark:hover,
 button.bg-dark:focus {
   background-color: #1a1a1a !important; }
 
+.p25{
+  padding: 25px !important;
+}
+
 .bg-white {
   background-color: #fff !important; }
 

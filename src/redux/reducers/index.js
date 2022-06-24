@@ -6,8 +6,10 @@
 import { combineReducers } from "redux";
 import { appReducer } from "./appReducer";
 import { userReducer } from "./userReducer";
+import { guidedSoltionReducer } from "./guidedSolutionReducer"
 
 export const rootReducer = combineReducers({
     app: appReducer,
-    user: userReducer
+    user: userReducer,
+    guidedSolution: guidedSoltionReducer
 })

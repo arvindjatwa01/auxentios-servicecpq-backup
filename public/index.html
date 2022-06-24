@@ -181,7 +181,20 @@
     });
 
   </script>
+<script>
+  $(document).ready(function () {
+    $('.Account-custom-tabs .nav li').click(function(e) {
 
+        $('.Account-custom-tabs .nav li').removeClass('active');
+
+        var $this = $(this);
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+        //e.preventDefault();
+    });
+});
+</script>
   <!-- <script src="%PUBLIC_URL%/assets/js/dashboard/dashboard-1.js"></script> -->
   <i title="Raphaël Colour Picker" style="display: none; color: transparent;"></i>
 </body>

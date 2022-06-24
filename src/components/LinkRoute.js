@@ -25,6 +25,6 @@ export const LinkRoute = props => {
     )
 }
 
-//LinkRoute.propTypes = {
-//    to: PropTypes.string.isRequired
-// }
+LinkRoute.propTypes = {
+    to: PropTypes.string.isRequired
+}
