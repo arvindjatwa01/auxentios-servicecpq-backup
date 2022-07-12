@@ -12,7 +12,6 @@ import type {ListResponse, StrategyTask} from "../../../models";
 
 function* fetchTaskList() {
   try {
-    // const response: ListResponse<StrategyTask> = yield call(HttpService, 'get',GET_STRATEGY_TASK());
     const [users, tasks,category,rTime,product,geographic]:[ListResponse<StrategyTask>,ListResponse<StrategyTask>] = yield all([
       call(HttpService, 'get',GET_STRATEGY_TASK()),
       call(HttpService, 'get',GET_TASK_TYPE()),
@@ -21,9 +20,6 @@ function* fetchTaskList() {
       call(HttpService, 'get',GET_PRODUCT_HIERARCHY()) ,
       call(HttpService, 'get',GET_GEOGRAPHIC()) ,
     ])
-
-    // console.log(users);
-    // console.log(repos);
     yield put(taskActions.fetchTaskListSuccess({users,tasks,category,rTime,product,geographic}));
   } catch (error) {
     console.log(`Failed to fetch city list`, error);

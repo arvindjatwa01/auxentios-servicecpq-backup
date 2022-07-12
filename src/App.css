@@ -411,7 +411,7 @@ h5 {
 }
 
 .modal-content {
-  background: #F3F4FF;
+  background: #fff;
 }
 
 .btn {
@@ -1314,9 +1314,18 @@ nav.main-menu li.active>a,
   color: #4D4D4D !important;
   font-size: 12px;
 }
-.internalexternaltabs{border: 1px solid #cfcece;
-  width: fit-content;
-  border-radius: 4px;border-bottom: 0;}
+.internalexternaltabs{
+  border: 1px solid #cfcece;
+    width: -moz-fit-content;
+    /* width: fit-content; */
+    border-radius: 4px;
+    /* border-bottom: 0; */
+    justify-content: space-between;
+  
+
+  
+  /* border-radius: 4px; */
+}
 .internalexternaltabs li a{border-radius: 0;}
 .internalexternaltabs li a.active{background: #872ff7 !important;
   color: #ffff;}
@@ -1587,9 +1596,10 @@ nav.main-menu li.active>a,
 
 .customMenu .dropdown-menu.show {
   transform: none !important;
-  top: 45px !important;
-  right: 30px !important;
+  top: 60px !important;
+  right: 23px !important;
   min-width: auto !important;
+  width: auto !important;
 }
 
 .custometable {
@@ -2341,6 +2351,47 @@ color: #ffffff;
   margin: 10px 0;
   border-radius: 6px;
 }
+.intexttab {
+  border: none;
+  display: block;
+}
+.intexttab li {
+  display: table-cell;
+  width: 1%;
+}
+.intexttab .btn{
+  display: block;
+}
+
+.machine-droped {
+  border: 1px solid rgb(207, 207, 207);
+  padding-left: 0px;
+  border-radius: 50px
+}
+
+.machine-droped .label-div {
+  padding: 2px 5px;
+}
+
+.machine-droped .css-e363es-MuiFormControl-root {
+  width: 100%;
+  margin: 0;
+}
+
+.machine-droped .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input {
+  padding: 2px 10px;
+  font-size: 14px;
+  border-left: 1px solid #e5e5e5;
+  border-radius: 0;
+}
+
+.machine-droped fieldset {
+  border: none;
+}
+
+
+
+
 /* .Account-custom-tabs .tabs-left>li.active>a::after{content: "";
     position: absolute;
     top: 10px;

@@ -1,7 +1,6 @@
 import { User } from '../../models/user';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-import type {RootState} from "../../app/store";
 
 export interface LoginPayload {
   username: string;

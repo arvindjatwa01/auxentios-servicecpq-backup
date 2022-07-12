@@ -14,16 +14,12 @@ import SellOutlinedIcon from '@mui/icons-material/SellOutlined';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import shearchIcon from '../../assets/icons/svg/search.svg'
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import EventNoteOutlinedIcon from '@mui/icons-material/EventNoteOutlined';
-import makeAnimated from 'react-select/animated';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import * as ENUM from './CONSTS.js';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { Link } from 'react-router-dom'
-import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import Checkbox from '@mui/material/Checkbox';
 import { FileUploader } from "react-drag-drop-files";
@@ -31,9 +27,6 @@ import { MuiMenuComponent } from '../Operational/index'
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faFileAlt, faFolderPlus } from '@fortawesome/free-solid-svg-icons'
-import { faShareAlt } from '@fortawesome/free-solid-svg-icons'
-import { faUpload } from '@fortawesome/free-solid-svg-icons'
 import { faPen } from '@fortawesome/free-solid-svg-icons'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
@@ -46,21 +39,21 @@ import copyIcon from '../../assets/icons/svg/Copy.svg'
 import editIcon from '../../assets/icons/svg/edit.svg'
 import searchstatusIcon from '../../assets/icons/svg/search-status.svg'
 import { CommanComponents } from "../../components/index"
-// import { DatePicker } from "@material-ui/pickers";
 import DateFnsUtils from '@date-io/date-fns';
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import DateRangeOutlinedIcon from '@mui/icons-material/DateRangeOutlined';
 
 import { ReactTableNested } from "../Test/ReactTableNested"
 
 
 import DataTable from 'react-data-table-component';
+
 import boxicon from '../../assets/icons/png/box.png'
 
 import Portfoliosicon from '../../assets/icons/svg/Portfolios-icon.svg'
 import Buttonarrow from '../../assets/icons/svg/Button-arrow.svg'
 import contract from '../../assets/icons/svg/contract.svg'
 import repairicon from '../../assets/icons/svg/repair-icon.svg'
-import { SOLUTION_BUILDER_ANALYTICS } from 'navigation/CONSTANTS'
 
 
 
@@ -71,14 +64,16 @@ import {
     updatePortfolio, getUsageCategoryKeyValue, getTaskTypeKeyValue, getResponseTimeTaskKeyValue, getValidityKeyValue, getStrategyTaskKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getTypeKeyValue
 } from '../../services/index'
 import {
-    selectCategoryList, selectGeographicalList, selectProductList, selectResponseTimeList,
+    selectCategoryList, selectFrequencyList, selectGeographicalList, selectProductList, selectResponseTimeList,
     selectStrategyTaskList,
     selectStrategyTaskOption,
-    selectTaskList,
+    selectTaskList, selectUnitList, selectUpdateList, selectUpdateTaskList,
     taskActions
 } from "./customerSegment/strategySlice";
 import {useDispatch} from "react-redux";
 import {useAppSelector} from "../../app/hooks";
+import {portfolioItemActions} from "./createItem/portfolioSlice";
+import {createItemPayload} from "./createItem/createItemPayload";
 
 const customStyles = {
     rows: {
@@ -114,7 +109,7 @@ const columns = [
     //   cell: row => <CustomTitle row={row} />,
     // },
     {
-        name: <><div><img className='mr-2' src={boxicon}></img>Bundle ID</div></>,
+        name: <><div><img className='mr-2' src={boxicon}></img>S NO</div></>,
         selector: row => row.bundleId,
         sortable: true,
         maxWidth: '300px', // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
@@ -122,14 +117,14 @@ const columns = [
         cell: row => <button onClick={() => alert()}>Click</button>
     },
     {
-        name: <><div><img className='mr-2' src={boxicon}></img>Bundle Description</div></>,
+        name: <><div><img className='mr-2' src={boxicon}></img>Start S NO</div></>,
         selector: row => row.bundleDescription,
         wrap: true,
         sortable: true,
         format: row => row.bundleDescription,
     },
     {
-        name: <><div>Strategy
+        name: <><div>End S NO
         </div></>,
         selector: row => row.strategy,
         wrap: true,
@@ -137,7 +132,7 @@ const columns = [
         format: row => row.strategy,
     },
     {
-        name: <><div>Standard Job Ids
+        name: <><div>Make
         </div></>,
         selector: row => row.standardJobId,
         wrap: true,
@@ -145,7 +140,7 @@ const columns = [
         format: row => row.standardJobId,
     },
     {
-        name: <><div>Frequency
+        name: <><div>Family
         </div></>,
         selector: row => row.frequency,
         wrap: true,
@@ -153,7 +148,7 @@ const columns = [
         format: row => row.frequency,
     },
     {
-        name: <><div>Qunatity
+        name: <><div>Model
         </div></>,
         selector: row => row.quantity,
         wrap: true,
@@ -161,7 +156,7 @@ const columns = [
         format: row => row.quantity,
     },
     {
-        name: <><div>Part $
+        name: <><div>Prefix
         </div></>,
         selector: row => row.part,
         wrap: true,
@@ -169,23 +164,23 @@ const columns = [
         format: row => row.part
         ,
     },
-    {
-        name: <><div>Service $
-        </div></>,
-        selector: row => row.service,
-        wrap: true,
-        sortable: true,
-        format: row => row.service
-        ,
-    },
-    {
-        name: <><div>Total $
-        </div></>,
-        selector: row => row.total,
-        wrap: true,
-        sortable: true,
-        format: row => row.total
-    },
+    // {
+    //     name: <><div>Service $
+    //     </div></>,
+    //     selector: row => row.service,
+    //     wrap: true,
+    //     sortable: true,
+    //     format: row => row.service
+    //     ,
+    // },
+    // {
+    //     name: <><div>Total $
+    //     </div></>,
+    //     selector: row => row.total,
+    //     wrap: true,
+    //     sortable: true,
+    //     format: row => row.total
+    // },
     {
         name: <><div>Action
         </div></>,
@@ -506,35 +501,37 @@ export function CreatePortfolio() {
     }
 
     const handleBundleItemSaveAndContinue = () => {
+        console.log(taskItem);
+        dispatch(portfolioItemActions.createItem(createItemPayload(taskItem)));
         // alert("Save And Continue")
-        var temp = [...bundleItems];
-        var bundleId = Math.floor(Math.random() * 100)
-        var dict = {
-            id: 1,
-            bundleId: "PM" + bundleId,
-            bundleDescription: 'Preventive Maintenance ' + bundleId,
-            strategy: 'Preventive Maintenance',
-            standardJobId: 'SJ1034',
-            frequency: '125 hours',
-            quantity: '4',
-            part: '$1250',
-            service: '$350',
-            total: '$1575',
-            action: "-"
-        }
-        temp.push(dict)
-        setBundleItems(temp)
+        // var temp = [...bundleItems];
+        // var bundleId = Math.floor(Math.random() * 100)
+        // var dict = {
+        //     id: 1,
+        //     bundleId: "PM" + bundleId,
+        //     bundleDescription: 'Preventive Maintenance ' + bundleId,
+        //     strategy: 'Preventive Maintenance',
+        //     standardJobId: 'SJ1034',
+        //     frequency: '125 hours',
+        //     quantity: '4',
+        //     part: '$1250',
+        //     service: '$350',
+        //     total: '$1575',
+        //     action: "-"
+        // }
+        // temp.push(dict)
+        // setBundleItems(temp)
         setOpenAddBundleItem(false)
         setOpenSearchSolution(false)
-        toast('👏 Item Added', {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-        });
+        // toast('👏 Item Added', {
+        //     position: "top-right",
+        //     autoClose: 5000,
+        //     hideProgressBar: false,
+        //     closeOnClick: true,
+        //     pauseOnHover: true,
+        //     draggable: true,
+        //     progress: undefined,
+        // });
     }
     const handleAddNewBundle = () => {
         // alert("Save And Continue")
@@ -902,7 +899,18 @@ export function CreatePortfolio() {
     const rTimeList = useAppSelector(selectStrategyTaskOption(selectResponseTimeList));
     const productList = useAppSelector(selectStrategyTaskOption(selectProductList));
     const geographicList = useAppSelector(selectStrategyTaskOption(selectGeographicalList));
-    const [task,setTaskList] = useState(strategyList);
+    const unitList = useAppSelector(selectStrategyTaskOption(selectUnitList));
+    const frequencyList = useAppSelector(selectStrategyTaskOption(selectFrequencyList));
+    const [taskItem,setTaskItemList] = useState(null);
+    const [categoryItem,setCategoryItem] = useState(null);
+    const updatedList = useAppSelector(selectStrategyTaskOption(selectUpdateList));
+    const updatedTaskList = useAppSelector(selectStrategyTaskOption(selectUpdateTaskList));
+    const HandleCatUsage = (e) => {
+      dispatch(taskActions.updateList(e.value));
+    }
+    const HandleStrategyUsage = (e) => {
+        dispatch(taskActions.updateTask(e.value));
+    }
     const initBeforeUnLoad = (showExitPrompt) => {
         window.onbeforeunload = (event) => {
             // Show prompt based on state
@@ -947,7 +955,24 @@ export function CreatePortfolio() {
     const handleClose = () => setOpen(false);
     const handleClose1 = () => setOpen1(false);
     const handleCoveragetable = () => setOpenCoveragetable(false);
-
+    const data = [
+        {
+          id: 1,
+          caseId:13322,
+          BundleId:'Pc',
+          Bundledescription:'Ex2487518',
+          S1:"CAT DEO",
+          strategy:'3',
+          Standardjob:'$43.09',
+          repairoption:'$100',
+          frequency:'USD',
+          quantity:'80%',
+          part$:'$80',
+          srevic$:'80% usage observed on previous work.',
+          Total$:'80% usage observed on previous work.',
+        
+        },
+      ]
     const handleChange = (event, newValue) => {
         console.log(newValue);
         setValue(newValue);
@@ -997,7 +1022,7 @@ export function CreatePortfolio() {
                     </div>
                     <div className="card p-4 mt-5">
                         <h5 className="d-flex align-items-center mb-0">
-                            <div className="" style={{ display: 'contents' }}><span className="mr-3">Header</span><a href="#" className="btn-sm"><i className="fa fa-pencil" aria-hidden="true"></i></a>
+                            <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{whiteSpace: 'pre'}}>Portfolio Details</span><a href="#" className="btn-sm"><i className="fa fa-pencil" aria-hidden="true"></i></a>
                                 <a href="#" className="btn-sm"><i className="fa fa-bookmark-o" aria-hidden="true"></i></a>
                                 <a href="#" className="btn-sm"><img style={{ width: '14px' }} src={folderaddIcon}></img></a></div>
                             <div className="input-group icons border-radius-10 border">
@@ -1023,7 +1048,7 @@ export function CreatePortfolio() {
                                 </Box>
                                 <TabPanel value={1}>
                                     <div className="row mt-4">
-                                        <div className="col-md-4 col-sm-3">
+                                        <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" >SELECT TYPE</label>
                                                 <Select
@@ -1049,25 +1074,31 @@ export function CreatePortfolio() {
                                                 {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponetData.portfolioName} onChange={handleGeneralInputChange} /> */}
                                             </div>
                                         </div>
-                                        <div className="col-md-4 col-sm-3">
+                                        <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500" >{prefixLabelGeneral} DESCRIPTION</label>
-                                                <input type="email" className="form-control border-radius-10" name="description" placeholder="Description" value={generalComponetData.portfolioDescription} onChange={handleGeneralInputChange} />
+                                                <label className="text-light-dark font-size-12 font-weight-500" >{prefixLabelGeneral} ID</label>
+                                                <input type="email" className="form-control border-radius-10" name="description" placeholder="(Auto-generated)" value={generalComponetData.portfolioDescription} onChange={handleGeneralInputChange} />
                                             </div>
                                         </div>
-                                        <div className="col-md-4 col-sm-3">
+                                        <div className="col-md-3 col-sm-3">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-12 font-weight-500" >{prefixLabelGeneral} NAME</label>
+                                                <input type="email" className="form-control border-radius-10" name="description" placeholder="Name" value={generalComponetData.portfolioDescription} onChange={handleGeneralInputChange} />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" >SERVICE {prefixLabelGeneral} DESCRIPTION (IF ANY)</label>
                                                 <input type="email" className="form-control border-radius-10" name="serviceDescription" placeholder="Description" value={generalComponetData.serviceProgramDescription} onChange={handleGeneralInputChange} />
                                             </div>
                                         </div>
-                                        <div className="col-md-4 col-sm-3">
+                                        <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" >REFERENCE</label>
                                                 <input type="email" className="form-control border-radius-10" name="reference" placeholder="Reference" value={generalComponetData.reference} onChange={handleGeneralInputChange} />
                                             </div>
                                         </div>
-                                        <div className="col-md-4 col-sm-3">
+                                        <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" >CUSTOMER SEGMENT</label>
                                                 <Select options={strategyList} />
@@ -1075,7 +1106,7 @@ export function CreatePortfolio() {
                                         </div>
                                     </div>
                                     <div className="row" style={{ justifyContent: 'right' }}>
-                                        <button type="button" onClick={handleNextClick} className="btn btn-light">Next</button>
+                                        <button type="button" onClick={handleNextClick} className="btn btn-light">Save & Next</button>
                                     </div>
                                     {isView ?
                                         <div className="row mt-4">
@@ -1155,6 +1186,14 @@ export function CreatePortfolio() {
                                                             {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
                                                         </div>
                                                     </div>
+                                                </div>
+                                            </div>
+                                            <div className="row" style={{textAlign: 'center', margin: '8px'}}>
+                                                <div className="col-6">
+                                                <h6 className="font-weight-600">OR</h6>
+                                                </div>
+                                                <div className="col-6">
+                                                
                                                 </div>
                                             </div>
                                             <div className="row">
@@ -1262,36 +1301,44 @@ export function CreatePortfolio() {
                                         </div>
                                     </div> */}
                                     <div className="row" style={{ justifyContent: 'right' }}>
-                                        <button type="button" onClick={handleNextClick} className="btn btn-light">Next</button>
+                                        <button type="button" onClick={handleNextClick} className="btn btn-light">Save & Next</button>
                                     </div>
                                 </TabPanel>
                                 <TabPanel value={3}>
                                     <div className="row">
+                                    <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CATEGORY USAGE</label>
+                                                <Select options={categoryList} onChange={(e) => HandleCatUsage(e)}/>
+                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
+                                            </div>
+                                        </div>
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">STRATEGY TASK</label>
-                                                <Select options={strategyList} />
+                                                <Select options={updatedList} onChange={(e)=> HandleStrategyUsage(e)}/>
 
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TASK TYPE</label>
-                                                <Select options={taskList} />
+                                                <Select options={updatedTaskList} />
                                                 {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
-                                        <div className="col-md-4 col-sm-4">
+                                        {/* <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CATEGORY USAGE</label>
                                                 <Select options={categoryList} />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
+                                                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" />
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">OPTIONALS</label>
-                                                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Optionais" />
+                                                <Select options={rTimeList} />
+                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Optionais" /> */}
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -1359,7 +1406,7 @@ export function CreatePortfolio() {
                                         <></>}
 
                                     <div className="row" style={{ justifyContent: 'right' }}>
-                                        <button type="button" onClick={() => setValue(value + 1)} className="btn btn-light">Next</button>
+                                        <button type="button" onClick={() => setValue(value + 1)} className="btn btn-light">Save & Next</button>
                                     </div>
                                 </TabPanel>
                                 <TabPanel value={4}>
@@ -1496,7 +1543,7 @@ export function CreatePortfolio() {
                                         </div>
                                     </div>
                                     <div className="row" style={{ justifyContent: 'right' }}>
-                                        <button type="button" onClick={() => setValue(value + 1)} className="btn btn-light">Next</button>
+                                        <button type="button" onClick={() => setValue(value + 1)} className="btn btn-light"> Save & Next</button>
                                     </div>
                                 </TabPanel>
 
@@ -1538,11 +1585,82 @@ export function CreatePortfolio() {
                                         </div>
                                     </div>
                                     <div className="row" style={{ justifyContent: 'right' }}>
-                                        <button type="button" onClick={() => setValue(value + 1)} className="btn btn-light">Next</button>
+                                        <button type="button" onClick={() => setValue(value + 1)} className="btn btn-light">Save & Next</button>
                                     </div>
                                 </TabPanel>
                                 <TabPanel value={6}>
-                                    <div className="row">
+                                <div className="custom-table card" style={{width: '100%', backgroundColor: '#fff' }}>
+        <div className="row align-items-center">
+                            <div className="col-3">
+                                <div className="d-flex ">
+                                    <h5 className="mr-4 mb-0"><span></span></h5>
+                                    <p className="ml-4 mb-0">
+                                        <a href="#" className="ml-3 "><img src={editIcon}></img></a>
+                                        <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="col-6">
+                                <div className="d-flex align-items-center" style={{ background: '#F9F9F9', padding: '10px 15px', borderRadius: '10px' }}>
+                                    <div className="search-icon mr-2" style={{ lineHeight: '24px' }}>
+                                        <img src={searchstatusIcon}></img>
+                                    </div>
+                                    <div className="w-100 mx-2">
+                                        <div className="machine-drop d-flex align-items-center">
+                                            {/* <div><lable className="label-div">Search By</lable></div> */}
+                                            <FormControl className="" sx={{ m: 1, }}>
+                                                <Select
+                                                    placeholder="Search By"
+                                                    id="demo-simple-select-autowidth"
+                                                    value={age}
+                                                    onChange={handleChangedrop}
+                                                    autoWidth
+                                                >
+                                                    <MenuItem value="5">
+                                                        <em>Engine</em>
+                                                    </MenuItem>
+                                                    <MenuItem value={10}>Twenty</MenuItem>
+                                                    <MenuItem value={21}>Twenty one</MenuItem>
+                                                    <MenuItem value={22}>Twenty one and a half</MenuItem>
+                                                </Select>
+                                            </FormControl>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div className="col-3">
+                                <div className="d-flex align-items-center">
+                                    <div className="col-6 text-center">
+                                        <a href="#" className="p-1 more-btn">+ 3 more
+                                            <span className="c-btn">C</span>
+                                            <span className="b-btn">B</span>
+                                            <span className="a-btn">A</span>
+                                        </a>
+                                    </div>
+                                    <div className="col-6 text-center border-left py-4">
+                                        <div className="row">
+                                        <div className="col-6">
+                                        <a onClick='' className="p-1 ">+ Add Coverage</a>
+                                        </div>
+                                        <div className="col-6">
+                                        <a onClick={()=>handleOpen()} className="p-1 ">+ Upload Coverage</a>
+                                        </div>
+
+                                        </div>
+                                        
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <h6 className="font-weight-400 text-black mb-2 mt-1">Select coverages from list to add in portfolio</h6>
+                        
+        <DataTable className="" title="" columns={columns} data={data} customStyles={customStyles} pagination />
+        </div>
+                                    
+                                    <div className="row" style={{ display: 'none'}}>
                                         <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500" >MAKE</label>
@@ -1685,6 +1803,9 @@ export function CreatePortfolio() {
                                         </div>
                                         :
                                         <></>}
+                                    <div className="row" style={{ justifyContent: 'right' }}>
+                                        <button type="button" onClick={handleNextClick} className="btn btn-light">Save</button>
+                                    </div>
 
                                 </TabPanel>
 
@@ -1694,7 +1815,7 @@ export function CreatePortfolio() {
                     </div>
                     <div className="card mt-5">
                         <div className="fileheader p-4 border-bottom d-flex justify-content-between align-items-center customMenu">
-                            <h6 className="font-weight-600 text-light mb-0">Bundle Items<span> <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faPen} /></a></span></h6>
+                            <h6 className="font-weight-600 text-light mb-0">Portfolio Items<span> <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faPen} /></a></span></h6>
                             {/* <h6 className="font-weight-600 text-light mb-0 cursor" onClick={handleShowAddSolution}><span className="mr-2">+</span>Add Solution</h6> */}
                             <div className="d-flex align-items-center">
                                 <h6 className="font-weight-600 text-light mb-0 cursor" onClick={handleAddSolutionPress}><span className="mr-2">+</span>Add Solution</h6>
@@ -1704,7 +1825,7 @@ export function CreatePortfolio() {
                                     <Dropdown.Menu>
                                         <Dropdown.Item className="cursor" onClick={() => handleMoreAction(1)}>Create Bundle</Dropdown.Item>
                                         <Dropdown.Item className="cursor" onClick={() => handleMoreAction(2)}>Create Service</Dropdown.Item>
-                                        <Dropdown.Item className="cursor" onClick={() => handleMoreAction(3)}>Create Portfolio Item</Dropdown.Item>
+                                        <Dropdown.Item className="cursor" onClick={() => handleMoreAction(3)}>Create Item</Dropdown.Item>
                                     </Dropdown.Menu>
                                 </Dropdown>
                             </div>
@@ -1882,7 +2003,7 @@ export function CreatePortfolio() {
                         </div>
                         <p className="mt-3">Single upload file should not be more than 10MB. Only the  .xls, .xlsx file types are allowed</p>
                     </div>
-                    <div className="recent-div p-3">
+                    {/* <div className="recent-div p-3">
                         <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
                         <div className="recent-items mt-3">
                             <div className="d-flex justify-content-between align-items-center ">
@@ -1926,7 +2047,7 @@ export function CreatePortfolio() {
                             <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
                             <p className="font-size-12 mb-0">Part List </p>
                         </div>
-                    </div>
+                    </div> */}
 
 
                 </Modal.Body>
@@ -2086,10 +2207,10 @@ export function CreatePortfolio() {
                             ?
                             <div className="tableheader">
                                 <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
-                                    <li><a className="result">RESULTS</a></li>
+                                    <li><a className="cursor" className="result">RESULTS</a></li>
                                     <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM125</a></li>
                                     <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM2</a></li>
-                                    <li><a className="lastOption text-violet" onClick={handleCreateNewServiceBundle}><span className="mr-2">+</span>Create New {typeOfSearch != null ? typeOfSearch.value == 'bundle' ? "Bundle" : typeOfSearch.value == 'service' ? "Service" : typeOfSearch.value == 'portfolioItem' ? "Portfolio Item" : "" : ""}</a></li>
+                                    <li><a className="cursor" onClick={handleCreateNewServiceBundle} className="lastOption text-violet"><span className="mr-2">+</span>Create New {typeOfSearch != null ? typeOfSearch.value == 'bundle' ? "Bundle" : typeOfSearch.value == 'service' ? "Service" : typeOfSearch.value == 'portfolioItem' ? "Portfolio Item" : "" : ""}</a></li>
                                 </ul>
                             </div>
                             :
@@ -2290,13 +2411,13 @@ export function CreatePortfolio() {
                     <Modal.Body className="p-0 bg-white">
                         <div className="ligt-greey-bg p-3">
                             <div>
-                                <span className="mr-3">
+                                {/* <span className="mr-3">
                                     <i class="fa fa-pencil font-size-12" aria-hidden="true"></i><span className="ml-2">Edit</span>
                                 </span>
                                 <span className="mr-3">
                                     < MonetizationOnOutlinedIcon className=" font-size-16" />
                                     <span className="ml-2"> Adjudt price</span>
-                                </span>
+                                </span> */}
                                 <span className="mr-3">
                                     <FormatListBulletedOutlinedIcon className=" font-size-16" />
                                     <span className="ml-2">Related part list(s)</span>
@@ -2312,676 +2433,287 @@ export function CreatePortfolio() {
                             </div>
                         </div>
                         <div className="px-3">
-                            <div>
-                                <a href="#" className="btn-sm border">
-                                    Cancel
-                                </a>
-                                <a href="#"
-                                   className="btn-sm bg-primary
-            text-white ml-3">
-                                    Save &amp; Continue
-                                </a>
-                            </div>
+                            {/* <Box className="" sx={{ width: '100%', typography: 'body1' }}>
+                                <TabContext value={1}>
+                                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                                        <TabList onChange={handleChange} aria-label="lab API tabs example">
+                                            <Tab label="General" value="1" />
+                                            <Tab label="Price " value="2" disabled />
+
+                                        </TabList>
+                                    </Box>
+                                    <TabPanel value="1"> */}
+                            {/* <div>
+                                <a href="#" className="btn-sm border" onClick={() => setOpenAddBundleItem(false)}>Cancel</a>
+                                <a href="#" className="btn-sm bg-primary text-white ml-3" onClick={handleBundleItemSaveAndContinue}>Save & Continue</a>
+                            </div> */}
                             <p className="mt-4">SUMMARY</p>
-                            <div className="row mt-4">
+                            <div class="row mt-4">
                                 <div className="col-md-6 col-sm-6">
-                                    <div className="form-group w-100">
-                                        <label className="text-light-dark font-size-12 font-weight-500"
-                                               htmlFor="exampleInputEmail1">ID</label>
-                                        <input type="email" className="form-control border-radius-10" disabled=""
-                                               id="exampleInputEmail1"
-                                               aria-describedby="emailHelp"
-                                               placeholder="(AUTO GENERATE)"/>
+                                    <div class="form-group w-100">
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ID</label>
+                                        <input type="email" class="form-control border-radius-10" disabled id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(AUTO GENERATE)" />
                                     </div>
                                 </div>
                                 <div className="col-md-6 col-sm-6">
-                                    <div className="form-group w-100">
-                                        <label className="text-light-dark font-size-12 font-weight-500"
-                                               htmlFor="exampleInputEmail1">
-                                            DESCRIPTION
-                                        </label>
-                                        <input type="email"
-                                               className="form-control border-radius-10"
-                                               id="exampleInputEmail1"
-                                               aria-describedby="emailHelp"
-                                               placeholder="Replace Cranskshaft"/>
+                                    <div class="form-group w-100">
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DESCRIPTION</label>
+                                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace Cranskshaft" />
                                     </div>
                                 </div>
                                 <div className="col-md-6 col-sm-6">
-                                    <div className="form-group w-100">
-                                        <label className="text-light-dark font-size-12
-                 font-weight-500"
-                                               htmlFor="exampleInputEmail1">USAGE IN</label>
-                                        <input type="email" className="form-control border-radius-10"
-                                               id="exampleInputEmail1"
-                                               aria-describedby="emailHelp"
-                                               placeholder="Overhaul"/>
+                                    <div class="form-group w-100">
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">USAGE IN</label>
+                                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Overhaul" />
                                     </div>
                                 </div>
                             </div>
-                            <p className="mt-4">STRATEGY
-                            </p>
-                            <div className="row mt-4">
+                            <p className="mt-4">STRATEGY</p>
+                            <div class="row mt-4">
                                 <div className="col-md-6 col-sm-6">
                                     <div className="form-group">
-                                        <label className="text-light-dark font-size-14
-                 font-weight-500"
-                                               htmlFor="exampleInputEmail1">TASK TYPE
-                                        </label>
+                                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">TASK TYPE</label>
                                         <div className="icon-defold">
                                             <div className="form-control">
-                                                <div className=" css-b62m3t-container">
-                            <span id="react-select-7-live-region"
-                                  className="css-1f43avz-a11yText-A11yText">
-
-                            </span>
-                                                    <span aria-live="polite"
-                                                          aria-atomic="false"
-                                                          aria-relevant="additions text"
-                                                          className="css-1f43avz-a11yText-A11yText">
-
-                            </span>
-                                                    <div className=" css-1s2u09g-control">
-                                                        <div className=" css-319lph-ValueContainer">
-                                                            <div className=" css-14el2xx-placeholder"
-                                                                 id="react-select-7-placeholder">
-                                                                Select Or Search
-                                                            </div>
-                                                            <div className=" css-6j8wv5-Input"
-                                                                 data-value="">
-                                                                <input className=""
-                                                                       autoCapitalize="none"
-                                                                       autoComplete="off"
-                                                                       autoCorrect="off"
-                                                                       id="react-select-7-input"
-                                                                       spellCheck="false"
-                                                                       tabIndex="0"
-                                                                       type="text"
-                                                                       aria-autocomplete="list"
-                                                                       aria-expanded="false"
-                                                                       aria-haspopup="true"
-                                                                       role="combobox"
-                                                                       aria-describedby="react-select-7-placeholder"
-                                                                       value=""
-                                                                       style={{color: "inherit", background: "0px center", opacity: 1, width: "100%", gridArea: "1 / 2 / auto / auto", font: "inherit", minWidth: "2px", border: "0px", margin: "0px", outline: "0px", padding: "0px"}}/>
-                                                            </div>
-                                                        </div>
-                                                        <div className=" css-1hb7zxy-IndicatorsContainer">
-                                    <span className=" css-1okebmr-indicatorSeparator">
-
-                                    </span>
-                                                            <div className=" css-tlfecz-indicatorContainer"
-                                                                 aria-hidden="true">
-                                                                <svg height="20" width="20" viewBox="0 0 20 20"
-                                                                     aria-hidden="true" focusable="false"
-                                                                     className="css-tj5bde-Svg">
-                                                                    <path
-                                                                        d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z">
-
-                                                                    </path>
-                                                                </svg>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <span className="search-icon searchIcon">
-                            <svg
-                                className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium font-size-16 css-i4bv87-MuiSvgIcon-root"
-                                focusable="false"
-                                aria-hidden="true"
-                                viewBox="0 0 24 24"
-                                data-testid="SearchOutlinedIcon">
-                                <path
-                                    d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z">
-
-                                </path>
-                            </svg>
-                        </span>
+                                                <Select
+                                                    // defaultValue={1}
+                                                    onChange={setTaskItemList}
+                                                    options={taskList}
+                                                    placeholder="Select Or Search"
+                                                />
+                                                <span className="search-icon searchIcon"><SearchOutlinedIcon className="font-size-16" /></span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="col-md-6 col-sm-6">
                                     <div className="form-group">
-                                        <label className="text-light-dark font-size-14 font-weight-500"
-                                               htmlFor="exampleInputEmail1">
-                                            FREQUENCY
-                                        </label>
+                                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">FREQUENCY</label>
                                         <div className="icon-defold">
                                             <div className="form-control">
-                                                <div className=" css-b62m3t-container">
-                            <span id="react-select-9-live-region"
-                                  className="css-1f43avz-a11yText-A11yText">
-
-                            </span>
-                                                    <span aria-live="polite"
-                                                          aria-atomic="false"
-                                                          aria-relevant="additions text"
-                                                          className="css-1f43avz-a11yText-A11yText">
-
-                            </span>
-                                                    <div className=" css-1s2u09g-control">
-                                                        <div className=" css-319lph-ValueContainer">
-                                                            <div className=" css-14el2xx-placeholder"
-                                                                 id="react-select-9-placeholder">
-                                                                Cyclical
-                                                            </div>
-                                                            <div className=" css-6j8wv5-Input"
-                                                                 data-value="">
-                                                                <input className=""
-                                                                       autoCapitalize="none"
-                                                                       autoComplete="off"
-                                                                       autoCorrect="off"
-                                                                       id="react-select-9-input"
-                                                                       spellCheck="false"
-                                                                       tabIndex="0"
-                                                                       type="text"
-                                                                       aria-autocomplete="list"
-                                                                       aria-expanded="false"
-                                                                       aria-haspopup="true"
-                                                                       role="combobox"
-                                                                       aria-describedby="react-select-9-placeholder"
-                                                                       value=""
-                                                                       style={{color: "inherit", background: "0px center", opacity: 1, width: "100%", gridArea: "1 / 2 / auto / auto", font: "inherit", minWidth: "2px", border: "0px", margin: "0px", outline: "0px", padding: "0px"}}/>
-                                                            </div>
-                                                        </div>
-                                                        <div className=" css-1hb7zxy-IndicatorsContainer">
-                                    <span className=" css-1okebmr-indicatorSeparator">
-
-                                    </span>
-                                                            <div className=" css-tlfecz-indicatorContainer"
-                                                                 aria-hidden="true">
-                                                                <svg height="20"
-                                                                     width="20"
-                                                                     viewBox="0 0 20 20"
-                                                                     aria-hidden="true"
-                                                                     focusable="false"
-                                                                     className="css-tj5bde-Svg">
-                                                                    <path
-                                                                        d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z">
-
-                                                                    </path>
-                                                                </svg>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <span className="search-icon searchIcon">
-                            <svg
-                                className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium font-size-16 css-i4bv87-MuiSvgIcon-root"
-                                focusable="false"
-                                aria-hidden="true"
-                                viewBox="0 0 24 24"
-                                data-testid="SearchOutlinedIcon">
-                                <path
-                                    d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z">
-
-                                </path>
-                            </svg>
-                        </span>
+                                                <Select
+                                                    options={frequencyList}
+                                                    placeholder="Cyclical"
+                                                />
+                                                <span className="search-icon searchIcon"><SearchOutlinedIcon className="font-size-16" /></span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="col-md-6 col-sm-6">
                                     <div className="form-group">
-                                        <label className="text-light-dark font-size-14 font-weight-500"
-                                               htmlFor="exampleInputEmail1">
-                                            UNIT
-                                        </label>
-                                        <div className=" css-b62m3t-container">
-                    <span id="react-select-11-live-region"
-                          className="css-1f43avz-a11yText-A11yText">
-
-                    </span>
-                                            <span aria-live="polite"
-                                                  aria-atomic="false"
-                                                  aria-relevant="additions text"
-                                                  className="css-1f43avz-a11yText-A11yText">
-
-                    </span>
-                                            <div className=" css-1s2u09g-control">
-                                                <div className=" css-319lph-ValueContainer">
-                                                    <div className=" css-14el2xx-placeholder"
-                                                         id="react-select-11-placeholder">
-                                                        HOURS
-                                                    </div>
-                                                    <div className=" css-6j8wv5-Input"
-                                                         data-value="">
-                                                        <input className="" autoCapitalize="none"
-                                                               autoComplete="off"
-                                                               autoCorrect="off"
-                                                               id="react-select-11-input"
-                                                               spellCheck="false"
-                                                               tabIndex="0"
-                                                               type="text"
-                                                               aria-autocomplete="list"
-                                                               aria-expanded="false"
-                                                               aria-haspopup="true"
-                                                               role="combobox"
-                                                               aria-describedby="react-select-11-placeholder"
-                                                               value=""
-                                                               style={{color: "inherit", background: "0px center", opacity: 1, width: "100%", gridArea: "1 / 2 / auto / auto", font: "inherit", minWidth: "2px", border: "0px", margin: "0px", outline: "0px", padding: "0px"}}/>
-                                                    </div>
-                                                </div>
-                                                <div className=" css-1hb7zxy-IndicatorsContainer">
-                            <span className=" css-1okebmr-indicatorSeparator">
-
-                            </span>
-                                                    <div className=" css-tlfecz-indicatorContainer"
-                                                         aria-hidden="true">
-                                                        <svg height="20" width="20" viewBox="0 0 20 20"
-                                                             aria-hidden="true" focusable="false"
-                                                             className="css-tj5bde-Svg">
-                                                            <path
-                                                                d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z">
-
-                                                            </path>
-                                                        </svg>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">UNIT</label>
+                                        <Select options={unitList} placeholder="HOURS"/>
                                     </div>
                                 </div>
                                 <div className="col-md-6 col-sm-6">
                                     <div className="form-group">
-                                        <label className="text-light-dark font-size-14 font-weight-500"
-                                               htmlFor="exampleInputEmail1">RECOMMENDED VALUE</label>
-                                        <div className=" css-b62m3t-container">
-                    <span id="react-select-13-live-region"
-                          className="css-1f43avz-a11yText-A11yText">
-
-                    </span>
-                                            <span aria-live="polite"
-                                                  aria-atomic="false"
-                                                  aria-relevant="additions text"
-                                                  className="css-1f43avz-a11yText-A11yText">
-
-                    </span>
-                                            <div className=" css-1s2u09g-control">
-                                                <div className=" css-319lph-ValueContainer">
-                                                    <div className=" css-14el2xx-placeholder"
-                                                         id="react-select-13-placeholder">
-                                                        250
-                                                    </div>
-                                                    <div className=" css-6j8wv5-Input"
-                                                         data-value="">
-                                                        <input className=""
-                                                               autoCapitalize="none"
-                                                               autoComplete="off"
-                                                               autoCorrect="off"
-                                                               id="react-select-13-input"
-                                                               spellCheck="false"
-                                                               tabIndex="0"
-                                                               type="text"
-                                                               aria-autocomplete="list"
-                                                               aria-expanded="false"
-                                                               aria-haspopup="true"
-                                                               role="combobox"
-                                                               aria-describedby="react-select-13-placeholder"
-                                                               value=""
-                                                               style={{color: "inherit", background: "0px center", opacity: 1, width: "100%", gridArea: "1 / 2 / auto / auto", font: "inherit", minWidth: "2px", border: "0px", margin: "0px", outline: "0px", padding: "0px"}}/>
-                                                    </div>
-                                                </div>
-                                                <div className=" css-1hb7zxy-IndicatorsContainer">
-                            <span className=" css-1okebmr-indicatorSeparator">
-
-                            </span>
-                                                    <div className=" css-tlfecz-indicatorContainer" aria-hidden="true">
-                                                        <svg height="20" width="20"
-                                                             viewBox="0 0 20 20"
-                                                             aria-hidden="true"
-                                                             focusable="false"
-                                                             className="css-tj5bde-Svg">
-                                                            <path
-                                                                d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z">
-
-                                                            </path>
-                                                        </svg>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">RECOMMENDED VALUE</label>
+                                        <Select
+                                            defaultValue={selectedOption}
+                                            onChange={setSelectedOption}
+                                            options={options}
+                                            placeholder="250"
+                                        />
                                     </div>
                                 </div>
                                 <div className="col-md-6 col-sm-6">
-                                    <div className="form-group w-100">
-                                        <label className="text-light-dark font-size-12
-                 font-weight-500" htmlFor="exampleInputEmail1">QUANTITY
-                                        </label>
-                                        <input type="email"
-                                               className="form-control border-radius-10"
-                                               id="exampleInputEmail1"
-                                               aria-describedby="emailHelp"
-                                               placeholder="Overhaul"/>
+                                    <div class="form-group w-100">
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUANTITY</label>
+                                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Overhaul" />
                                     </div>
                                 </div>
                                 <div className="col-md-6 col-sm-6">
-                                    <div className="form-group w-100">
-                                        <label className="text-light-dark font-size-12 font-weight-500"
-                                               htmlFor="exampleInputEmail1">NO. OF EVENTS</label>
-                                        <input type="email"
-                                               className="form-control border-radius-10"
-                                               id="exampleInputEmail1"
-                                               aria-describedby="emailHelp"
-                                               placeholder="Overhaul"/>
+                                    <div class="form-group w-100">
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NO. OF EVENTS</label>
+                                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Overhaul" />
                                     </div>
                                 </div>
+
                             </div>
                             <p className="mt-4">TEMPLATES</p>
                             <div className="row">
-                                <div className="col-md-6 col-sm-6">
+                            <div className="col-md-6 col-sm-6">
                                     <div className="form-group">
-                                        <label className="text-light-dark font-size-14 font-weight-500"
-                                               htmlFor="exampleInputEmail1">TEMPLATE ID</label>
+                                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">TEMPLATE ID</label>
                                         <div className="icon-defold">
                                             <div className="form-control">
-                                                <div className=" css-b62m3t-container">
-                            <span id="react-select-15-live-region"
-                                  className="css-1f43avz-a11yText-A11yText">
-
-                            </span>
-                                                    <span aria-live="polite"
-                                                          aria-atomic="false"
-                                                          aria-relevant="additions text"
-                                                          className="css-1f43avz-a11yText-A11yText">
-
-                            </span>
-                                                    <div className=" css-1s2u09g-control">
-                                                        <div className=" css-319lph-ValueContainer">
-                                                            <div className=" css-14el2xx-placeholder"
-                                                                 id="react-select-15-placeholder">Cyclical
-                                                            </div>
-                                                            <div className=" css-6j8wv5-Input" data-value="">
-                                                                <input className="" autoCapitalize="none"
-                                                                       autoComplete="off"
-                                                                       autoCorrect="off"
-                                                                       id="react-select-15-input"
-                                                                       spellCheck="false"
-                                                                       tabIndex="0"
-                                                                       type="text"
-                                                                       aria-autocomplete="list"
-                                                                       aria-expanded="false"
-                                                                       aria-haspopup="true"
-                                                                       role="combobox"
-                                                                       aria-describedby="react-select-15-placeholder"
-                                                                       value=""
-                                                                       style={{color: "inherit", background: "0px center", opacity: 1, width: "100%", gridArea: "1 / 2 / auto / auto", font: "inherit", minWidth: "2px", border: "0px", margin: "0px", outline: "0px", padding: "0px"}}/>
-                                                            </div>
-                                                        </div>
-                                                        <div className=" css-1hb7zxy-IndicatorsContainer">
-                                    <span className=" css-1okebmr-indicatorSeparator">
-
-                                    </span>
-                                                            <div className=" css-tlfecz-indicatorContainer"
-                                                                 aria-hidden="true">
-                                                                <svg height="20" width="20" viewBox="0 0 20 20"
-                                                                     aria-hidden="true" focusable="false"
-                                                                     className="css-tj5bde-Svg">
-                                                                    <path d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"></path>
-                                                                </svg>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <span className="search-icon searchIcon">
-                            <svg
-                                className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium font-size-16 css-i4bv87-MuiSvgIcon-root"
-                                focusable="false"
-                                aria-hidden="true"
-                                viewBox="0 0 24 24"
-                                data-testid="SearchOutlinedIcon">
-                                <path
-                                    d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z">
-
-                                </path>
-                            </svg>
-                        </span>
+                                                <Select
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                    options={options}
+                                                    placeholder="Cyclical"
+                                                />
+                                                <span className="search-icon searchIcon"><SearchOutlinedIcon className="font-size-16" /></span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="col-md-6 col-sm-6">
                                     <div className="form-group">
-                                        <label className="text-light-dark font-size-14 font-weight-500"
-                                               htmlFor="exampleInputEmail1">
-                                            TEMPLATE DESCRIPTION
-                                        </label>
+                                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">TEMPLATE DESCRIPTION</label>
                                         <div className="icon-defold">
                                             <div className="form-control">
-                                                <div className=" css-b62m3t-container">
-                            <span id="react-select-17-live-region"
-                                  className="css-1f43avz-a11yText-A11yText">
-
-                            </span>
-                                                    <span aria-live="polite"
-                                                          aria-atomic="false"
-                                                          aria-relevant="additions text"
-                                                          className="css-1f43avz-a11yText-A11yText">
-
-                            </span>
-                                                    <div className=" css-1s2u09g-control">
-                                                        <div className=" css-319lph-ValueContainer">
-                                                            <div className=" css-14el2xx-placeholder"
-                                                                 id="react-select-17-placeholder">
-                                                                Cyclical
-                                                            </div>
-                                                            <div className=" css-6j8wv5-Input"
-                                                                 data-value="">
-                                                                <input className=""
-                                                                       autoCapitalize="none"
-                                                                       autoComplete="off"
-                                                                       autoCorrect="off"
-                                                                       id="react-select-17-input"
-                                                                       spellCheck="false"
-                                                                       tabIndex="0"
-                                                                       type="text"
-                                                                       aria-autocomplete="list"
-                                                                       aria-expanded="false"
-                                                                       aria-haspopup="true"
-                                                                       role="combobox"
-                                                                       aria-describedby="react-select-17-placeholder"
-                                                                       value=""
-                                                                       style={{color: "inherit", background: "0px center", opacity: 1, width: "100%", gridArea: "1 / 2 / auto / auto", font: "inherit", minWidth: "2px", border: "0px", margin: "0px", outline: "0px", padding: "0px"}}/>
-                                                            </div>
-                                                        </div>
-                                                        <div className=" css-1hb7zxy-IndicatorsContainer">
-                                    <span className=" css-1okebmr-indicatorSeparator">
-
-                                    </span>
-                                                            <div className=" css-tlfecz-indicatorContainer"
-                                                                 aria-hidden="true">
-                                                                <svg height="20" width="20"
-                                                                     viewBox="0 0 20 20"
-                                                                     aria-hidden="true"
-                                                                     focusable="false"
-                                                                     className="css-tj5bde-Svg">
-                                                                    <path
-                                                                        d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z">
-
-                                                                    </path>
-                                                                </svg>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <span className="search-icon searchIcon">
-                            <svg className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium
-                             font-size-16 css-i4bv87-MuiSvgIcon-root"
-                                 focusable="false" aria-hidden="true"
-                                 viewBox="0 0 24 24"
-                                 data-testid="SearchOutlinedIcon">
-                                <path
-                                    d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z">
-
-                                </path>
-                            </svg>
-                        </span>
+                                                <Select
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                    options={options}
+                                                    placeholder="Cyclical"
+                                                />
+                                                <span className="search-icon searchIcon"><SearchOutlinedIcon className="font-size-16" /></span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="col-md-6 col-sm-6">
-                                    <div className="form-group">
-                                        <label className="text-light-dark font-size-12
-                font-weight-500"
-                                               htmlFor="exampleInputEmail1"># OF EVENTS
-                                        </label>
-                                        <div className="icon-defold">
-                                            <input type="email"
-                                                   className="form-control icon-defold
-                            border-radius-10"
-                                                   id="exampleInputEmail1"
-                                                   aria-describedby="emailHelp"
-                                                   placeholder="SJ1234"
-                                                   style={{paddingLeft:"35px"}}/>
-                                            <span className="search-icon"
-                                                  style={{top: "7px", left: "10px", position: "absolute"}}>
-                        <svg
-                            className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium font-size-16 css-i4bv87-MuiSvgIcon-root"
-                            focusable="false"
-                            aria-hidden="true"
-                            viewBox="0 0 24 24"
-                            data-testid="DateRangeOutlinedIcon">
-                            <path
-                                d="M7 11h2v2H7v-2zm14-5v14c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2l.01-14c0-1.1.88-2 1.99-2h1V2h2v2h8V2h2v2h1c1.1 0 2 .9 2 2zM5 8h14V6H5v2zm14 12V10H5v10h14zm-4-7h2v-2h-2v2zm-4 0h2v-2h-2v2z">
-
-                            </path>
-                        </svg>
-                    </span>
-                                        </div>
-                                    </div>
+                                <div className="form-group">
+                                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1"># OF EVENTS</label>
+                                <div className="icon-defold">
+                                <input type="email" class="form-control icon-defold border-radius-10" style={{paddingLeft:'35px'}} id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="SJ1234"/>
+                                <span className="search-icon" style={{top:'7px',left:'10px',position:'absolute'}}><DateRangeOutlinedIcon  className="font-size-16"/></span>
+                                </div>
+                                </div>
                                 </div>
                                 <div className="col-md-6 col-sm-6">
-                                    <div className="form-group">
-                                        <div className="mt-4">
-                                            <a href="#"
-                                               className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2">
-                                                <span className="mr-2">+</span>
-                                                Add Template / Kit
-                                            </a>
-                                        </div>
-                                    </div>
+                                <div className="form-group">
+                                <div className="mt-4">
+                                <a href="#" className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2" ><span className="mr-2">+</span>Add Template / Kit</a>
                                 </div>
-                            </div>
-                            <p className="mt-4">REPAIR OPTIONS</p>
-                            <div className="row">
-                                <div className="col-md-4 col-sm-4">
-                                    <div className="form-group">
-                                        <label className="text-light-dark
-                 font-size-12 font-weight-500"
-                                               htmlFor="exampleInputEmail1"># OF EVENTS
-                                        </label>
-                                        <div className="icon-defold">
-                                            <input type="email"
-                                                   className="form-control icon-defold border-radius-10"
-                                                   id="exampleInputEmail1"
-                                                   aria-describedby="emailHelp"
-                                                   placeholder="SJ1234"
-                                                   style={{paddingLeft:"35px"}}/>
-                                            <span className="search-icon"
-                                                  style={{top: "7px", left: "10px", position: "absolute"}}>
-                        <svg
-                            className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium font-size-16 css-i4bv87-MuiSvgIcon-root"
-                            focusable="false" aria-hidden="true" viewBox="0 0 24 24"
-                            data-testid="DateRangeOutlinedIcon">
-                            <path
-                                d="M7 11h2v2H7v-2zm14-5v14c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2l.01-14c0-1.1.88-2 1.99-2h1V2h2v2h8V2h2v2h1c1.1 0 2 .9 2 2zM5 8h14V6H5v2zm14 12V10H5v10h14zm-4-7h2v-2h-2v2zm-4 0h2v-2h-2v2z">
+                                </div>
+                                </div>
+                                </div>
 
-                            </path>
-                        </svg>
-                    </span>
-                                        </div>
-                                    </div>
+
+                                <p className="mt-4">REPAIR OPTIONS</p>
+                                <div className="row">
+                                <div className="col-md-4 col-sm-4">
+                                <div className="form-group">
+                                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1"># OF EVENTS</label>
+                                <div className="icon-defold">
+                                <input type="email" class="form-control icon-defold border-radius-10" style={{paddingLeft:'35px'}} id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="SJ1234"/>
+                                <span className="search-icon" style={{top:'7px',left:'10px',position:'absolute'}}><DateRangeOutlinedIcon  className="font-size-16"/></span>
+                                </div>
+                                </div>
                                 </div>
                                 <div className="col-md-4 col-sm-4">
                                     <div className="form-group">
-                                        <label className="text-light-dark font-size-14 font-weight-500"
-                                               htmlFor="exampleInputEmail1">REPAIR OPTION</label>
+                                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">REPAIR OPTION</label>
                                         <div className="icon-defold">
                                             <div className="form-control">
-                                                <div className=" css-b62m3t-container">
-                            <span id="react-select-19-live-region"
-                                  className="css-1f43avz-a11yText-A11yText">
-
-                            </span>
-                                                    <span aria-live="polite"
-                                                          aria-atomic="false"
-                                                          aria-relevant="additions text"
-                                                          className="css-1f43avz-a11yText-A11yText">
-
-                            </span>
-                                                    <div className=" css-1s2u09g-control">
-                                                        <div className=" css-319lph-ValueContainer">
-                                                            <div className=" css-14el2xx-placeholder"
-                                                                 id="react-select-19-placeholder">Cyclical
-                                                            </div>
-                                                            <div className=" css-6j8wv5-Input" data-value="">
-                                                                <input className="" autoCapitalize="none"
-                                                                       autoComplete="off"
-                                                                       autoCorrect="off"
-                                                                       id="react-select-19-input" spellCheck="false"
-                                                                       tabIndex="0" type="text" aria-autocomplete="list"
-                                                                       aria-expanded="false" aria-haspopup="true"
-                                                                       role="combobox"
-                                                                       aria-describedby="react-select-19-placeholder"
-                                                                       value=""
-                                                                       style={{color: "inherit", background: "0px center", opacity: 1, width: "100%", gridArea: "1 / 2 / auto / auto", font: "inherit", minWidth: "2px", border: "0px", margin: "0px", outline: "0px", padding: "0px"}}/>
-                                                            </div>
-                                                        </div>
-                                                        <div className=" css-1hb7zxy-IndicatorsContainer">
-                                    <span className=" css-1okebmr-indicatorSeparator">
-
-                                    </span>
-                                                            <div className=" css-tlfecz-indicatorContainer"
-                                                                 aria-hidden="true">
-                                                                <svg height="20"
-                                                                     width="20" viewBox="0 0 20 20"
-                                                                     aria-hidden="true"
-                                                                     focusable="false"
-                                                                     className="css-tj5bde-Svg">
-                                                                    <path
-                                                                        d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"></path>
-                                                                </svg>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <span className="search-icon searchIcon">
-                            <svg
-                                className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium font-size-16 css-i4bv87-MuiSvgIcon-root"
-                                focusable="false" aria-hidden="true" viewBox="0 0 24 24"
-                                data-testid="SearchOutlinedIcon">
-                                <path
-                                    d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z">
-
-                                </path>
-                            </svg>
-                        </span>
+                                                <Select
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                    options={options}
+                                                    placeholder="Cyclical"
+                                                />
+                                                <span className="search-icon searchIcon"><SearchOutlinedIcon className="font-size-16" /></span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="col-md-4 col-sm-4">
-                                    <div className="form-group">
-                                        <div className="mt-4">
-                                            <a href="#"
-                                               className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2">
-                                                <span className="mr-2">+</span>
-                                                Add Repair Option
-                                            </a></div>
-                                    </div>
+                                <div className="form-group">
+                                <div className="mt-4">
+                                <a href="#" className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"><span className="mr-2">+</span>Add Repair Option</a>
                                 </div>
+                                </div>
+                                </div>
+
+
                             </div>
                             <div className="text-right pb-2">
-                                <a href="#" className="btn border mr-4">
-                                    Cancel</a>
-                                <a href="#"
-                                   className="btn bg-primary text-white">
-                                    Save &amp; Continue
-                                </a>
+                                <a href="#" className="btn border mr-4" onClick={() => setOpenAddBundleItem(false)}>Cancel</a>
+                                <a href="#" className="btn bg-primary text-white" onClick={handleBundleItemSaveAndContinue}>Save & Continue</a>
                             </div>
+                            {/* <div class="row mt-4">
+                                <div className="col-md-6 col-sm-6">
+                                    <div class="form-group w-100">
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOLUTION ID</label>
+                                        <input type="email" class="form-control border-radius-10" disabled id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(AUTO GENERATE)" />
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-sm-6">
+                                    <div class="form-group w-100">
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOLUTION DESCRIPTION</label>
+                                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace Cranskshaft" />
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-sm-6">
+                                    <div class="form-group w-100">
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">USAGE IN</label>
+                                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Overhaul" />
+                                    </div>
+                                </div>
+                            </div>
+                            <p className="mt-4">STRATEGY</p>
+                            <div class="row mt-4">
+                                <div className="col-md-6 col-sm-6">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">TASK TYPE</label>
+                                        <div className="icon-defold">
+                                            <div className="form-control">
+                                                <Select
+                                                    // defaultValue={selectedOption}
+                                                    // onChange={setSelectedOption}
+                                                    options={bundleItemTaskTypeKeyValue}
+                                                    placeholder="Select Or Search"
+                                                />
+                                                <span className="search-icon searchIcon"><SearchOutlinedIcon className="font-size-16" /></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-sm-6">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">FREQUENCY</label>
+                                        <div className="icon-defold">
+                                            <div className="form-control">
+                                                <Select
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                    options={options}
+                                                    placeholder="Cyclical"
+                                                />
+                                                <span className="search-icon searchIcon"><SearchOutlinedIcon className="font-size-16" /></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-sm-6">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">TIME/HOURS</label>
+                                        <Select
+                                            defaultValue={selectedOption}
+                                            onChange={setSelectedOption}
+                                            options={options}
+                                            placeholder="HOURS"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-sm-6">
+                                    <div className="form-group">
+                                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">VALUE</label>
+                                        <Select
+                                            defaultValue={selectedOption}
+                                            onChange={setSelectedOption}
+                                            options={options}
+                                            placeholder="250"
+                                        />
+                                    </div>
+                                </div>
+
+                            </div> */}
+                            {/* <div className="text-right">
+                                <a href="#" className="btn-sm border mr-3" onClick={() => setOpenAddBundleItem(true)} style={{ cursor: 'pointer' }}>Review</a>
+                                <a href="#" className="btn-sm bg-primary text-white" onClick={() => setOpen1(true)} style={{ cursor: 'pointer' }} >Copy to Solution</a>
+                            </div> */}
+
+                            {/* </TabPanel>
+                                    <TabPanel value="2">
+                                        <p>Data not found</p>
+                                    </TabPanel>
+                                </TabContext>
+                            </Box> */}
                         </div>
                     </Modal.Body>
                 </Modal.Body>

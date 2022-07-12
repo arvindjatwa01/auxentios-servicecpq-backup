@@ -184,7 +184,7 @@ export function SubHeaderComponent(props) {
           <div class="modal-header ">
             <h4 class="modal-title" id="myModalLabel2">Version history</h4>
             <div className="d-flex">
-              <div className="headerdropdown">
+              {/* <div className="headerdropdown">
                 <Box>
                   <FormControl fullWidth>
                     <NativeSelect
@@ -199,15 +199,32 @@ export function SubHeaderComponent(props) {
                       <option value={30}>All</option>
                     </NativeSelect>
                   </FormControl>
-                </Box></div>
+                </Box></div> */}
               <button type="button" class="close" onClick={toggleDrawer(anchor, false, false)}><span aria-hidden="true">&times;</span></button>
             </div>
           </div>
           <div class="modal-body" style={{ background: 'white' }}>
-            <div className="card border p-3">
-              <h5 className="d-flex align-items-center mb-0">
-                <div className="" style={{ display: 'contents' }}><span className="mr-3">Service Estimate 01</span><a href="#" className="btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i></a> <a href="#" className="btn-sm"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a> <a href="#" className="btn-sm"><i class="fa fa-folder-o" aria-hidden="true"></i></a></div>
+            <div className="card border p-3 bg-primary ">
+              <h5 className="d-flex align-items-center justify-content-between mb-0">
+                <div className="text-white" style={{ display: 'contents' }}><span className="mr-3">Service Estimate 01</span>
+                <div>
+                <a href="#" className="btn-sm text-white"><i class="fa fa-pencil" aria-hidden="true"></i></a> 
+                <a href="#" className="btn-sm text-white"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a> 
+                <a href="#" className="btn-sm text-white"><i class="fa fa-folder-o" aria-hidden="true"></i></a></div>
+                </div>
               </h5>
+              </div>
+              <div className="card border p-3">
+              <div className="d-flex justify-content-between align-items-center">
+                <p className="mb-0">5 Aug 21, 1:38 pm 
+                  <a href="#" className="p-1 more-btn " style={{ marginLeft: '35px' }}>+ 2
+                    <span className="c-btn">J</span>
+                  </a>
+                </p>
+                <p className="mb-0"><a href="#" className=""><MuiMenuComponent options={activityOptions} /></a></p>
+
+              </div>
+             
               <div className="mt-3">
                 <small>MAKE</small>
               </div>
@@ -223,8 +240,87 @@ export function SubHeaderComponent(props) {
               </div>
               <p className="text-black mb-2" style={{ textDecoration: 'line-through' }}>SFI234</p>
               <p className="text-black mb-2">SFI234</p>
+              <div class="card border">
+                <table class="table table-bordered mb-0">
+                  <tbody>
+                    <tr>
+                      <td>365-1234</td>
+                      <td><MoreHorizOutlinedIcon /></td>
+                      <td><MoreHorizOutlinedIcon /></td>
+                      <td><MoreHorizOutlinedIcon /></td>
+                      <td >
+                        <div className="d-flex justify-content-between">
+                          <div className="mr-3">
+                            <small style={{ textDecoration: 'line-through' }}>$80</small>
+                            <p className="mb-0 mt-2">$100</p>
+                          </div>
+                          <div><span className="c-btn" style={{ position: 'unset' }}>J</span></div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <div className="">
+            <div className="card border p-3 bg-primary ">
+              <h5 className="d-flex align-items-center justify-content-between mb-0">
+                <div className="text-white" style={{ display: 'contents' }}><span className="mr-3">Service Estimate 02</span>
+                <div>
+                <a href="#" className="btn-sm text-white"><i class="fa fa-pencil" aria-hidden="true"></i></a> 
+                <a href="#" className="btn-sm text-white"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a> 
+                <a href="#" className="btn-sm text-white"><i class="fa fa-folder-o" aria-hidden="true"></i></a></div>
+                </div>
+              </h5>
+              </div>
+              <div className="card border p-3">
+              <div className="d-flex justify-content-between align-items-center">
+                <p className="mb-0">5 Aug 21, 1:38 pm 
+                  <a href="#" className="p-1 more-btn " style={{ marginLeft: '35px' }}>+ 2
+                    <span className="c-btn">J</span>
+                  </a>
+                </p>
+                <p className="mb-0"><a href="#" className=""><MuiMenuComponent options={activityOptions} /></a></p>
+
+              </div>
+             
+              <div className="mt-3">
+                <small>MAKE</small>
+              </div>
+              <p className="text-black mb-2" style={{ textDecoration: 'line-through' }}>Chinalco Sa,Beijing,Chaina(code 302037)</p>
+              <p className="text-black mb-2">Chinalco Sa,Beijing,Chaina(code 302037)</p>
+              <div className="mt-3">
+                <small>FAMILY</small>
+              </div>
+              <p className="text-black mb-2" style={{ textDecoration: 'line-through' }}>Alberto Franco,Head of Purchase</p>
+              <p className="text-black mb-2">Alberto Franco,Head of Purchase</p>
+              <div className="mt-3">
+                <small>RECOMMENDED FREQUENCY</small>
+              </div>
+              <p className="text-black mb-2" style={{ textDecoration: 'line-through' }}>SFI234</p>
+              <p className="text-black mb-2">SFI234</p>
+              <div class="card border">
+                <table class="table table-bordered mb-0">
+                  <tbody>
+                    <tr>
+                      <td>365-1234</td>
+                      <td><MoreHorizOutlinedIcon /></td>
+                      <td><MoreHorizOutlinedIcon /></td>
+                      <td><MoreHorizOutlinedIcon /></td>
+                      <td >
+                        <div className="d-flex justify-content-between">
+                          <div className="mr-3">
+                            <small style={{ textDecoration: 'line-through' }}>$80</small>
+                            <p className="mb-0 mt-2">$100</p>
+                          </div>
+                          <div><span className="c-btn" style={{ position: 'unset' }}>J</span></div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            {/* <div className="">
               <div className="d-flex justify-content-between align-items-center">
                 <p className="mb-0">5 Aug 21, 1:38 pm by
                   <a href="#" className="p-1 more-btn " style={{ marginLeft: '70px' }}>+ 3 more
@@ -280,7 +376,7 @@ export function SubHeaderComponent(props) {
                   </tbody>
                 </table>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       }
@@ -507,43 +603,69 @@ export function SubHeaderComponent(props) {
                       </div>
                     </div>
                     <div class="modal-body" style={{background:'white'}}>
-                    <div style={{borderBottom: '1px solid #cfcece'}}>
-                    <ul class="nav internalexternaltabs">
+                    {/* <div style={{borderBottom: '1px solid #cfcece'}}> */}
+                    <ul class="nav internalexternaltabs intexttab">
                       <li class="active"><a data-toggle="tab" href="#internal1" className="btn active show">Internal</a></li>
                       <li><a data-toggle="tab" href="#external1" className="btn">External</a></li>
                     </ul>
-                    </div>
+                    {/* </div> */}
 
                     <div class="tab-content">
                       <div id="internal1" class="tab-pane fade in active show">
                        <div className="mt-4">
-                         <a href="#" className="btn bg-light-blue d-block text-left font-size-18 text-violet"><span  className="font-size-24 mr-2">+</span>Comment</a>
+                         <a href="#" className=" d-block text-left font-size-15 text-violet"><span  className="font-size-20 mr-2">+</span>Comment</a>
                        </div>
                        <div>
-                       <textarea name="comments" className="w-100 p-2 border" id="comments"placeholder="Reply">
+                       <textarea name="comments" className="w-100 p-2 border rounded-5" id="comments"placeholder="Reply">
                         </textarea>
-                        <div className="d-flex justify-content-between">
-                          <div><a href="#" className="btn border">Cancel</a></div>
-                          <div><a href="#" className="btn text-white bg-primary">Save</a></div>
+                        <div className="d-flex float-right mr-2">
+                          <div><a href="#" className="btn-sm border mr-3">Cancel</a></div>
+                          <div><a href="#" className="btn-sm text-white bg-primary">Save</a></div>
                         </div>
                        </div>
-                       <hr/>
-                      <div className="d-flex justify-content-between align-items-center mt-3">
-                        <p className="mb-0">Engine Partlist</p>
-                        <div>
+                      
+                      <div className="d-flex justify-content-between align-items-center mt-5">
+                        <p className="mb-0"><strong> Engine Partlist</strong></p>
+                        {/* <div>
                           <a href="#" className="mr-3 "><EditOutlinedIcon  className="font-size-18"/></a>
                           <a href="#" className="mr-3"><AttachmentOutlinedIcon className="font-size-18"/></a>
                           <a href="#" className="mr-3"><CreateNewFolderOutlinedIcon className="font-size-18"/></a>
                           <a href="#"><ShareOutlinedIcon className="font-size-18"/></a>
-                        </div>
+                        </div> */}
                       </div>
                       <div className="border p-3 rounded mt-3">
                        <p className="mb-0">Amit minim mollit non deserunt ullamco est sit aliqua dolor do amet sont. Velit officia consequat duis enim velit mollit.Exercitation veniam consequat sunt nostrud amet</p>
                       </div>
-                      <p class="text-grey  mb-0 font-size-12 mt-2"><b>2:38pm, 19 Aug 21</b></p>
+                      <p class="text-grey  mb-0 font-size-12 mt-2 float-right"><b>2:38pm, 19 Aug 21</b></p>
                       </div>
+
                       <div id="external1" class="tab-pane fade">
                       <div className="mt-4">
+                         <a href="#" className=" d-block text-left font-size-15 text-violet"><span  className="font-size-20 mr-2">+</span>Comment</a>
+                       </div>
+                       <div>
+                       <textarea name="comments" className="w-100 p-2 border rounded-5" id="comments"placeholder="Reply">
+                        </textarea>
+                        <div className="d-flex float-right mr-2">
+                          <div><a href="#" className="btn-sm border mr-3">Cancel</a></div>
+                          <div><a href="#" className="btn-sm text-white bg-primary">Save</a></div>
+                        </div>
+                       </div>
+                      
+                      <div className="d-flex justify-content-between align-items-center mt-5">
+                        <p className="mb-0"><strong> Engine Partlist</strong></p>
+                        {/* <div>
+                          <a href="#" className="mr-3 "><EditOutlinedIcon  className="font-size-18"/></a>
+                          <a href="#" className="mr-3"><AttachmentOutlinedIcon className="font-size-18"/></a>
+                          <a href="#" className="mr-3"><CreateNewFolderOutlinedIcon className="font-size-18"/></a>
+                          <a href="#"><ShareOutlinedIcon className="font-size-18"/></a>
+                        </div> */}
+                      </div>
+                      <div className="border p-3 rounded mt-3">
+                       <p className="mb-0">Amit minim mollit non deserunt ullamco est sit aliqua dolor do amet sont. Velit officia consequat duis enim velit mollit.Exercitation veniam consequat sunt nostrud amet</p>
+                      </div>
+                      <p class="text-grey  mb-0 font-size-12 mt-2 float-right"><b>2:38pm, 19 Aug 21</b></p>
+                      {/* <div className="mt-4">
                          <a href="#" className="btn bg-light-blue d-block text-left font-size-18 text-violet"><span  className="font-size-24 mr-2">+</span>Comment</a>
                        </div>
                        <div>
@@ -567,7 +689,7 @@ export function SubHeaderComponent(props) {
                       <div className="border p-3 rounded mt-3">
                        <p className="mb-0">Amit minim mollit non deserunt ullamco est sit aliqua dolor do amet sont. Velit officia consequat duis enim velit mollit.Exercitation veniam consequat sunt nostrud amet</p>
                       </div>
-                      <p class="text-grey  mb-0 font-size-12 mt-2"><b>2:38pm, 19 Aug 21</b></p>
+                      <p class="text-grey  mb-0 font-size-12 mt-2"><b>2:38pm, 19 Aug 21</b></p> */}
                       </div>
                     </div>
                     </div>

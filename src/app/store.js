@@ -6,12 +6,14 @@ import { history } from 'utils';
 import rootSaga from './rootSaga';
 import signUpReducer from "../features/auth/signUpSlice";
 import taskReducer from "../pages/PortfolioAndBundle/customerSegment/strategySlice";
+import portfolioItemReducer from "../pages/PortfolioAndBundle/createItem/portfolioSlice";
 
 const rootReducer = combineReducers({
     router: connectRouter(history),
     auth: authReducer,
     signUp: signUpReducer,
-    task:taskReducer
+    task:taskReducer,
+    portfolioItem:portfolioItemReducer,
 })
 
 const sagaMiddleware = createSagaMiddleware()

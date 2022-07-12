@@ -7,7 +7,6 @@ import { RouterConfig } from "navigation/RouterConfig";
 import "./App.css";
 import { ProvideAuth } from "navigation/Auth/ProvideAuth";
 import LoaderComponent from "pages/Common/LoaderComponent";
-
 const App= () => {
   return (
       <div>

@@ -40,6 +40,7 @@ export const GET_CATEGORY_USAGE = () => SOLUTION_BUILDER_URI + "common-config/us
 export const GET_RESPONSE_TIME = () => SOLUTION_BUILDER_URI + "common-config/response-time"
 export const GET_PRODUCT_HIERARCHY = () => SOLUTION_BUILDER_URI + "common-config/product-hierarchy"
 export const GET_GEOGRAPHIC = () => SOLUTION_BUILDER_URI + "common-config/geographic"
+export const CREATE_PORTFOLIO_ITEM = () => SOLUTION_BUILDER_URI + "item"
 
 //Schema Config
 export const SCHEMA_CONFIG = () => SOLUTION_BUILDER_URI + "schema"
