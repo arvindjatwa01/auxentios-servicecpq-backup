@@ -10,7 +10,8 @@ export { getPortfolioSchema } from './schemaConfigServices';
 export { getGuidedSolution } from './guidedSolutionServices';
 export { getUserDetails, signup, signIn } from './userServices';
 export { getAllPortfolios } from './solutionBuilderServices'
-export { createPortfolio, getPortfolio, updatePortfolio } from './servicePortfolioServices'
+export { createPortfolio, getPortfolio, updatePortfolio} from './servicePortfolioServices'
+export { getPortfolioCommonConfig } from './pricingCommonConfig'
 export { getMakeKeyValue, getModelKeyValue, getPrefixKeyValue } from './coverageService'
 export { getUsageCategoryKeyValue, getStrategyTaskKeyValue, getTaskTypeKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getTypeKeyValue, getResponseTimeTaskKeyValue, getValidityKeyValue } from './commonSolutionBuilderServices'
 

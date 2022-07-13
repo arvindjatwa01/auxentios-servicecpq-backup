@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, PORTFOLIO_URL } from "./CONSTANTS";
+import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, PORTFOLIO_URL,PRICING_COMMON_CONFIG } from "./CONSTANTS";
 
 /**
  * Function to create the Portfolios.
@@ -98,6 +98,7 @@ export const getAllPortfolios = () => {
     }
   });
 };
+
 
 /**
  * Function to fetch the details of the user based on userId.
