@@ -38,6 +38,12 @@ const strategySlice = createSlice({
       state.geographicList = action.payload.geographic.data;
     },
     updateList(state, action: PayloadAction) {
+      // state.categoryList.map((currUsage,i)=>{
+      //   if(currUsage.key===action.payload){
+
+      //   }
+      // })
+      // state.categoryList.push(action.payload)
       console.log("action update list",action)
 
     },
