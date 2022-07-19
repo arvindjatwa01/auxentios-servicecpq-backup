@@ -309,7 +309,7 @@ export function CreatePortfolio() {
   const [headerTypeKeyValue, setHeaderTypeKeyValue] = useState([]);
   const [responseTimeTaskKeyValue, setResponseTimeTaskKeyValue] = useState([]);
   const [taskTypeKeyValue, setTaskTypeKeyValue] = useState([]);
- 
+
   const [bundleItemTaskTypeKeyValue, setBundleItemTaskTypeKeyValue] = useState(
     []
   );
@@ -344,6 +344,8 @@ export function CreatePortfolio() {
   const [openAddBundleItemHeader, setOpenAddBundleItemHeader] = useState("");
   const [portfolioMenuOpen, setPortfolioMenuOpen] = useState(false);
   const [priceAgreementRows, setPriceAgreementRows] = useState([]);
+  const [taskItemList, setTaskItemList] = useState(null);
+  const [categoryItem, setCategoryItem] = useState(null);
 
   const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
   const [customerSegmentKeyValue, setCustomerSegmentKeyValue] = useState([]);
@@ -375,11 +377,11 @@ export function CreatePortfolio() {
     fromDate: new Date(),
     toDate: new Date(),
     from: null,
-    fromInput: "",
     to: null,
+    fromInput: "",
     toInput: "",
   });
-  const [generalComponetData, setGeneralComponetData] = useState({
+  const [generalComponentData, setGeneralComponentData] = useState({
     portfolioName: "",
     description: "",
     serviceDescription: "",
@@ -402,8 +404,8 @@ export function CreatePortfolio() {
   const handleClose2 = () => setOpen2(false);
 
   const handleCustomerSegmentChange = (e) => {
-    setGeneralComponetData({
-      ...generalComponetData,
+    setGeneralComponentData({
+      ...generalComponentData,
       customerSegment: e,
     });
   };
@@ -538,11 +540,10 @@ export function CreatePortfolio() {
   };
 
   const handleHeaderTypeChange = (e) => {
+    setPrefixLabelGeneral(e.value);
     if (e.value == "PROGRAM") {
-      setPrefixLabelGeneral(e.value);
       setPriceAgreementOption(true);
     } else {
-      setPrefixLabelGeneral(e.value);
       setPriceAgreementOption(false);
     }
     setHeaderType(e);
@@ -562,8 +563,8 @@ export function CreatePortfolio() {
   };
 
   const handleBundleItemSaveAndContinue = () => {
-    console.log(taskItem);
-    dispatch(portfolioItemActions.createItem(createItemPayload(taskItem)));
+    console.log(taskItemList);
+    dispatch(portfolioItemActions.createItem(createItemPayload(taskItemList)));
     // alert("Save And Continue")
     // var temp = [...bundleItems];
     // var bundleId = Math.floor(Math.random() * 100)
@@ -740,15 +741,73 @@ export function CreatePortfolio() {
     }
   };
 
-  const handleNextClick = () => {
+  const handleNextClick = (e) => {
     setValue(value + 1);
+    if (e.target.id == "general") {
+      let reqData = {
+        type: prefixLabelGeneral,
+        name: generalComponentData.portfolioName,
+        description: generalComponentData.portfolioDescription,
+        externalReference: generalComponentData.reference,
+        customerSegment: generalComponentData.customerSegment,
+
+        strategyTask: "PREVENTIVE_MAINTENANCE",
+        taskType: "PM1",
+        usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+        productHierarchy: "END_PRODUCT",
+        geographic: "ONSITE",
+        availability: "AVAILABILITY_GREATER_95",
+        responseTime: "PROACTIVE",
+        type: "MACHINE",
+        application: "HILL",
+        contractOrSupport: "LEVEL_I",
+        lifeStageOfMachine: "NEW_BREAKIN",
+        supportLevel: "PREMIUM",
+      };
+      createPortfolio(reqData)
+        .then((res) => {
+          setGeneralComponentData({
+            ...generalComponentData,
+            reference: res.portfolioId,
+          });
+          // console.log("res createPortfolio", res);
+        })
+        .catch((err) => {
+          console.log("err in createPortfolio", err);
+        });
+    } else if (e.target.id == "validity") {
+      let reqData;
+      if (validityData.fromInput && validityData.toInput) {
+        reqData = {
+          validFrom: validityData.fromInput + validityData.from,
+          validTo: validityData.toInput + validityData.from,
+        };
+      } else if (validityData.fromDate && validityData.toDate) {
+        let yf = validityData.fromDate.getFullYear();
+        let mf = validityData.fromDate.getMonth();
+        let df = validityData.fromDate.getDate();
+
+        let yt = validityData.toDate.getFullYear();
+        let mt = validityData.toDate.getMonth();
+        let dt = validityData.toDate.getDate();
+        reqData = {
+          validFrom: `${yf}/${mf}/${df}`,
+          validTo: `${yt}/${mt}/${dt}`,
+        };
+      }
+
+      // service Call for updating Date
+
+      console.log("reqData for validity:", reqData, generalComponentData);
+    } else if (e.target.id == "strategy") {
+    }
   };
 
   const handleGeneralInputChange = (e) => {
     var value = e.target.value;
     var name = e.target.name;
-    setGeneralComponetData({
-      ...generalComponetData,
+    setGeneralComponentData({
+      ...generalComponentData,
       [name]: value,
     });
   };
@@ -788,7 +847,7 @@ export function CreatePortfolio() {
           const portfolioDetails = res;
           console.log(portfolioDetails);
           if (portfolioDetails.portfolioId != null) {
-            setGeneralComponetData({
+            setGeneralComponentData({
               portfolioName: portfolioDetails.name,
               portfolioDescription: portfolioDetails.description,
               serviceProgramDescription: "",
@@ -963,40 +1022,42 @@ export function CreatePortfolio() {
       })
       .catch((err) => {
         alert(err);
-    });
+      });
 
-    getPortfolioCommonConfig("item-type").then((res)=>{
+    getPortfolioCommonConfig("item-type")
+      .then((res) => {
         const options = res.map((d) => ({
-            value: d.key,
-            label: d.value,
-          }));
-          setStrategyOptionals(options);
-    }).catch((err)=>{
-          alert(err);
-    
+          value: d.key,
+          label: d.value,
+        }));
+        setStrategyOptionals(options);
+      })
+      .catch((err) => {
+        alert(err);
       });
-    getPortfolioCommonConfig("customer-segment").then((res)=>{
+    getPortfolioCommonConfig("customer-segment")
+      .then((res) => {
         const options = res.map((d) => ({
-            value: d.key,
-            label: d.value,
-          }));
-          setCustomerSegmentKeyValue(options);
-    }).catch((err)=>{
-          alert(err);
-    
+          value: d.key,
+          label: d.value,
+        }));
+        setCustomerSegmentKeyValue(options);
+      })
+      .catch((err) => {
+        alert(err);
       });
-    getPortfolioCommonConfig("price-method").then((res)=>{
+    getPortfolioCommonConfig("price-method")
+      .then((res) => {
         const options = res.map((d) => ({
-            value: d.key,
-            label: d.value,
-          }));
-          setPriceMethodKeyValue(options);
-    }).catch((err)=>{
-          alert(err);
-    
+          value: d.key,
+          label: d.value,
+        }));
+        setPriceMethodKeyValue(options);
+      })
+      .catch((err) => {
+        alert(err);
       });
-    
-};
+  };
 
   const dispatch = useDispatch();
 
@@ -1007,7 +1068,6 @@ export function CreatePortfolio() {
     dispatch(taskActions.fetchTaskList());
   }, [dispatch]);
 
- 
   const strategyList = useAppSelector(
     selectStrategyTaskOption(selectStrategyTaskList)
   );
@@ -1028,8 +1088,7 @@ export function CreatePortfolio() {
   const frequencyList = useAppSelector(
     selectStrategyTaskOption(selectFrequencyList)
   );
-  const [taskItem, setTaskItemList] = useState(null);
-  const [categoryItem, setCategoryItem] = useState(null);
+
   const updatedList = useAppSelector(
     selectStrategyTaskOption(selectUpdateList)
   );
@@ -1158,6 +1217,7 @@ export function CreatePortfolio() {
     // { id: 8, DocumentType: 'Frances', PrimaruQuote: 'Rossini', Groupid: 36, progress: 35, },
     // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
   ];
+
   return (
     <>
       <CommanComponents />
@@ -1248,14 +1308,14 @@ export function CreatePortfolio() {
                           SELECT TYPE
                         </label>
                         <Select
+                          placeholder="Select"
+                          options={headerTypeKeyValue}
+                          value={headerType}
                           onChange={handleHeaderTypeChange}
                           isClearable={true}
-                          value={headerType}
                           isLoading={
                             headerTypeKeyValue.length > 0 ? false : true
                           }
-                          options={headerTypeKeyValue}
-                          placeholder="Select"
                         />
                         {/* <div>
                                                     <ToggleButtonGroup
@@ -1269,7 +1329,7 @@ export function CreatePortfolio() {
                                                     </ToggleButtonGroup>
                                                 </div> */}
 
-                        {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponetData.portfolioName} onChange={handleGeneralInputChange} /> */}
+                        {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponentData.portfolioName} onChange={handleGeneralInputChange} /> */}
                       </div>
                     </div>
                     <div className="col-md-3 col-sm-3">
@@ -1280,9 +1340,9 @@ export function CreatePortfolio() {
                         <input
                           type="email"
                           className="form-control border-radius-10"
-                          name="description"
+                          name="portfolioId"
                           placeholder="(Auto-generated)"
-                          value={generalComponetData.portfolioDescription}
+                          // value={generalComponentData.portfolioDescription}
                           onChange={handleGeneralInputChange}
                         />
                       </div>
@@ -1293,11 +1353,11 @@ export function CreatePortfolio() {
                           {prefixLabelGeneral} NAME
                         </label>
                         <input
-                          type="email"
+                          type="text"
                           className="form-control border-radius-10"
-                          name="description"
+                          name="portfolioName"
                           placeholder="Name"
-                          value={generalComponetData.portfolioDescription}
+                          value={generalComponentData.portfolioName}
                           onChange={handleGeneralInputChange}
                         />
                       </div>
@@ -1308,11 +1368,11 @@ export function CreatePortfolio() {
                           SERVICE {prefixLabelGeneral} DESCRIPTION (IF ANY)
                         </label>
                         <input
-                          type="email"
+                          type="text"
                           className="form-control border-radius-10"
-                          name="serviceDescription"
+                          name="portfolioDescription"
                           placeholder="Description"
-                          value={generalComponetData.serviceProgramDescription}
+                          value={generalComponentData.portfolioDescription}
                           onChange={handleGeneralInputChange}
                         />
                       </div>
@@ -1323,11 +1383,11 @@ export function CreatePortfolio() {
                           REFERENCE
                         </label>
                         <input
-                          type="email"
+                          type="text"
                           className="form-control border-radius-10"
                           name="reference"
                           placeholder="Reference"
-                          value={generalComponetData.reference}
+                          value={generalComponentData.reference}
                           onChange={handleGeneralInputChange}
                         />
                       </div>
@@ -1337,9 +1397,11 @@ export function CreatePortfolio() {
                         <label className="text-light-dark font-size-12 font-weight-500">
                           CUSTOMER SEGMENT
                         </label>
-                        <Select 
-                        options={customerSegmentKeyValue} 
-                        // options={strategyList} 
+                        <Select
+                          onChange={handleCustomerSegmentChange}
+                          value={generalComponentData.customerSegment}
+                          options={customerSegmentKeyValue}
+                          // options={strategyList}
                         />
                       </div>
                     </div>
@@ -1349,6 +1411,7 @@ export function CreatePortfolio() {
                       type="button"
                       onClick={handleNextClick}
                       className="btn btn-light"
+                      id="general"
                     >
                       Save & Next
                     </button>
@@ -1496,11 +1559,11 @@ export function CreatePortfolio() {
                                   />
                                   <div>
                                     <input
-                                      type="email"
+                                      type="text"
                                       className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                                      id="exampleInputEmail1"
+                                      id="fromInput"
                                       aria-describedby="emailHelp"
-                                      placeholder=""
+                                      placeholder="From"
                                       value={validityData.fromInput}
                                       onChange={(e) =>
                                         setValidityData({
@@ -1615,6 +1678,7 @@ export function CreatePortfolio() {
                       type="button"
                       onClick={handleNextClick}
                       className="btn btn-light"
+                      id="validity"
                     >
                       Save & Next
                     </button>
@@ -1631,6 +1695,7 @@ export function CreatePortfolio() {
                           CATEGORY USAGE
                         </label>
                         <Select
+                          // value={}
                           options={categoryList}
                           onChange={(e) => HandleCatUsage(e)}
                         />
@@ -1678,9 +1743,9 @@ export function CreatePortfolio() {
                         >
                           OPTIONALS
                         </label>
-                        <Select 
-                        options={strategyOptionals} 
-                        // options={rTimeList} 
+                        <Select
+                          options={strategyOptionals}
+                          // options={rTimeList}
                         />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Optionais" /> */}
                       </div>
@@ -1786,8 +1851,9 @@ export function CreatePortfolio() {
                   <div className="row" style={{ justifyContent: "right" }}>
                     <button
                       type="button"
-                      onClick={() => setValue(value + 1)}
+                      onClick={handleNextClick}
                       className="btn btn-light"
+                      id="strategy"
                     >
                       Save & Next
                     </button>
@@ -1823,7 +1889,7 @@ export function CreatePortfolio() {
                           defaultValue={selectedOption}
                           onChange={setSelectedOption}
                           options={priceMethodKeyValue}
-                        //   options={options}
+                          //   options={options}
                           placeholder="placeholder (Optional)"
                         />
                       </div>
@@ -3135,7 +3201,7 @@ export function CreatePortfolio() {
                       disabled
                       name="portfolioName"
                       placeholder="Service ID(AUTO)"
-                      value={generalComponetData.portfolioName}
+                      value={generalComponentData.portfolioName}
                       onChange={handleGeneralInputChange}
                     />
                   </div>
@@ -3205,7 +3271,7 @@ export function CreatePortfolio() {
                       options={options}
                       placeholder="Customer Segment"
                     />
-                    {/* <input type="email" className="form-control border-radius-10" name="reference" placeholder="Customer Segment" value={generalComponetData.reference} onChange={handleGeneralInputChange} /> */}
+                    {/* <input type="email" className="form-control border-radius-10" name="reference" placeholder="Customer Segment" value={generalComponentData.reference} onChange={handleGeneralInputChange} /> */}
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-3">
@@ -3218,7 +3284,7 @@ export function CreatePortfolio() {
                       className="form-control border-radius-10"
                       name="customerSegment"
                       placeholder="Placeholder"
-                      value={generalComponetData.customerSegment}
+                      value={generalComponentData.customerSegment}
                       onChange={handleGeneralInputChange}
                     />
                   </div>
@@ -3233,7 +3299,7 @@ export function CreatePortfolio() {
                       className="form-control border-radius-10"
                       name="customerSegment"
                       placeholder="Placeholder"
-                      value={generalComponetData.customerSegment}
+                      value={generalComponentData.customerSegment}
                       onChange={handleGeneralInputChange}
                     />
                   </div>
@@ -3248,7 +3314,7 @@ export function CreatePortfolio() {
                       className="form-control border-radius-10"
                       name="customerSegment"
                       placeholder="Placeholder"
-                      value={generalComponetData.customerSegment}
+                      value={generalComponentData.customerSegment}
                       onChange={handleGeneralInputChange}
                     />
                   </div>
