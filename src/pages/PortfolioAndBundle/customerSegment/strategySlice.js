@@ -38,6 +38,7 @@ const strategySlice = createSlice({
       state.geographicList = action.payload.geographic.data;
     },
     updateList(state, action: PayloadAction) {
+      console.log("action update list",action)
 
     },
     updateTask(state, action: PayloadAction) {

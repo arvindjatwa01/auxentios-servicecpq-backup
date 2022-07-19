@@ -800,7 +800,10 @@ export function CreatePortfolio() {
 
       console.log("reqData for validity:", reqData, generalComponentData);
     } else if (e.target.id == "strategy") {
+      
     }
+
+
   };
 
   const handleGeneralInputChange = (e) => {
@@ -1724,7 +1727,10 @@ export function CreatePortfolio() {
                         >
                           TASK TYPE
                         </label>
-                        <Select options={updatedTaskList} />
+                        <Select
+                         options={updatedTaskList}
+
+                         />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                       </div>
                     </div>
