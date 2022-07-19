@@ -13,6 +13,13 @@ export const PAGE1 = "/page1";
 export const AUTH_PAGE1 = "/authorized1";
 export const PROFILE = "/profile";
 export const ACCOUNT = "/account";
+export const BULID_REPAIR_OPTION = "/BulidRepairOptions";
+export const RIPAIR_SEGMENT01_TRANSMISSION = "/Segment01Transmission";
+export const RIPAIR_SERVICE_ESTIMATE = "/RepairServiceEstimate";
+export const WITHOUTSPARE_REPAIR_OPTION = "/WithoutSpareParts";
+export const PART_LIST = "/PartList";
+export const STANDARD_JOBS = "/StandardJobs";
+export const KITS = "/Kits";
 
 export const VERIFY_EMAIL = "/verify-email/:id";
 
