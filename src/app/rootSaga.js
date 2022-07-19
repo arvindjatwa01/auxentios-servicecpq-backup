@@ -1,5 +1,5 @@
-import { authSaga } from 'features/auth/authSaga';
 import { all } from 'redux-saga/effects';
+import { authSaga } from 'features/auth/authSaga';
 import {signUpSaga} from "../features/auth/signUpSaga";
 import strategySaga from "../pages/PortfolioAndBundle/customerSegment/strategySaga";
 import {portfolioItemSaga} from "../pages/PortfolioAndBundle/createItem/portfolioItemSaga";

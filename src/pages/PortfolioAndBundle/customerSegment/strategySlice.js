@@ -29,7 +29,7 @@ const strategySlice = createSlice({
     },
     fetchTaskListSuccess(state, action: PayloadAction) {
       state.loading = false;
-      console.log(action.payload.category.data);
+      console.log("strategySlice",action.payload.category.data);
       state.list = action.payload.users.data;
       state.taskList = action.payload.tasks.data;
       state.categoryList = action.payload.category.data;
@@ -38,6 +38,7 @@ const strategySlice = createSlice({
       state.geographicList = action.payload.geographic.data;
     },
     updateList(state, action: PayloadAction) {
+      console.log("action update list",action)
 
     },
     updateTask(state, action: PayloadAction) {
