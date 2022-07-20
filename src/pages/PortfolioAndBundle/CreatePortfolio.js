@@ -88,7 +88,7 @@ import {
   selectUpdateTaskList,
   taskActions,
 } from "./customerSegment/strategySlice";
-import { useDispatch } from "react-redux";
+import { useDispatch,useSelector} from "react-redux";
 import { useAppSelector } from "../../app/hooks";
 import { portfolioItemActions } from "./createItem/portfolioSlice";
 import { createItemPayload } from "./createItem/createItemPayload";
@@ -396,10 +396,10 @@ export function CreatePortfolio() {
     toInput: "",
   });
   const [generalComponentData, setGeneralComponentData] = useState({
-    portfolioName: "",
+    name: "",
     description: "",
     serviceDescription: "",
-    reference: "",
+    externalReference: "",
     customerSegment: null,
   });
   const [newBundle, setNewBundle] = useState({
@@ -760,10 +760,11 @@ export function CreatePortfolio() {
     if (e.target.id == "general") {
       let reqData = {
         type: prefixLabelGeneral,
-        name: generalComponentData.portfolioName,
-        description: generalComponentData.portfolioDescription,
-        externalReference: generalComponentData.reference,
+        name: generalComponentData.name,
+        description: generalComponentData.description,
+        externalReference: generalComponentData.externalReference,
         customerSegment: generalComponentData.customerSegment,
+        
 
         strategyTask: "PREVENTIVE_MAINTENANCE",
         taskType: "PM1",
@@ -777,13 +778,17 @@ export function CreatePortfolio() {
         contractOrSupport: "LEVEL_I",
         lifeStageOfMachine: "NEW_BREAKIN",
         supportLevel: "PREMIUM",
+        serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
       };
+      console.log("Portfolio ceation reqObj",reqData)
       createPortfolio(reqData)
         .then((res) => {
+          console.log("portFolio id", res.portfolioId);
           setGeneralComponentData({
             ...generalComponentData,
-            reference: res.portfolioId,
+            ...res       
           });
+          setPortfolioId(res.portfolioId)
           // console.log("res createPortfolio", res);
         })
         .catch((err) => {
@@ -791,12 +796,7 @@ export function CreatePortfolio() {
         });
     } else if (e.target.id == "validity") {
       let reqData;
-      if (validityData.fromInput && validityData.toInput) {
-        reqData = {
-          validFrom: validityData.fromInput + validityData.from,
-          validTo: validityData.toInput + validityData.from,
-        };
-      } else if (validityData.fromDate && validityData.toDate) {
+      if (validityData.fromDate && validityData.toDate) {
         let yf = validityData.fromDate.getFullYear();
         let mf = validityData.fromDate.getMonth();
         let df = validityData.fromDate.getDate();
@@ -808,16 +808,53 @@ export function CreatePortfolio() {
           validFrom: `${yf}/${mf}/${df}`,
           validTo: `${yt}/${mt}/${dt}`,
         };
+      } else if (validityData.fromInput && validityData.toInput) {
+        reqData = {
+          validFrom: validityData.fromInput + validityData.from,
+          validTo: validityData.toInput + validityData.from,
+        };
       }
-
       // service Call for updating Date
+      let obj={
+        ...generalComponentData,
+        ...reqData,
 
-      console.log("reqData for validity:", reqData, generalComponentData);
+        visibleInCommerce: true,
+        customerId: 0,
+        lubricant: true,
+
+        customerSegment:generalComponentData.customerSegment?generalComponentData.customerSegment:"EMPTY",
+        machineType: generalComponentData.machineType?generalComponentData.machineType:"EMPTY",
+        // searchTerm: "EMPTY",
+        status: generalComponentData.status?generalComponentData.status:"EMPTY",
+        strategyTask: generalComponentData.strategyTask?generalComponentData.strategyTask:"EMPTY",
+        taskType: generalComponentData.taskType?generalComponentData.taskType:"EMPTY",
+        usageCategory: generalComponentData.usageCategory?generalComponentData.usageCategory:"EMPTY",
+        productHierarchy: generalComponentData.productHierarchy?generalComponentData.productHierarchy:"EMPTY",
+        geographic: generalComponentData.geographic?generalComponentData.geographic:"EMPTY",
+        availability: generalComponentData.availability?generalComponentData.availability:"EMPTY",
+        responseTime: generalComponentData.responseTime?generalComponentData.responseTime:"EMPTY",
+        type: generalComponentData.type?generalComponentData.type:"EMPTY",
+        application: generalComponentData.application?generalComponentData.application:"EMPTY",
+        contractOrSupport: generalComponentData.contractOrSupport?generalComponentData.contractOrSupport:"EMPTY",
+        lifeStageOfMachine: generalComponentData.lifeStageOfMachine?generalComponentData.lifeStageOfMachine:"EMPTY",
+        supportLevel: generalComponentData.supportLevel?generalComponentData.supportLevel:"EMPTY",
+        items: [],
+        coverages: [],
+        customerGroup: generalComponentData.customerGroup?generalComponentData.customerGroup:"EMPTY"
+        // serviceProgramDescription:"EMPTY"
+      }
+      console.log("Update Date Data", obj);
+      updatePortfolio(portfolioId,obj)
+        .then((res) => {
+          console.log("updatePortFolio for Date", res);
+        })
+        .catch((err) => {
+          console.log(" Error in updatePortFolio for Date", err);
+        });
     } else if (e.target.id == "strategy") {
-      
+      console.log("strategy updating")
     }
-
-
   };
 
   const handleGeneralInputChange = (e) => {
@@ -865,10 +902,10 @@ export function CreatePortfolio() {
           console.log(portfolioDetails);
           if (portfolioDetails.portfolioId != null) {
             setGeneralComponentData({
-              portfolioName: portfolioDetails.name,
-              portfolioDescription: portfolioDetails.description,
+              name: portfolioDetails.name,
+              description: portfolioDetails.description,
               serviceProgramDescription: "",
-              reference: portfolioDetails.externalReference,
+              externalReference: portfolioDetails.externalReference,
               customerSegment: "",
             });
           }
@@ -1077,6 +1114,8 @@ export function CreatePortfolio() {
   };
 
   const dispatch = useDispatch();
+  // const usageIn=useSelector((state)=>state.task.categoryList)
+  // console.log("useSelector((state)=>state.categoryList)",usageIn)
 
   useEffect(() => {
     const portfolioId = 4;
@@ -1384,12 +1423,11 @@ export function CreatePortfolio() {
                           {prefixLabelGeneral} ID
                         </label>
                         <input
-                          type="email"
+                          type="text"
                           className="form-control border-radius-10"
-                          name="portfolioId"
                           placeholder="(Auto-generated)"
-                          // value={generalComponentData.portfolioDescription}
-                          onChange={handleGeneralInputChange}
+                          value={portfolioId}
+                          // onChange={handleGeneralInputChange}
                         />
                       </div>
                     </div>
@@ -1401,9 +1439,9 @@ export function CreatePortfolio() {
                         <input
                           type="text"
                           className="form-control border-radius-10"
-                          name="portfolioName"
+                          name="name"
                           placeholder="Name"
-                          value={generalComponentData.portfolioName}
+                          value={generalComponentData.name}
                           onChange={handleGeneralInputChange}
                         />
                       </div>
@@ -1416,9 +1454,9 @@ export function CreatePortfolio() {
                         <input
                           type="text"
                           className="form-control border-radius-10"
-                          name="portfolioDescription"
+                          name="description"
                           placeholder="Description"
-                          value={generalComponentData.portfolioDescription}
+                          value={generalComponentData.description}
                           onChange={handleGeneralInputChange}
                         />
                       </div>
@@ -1431,9 +1469,9 @@ export function CreatePortfolio() {
                         <input
                           type="text"
                           className="form-control border-radius-10"
-                          name="reference"
+                          name="externalReference"
                           placeholder="Reference"
-                          value={generalComponentData.reference}
+                          value={generalComponentData.externalReference}
                           onChange={handleGeneralInputChange}
                         />
                       </div>
@@ -1530,7 +1568,7 @@ export function CreatePortfolio() {
                                 <DatePicker
                                   variant="inline"
                                   format="dd/MM/yyyy"
-                                  className="form-control border-radius-10"
+                                  className="form-controldate border-radius-10"
                                   label=""
                                   value={validityData.fromDate}
                                   onChange={(e) =>
@@ -1553,7 +1591,7 @@ export function CreatePortfolio() {
                               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <DatePicker
                                   variant="inline"
-                                  className="form-control border-radius-10"
+                                  className="form-controldate border-radius-10"
                                   label=""
                                   format="dd/MM/yyyy"
                                   value={validityData.toDate}
@@ -1770,10 +1808,7 @@ export function CreatePortfolio() {
                         >
                           TASK TYPE
                         </label>
-                        <Select
-                         options={updatedTaskList}
-
-                         />
+                        <Select options={updatedTaskList} />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                       </div>
                     </div>
@@ -3248,9 +3283,9 @@ export function CreatePortfolio() {
                       type="email"
                       className="form-control border-radius-10"
                       disabled
-                      name="portfolioName"
+                      name="name"
                       placeholder="Service ID(AUTO)"
-                      value={generalComponentData.portfolioName}
+                      value={generalComponentData.name}
                       onChange={handleGeneralInputChange}
                     />
                   </div>
@@ -3320,7 +3355,7 @@ export function CreatePortfolio() {
                       options={options}
                       placeholder="Customer Segment"
                     />
-                    {/* <input type="email" className="form-control border-radius-10" name="reference" placeholder="Customer Segment" value={generalComponentData.reference} onChange={handleGeneralInputChange} /> */}
+                    {/* <input type="email" className="form-control border-radius-10" name="reference" placeholder="Customer Segment" value={generalComponentData.externalReference} onChange={handleGeneralInputChange} /> */}
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-3">
@@ -3613,15 +3648,17 @@ export function CreatePortfolio() {
                       USAGE IN
                     </label>
                     <input
-                      type="email"
+                      type="text"
                       class="form-control border-radius-10"
                       id="exampleInputEmail1"
                       aria-describedby="emailHelp"
                       placeholder="Overhaul"
+                      // value={useSelector((state)=>state.categoryList[0])}
                     />
                   </div>
                 </div>
               </div>
+              
               <p className="mt-4">STRATEGY</p>
               <div class="row mt-4">
                 <div className="col-md-6 col-sm-6">
