@@ -1536,13 +1536,36 @@ nav.main-menu li.active>a,
 .form-control-date .css-tlfecz-indicatorContainer {
   color: #535353 !important;
 }
-
+.date-box .form-controldate {
+  min-height: 38px;
+  height: 38px;
+  border-radius:10px;
+  display: block;
+  width: 100%;
+  height: calc(2.0625rem + 2px);
+  padding: 0.475rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  position: relative;
+}
+.date-box .form-controldate::before{content: "\f073";
+  font-family: 'FontAwesome';
+  right: 10px;
+  position: absolute;
+  top: 8px;}
 .date-box .form-control {
   border: none !important;
   min-height: 38px;
   height: 38px;
   border-radius: 0px 10px 10px 0px;
 }
+.date-box .MuiInput-underline:after{ display: none;}
+.date-box .MuiInput-underline::before{ display: none;}
 
 .date-box .form-control .css-1pahdxg-control:hover {
   border-color: transparent !important;
