@@ -44,6 +44,7 @@ import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
 
 import { ReactTableNested } from "../Test/ReactTableNested";
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 import DataTable from "react-data-table-component";
 
@@ -310,6 +311,11 @@ export function CreatePortfolio() {
   const [responseTimeTaskKeyValue, setResponseTimeTaskKeyValue] = useState([]);
   const [taskTypeKeyValue, setTaskTypeKeyValue] = useState([]);
 
+  const [value1, setValue1] = React.useState({ value: 'Archived', label: 'Archived' });
+  const [value2, setValue2] = React.useState({ value: 'Archived', label: 'Archived' });
+  const [value3, setValue3] = React.useState({ value: 'Archived', label: 'Archived' });
+
+
   const [bundleItemTaskTypeKeyValue, setBundleItemTaskTypeKeyValue] = useState(
     []
   );
@@ -372,7 +378,15 @@ export function CreatePortfolio() {
     productHierarchy: null,
     geographic: null,
   });
-
+  const handleOption=(e)=>{
+    setValue1(e)
+  }
+  const handleOption2=(e)=>{
+    setValue2(e)
+  }
+  const handleOption3=(e)=>{
+    setValue2(e)
+  }
   const [validityData, setValidityData] = useState({
     fromDate: new Date(),
     toDate: new Date(),
@@ -1135,6 +1149,18 @@ export function CreatePortfolio() {
     { value: "vanilla", label: "Construction-Medium" },
     { value: "Construction", label: "Construction" },
   ];
+  const options2 = [
+    { value: "chocolate", label: "Archived" },
+    { value: "strawberry", label: "Draft" },
+    { value: "vanilla", label: "Active" },
+    { value: "Construction", label: "Revised" },
+  ];
+  const options3 = [
+    { value: "chocolate", label: "Gold" },
+    { value: "strawberry", label: "1" },
+    { value: "vanilla", label: "2" },
+    { value: "Construction", label: "3" },
+  ];
   const [selectedOption, setSelectedOption] = useState(null);
 
   const [value, setValue] = React.useState(1);
@@ -1227,7 +1253,24 @@ export function CreatePortfolio() {
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5>
+            {/* <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5> */}
+            <div className="d-flex">
+            
+            <div className="ml-3">
+              <Select className="customselectbtn" onChange={(e)=>handleOption3(e)} options={options3} value={value3}/>
+            </div>
+            <div className="ml-3">
+              <Select className="customselectbtn" onChange={(e)=>handleOption2(e)} options={options2} value={value2}/>
+            </div>
+            <div className="rating-star">
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star"></span>
+              <span class="fa fa-star"></span>
+              </div>
+           
+          </div>
             <div className="d-flex justify-content-center align-items-center">
               <a href="#" className="ml-3 font-size-14">
                 <img src={shareIcon}></img>
@@ -2230,7 +2273,7 @@ export function CreatePortfolio() {
                           <div className="col-6 text-center border-left py-4">
                             <div className="row">
                               <div className="col-6">
-                                <a onClick="" className="p-1 ">
+                                <a href="#" data-toggle="modal" data-target="#AddCoverage" className="p-1 ">
                                   + Add Coverage
                                 </a>
                               </div>
@@ -4057,7 +4100,123 @@ export function CreatePortfolio() {
           </div>
         </Modal.Body>
       </Modal>
-
+      <div class="modal fade" id="AddCoverage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Add Coverage</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+            <div className="row">
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Coverage ID</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Service ID</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Model No</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Serial No</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Start Serial No</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">End Serial No</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Serial Number Prefix</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Family</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Make</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Fleet</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Fleet Size</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Location</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Start Date </label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">End Date </label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Actions </label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Created At</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn border w-100 bg-white" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary w-100">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <ToastContainer />
     </>
   );
