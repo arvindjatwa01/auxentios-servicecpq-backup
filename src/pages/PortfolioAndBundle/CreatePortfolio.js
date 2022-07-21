@@ -22,6 +22,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import FormControl from "@mui/material/FormControl";
 import Checkbox from "@mui/material/Checkbox";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import { FileUploader } from "react-drag-drop-files";
 import { MuiMenuComponent } from "../Operational/index";
@@ -2275,12 +2276,12 @@ console.log("selectUpdateList",selectUpdateList)
                     style={{ width: "100%", backgroundColor: "#fff" }}
                   >
                     <div className="row align-items-center">
-                      <div className="col-3">
+                      <div className="col-2">
                         <div className="d-flex ">
                           <h5 className="mr-4 mb-0">
-                            <span></span>
+                            <span>Master Data</span>
                           </h5>
-                          <p className="ml-4 mb-0">
+                          {/* <p className="ml-4 mb-0">
                            
 
                             <a onClick={() => handleOpen()} className=" ml-3 font-size-14">
@@ -2289,28 +2290,102 @@ console.log("selectUpdateList",selectUpdateList)
                             <a href="#" className="ml-3 ">
                               <img src={shareIcon}></img>
                             </a>
-                          </p>
+                          </p> */}
                         </div>
                       </div>
-                      <div className="col-6">
-                        <div
+                      <div className="col-8">
+                      <div className="d-flex justify-content-between align-items-center">
+              <div className="d-flex align-items-center mt-3">
+              <div className="search-icon mr-2" style={{ lineHeight: '24px' }}>
+                <img src={searchstatusIcon}></img>
+              </div>
+                <div className="d-flex justify-content-between align-items-center p-3 bg-light-dark border-radius-10">
+                <div className="d-flex align-items-center">
+              <span className="mr-3">Repair Bulider</span>
+                <div className="customselect d-flex align-items-center mr-3">
+                  <div><span className="px-2">Spare Parts</span></div>
+                    <Select className="border-left"
+                      // onChange={handleChangeSelect}
+                      isClearable={true}
+                      // value={dValue}
+                      options={[{label:"One",value:"one"}]}
+                      placeholder="Repair Quote"
+                      /> <span>
+                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
+                      </span>
+                </div>
+                <div className="customselect d-flex align-items-center mr-3">
+                    <Select
+                      // onChange={handleChangeSelect}
+                      isClearable={true}
+                      // value={dValue}
+                      options={[{label:"One",value:"one"}]}
+                      placeholder="&"
+                      />
+                </div>
+                <div className="customselect d-flex align-items-center mr-3">
+                  <div><span className="px-2">Labor</span></div>
+                    <Select className="border-left"
+                      // onChange={handleChangeSelect}
+                      isClearable={true}
+                      // value={dValue}
+                      options={[{label:"One",value:"one"}]}
+                      placeholder="Cost Plus"
+                      /> <span>
+                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
+                      </span>
+                </div>
+                <div className="customselect d-flex align-items-center mr-3">
+                    <Select
+                      // onChange={handleChangeSelect}
+                      isClearable={true}
+                      // value={dValue}
+                      options={[{label:"One",value:"one"}]}
+                      placeholder="&"
+                      />
+                </div>
+                <div className="customselect d-flex align-items-center mr-3">
+                  <div><span className="px-2">Consumables</span></div>
+                    <Select className="border-left"
+                      // onChange={handleChangeSelect}
+                      isClearable={true}
+                      // value={dValue}
+                      options={[{label:"One",value:"one"}]}
+                      placeholder="Flat rate"
+                      /> <span>
+                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
+                      </span>
+                </div>
+                <div>
+                  <a href="#" className="btn-sm text-violet border" style={{border:'1px solid #872FF7'}}>+</a>
+                </div>
+              </div>
+                </div>
+                
+              </div>
+              <div>
+              <a href="#" className="btn-sm"><DeleteIcon className="font-size-14 text-danger"/></a>
+              </div>
+              </div>
+                        {/* <div
                           className="d-flex align-items-center"
                           style={{
                             background: "#F9F9F9",
                             padding: "10px 15px",
                             borderRadius: "10px",
                           }}
-                        >
-                          <div
+                        > */}
+                          
+                          {/* <div
                             className="search-icon mr-2"
                             style={{ lineHeight: "24px" }}
                           >
                             <img src={searchstatusIcon}></img>
-                          </div>
-                          <div className="w-100 mx-2">
-                            <div className="machine-drop d-flex align-items-center">
+                          </div> */}
+                          {/* <div className="w-100 mx-2">
+                            <div className="machine-drop d-flex align-items-center"> */}
                               {/* <div><lable className="label-div">Search By</lable></div> */}
-                              <FormControl className="" sx={{ m: 1 }}>
+                              {/* <FormControl className="" sx={{ m: 1 }}>
                                 <Select
                                   placeholder="Search By"
                                   id="demo-simple-select-autowidth"
@@ -2327,33 +2402,41 @@ console.log("selectUpdateList",selectUpdateList)
                                     Twenty one and a half
                                   </MenuItem>
                                 </Select>
-                              </FormControl>
-                            </div>
-                          </div>
-                        </div>
+                              </FormControl> */}
+                            {/* </div>
+                          </div> */}
+                        {/* </div> */}
                       </div>
-                      <div className="col-3">
+                      <div className="col-2">
                         <div className="d-flex align-items-center">
-                          <div className="col-6 text-center">
+                          {/* <div className="col-6 text-center">
                             <a href="#" className="p-1 more-btn">
                               + 3 more
                               <span className="c-btn">C</span>
                               <span className="b-btn">B</span>
                               <span className="a-btn">A</span>
                             </a>
-                          </div>
+                          </div> */}
                           <div className="col-6 text-center border-left py-4">
                             
                                 <a href="#" data-toggle="modal" data-target="#AddCoverage" className="p-1 ">
-                                  + Add Coverage
+                                  + Add Selected Coverages
                                 </a>
                               
                           </div>
                         </div>
                       </div>
                     </div>
+                    <DataTable
+                      className=""
+                      title=""
+                      columns={columns}
+                      data={data}
+                      customStyles={customStyles}
+                      pagination
+                    />
                     <h6 className="font-weight-400 text-black mb-2 mt-1">
-                      Select coverages from list to add in portfolio
+                      Selected Coverages for this portfolio
                     </h6>
 
                     <DataTable
