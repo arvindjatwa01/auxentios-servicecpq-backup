@@ -338,6 +338,7 @@ export function CreatePortfolio() {
     []
   );
   const [categoryUsageKeyValue, setCategoryUsageKeyValue] = useState([]);
+  const [categoryUsageKeyValue1, setCategoryUsageKeyValue1] = useState([]);
   const [productHierarchyKeyValue, setProductHierarchyKeyValue] = useState([]);
   const [geographicKeyValue, setGeographicKeyValue] = useState([]);
   const [typeKeyValue, setTypeKeyValue] = useState([]);
@@ -917,14 +918,14 @@ export function CreatePortfolio() {
       getPortfolio(portfolioId)
         .then((res) => {
           const portfolioDetails = res;
-          console.log(portfolioDetails);
+          console.log("portfolioDetails",portfolioDetails);
           if (portfolioDetails.portfolioId != null) {
             setGeneralComponentData({
               name: portfolioDetails.name,
               description: portfolioDetails.description,
-              serviceProgramDescription: "",
               externalReference: portfolioDetails.externalReference,
-              customerSegment: "",
+              customerSegment: portfolioDetails.customerSegment,
+              // serviceProgramDescription: "",
             });
           }
         })
@@ -1130,7 +1131,7 @@ export function CreatePortfolio() {
         alert(err);
       });
   };
-
+  
   const dispatch = useDispatch();
   // const usageIn=useSelector((state)=>state.task.categoryList)
   // console.log("useSelector((state)=>state.categoryList)",usageIn)
@@ -1145,10 +1146,14 @@ export function CreatePortfolio() {
   const strategyList = useAppSelector(
     selectStrategyTaskOption(selectStrategyTaskList)
   );
+  
   const taskList = useAppSelector(selectStrategyTaskOption(selectTaskList));
+  
   const categoryList = useAppSelector(
     selectStrategyTaskOption(selectCategoryList)
   );
+  console.log("categoryList",categoryList)
+
   const rTimeList = useAppSelector(
     selectStrategyTaskOption(selectResponseTimeList)
   );
@@ -1166,12 +1171,20 @@ export function CreatePortfolio() {
   const updatedList = useAppSelector(
     selectStrategyTaskOption(selectUpdateList)
   );
+  
   const updatedTaskList = useAppSelector(
     selectStrategyTaskOption(selectUpdateTaskList)
   );
+
+
+
+  // const updateList = useSelector((state)=>state.taskReducer)
+console.log("selectUpdateList",selectUpdateList)
   const HandleCatUsage = (e) => {
+    setCategoryUsageKeyValue1(e)
     dispatch(taskActions.updateList(e.value));
   };
+  console.log("categoryUsageKeyValue1",categoryUsageKeyValue1)
   const HandleStrategyUsage = (e) => {
     dispatch(taskActions.updateTask(e.value));
   };
@@ -1444,8 +1457,9 @@ export function CreatePortfolio() {
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="(Auto-generated)"
-                          value={portfolioId}
+                          // value={portfolioId}
                           // onChange={handleGeneralInputChange}
+                          disabled={true}
                         />
                       </div>
                     </div>
@@ -1797,7 +1811,6 @@ export function CreatePortfolio() {
                           CATEGORY USAGE
                         </label>
                         <Select
-                          // value={}
                           options={categoryList}
                           onChange={(e) => HandleCatUsage(e)}
                         />
@@ -1826,7 +1839,9 @@ export function CreatePortfolio() {
                         >
                           TASK TYPE
                         </label>
-                        <Select options={updatedTaskList} />
+                        <Select 
+                        options={updatedTaskList} 
+                        />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                       </div>
                     </div>
@@ -1860,7 +1875,9 @@ export function CreatePortfolio() {
                         >
                           RESPONSE TIME
                         </label>
-                        <Select options={rTimeList} />
+                        <Select 
+                        options={rTimeList} 
+                        />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Response Time" /> */}
                       </div>
                     </div>
@@ -3668,11 +3685,11 @@ export function CreatePortfolio() {
                       DESCRIPTION
                     </label>
                     <input
-                      type="email"
+                      type="text"
                       class="form-control border-radius-10"
                       id="exampleInputEmail1"
                       aria-describedby="emailHelp"
-                      placeholder="Replace Cranskshaft"
+                      placeholder="DESCRIPTION"
                     />
                   </div>
                 </div>
@@ -3689,8 +3706,9 @@ export function CreatePortfolio() {
                       class="form-control border-radius-10"
                       id="exampleInputEmail1"
                       aria-describedby="emailHelp"
-                      placeholder="Overhaul"
-                      // value={useSelector((state)=>state.categoryList[0])}
+                      placeholder="USAGE IN"
+                      value={categoryUsageKeyValue1.lable}
+                     
                     />
                   </div>
                 </div>
@@ -3733,7 +3751,7 @@ export function CreatePortfolio() {
                       <div className="form-control">
                         <Select
                           options={frequencyList}
-                          placeholder="Cyclical"
+                          placeholder="FREQUENCY"
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
@@ -3765,7 +3783,7 @@ export function CreatePortfolio() {
                       defaultValue={selectedOption}
                       onChange={setSelectedOption}
                       options={options}
-                      placeholder="250"
+                      placeholder="RECOMMENDED VALUE"
                     />
                   </div>
                 </div>
@@ -3778,11 +3796,11 @@ export function CreatePortfolio() {
                       QUANTITY
                     </label>
                     <input
-                      type="email"
+                      type="text"
                       class="form-control border-radius-10"
                       id="exampleInputEmail1"
                       aria-describedby="emailHelp"
-                      placeholder="Overhaul"
+                      placeholder="QUANTITY"
                     />
                   </div>
                 </div>
@@ -3799,7 +3817,7 @@ export function CreatePortfolio() {
                       class="form-control border-radius-10"
                       id="exampleInputEmail1"
                       aria-describedby="emailHelp"
-                      placeholder="Overhaul"
+                      placeholder="NO. OF EVENTS"
                     />
                   </div>
                 </div>
@@ -3820,7 +3838,7 @@ export function CreatePortfolio() {
                           defaultValue={selectedOption}
                           onChange={setSelectedOption}
                           options={options}
-                          placeholder="Cyclical"
+                          placeholder="TEMPLATE ID"
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
@@ -3843,7 +3861,7 @@ export function CreatePortfolio() {
                           defaultValue={selectedOption}
                           onChange={setSelectedOption}
                           options={options}
-                          placeholder="Cyclical"
+                          placeholder="TEMPLATE DESCRIPTION"
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
@@ -3862,7 +3880,7 @@ export function CreatePortfolio() {
                     </label>
                     <div className="icon-defold">
                       <input
-                        type="email"
+                        type="text"
                         class="form-control icon-defold border-radius-10"
                         style={{ paddingLeft: "35px" }}
                         id="exampleInputEmail1"
@@ -3942,7 +3960,7 @@ export function CreatePortfolio() {
                           defaultValue={selectedOption}
                           onChange={setSelectedOption}
                           options={options}
-                          placeholder="Cyclical"
+                          placeholder="REPAIR OPTION"
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
