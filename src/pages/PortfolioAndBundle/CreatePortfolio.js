@@ -53,6 +53,7 @@ import Portfoliosicon from "../../assets/icons/svg/Portfolios-icon.svg";
 import Buttonarrow from "../../assets/icons/svg/Button-arrow.svg";
 import contract from "../../assets/icons/svg/contract.svg";
 import repairicon from "../../assets/icons/svg/repair-icon.svg";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
   createPortfolio,
@@ -87,10 +88,11 @@ import {
   selectUpdateTaskList,
   taskActions,
 } from "./customerSegment/strategySlice";
-import { useDispatch,useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAppSelector } from "../../app/hooks";
 import { portfolioItemActions } from "./createItem/portfolioSlice";
 import { createItemPayload } from "./createItem/createItemPayload";
+import QuerySearchComp from "./QuerySearchComp";
 
 const customStyles = {
   rows: {
@@ -314,7 +316,7 @@ export function CreatePortfolio() {
     []
   );
   const [categoryUsageKeyValue, setCategoryUsageKeyValue] = useState([]);
-  const [categoryUsageKeyValue1, setCategoryUsageKeyValue1] = useState([]);
+
   const [productHierarchyKeyValue, setProductHierarchyKeyValue] = useState([]);
   const [geographicKeyValue, setGeographicKeyValue] = useState([]);
   const [typeKeyValue, setTypeKeyValue] = useState([]);
@@ -351,6 +353,17 @@ export function CreatePortfolio() {
   const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
   const [customerSegmentKeyValue, setCustomerSegmentKeyValue] = useState([]);
   const [strategyOptionals, setStrategyOptionals] = useState([]);
+
+  const [categoryUsageKeyValue1, setCategoryUsageKeyValue1] = useState([]);
+  const [stratgyTaskUsageKeyValue, setStratgyTaskUsageKeyValue] = useState([]);
+  const [stratgyTaskTypeKeyValue, setStratgyTaskTypeKeyValue] = useState([]);
+  const [stratgyOptionalsKeyValue, setStratgyOptionalsKeyValue] = useState([]);
+  const [stratgyResponseTimeKeyValue, setStratgyResponseTimeKeyValue] =
+    useState([]);
+  const [stratgyHierarchyKeyValue, setStratgyHierarchyKeyValue] = useState([]);
+  const [stratgyGeographicKeyValue, setStratgyGeographicKeyValue] = useState(
+    []
+  );
 
   const [coverageData, setCoverageData] = useState({
     make: "",
@@ -396,13 +409,17 @@ export function CreatePortfolio() {
     customerSegment: null,
     machineComponent: null,
   });
-  const [portfolioId, setPortfolioId] = useState(4);
+  const [portfolioId, setPortfolioId] = useState();
   const [alignment, setAlignment] = React.useState("Portfolio");
   const [prefixLabelGeneral, setPrefixLabelGeneral] = useState("PORTFOLIO");
   const [priceAgreementOption, setPriceAgreementOption] = useState(false);
   const [open2, setOpen2] = React.useState(false);
   const handleOpen2 = () => setOpen2(true);
   const handleClose2 = () => setOpen2(false);
+
+
+  const [count,setCount]=useState(0)
+  const [querySearchCompHtml,setQuerySearchCompHtml]=useState([<QuerySearchComp count={count}/>])
 
   const handleCustomerSegmentChange = (e) => {
     setGeneralComponentData({
@@ -751,7 +768,6 @@ export function CreatePortfolio() {
         description: generalComponentData.description,
         externalReference: generalComponentData.externalReference,
         customerSegment: generalComponentData.customerSegment,
-        
 
         strategyTask: "PREVENTIVE_MAINTENANCE",
         taskType: "PM1",
@@ -767,15 +783,15 @@ export function CreatePortfolio() {
         supportLevel: "PREMIUM",
         serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
       };
-      console.log("Portfolio ceation reqObj",reqData)
+      console.log("Portfolio creation reqObj", reqData);
       createPortfolio(reqData)
         .then((res) => {
           console.log("portFolio id", res.portfolioId);
           setGeneralComponentData({
             ...generalComponentData,
-            ...res       
+            portfolioId: res.portfolioId,
           });
-          setPortfolioId(res.portfolioId)
+          setPortfolioId(res.portfolioId);
           // console.log("res createPortfolio", res);
         })
         .catch((err) => {
@@ -802,7 +818,11 @@ export function CreatePortfolio() {
         };
       }
       // service Call for updating Date
-      let obj={
+      setGeneralComponentData({
+        ...generalComponentData,
+        ...reqData,
+      });
+      let obj = {
         ...generalComponentData,
         ...reqData,
 
@@ -810,40 +830,82 @@ export function CreatePortfolio() {
         customerId: 0,
         lubricant: true,
 
-        customerSegment:generalComponentData.customerSegment?generalComponentData.customerSegment:"EMPTY",
-        machineType: generalComponentData.machineType?generalComponentData.machineType:"EMPTY",
-        // searchTerm: "EMPTY",
-        status: generalComponentData.status?generalComponentData.status:"EMPTY",
-        strategyTask: generalComponentData.strategyTask?generalComponentData.strategyTask:"EMPTY",
-        taskType: generalComponentData.taskType?generalComponentData.taskType:"EMPTY",
-        usageCategory: generalComponentData.usageCategory?generalComponentData.usageCategory:"EMPTY",
-        productHierarchy: generalComponentData.productHierarchy?generalComponentData.productHierarchy:"EMPTY",
-        geographic: generalComponentData.geographic?generalComponentData.geographic:"EMPTY",
-        availability: generalComponentData.availability?generalComponentData.availability:"EMPTY",
-        responseTime: generalComponentData.responseTime?generalComponentData.responseTime:"EMPTY",
-        type: generalComponentData.type?generalComponentData.type:"EMPTY",
-        application: generalComponentData.application?generalComponentData.application:"EMPTY",
-        contractOrSupport: generalComponentData.contractOrSupport?generalComponentData.contractOrSupport:"EMPTY",
-        lifeStageOfMachine: generalComponentData.lifeStageOfMachine?generalComponentData.lifeStageOfMachine:"EMPTY",
-        supportLevel: generalComponentData.supportLevel?generalComponentData.supportLevel:"EMPTY",
+        customerSegment: generalComponentData.customerSegment
+          ? generalComponentData.customerSegment
+          : "EMPTY",
+        machineType: generalComponentData.machineType
+          ? generalComponentData.machineType
+          : "EMPTY",
+        status: generalComponentData.status
+          ? generalComponentData.status
+          : "EMPTY",
+        strategyTask: generalComponentData.strategyTask
+          ? generalComponentData.strategyTask
+          : "EMPTY",
+        taskType: generalComponentData.taskType
+          ? generalComponentData.taskType
+          : "EMPTY",
+        usageCategory: generalComponentData.usageCategory
+          ? generalComponentData.usageCategory
+          : "EMPTY",
+        productHierarchy: generalComponentData.productHierarchy
+          ? generalComponentData.productHierarchy
+          : "EMPTY",
+        geographic: generalComponentData.geographic
+          ? generalComponentData.geographic
+          : "EMPTY",
+        availability: generalComponentData.availability
+          ? generalComponentData.availability
+          : "EMPTY",
+        responseTime: generalComponentData.responseTime
+          ? generalComponentData.responseTime
+          : "EMPTY",
+        type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+        application: generalComponentData.application
+          ? generalComponentData.application
+          : "EMPTY",
+        contractOrSupport: generalComponentData.contractOrSupport
+          ? generalComponentData.contractOrSupport
+          : "EMPTY",
+        lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+          ? generalComponentData.lifeStageOfMachine
+          : "EMPTY",
+        supportLevel: generalComponentData.supportLevel
+          ? generalComponentData.supportLevel
+          : "EMPTY",
         items: [],
         coverages: [],
-        customerGroup: generalComponentData.customerGroup?generalComponentData.customerGroup:"EMPTY"
+        customerGroup: generalComponentData.customerGroup
+          ? generalComponentData.customerGroup
+          : "EMPTY",
+        // searchTerm: "EMPTY",
         // serviceProgramDescription:"EMPTY"
-      }
+      };
       console.log("Update Date Data", obj);
-      updatePortfolio(portfolioId,obj)
-        .then((res) => {
-          console.log("updatePortFolio for Date", res);
-        })
-        .catch((err) => {
-          console.log(" Error in updatePortFolio for Date", err);
-        });
+      // updatePortfolio(generalComponentData.portfolioId,obj)
+      //   .then((res) => {
+      //     console.log("updatePortFolio for Date", res);
+      //   })
+      //   .catch((err) => {
+      //     console.log(" Error in updatePortFolio for Date", err);
+      //   });
     } else if (e.target.id == "strategy") {
-      console.log("strategy updating")
+      setGeneralComponentData({
+        ...generalComponentData,
+        usageCategory: categoryUsageKeyValue1.value,
+        taskType: stratgyTaskTypeKeyValue.value,
+        strategyTask: stratgyTaskUsageKeyValue.value,
+        optionals: stratgyOptionalsKeyValue.value,
+        responseTime: stratgyResponseTimeKeyValue.value,
+        productHierarchy: stratgyHierarchyKeyValue.value,
+        geographic: stratgyGeographicKeyValue.value,
+      });
+      console.log("strategy updating");
+    } else if (e.target.id == "coverage") {
+      console.log("strategy updating");
     }
   };
-
+  console.log("generalComponentData", generalComponentData);
   const handleGeneralInputChange = (e) => {
     var value = e.target.value;
     var name = e.target.name;
@@ -886,7 +948,7 @@ export function CreatePortfolio() {
       getPortfolio(portfolioId)
         .then((res) => {
           const portfolioDetails = res;
-          console.log("portfolioDetails",portfolioDetails);
+          console.log("portfolioDetails", portfolioDetails);
           if (portfolioDetails.portfolioId != null) {
             setGeneralComponentData({
               name: portfolioDetails.name,
@@ -1099,7 +1161,7 @@ export function CreatePortfolio() {
         alert(err);
       });
   };
-  
+
   const dispatch = useDispatch();
   // const usageIn=useSelector((state)=>state.task.categoryList)
   // console.log("useSelector((state)=>state.categoryList)",usageIn)
@@ -1114,13 +1176,13 @@ export function CreatePortfolio() {
   const strategyList = useAppSelector(
     selectStrategyTaskOption(selectStrategyTaskList)
   );
-  
+
   const taskList = useAppSelector(selectStrategyTaskOption(selectTaskList));
-  
+
   const categoryList = useAppSelector(
     selectStrategyTaskOption(selectCategoryList)
   );
-  console.log("categoryList",categoryList)
+  console.log("categoryList", categoryList);
 
   const rTimeList = useAppSelector(
     selectStrategyTaskOption(selectResponseTimeList)
@@ -1139,21 +1201,22 @@ export function CreatePortfolio() {
   const updatedList = useAppSelector(
     selectStrategyTaskOption(selectUpdateList)
   );
-  
+
   const updatedTaskList = useAppSelector(
     selectStrategyTaskOption(selectUpdateTaskList)
   );
 
-
-
   // const updateList = useSelector((state)=>state.taskReducer)
-console.log("selectUpdateList",selectUpdateList)
+  console.log("selectUpdateList", selectUpdateList);
   const HandleCatUsage = (e) => {
-    setCategoryUsageKeyValue1(e)
+    alert(e.target.value.value);
+    console.log("e.target.value.value", e.target.value.value);
+    setCategoryUsageKeyValue1(e);
     dispatch(taskActions.updateList(e.value));
   };
-  console.log("categoryUsageKeyValue1",categoryUsageKeyValue1)
+
   const HandleStrategyUsage = (e) => {
+    setStratgyTaskUsageKeyValue(e);
     dispatch(taskActions.updateTask(e.value));
   };
   const initBeforeUnLoad = (showExitPrompt) => {
@@ -1272,6 +1335,45 @@ console.log("selectUpdateList",selectUpdateList)
     // { id: 8, DocumentType: 'Frances', PrimaruQuote: 'Rossini', Groupid: 36, progress: 35, },
     // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
   ];
+
+const addSearchQuerryHtml=()=>{
+let list=[]
+const html=(<>
+<div className="customselect d-flex align-items-center mr-3">
+      <Select
+        isClearable={true}
+        options={[
+          { label: "And", value: "And" },
+          { label: "Or", value: "Or" },
+        ]}
+        placeholder="&"
+      />
+    </div>
+
+<div className="customselect d-flex align-items-center mr-3">
+<div>
+  <Select
+    isClearable={true}
+    options={[
+      { label: "Make", value: "Make" },
+      { label: "Family", value: "Family" },
+      { label: "Model", value: "Model" },
+      { label: "Prefix", value: "Prefix" },
+    ]}
+  />
+</div>
+<input
+  type="text"
+  placeholder="Repair Quote"
+/>
+</div>
+</>)
+list.push(html)
+setQuerySearchCompHtml([...querySearchCompHtml,...list])
+}
+
+
+
 
   return (
     <>
@@ -1751,6 +1853,7 @@ console.log("selectUpdateList",selectUpdateList)
                         </label>
                         <Select
                           options={categoryList}
+                          value={categoryUsageKeyValue1}
                           onChange={(e) => HandleCatUsage(e)}
                         />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
@@ -1766,6 +1869,7 @@ console.log("selectUpdateList",selectUpdateList)
                         </label>
                         <Select
                           options={updatedList}
+                          value={stratgyTaskUsageKeyValue}
                           onChange={(e) => HandleStrategyUsage(e)}
                         />
                       </div>
@@ -1778,8 +1882,10 @@ console.log("selectUpdateList",selectUpdateList)
                         >
                           TASK TYPE
                         </label>
-                        <Select 
-                        options={updatedTaskList} 
+                        <Select
+                          options={updatedTaskList}
+                          value={stratgyTaskTypeKeyValue}
+                          onChange={(e) => setStratgyTaskTypeKeyValue(e)}
                         />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                       </div>
@@ -1801,6 +1907,8 @@ console.log("selectUpdateList",selectUpdateList)
                         </label>
                         <Select
                           options={strategyOptionals}
+                          value={stratgyOptionalsKeyValue}
+                          onChange={(e) => setStratgyOptionalsKeyValue(e)}
                           // options={rTimeList}
                         />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Optionais" /> */}
@@ -1814,8 +1922,10 @@ console.log("selectUpdateList",selectUpdateList)
                         >
                           RESPONSE TIME
                         </label>
-                        <Select 
-                        options={rTimeList} 
+                        <Select
+                          options={rTimeList}
+                          value={stratgyResponseTimeKeyValue}
+                          onChange={(e) => setStratgyResponseTimeKeyValue(e)}
                         />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Response Time" /> */}
                       </div>
@@ -1828,7 +1938,11 @@ console.log("selectUpdateList",selectUpdateList)
                         >
                           PRODUCT HIERARCHY
                         </label>
-                        <Select options={productList} />
+                        <Select
+                          options={productList}
+                          value={stratgyHierarchyKeyValue}
+                          onChange={(e) => setStratgyHierarchyKeyValue(e)}
+                        />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                       </div>
                     </div>
@@ -1842,6 +1956,8 @@ console.log("selectUpdateList",selectUpdateList)
                         </label>
                         <Select
                           options={geographicList}
+                          value={stratgyGeographicKeyValue}
+                          onChange={(e) => setStratgyGeographicKeyValue(e)}
                           placeholder="Geographic"
                         />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
@@ -2208,46 +2324,147 @@ console.log("selectUpdateList",selectUpdateList)
                     </button>
                   </div>
                 </TabPanel>
+
                 <TabPanel value={6}>
                   <div
-                    className="custom-table card"
+                    className="custom-table card "
                     style={{ width: "100%", backgroundColor: "#fff" }}
                   >
                     <div className="row align-items-center">
-                      <div className="col-3">
+                      <div className="col-2">
                         <div className="d-flex ">
                           <h5 className="mr-4 mb-0">
-                            <span></span>
+                            <span>Master Data</span>
                           </h5>
-                          <p className="ml-4 mb-0">
-                            <a href="#" className="ml-3 ">
-                              <img src={editIcon}></img>
-                            </a>
-                            <a href="#" className="ml-3 ">
-                              <img src={shareIcon}></img>
-                            </a>
-                          </p>
+                          {/* <p className="ml-4 mb-0"><a onClick={() => handleOpen()} className=" ml-3 font-size-14"><img src={uploadIcon}></img></a><a href="#" className="ml-3 "><img src={shareIcon}></img></a></p> */}
                         </div>
                       </div>
-                      <div className="col-6">
-                        <div
+                      <div className="col-8">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="d-flex align-items-center mt-3">
+                            <div
+                              className="search-icon mr-2"
+                              style={{ lineHeight: "24px" }}
+                            >
+                              <img src={searchstatusIcon}></img>
+                            </div>
+                            <div className="d-flex justify-content-between align-items-center p-3 bg-light-dark border-radius-10">
+                              <div className="d-flex align-items-center">
+                                <span className="mr-3">Repair Bulider</span>
+                                {/* <QuerySearchComp count={count}/> */}
+                                {querySearchCompHtml.map((curr)=>curr)}
+                                {/* <div className="customselect d-flex align-items-center mr-3">
+                                  <div>
+                                    <Select
+                                      isClearable={true}
+                                      options={[
+                                        { label: "Make", value: "Make" },
+                                        { label: "Family", value: "Family" },
+                                        { label: "Model", value: "Model" },
+                                        { label: "Prefix", value: "Prefix" },
+                                      ]}
+                                    />
+                                  </div>
+                                  <input 
+                                  type="text" 
+                                  placeholder="Repair Quote"
+                                  />
+                                </div>
+                                <div className="customselect d-flex align-items-center mr-3">
+                                  <Select
+                                    isClearable={true}
+                                    options={[
+                                      { label: "And", value: "And" },
+                                      { label: "Or", value: "Or" },
+                                    ]}
+                                    placeholder="&"
+                                  />
+                                </div> */}
+                                {/* <div className="customselect d-flex align-items-center mr-3">
+                                  <div>
+                                    <span className="px-2">Labor</span>
+                                  </div>
+                                  <Select
+                                    className="border-left"
+                                    // onChange={handleChangeSelect}
+                                    isClearable={true}
+                                    // value={dValue}
+                                    options={[{ label: "One", value: "one" }]}
+                                    placeholder="Cost Plus"
+                                  />{" "}
+                                  <span>
+                                    <a href="#" className="btn-sm">
+                                      <DeleteIcon className="font-size-14" />
+                                    </a>
+                                  </span>
+                                </div>
+                                <div className="customselect d-flex align-items-center mr-3">
+                                  <Select
+                                    // onChange={handleChangeSelect}
+                                    isClearable={true}
+                                    // value={dValue}
+                                    options={[
+                                      { label: "And", value: "And" },
+                                      { label: "Or", value: "Or" },
+                                    ]}
+                                    placeholder="&"
+                                  />
+                                </div>
+                                <div className="customselect d-flex align-items-center mr-3">
+                                  <div>
+                                    <span className="px-2">Consumables</span>
+                                  </div>
+                                  <Select
+                                    className="border-left"
+                                    // onChange={handleChangeSelect}
+                                    isClearable={true}
+                                    // value={dValue}
+                                    options={[{ label: "One", value: "one" }]}
+                                    placeholder="Flat rate"
+                                  />{" "}
+                                  <span>
+                                    <a href="#" className="btn-sm">
+                                      <DeleteIcon className="font-size-14" />
+                                    </a>
+                                  </span>
+                                </div> */}
+                                <div onClick={(e)=>addSearchQuerryHtml()}>
+                                  <a
+                                    href="#"
+                                    className="btn-sm text-violet border"
+                                    style={{ border: "1px solid #872FF7" }}
+                                  >
+                                    +
+                                  </a>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <a href="#" className="btn-sm">
+                              <DeleteIcon className="font-size-14 text-danger" />
+                            </a>
+                          </div>
+                        </div>
+                        {/* <div
                           className="d-flex align-items-center"
                           style={{
                             background: "#F9F9F9",
                             padding: "10px 15px",
                             borderRadius: "10px",
                           }}
-                        >
-                          <div
+                        > */}
+
+                        {/* <div
                             className="search-icon mr-2"
                             style={{ lineHeight: "24px" }}
                           >
                             <img src={searchstatusIcon}></img>
-                          </div>
-                          <div className="w-100 mx-2">
-                            <div className="machine-drop d-flex align-items-center">
-                              {/* <div><lable className="label-div">Search By</lable></div> */}
-                              <FormControl className="" sx={{ m: 1 }}>
+                          </div> */}
+                        {/* <div className="w-100 mx-2">
+                            <div className="machine-drop d-flex align-items-center"> */}
+                        {/* <div><lable className="label-div">Search By</lable></div> */}
+                        {/* <FormControl className="" sx={{ m: 1 }}>
                                 <Select
                                   placeholder="Search By"
                                   id="demo-simple-select-autowidth"
@@ -2264,44 +2481,34 @@ console.log("selectUpdateList",selectUpdateList)
                                     Twenty one and a half
                                   </MenuItem>
                                 </Select>
-                              </FormControl>
-                            </div>
-                          </div>
-                        </div>
+                              </FormControl> */}
+                        {/* </div>
+                          </div> */}
+                        {/* </div> */}
                       </div>
-                      <div className="col-3">
+                      <div className="col-2">
                         <div className="d-flex align-items-center">
-                          <div className="col-6 text-center">
+                          {/* <div className="col-6 text-center">
                             <a href="#" className="p-1 more-btn">
                               + 3 more
                               <span className="c-btn">C</span>
                               <span className="b-btn">B</span>
                               <span className="a-btn">A</span>
                             </a>
-                          </div>
+                          </div> */}
                           <div className="col-6 text-center border-left py-4">
-                            <div className="row">
-                              <div className="col-6">
-                                <a onClick="" className="p-1 ">
-                                  + Add Coverage
-                                </a>
-                              </div>
-                              <div className="col-6">
-                                <a
-                                  onClick={() => handleOpen()}
-                                  className="p-1 "
-                                >
-                                  + Upload Coverage
-                                </a>
-                              </div>
-                            </div>
+                            <a
+                              href="#"
+                              data-toggle="modal"
+                              data-target="#AddCoverage"
+                              className="p-1 "
+                            >
+                              + Add Selected Coverages
+                            </a>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <h6 className="font-weight-400 text-black mb-2 mt-1">
-                      Select coverages from list to add in portfolio
-                    </h6>
 
                     <DataTable
                       className=""
@@ -3627,13 +3834,12 @@ console.log("selectUpdateList",selectUpdateList)
                       id="exampleInputEmail1"
                       aria-describedby="emailHelp"
                       placeholder="USAGE IN"
-                      value={categoryUsageKeyValue1.lable}
-                     
+                      // value={categoryUsageKeyValue1.lable}
                     />
                   </div>
                 </div>
               </div>
-              
+
               <p className="mt-4">STRATEGY</p>
               <div class="row mt-4">
                 <div className="col-md-6 col-sm-6">
