@@ -2303,23 +2303,34 @@ console.log("selectUpdateList",selectUpdateList)
                 <div className="d-flex align-items-center">
               <span className="mr-3">Repair Bulider</span>
                 <div className="customselect d-flex align-items-center mr-3">
-                  <div><span className="px-2">Spare Parts</span></div>
-                    <Select className="border-left"
+                  <div>
+                  <Select
+                      // onChange={handleChangeSelect}
+                      isClearable={true}
+                      // value={dValue}
+                      options={[{label:"Make",value:"Make",},{label:"Family",value:"Family",},{label:"Model",value:"Model",},{label:"Prefix",value:"Prefix",}]}
+                      placeholder="Spare Parts"
+                      />
+                    {/* <span className="px-2">Spare Parts</span> */}
+                    </div>
+                    <span className="px-2">Repair Quote</span>
+                    {/* <Select className="border-left"
                       // onChange={handleChangeSelect}
                       isClearable={true}
                       // value={dValue}
                       options={[{label:"One",value:"one"}]}
                       placeholder="Repair Quote"
-                      /> <span>
+                      />  */}
+                      {/* <span>
                       <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
-                      </span>
+                      </span> */}
                 </div>
                 <div className="customselect d-flex align-items-center mr-3">
                     <Select
                       // onChange={handleChangeSelect}
                       isClearable={true}
                       // value={dValue}
-                      options={[{label:"One",value:"one"}]}
+                      options={[{label:"And",value:"And"},{label:"Or",value:"Or"}]}
                       placeholder="&"
                       />
                 </div>
@@ -2340,7 +2351,7 @@ console.log("selectUpdateList",selectUpdateList)
                       // onChange={handleChangeSelect}
                       isClearable={true}
                       // value={dValue}
-                      options={[{label:"One",value:"one"}]}
+                      options={[{label:"And",value:"And"},{label:"Or",value:"Or"}]}
                       placeholder="&"
                       />
                 </div>
