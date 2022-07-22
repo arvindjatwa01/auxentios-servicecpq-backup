@@ -2412,7 +2412,22 @@ color: #ffffff;
   border: none;
 }
 
-
+.customselectbtn1{}
+  .customselectbtn1 .css-1s2u09g-control{ 
+    font-size: 0.76563rem;
+    line-height: 1.5;
+    border-radius: 50px;
+    min-height: auto;
+    background: #DCCB4C; padding: 0 10px;}
+    .customselectbtn1 .css-1pahdxg-control{ font-size: 0.76563rem;
+      line-height: 1.5;
+      border-radius: 50px;
+      min-height: auto;
+      background: #DCCB4C; padding: 0 10px;}
+    .customselectbtn1 .css-6j8wv5-Input{ margin: 0;}  
+    .customselectbtn1 .css-tlfecz-indicatorContainer{ padding: 0;} 
+    .customselectbtn1 .css-319lph-ValueContainer{ padding: 0 ;}
+    .customselectbtn1 .css-1gtu0rj-indicatorContainer{padding: 0;}
 
 
 /* .Account-custom-tabs .tabs-left>li.active>a::after{content: "";

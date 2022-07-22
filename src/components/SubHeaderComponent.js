@@ -17,6 +17,7 @@ import { MuiMenuComponent } from "../pages/Operational/index";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import Select from 'react-select';
+
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -30,9 +31,13 @@ import AttachmentOutlinedIcon from '@mui/icons-material/AttachmentOutlined';
 import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
 import { useSelector, useDispatch } from 'react-redux'
 import Clock from 'react-live-clock';
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
 
 export function SubHeaderComponent(props) {
 
+  const [selectedOption, setSelectedOption] = useState(null);
+  
   const [dateObj, setDateObj] = useState({
     day: '0',
     month: "0",
@@ -43,6 +48,15 @@ export function SubHeaderComponent(props) {
     top: false,
   });
   const [isShareSideBar, setIsShareSideBar] = useState(false)
+
+  const [validityData, setValidityData] = useState({
+    fromDate: new Date(),
+    toDate: new Date(),
+    from: null,
+    to: null,
+    fromInput: "",
+    toInput: "",
+  });
 
   const toggleDrawer = (anchor, open, type) => (event) => {
     if (
@@ -61,7 +75,12 @@ export function SubHeaderComponent(props) {
     'Atria',
     'Callisto'
   ];
-
+  const options = [
+    { value: 'chocolate', label: 'Construction-Heavy' },
+    { value: 'strawberry', label: 'Construction-Low' },
+    { value: 'vanilla', label: 'Construction-Medium' },
+    { value: 'Construction', label: 'Construction' },
+];
   const list = (anchor) => (
     <>
       {isShareSideBar ?
@@ -593,27 +612,103 @@ export function SubHeaderComponent(props) {
           </div>
         </div>
       </div>
-      <div class="modal right fade" id="notemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header ">
-                      <h4 class="modal-title" id="myModalLabel2">Note</h4>
-                      <div className="d-flex">
+
+
+      <div class="modal fade" id="notemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="myModalLabel2">Add Notes</h4>
+              <div className="d-flex">
                       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                      </div>
-                    </div>
-                    <div class="modal-body" style={{background:'white'}}>
+               </div>
+              
+            </div>
+            
+            
+              
+            <div class="modal-body" style={{background:'white'}}>
+            <div className="row">
+            <div className="col-md-6 col-sm-6">
+            <div className="form-group">
+            <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">NOTE FOR</label>
+              <Select
+                  defaultValue={selectedOption}
+                  onChange={setSelectedOption}
+                  options={options}
+                  placeholder="1000-ENGINE"
+              />
+          </div>
+            </div>
+            <div className="col-md-6 col-sm-6">
+            <div className="form-group">
+            <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">NOTE TYPE</label>
+              <Select
+                  defaultValue={selectedOption}
+                  onChange={setSelectedOption}
+                  options={options}
+                  placeholder="1000-ENGINE"
+              />
+          </div>
+            </div>
+            <div className="col-md-6 col-sm-6">
+            <div className="d-block align-items-center date-box">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
+                              for="exampleInputEmail1"
+                            >
+                              <span className=" mr-2">DATE</span>
+                            </label>
+                            <div className="form-group w-100">
+                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <DatePicker
+                                  variant="inline"
+                                  format="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  label=""
+                                  value={validityData.fromDate}
+                                  onChange={(e) =>
+                                    setValidityData({
+                                      ...validityData,
+                                      fromDate: e,
+                                    })
+                                  }
+                                />
+                              </MuiPickersUtilsProvider>
+                              {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
+                            </div>
+                          </div>
+            </div>
+
+            </div>
+            <div className="mt-4">
+                         <a href="" className="d-block text-left font-size-15 text-violet ">NOTE</a>
+                       </div>
+                       <div className="d-flex float-left mr-2 pb-2 pt-2">
+                       <div><button type="button" class="btn-sm btn-warning  mr-3 border-none" style={{    borderRadius: '15px'}}>External</button></div>
+                       <div><button type="button" class="btn-sm btn-success" style={{    borderRadius: '15px'}}>Recommendations</button></div>
+
+                        </div>
+                        <textarea name="comments" className="w-100 p-2 border rounded-5" id="comments"placeholder="Reply">
+                        </textarea>
+                        <div class="modal-footer mr-auto">
+              <button type="button" class="btn border bg-white" data-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary">Save</button>
+            </div>
+            {/* <h6 className="  font-size-14">NOTE</h6> */}
                     {/* <div style={{borderBottom: '1px solid #cfcece'}}> */}
-                    <ul class="nav internalexternaltabs intexttab">
+                    {/* <ul class="nav internalexternaltabs intexttab">
                       <li class="active"><a data-toggle="tab" href="#internal1" className="btn active show">Internal</a></li>
                       <li><a data-toggle="tab" href="#external1" className="btn">External</a></li>
-                    </ul>
+                    </ul> */}
                     {/* </div> */}
 
-                    <div class="tab-content">
+                    {/* <div class="tab-content">
                       <div id="internal1" class="tab-pane fade in active show">
+
+                      
                        <div className="mt-4">
-                         <a href="#" className=" d-block text-left font-size-15 text-violet"><span  className="font-size-20 mr-2">+</span>Comment</a>
+                         <a href="#" className="d-block text-left font-size-15 text-violet"><span  className="font-size-20 mr-2">+</span>Comment</a>
                        </div>
                        <div>
                        <textarea name="comments" className="w-100 p-2 border rounded-5" id="comments"placeholder="Reply">
@@ -626,12 +721,12 @@ export function SubHeaderComponent(props) {
                       
                       <div className="d-flex justify-content-between align-items-center mt-5">
                         <p className="mb-0"><strong> Engine Partlist</strong></p>
-                        {/* <div>
+                        <div>
                           <a href="#" className="mr-3 "><EditOutlinedIcon  className="font-size-18"/></a>
                           <a href="#" className="mr-3"><AttachmentOutlinedIcon className="font-size-18"/></a>
                           <a href="#" className="mr-3"><CreateNewFolderOutlinedIcon className="font-size-18"/></a>
                           <a href="#"><ShareOutlinedIcon className="font-size-18"/></a>
-                        </div> */}
+                        </div>
                       </div>
                       <div className="border p-3 rounded mt-3">
                        <p className="mb-0">Amit minim mollit non deserunt ullamco est sit aliqua dolor do amet sont. Velit officia consequat duis enim velit mollit.Exercitation veniam consequat sunt nostrud amet</p>
@@ -654,18 +749,18 @@ export function SubHeaderComponent(props) {
                       
                       <div className="d-flex justify-content-between align-items-center mt-5">
                         <p className="mb-0"><strong> Engine Partlist</strong></p>
-                        {/* <div>
+                        <div>
                           <a href="#" className="mr-3 "><EditOutlinedIcon  className="font-size-18"/></a>
                           <a href="#" className="mr-3"><AttachmentOutlinedIcon className="font-size-18"/></a>
                           <a href="#" className="mr-3"><CreateNewFolderOutlinedIcon className="font-size-18"/></a>
                           <a href="#"><ShareOutlinedIcon className="font-size-18"/></a>
-                        </div> */}
+                        </div>
                       </div>
                       <div className="border p-3 rounded mt-3">
                        <p className="mb-0">Amit minim mollit non deserunt ullamco est sit aliqua dolor do amet sont. Velit officia consequat duis enim velit mollit.Exercitation veniam consequat sunt nostrud amet</p>
                       </div>
                       <p class="text-grey  mb-0 font-size-12 mt-2 float-right"><b>2:38pm, 19 Aug 21</b></p>
-                      {/* <div className="mt-4">
+                      <div className="mt-4">
                          <a href="#" className="btn bg-light-blue d-block text-left font-size-18 text-violet"><span  className="font-size-24 mr-2">+</span>Comment</a>
                        </div>
                        <div>
@@ -689,13 +784,24 @@ export function SubHeaderComponent(props) {
                       <div className="border p-3 rounded mt-3">
                        <p className="mb-0">Amit minim mollit non deserunt ullamco est sit aliqua dolor do amet sont. Velit officia consequat duis enim velit mollit.Exercitation veniam consequat sunt nostrud amet</p>
                       </div>
-                      <p class="text-grey  mb-0 font-size-12 mt-2"><b>2:38pm, 19 Aug 21</b></p> */}
+                      <p class="text-grey  mb-0 font-size-12 mt-2"><b>2:38pm, 19 Aug 21</b></p>
                       </div>
+                    </div> */}
                     </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* <div class="modal-footer">
+              <button type="button" class="btn border w-100 bg-white" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary w-100">Save changes</button>
+            </div> */}
+          </div>
+        </div>
+      </div>
+      
+
+
+
+
+
+      
 
     </>
   );

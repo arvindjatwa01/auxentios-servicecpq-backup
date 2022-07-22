@@ -22,6 +22,8 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import FormControl from "@mui/material/FormControl";
 import Checkbox from "@mui/material/Checkbox";
+import DeleteIcon from '@mui/icons-material/Delete';
+
 import { FileUploader } from "react-drag-drop-files";
 import { MuiMenuComponent } from "../Operational/index";
 import MenuItem from "@mui/material/MenuItem";
@@ -47,6 +49,8 @@ import { ReactTableNested } from "../Test/ReactTableNested";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 import DataTable from "react-data-table-component";
+
+
 
 import boxicon from "../../assets/icons/png/box.png";
 
@@ -92,7 +96,7 @@ import { useDispatch,useSelector} from "react-redux";
 import { useAppSelector } from "../../app/hooks";
 import { portfolioItemActions } from "./createItem/portfolioSlice";
 import { createItemPayload } from "./createItem/createItemPayload";
-
+const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 const customStyles = {
   rows: {
     style: {
@@ -126,43 +130,18 @@ const columns = [
   //   maxWidth: '600px', // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
   //   cell: row => <CustomTitle row={row} />,
   // },
+ 
   {
     name: (
       <>
-        <div>
-          <img className="mr-2" src={boxicon}></img>S NO
-        </div>
+        <div><Checkbox className="text-white" {...label} /></div>
       </>
     ),
-    selector: (row) => row.bundleId,
-    sortable: true,
-    maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
-    // cell: row => row.bundleId,
-    cell: (row) => <button onClick={() => alert()}>Click</button>,
-  },
-  {
-    name: (
-      <>
-        <div>
-          <img className="mr-2" src={boxicon}></img>Start S NO
-        </div>
-      </>
-    ),
-    selector: (row) => row.bundleDescription,
+    selector: (row) => row.standardJobId,
     wrap: true,
     sortable: true,
-    format: (row) => row.bundleDescription,
-  },
-  {
-    name: (
-      <>
-        <div>End S NO</div>
-      </>
-    ),
-    selector: (row) => row.strategy,
-    wrap: true,
-    sortable: true,
-    format: (row) => row.strategy,
+    maxWidth: "300px", 
+    cell: (row) => <Checkbox className="text-black" {...label} />,
   },
   {
     name: (
@@ -208,6 +187,48 @@ const columns = [
     sortable: true,
     format: (row) => row.part,
   },
+  {
+    name: (
+      <>
+        <div>
+         S NO
+        </div>
+      </>
+    ),
+    selector: (row) => row.bundleId,
+    sortable: true,
+    maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
+    // cell: row => row.bundleId,
+    // cell: (row) => <button onClick={() => alert()}>1</button>,
+    // cell: (row) => <Checkbox className="text-black" {...label} />,
+    format: (row) => row.bundleId,
+  },
+  {
+    name: (
+      <>
+        <div>
+          <img className="mr-2" src={boxicon}></img>Start S NO
+        </div>
+        
+      </>
+    ),
+    selector: (row) => row.bundleDescription,
+    wrap: true,
+    sortable: true,
+    format: (row) => row.bundleDescription,
+  },
+  {
+    name: (
+      <>
+        <div>End S NO</div>
+      </>
+    ),
+    selector: (row) => row.strategy,
+    wrap: true,
+    sortable: true,
+    format: (row) => row.strategy,
+  },
+  
   // {
   //     name: <><div>Service $
   //     </div></>,
@@ -313,7 +334,7 @@ export function CreatePortfolio() {
 
   const [value1, setValue1] = React.useState({ value: 'Archived', label: 'Archived' });
   const [value2, setValue2] = React.useState({ value: 'Archived', label: 'Archived' });
-  const [value3, setValue3] = React.useState({ value: 'Archived', label: 'Archived' });
+  const [value3, setValue3] = React.useState({ value: 'Gold', label: 'Gold' });
 
 
   const [bundleItemTaskTypeKeyValue, setBundleItemTaskTypeKeyValue] = useState(
@@ -386,7 +407,7 @@ export function CreatePortfolio() {
     setValue2(e)
   }
   const handleOption3=(e)=>{
-    setValue2(e)
+    setValue3(e)
   }
   const [validityData, setValidityData] = useState({
     fromDate: new Date(),
@@ -1309,7 +1330,7 @@ console.log("selectUpdateList",selectUpdateList)
             <div className="d-flex">
             
             <div className="ml-3">
-              <Select className="customselectbtn" onChange={(e)=>handleOption3(e)} options={options3} value={value3}/>
+              <Select className="customselectbtn1" onChange={(e)=>handleOption3(e)} options={options3} value={value3}/>
             </div>
             <div className="ml-3">
               <Select className="customselectbtn" onChange={(e)=>handleOption2(e)} options={options2} value={value2}/>
@@ -2257,40 +2278,127 @@ console.log("selectUpdateList",selectUpdateList)
                     style={{ width: "100%", backgroundColor: "#fff" }}
                   >
                     <div className="row align-items-center">
-                      <div className="col-3">
+                      <div className="col-2">
                         <div className="d-flex ">
                           <h5 className="mr-4 mb-0">
-                            <span></span>
+                            <span>Master Data</span>
                           </h5>
-                          <p className="ml-4 mb-0">
-                            <a href="#" className="ml-3 ">
-                              <img src={editIcon}></img>
-                            </a>
+                          {/* <p className="ml-4 mb-0">
+                           
+
+                            <a onClick={() => handleOpen()} className=" ml-3 font-size-14">
+                <img src={uploadIcon}></img>
+              </a>
                             <a href="#" className="ml-3 ">
                               <img src={shareIcon}></img>
                             </a>
-                          </p>
+                          </p> */}
                         </div>
                       </div>
-                      <div className="col-6">
-                        <div
+                      <div className="col-8">
+                      <div className="d-flex justify-content-between align-items-center">
+              <div className="d-flex align-items-center mt-3">
+              <div className="search-icon mr-2" style={{ lineHeight: '24px' }}>
+                <img src={searchstatusIcon}></img>
+              </div>
+                <div className="d-flex justify-content-between align-items-center p-3 bg-light-dark border-radius-10">
+                <div className="d-flex align-items-center">
+              <span className="mr-3">Repair Bulider</span>
+                <div className="customselect d-flex align-items-center mr-3">
+                  <div>
+                  <Select
+                      // onChange={handleChangeSelect}
+                      isClearable={true}
+                      // value={dValue}
+                      options={[{label:"Make",value:"Make",},{label:"Family",value:"Family",},{label:"Model",value:"Model",},{label:"Prefix",value:"Prefix",}]}
+                      placeholder="Spare Parts"
+                      />
+                    {/* <span className="px-2">Spare Parts</span> */}
+                    </div>
+                    <span className="px-2">Repair Quote</span>
+                    {/* <Select className="border-left"
+                      // onChange={handleChangeSelect}
+                      isClearable={true}
+                      // value={dValue}
+                      options={[{label:"One",value:"one"}]}
+                      placeholder="Repair Quote"
+                      />  */}
+                      {/* <span>
+                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
+                      </span> */}
+                </div>
+                <div className="customselect d-flex align-items-center mr-3">
+                    <Select
+                      // onChange={handleChangeSelect}
+                      isClearable={true}
+                      // value={dValue}
+                      options={[{label:"And",value:"And"},{label:"Or",value:"Or"}]}
+                      placeholder="&"
+                      />
+                </div>
+                <div className="customselect d-flex align-items-center mr-3">
+                  <div><span className="px-2">Labor</span></div>
+                    <Select className="border-left"
+                      // onChange={handleChangeSelect}
+                      isClearable={true}
+                      // value={dValue}
+                      options={[{label:"One",value:"one"}]}
+                      placeholder="Cost Plus"
+                      /> <span>
+                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
+                      </span>
+                </div>
+                <div className="customselect d-flex align-items-center mr-3">
+                    <Select
+                      // onChange={handleChangeSelect}
+                      isClearable={true}
+                      // value={dValue}
+                      options={[{label:"And",value:"And"},{label:"Or",value:"Or"}]}
+                      placeholder="&"
+                      />
+                </div>
+                <div className="customselect d-flex align-items-center mr-3">
+                  <div><span className="px-2">Consumables</span></div>
+                    <Select className="border-left"
+                      // onChange={handleChangeSelect}
+                      isClearable={true}
+                      // value={dValue}
+                      options={[{label:"One",value:"one"}]}
+                      placeholder="Flat rate"
+                      /> <span>
+                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
+                      </span>
+                </div>
+                <div>
+                  <a href="#" className="btn-sm text-violet border" style={{border:'1px solid #872FF7'}}>+</a>
+                </div>
+              </div>
+                </div>
+                
+              </div>
+              <div>
+              <a href="#" className="btn-sm"><DeleteIcon className="font-size-14 text-danger"/></a>
+              </div>
+              </div>
+                        {/* <div
                           className="d-flex align-items-center"
                           style={{
                             background: "#F9F9F9",
                             padding: "10px 15px",
                             borderRadius: "10px",
                           }}
-                        >
-                          <div
+                        > */}
+                          
+                          {/* <div
                             className="search-icon mr-2"
                             style={{ lineHeight: "24px" }}
                           >
                             <img src={searchstatusIcon}></img>
-                          </div>
-                          <div className="w-100 mx-2">
-                            <div className="machine-drop d-flex align-items-center">
+                          </div> */}
+                          {/* <div className="w-100 mx-2">
+                            <div className="machine-drop d-flex align-items-center"> */}
                               {/* <div><lable className="label-div">Search By</lable></div> */}
-                              <FormControl className="" sx={{ m: 1 }}>
+                              {/* <FormControl className="" sx={{ m: 1 }}>
                                 <Select
                                   placeholder="Search By"
                                   id="demo-simple-select-autowidth"
@@ -2307,43 +2415,41 @@ console.log("selectUpdateList",selectUpdateList)
                                     Twenty one and a half
                                   </MenuItem>
                                 </Select>
-                              </FormControl>
-                            </div>
-                          </div>
-                        </div>
+                              </FormControl> */}
+                            {/* </div>
+                          </div> */}
+                        {/* </div> */}
                       </div>
-                      <div className="col-3">
+                      <div className="col-2">
                         <div className="d-flex align-items-center">
-                          <div className="col-6 text-center">
+                          {/* <div className="col-6 text-center">
                             <a href="#" className="p-1 more-btn">
                               + 3 more
                               <span className="c-btn">C</span>
                               <span className="b-btn">B</span>
                               <span className="a-btn">A</span>
                             </a>
-                          </div>
+                          </div> */}
                           <div className="col-6 text-center border-left py-4">
-                            <div className="row">
-                              <div className="col-6">
+                            
                                 <a href="#" data-toggle="modal" data-target="#AddCoverage" className="p-1 ">
-                                  + Add Coverage
+                                  + Add Selected Coverages
                                 </a>
-                              </div>
-                              <div className="col-6">
-                                <a
-                                  onClick={() => handleOpen()}
-                                  className="p-1 "
-                                >
-                                  + Upload Coverage
-                                </a>
-                              </div>
-                            </div>
+                              
                           </div>
                         </div>
                       </div>
                     </div>
+                    <DataTable
+                      className=""
+                      title=""
+                      columns={columns}
+                      data={data}
+                      customStyles={customStyles}
+                      pagination
+                    />
                     <h6 className="font-weight-400 text-black mb-2 mt-1">
-                      Select coverages from list to add in portfolio
+                      Selected Coverages for this portfolio
                     </h6>
 
                     <DataTable
@@ -2357,6 +2463,33 @@ console.log("selectUpdateList",selectUpdateList)
                   </div>
 
                   <div className="row" style={{ display: "none" }}>
+                  <div className="col-md-4 col-sm-3">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                        <Checkbox className="text-white" {...label} />
+                        </label>
+                        {makeKeyValue.length > 0 ? (
+                          <Select
+                            onChange={(e) => handleDropdownChange(ENUM.MAKE, e)}
+                            isClearable={true}
+                            value={coverageData.makeSelect}
+                            isLoading={makeKeyValue.length > 0 ? false : true}
+                            options={makeKeyValue}
+                          />
+                        ) : (
+                          <input
+                            type="email"
+                            className="form-control border-radius-10"
+                            name="make"
+                            placeholder=""
+                            value={coverageData.make}
+                            onChange={handleCoverageInputChange}
+                          />
+                        )}
+
+                        {/* <input type="email" className="form-control border-radius-10" name="make" placeholder="" value={coverageData.make} onChange={handleCoverageInputChange} /> */}
+                      </div>
+                    </div>
                     <div className="col-md-4 col-sm-3">
                       <div className="form-group">
                         <label className="text-light-dark font-size-12 font-weight-500">
@@ -4156,7 +4289,7 @@ console.log("selectUpdateList",selectUpdateList)
         </Modal.Body>
       </Modal>
       <div class="modal fade" id="AddCoverage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="exampleModalLabel">Add Coverage</h5>
@@ -4166,102 +4299,167 @@ console.log("selectUpdateList",selectUpdateList)
             </div>
             <div class="modal-body">
             <div className="row">
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group">
-                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Coverage ID</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+            <div className="col-md-4 col-sm-4">
+                  <div class="form-group w-100">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      Coverage ID
+                    </label>
+                    <input
+                      type="email"
+                      class="form-control border-radius-10"
+                      disabled
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp"
+                      placeholder="(AUTO GENERATE)"
+                    />
+                  </div>
                 </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
+                <div className="col-md-4 col-sm-4">
                 <div class="form-group">
                   <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Service ID</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)"/>
                 </div>
                 </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group">
-                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Model No</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group">
-                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Serial No</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
+                <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          Make
+                        </label>
+                        <Select
+                          // value={}
+                          options={categoryList}
+                          onChange={(e) => HandleCatUsage(e)}
+                        />
+                        
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          Family
+                        </label>
+                        <Select
+                          // value={}
+                          options={categoryList}
+                          onChange={(e) => HandleCatUsage(e)}
+                        />
+                        
+                      </div>
+                    </div>
+                <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          Model No
+                        </label>
+                        <Select
+                          // value={}
+                          options={categoryList}
+                          onChange={(e) => HandleCatUsage(e)}
+                        />
+                        
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          Serial No Prefix
+                        </label>
+                        <Select
+                          // value={}
+                          options={categoryList}
+                          onChange={(e) => HandleCatUsage(e)}
+                        />
+                        
+                      </div>
+                    </div>
+                <div className="col-md-4 col-sm-4">
                 <div class="form-group">
                   <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Start Serial No</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)"/>
                 </div>
                 </div>
-                <div className="col-md-6 col-sm-6">
+                <div className="col-md-4 col-sm-4">
                 <div class="form-group">
                   <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">End Serial No</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)"/>
                 </div>
                 </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group">
-                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Serial Number Prefix</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group">
-                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Family</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group">
-                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Make</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
+                
+                    
+                    
+                <div className="col-md-4 col-sm-4">
                 <div class="form-group">
                   <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Fleet</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)"/>
                 </div>
                 </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group">
-                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Fleet Size</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group">
-                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Location</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
+                <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          Fleet Size
+                        </label>
+                        <Select
+                          // value={}
+                          options={categoryList}
+                          onChange={(e) => HandleCatUsage(e)}
+                        />
+                        
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          Location
+                        </label>
+                        <Select
+                          // value={}
+                          options={categoryList}
+                          onChange={(e) => HandleCatUsage(e)}
+                        />
+                        
+                      </div>
+                    </div>
+                
+                <div className="col-md-4 col-sm-4">
                 <div class="form-group">
                   <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Start Date </label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)"/>
                 </div>
                 </div>
-                <div className="col-md-6 col-sm-6">
+                <div className="col-md-4 col-sm-4">
                 <div class="form-group">
                   <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">End Date </label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)"/>
                 </div>
                 </div>
-                <div className="col-md-6 col-sm-6">
+                <div className="col-md-4 col-sm-4">
                 <div class="form-group">
                   <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Actions </label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)"/>
                 </div>
                 </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group">
-                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Created At</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
-                </div>
-                </div>
+                
                 
               </div>
             </div>
