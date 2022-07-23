@@ -17,10 +17,12 @@
 const PRICING_BASE_URL = "http://35.200.157.237/";
 const SOLUTION_BASE_URL = "http://35.200.157.237/";
 const USER_SERVICE_BASE_URL = "http://35.200.157.237/";
+const DATA_SERVICE_BASE_URL = "http://35.200.157.237/";
 
 const PRICING_URI = PRICING_BASE_URL + "pricing-svc/v1/";
 const SOLUTION_BUILDER_URI = SOLUTION_BASE_URL + "solution-builder-svc/v1/";
 const USER_SERVICE_URI = USER_SERVICE_BASE_URL + "user-svc/v1/user/";
+const SEARCH_COVERAGE = DATA_SERVICE_BASE_URL + "data-svc/api/v1/coverage/search"
 
 // Local endpoints. Uncomment below section to use dummy local data.
 export const GET_ALL_USERS = () => `/data/users`;
