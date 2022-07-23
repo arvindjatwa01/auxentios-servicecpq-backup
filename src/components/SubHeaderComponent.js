@@ -17,6 +17,7 @@ import { MuiMenuComponent } from "../pages/Operational/index";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import Select from 'react-select';
+import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
 
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
@@ -624,7 +625,10 @@ export function SubHeaderComponent(props) {
                </div>
               
             </div>
-            
+            <div className="bg-light p-4">
+            <a href="#" className="mr-4"><EditOutlinedIcon className="mr-2"/>Edit</a>
+            <a href="#" className="mr-2"><ShareOutlinedIcon className="mr-2"/>Share</a> 
+            </div>
             
               
             <div class="modal-body" style={{background:'white'}}>
@@ -682,15 +686,23 @@ export function SubHeaderComponent(props) {
 
             </div>
             <div className="mt-4">
-                         <a href="" className="d-block text-left font-size-15 text-violet ">NOTE</a>
+            <h6 className="mt-3">NOTE</h6>
                        </div>
                        <div className="d-flex float-left mr-2 pb-2 pt-2">
                        <div><button type="button" class="btn-sm btn-warning  mr-3 border-none" style={{    borderRadius: '15px'}}>External</button></div>
                        <div><button type="button" class="btn-sm btn-success" style={{    borderRadius: '15px'}}>Recommendations</button></div>
 
                         </div>
-                        <textarea name="comments" className="w-100 p-2 border rounded-5" id="comments"placeholder="Reply">
+                        <div class="form-group">
+                        <textarea name="comments" className="w-100 p-2 border rounded-5"  rows="5" id="comments"placeholder="Reply">
                         </textarea>
+                        <div className="bg-primary p-3 cardradi">
+                            <a href="#" className="mr-2"><EditOutlinedIcon className="text-white font-size-18"/></a>
+                            <a href="#" className="mr-2"><AttachFileOutlinedIcon className="text-white font-size-18"/></a>
+                            <a href="#" className="mr-2"><CreateNewFolderOutlinedIcon className="text-white font-size-18"/></a>
+                            <a href="#" className="mr-2"><ShareOutlinedIcon className="text-white font-size-18" /></a>
+                        </div>
+                        </div>
                         <div class="modal-footer mr-auto">
               <button type="button" class="btn border bg-white" data-dismiss="modal">Cancel</button>
               <button type="button" class="btn btn-primary">Save</button>
