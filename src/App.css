@@ -369,7 +369,7 @@ h5 {
 }
 
 .font-size-18 {
-  font-size: 18px;
+  font-size: 18px !important;
 }
 .font-size-21 {
   font-size: 21px !important;
@@ -2429,6 +2429,11 @@ color: #ffffff;
     .customselectbtn1 .css-319lph-ValueContainer{ padding: 0 ;}
     .customselectbtn1 .css-1gtu0rj-indicatorContainer{padding: 0;}
 
+
+    .cardradi{
+      border-radius: 0 0 20px 20px;
+      margin-top: -10px;
+    }
 
 /* .Account-custom-tabs .tabs-left>li.active>a::after{content: "";
     position: absolute;
