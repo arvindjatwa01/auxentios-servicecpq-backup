@@ -93,6 +93,7 @@ import { useAppSelector } from "../../app/hooks";
 import { portfolioItemActions } from "./createItem/portfolioSlice";
 import { createItemPayload } from "./createItem/createItemPayload";
 import QuerySearchComp from "./QuerySearchComp";
+import { Link } from "react-router-dom";
 
 const customStyles = {
   rows: {
@@ -418,8 +419,11 @@ export function CreatePortfolio() {
   const handleClose2 = () => setOpen2(false);
 
 
-  const [count,setCount]=useState(0)
-  const [querySearchCompHtml,setQuerySearchCompHtml]=useState([<QuerySearchComp count={count}/>])
+  const [count, setCount] = useState(0)
+  const [querySearchCompHtml, setQuerySearchCompHtml] = useState([])
+  const [querySearchFamily, setQuerySearchFamily] = useState({})
+  const [querySearchTild, setQuerySearchTild] = useState({})
+  const [querySearchOperator, setQuerySearchOperator] = useState({})
 
   const handleCustomerSegmentChange = (e) => {
     setGeneralComponentData({
@@ -455,7 +459,7 @@ export function CreatePortfolio() {
           label: d,
         }));
       })
-      .catch((err) => {});
+      .catch((err) => { });
   };
 
   const handleClosePortfolioMenu = () => {
@@ -905,7 +909,6 @@ export function CreatePortfolio() {
       console.log("strategy updating");
     }
   };
-  console.log("generalComponentData", generalComponentData);
   const handleGeneralInputChange = (e) => {
     var value = e.target.value;
     var name = e.target.name;
@@ -959,7 +962,7 @@ export function CreatePortfolio() {
             });
           }
         })
-        .catch((err) => {});
+        .catch((err) => { });
     }
   };
 
@@ -1167,10 +1170,13 @@ export function CreatePortfolio() {
   // console.log("useSelector((state)=>state.categoryList)",usageIn)
 
   useEffect(() => {
+    addSearchQuerryHtml()
     const portfolioId = 4;
     getPortfolioDetails(portfolioId);
     initFetch();
     dispatch(taskActions.fetchTaskList());
+
+
   }, [dispatch]);
 
   const strategyList = useAppSelector(
@@ -1182,7 +1188,6 @@ export function CreatePortfolio() {
   const categoryList = useAppSelector(
     selectStrategyTaskOption(selectCategoryList)
   );
-  console.log("categoryList", categoryList);
 
   const rTimeList = useAppSelector(
     selectStrategyTaskOption(selectResponseTimeList)
@@ -1207,7 +1212,6 @@ export function CreatePortfolio() {
   );
 
   // const updateList = useSelector((state)=>state.taskReducer)
-  console.log("selectUpdateList", selectUpdateList);
   const HandleCatUsage = (e) => {
     alert(e.target.value.value);
     console.log("e.target.value.value", e.target.value.value);
@@ -1252,11 +1256,11 @@ export function CreatePortfolio() {
   ];
   const [selectedOption, setSelectedOption] = useState(null);
 
-  const [value, setValue] = React.useState(1);
+  const [value, setValue] = useState(1);
 
-  const [open, setOpen] = React.useState(false);
-  const [open1, setOpen1] = React.useState(false);
-  const [openCoverage, setOpenCoveragetable] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [open1, setOpen1] = useState(false);
+  const [openCoverage, setOpenCoveragetable] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleClose1 = () => setOpen1(false);
@@ -1336,43 +1340,101 @@ export function CreatePortfolio() {
     // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
   ];
 
-const addSearchQuerryHtml=()=>{
-let list=[]
-const html=(<>
-<div className="customselect d-flex align-items-center mr-3">
-      <Select
-        isClearable={true}
-        options={[
-          { label: "And", value: "And" },
-          { label: "Or", value: "Or" },
-        ]}
-        placeholder="&"
-      />
-    </div>
+  const handleFamily = (e, count) => {
+    console.log("Family Change", e)
+    setQuerySearchFamily({ ...querySearchFamily, [count]: e })
+  }
+  const handleOperator = (e, count) => {
+    console.log("Operator Change", e)
+    setQuerySearchOperator({ ...querySearchOperator, [count]: e })
+  }
+  const handleTild = (e, count) => {
+    console.log("Tild Change", e)
+    setQuerySearchTild({ ...querySearchTild, [count]: e.target.value })
+  }
 
-<div className="customselect d-flex align-items-center mr-3">
-<div>
-  <Select
-    isClearable={true}
-    options={[
-      { label: "Make", value: "Make" },
-      { label: "Family", value: "Family" },
-      { label: "Model", value: "Model" },
-      { label: "Prefix", value: "Prefix" },
-    ]}
-  />
-</div>
-<input
-  type="text"
-  placeholder="Repair Quote"
-/>
-</div>
-</>)
-list.push(html)
-setQuerySearchCompHtml([...querySearchCompHtml,...list])
-}
+  const handleQuerySearchClick = () => {
+    console.log("handleQuerySearchClick")
+    var searchStr = querySearchFamily[0].value + "~" + querySearchTild[0]
+    if (Object.keys(querySearchOperator).length > 0) {
+      for (let i = 1; i < Object.keys(querySearchOperator).length + 1; i++) {
+        searchStr = searchStr + querySearchOperator[i].value + querySearchFamily[i].value +"~"+ querySearchTild[i]
+
+        console.log("querySearchFamily", querySearchFamily[i].value)
+        console.log("querySearchTild", querySearchTild[i])
+        console.log("querySearchOperator", querySearchOperator[i + 1])
+      }
+    } else {
+      searchStr = `${searchStr}${querySearchFamily[0].value}~${querySearchTild[0]}`
+
+    }
+    console.log("querySearchFamily", querySearchFamily)
+    console.log("querySearchTild", querySearchTild)
+    console.log("querySearchOperator", querySearchOperator)
+    console.log("searchStr", searchStr)
 
 
+
+  }
+
+  const addSearchQuerryHtml = (e) => {
+    let list = []
+    const html = (<>
+      {
+        count > 0 ? (<div className="customselect d-flex align-items-center mr-3">
+          <Select
+            isClearable={true}
+            options={[
+              { label: "And", value: "AND" },
+              { label: "Or", value: "OR" },
+            ]}
+            placeholder="&"
+            onChange={(e) => handleOperator(e, count)}
+            value={querySearchOperator[count]}
+            id={count}
+          />
+        </div>) : <></>
+      }
+
+      <div className="customselect d-flex align-items-center mr-3 my-2">
+        <div>
+          <Select
+            isClearable={true}
+            options={[
+              { label: "Make", value: "make" },
+              { label: "Family", value: "family" },
+              { label: "Model", value: "model" },
+              { label: "Prefix", value: "prefix" },
+            ]}
+            onChange={(e) => handleFamily(e, count)}
+            value={querySearchFamily[count]}
+            id={count}
+          />
+        </div>
+        <input
+          type="text"
+          placeholder="Repair Quote"
+          // placeholder="C/M"
+          onChange={(e) => handleTild(e, count)}
+          value={querySearchTild[count]}
+          id={count}
+        />
+      </div>
+
+    </>)
+    list.push(html)
+    setQuerySearchCompHtml([...querySearchCompHtml, ...list])
+    setCount(count + 1)
+  }
+
+
+  const handleDeletQuerySearch = () => {
+    setCount(0)
+    setQuerySearchCompHtml([])
+    setQuerySearchTild({})
+    setQuerySearchOperator({})
+    setQuerySearchFamily({})
+  }
 
 
   return (
@@ -1558,7 +1620,7 @@ setQuerySearchCompHtml([...querySearchCompHtml,...list])
                           onChange={handleCustomerSegmentChange}
                           value={generalComponentData.customerSegment}
                           options={customerSegmentKeyValue}
-                          // options={strategyList}
+                        // options={strategyList}
                         />
                       </div>
                     </div>
@@ -1632,7 +1694,7 @@ setQuerySearchCompHtml([...querySearchCompHtml,...list])
                           <div className="d-flex align-items-center date-box">
                             <label
                               className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
-                              for="exampleInputEmail1"
+                              htmlFor="exampleInputEmail1"
                             >
                               <span className=" mr-2">FROM</span>
                             </label>
@@ -1909,7 +1971,7 @@ setQuerySearchCompHtml([...querySearchCompHtml,...list])
                           options={strategyOptionals}
                           value={stratgyOptionalsKeyValue}
                           onChange={(e) => setStratgyOptionalsKeyValue(e)}
-                          // options={rTimeList}
+                        // options={rTimeList}
                         />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Optionais" /> */}
                       </div>
@@ -2341,109 +2403,36 @@ setQuerySearchCompHtml([...querySearchCompHtml,...list])
                       </div>
                       <div className="col-8">
                         <div className="d-flex justify-content-between align-items-center">
-                          <div className="d-flex align-items-center mt-3">
+                          <div className="d-flex align-items-center mt-3 w-100">
                             <div
                               className="search-icon mr-2"
                               style={{ lineHeight: "24px" }}
+                              onClick={handleQuerySearchClick}
                             >
                               <img src={searchstatusIcon}></img>
                             </div>
-                            <div className="d-flex justify-content-between align-items-center p-3 bg-light-dark border-radius-10">
-                              <div className="d-flex align-items-center">
+                            <div className="d-flex justify-content-between align-items-center p-3 bg-light-dark border-radius-10 w-100">
+                              <div className="row align-items-center m-0">
                                 <span className="mr-3">Repair Bulider</span>
                                 {/* <QuerySearchComp count={count}/> */}
-                                {querySearchCompHtml.map((curr)=>curr)}
-                                {/* <div className="customselect d-flex align-items-center mr-3">
-                                  <div>
-                                    <Select
-                                      isClearable={true}
-                                      options={[
-                                        { label: "Make", value: "Make" },
-                                        { label: "Family", value: "Family" },
-                                        { label: "Model", value: "Model" },
-                                        { label: "Prefix", value: "Prefix" },
-                                      ]}
-                                    />
-                                  </div>
-                                  <input 
-                                  type="text" 
-                                  placeholder="Repair Quote"
-                                  />
-                                </div>
-                                <div className="customselect d-flex align-items-center mr-3">
-                                  <Select
-                                    isClearable={true}
-                                    options={[
-                                      { label: "And", value: "And" },
-                                      { label: "Or", value: "Or" },
-                                    ]}
-                                    placeholder="&"
-                                  />
-                                </div> */}
-                                {/* <div className="customselect d-flex align-items-center mr-3">
-                                  <div>
-                                    <span className="px-2">Labor</span>
-                                  </div>
-                                  <Select
-                                    className="border-left"
-                                    // onChange={handleChangeSelect}
-                                    isClearable={true}
-                                    // value={dValue}
-                                    options={[{ label: "One", value: "one" }]}
-                                    placeholder="Cost Plus"
-                                  />{" "}
-                                  <span>
-                                    <a href="#" className="btn-sm">
-                                      <DeleteIcon className="font-size-14" />
-                                    </a>
-                                  </span>
-                                </div>
-                                <div className="customselect d-flex align-items-center mr-3">
-                                  <Select
-                                    // onChange={handleChangeSelect}
-                                    isClearable={true}
-                                    // value={dValue}
-                                    options={[
-                                      { label: "And", value: "And" },
-                                      { label: "Or", value: "Or" },
-                                    ]}
-                                    placeholder="&"
-                                  />
-                                </div>
-                                <div className="customselect d-flex align-items-center mr-3">
-                                  <div>
-                                    <span className="px-2">Consumables</span>
-                                  </div>
-                                  <Select
-                                    className="border-left"
-                                    // onChange={handleChangeSelect}
-                                    isClearable={true}
-                                    // value={dValue}
-                                    options={[{ label: "One", value: "one" }]}
-                                    placeholder="Flat rate"
-                                  />{" "}
-                                  <span>
-                                    <a href="#" className="btn-sm">
-                                      <DeleteIcon className="font-size-14" />
-                                    </a>
-                                  </span>
-                                </div> */}
-                                <div onClick={(e)=>addSearchQuerryHtml()}>
-                                  <a
-                                    href="#"
+                                {querySearchCompHtml.map((curr, i) => curr)}
+                                <div
+                                  onClick={(e) => addSearchQuerryHtml(e)}>
+                                  <Link
+                                    to="#"
                                     className="btn-sm text-violet border"
                                     style={{ border: "1px solid #872FF7" }}
                                   >
                                     +
-                                  </a>
+                                  </Link>
                                 </div>
                               </div>
                             </div>
                           </div>
-                          <div>
-                            <a href="#" className="btn-sm">
+                          <div onClick={handleDeletQuerySearch}>
+                            <Link to="#" className="btn-sm">
                               <DeleteIcon className="font-size-14 text-danger" />
-                            </a>
+                            </Link>
                           </div>
                         </div>
                         {/* <div
@@ -3371,10 +3360,10 @@ setQuerySearchCompHtml([...querySearchCompHtml,...list])
                         ? typeOfSearch.value == "bundle"
                           ? "Bundle"
                           : typeOfSearch.value == "service"
-                          ? "Service"
-                          : typeOfSearch.value == "portfolioItem"
-                          ? "Portfolio Item"
-                          : ""
+                            ? "Service"
+                            : typeOfSearch.value == "portfolioItem"
+                              ? "Portfolio Item"
+                              : ""
                         : ""}
                     </a>
                   </li>
@@ -3834,7 +3823,7 @@ setQuerySearchCompHtml([...querySearchCompHtml,...list])
                       id="exampleInputEmail1"
                       aria-describedby="emailHelp"
                       placeholder="USAGE IN"
-                      // value={categoryUsageKeyValue1.lable}
+                    // value={categoryUsageKeyValue1.lable}
                     />
                   </div>
                 </div>
