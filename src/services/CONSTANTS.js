@@ -24,6 +24,9 @@ const SOLUTION_BUILDER_URI = SOLUTION_BASE_URL + "solution-builder-svc/v1/";
 const USER_SERVICE_URI = USER_SERVICE_BASE_URL + "user-svc/v1/user/";
 const SEARCH_COVERAGE = DATA_SERVICE_BASE_URL + "data-svc/api/v1/coverage/search"
 
+// search for coverage
+
+export const GET_SEARCH_COVERAGE=SEARCH_COVERAGE+"?search="
 // Local endpoints. Uncomment below section to use dummy local data.
 export const GET_ALL_USERS = () => `/data/users`;
 export const GET_USER_DETAILS = (id) => `/data/user`;
