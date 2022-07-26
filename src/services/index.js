@@ -14,5 +14,5 @@ export { createPortfolio, getPortfolio, updatePortfolio} from './servicePortfoli
 export { getPortfolioCommonConfig } from './pricingCommonConfig'
 export { getMakeKeyValue, getModelKeyValue, getPrefixKeyValue } from './coverageService'
 export { getUsageCategoryKeyValue, getStrategyTaskKeyValue, getTaskTypeKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getTypeKeyValue, getResponseTimeTaskKeyValue, getValidityKeyValue } from './commonSolutionBuilderServices'
-export {getSearchQueryCoverage} from "./searchQueryService"
+export {getSearchQueryCoverage,getSearchCoverageForFamily} from "./searchQueryService"
 

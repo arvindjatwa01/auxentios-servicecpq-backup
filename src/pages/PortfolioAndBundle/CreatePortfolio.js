@@ -79,6 +79,7 @@ import {
   getTypeKeyValue,
   getPortfolioCommonConfig,
   getSearchQueryCoverage,
+  getSearchCoverageForFamily
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -393,6 +394,7 @@ export function CreatePortfolio() {
     []
   );
 
+  const [masterData,setMasterData]=useState(null)
   const [coverageData, setCoverageData] = useState({
     make: "",
     modal: "",
@@ -1198,6 +1200,7 @@ export function CreatePortfolio() {
       .catch((err) => {
         alert(err);
       });
+
   };
 
   const dispatch = useDispatch();
@@ -1205,12 +1208,14 @@ export function CreatePortfolio() {
   // console.log("useSelector((state)=>state.categoryList)",usageIn)
 
   useEffect(() => {
-    addSearchQuerryHtml()
+    if(Object.keys(querySearchCompHtml).length==0){
+      addSearchQuerryHtml()
+    }
+          
     const portfolioId = 4;
     getPortfolioDetails(portfolioId);
     initFetch();
     dispatch(taskActions.fetchTaskList());
-
 
   }, [dispatch]);
 
@@ -1388,16 +1393,13 @@ export function CreatePortfolio() {
   ];
 
   const handleFamily = (e, count) => {
-    console.log("Family Change", e)
     setQuerySearchFamily({ ...querySearchFamily, [count]: e })
   }
   const handleOperator = (e, count) => {
-    console.log("Operator Change", e)
     setQuerySearchOperator({ ...querySearchOperator, [count]: e })
   }
   const handleTild = (e, count) => {
-    console.log("Tild Change", e)
-    setQuerySearchTild({ ...querySearchTild, [count]: e.target.value })
+    setQuerySearchTild({ ...querySearchTild, [count]: e })
   }
 
   const handleQuerySearchClick = () => {
@@ -1405,11 +1407,7 @@ export function CreatePortfolio() {
     var searchStr = querySearchFamily[0].value + "~" + querySearchTild[0]
     if (Object.keys(querySearchOperator).length > 0) {
       for (let i = 1; i < Object.keys(querySearchOperator).length + 1; i++) {
-        searchStr = searchStr + querySearchOperator[i].value + querySearchFamily[i].value + "~" + querySearchTild[i]
-
-        console.log("querySearchFamily", querySearchFamily[i].value)
-        console.log("querySearchTild", querySearchTild[i])
-        console.log("querySearchOperator", querySearchOperator[i + 1])
+        searchStr = searchStr +" "+querySearchOperator[i].value +" "+ querySearchFamily[i].value + "~" + querySearchTild[i]
       }
     } else {
       searchStr =searchStr
@@ -1419,9 +1417,11 @@ export function CreatePortfolio() {
     console.log("querySearchTild", querySearchTild)
     console.log("querySearchOperator", querySearchOperator)
     console.log("searchStr", searchStr)
-  // "proxy":"http://localhost:8080",
+  
     getSearchQueryCoverage(searchStr).then((res) => {
       console.log("search Query Result :",res)
+
+      setMasterData(res)
     }).catch((err) => {
       console.log("error in getSearchQueryCoverage", err)
     })
@@ -1435,6 +1435,7 @@ export function CreatePortfolio() {
         count > 0 ? (<div className="customselect d-flex align-items-center mr-3">
           <Select
             isClearable={true}
+            defaultValue= {{ label: "And", value: "AND" }}
             options={[
               { label: "And", value: "AND" },
               { label: "Or", value: "OR" },
@@ -1462,14 +1463,22 @@ export function CreatePortfolio() {
             id={count}
           />
         </div>
-        <input
+        <Select 
+        placeholder="Search String"
+        options={[
+          { label: "3C", value: "3C" },
+          { label: "2C", value: "2C" },
+        ]}
+        onChange={(e) => handleTild(e, count)}
+        value={querySearchTild[count]}
+        />
+        {/* <input
           type="text"
-          placeholder="Repair Quote"
-          // placeholder="C/M"
+          placeholder="Search String"
           onChange={(e) => handleTild(e, count)}
           value={querySearchTild[count]}
           id={count}
-        />
+        /> */}
       </div>
 
     </>)
@@ -2481,7 +2490,7 @@ export function CreatePortfolio() {
                             </div>
                             <div className="d-flex justify-content-between align-items-center p-3 bg-light-dark border-radius-10 w-100">
                               <div className="row align-items-center m-0">
-                                <span className="mr-3">Repair Bulider</span>
+                                <span className="mr-3">Search</span>
                                 {/* <QuerySearchComp count={count}/> */}
                                 {querySearchCompHtml.map((curr, i) => curr)}
                                 <div
