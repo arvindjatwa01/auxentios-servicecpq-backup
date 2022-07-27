@@ -1491,8 +1491,9 @@ nav.main-menu li.active>a,
 .custom-table {}
 
 .custom-table .rdt_TableHeadRow {
-  background: #872ff7 !important;
+  background: #7571f9!important;
   color: white !important;
+
 }
 
 .rounded-pill {
