@@ -12,6 +12,7 @@ import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBullet
 import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
 import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import SearchIcon from '@mui/icons-material/Search';
 import shearchIcon from "../../assets/icons/svg/search.svg";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Box from "@mui/material/Box";
@@ -122,209 +123,7 @@ const customStyles = {
   },
 };
 
-const columns = [
-  // {
-  //   name: <><div>
-  //     <div>
-  //     <Checkbox {...label} />
-  //   </div>
-  //     </div></>,
-  //   selector: row => row.title,
-  //   sortable: true,
-  //   maxWidth: '600px', // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
-  //   cell: row => <CustomTitle row={row} />,
-  // },
 
-  {
-    name: (
-      <>
-        <div><Checkbox className="text-white" {...label} /></div>
-      </>
-    ),
-    selector: (row) => row.standardJobId,
-    wrap: true,
-    sortable: true,
-    maxWidth: "300px",
-    cell: (row) => <Checkbox className="text-black" {...label} />,
-  },
-  {
-    name: (
-      <>
-        <div>Make</div>
-      </>
-    ),
-    selector: (row) => row.standardJobId,
-    wrap: true,
-    sortable: true,
-    format: (row) => row.standardJobId,
-  },
-  {
-    name: (
-      <>
-        <div>Family</div>
-      </>
-    ),
-    selector: (row) => row.frequency,
-    wrap: true,
-    sortable: true,
-    format: (row) => row.frequency,
-  },
-  {
-    name: (
-      <>
-        <div>Model</div>
-      </>
-    ),
-    selector: (row) => row.quantity,
-    wrap: true,
-    sortable: true,
-    format: (row) => row.quantity,
-  },
-  {
-    name: (
-      <>
-        <div>Prefix</div>
-      </>
-    ),
-    selector: (row) => row.part,
-    wrap: true,
-    sortable: true,
-    format: (row) => row.part,
-  },
-  {
-    name: (
-      <>
-        <div>
-          S NO
-        </div>
-      </>
-    ),
-    selector: (row) => row.bundleId,
-    sortable: true,
-    maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
-    // cell: row => row.bundleId,
-    // cell: (row) => <button onClick={() => alert()}>1</button>,
-    // cell: (row) => <Checkbox className="text-black" {...label} />,
-    format: (row) => row.bundleId,
-  },
-  {
-    name: (
-      <>
-        <div>
-          <img className="mr-2" src={boxicon}></img>Start S NO
-        </div>
-
-      </>
-    ),
-    selector: (row) => row.bundleDescription,
-    wrap: true,
-    sortable: true,
-    format: (row) => row.bundleDescription,
-  },
-  {
-    name: (
-      <>
-        <div>End S NO</div>
-      </>
-    ),
-    selector: (row) => row.strategy,
-    wrap: true,
-    sortable: true,
-    format: (row) => row.strategy,
-  },
-
-  // {
-  //     name: <><div>Service $
-  //     </div></>,
-  //     selector: row => row.service,
-  //     wrap: true,
-  //     sortable: true,
-  //     format: row => row.service
-  //     ,
-  // },
-  // {
-  //     name: <><div>Total $
-  //     </div></>,
-  //     selector: row => row.total,
-  //     wrap: true,
-  //     sortable: true,
-  //     format: row => row.total
-  // },
-  {
-    name: (
-      <>
-        <div>Action</div>
-      </>
-    ),
-    selector: (row) => row.action,
-    wrap: true,
-    sortable: true,
-    format: (row) => row.action,
-  },
-
-  // {
-  //   name:<><div>Progress
-  //   </div></>,
-  //   selector: row => row.plot,
-  //   wrap: true,
-  //   sortable: true,
-  //   format: row => `${row.plot.slice(0, 200)}...`,
-  // },
-  // {
-  //   name:<><div>Status
-  //   </div></>,
-  //   selector: row => row.plot,
-  //   wrap: true,
-  //   sortable: true,
-  //   format: row => `${row.plot.slice(0, 200)}...`,
-  // },
-  // {
-  //   name:<><div>Consistency status
-  //   </div></>,
-  //   selector: row => row.plot,
-  //   wrap: true,
-  //   sortable: true,
-  //   format: row => `${row.plot.slice(0, 200)}...`,
-  // },
-  // {
-  //   name:<><div>Description
-  //   </div></>,
-  //   selector: row => row.plot,
-  //   wrap: true,
-  //   sortable: true,
-  //   format: row => `${row.plot.slice(0, 200)}...`,
-  // },
-  // {
-  //   name: 'Actions',
-
-  //   cell: row => (
-  //     <div>
-  //       {row.genres.map((genre, i) => (
-  //         <div key={i}>{genre}</div>
-  //       ))}
-  //     </div>
-  //   ),
-  // },
-  // {
-  //   name: 'Thumbnail',
-  //   grow: 0,
-  //   cell: row => <img height="84px" width="56px" alt={row.name} src={row.posterUrl} />,
-  // },
-  // {
-  //   name: 'Poster Link',
-  //   button: true,
-  //   cell: row => (
-  //     <a href={row.posterUrl} target="_blank" rel="noopener noreferrer">
-  //       Download
-  //     </a>
-  //   ),
-  // },
-  // {
-  //     name: 'Actions',
-  //     button: true,
-  //     cell: () => <Button>Download Poster</Button>,
-  // },
-];
 
 export function CreatePortfolio() {
   const [makeKeyValue, setMakeKeyValue] = useState([]);
@@ -336,9 +135,9 @@ export function CreatePortfolio() {
   const [responseTimeTaskKeyValue, setResponseTimeTaskKeyValue] = useState([]);
   const [taskTypeKeyValue, setTaskTypeKeyValue] = useState([]);
 
-  const [value1, setValue1] = React.useState({ value: 'Archived', label: 'Archived' });
-  const [value2, setValue2] = React.useState({ value: 'Archived', label: 'Archived' });
-  const [value3, setValue3] = React.useState({ value: 'Gold', label: 'Gold' });
+  const [value1, setValue1] = useState({ value: 'Archived', label: 'Archived' });
+  const [value2, setValue2] = useState({ value: 'Archived', label: 'Archived' });
+  const [value3, setValue3] = useState({ value: 'Gold', label: 'Gold' });
 
 
   const [bundleItemTaskTypeKeyValue, setBundleItemTaskTypeKeyValue] = useState(
@@ -350,7 +149,7 @@ export function CreatePortfolio() {
   const [geographicKeyValue, setGeographicKeyValue] = useState([]);
   const [typeKeyValue, setTypeKeyValue] = useState([]);
   const [machineTypeKeyValue, setMachineTypeKeyValue] = useState([]);
-  const [age, setAge] = React.useState("5");
+  const [age, setAge] = useState("5");
   const [isView, setIsView] = useState(false); //Use for show data into label format
   const [showExitPrompt, setShowExitPrompt] = useState(true);
   const [createNewBundle, setCreateNewBundle] = useState(false);
@@ -394,7 +193,8 @@ export function CreatePortfolio() {
     []
   );
 
-  const [masterData,setMasterData]=useState(null)
+  const [masterData,setMasterData]=useState([])
+  const [filterMasterData,setFilterMasterData]=useState([])
   const [coverageData, setCoverageData] = useState({
     make: "",
     modal: "",
@@ -448,10 +248,10 @@ export function CreatePortfolio() {
     machineComponent: null,
   });
   const [portfolioId, setPortfolioId] = useState();
-  const [alignment, setAlignment] = React.useState("Portfolio");
+  const [alignment, setAlignment] =useState("Portfolio");
   const [prefixLabelGeneral, setPrefixLabelGeneral] = useState("PORTFOLIO");
   const [priceAgreementOption, setPriceAgreementOption] = useState(false);
-  const [open2, setOpen2] = React.useState(false);
+  const [open2, setOpen2] = useState(false);
   const handleOpen2 = () => setOpen2(true);
   const handleClose2 = () => setOpen2(false);
 
@@ -1253,8 +1053,8 @@ export function CreatePortfolio() {
 
   // const updateList = useSelector((state)=>state.taskReducer)
   const HandleCatUsage = (e) => {
-    alert(e.target.value.value);
-    console.log("e.target.value.value", e.target.value.value);
+
+    // console.log("e.target.value", e.target.value);
     setCategoryUsageKeyValue1(e);
     dispatch(taskActions.updateList(e.value));
   };
@@ -1399,7 +1199,8 @@ export function CreatePortfolio() {
     setQuerySearchOperator({ ...querySearchOperator, [count]: e })
   }
   const handleTild = (e, count) => {
-    setQuerySearchTild({ ...querySearchTild, [count]: e })
+    console.log("handle Tild Event",e)
+    setQuerySearchTild({ ...querySearchTild, [count]: e.value })
   }
 
   const handleQuerySearchClick = () => {
@@ -1494,7 +1295,224 @@ export function CreatePortfolio() {
     setQuerySearchTild({})
     setQuerySearchOperator({})
     setQuerySearchFamily({})
+    setMasterData([])
+    setFilterMasterData([])
   }
+
+  const handleMasterCheck=(e,row)=>{
+    
+    console.log("handleMasterCheck event",e)
+    if(e.target.checked){
+      setMasterData([...masterData,{...row,["check1"]:e.target.checked}])
+      setFilterMasterData([...filterMasterData,{...row}])
+    }else{
+      var _filterMasterData=[...filterMasterData]
+      const updated=_filterMasterData.filter((currentItem,i)=>{
+        if(row.id==currentItem.id){
+          return
+        }else return currentItem
+
+      })
+      console.log(" handleMasterCheck updated",updated)
+      setFilterMasterData(updated)
+    }
+
+
+
+  }
+
+
+  const columns = [
+    {
+      name: (
+        <>
+          <div><Checkbox className="text-white" {...label} /></div>
+        </>
+      ),
+      selector: (row) => row.standardJobId,
+      wrap: true,
+      sortable: true,
+      maxWidth: "300px",
+      cell: (row) => <Checkbox className="text-black" checked={row.check1} onChange={(e)=>handleMasterCheck(e,row)}/>,
+    },
+    {
+      name: (
+        <>
+          <div>Make</div>
+        </>
+      ),
+      selector: (row) => row.make,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.make,
+    },
+    {
+      name: (
+        <>
+          <div>Family</div>
+        </>
+      ),
+      selector: (row) => row.family,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.family,
+    },
+    {
+      name: (
+        <>
+          <div>Model</div>
+        </>
+      ),
+      selector: (row) => row.modelDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.modelDescription,
+    },
+    {
+      name: (
+        <>
+          <div>Prefix</div>
+        </>
+      ),
+      selector: (row) => row.prefix,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.prefix,
+    },
+    {
+      name: (
+        <>
+          <div>
+            S NO
+          </div>
+        </>
+      ),
+      selector: (row) => row.bundleId,
+      sortable: true,
+      maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
+      // cell: row => row.bundleId,
+      // cell: (row) => <button onClick={() => alert()}>1</button>,
+      // cell: (row) => <Checkbox className="text-black" {...label} />,
+      format: (row) => row.bundleId,
+    },
+    {
+      name: (
+        <>
+          <div>
+            <img className="mr-2" src={boxicon}></img>Start S NO
+          </div>
+  
+        </>
+      ),
+      selector: (row) => row.bundleDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.bundleDescription,
+    },
+    {
+      name: (
+        <>
+          <div>End S NO</div>
+        </>
+      ),
+      selector: (row) => row.strategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.strategy,
+    },
+  
+    // {
+    //     name: <><div>Service $
+    //     </div></>,
+    //     selector: row => row.service,
+    //     wrap: true,
+    //     sortable: true,
+    //     format: row => row.service
+    //     ,
+    // },
+    // {
+    //     name: <><div>Total $
+    //     </div></>,
+    //     selector: row => row.total,
+    //     wrap: true,
+    //     sortable: true,
+    //     format: row => row.total
+    // },
+    {
+      name: (
+        <>
+          <div>Action</div>
+        </>
+      ),
+      selector: (row) => row.action,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.action,
+    },
+  
+    // {
+    //   name:<><div>Progress
+    //   </div></>,
+    //   selector: row => row.plot,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: row => `${row.plot.slice(0, 200)}...`,
+    // },
+    // {
+    //   name:<><div>Status
+    //   </div></>,
+    //   selector: row => row.plot,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: row => `${row.plot.slice(0, 200)}...`,
+    // },
+    // {
+    //   name:<><div>Consistency status
+    //   </div></>,
+    //   selector: row => row.plot,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: row => `${row.plot.slice(0, 200)}...`,
+    // },
+    // {
+    //   name:<><div>Description
+    //   </div></>,
+    //   selector: row => row.plot,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: row => `${row.plot.slice(0, 200)}...`,
+    // },
+    // {
+    //   name: 'Actions',
+  
+    //   cell: row => (
+    //     <div>
+    //       {row.genres.map((genre, i) => (
+    //         <div key={i}>{genre}</div>
+    //       ))}
+    //     </div>
+    //   ),
+    // },
+    // {
+    //   name: 'Thumbnail',
+    //   grow: 0,
+    //   cell: row => <img height="84px" width="56px" alt={row.name} src={row.posterUrl} />,
+    // },
+    // {
+    //   name: 'Poster Link',
+    //   button: true,
+    //   cell: row => (
+    //     <a href={row.posterUrl} target="_blank" rel="noopener noreferrer">
+    //       Download
+    //     </a>
+    //   ),
+    // },
+    // {
+    //     name: 'Actions',
+    //     button: true,
+    //     cell: () => <Button>Download Poster</Button>,
+    // },
+  ];
 
 
   return (
@@ -2470,23 +2488,24 @@ export function CreatePortfolio() {
                     style={{ width: "100%", backgroundColor: "#fff" }}
                   >
                     <div className="row align-items-center">
-                      <div className="col-2">
+                      {/* <div className="col-2">
                         <div className="d-flex ">
                           <h5 className="mr-4 mb-0">
                             <span>Master Data</span>
                           </h5>
-                          {/* <p className="ml-4 mb-0"><a onClick={() => handleOpen()} className=" ml-3 font-size-14"><img src={uploadIcon}></img></a><a href="#" className="ml-3 "><img src={shareIcon}></img></a></p> */}
+                          <p className="ml-4 mb-0"><a onClick={() => handleOpen()} className=" ml-3 font-size-14"><img src={uploadIcon}></img></a><a href="#" className="ml-3 "><img src={shareIcon}></img></a></p>
                         </div>
-                      </div>
+                      </div> */}
                       <div className="col-8">
                         <div className="d-flex justify-content-between align-items-center">
                           <div className="d-flex align-items-center mt-3 w-100">
                             <div
                               className="search-icon mr-2"
-                              style={{ lineHeight: "24px" }}
+                              style={{ lineHeight: "24px",cursor:"pointer" }}
                               onClick={handleQuerySearchClick}
                             >
-                              <img src={searchstatusIcon}></img>
+                              {/* <img src={searchstatusIcon}></img> */}
+                              <SearchIcon />
                             </div>
                             <div className="d-flex justify-content-between align-items-center p-3 bg-light-dark border-radius-10 w-100">
                               <div className="row align-items-center m-0">
@@ -2579,7 +2598,7 @@ export function CreatePortfolio() {
                       className=""
                       title=""
                       columns={columns}
-                      data={data}
+                      data={masterData}
                       customStyles={customStyles}
                       pagination
                     />
@@ -2590,7 +2609,7 @@ export function CreatePortfolio() {
                       className=""
                       title=""
                       columns={columns}
-                      data={data}
+                      data={filterMasterData}
                       customStyles={customStyles}
                       pagination
                     />
@@ -4450,12 +4469,12 @@ export function CreatePortfolio() {
                     />
                   </div>
                 </div>
-                <div className="col-md-4 col-sm-4">
+                {/* <div className="col-md-4 col-sm-4">
                   <div class="form-group">
                     <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Service ID</label>
                     <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
                   </div>
-                </div>
+                </div> */}
                 <div className="col-md-4 col-sm-4">
                   <div className="form-group">
                     <label
@@ -4557,7 +4576,7 @@ export function CreatePortfolio() {
 
                   </div>
                 </div>
-                <div className="col-md-4 col-sm-4">
+                {/* <div className="col-md-4 col-sm-4">
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
@@ -4591,7 +4610,7 @@ export function CreatePortfolio() {
                     <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Actions </label>
                     <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
                   </div>
-                </div>
+                </div> */}
 
 
               </div>
