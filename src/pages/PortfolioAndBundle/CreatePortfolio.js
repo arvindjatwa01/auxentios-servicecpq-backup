@@ -101,6 +101,9 @@ import { useAppSelector } from "../../app/hooks";
 import { portfolioItemActions } from "./createItem/portfolioSlice";
 import { createItemPayload } from "./createItem/createItemPayload";
 import { Link } from "react-router-dom";
+
+
+
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 const customStyles = {
   rows: {
@@ -193,8 +196,8 @@ export function CreatePortfolio() {
     []
   );
 
-  const [masterData,setMasterData]=useState([])
-  const [filterMasterData,setFilterMasterData]=useState([])
+  const [masterData, setMasterData] = useState([])
+  const [filterMasterData, setFilterMasterData] = useState([])
   const [coverageData, setCoverageData] = useState({
     make: "",
     modal: "",
@@ -248,7 +251,7 @@ export function CreatePortfolio() {
     machineComponent: null,
   });
   const [portfolioId, setPortfolioId] = useState();
-  const [alignment, setAlignment] =useState("Portfolio");
+  const [alignment, setAlignment] = useState("Portfolio");
   const [prefixLabelGeneral, setPrefixLabelGeneral] = useState("PORTFOLIO");
   const [priceAgreementOption, setPriceAgreementOption] = useState(false);
   const [open2, setOpen2] = useState(false);
@@ -257,10 +260,13 @@ export function CreatePortfolio() {
 
 
   const [count, setCount] = useState(0)
+  const [querySearchSelector, setQuerySearchSelector] = useState([])
   const [querySearchCompHtml, setQuerySearchCompHtml] = useState([])
   const [querySearchFamily, setQuerySearchFamily] = useState({})
   const [querySearchTild, setQuerySearchTild] = useState({})
   const [querySearchOperator, setQuerySearchOperator] = useState({})
+  const [familySearchDropDown, setFamilySearchDropDown] = useState([])
+  const [searchLoading, setSearchLoading] = useState(true)
 
   const handleCustomerSegmentChange = (e) => {
     setGeneralComponentData({
@@ -1008,16 +1014,39 @@ export function CreatePortfolio() {
   // console.log("useSelector((state)=>state.categoryList)",usageIn)
 
   useEffect(() => {
-    if(Object.keys(querySearchCompHtml).length==0){
+    const portfolioId = 4;
+    querySearchSelector.push(
+      {
+        selectOperator: "",
+        selectFamily: "",
+        inputSearch: "",
+        selectOptions: [
+          { label: "1", value: "1" },
+          { label: "2", value: "2" },
+          { label: "3", value: "3" },
+          { label: "4", value: "4" }
+        ]
+      }, {
+        selectOperator: "",
+        selectFamily: "",
+        inputSearch: "",
+        selectOptions: [
+          { label: "1", value: "1" },
+          { label: "2", value: "2" },
+          { label: "3", value: "3" },
+          { label: "4", value: "4" }
+        ]
+      }
+    );
+    if (Object.keys(querySearchCompHtml).length == 0) {
       addSearchQuerryHtml()
     }
-          
-    const portfolioId = 4;
     getPortfolioDetails(portfolioId);
     initFetch();
     dispatch(taskActions.fetchTaskList());
 
   }, [dispatch]);
+
 
   const strategyList = useAppSelector(
     selectStrategyTaskOption(selectStrategyTaskList)
@@ -1194,13 +1223,22 @@ export function CreatePortfolio() {
 
   const handleFamily = (e, count) => {
     setQuerySearchFamily({ ...querySearchFamily, [count]: e })
+    console.log("handleFamily", e)
   }
   const handleOperator = (e, count) => {
     setQuerySearchOperator({ ...querySearchOperator, [count]: e })
   }
   const handleTild = (e, count) => {
-    console.log("handle Tild Event",e)
-    setQuerySearchTild({ ...querySearchTild, [count]: e.value })
+    console.log("handle Tild Event", e.target.value)
+
+    getSearchCoverageForFamily(e.target.value).then((res) => {
+      setFamilySearchDropDown(res)
+      console.log("data", res)
+      setSearchLoading(false)
+    }).catch((err) => console.log("err:", err))
+
+    setQuerySearchTild({ ...querySearchTild, [count]: e.target.value })
+
   }
 
   const handleQuerySearchClick = () => {
@@ -1208,21 +1246,21 @@ export function CreatePortfolio() {
     var searchStr = querySearchFamily[0].value + "~" + querySearchTild[0]
     if (Object.keys(querySearchOperator).length > 0) {
       for (let i = 1; i < Object.keys(querySearchOperator).length + 1; i++) {
-        searchStr = searchStr +" "+querySearchOperator[i].value +" "+ querySearchFamily[i].value + "~" + querySearchTild[i]
+        searchStr = searchStr + " " + querySearchOperator[i].value + " " + querySearchFamily[i].value + "~" + querySearchTild[i]
       }
     } else {
-      searchStr =searchStr
+      searchStr = searchStr
 
     }
-    console.log("querySearchFamily", querySearchFamily)
-    console.log("querySearchTild", querySearchTild)
-    console.log("querySearchOperator", querySearchOperator)
-    console.log("searchStr", searchStr)
-  
-    getSearchQueryCoverage(searchStr).then((res) => {
-      console.log("search Query Result :",res)
+    // console.log("querySearchFamily", querySearchFamily)
+    // console.log("querySearchTild", querySearchTild)
+    // console.log("querySearchOperator", querySearchOperator)
+    // console.log("searchStr", searchStr)
 
+    getSearchQueryCoverage(searchStr).then((res) => {
+      console.log("search Query Result :", res)
       setMasterData(res)
+
     }).catch((err) => {
       console.log("error in getSearchQueryCoverage", err)
     })
@@ -1230,13 +1268,13 @@ export function CreatePortfolio() {
   }
 
   const addSearchQuerryHtml = (e) => {
-    let list = []
+    // let list = []
     const html = (<>
       {
         count > 0 ? (<div className="customselect d-flex align-items-center mr-3">
           <Select
             isClearable={true}
-            defaultValue= {{ label: "And", value: "AND" }}
+            defaultValue={{ label: "And", value: "AND" }}
             options={[
               { label: "And", value: "AND" },
               { label: "Or", value: "OR" },
@@ -1264,7 +1302,7 @@ export function CreatePortfolio() {
             id={count}
           />
         </div>
-        <Select 
+        {/* <Select 
         placeholder="Search String"
         options={[
           { label: "3C", value: "3C" },
@@ -1272,19 +1310,48 @@ export function CreatePortfolio() {
         ]}
         onChange={(e) => handleTild(e, count)}
         value={querySearchTild[count]}
-        />
-        {/* <input
+        /> */}
+
+        <input
           type="text"
           placeholder="Search String"
           onChange={(e) => handleTild(e, count)}
           value={querySearchTild[count]}
           id={count}
-        /> */}
+        />
       </div>
+      <ul
+        className="list-group"
+        style={{
+          maxHeight: "100px",
+          minWidth: "180px",
+          marginBottom: "10px",
+          overflowY: "scroll",
+          fontSize: "10px",
+          webkitOverflowScrolling: "touch"
+        }}
+      >
+        {/* <li className="list-group-item">ABC</li>
+        <li className="list-group-item">ABC</li>
+        <li className="list-group-item">ABC</li>
+        <li className="list-group-item">ABC</li>
+        <li className="list-group-item">ABC</li>
+        <li className="list-group-item">ABC</li>
+        <li className="list-group-item">ABC</li>
+        <li className="list-group-item">ABC</li> */}
+        {
+          familySearchDropDown.map((currentItem, i) => {
+            console.log("current item in search dropDown", currentItem)
+            return (<li className="list-group-item" key={i}>{currentItem}</li>)
+          })
 
+        }
+
+      </ul>
     </>)
-    list.push(html)
-    setQuerySearchCompHtml([...querySearchCompHtml, ...list])
+    // list.push(html)
+    console.log("----------", html);
+    setQuerySearchCompHtml([...querySearchCompHtml, html])
     setCount(count + 1)
   }
 
@@ -1299,21 +1366,21 @@ export function CreatePortfolio() {
     setFilterMasterData([])
   }
 
-  const handleMasterCheck=(e,row)=>{
-    
-    console.log("handleMasterCheck event",e)
-    if(e.target.checked){
-      setMasterData([...masterData,{...row,["check1"]:e.target.checked}])
-      setFilterMasterData([...filterMasterData,{...row}])
-    }else{
-      var _filterMasterData=[...filterMasterData]
-      const updated=_filterMasterData.filter((currentItem,i)=>{
-        if(row.id==currentItem.id){
+  const handleMasterCheck = (e, row) => {
+
+    console.log("handleMasterCheck event", e)
+    if (e.target.checked) {
+      setMasterData([...masterData, { ...row, ["check1"]: e.target.checked }])
+      setFilterMasterData([...filterMasterData, { ...row }])
+    } else {
+      var _filterMasterData = [...filterMasterData]
+      const updated = _filterMasterData.filter((currentItem, i) => {
+        if (row.id == currentItem.id) {
           return
-        }else return currentItem
+        } else return currentItem
 
       })
-      console.log(" handleMasterCheck updated",updated)
+      console.log(" handleMasterCheck updated", updated)
       setFilterMasterData(updated)
     }
 
@@ -1333,7 +1400,7 @@ export function CreatePortfolio() {
       wrap: true,
       sortable: true,
       maxWidth: "300px",
-      cell: (row) => <Checkbox className="text-black" checked={row.check1} onChange={(e)=>handleMasterCheck(e,row)}/>,
+      cell: (row) => <Checkbox className="text-black" checked={row.check1} onChange={(e) => handleMasterCheck(e, row)} />,
     },
     {
       name: (
@@ -1401,7 +1468,7 @@ export function CreatePortfolio() {
           <div>
             <img className="mr-2" src={boxicon}></img>Start S NO
           </div>
-  
+
         </>
       ),
       selector: (row) => row.bundleDescription,
@@ -1420,7 +1487,7 @@ export function CreatePortfolio() {
       sortable: true,
       format: (row) => row.strategy,
     },
-  
+
     // {
     //     name: <><div>Service $
     //     </div></>,
@@ -1449,7 +1516,7 @@ export function CreatePortfolio() {
       sortable: true,
       format: (row) => row.action,
     },
-  
+
     // {
     //   name:<><div>Progress
     //   </div></>,
@@ -1484,7 +1551,7 @@ export function CreatePortfolio() {
     // },
     // {
     //   name: 'Actions',
-  
+
     //   cell: row => (
     //     <div>
     //       {row.genres.map((genre, i) => (
@@ -2496,22 +2563,99 @@ export function CreatePortfolio() {
                           <p className="ml-4 mb-0"><a onClick={() => handleOpen()} className=" ml-3 font-size-14"><img src={uploadIcon}></img></a><a href="#" className="ml-3 "><img src={shareIcon}></img></a></p>
                         </div>
                       </div> */}
-                      <div className="col-8">
-                        <div className="d-flex justify-content-between align-items-center">
-                          <div className="d-flex align-items-center mt-3 w-100">
-                            <div
+                      <div className="col-10">
+                        {/* <div className="d-flex align-items-center">
+                        <div
                               className="search-icon mr-2"
-                              style={{ lineHeight: "24px",cursor:"pointer" }}
+                              style={{ lineHeight: "24px", cursor: "pointer" }}
                               onClick={handleQuerySearchClick}
                             >
-                              {/* <img src={searchstatusIcon}></img> */}
                               <SearchIcon />
                             </div>
+                                <span className="mr-3">Search</span>
+                        </div> */}
+                        <div className="d-flex justify-content-between align-items-center">
+                          <div className="d-flex align-items-center mt-3 w-100">
+
                             <div className="d-flex justify-content-between align-items-center p-3 bg-light-dark border-radius-10 w-100">
                               <div className="row align-items-center m-0">
+                                <div
+                                  className="search-icon mr-2"
+                                  style={{ lineHeight: "24px", cursor: "pointer" }}
+                                  onClick={handleQuerySearchClick}
+                                >
+                                  <SearchIcon />
+                                </div>
                                 <span className="mr-3">Search</span>
                                 {/* <QuerySearchComp count={count}/> */}
-                                {querySearchCompHtml.map((curr, i) => curr)}
+
+                                {
+                                  querySearchSelector.map((obj, i) => {
+                                    return (
+                                      <>
+                                        <div className="customselect d-flex align-items-center mr-3 my-2">
+                                          {
+                                            i > 0 ?
+                                              <Select
+                                                isClearable={true}
+                                                defaultValue={{ label: "And", value: "AND" }}
+                                                options={[
+                                                  { label: "And", value: "AND" },
+                                                  { label: "Or", value: "OR" },
+                                                ]}
+                                                placeholder="&amp;"
+                                                value={obj.selectOperator}
+                                                
+                                              /> : <></>
+                                          }
+
+                                          <div>
+                                            <Select
+                                              isClearable={true}
+                                              options={[
+                                                { label: "Make", value: "make" },
+                                                { label: "Family", value: "family" },
+                                                { label: "Model", value: "model" },
+                                                { label: "Prefix", value: "prefix" },
+                                              ]}
+                                              onChange={(e) => handleFamily(e, count)}
+                                              value={obj.selectFamily}
+                                              id={count}
+                                            />
+                                          </div>
+                                          <input
+                                            type="text"
+                                            placeholder="Search String"
+                                            onChange={(e) => handleTild(e, count)}
+                                            value={obj.inputSearch}
+                                            id={count}
+                                          />
+
+                                          {
+                                            obj.selectOptions.length > 0 ?
+                                              <>
+                                                <Select
+                                                  isClearable={true}
+                                                  options={obj.selectOptions}
+                                                />
+                                              </>
+                                              :
+                                              <></>
+                                          }
+                                        </div>
+                                      </>
+                                    );
+                                  })
+                                }
+
+
+
+
+                                {/* {querySearchCompHtml.map((curr, i) => curr)} */}
+
+
+
+
                                 <div
                                   onClick={(e) => addSearchQuerryHtml(e)}>
                                   <Link
@@ -2531,48 +2675,10 @@ export function CreatePortfolio() {
                             </Link>
                           </div>
                         </div>
-                        {/* <div
-                          className="d-flex align-items-center"
-                          style={{
-                            background: "#F9F9F9",
-                            padding: "10px 15px",
-                            borderRadius: "10px",
-                          }}
-                        > */}
-                        {/* <div
-                            className="search-icon mr-2"
-                            style={{ lineHeight: "24px" }}
-                          >
-                            <img src={searchstatusIcon}></img>
-                          </div> */}
 
-                        {/* <div className="w-100 mx-2">
-                            <div className="machine-drop d-flex align-items-center"> */}
-                        {/* <div><lable className="label-div">Search By</lable></div> */}
-                        {/* <FormControl className="" sx={{ m: 1 }}>
-                                <Select
-                                  placeholder="Search By"
-                                  id="demo-simple-select-autowidth"
-                                  value={age}
-                                  onChange={handleChangedrop}
-                                  autoWidth
-                                >
-                                  <MenuItem value="5">
-                                    <em>Engine</em>
-                                  </MenuItem>
-                                  <MenuItem value={10}>Twenty</MenuItem>
-                                  <MenuItem value={21}>Twenty one</MenuItem>
-                                  <MenuItem value={22}>
-                                    Twenty one and a half
-                                  </MenuItem>
-                                </Select>
-                              </FormControl> */}
-                        {/* </div>
-                          </div> */}
-                        {/* </div> */}
                       </div>
                       <div className="col-2">
-                        <div className="d-flex align-items-center">
+                        <div className="d-flex align-items-center justify-content-center">
                           {/* <div className="col-6 text-center">
                             <a href="#" className="p-1 more-btn">
                               + 3 more
@@ -2581,15 +2687,13 @@ export function CreatePortfolio() {
                               <span className="a-btn">A</span>
                             </a>
                           </div> */}
-                          <div className="col-6 text-center border-left py-4">
+                          <div className="border-left py-4">
                             <a
                               href="#"
                               data-toggle="modal"
                               data-target="#AddCoverage"
-                              className="p-1 "
-                            >
-                              + Add Selected Coverages
-                            </a>
+                              className="p-1"
+                            >+ Add Selected</a>
                           </div>
                         </div>
                       </div>
