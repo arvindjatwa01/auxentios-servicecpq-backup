@@ -256,18 +256,20 @@ export const PortfolioSummary = () => {
         <>
             <CommanComponents />
             <div className="content-body" style={{ minHeight: '884px' }}>
-                <div class="container-fluid ">
+                <div class="container-fluid">
                     <div className="d-flex align-items-center justify-content-between mt-2">
                         <h5 className="font-weight-600 mb-0">Portfolio and Service</h5>
-                    </div>
-                    <div className="card p-4 mt-5">
                         <div>
                             <a href="/portfolioBuilder/new" style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
                                 <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create New<span className="ml-2"></span>
                             </a>
                         </div>
-                        <div className="mt-5">
-                            <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6>
+                    </div>
+                    
+                    <div className="card p-4 mt-5">
+                        
+                        <div className="mt-1">
+                            {/* <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6> */}
                             <div className="recent-div p-3">
                                 <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
                                 <div className="row">

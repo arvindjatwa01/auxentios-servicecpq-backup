@@ -1,11 +1,11 @@
 body {
-  font-family: 'Inter';
+      font-family: "Roboto","Helvetica","Arial",sans-serif;
   background-color: #F8F8F8;
   font-size: 14px;
 }
 
 @font-face {
-  font-family: 'Inter';
+      font-family: "Roboto","Helvetica","Arial",sans-serif;
   src: url('./assets/fonts/Inter-ExtraBold.woff2') format('woff2'),
     url('./assets/fonts/Inter-ExtraBold.woff') format('woff');
   font-weight: bold;
@@ -14,7 +14,7 @@ body {
 }
 
 @font-face {
-  font-family: 'Inter';
+      font-family: "Roboto","Helvetica","Arial",sans-serif;
   src: url('./assets/fonts/Inter-Black.woff2') format('woff2'),
     url('./assets/fonts/Inter-Black.woff') format('woff');
   font-weight: 900;
@@ -23,7 +23,7 @@ body {
 }
 
 @font-face {
-  font-family: 'Inter';
+      font-family: "Roboto","Helvetica","Arial",sans-serif;
   src: url('./assets/fonts/Inter-Bold.woff2') format('woff2'),
     url('./assets/fonts/Inter-Bold.woff') format('woff');
   font-weight: bold;
@@ -32,7 +32,7 @@ body {
 }
 
 @font-face {
-  font-family: 'Inter';
+      font-family: "Roboto","Helvetica","Arial",sans-serif;
   src: url('./assets/fonts/Inter-ExtraLight.woff2') format('woff2'),
     url('./assets/fonts/Inter-ExtraLight.woff') format('woff');
   font-weight: 200;
@@ -41,7 +41,7 @@ body {
 }
 
 @font-face {
-  font-family: 'Inter';
+      font-family: "Roboto","Helvetica","Arial",sans-serif;
   src: url('./assets/fonts/Inter-Regular.woff2') format('woff2'),
     url('./assets/fonts/Inter-Regular.woff') format('woff');
   font-weight: normal;
@@ -50,7 +50,7 @@ body {
 }
 
 @font-face {
-  font-family: 'Inter';
+      font-family: "Roboto","Helvetica","Arial",sans-serif;
   src: url('./assets/fonts/Inter-Light.woff2') format('woff2'),
     url('./assets/fonts/Inter-Light.woff') format('woff');
   font-weight: 300;
@@ -59,7 +59,7 @@ body {
 }
 
 @font-face {
-  font-family: 'Inter';
+      font-family: "Roboto","Helvetica","Arial",sans-serif;
   src: url('./assets/fonts/Inter-Medium.woff2') format('woff2'),
     url('./assets/fonts/Inter-Medium.woff') format('woff');
   font-weight: 500;
@@ -68,7 +68,7 @@ body {
 }
 
 @font-face {
-  font-family: 'Inter';
+      font-family: "Roboto","Helvetica","Arial",sans-serif;
   src: url('./assets/fonts/Inter-SemiBold.woff2') format('woff2'),
     url('./assets/fonts/Inter-SemiBold.woff') format('woff');
   font-weight: 600;
@@ -77,7 +77,7 @@ body {
 }
 
 @font-face {
-  font-family: 'Inter';
+      font-family: "Roboto","Helvetica","Arial",sans-serif;
   src: url('./assets/fonts/Inter-Thin.woff2') format('woff2'),
     url('./assets/fonts/Inter-Thin.woff') format('woff');
   font-weight: 100;
@@ -98,7 +98,7 @@ em {
 }
 
 h5 {
-  font-family: 'Inter';
+      font-family: "Roboto","Helvetica","Arial",sans-serif;
   src: url('./assets/fonts/Inter-SemiBold.woff2') format('woff2'),
     url('./assets/fonts/Inter-SemiBold.woff') format('woff');
   font-weight: 600;
@@ -823,7 +823,7 @@ nav.main-menu li.hover>a span {
   display: table-cell;
   vertical-align: middle;
   width: 190px;
-  font-family: 'Titillium Web', sans-serif;
+      font-family: "Roboto","Helvetica","Arial",sans-serif;
 }
 
 .main-menu>ul.logout {
