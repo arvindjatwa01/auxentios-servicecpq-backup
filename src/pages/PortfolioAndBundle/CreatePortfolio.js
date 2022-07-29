@@ -259,8 +259,15 @@ export function CreatePortfolio() {
   const handleClose2 = () => setOpen2(false);
 
 
-  const [count, setCount] = useState(0)
-  const [querySearchSelector, setQuerySearchSelector] = useState([])
+  const [count, setCount] = useState(1)
+  const [querySearchSelector, setQuerySearchSelector] = useState([{
+    id: 0,
+    selectFamily: "",
+    selectOperator: "",
+    inputSearch: "",
+    selectOptions: [],
+    selectedOption: ""
+  }])
   const [querySearchCompHtml, setQuerySearchCompHtml] = useState([])
   const [querySearchFamily, setQuerySearchFamily] = useState({})
   const [querySearchTild, setQuerySearchTild] = useState({})
@@ -1015,32 +1022,6 @@ export function CreatePortfolio() {
 
   useEffect(() => {
     const portfolioId = 4;
-    querySearchSelector.push(
-      {
-        selectOperator: "",
-        selectFamily: "",
-        inputSearch: "",
-        selectOptions: [
-          { label: "1", value: "1" },
-          { label: "2", value: "2" },
-          { label: "3", value: "3" },
-          { label: "4", value: "4" }
-        ]
-      }, {
-        selectOperator: "",
-        selectFamily: "",
-        inputSearch: "",
-        selectOptions: [
-          { label: "1", value: "1" },
-          { label: "2", value: "2" },
-          { label: "3", value: "3" },
-          { label: "4", value: "4" }
-        ]
-      }
-    );
-    if (Object.keys(querySearchCompHtml).length == 0) {
-      addSearchQuerryHtml()
-    }
     getPortfolioDetails(portfolioId);
     initFetch();
     dispatch(taskActions.fetchTaskList());
@@ -1221,42 +1202,81 @@ export function CreatePortfolio() {
     // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
   ];
 
-  const handleFamily = (e, count) => {
-    setQuerySearchFamily({ ...querySearchFamily, [count]: e })
+  const handleFamily = (e, id) => {
     console.log("handleFamily", e)
-  }
-  const handleOperator = (e, count) => {
-    setQuerySearchOperator({ ...querySearchOperator, [count]: e })
-  }
-  const handleTild = (e, count) => {
-    console.log("handle Tild Event", e.target.value)
+    for (let i = 0; i < querySearchSelector.length; i++) {
+      if (querySearchSelector[i].id === id) {
+        querySearchSelector[i].selectFamily = e
+      }
+    }
 
-    getSearchCoverageForFamily(e.target.value).then((res) => {
-      setFamilySearchDropDown(res)
-      console.log("data", res)
-      setSearchLoading(false)
-    }).catch((err) => console.log("err:", err))
+    console.log("handleFamily", querySearchSelector, e, id)
+    // setQuerySearchFamily({ ...querySearchFamily, [i]: e })
+  }
+  const handleOperator = (e, id) => {
 
-    setQuerySearchTild({ ...querySearchTild, [count]: e.target.value })
+    for (let i = 0; i < querySearchSelector.length; i++) {
+      if (querySearchSelector[i].id === id) {
+        querySearchSelector[i].selectOperator = e
+      }
+    }
+
+    // setQuerySearchOperator({ ...querySearchOperator, [i]: e })
+  }
+  const handleInputSearch = async (e, id) => {
+    try {
+      const res = await getSearchCoverageForFamily(e.target.value)
+
+      for (let i = 0; i < querySearchSelector.length; i++) {
+        if (querySearchSelector[i].id === id) {
+          querySearchSelector[i].inputSearch = e.target.value
+          querySearchSelector[i].selectOptions = res
+
+        }
+      }
+      setCount(count+1)
+
+    } catch (error) {
+      console.log("err 111111:", error)
+    }
+
+    // setQuerySearchTild({ ...querySearchTild, [count]: e.target.value })
 
   }
 
   const handleQuerySearchClick = () => {
-    console.log("handleQuerySearchClick")
-    var searchStr = querySearchFamily[0].value + "~" + querySearchTild[0]
-    if (Object.keys(querySearchOperator).length > 0) {
-      for (let i = 1; i < Object.keys(querySearchOperator).length + 1; i++) {
-        searchStr = searchStr + " " + querySearchOperator[i].value + " " + querySearchFamily[i].value + "~" + querySearchTild[i]
-      }
-    } else {
-      searchStr = searchStr
+    console.log("handleQuerySearchClick", querySearchSelector)
 
-    }
+    // var searchStr = querySearchFamily[0].value + "~" + querySearchTild[0]
+    // if (Object.keys(querySearchOperator).length > 0) {
+    //   for (let i = 1; i < Object.keys(querySearchOperator).length + 1; i++) {
+    //     searchStr = searchStr + " " + querySearchOperator[i].value + " " + querySearchFamily[i].value + "~" + querySearchTild[i]
+    //   }
+    // } else {
+    //   searchStr = searchStr
+    // }
     // console.log("querySearchFamily", querySearchFamily)
     // console.log("querySearchTild", querySearchTild)
     // console.log("querySearchOperator", querySearchOperator)
     // console.log("searchStr", searchStr)
 
+
+    // var searchStr = querySearchSelector[0].selectFamily.value+ "~" + querySearchSelector[0].selectedOption
+    var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].selectOptions[0]
+    for (let i = 1; i < querySearchSelector.length; i++) {
+      // searchStr = searchStr + querySearchSelector[i].selectOperator.value + querySearchSelector[i].selectFamily.value+ "~" + querySearchSelector[i].selectedOption
+      searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + "~" + querySearchSelector[i].selectOptions[0]
+
+      // console.log("querySearchSelector[i].selectFamily.value", querySearchSelector[i].selectFamily.value, i)
+      // console.log("querySearchSelector[i].inputSearch", querySearchSelector[i].inputSearch)
+      // console.log("querySearchSelector[i].selectedOption", querySearchSelector[i].selectedOption)
+      // console.log("querySearchSelector[i].selectOperator.value", querySearchSelector[i].selectOperator.value)
+
+    }
+
+
+
+    console.log("searchStr", searchStr)
     getSearchQueryCoverage(searchStr).then((res) => {
       console.log("search Query Result :", res)
       setMasterData(res)
@@ -1267,101 +1287,115 @@ export function CreatePortfolio() {
 
   }
 
-  const addSearchQuerryHtml = (e) => {
-    // let list = []
-    const html = (<>
-      {
-        count > 0 ? (<div className="customselect d-flex align-items-center mr-3">
-          <Select
-            isClearable={true}
-            defaultValue={{ label: "And", value: "AND" }}
-            options={[
-              { label: "And", value: "AND" },
-              { label: "Or", value: "OR" },
-            ]}
-            placeholder="&"
-            onChange={(e) => handleOperator(e, count)}
-            value={querySearchOperator[count]}
-            id={count}
-          />
-        </div>) : <></>
-      }
-
-      <div className="customselect d-flex align-items-center mr-3 my-2">
-        <div>
-          <Select
-            isClearable={true}
-            options={[
-              { label: "Make", value: "make" },
-              { label: "Family", value: "family" },
-              { label: "Model", value: "model" },
-              { label: "Prefix", value: "prefix" },
-            ]}
-            onChange={(e) => handleFamily(e, count)}
-            value={querySearchFamily[count]}
-            id={count}
-          />
-        </div>
-        {/* <Select 
-        placeholder="Search String"
-        options={[
-          { label: "3C", value: "3C" },
-          { label: "2C", value: "2C" },
-        ]}
-        onChange={(e) => handleTild(e, count)}
-        value={querySearchTild[count]}
-        /> */}
-
-        <input
-          type="text"
-          placeholder="Search String"
-          onChange={(e) => handleTild(e, count)}
-          value={querySearchTild[count]}
-          id={count}
-        />
-      </div>
-      <ul
-        className="list-group"
-        style={{
-          maxHeight: "100px",
-          minWidth: "180px",
-          marginBottom: "10px",
-          overflowY: "scroll",
-          fontSize: "10px",
-          webkitOverflowScrolling: "touch"
-        }}
-      >
-        {/* <li className="list-group-item">ABC</li>
-        <li className="list-group-item">ABC</li>
-        <li className="list-group-item">ABC</li>
-        <li className="list-group-item">ABC</li>
-        <li className="list-group-item">ABC</li>
-        <li className="list-group-item">ABC</li>
-        <li className="list-group-item">ABC</li>
-        <li className="list-group-item">ABC</li> */}
-        {
-          familySearchDropDown.map((currentItem, i) => {
-            console.log("current item in search dropDown", currentItem)
-            return (<li className="list-group-item" key={i}>{currentItem}</li>)
-          })
-
-        }
-
-      </ul>
-    </>)
-    // list.push(html)
-    console.log("----------", html);
-    setQuerySearchCompHtml([...querySearchCompHtml, html])
+  const addSearchQuerryHtml = () => {
+    querySearchSelector.push({
+      id: count,
+      selectOperator: "",
+      selectFamily: "",
+      inputSearch: "",
+      selectOptions: [],
+      selectedOption: ""
+    })
     setCount(count + 1)
+
+
+    // let list = []
+    // const html = (<>
+    //   {
+    //     count > 0 ? (<div className="customselect d-flex align-items-center mr-3">
+    //       <Select
+    //         isClearable={true}
+    //         defaultValue={{ label: "And", value: "AND" }}
+    //         options={[
+    //           { label: "And", value: "AND" },
+    //           { label: "Or", value: "OR" },
+    //         ]}
+    //         placeholder="&"
+    //         onChange={(e) => handleOperator(e, count)}
+    //         value={querySearchOperator[count]}
+    //         id={count}
+    //       />
+    //     </div>) : <></>
+    //   }
+
+    //   <div className="customselect d-flex align-items-center mr-3 my-2">
+    //     <div>
+    //       <Select
+    //         isClearable={true}
+    //         options={[
+    //           { label: "Make", value: "make" },
+    //           { label: "Family", value: "family" },
+    //           { label: "Model", value: "model" },
+    //           { label: "Prefix", value: "prefix" },
+    //         ]}
+    //         onChange={(e) => handleFamily(e, count)}
+    //         value={querySearchFamily[count]}
+    //         id={count}
+    //       />
+    //     </div>
+    //     {/* <Select 
+    //     placeholder="Search String"
+    //     options={[
+    //       { label: "3C", value: "3C" },
+    //       { label: "2C", value: "2C" },
+    //     ]}
+    //     onChange={(e) => handleTild(e, count)}
+    //     value={querySearchTild[count]}
+    //     /> */}
+
+    //     <input
+    //       type="text"
+    //       placeholder="Search String"
+    //       onChange={(e) => handleTild(e, count)}
+    //       value={querySearchTild[count]}
+    //       id={count}
+    //     />
+    //   </div>
+    //   <ul
+    //     className="list-group"
+    //     style={{
+    //       maxHeight: "100px",
+    //       minWidth: "180px",
+    //       marginBottom: "10px",
+    //       overflowY: "scroll",
+    //       fontSize: "10px",
+    //       webkitOverflowScrolling: "touch"
+    //     }}
+    //   >
+    //     {/* <li className="list-group-item">ABC</li>
+    //     <li className="list-group-item">ABC</li>
+    //     <li className="list-group-item">ABC</li>
+    //     <li className="list-group-item">ABC</li>
+    //     <li className="list-group-item">ABC</li>
+    //     <li className="list-group-item">ABC</li>
+    //     <li className="list-group-item">ABC</li>
+    //     <li className="list-group-item">ABC</li> */}
+    //     {
+    //       familySearchDropDown.map((currentItem, i) => {
+    //         console.log("current item in search dropDown", currentItem)
+    //         return (<li className="list-group-item" key={i}>{currentItem}</li>)
+    //       })
+
+    //     }
+
+    //   </ul>
+    // </>)
+    // // list.push(html)
+    // console.log("----------", html);
+    // setQuerySearchCompHtml([...querySearchCompHtml, html])
+    // setCount(count + 1)
   }
 
 
   const handleDeletQuerySearch = () => {
+    setQuerySearchSelector([])
     setCount(0)
-    setQuerySearchCompHtml([])
-    setQuerySearchTild({})
-    setQuerySearchOperator({})
-    setQuerySearchFamily({})
+
+    // setQuerySearchCompHtml([])
+    // setQuerySearchTild({})
+    // setQuerySearchOperator({})
+    // setQuerySearchFamily({})
+    
     setMasterData([])
     setFilterMasterData([])
   }
@@ -1370,7 +1404,7 @@ export function CreatePortfolio() {
 
     console.log("handleMasterCheck event", e)
     if (e.target.checked) {
-      setMasterData([...masterData, { ...row, ["check1"]: e.target.checked }])
+      setMasterData([...masterData,   { ...row, ["check1"]: e.target.checked }])
       setFilterMasterData([...filterMasterData, { ...row }])
     } else {
       var _filterMasterData = [...filterMasterData]
@@ -2593,6 +2627,7 @@ export function CreatePortfolio() {
                                   querySearchSelector.map((obj, i) => {
                                     return (
                                       <>
+
                                         <div className="customselect d-flex align-items-center mr-3 my-2">
                                           {
                                             i > 0 ?
@@ -2600,12 +2635,14 @@ export function CreatePortfolio() {
                                                 isClearable={true}
                                                 defaultValue={{ label: "And", value: "AND" }}
                                                 options={[
-                                                  { label: "And", value: "AND" },
-                                                  { label: "Or", value: "OR" },
+                                                  { label: "And", value: "AND", id: i },
+                                                  { label: "Or", value: "OR", id: i },
                                                 ]}
                                                 placeholder="&amp;"
-                                                value={obj.selectOperator}
-                                                
+                                                onChange={(e) => handleOperator(e, i)}
+                                                // value={querySearchOperator[i]}
+                                                value={obj.selectOperator.value}
+
                                               /> : <></>
                                           }
 
@@ -2613,35 +2650,32 @@ export function CreatePortfolio() {
                                             <Select
                                               isClearable={true}
                                               options={[
-                                                { label: "Make", value: "make" },
-                                                { label: "Family", value: "family" },
-                                                { label: "Model", value: "model" },
-                                                { label: "Prefix", value: "prefix" },
+                                                { label: "Make", value: "make", id: i },
+                                                { label: "Family", value: "family", id: i },
+                                                { label: "Model", value: "model", id: i },
+                                                { label: "Prefix", value: "prefix", id: i },
                                               ]}
-                                              onChange={(e) => handleFamily(e, count)}
-                                              value={obj.selectFamily}
-                                              id={count}
+                                              onChange={(e) => handleFamily(e, i)}
+                                              value={obj.selectFamily.value}
+                                              // value={querySearchFamily[i]}
+                                              id={i}
                                             />
                                           </div>
                                           <input
                                             type="text"
                                             placeholder="Search String"
-                                            onChange={(e) => handleTild(e, count)}
-                                            value={obj.inputSearch}
-                                            id={count}
+                                            onChange={(e) => handleInputSearch(e, i)}
+                                            value={obj.inputSearch.value}
                                           />
 
-                                          {
-                                            obj.selectOptions.length > 0 ?
-                                              <>
-                                                <Select
-                                                  isClearable={true}
-                                                  options={obj.selectOptions}
-                                                />
-                                              </>
-                                              :
-                                              <></>
-                                          }
+                                            {
+                                              
+                                              <ul class="list-group" style={{height:"150px",width:"100px",overflowY:"scroll"}}>
+                                               {obj.selectOptions.map((currentItem,i)=>(
+                                                <li class="list-group-item" key={i}>{currentItem}</li>
+                                               ))}
+                                              </ul>
+                                            }
                                         </div>
                                       </>
                                     );
