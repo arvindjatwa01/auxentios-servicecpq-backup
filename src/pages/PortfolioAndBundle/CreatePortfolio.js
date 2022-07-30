@@ -101,6 +101,10 @@ import { useAppSelector } from "../../app/hooks";
 import { portfolioItemActions } from "./createItem/portfolioSlice";
 import { createItemPayload } from "./createItem/createItemPayload";
 import { Link } from "react-router-dom";
+import $ from "jquery"
+
+
+
 
 
 
@@ -260,6 +264,7 @@ export function CreatePortfolio() {
 
 
   const [count, setCount] = useState(1)
+  const [updateCount, setUpdateCount] = useState(0)
   const [querySearchSelector, setQuerySearchSelector] = useState([{
     id: 0,
     selectFamily: "",
@@ -273,12 +278,16 @@ export function CreatePortfolio() {
   const [querySearchTild, setQuerySearchTild] = useState({})
   const [querySearchOperator, setQuerySearchOperator] = useState({})
   const [familySearchDropDown, setFamilySearchDropDown] = useState([])
-  const [searchLoading, setSearchLoading] = useState(true)
+
+  const [autoState, setAutoState] = useState({
+    value: '',
+    suggestions: []
+  })
 
   const handleCustomerSegmentChange = (e) => {
     setGeneralComponentData({
       ...generalComponentData,
-      customerSegment: e,
+      customerSegment: e.value,
     });
   };
 
@@ -646,7 +655,6 @@ export function CreatePortfolio() {
             portfolioId: res.portfolioId,
           });
           setPortfolioId(res.portfolioId);
-          // console.log("res createPortfolio", res);
         })
         .catch((err) => {
           console.log("err in createPortfolio", err);
@@ -678,12 +686,27 @@ export function CreatePortfolio() {
       });
       let obj = {
         ...generalComponentData,
-        ...reqData,
+        ...reqData
+      };
+      
+      console.log("Update Date Data",obj);
+    } else if (e.target.id == "strategy") {
+      setGeneralComponentData({
+        ...generalComponentData,
+        usageCategory: categoryUsageKeyValue1.value,
+        taskType: stratgyTaskTypeKeyValue.value,
+        strategyTask: stratgyTaskUsageKeyValue.value,
+        optionals: stratgyOptionalsKeyValue.value,
+        responseTime: stratgyResponseTimeKeyValue.value,
+        productHierarchy: stratgyHierarchyKeyValue.value,
+        geographic: stratgyGeographicKeyValue.value,
+      });
 
+      const { portfolioId, ...res } = generalComponentData
+      let obj = {
         visibleInCommerce: true,
         customerId: 0,
         lubricant: true,
-
         customerSegment: generalComponentData.customerSegment
           ? generalComponentData.customerSegment
           : "EMPTY",
@@ -732,31 +755,35 @@ export function CreatePortfolio() {
         customerGroup: generalComponentData.customerGroup
           ? generalComponentData.customerGroup
           : "EMPTY",
-        // searchTerm: "EMPTY",
-        // serviceProgramDescription:"EMPTY"
-      };
-      console.log("Update Date Data", obj);
-      // updatePortfolio(generalComponentData.portfolioId,obj)
-      //   .then((res) => {
-      //     console.log("updatePortFolio for Date", res);
-      //   })
-      //   .catch((err) => {
-      //     console.log(" Error in updatePortFolio for Date", err);
-      //   });
-    } else if (e.target.id == "strategy") {
-      setGeneralComponentData({
-        ...generalComponentData,
+        searchTerm: "EMPTY",
+        supportLevel: "EMPTY",
+        // serviceProgramDescription:"EMPTY",
+        portfolioPrice: { portfolioPriceId: "EMPTY" },
+        additionalPrice: { additionalPriceId: "EMPTY" },
+        escalationPrice: { escalationPriceId: "EMPTY" },
+
+        ...res,
         usageCategory: categoryUsageKeyValue1.value,
         taskType: stratgyTaskTypeKeyValue.value,
         strategyTask: stratgyTaskUsageKeyValue.value,
-        optionals: stratgyOptionalsKeyValue.value,
+        // optionals: stratgyOptionalsKeyValue.value,
         responseTime: stratgyResponseTimeKeyValue.value,
         productHierarchy: stratgyHierarchyKeyValue.value,
         geographic: stratgyGeographicKeyValue.value,
-      });
-      console.log("strategy updating");
+
+      }
+      
+      console.log("generalComponentData res,id",portfolioId,res)
+      updatePortfolio(generalComponentData.portfolioId, obj)
+        .then((res) => {
+          console.log("strategy updating", res);
+        })
+        .catch((err) => {
+          console.log(" Error in strategy updating", err);
+        });
+      console.log("strategy updating obj", obj);
     } else if (e.target.id == "coverage") {
-      console.log("strategy updating");
+      console.log("coverage updating");
     }
   };
   const handleGeneralInputChange = (e) => {
@@ -1223,9 +1250,19 @@ export function CreatePortfolio() {
 
     // setQuerySearchOperator({ ...querySearchOperator, [i]: e })
   }
+
+
+
+
+
   const handleInputSearch = async (e, id) => {
+
     try {
+
       const res = await getSearchCoverageForFamily(e.target.value)
+      // $("#inputSearch1").autoComplete({
+      //   source: res
+      // });
 
       for (let i = 0; i < querySearchSelector.length; i++) {
         if (querySearchSelector[i].id === id) {
@@ -1234,7 +1271,7 @@ export function CreatePortfolio() {
 
         }
       }
-      setCount(count+1)
+      setUpdateCount(updateCount + 1)
 
     } catch (error) {
       console.log("err 111111:", error)
@@ -1395,7 +1432,7 @@ export function CreatePortfolio() {
     // setQuerySearchTild({})
     // setQuerySearchOperator({})
     // setQuerySearchFamily({})
-    
+
     setMasterData([])
     setFilterMasterData([])
   }
@@ -1404,7 +1441,7 @@ export function CreatePortfolio() {
 
     console.log("handleMasterCheck event", e)
     if (e.target.checked) {
-      setMasterData([...masterData,   { ...row, ["check1"]: e.target.checked }])
+      setMasterData([...masterData, { ...row, ["check1"]: e.target.checked }])
       setFilterMasterData([...filterMasterData, { ...row }])
     } else {
       var _filterMasterData = [...filterMasterData]
@@ -2666,16 +2703,18 @@ export function CreatePortfolio() {
                                             placeholder="Search String"
                                             onChange={(e) => handleInputSearch(e, i)}
                                             value={obj.inputSearch.value}
+                                            id="inputSearch1"
+                                            autoComplete={true}
                                           />
 
-                                            {
-                                              
-                                              <ul class="list-group" style={{height:"150px",width:"100px",overflowY:"scroll"}}>
-                                               {obj.selectOptions.map((currentItem,i)=>(
+                                          {
+
+                                            <ul class="list-group" style={{ height: "150px", width: "100px", overflowY: "scroll" }}>
+                                              {obj.selectOptions.map((currentItem, i) => (
                                                 <li class="list-group-item" key={i}>{currentItem}</li>
-                                               ))}
-                                              </ul>
-                                            }
+                                              ))}
+                                            </ul>
+                                          }
                                         </div>
                                       </>
                                     );
