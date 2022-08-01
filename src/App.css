@@ -2447,4 +2447,31 @@ color: #ffffff;
     display: block;
     width: 0;} */
 
-
+.customselectsearch{position: relative;}
+.customselectsearch .customselectsearch-list{
+  width: 100%;
+  position: absolute;
+  z-index: 1100;
+}
+.customselectsearch .customselectsearch-list .list-group-item{
+padding:5px 10px;
+cursor: pointer;
+}
+  #style::-webkit-scrollbar-track {
+    -webkit-box-shadow:none;
+    background-color: transparent;
+    }
+    #style::-webkit-scrollbar {
+    width: 2px;
+    background-color:transparent;
+    height: 2px;
+    }
+    #style::-webkit-scrollbar-thumb {
+    background-color: #000000;
+    }
+    .scrollbar {
+    height: 150px;
+    overflow-y: scroll;
+    width: 100%;
+    margin: 0;
+    }

@@ -102,6 +102,7 @@ import { portfolioItemActions } from "./createItem/portfolioSlice";
 import { createItemPayload } from "./createItem/createItemPayload";
 import { Link } from "react-router-dom";
 import $ from "jquery"
+import { display } from "@mui/system";
 
 
 
@@ -287,7 +288,7 @@ export function CreatePortfolio() {
   const handleCustomerSegmentChange = (e) => {
     setGeneralComponentData({
       ...generalComponentData,
-      customerSegment: e.value,
+      customerSegment: e,
     });
   };
 
@@ -630,7 +631,7 @@ export function CreatePortfolio() {
         name: generalComponentData.name,
         description: generalComponentData.description,
         externalReference: generalComponentData.externalReference,
-        customerSegment: generalComponentData.customerSegment,
+        customerSegment: generalComponentData.customerSegment.value,
 
         strategyTask: "PREVENTIVE_MAINTENANCE",
         taskType: "PM1",
@@ -662,16 +663,9 @@ export function CreatePortfolio() {
     } else if (e.target.id == "validity") {
       let reqData;
       if (validityData.fromDate && validityData.toDate) {
-        let yf = validityData.fromDate.getFullYear();
-        let mf = validityData.fromDate.getMonth();
-        let df = validityData.fromDate.getDate();
-
-        let yt = validityData.toDate.getFullYear();
-        let mt = validityData.toDate.getMonth();
-        let dt = validityData.toDate.getDate();
         reqData = {
-          validFrom: `${yf}/${mf}/${df}`,
-          validTo: `${yt}/${mt}/${dt}`,
+          validFrom: validityData.fromDate.toISOString().substring(0, 10),
+          validTo: validityData.toDate.toISOString().substring(0, 10),
         };
       } else if (validityData.fromInput && validityData.toInput) {
         reqData = {
@@ -704,11 +698,12 @@ export function CreatePortfolio() {
 
       const { portfolioId, ...res } = generalComponentData
       let obj = {
+        ...res,
         visibleInCommerce: true,
         customerId: 0,
         lubricant: true,
-        customerSegment: generalComponentData.customerSegment
-          ? generalComponentData.customerSegment
+        customerSegment: generalComponentData.customerSegment.value
+          ? generalComponentData.customerSegment.value
           : "EMPTY",
         machineType: generalComponentData.machineType
           ? generalComponentData.machineType
@@ -757,23 +752,18 @@ export function CreatePortfolio() {
           : "EMPTY",
         searchTerm: "EMPTY",
         supportLevel: "EMPTY",
-        // serviceProgramDescription:"EMPTY",
-        portfolioPrice: { portfolioPriceId: "EMPTY" },
-        additionalPrice: { additionalPriceId: "EMPTY" },
-        escalationPrice: { escalationPriceId: "EMPTY" },
+        portfolioPrice: {},
+        additionalPrice: {},
+        escalationPrice: {},
 
-        ...res,
         usageCategory: categoryUsageKeyValue1.value,
         taskType: stratgyTaskTypeKeyValue.value,
         strategyTask: stratgyTaskUsageKeyValue.value,
-        // optionals: stratgyOptionalsKeyValue.value,
         responseTime: stratgyResponseTimeKeyValue.value,
         productHierarchy: stratgyHierarchyKeyValue.value,
         geographic: stratgyGeographicKeyValue.value,
 
       }
-      
-      console.log("generalComponentData res,id",portfolioId,res)
       updatePortfolio(generalComponentData.portfolioId, obj)
         .then((res) => {
           console.log("strategy updating", res);
@@ -1260,10 +1250,6 @@ export function CreatePortfolio() {
     try {
 
       const res = await getSearchCoverageForFamily(e.target.value)
-      // $("#inputSearch1").autoComplete({
-      //   source: res
-      // });
-
       for (let i = 0; i < querySearchSelector.length; i++) {
         if (querySearchSelector[i].id === id) {
           querySearchSelector[i].inputSearch = e.target.value
@@ -1271,47 +1257,33 @@ export function CreatePortfolio() {
 
         }
       }
-      setUpdateCount(updateCount + 1)
+      setUpdateCount(updateCount+1)
 
     } catch (error) {
-      console.log("err 111111:", error)
+      console.log("err :", error)
     }
 
     // setQuerySearchTild({ ...querySearchTild, [count]: e.target.value })
 
   }
 
+  const handleSearchList=(e,currentItem,obj)=>{
+    obj.inputSearch=currentItem
+    obj.selectedOption=currentItem
+    setUpdateCount(updateCount+1)
+  }
+
+  
   const handleQuerySearchClick = () => {
-    console.log("handleQuerySearchClick", querySearchSelector)
-
-    // var searchStr = querySearchFamily[0].value + "~" + querySearchTild[0]
-    // if (Object.keys(querySearchOperator).length > 0) {
-    //   for (let i = 1; i < Object.keys(querySearchOperator).length + 1; i++) {
-    //     searchStr = searchStr + " " + querySearchOperator[i].value + " " + querySearchFamily[i].value + "~" + querySearchTild[i]
-    //   }
-    // } else {
-    //   searchStr = searchStr
-    // }
-    // console.log("querySearchFamily", querySearchFamily)
-    // console.log("querySearchTild", querySearchTild)
-    // console.log("querySearchOperator", querySearchOperator)
-    // console.log("searchStr", searchStr)
-
+    // console.log("handleQuerySearchClick", querySearchSelector)
 
     // var searchStr = querySearchSelector[0].selectFamily.value+ "~" + querySearchSelector[0].selectedOption
-    var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].selectOptions[0]
+    var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].selectedOption
     for (let i = 1; i < querySearchSelector.length; i++) {
-      // searchStr = searchStr + querySearchSelector[i].selectOperator.value + querySearchSelector[i].selectFamily.value+ "~" + querySearchSelector[i].selectedOption
-      searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + "~" + querySearchSelector[i].selectOptions[0]
-
-      // console.log("querySearchSelector[i].selectFamily.value", querySearchSelector[i].selectFamily.value, i)
-      // console.log("querySearchSelector[i].inputSearch", querySearchSelector[i].inputSearch)
-      // console.log("querySearchSelector[i].selectedOption", querySearchSelector[i].selectedOption)
-      // console.log("querySearchSelector[i].selectOperator.value", querySearchSelector[i].selectOperator.value)
-
+      searchStr = searchStr +" "+ querySearchSelector[i].selectOperator.value + " "+querySearchSelector[i].selectFamily.value+ "~" + querySearchSelector[i].selectedOption
     }
 
-
+$("#style").css("display","none")
 
     console.log("searchStr", searchStr)
     getSearchQueryCoverage(searchStr).then((res) => {
@@ -2698,23 +2670,25 @@ export function CreatePortfolio() {
                                               id={i}
                                             />
                                           </div>
+                                          <div className="customselectsearch">
                                           <input
                                             type="text"
                                             placeholder="Search String"
                                             onChange={(e) => handleInputSearch(e, i)}
-                                            value={obj.inputSearch.value}
-                                            id="inputSearch1"
-                                            autoComplete={true}
+                                            value={obj.inputSearch}
+                                            id="inputSearch"
                                           />
 
                                           {
 
-                                            <ul class="list-group" style={{ height: "150px", width: "100px", overflowY: "scroll" }}>
+                                            <ul class="list-group customselectsearch-list scrollbar" id="style">
                                               {obj.selectOptions.map((currentItem, i) => (
-                                                <li class="list-group-item" key={i}>{currentItem}</li>
+                                                <li class="list-group-item" key={i} onClick={(e)=>handleSearchList(e,currentItem,obj)}>{currentItem}</li>
                                               ))}
                                             </ul>
+                                           
                                           }
+                                           </div>
                                         </div>
                                       </>
                                     );
