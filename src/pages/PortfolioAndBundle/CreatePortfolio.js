@@ -285,6 +285,24 @@ export function CreatePortfolio() {
     suggestions: []
   })
 
+  const [addPortFolioItem,setAddportFolioItem]=useState({
+    id:"",
+    description:"",
+    usageIn:"",
+    taskType:"",
+    frequency:"",
+    unit:"",
+    recomondedValue:"",
+    quantity:"",
+    strategyEvents:"",
+    templateId:"",
+    templateDescription:"",
+    templateEvents:"",
+    repairoption:"",
+    repairEvents:""
+
+  })
+
   const handleCustomerSegmentChange = (e) => {
     setGeneralComponentData({
       ...generalComponentData,
@@ -682,8 +700,8 @@ export function CreatePortfolio() {
         ...generalComponentData,
         ...reqData
       };
-      
-      console.log("Update Date Data",obj);
+
+      console.log("Update Date Data", obj);
     } else if (e.target.id == "strategy") {
       setGeneralComponentData({
         ...generalComponentData,
@@ -1220,70 +1238,114 @@ export function CreatePortfolio() {
   ];
 
   const handleFamily = (e, id) => {
-    console.log("handleFamily", e)
-    for (let i = 0; i < querySearchSelector.length; i++) {
-      if (querySearchSelector[i].id === id) {
-        querySearchSelector[i].selectFamily = e
+    let tempArray=[...querySearchSelector]
+    console.log("handleFamily e:", e)
+    for (let i = 0; i < tempArray.length; i++) {
+      if (tempArray[i].id === id) {
+        let obj={
+          ...tempArray[i],
+          selectFamily:e
+        }
+        tempArray[i]=obj
+        // tempArray[i].selectFamily = e
+        break;
       }
     }
-
-    console.log("handleFamily", querySearchSelector, e, id)
-    // setQuerySearchFamily({ ...querySearchFamily, [i]: e })
+    setQuerySearchSelector(tempArray)
   }
   const handleOperator = (e, id) => {
-
-    for (let i = 0; i < querySearchSelector.length; i++) {
-      if (querySearchSelector[i].id === id) {
-        querySearchSelector[i].selectOperator = e
+    let tempArray=[...querySearchSelector]
+    for (let i = 0; i < tempArray.length; i++) {
+      if (tempArray[i].id === id) {
+        let obj = {
+          ...tempArray[i],
+          selectOperator : e,
+        }
+        tempArray[i]=obj
+        // tempArray[i].selectOperator = e
+        break;
       }
     }
-
-    // setQuerySearchOperator({ ...querySearchOperator, [i]: e })
+    setQuerySearchSelector(tempArray)
   }
 
-
-
-
-
   const handleInputSearch = async (e, id) => {
-
     try {
+      // const res = await getSearchCoverageForFamily(e.target.value);
+      // setQuerySearchSelector(prevState => {
+      //   const newState = prevState.map(obj => {
+      //     if (obj.id === id) {
+      //       return {
+      //         ...obj,
+      //         inputSearch : e.target.value,
+      //         selectOptions : res
+      //       };
+      //     }
+      //     return obj;
+      //   });
+      //   return newState;
+      // });
+      // $("#inputSearch-"+id).val(e.target.value)
 
+      // const newState = querySearchSelector.map(obj => {
+      //   if (obj.id === id) {
+      //     return {
+      //       ...obj,
+      //       inputSearch : e.target.value,
+      //       selectOptions : res
+      //     };
+      //   }
+      //   return obj;
+      // });
+      // setQuerySearchSelector(newState);
+      // setUpdateCount(updateCount + 1);
+
+      let tempArray=[...querySearchSelector]
       const res = await getSearchCoverageForFamily(e.target.value)
-      for (let i = 0; i < querySearchSelector.length; i++) {
-        if (querySearchSelector[i].id === id) {
-          querySearchSelector[i].inputSearch = e.target.value
-          querySearchSelector[i].selectOptions = res
-
+      for (let i = 0; i < tempArray.length; i++) {
+        if (tempArray[i].id === id) {
+          let obj = {
+            ...tempArray[i],
+            inputSearch : e.target.value,
+            selectOptions : res
+          }
+          tempArray[i]=obj
+          break;
         }
       }
-      setUpdateCount(updateCount+1)
-
+      setQuerySearchSelector(tempArray);
+      $(`.scrollbar-${id}`).css("display", "block")
+      // setUpdateCount(updateCount + 1);
     } catch (error) {
       console.log("err :", error)
     }
-
-    // setQuerySearchTild({ ...querySearchTild, [count]: e.target.value })
-
   }
 
-  const handleSearchList=(e,currentItem,obj)=>{
-    obj.inputSearch=currentItem
-    obj.selectedOption=currentItem
-    setUpdateCount(updateCount+1)
-  }
-
-  
-  const handleQuerySearchClick = () => {
-    // console.log("handleQuerySearchClick", querySearchSelector)
-
-    // var searchStr = querySearchSelector[0].selectFamily.value+ "~" + querySearchSelector[0].selectedOption
-    var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].selectedOption
-    for (let i = 1; i < querySearchSelector.length; i++) {
-      searchStr = searchStr +" "+ querySearchSelector[i].selectOperator.value + " "+querySearchSelector[i].selectFamily.value+ "~" + querySearchSelector[i].selectedOption
+  const handleSearchListClick = (e, currentItem, obj1, id) => {
+    let tempArray=[...querySearchSelector]
+    for (let i = 0; i < tempArray.length; i++) {
+      if (tempArray[i].id === id) {
+        let obj={
+          ...tempArray[i],
+          inputSearch: currentItem,
+          selectedOption : currentItem
+        }
+        tempArray[i]=obj
+        break;
+      }
     }
+    setQuerySearchSelector(tempArray)
+    $(`.scrollbar-${id}`).css("display", "none")
+  }
 
-$("#style").css("display","none")
+  const handleQuerySearchClick = () => {
+    $(".scrollbar").css("display", "none")
+    console.log("handleQuerySearchClick", querySearchSelector)
+    var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
+
+    for (let i = 1; i < querySearchSelector.length; i++) {
+      searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + "~" + querySearchSelector[i].inputSearch
+    }
 
     console.log("searchStr", searchStr)
     getSearchQueryCoverage(searchStr).then((res) => {
@@ -1297,114 +1359,21 @@ $("#style").css("display","none")
   }
 
   const addSearchQuerryHtml = () => {
-    querySearchSelector.push({
+    setQuerySearchSelector([...querySearchSelector, {
       id: count,
       selectOperator: "",
       selectFamily: "",
       inputSearch: "",
       selectOptions: [],
       selectedOption: ""
-    })
+    }])
     setCount(count + 1)
-
-
-    // let list = []
-    // const html = (<>
-    //   {
-    //     count > 0 ? (<div className="customselect d-flex align-items-center mr-3">
-    //       <Select
-    //         isClearable={true}
-    //         defaultValue={{ label: "And", value: "AND" }}
-    //         options={[
-    //           { label: "And", value: "AND" },
-    //           { label: "Or", value: "OR" },
-    //         ]}
-    //         placeholder="&"
-    //         onChange={(e) => handleOperator(e, count)}
-    //         value={querySearchOperator[count]}
-    //         id={count}
-    //       />
-    //     </div>) : <></>
-    //   }
-
-    //   <div className="customselect d-flex align-items-center mr-3 my-2">
-    //     <div>
-    //       <Select
-    //         isClearable={true}
-    //         options={[
-    //           { label: "Make", value: "make" },
-    //           { label: "Family", value: "family" },
-    //           { label: "Model", value: "model" },
-    //           { label: "Prefix", value: "prefix" },
-    //         ]}
-    //         onChange={(e) => handleFamily(e, count)}
-    //         value={querySearchFamily[count]}
-    //         id={count}
-    //       />
-    //     </div>
-    //     {/* <Select 
-    //     placeholder="Search String"
-    //     options={[
-    //       { label: "3C", value: "3C" },
-    //       { label: "2C", value: "2C" },
-    //     ]}
-    //     onChange={(e) => handleTild(e, count)}
-    //     value={querySearchTild[count]}
-    //     /> */}
-
-    //     <input
-    //       type="text"
-    //       placeholder="Search String"
-    //       onChange={(e) => handleTild(e, count)}
-    //       value={querySearchTild[count]}
-    //       id={count}
-    //     />
-    //   </div>
-    //   <ul
-    //     className="list-group"
-    //     style={{
-    //       maxHeight: "100px",
-    //       minWidth: "180px",
-    //       marginBottom: "10px",
-    //       overflowY: "scroll",
-    //       fontSize: "10px",
-    //       webkitOverflowScrolling: "touch"
-    //     }}
-    //   >
-    //     {/* <li className="list-group-item">ABC</li>
-    //     <li className="list-group-item">ABC</li>
-    //     <li className="list-group-item">ABC</li>
-    //     <li className="list-group-item">ABC</li>
-    //     <li className="list-group-item">ABC</li>
-    //     <li className="list-group-item">ABC</li>
-    //     <li className="list-group-item">ABC</li>
-    //     <li className="list-group-item">ABC</li> */}
-    //     {
-    //       familySearchDropDown.map((currentItem, i) => {
-    //         console.log("current item in search dropDown", currentItem)
-    //         return (<li className="list-group-item" key={i}>{currentItem}</li>)
-    //       })
-
-    //     }
-
-    //   </ul>
-    // </>)
-    // // list.push(html)
-    // console.log("----------", html);
-    // setQuerySearchCompHtml([...querySearchCompHtml, html])
-    // setCount(count + 1)
   }
 
 
   const handleDeletQuerySearch = () => {
     setQuerySearchSelector([])
     setCount(0)
-
-    // setQuerySearchCompHtml([])
-    // setQuerySearchTild({})
-    // setQuerySearchOperator({})
-    // setQuerySearchFamily({})
-
     setMasterData([])
     setFilterMasterData([])
   }
@@ -2650,14 +2619,14 @@ $("#style").css("display","none")
                                                 placeholder="&amp;"
                                                 onChange={(e) => handleOperator(e, i)}
                                                 // value={querySearchOperator[i]}
-                                                value={obj.selectOperator.value}
+                                                value={obj.selectOperator}
 
                                               /> : <></>
                                           }
 
                                           <div>
                                             <Select
-                                              isClearable={true}
+                                              // isClearable={true}
                                               options={[
                                                 { label: "Make", value: "make", id: i },
                                                 { label: "Family", value: "family", id: i },
@@ -2665,44 +2634,34 @@ $("#style").css("display","none")
                                                 { label: "Prefix", value: "prefix", id: i },
                                               ]}
                                               onChange={(e) => handleFamily(e, i)}
-                                              value={obj.selectFamily.value}
-                                              // value={querySearchFamily[i]}
-                                              id={i}
+                                              value={obj.selectFamily}
                                             />
                                           </div>
                                           <div className="customselectsearch">
-                                          <input
-                                            type="text"
-                                            placeholder="Search String"
-                                            onChange={(e) => handleInputSearch(e, i)}
-                                            value={obj.inputSearch}
-                                            id="inputSearch"
-                                          />
+                                            <input
+                                              type="text"
+                                              placeholder={obj.selectedOption}
+                                              onChange={(e) => handleInputSearch(e, i)}
+                                              value={obj.inputSearch}
+                                              id={"inputSearch-" + i}
+                                              autoComplete="off"
+                                            />
 
-                                          {
+                                            {
 
-                                            <ul class="list-group customselectsearch-list scrollbar" id="style">
-                                              {obj.selectOptions.map((currentItem, i) => (
-                                                <li class="list-group-item" key={i} onClick={(e)=>handleSearchList(e,currentItem,obj)}>{currentItem}</li>
-                                              ))}
-                                            </ul>
-                                           
-                                          }
-                                           </div>
+                                              <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i}`} id="style">
+                                                {obj.selectOptions.map((currentItem, j) => (
+                                                  <li className="list-group-item" key={j} onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}>{currentItem}</li>
+                                                ))}
+                                              </ul>
+
+                                            }
+                                          </div>
                                         </div>
                                       </>
                                     );
                                   })
                                 }
-
-
-
-
-                                {/* {querySearchCompHtml.map((curr, i) => curr)} */}
-
-
-
-
                                 <div
                                   onClick={(e) => addSearchQuerryHtml(e)}>
                                   <Link
@@ -3033,8 +2992,7 @@ $("#style").css("display","none")
                 >
                   <span className="mr-2">+</span>Add Solution
                 </h6>
-                <Dropdown as={ButtonGroup}>
-                  {/* <div id="dropdown-split-basic" aria-expanded="false" type="button" class="dropdown-toggle dropdown-toggle-split btn"><MoreVertIcon /></div> */}
+                {/* <Dropdown as={ButtonGroup}>
                   <Dropdown.Toggle
                     split
                     variant=""
@@ -3063,7 +3021,7 @@ $("#style").css("display","none")
                       Create Item
                     </Dropdown.Item>
                   </Dropdown.Menu>
-                </Dropdown>
+                </Dropdown> */}
               </div>
 
               {/* <MuiMenuComponent onClick={(event) => handleMenuItemClick(event)} options={portfolioBodyMoreActions} /> */}
@@ -4067,10 +4025,10 @@ $("#style").css("display","none")
                       ID
                     </label>
                     <input
-                      type="email"
+                      type="text"
                       class="form-control border-radius-10"
                       disabled
-                      id="exampleInputEmail1"
+                      // id="exampleInputEmail1"
                       aria-describedby="emailHelp"
                       placeholder="(AUTO GENERATE)"
                     />
@@ -4090,6 +4048,7 @@ $("#style").css("display","none")
                       id="exampleInputEmail1"
                       aria-describedby="emailHelp"
                       placeholder="DESCRIPTION"
+                      // value={}
                     />
                   </div>
                 </div>
@@ -4104,10 +4063,10 @@ $("#style").css("display","none")
                     <input
                       type="text"
                       class="form-control border-radius-10"
-                      id="exampleInputEmail1"
+                      // id="exampleInputEmail1"
                       aria-describedby="emailHelp"
                       placeholder="USAGE IN"
-                    // value={categoryUsageKeyValue1.lable}
+                      value={categoryUsageKeyValue1.label?categoryUsageKeyValue1.label:""}
                     />
                   </div>
                 </div>
@@ -4127,9 +4086,10 @@ $("#style").css("display","none")
                       <div className="form-control">
                         <Select
                           // defaultValue={1}
-                          onChange={setTaskItemList}
+                          onChange={(e)=>setTaskItemList(e)}
                           options={taskList}
                           placeholder="Select Or Search"
+                          // value={taskItemList}
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
