@@ -24,6 +24,7 @@ import TabPanel from "@mui/lab/TabPanel";
 import FormControl from "@mui/material/FormControl";
 import Checkbox from "@mui/material/Checkbox";
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 import { FileUploader } from "react-drag-drop-files";
 import { MuiMenuComponent } from "../Operational/index";
@@ -45,6 +46,7 @@ import { CommanComponents } from "../../components/index";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
+import deleticon from "../../assets/images/delete.png";
 
 import { ReactTableNested } from "../Test/ReactTableNested";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -80,7 +82,8 @@ import {
   getTypeKeyValue,
   getPortfolioCommonConfig,
   getSearchQueryCoverage,
-  getSearchCoverageForFamily
+  getSearchCoverageForFamily,
+  itemCreation
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -274,32 +277,27 @@ export function CreatePortfolio() {
     selectOptions: [],
     selectedOption: ""
   }])
-  const [querySearchCompHtml, setQuerySearchCompHtml] = useState([])
-  const [querySearchFamily, setQuerySearchFamily] = useState({})
-  const [querySearchTild, setQuerySearchTild] = useState({})
-  const [querySearchOperator, setQuerySearchOperator] = useState({})
-  const [familySearchDropDown, setFamilySearchDropDown] = useState([])
 
   const [autoState, setAutoState] = useState({
     value: '',
     suggestions: []
   })
 
-  const [addPortFolioItem,setAddportFolioItem]=useState({
-    id:"",
-    description:"",
-    usageIn:"",
-    taskType:"",
-    frequency:"",
-    unit:"",
-    recomondedValue:"",
-    quantity:"",
-    strategyEvents:"",
-    templateId:"",
-    templateDescription:"",
-    templateEvents:"",
-    repairoption:"",
-    repairEvents:""
+  const [addPortFolioItem, setAddportFolioItem] = useState({
+    id: "",
+    description: "",
+    usageIn: categoryUsageKeyValue1.value ? categoryUsageKeyValue1.value : "",
+    taskType: "",
+    frequency: "",
+    unit: "",
+    recomondedValue: "",
+    quantity: "",
+    strategyEvents: "",
+    templateId: "",
+    templateDescription: "",
+    templateEvents: "",
+    repairEvents: "",
+    repairOption: ""
 
   })
 
@@ -463,8 +461,102 @@ export function CreatePortfolio() {
   };
 
   const handleBundleItemSaveAndContinue = () => {
-    console.log(taskItemList);
-    dispatch(portfolioItemActions.createItem(createItemPayload(taskItemList)));
+    console.log("taskItemList",taskItemList);
+    console.log("handleBundleItemSaveAndContinue",addPortFolioItem)
+    const {portFolioId,...res}=generalComponentData
+
+    let reqObj={
+      itemId: 0,
+      itemName: "string",
+      itemHeaderModel: {
+        itemHeaderId: generalComponentData.portFolioId
+              ? generalComponentData.portFolioId
+              : 0,
+        itemHeaderDescription: generalComponentData.description,
+        bundleFlag: "PORTFOLIO",
+        reference: generalComponentData.externalReference,
+        itemHeaderMake: "string",
+        itemHeaderFamily: "string",
+        model: "string",
+        prefix: "string",
+        type: prefixLabelGeneral,
+        additional: "string",
+        currency: "string",
+        netPrice: 0,
+        itemProductHierarchy: stratgyHierarchyKeyValue.value
+        ? stratgyHierarchyKeyValue.value
+        : "END_PRODUCT",
+        itemHeaderGeographic: stratgyGeographicKeyValue.value
+        ? stratgyGeographicKeyValue.value
+        : "ONSITE",
+        responseTime: stratgyResponseTimeKeyValue.value
+        ? stratgyResponseTimeKeyValue.value
+        : "PROACTIVE",
+        usage: generalComponentData.usageCategory
+        ? generalComponentData.usageCategory
+        : "string",
+        validFrom: generalComponentData.validFrom 
+        ? generalComponentData.validFrom
+        : "string",
+        validTo: generalComponentData.validTo
+        ? generalComponentData.validTo
+        : "string",
+        estimatedTime: "string",
+        servicePrice: 0,
+        status: "NEW"
+      },
+      itemBodyModel: {
+        itemBodyId: 0,
+        itemBodyDescription: addPortFolioItem.description,
+        quantity: addPortFolioItem.quantity?parseInt(addPortFolioItem.quantity):0,
+        startUsage: "string",
+        endUsage: "string",
+        standardJobId: "string",
+        frequency: addPortFolioItem.frequency.value,
+        additional: "string",
+        spareParts: ["WITH_SPARE_PARTS"],
+        labours: ["WITH_LABOUR"],
+        miscellaneous: ["LUBRICANTS"],
+        taskType: ["PM1"],
+        // taskType: addPortFolioItem.taskType.value,
+        solutionCode: "string",
+        usageIn: addPortFolioItem.usageIn?addPortFolioItem.usageIn:"string",
+        recommendedValue: 0,
+        // recommendedValue: addPortFolioItem.recomondedValue.value,
+        usage: "string",
+        repairKitId: "string",
+        templateDescription: addPortFolioItem.templateDescription.value,
+        partListId: "string",
+        serviceEstimateId: "string",
+        numberOfEvents: 0,
+        repairOption: addPortFolioItem.repairOption.value,
+        priceMethod: "LIST_PRICE",
+        listPrice: 0,
+        priceEscalation: "string",
+        calculatedPrice: 0,
+        flatPrice: 0,
+        discountType: "string",
+        year: "string",
+        avgUsage: 0,
+        unit: addPortFolioItem.unit.value,
+        sparePartsPrice: 0,
+        sparePartsPriceBreakDownPercentage: 0,
+        servicePrice: 0,
+        servicePriceBreakDownPercentage: 0,
+        miscPrice: 0,
+        miscPriceBreakDownPercentage: 0,
+        totalPrice: 0
+      },
+      createdAt: "2022-08-03T12:59:57.683Z"
+
+    }
+    itemCreation(reqObj).then((res)=>{
+      console.log("itemCreation res:",res)
+    }).catch((err)=>{
+      console.log("itemCreation err:",err)
+    })
+    // dispatch(portfolioItemActions.createItem(createItemPayload(reqObj)));
+    // dispatch(portfolioItemActions.createItem(createItemPayload(taskItemList)));
     // alert("Save And Continue")
     // var temp = [...bundleItems];
     // var bundleId = Math.floor(Math.random() * 100)
@@ -1238,103 +1330,44 @@ export function CreatePortfolio() {
   ];
 
   const handleFamily = (e, id) => {
-    let tempArray=[...querySearchSelector]
+    let tempArray = [...querySearchSelector]
     console.log("handleFamily e:", e)
-    for (let i = 0; i < tempArray.length; i++) {
-      if (tempArray[i].id === id) {
-        let obj={
-          ...tempArray[i],
-          selectFamily:e
-        }
-        tempArray[i]=obj
-        // tempArray[i].selectFamily = e
-        break;
-      }
-    }
-    setQuerySearchSelector(tempArray)
+    let obj=tempArray[id]
+    obj.selectFamily= e
+    tempArray[id] = obj
+    setQuerySearchSelector([...tempArray])
   }
   const handleOperator = (e, id) => {
-    let tempArray=[...querySearchSelector]
-    for (let i = 0; i < tempArray.length; i++) {
-      if (tempArray[i].id === id) {
-        let obj = {
-          ...tempArray[i],
-          selectOperator : e,
-        }
-        tempArray[i]=obj
-        // tempArray[i].selectOperator = e
-        break;
-      }
-    }
-    setQuerySearchSelector(tempArray)
+    let tempArray = [...querySearchSelector]
+    let obj=tempArray[id]
+      obj.selectOperator= e
+      tempArray[id] = obj
+    setQuerySearchSelector([...tempArray])
   }
 
-  const handleInputSearch = async (e, id) => {
-    try {
-      // const res = await getSearchCoverageForFamily(e.target.value);
-      // setQuerySearchSelector(prevState => {
-      //   const newState = prevState.map(obj => {
-      //     if (obj.id === id) {
-      //       return {
-      //         ...obj,
-      //         inputSearch : e.target.value,
-      //         selectOptions : res
-      //       };
-      //     }
-      //     return obj;
-      //   });
-      //   return newState;
-      // });
-      // $("#inputSearch-"+id).val(e.target.value)
+  const handleInputSearch = (e, id) => {
+      let tempArray = [...querySearchSelector]
+      let obj=tempArray[id]
+       getSearchCoverageForFamily(tempArray[id].selectFamily.value,e.target.value ).then((res)=>{
+         obj.selectOptions=res
 
-      // const newState = querySearchSelector.map(obj => {
-      //   if (obj.id === id) {
-      //     return {
-      //       ...obj,
-      //       inputSearch : e.target.value,
-      //       selectOptions : res
-      //     };
-      //   }
-      //   return obj;
-      // });
-      // setQuerySearchSelector(newState);
-      // setUpdateCount(updateCount + 1);
-
-      let tempArray=[...querySearchSelector]
-      const res = await getSearchCoverageForFamily(e.target.value)
-      for (let i = 0; i < tempArray.length; i++) {
-        if (tempArray[i].id === id) {
-          let obj = {
-            ...tempArray[i],
-            inputSearch : e.target.value,
-            selectOptions : res
-          }
-          tempArray[i]=obj
-          break;
-        }
-      }
-      setQuerySearchSelector(tempArray);
+      }).catch((err)=>{
+        console.log("err in api call",err)
+      })
+      obj.inputSearch= e.target.value
+      tempArray[id] = obj
+      setQuerySearchSelector([...tempArray]);
       $(`.scrollbar-${id}`).css("display", "block")
-      // setUpdateCount(updateCount + 1);
-    } catch (error) {
-      console.log("err :", error)
-    }
+    
   }
 
   const handleSearchListClick = (e, currentItem, obj1, id) => {
-    let tempArray=[...querySearchSelector]
-    for (let i = 0; i < tempArray.length; i++) {
-      if (tempArray[i].id === id) {
-        let obj={
-          ...tempArray[i],
-          inputSearch: currentItem,
-          selectedOption : currentItem
-        }
-        tempArray[i]=obj
-        break;
-      }
-    }
-    setQuerySearchSelector(tempArray)
+    let tempArray = [...querySearchSelector]
+    let obj=tempArray[id]
+    obj.inputSearch= currentItem
+    obj.selectedOption=currentItem
+    tempArray[id] = obj
+    setQuerySearchSelector([...tempArray])
     $(`.scrollbar-${id}`).css("display", "none")
   }
 
@@ -1395,8 +1428,6 @@ export function CreatePortfolio() {
       console.log(" handleMasterCheck updated", updated)
       setFilterMasterData(updated)
     }
-
-
 
   }
 
@@ -1499,24 +1530,6 @@ export function CreatePortfolio() {
       sortable: true,
       format: (row) => row.strategy,
     },
-
-    // {
-    //     name: <><div>Service $
-    //     </div></>,
-    //     selector: row => row.service,
-    //     wrap: true,
-    //     sortable: true,
-    //     format: row => row.service
-    //     ,
-    // },
-    // {
-    //     name: <><div>Total $
-    //     </div></>,
-    //     selector: row => row.total,
-    //     wrap: true,
-    //     sortable: true,
-    //     format: row => row.total
-    // },
     {
       name: (
         <>
@@ -1527,70 +1540,8 @@ export function CreatePortfolio() {
       wrap: true,
       sortable: true,
       format: (row) => row.action,
+      cell: (row) => <div><EditIcon /><img style={{width:'20px'}} src={deleticon} /><span>Related S.No.</span></div>,
     },
-
-    // {
-    //   name:<><div>Progress
-    //   </div></>,
-    //   selector: row => row.plot,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: row => `${row.plot.slice(0, 200)}...`,
-    // },
-    // {
-    //   name:<><div>Status
-    //   </div></>,
-    //   selector: row => row.plot,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: row => `${row.plot.slice(0, 200)}...`,
-    // },
-    // {
-    //   name:<><div>Consistency status
-    //   </div></>,
-    //   selector: row => row.plot,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: row => `${row.plot.slice(0, 200)}...`,
-    // },
-    // {
-    //   name:<><div>Description
-    //   </div></>,
-    //   selector: row => row.plot,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: row => `${row.plot.slice(0, 200)}...`,
-    // },
-    // {
-    //   name: 'Actions',
-
-    //   cell: row => (
-    //     <div>
-    //       {row.genres.map((genre, i) => (
-    //         <div key={i}>{genre}</div>
-    //       ))}
-    //     </div>
-    //   ),
-    // },
-    // {
-    //   name: 'Thumbnail',
-    //   grow: 0,
-    //   cell: row => <img height="84px" width="56px" alt={row.name} src={row.posterUrl} />,
-    // },
-    // {
-    //   name: 'Poster Link',
-    //   button: true,
-    //   cell: row => (
-    //     <a href={row.posterUrl} target="_blank" rel="noopener noreferrer">
-    //       Download
-    //     </a>
-    //   ),
-    // },
-    // {
-    //     name: 'Actions',
-    //     button: true,
-    //     cell: () => <Button>Download Poster</Button>,
-    // },
   ];
 
 
@@ -1602,7 +1553,9 @@ export function CreatePortfolio() {
           <div className="d-flex align-items-center justify-content-between mt-2">
             {/* <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5> */}
             <div className="d-flex">
-
+              <div className="ml-3">
+              {/* {generalComponentData.name?generalComponentData.name:""} */}
+              </div>
               <div className="ml-3">
                 <Select className="customselectbtn1" onChange={(e) => handleOption3(e)} options={options3} value={value3} />
               </div>
@@ -2591,14 +2544,7 @@ export function CreatePortfolio() {
 
                             <div className="d-flex justify-content-between align-items-center p-3 bg-light-dark border-radius-10 w-100">
                               <div className="row align-items-center m-0">
-                                <div
-                                  className="search-icon mr-2"
-                                  style={{ lineHeight: "24px", cursor: "pointer" }}
-                                  onClick={handleQuerySearchClick}
-                                >
-                                  <SearchIcon />
-                                </div>
-                                <span className="mr-3">Search</span>
+
                                 {/* <QuerySearchComp count={count}/> */}
 
                                 {
@@ -2640,11 +2586,13 @@ export function CreatePortfolio() {
                                           <div className="customselectsearch">
                                             <input
                                               type="text"
-                                              placeholder={obj.selectedOption}
-                                              onChange={(e) => handleInputSearch(e, i)}
+                                              placeholder="Search string"
                                               value={obj.inputSearch}
+                                              onChange={(e) => handleInputSearch(e, i)}
+                                              // onChange={(e)=>{obj.inputSearch=e.target.value
+                                              // console.log("ngfjgnfnfgbfkg",obj.inputSearch)}}
                                               id={"inputSearch-" + i}
-                                              autoComplete="off"
+                                              // autoComplete="off"
                                             />
 
                                             {
@@ -2675,6 +2623,14 @@ export function CreatePortfolio() {
                               </div>
                             </div>
                           </div>
+                          <div
+                            className="search-icon mr-2"
+                            style={{ lineHeight: "24px", cursor: "pointer" }}
+                            onClick={handleQuerySearchClick}
+                          >
+                          <SearchIcon />
+                          </div>
+                          <span className="mr-3">Search</span>
                           <div onClick={handleDeletQuerySearch}>
                             <Link to="#" className="btn-sm">
                               <DeleteIcon className="font-size-14 text-danger" />
@@ -2693,13 +2649,21 @@ export function CreatePortfolio() {
                               <span className="a-btn">A</span>
                             </a>
                           </div> */}
-                          <div className="border-left py-4">
+                          <div className="border-left py-2">
                             <a
                               href="#"
                               data-toggle="modal"
                               data-target="#AddCoverage"
                               className="p-1"
-                            >+ Add Selected</a>
+                            >+Add Selected</a>
+                          </div>
+                          <div className="border-left p-4">
+                            <a
+                              href="#"
+                              // data-toggle="modal"
+                              // data-target="#AddCoverage"
+                              className="p-1"
+                            >Upload</a>
                           </div>
                         </div>
                       </div>
@@ -2713,7 +2677,7 @@ export function CreatePortfolio() {
                       pagination
                     />
                     <h6 className="font-weight-400 text-black mb-2 mt-1">
-                      Selected Coverages for this portfolio
+                    Included models
                     </h6>
                     <DataTable
                       className=""
@@ -4048,7 +4012,8 @@ export function CreatePortfolio() {
                       id="exampleInputEmail1"
                       aria-describedby="emailHelp"
                       placeholder="DESCRIPTION"
-                      // value={}
+                      onChange={(e)=>setAddportFolioItem({...addPortFolioItem,description:e.target.value})}
+                      value={addPortFolioItem.description}
                     />
                   </div>
                 </div>
@@ -4062,11 +4027,10 @@ export function CreatePortfolio() {
                     </label>
                     <input
                       type="text"
-                      class="form-control border-radius-10"
-                      // id="exampleInputEmail1"
+                      className="form-control border-radius-10"
                       aria-describedby="emailHelp"
                       placeholder="USAGE IN"
-                      value={categoryUsageKeyValue1.label?categoryUsageKeyValue1.label:""}
+                      value={categoryUsageKeyValue1.label ? categoryUsageKeyValue1.label : ""}
                     />
                   </div>
                 </div>
@@ -4086,10 +4050,12 @@ export function CreatePortfolio() {
                       <div className="form-control">
                         <Select
                           // defaultValue={1}
-                          onChange={(e)=>setTaskItemList(e)}
+                          // onChange={(e) => {setTaskItemList(e)}}
+                          // value={taskItemList}
                           options={taskList}
                           placeholder="Select Or Search"
-                          // value={taskItemList}
+                          onChange={(e)=>setAddportFolioItem({...addPortFolioItem,taskType:e})}
+                          value={addPortFolioItem.taskType}
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
@@ -4111,6 +4077,8 @@ export function CreatePortfolio() {
                         <Select
                           options={frequencyList}
                           placeholder="FREQUENCY"
+                          onChange={(e)=>setAddportFolioItem({...addPortFolioItem,frequency:e})}
+                          value={addPortFolioItem.frequency}
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
@@ -4127,7 +4095,12 @@ export function CreatePortfolio() {
                     >
                       UNIT
                     </label>
-                    <Select options={unitList} placeholder="HOURS" />
+                    <Select 
+                    options={unitList}
+                    placeholder="HOURS"
+                    onChange={(e)=>setAddportFolioItem({...addPortFolioItem,unit:e})}
+                    value={addPortFolioItem.unit}
+                    />
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -4139,8 +4112,9 @@ export function CreatePortfolio() {
                       RECOMMENDED VALUE
                     </label>
                     <Select
-                      defaultValue={selectedOption}
-                      onChange={setSelectedOption}
+                      // defaultValue={selectedOption}
+                      onChange={(e)=>setAddportFolioItem({...addPortFolioItem,recomondedValue:e})}
+                      value={addPortFolioItem.recomondedValue}
                       options={options}
                       placeholder="RECOMMENDED VALUE"
                     />
@@ -4156,10 +4130,12 @@ export function CreatePortfolio() {
                     </label>
                     <input
                       type="text"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
+                      className="form-control border-radius-10"
+                      // id="exampleInputEmail1"
+                      // aria-describedby="emailHelp"
                       placeholder="QUANTITY"
+                      onChange={(e)=>setAddportFolioItem({...addPortFolioItem,quantity:e.target.value})}
+                      value={addPortFolioItem.quantity}
                     />
                   </div>
                 </div>
@@ -4173,10 +4149,12 @@ export function CreatePortfolio() {
                     </label>
                     <input
                       type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
+                      className="form-control border-radius-10"
+                      // id="exampleInputEmail1"
+                      // aria-describedby="emailHelp"
                       placeholder="NO. OF EVENTS"
+                      onChange={(e)=>setAddportFolioItem({...addPortFolioItem,strategyEvents:e.target.value})}
+                      value={addPortFolioItem.strategyEvents}
                     />
                   </div>
                 </div>
@@ -4194,10 +4172,12 @@ export function CreatePortfolio() {
                     <div className="icon-defold">
                       <div className="form-control">
                         <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
+                          // defaultValue={selectedOption}
+                          // onChange={setSelectedOption}
                           options={options}
                           placeholder="TEMPLATE ID"
+                          onChange={(e)=>setAddportFolioItem({...addPortFolioItem,templateId:e})}
+                          value={addPortFolioItem.templateId}
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
@@ -4217,10 +4197,12 @@ export function CreatePortfolio() {
                     <div className="icon-defold">
                       <div className="form-control">
                         <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
+                          // defaultValue={selectedOption}
+                          // onChange={setSelectedOption}
                           options={options}
                           placeholder="TEMPLATE DESCRIPTION"
+                          onChange={(e)=>setAddportFolioItem({...addPortFolioItem,templateDescription:e})}
+                          value={addPortFolioItem.templateDescription}
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
@@ -4240,11 +4222,14 @@ export function CreatePortfolio() {
                     <div className="icon-defold">
                       <input
                         type="text"
-                        class="form-control icon-defold border-radius-10"
+                        className="form-control icon-defold border-radius-10"
                         style={{ paddingLeft: "35px" }}
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
+                        // id="exampleInputEmail1"
+                        // aria-describedby="emailHelp"
                         placeholder="SJ1234"
+                        onChange={(e)=>setAddportFolioItem({...addPortFolioItem,templateEvents:e.target.value})}
+                        value={addPortFolioItem.templateEvents}
+
                       />
                       <span
                         className="search-icon"
@@ -4286,11 +4271,13 @@ export function CreatePortfolio() {
                     <div className="icon-defold">
                       <input
                         type="email"
-                        class="form-control icon-defold border-radius-10"
+                        className="form-control icon-defold border-radius-10"
                         style={{ paddingLeft: "35px" }}
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
+                        // id="exampleInputEmail1"
+                        // aria-describedby="emailHelp"
                         placeholder="SJ1234"
+                        onChange={(e)=>setAddportFolioItem({...addPortFolioItem,repairEvents:e.target.value})}
+                        value={addPortFolioItem.repairEvents}
                       />
                       <span
                         className="search-icon"
@@ -4316,10 +4303,12 @@ export function CreatePortfolio() {
                     <div className="icon-defold">
                       <div className="form-control">
                         <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
+                          // defaultValue={selectedOption}
+                          // onChange={setSelectedOption}
                           options={options}
                           placeholder="REPAIR OPTION"
+                          onChange={(e)=>setAddportFolioItem({...addPortFolioItem,repairOption:e })}
+                          value={addPortFolioItem.repairOption}
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
