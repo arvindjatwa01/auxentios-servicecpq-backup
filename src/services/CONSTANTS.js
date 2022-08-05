@@ -27,7 +27,7 @@ const SEARCH_COVERAGE = DATA_SERVICE_BASE_URL + "data-svc/api/v1/coverage/"
 // search for coverage
 
 export const GET_SEARCH_COVERAGE=SEARCH_COVERAGE+"search?search="
-export const GET_SEARCH_FAMILY_COVERAGE=SEARCH_COVERAGE+"?family="
+export const GET_SEARCH_FAMILY_COVERAGE=SEARCH_COVERAGE
 // Local endpoints. Uncomment below section to use dummy local data.
 export const GET_ALL_USERS = () => `/data/users`;
 export const GET_USER_DETAILS = (id) => `/data/user`;

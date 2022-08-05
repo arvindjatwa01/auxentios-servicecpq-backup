@@ -23,12 +23,13 @@ export const getSearchQueryCoverage = (searchStr) => {
       }
     });
   };
-export const getSearchCoverageForFamily = (familyValue) => {
+export const getSearchCoverageForFamily = (family,familyValue) => {
     console.log("Query coverageService > getSearchCoverageForFamily called...");
     return new Promise((resolve, reject) => {
+      console.log("GET_SEARCH_FAMILY_COVERAGE",`${GET_SEARCH_FAMILY_COVERAGE}${family}?${family}=${familyValue}`)
       try {
         axios
-          .get(GET_SEARCH_FAMILY_COVERAGE +familyValue)
+          .get(GET_SEARCH_FAMILY_COVERAGE+"?"+family+"="+familyValue)
           .then((res) => {
             console.log("getSearchCoverageForFamily > axios res=", res);
             resolve(res.data);

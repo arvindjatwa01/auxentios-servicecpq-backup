@@ -24,6 +24,7 @@ import TabPanel from "@mui/lab/TabPanel";
 import FormControl from "@mui/material/FormControl";
 import Checkbox from "@mui/material/Checkbox";
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 import { FileUploader } from "react-drag-drop-files";
 import { MuiMenuComponent } from "../Operational/index";
@@ -45,6 +46,9 @@ import { CommanComponents } from "../../components/index";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
+import deleticon from "../../assets/images/delete.png";
+import link1Icon from "../../assets/images/link1.png";
+import penIcon from "../../assets/images/pen.png";
 
 import { ReactTableNested } from "../Test/ReactTableNested";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -80,7 +84,8 @@ import {
   getTypeKeyValue,
   getPortfolioCommonConfig,
   getSearchQueryCoverage,
-  getSearchCoverageForFamily
+  getSearchCoverageForFamily,
+  itemCreation
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -120,7 +125,8 @@ const customStyles = {
     style: {
       paddingLeft: "8px", // override the cell padding for head cells
       paddingRight: "8px",
-      // backgroundColor: "#000"
+      backgroundColor: "#7571f9",
+      color:"#fff"
     },
   },
   cells: {
@@ -274,34 +280,31 @@ export function CreatePortfolio() {
     selectOptions: [],
     selectedOption: ""
   }])
-  const [querySearchCompHtml, setQuerySearchCompHtml] = useState([])
-  const [querySearchFamily, setQuerySearchFamily] = useState({})
-  const [querySearchTild, setQuerySearchTild] = useState({})
-  const [querySearchOperator, setQuerySearchOperator] = useState({})
-  const [familySearchDropDown, setFamilySearchDropDown] = useState([])
 
   const [autoState, setAutoState] = useState({
     value: '',
     suggestions: []
   })
 
-  const [addPortFolioItem,setAddportFolioItem]=useState({
-    id:"",
-    description:"",
-    usageIn:"",
-    taskType:"",
-    frequency:"",
-    unit:"",
-    recomondedValue:"",
-    quantity:"",
-    strategyEvents:"",
-    templateId:"",
-    templateDescription:"",
-    templateEvents:"",
-    repairoption:"",
-    repairEvents:""
+  const [addPortFolioItem, setAddportFolioItem] = useState({
+    id: "",
+    description: "",
+    usageIn: categoryUsageKeyValue1,
+    taskType: "",
+    frequency: "",
+    unit: "",
+    recomondedValue: "",
+    quantity: "",
+    strategyEvents: "",
+    templateId: "",
+    templateDescription: "",
+    // templateEvents: "",
+    // repairEvents: "",
+    repairOption: ""
 
   })
+
+  const [showRelatedModel,setShowRelatedModel]=useState(false)
 
   const handleCustomerSegmentChange = (e) => {
     setGeneralComponentData({
@@ -463,8 +466,86 @@ export function CreatePortfolio() {
   };
 
   const handleBundleItemSaveAndContinue = () => {
-    console.log(taskItemList);
-    dispatch(portfolioItemActions.createItem(createItemPayload(taskItemList)));
+    console.log("taskItemList", taskItemList);
+    console.log("handleBundleItemSaveAndContinue", generalComponentData)
+    const { portFolioId, ...res } = generalComponentData
+
+
+    let reqObj = {
+      itemId: 0,
+      itemName: "",
+      itemHeaderModel: {
+        itemHeaderId: parseInt(generalComponentData.portFolioId),
+        itemHeaderDescription: generalComponentData.description,
+        bundleFlag: "PORTFOLIO",
+        reference: generalComponentData.externalReference,
+        itemHeaderMake: "",
+        itemHeaderFamily: "",
+        model: "",
+        prefix: "",
+        type: "MACHINE",
+        additional: "",
+        currency: "",
+        netPrice: 0,
+        itemProductHierarchy: generalComponentData.productHierarchy,
+        itemHeaderGeographic: generalComponentData.geographic,
+        responseTime: generalComponentData.responseTime,
+        usage: "",
+        validFrom: generalComponentData.validFrom,
+        validTo: generalComponentData.validTo,
+        estimatedTime: "",
+        servicePrice: 0,
+        status: "NEW"
+      },
+      itemBodyModel: {
+        itemBodyId: parseInt(addPortFolioItem.id),
+        itemBodyDescription: addPortFolioItem.description,
+        quantity: parseInt(addPortFolioItem.quantity),
+        startUsage: "",
+        endUsage: "",
+        standardJobId: "",
+        frequency: addPortFolioItem.frequency.value,
+        additional: "",
+        spareParts: ["WITH_SPARE_PARTS"],
+        labours: ["WITH_LABOUR"],
+        miscellaneous: ["LUBRICANTS"],
+        taskType: ["PM1"],
+        solutionCode: "",
+        usageIn: addPortFolioItem.usageIn.value,
+        recommendedValue: parseInt(addPortFolioItem.recomondedValue.value),
+        usage: "",
+        repairKitId: "",
+        templateDescription: addPortFolioItem.templateDescription.value,
+        partListId: "",
+        serviceEstimateId: "",
+        numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+        repairOption: addPortFolioItem.repairOption.value,
+        priceMethod: "LIST_PRICE",
+        listPrice: 0,
+        priceEscalation: "",
+        calculatedPrice: 0,
+        flatPrice: 0,
+        discountType: "",
+        year: "",
+        avgUsage: 0,
+        unit: addPortFolioItem.unit.value,
+        sparePartsPrice: 0,
+        sparePartsPriceBreakDownPercentage: 0,
+        servicePrice: 0,
+        servicePriceBreakDownPercentage: 0,
+        miscPrice: 0,
+        miscPriceBreakDownPercentage: 0,
+        totalPrice: 0
+      },
+      createdAt: "2022-08-04T05:30:55.930Z"
+    }
+    itemCreation(reqObj).then((res) => {
+      console.log("itemCreation res:", res)
+    }).catch((err) => {
+      console.log("itemCreation err:", err)
+    })
+    // dispatch(portfolioItemActions.createItem(createItemPayload(reqObj)));
+    // dispatch(portfolioItemActions.createItem(createItemPayload(taskItemList)));
     // alert("Save And Continue")
     // var temp = [...bundleItems];
     // var bundleId = Math.floor(Math.random() * 100)
@@ -1238,103 +1319,43 @@ export function CreatePortfolio() {
   ];
 
   const handleFamily = (e, id) => {
-    let tempArray=[...querySearchSelector]
+    let tempArray = [...querySearchSelector]
     console.log("handleFamily e:", e)
-    for (let i = 0; i < tempArray.length; i++) {
-      if (tempArray[i].id === id) {
-        let obj={
-          ...tempArray[i],
-          selectFamily:e
-        }
-        tempArray[i]=obj
-        // tempArray[i].selectFamily = e
-        break;
-      }
-    }
-    setQuerySearchSelector(tempArray)
+    let obj = tempArray[id]
+    obj.selectFamily = e
+    tempArray[id] = obj
+    setQuerySearchSelector([...tempArray])
   }
   const handleOperator = (e, id) => {
-    let tempArray=[...querySearchSelector]
-    for (let i = 0; i < tempArray.length; i++) {
-      if (tempArray[i].id === id) {
-        let obj = {
-          ...tempArray[i],
-          selectOperator : e,
-        }
-        tempArray[i]=obj
-        // tempArray[i].selectOperator = e
-        break;
-      }
-    }
-    setQuerySearchSelector(tempArray)
+    let tempArray = [...querySearchSelector]
+    let obj = tempArray[id]
+    obj.selectOperator = e
+    tempArray[id] = obj
+    setQuerySearchSelector([...tempArray])
   }
 
-  const handleInputSearch = async (e, id) => {
-    try {
-      // const res = await getSearchCoverageForFamily(e.target.value);
-      // setQuerySearchSelector(prevState => {
-      //   const newState = prevState.map(obj => {
-      //     if (obj.id === id) {
-      //       return {
-      //         ...obj,
-      //         inputSearch : e.target.value,
-      //         selectOptions : res
-      //       };
-      //     }
-      //     return obj;
-      //   });
-      //   return newState;
-      // });
-      // $("#inputSearch-"+id).val(e.target.value)
-
-      // const newState = querySearchSelector.map(obj => {
-      //   if (obj.id === id) {
-      //     return {
-      //       ...obj,
-      //       inputSearch : e.target.value,
-      //       selectOptions : res
-      //     };
-      //   }
-      //   return obj;
-      // });
-      // setQuerySearchSelector(newState);
-      // setUpdateCount(updateCount + 1);
-
-      let tempArray=[...querySearchSelector]
-      const res = await getSearchCoverageForFamily(e.target.value)
-      for (let i = 0; i < tempArray.length; i++) {
-        if (tempArray[i].id === id) {
-          let obj = {
-            ...tempArray[i],
-            inputSearch : e.target.value,
-            selectOptions : res
-          }
-          tempArray[i]=obj
-          break;
-        }
-      }
-      setQuerySearchSelector(tempArray);
+  const handleInputSearch = (e, id) => {
+    let tempArray = [...querySearchSelector]
+    let obj = tempArray[id]
+    getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value).then((res) => {
+      obj.selectOptions = res
+      tempArray[id] = obj
+      setQuerySearchSelector([...tempArray]);
       $(`.scrollbar-${id}`).css("display", "block")
-      // setUpdateCount(updateCount + 1);
-    } catch (error) {
-      console.log("err :", error)
-    }
+    }).catch((err) => {
+      console.log("err in api call", err)
+    })
+    obj.inputSearch = e.target.value
+
   }
 
   const handleSearchListClick = (e, currentItem, obj1, id) => {
-    let tempArray=[...querySearchSelector]
-    for (let i = 0; i < tempArray.length; i++) {
-      if (tempArray[i].id === id) {
-        let obj={
-          ...tempArray[i],
-          inputSearch: currentItem,
-          selectedOption : currentItem
-        }
-        tempArray[i]=obj
-        break;
-      }
-    }
-    setQuerySearchSelector(tempArray)
+    let tempArray = [...querySearchSelector]
+    let obj = tempArray[id]
+    obj.inputSearch = currentItem
+    obj.selectedOption = currentItem
+    tempArray[id] = obj
+    setQuerySearchSelector([...tempArray])
     $(`.scrollbar-${id}`).css("display", "none")
   }
 
@@ -1379,15 +1400,21 @@ export function CreatePortfolio() {
   }
 
   const handleMasterCheck = (e, row) => {
-
-    console.log("handleMasterCheck event", e)
+    console.log("master Data", masterData)
     if (e.target.checked) {
-      setMasterData([...masterData, { ...row, ["check1"]: e.target.checked }])
+      var _masterData = [...masterData]
+      const updated = _masterData.map((currentItem, i) => {
+        if (row.id == currentItem.id) {
+          return { ...currentItem, ["check1"]: e.target.checked }
+        } else return currentItem
+      })
+      setMasterData([...updated])
       setFilterMasterData([...filterMasterData, { ...row }])
     } else {
       var _filterMasterData = [...filterMasterData]
       const updated = _filterMasterData.filter((currentItem, i) => {
         if (row.id == currentItem.id) {
+          currentItem.check1 = "false"
           return
         } else return currentItem
 
@@ -1396,10 +1423,7 @@ export function CreatePortfolio() {
       setFilterMasterData(updated)
     }
 
-
-
   }
-
 
   const columns = [
     {
@@ -1499,24 +1523,6 @@ export function CreatePortfolio() {
       sortable: true,
       format: (row) => row.strategy,
     },
-
-    // {
-    //     name: <><div>Service $
-    //     </div></>,
-    //     selector: row => row.service,
-    //     wrap: true,
-    //     sortable: true,
-    //     format: row => row.service
-    //     ,
-    // },
-    // {
-    //     name: <><div>Total $
-    //     </div></>,
-    //     selector: row => row.total,
-    //     wrap: true,
-    //     sortable: true,
-    //     format: row => row.total
-    // },
     {
       name: (
         <>
@@ -1527,72 +1533,323 @@ export function CreatePortfolio() {
       wrap: true,
       sortable: true,
       format: (row) => row.action,
+      cell: (row) => <div><img className="mr-2" src={penIcon} /><img className="mr-2" src={deleticon} /><img src={link1Icon} /></div>,
     },
+  ];
+  const columns1 = [
+    {
+      name: (
+        <>
+          <div><Checkbox className="text-white" {...label} /></div>
+        </>
+      ),
+      selector: (row) => row.standardJobId,
+      wrap: true,
+      sortable: true,
+      maxWidth: "300px",
+      cell: (row) => <Checkbox className="text-black" checked={row.check1} onChange={(e) => handleMasterCheck(e, row)} />,
+    },
+    {
+      name: (
+        <>
+          <div>Make</div>
+        </>
+      ),
+      selector: (row) => row.make,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.make,
+    },
+    {
+      name: (
+        <>
+          <div>Family</div>
+        </>
+      ),
+      selector: (row) => row.family,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.family,
+    },
+    {
+      name: (
+        <>
+          <div>Model</div>
+        </>
+      ),
+      selector: (row) => row.model,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.model,
+    },
+    {
+      name: (
+        <>
+          <div>Prefix</div>
+        </>
+      ),
+      selector: (row) => row.prefix,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.prefix,
+    },
+    {
+      name: (
+        <>
+          <div>
+            S NO
+          </div>
+        </>
+      ),
+      selector: (row) => row.bundleId,
+      sortable: true,
+      maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
+      // cell: row => row.bundleId,
+      // cell: (row) => <button onClick={() => alert()}>1</button>,
+      // cell: (row) => <Checkbox className="text-black" {...label} />,
+      format: (row) => row.bundleId,
+    },
+    {
+      name: (
+        <>
+          <div>
+            <img className="mr-2" src={boxicon}></img>Start S NO
+          </div>
 
+        </>
+      ),
+      selector: (row) => row.bundleDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.bundleDescription,
+    },
+    {
+      name: (
+        <>
+          <div>End S NO</div>
+        </>
+      ),
+      selector: (row) => row.strategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.strategy,
+    },
     // {
-    //   name:<><div>Progress
-    //   </div></>,
-    //   selector: row => row.plot,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: row => `${row.plot.slice(0, 200)}...`,
-    // },
-    // {
-    //   name:<><div>Status
-    //   </div></>,
-    //   selector: row => row.plot,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: row => `${row.plot.slice(0, 200)}...`,
-    // },
-    // {
-    //   name:<><div>Consistency status
-    //   </div></>,
-    //   selector: row => row.plot,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: row => `${row.plot.slice(0, 200)}...`,
-    // },
-    // {
-    //   name:<><div>Description
-    //   </div></>,
-    //   selector: row => row.plot,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: row => `${row.plot.slice(0, 200)}...`,
-    // },
-    // {
-    //   name: 'Actions',
-
-    //   cell: row => (
-    //     <div>
-    //       {row.genres.map((genre, i) => (
-    //         <div key={i}>{genre}</div>
-    //       ))}
-    //     </div>
+    //   name: (
+    //     <>
+    //       <div>Action</div>
+    //     </>
     //   ),
-    // },
-    // {
-    //   name: 'Thumbnail',
-    //   grow: 0,
-    //   cell: row => <img height="84px" width="56px" alt={row.name} src={row.posterUrl} />,
-    // },
-    // {
-    //   name: 'Poster Link',
-    //   button: true,
-    //   cell: row => (
-    //     <a href={row.posterUrl} target="_blank" rel="noopener noreferrer">
-    //       Download
-    //     </a>
-    //   ),
-    // },
-    // {
-    //     name: 'Actions',
-    //     button: true,
-    //     cell: () => <Button>Download Poster</Button>,
+    //   selector: (row) => row.action,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.action,
+    //   cell: (row) => <div><img className="mr-2" src={penIcon} /><img className="mr-2" src={deleticon} /><img src={link1Icon} /></div>,
     // },
   ];
+  const columns2 = [
+    {
+      name: (
+        <>
+          <div><Checkbox className="text-white" {...label} /></div>
+        </>
+      ),
+      selector: (row) => row.standardJobId,
+      wrap: true,
+      sortable: true,
+      maxWidth: "300px",
+      cell: (row) => <Checkbox className="text-black" />,
+    },
+    {
+      name: (
+        <>
+          <div>Make</div>
+        </>
+      ),
+      selector: (row) => row.make,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.make,
+    },
+    {
+      name: (
+        <>
+          <div>Family</div>
+        </>
+      ),
+      selector: (row) => row.family,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.family,
+    },
+    {
+      name: (
+        <>
+          <div>Model</div>
+        </>
+      ),
+      selector: (row) => row.modelDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.modelDescription,
+    },
+    {
+      name: (
+        <>
+          <div>Prefix</div>
+        </>
+      ),
+      selector: (row) => row.prefix,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.prefix,
+    },
+    {
+      name: (
+        <>
+          <div>
+            S NO
+          </div>
+        </>
+      ),
+      selector: (row) => row.bundleId,
+      sortable: true,
+      maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
+      // cell: row => row.bundleId,
+      // cell: (row) => <button onClick={() => alert()}>1</button>,
+      // cell: (row) => <Checkbox className="text-black" {...label} />,
+      format: (row) => row.bundleId,
+    },
+    {
+      name: (
+        <>
+          <div>
+            <img className="mr-2" src={boxicon}></img>Start S NO
+          </div>
 
+        </>
+      ),
+      selector: (row) => row.bundleDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.bundleDescription,
+    },
+    {
+      name: (
+        <>
+          <div>End S NO</div>
+        </>
+      ),
+      selector: (row) => row.strategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.strategy,
+    },
+    {
+      name: (
+        <>
+          <div>Action</div>
+        </>
+      ),
+      selector: (row) => row.action,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.action,
+      cell: (row) =>
+        <div>
+          <img className="mr-2" src={penIcon} style={{ cursor: "pointer" }} />
+          <img className="mr-2" src={deleticon} style={{ cursor: "pointer" }} />
+          <img src={link1Icon}onClick={()=>setShowRelatedModel(true)} style={{ cursor: "pointer" }} /></div>,
+    },
+  ];
+  const columns4 = [
+    {
+      name: (
+        <>
+          <div>Family</div>
+        </>
+      ),
+      selector: (row) => row.family,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.family,
+    },
+    {
+      name: (
+        <>
+          <div>Model</div>
+        </>
+      ),
+      selector: (row) => row.model,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.model,
+    },
+    {
+      name: (
+        <>
+          <div>Number seriese</div>
+        </>
+      ),
+      selector: (row) => row.noSeriese,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.noSeriese,
+      cell: (row) =><div>{row.noSeriese}<img src={shearchIcon} alt="search" /></div>,
+    },
+    {
+      name: (
+        <>
+          <div>Department</div>
+        </>
+      ),
+      selector: (row) => row.department,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.department,
+    },
+    {
+      name: (
+        <>
+          <div>Start Date</div>
+        </>
+      ),
+      selector: (row) => row.startDate,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.startDate,
+    },
+    {
+      name: (
+        <>
+          <div>End Date</div>
+        </>
+      ),
+      selector: (row) => row.endDate,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.endDate,
+    },
+
+  ];
+  const data4 = [
+    {
+      family: "MOTONIVELADORAS",
+      model: 120,
+      noSeriese: "0JAPA000470",
+      department: "LIMA",
+      startDate: "08/04/20017",
+      endDate: "08/04/20017",
+    },
+    {
+      family: "MOTONIVELADORAS",
+      model: 120,
+      noSeriese: "0JAPA000470",
+      department: "LIMA",
+      startDate: "08/04/20017",
+      endDate: "08/04/20017",
+    },
+  ];
 
   return (
     <>
@@ -1602,7 +1859,9 @@ export function CreatePortfolio() {
           <div className="d-flex align-items-center justify-content-between mt-2">
             {/* <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5> */}
             <div className="d-flex">
-
+              <div className="ml-3">
+                {/* {generalComponentData.name?generalComponentData.name:""} */}
+              </div>
               <div className="ml-3">
                 <Select className="customselectbtn1" onChange={(e) => handleOption3(e)} options={options3} value={value3} />
               </div>
@@ -1610,11 +1869,11 @@ export function CreatePortfolio() {
                 <Select className="customselectbtn" onChange={(e) => handleOption2(e)} options={options2} value={value2} />
               </div>
               <div className="rating-star">
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star"></span>
-                <span class="fa fa-star"></span>
+                <span className="fa fa-star checked"></span>
+                <span className="fa fa-star checked"></span>
+                <span className="fa fa-star checked"></span>
+                <span className="fa fa-star"></span>
+                <span className="fa fa-star"></span>
               </div>
 
             </div>
@@ -2533,8 +2792,8 @@ export function CreatePortfolio() {
                         </div>
                       </div>
                     </div>
-                    <div class="table-responsive custometable">
-                      <table class="table">
+                    <div className="table-responsive custometable">
+                      <table className="table">
                         <thead>
                           <tr>
                             <th scope="col">#</th>
@@ -2591,14 +2850,7 @@ export function CreatePortfolio() {
 
                             <div className="d-flex justify-content-between align-items-center p-3 bg-light-dark border-radius-10 w-100">
                               <div className="row align-items-center m-0">
-                                <div
-                                  className="search-icon mr-2"
-                                  style={{ lineHeight: "24px", cursor: "pointer" }}
-                                  onClick={handleQuerySearchClick}
-                                >
-                                  <SearchIcon />
-                                </div>
-                                <span className="mr-3">Search</span>
+
                                 {/* <QuerySearchComp count={count}/> */}
 
                                 {
@@ -2638,11 +2890,11 @@ export function CreatePortfolio() {
                                             />
                                           </div>
                                           <div className="customselectsearch">
-                                            <input
+                                            <input className="custom-input-sleact"
                                               type="text"
-                                              placeholder={obj.selectedOption}
-                                              onChange={(e) => handleInputSearch(e, i)}
+                                              placeholder="Search string"
                                               value={obj.inputSearch}
+                                              onChange={(e) => handleInputSearch(e, i)}
                                               id={"inputSearch-" + i}
                                               autoComplete="off"
                                             />
@@ -2672,14 +2924,24 @@ export function CreatePortfolio() {
                                     +
                                   </Link>
                                 </div>
+                                <div onClick={handleDeletQuerySearch}>
+                                  <Link to="#" className="btn-sm">
+                                    <DeleteIcon className="font-size-16" />
+                                  </Link>
+                                </div>
+
                               </div>
                             </div>
                           </div>
-                          <div onClick={handleDeletQuerySearch}>
-                            <Link to="#" className="btn-sm">
-                              <DeleteIcon className="font-size-14 text-danger" />
-                            </Link>
+                          <div
+                            className="search-icon mr-2"
+                            style={{ lineHeight: "24px", cursor: "pointer" }}
+                            onClick={handleQuerySearchClick}
+                          >
+                            <SearchIcon />
                           </div>
+                          <span className="mr-3">Search</span>
+
                         </div>
 
                       </div>
@@ -2693,13 +2955,22 @@ export function CreatePortfolio() {
                               <span className="a-btn">A</span>
                             </a>
                           </div> */}
-                          <div className="border-left py-4">
+                          <div className="border-left py-2">
                             <a
                               href="#"
                               data-toggle="modal"
                               data-target="#AddCoverage"
                               className="p-1"
-                            >+ Add Selected</a>
+                              style={{ whiteSpace: "pre" }}
+                            >+Add Selected</a>
+                          </div>
+                          <div className="border-left p-4">
+                            <a
+                              href="#"
+                              // data-toggle="modal"
+                              // data-target="#AddCoverage"
+                              className="p-1"
+                            >Upload</a>
                           </div>
                         </div>
                       </div>
@@ -2707,18 +2978,18 @@ export function CreatePortfolio() {
                     <DataTable
                       className=""
                       title=""
-                      columns={columns}
+                      columns={columns1}
                       data={masterData}
                       customStyles={customStyles}
                       pagination
                     />
                     <h6 className="font-weight-400 text-black mb-2 mt-1">
-                      Selected Coverages for this portfolio
+                      Included models
                     </h6>
                     <DataTable
                       className=""
                       title=""
-                      columns={columns}
+                      columns={columns2}
                       data={filterMasterData}
                       customStyles={customStyles}
                       pagination
@@ -3533,7 +3804,7 @@ export function CreatePortfolio() {
                       // <></>
                       <input
                         type="email"
-                        class=""
+                        className=""
                         id="exampleInputEmail1"
                         aria-describedby="emailHelp"
                         placeholder="Enter text"
@@ -3572,7 +3843,7 @@ export function CreatePortfolio() {
             </div>
             {columnSearchText.trim() != "" && typeOfSearchColumn != null ? (
               <div className="tableheader">
-                <ul class="submenu accordion mt-0" style={{ display: "block" }}>
+                <ul className="submenu accordion mt-0" style={{ display: "block" }}>
                   <li>
                     <a className="result cursor">RESULTS</a>
                   </li>
@@ -3979,7 +4250,7 @@ export function CreatePortfolio() {
             <div className="ligt-greey-bg p-3">
               <div>
                 {/* <span className="mr-3">
-                                    <i class="fa fa-pencil font-size-12" aria-hidden="true"></i><span className="ml-2">Edit</span>
+                                    <i className="fa fa-pencil font-size-12" aria-hidden="true"></i><span className="ml-2">Edit</span>
                                 </span>
                                 <span className="mr-3">
                                     < MonetizationOnOutlinedIcon className=" font-size-16" />
@@ -4015,9 +4286,9 @@ export function CreatePortfolio() {
                                 <a href="#" className="btn-sm bg-primary text-white ml-3" onClick={handleBundleItemSaveAndContinue}>Save & Continue</a>
                             </div> */}
               <p className="mt-4">SUMMARY</p>
-              <div class="row mt-4">
+              <div className="row mt-4">
                 <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
+                  <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
                       for="exampleInputEmail1"
@@ -4026,7 +4297,7 @@ export function CreatePortfolio() {
                     </label>
                     <input
                       type="text"
-                      class="form-control border-radius-10"
+                      className="form-control border-radius-10"
                       disabled
                       // id="exampleInputEmail1"
                       aria-describedby="emailHelp"
@@ -4035,7 +4306,7 @@ export function CreatePortfolio() {
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
+                  <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
                       for="exampleInputEmail1"
@@ -4044,36 +4315,37 @@ export function CreatePortfolio() {
                     </label>
                     <input
                       type="text"
-                      class="form-control border-radius-10"
+                      className="form-control border-radius-10"
                       id="exampleInputEmail1"
                       aria-describedby="emailHelp"
                       placeholder="DESCRIPTION"
-                      // value={}
+                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, description: e.target.value })}
+                      value={addPortFolioItem.description}
                     />
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
+                  <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
                       for="exampleInputEmail1"
                     >
                       USAGE IN
                     </label>
-                    <input
-                      type="text"
-                      class="form-control border-radius-10"
-                      // id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="USAGE IN"
-                      value={categoryUsageKeyValue1.label?categoryUsageKeyValue1.label:""}
+                    <Select
+                      placeholder={categoryUsageKeyValue1.label}
+                      options={categoryList}
+                      selectedValue={categoryUsageKeyValue1.value ? categoryUsageKeyValue1.value : ""}
+                      defaultValue={categoryUsageKeyValue1.value ? categoryUsageKeyValue1.value : ""}
+                      value={addPortFolioItem.usageIn}
+                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, usageIn: e })}
                     />
                   </div>
                 </div>
               </div>
 
               <p className="mt-4">STRATEGY</p>
-              <div class="row mt-4">
+              <div className="row mt-4">
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group">
                     <label
@@ -4086,10 +4358,12 @@ export function CreatePortfolio() {
                       <div className="form-control">
                         <Select
                           // defaultValue={1}
-                          onChange={(e)=>setTaskItemList(e)}
+                          // onChange={(e) => {setTaskItemList(e)}}
+                          // value={taskItemList}
                           options={taskList}
                           placeholder="Select Or Search"
-                          // value={taskItemList}
+                          onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, taskType: e })}
+                          value={addPortFolioItem.taskType}
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
@@ -4111,6 +4385,8 @@ export function CreatePortfolio() {
                         <Select
                           options={frequencyList}
                           placeholder="FREQUENCY"
+                          onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, frequency: e })}
+                          value={addPortFolioItem.frequency}
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
@@ -4127,7 +4403,12 @@ export function CreatePortfolio() {
                     >
                       UNIT
                     </label>
-                    <Select options={unitList} placeholder="HOURS" />
+                    <Select
+                      options={unitList}
+                      placeholder="HOURS"
+                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, unit: e })}
+                      value={addPortFolioItem.unit}
+                    />
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -4139,15 +4420,16 @@ export function CreatePortfolio() {
                       RECOMMENDED VALUE
                     </label>
                     <Select
-                      defaultValue={selectedOption}
-                      onChange={setSelectedOption}
+                      // defaultValue={selectedOption}
+                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recomondedValue: e })}
+                      value={addPortFolioItem.recomondedValue}
                       options={options}
                       placeholder="RECOMMENDED VALUE"
                     />
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
+                  <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
                       for="exampleInputEmail1"
@@ -4156,15 +4438,17 @@ export function CreatePortfolio() {
                     </label>
                     <input
                       type="text"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
+                      className="form-control border-radius-10"
+                      // id="exampleInputEmail1"
+                      // aria-describedby="emailHelp"
                       placeholder="QUANTITY"
+                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, quantity: e.target.value })}
+                      value={addPortFolioItem.quantity}
                     />
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
+                  <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
                       for="exampleInputEmail1"
@@ -4173,10 +4457,12 @@ export function CreatePortfolio() {
                     </label>
                     <input
                       type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
+                      className="form-control border-radius-10"
+                      // id="exampleInputEmail1"
+                      // aria-describedby="emailHelp"
                       placeholder="NO. OF EVENTS"
+                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, strategyEvents: e.target.value })}
+                      value={addPortFolioItem.strategyEvents}
                     />
                   </div>
                 </div>
@@ -4194,10 +4480,12 @@ export function CreatePortfolio() {
                     <div className="icon-defold">
                       <div className="form-control">
                         <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
+                          // defaultValue={selectedOption}
+                          // onChange={setSelectedOption}
                           options={options}
                           placeholder="TEMPLATE ID"
+                          onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, templateId: e })}
+                          value={addPortFolioItem.templateId}
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
@@ -4217,10 +4505,12 @@ export function CreatePortfolio() {
                     <div className="icon-defold">
                       <div className="form-control">
                         <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
+                          // defaultValue={selectedOption}
+                          // onChange={setSelectedOption}
                           options={options}
                           placeholder="TEMPLATE DESCRIPTION"
+                          onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, templateDescription: e })}
+                          value={addPortFolioItem.templateDescription}
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
@@ -4229,7 +4519,7 @@ export function CreatePortfolio() {
                     </div>
                   </div>
                 </div>
-                <div className="col-md-6 col-sm-6">
+                {/* <div className="col-md-6 col-sm-6">
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
@@ -4240,11 +4530,14 @@ export function CreatePortfolio() {
                     <div className="icon-defold">
                       <input
                         type="text"
-                        class="form-control icon-defold border-radius-10"
+                        className="form-control icon-defold border-radius-10"
                         style={{ paddingLeft: "35px" }}
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
+                        // id="exampleInputEmail1"
+                        // aria-describedby="emailHelp"
                         placeholder="SJ1234"
+                        onChange={(e)=>setAddportFolioItem({...addPortFolioItem,templateEvents:e.target.value})}
+                        value={addPortFolioItem.templateEvents}
+
                       />
                       <span
                         className="search-icon"
@@ -4258,7 +4551,7 @@ export function CreatePortfolio() {
                       </span>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group">
                     <div className="mt-4">
@@ -4275,7 +4568,7 @@ export function CreatePortfolio() {
 
               <p className="mt-4">REPAIR OPTIONS</p>
               <div className="row">
-                <div className="col-md-4 col-sm-4">
+                {/* <div className="col-md-4 col-sm-4">
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
@@ -4286,11 +4579,13 @@ export function CreatePortfolio() {
                     <div className="icon-defold">
                       <input
                         type="email"
-                        class="form-control icon-defold border-radius-10"
+                        className="form-control icon-defold border-radius-10"
                         style={{ paddingLeft: "35px" }}
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
+                        // id="exampleInputEmail1"
+                        // aria-describedby="emailHelp"
                         placeholder="SJ1234"
+                        onChange={(e)=>setAddportFolioItem({...addPortFolioItem,repairEvents:e.target.value})}
+                        value={addPortFolioItem.repairEvents}
                       />
                       <span
                         className="search-icon"
@@ -4304,7 +4599,7 @@ export function CreatePortfolio() {
                       </span>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 <div className="col-md-4 col-sm-4">
                   <div className="form-group">
                     <label
@@ -4316,10 +4611,12 @@ export function CreatePortfolio() {
                     <div className="icon-defold">
                       <div className="form-control">
                         <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
+                          // defaultValue={selectedOption}
+                          // onChange={setSelectedOption}
                           options={options}
                           placeholder="REPAIR OPTION"
+                          onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, repairOption: e })}
+                          value={addPortFolioItem.repairOption}
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
@@ -4357,28 +4654,28 @@ export function CreatePortfolio() {
                   Save & Continue
                 </a>
               </div>
-              {/* <div class="row mt-4">
+              {/* <div className="row mt-4">
                                 <div className="col-md-6 col-sm-6">
-                                    <div class="form-group w-100">
+                                    <div className="form-group w-100">
                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOLUTION ID</label>
-                                        <input type="email" class="form-control border-radius-10" disabled id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(AUTO GENERATE)" />
+                                        <input type="email" className="form-control border-radius-10" disabled id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(AUTO GENERATE)" />
                                     </div>
                                 </div>
                                 <div className="col-md-6 col-sm-6">
-                                    <div class="form-group w-100">
+                                    <div className="form-group w-100">
                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOLUTION DESCRIPTION</label>
-                                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace Cranskshaft" />
+                                        <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace Cranskshaft" />
                                     </div>
                                 </div>
                                 <div className="col-md-6 col-sm-6">
-                                    <div class="form-group w-100">
+                                    <div className="form-group w-100">
                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">USAGE IN</label>
-                                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Overhaul" />
+                                        <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Overhaul" />
                                     </div>
                                 </div>
                             </div>
                             <p className="mt-4">STRATEGY</p>
-                            <div class="row mt-4">
+                            <div className="row mt-4">
                                 <div className="col-md-6 col-sm-6">
                                     <div className="form-group">
                                         <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">TASK TYPE</label>
@@ -4464,7 +4761,7 @@ export function CreatePortfolio() {
         <Modal.Body>
           <div className="d-flex align-items-center justify-content-between">
             <div>
-              <h5 class="">Choose what solution you want to build</h5>
+              <h5 className="">Choose what solution you want to build</h5>
             </div>
             {/* <div>
                         <a href='#' className='btn border-light font-weight-500 bg-light-grey font-size-18'>Explore available solution</a>
@@ -4551,19 +4848,19 @@ export function CreatePortfolio() {
           </div>
         </Modal.Body>
       </Modal>
-      <div class="modal fade" id="AddCoverage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Add Coverage</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <div className="modal fade" id="AddCoverage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="exampleModalLabel">Add Coverage</h5>
+              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <div class="modal-body">
+            <div className="modal-body">
               <div className="row">
                 <div className="col-md-4 col-sm-4">
-                  <div class="form-group w-100">
+                  <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
                       for="exampleInputEmail1"
@@ -4571,19 +4868,18 @@ export function CreatePortfolio() {
                       Coverage ID
                     </label>
                     <input
-                      type="email"
-                      class="form-control border-radius-10"
+                      type="text"
+                      className="form-control border-radius-10"
                       disabled
-                      id="exampleInputEmail1"
                       aria-describedby="emailHelp"
                       placeholder="(AUTO GENERATE)"
                     />
                   </div>
                 </div>
                 {/* <div className="col-md-4 col-sm-4">
-                  <div class="form-group">
+                  <div className="form-group">
                     <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Service ID</label>
-                    <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
                   </div>
                 </div> */}
                 <div className="col-md-4 col-sm-4">
@@ -4651,24 +4947,24 @@ export function CreatePortfolio() {
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
-                  <div class="form-group">
+                  <div className="form-group">
                     <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Start Serial No</label>
-                    <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
-                  <div class="form-group">
+                  <div className="form-group">
                     <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">End Serial No</label>
-                    <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
                   </div>
                 </div>
 
 
 
                 <div className="col-md-4 col-sm-4">
-                  <div class="form-group">
+                  <div className="form-group">
                     <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Fleet</label>
-                    <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
@@ -4705,35 +5001,58 @@ export function CreatePortfolio() {
                 </div>
 
                 <div className="col-md-4 col-sm-4">
-                  <div class="form-group">
+                  <div className="form-group">
                     <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Start Date </label>
-                    <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
-                  <div class="form-group">
+                  <div className="form-group">
                     <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">End Date </label>
-                    <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
-                  <div class="form-group">
+                  <div className="form-group">
                     <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Actions </label>
-                    <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
                   </div>
                 </div> */}
 
 
               </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn border w-100 bg-white" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary w-100">Save changes</button>
+            <div className="modal-footer">
+              <button type="button" className="btn border w-100 bg-white" data-dismiss="modal">Close</button>
+              <button type="button" className="btn btn-primary w-100">Save changes</button>
             </div>
           </div>
         </div>
       </div>
       <ToastContainer />
+      {/* <div className="modal fade" id="relatedTable" tabindex="-1" role="dialog" aria-labelledby="exampleReleted" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered modal-lg" role="document"> */}
+          <Modal
+          show={showRelatedModel}
+          onHide={()=>setShowRelatedModel(false)}
+          size="xl"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+          >
+            <Modal.Body>
+              <DataTable
+                className=""
+                title=""
+                columns={columns4}
+                data={data4}
+                customStyles={customStyles}
+                // pagination
+              />
+            </Modal.Body>
+          </Modal>
+
+        {/* </div>
+      </div> */}
     </>
   );
 }
