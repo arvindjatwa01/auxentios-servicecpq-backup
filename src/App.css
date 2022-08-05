@@ -296,10 +296,6 @@ h5 {
   background: #f3fff5;
 }
 
-.bg-light-dark {
-  background: #F3F4FF;
-}
-
 .bg-light-grey {
   background: #efefef;
 }
@@ -326,10 +322,6 @@ h5 {
 
 .bg-light-pink {
   background: #F8F3FF;
-}
-
-.bg-light-dark {
-  background: #ECF6FE;
 }
 
 .bg-primary {
@@ -1939,12 +1931,9 @@ nav.main-menu li.active>a,
   background: #F8F3FF;
 }
 
-.bg-light-dark {
-  background: #ECF6FE;
-}
 
 .bg-primary {
-  background: #872ff7 !important;
+  background: #7571f9 !important;
 }
 
 .bg-light-blue {
@@ -2485,4 +2474,11 @@ cursor: pointer;
       .custom-input-sleact::-webkit-input-placeholder {
         color: #808080 !important;
       }
-      
+      .cMMpBL{ font-size: 12px !important;
+        color:#808080 !important; min-height: 44px !important;}
+        .css-i4bv87-MuiSvgIcon-root{width: 0.7em !important;
+          height: 0.7em !important;} 
+.btn-svg{} 
+.btn-svg svg{ width: 16px; fill: #707070; stroke:#707070;}     
+.tabledate-box{}
+.tabledate-box .form-controldate{border: none !important;}           

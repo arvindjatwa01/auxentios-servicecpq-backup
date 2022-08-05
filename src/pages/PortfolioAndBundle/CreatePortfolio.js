@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, SplitButton, Dropdown, ButtonGroup } from "react-bootstrap";
+import { Modal, SplitButton, Dropdown, ButtonGroup, Button } from "react-bootstrap";
 import { DataGrid } from "@mui/x-data-grid";
 import FormGroup from "@mui/material/FormGroup";
 import { ToastContainer, toast } from "react-toastify";
@@ -45,6 +45,8 @@ import searchstatusIcon from "../../assets/icons/svg/search-status.svg";
 import { CommanComponents } from "../../components/index";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
 import deleticon from "../../assets/images/delete.png";
 import link1Icon from "../../assets/images/link1.png";
@@ -126,7 +128,7 @@ const customStyles = {
       paddingLeft: "8px", // override the cell padding for head cells
       paddingRight: "8px",
       backgroundColor: "#7571f9",
-      color:"#fff"
+      color: "#fff"
     },
   },
   cells: {
@@ -209,6 +211,7 @@ export function CreatePortfolio() {
 
   const [masterData, setMasterData] = useState([])
   const [filterMasterData, setFilterMasterData] = useState([])
+  const [selectedMasterData, setSelectedMasterData] = useState([])
   const [coverageData, setCoverageData] = useState({
     make: "",
     modal: "",
@@ -303,8 +306,19 @@ export function CreatePortfolio() {
     repairOption: ""
 
   })
+  const [showRelatedModel, setShowRelatedModel] = useState(false)
+  const [editSerialNo, setEditSerialNo] = useState({
+    coverageId: "",
+    make: "",
+    family: "",
+    modelNo: "",
+    serialNoPrefix: "",
+    startSerialNo: "",
+    endSerialNo: "",
+    fleet: "",
+    fleetSize: ""
 
-  const [showRelatedModel,setShowRelatedModel]=useState(false)
+  })
 
   const handleCustomerSegmentChange = (e) => {
     setGeneralComponentData({
@@ -1397,10 +1411,10 @@ export function CreatePortfolio() {
     setCount(0)
     setMasterData([])
     setFilterMasterData([])
+    setSelectedMasterData([])
   }
 
   const handleMasterCheck = (e, row) => {
-    console.log("master Data", masterData)
     if (e.target.checked) {
       var _masterData = [...masterData]
       const updated = _masterData.map((currentItem, i) => {
@@ -1413,18 +1427,37 @@ export function CreatePortfolio() {
     } else {
       var _filterMasterData = [...filterMasterData]
       const updated = _filterMasterData.filter((currentItem, i) => {
-        if (row.id == currentItem.id) {
-          currentItem.check1 = "false"
-          return
-        } else return currentItem
-
+        if (row.id !== currentItem.id)
+          return currentItem
       })
-      console.log(" handleMasterCheck updated", updated)
       setFilterMasterData(updated)
     }
 
   }
 
+  const handleDeleteIncludeSerialNo = (e, row) => {
+    const updated = selectedMasterData.filter((obj) => {
+      if (obj.id !== row.id)
+        return obj
+    })
+    setSelectedMasterData(updated)
+  }
+  const handleEditIncludeSerialNo = (e, row) => {
+    console.log("handleEditIncludeSerialNo row:", row)
+    let obj = {
+      coverageId: row.id,
+      make: row.make,
+      family: row.family,
+      modelNo: row.model,
+      serialNoPrefix: row.prefix,
+      startSerialNo: row.startSerialNo,
+      endSerialNo: row.endSerialNo,
+      fleet: row.fleet,
+      fleetSize: row.fleetSize,
+    }
+    setEditSerialNo(obj)
+
+  }
   const columns = [
     {
       name: (
@@ -1486,7 +1519,7 @@ export function CreatePortfolio() {
       name: (
         <>
           <div>
-            S NO
+            Serial No
           </div>
         </>
       ),
@@ -1502,7 +1535,7 @@ export function CreatePortfolio() {
       name: (
         <>
           <div>
-            <img className="mr-2" src={boxicon}></img>Start S NO
+            <img className="mr-2" src={boxicon}></img>Start Serial No
           </div>
 
         </>
@@ -1515,7 +1548,7 @@ export function CreatePortfolio() {
     {
       name: (
         <>
-          <div>End S NO</div>
+          <div>End Serial No</div>
         </>
       ),
       selector: (row) => row.strategy,
@@ -1540,7 +1573,7 @@ export function CreatePortfolio() {
     {
       name: (
         <>
-          <div><Checkbox className="text-white" {...label} /></div>
+          <div>Select</div>
         </>
       ),
       selector: (row) => row.standardJobId,
@@ -1597,7 +1630,7 @@ export function CreatePortfolio() {
       name: (
         <>
           <div>
-            S NO
+            Serial No
           </div>
         </>
       ),
@@ -1613,7 +1646,7 @@ export function CreatePortfolio() {
       name: (
         <>
           <div>
-            <img className="mr-2" src={boxicon}></img>Start S NO
+            <img className="mr-2" src={boxicon}></img>Start Serial No
           </div>
 
         </>
@@ -1626,7 +1659,7 @@ export function CreatePortfolio() {
     {
       name: (
         <>
-          <div>End S NO</div>
+          <div>End Serial No</div>
         </>
       ),
       selector: (row) => row.strategy,
@@ -1648,18 +1681,6 @@ export function CreatePortfolio() {
     // },
   ];
   const columns2 = [
-    {
-      name: (
-        <>
-          <div><Checkbox className="text-white" {...label} /></div>
-        </>
-      ),
-      selector: (row) => row.standardJobId,
-      wrap: true,
-      sortable: true,
-      maxWidth: "300px",
-      cell: (row) => <Checkbox className="text-black" />,
-    },
     {
       name: (
         <>
@@ -1688,10 +1709,10 @@ export function CreatePortfolio() {
           <div>Model</div>
         </>
       ),
-      selector: (row) => row.modelDescription,
+      selector: (row) => row.model,
       wrap: true,
       sortable: true,
-      format: (row) => row.modelDescription,
+      format: (row) => row.model,
     },
     {
       name: (
@@ -1708,7 +1729,7 @@ export function CreatePortfolio() {
       name: (
         <>
           <div>
-            S NO
+            Serial No
           </div>
         </>
       ),
@@ -1724,7 +1745,7 @@ export function CreatePortfolio() {
       name: (
         <>
           <div>
-            <img className="mr-2" src={boxicon}></img>Start S NO
+            <img className="mr-2" src={boxicon}></img>Start Serial No
           </div>
 
         </>
@@ -1737,7 +1758,7 @@ export function CreatePortfolio() {
     {
       name: (
         <>
-          <div>End S NO</div>
+          <div>End Serial No</div>
         </>
       ),
       selector: (row) => row.strategy,
@@ -1757,9 +1778,12 @@ export function CreatePortfolio() {
       format: (row) => row.action,
       cell: (row) =>
         <div>
-          <img className="mr-2" src={penIcon} style={{ cursor: "pointer" }} />
-          <img className="mr-2" src={deleticon} style={{ cursor: "pointer" }} />
-          <img src={link1Icon}onClick={()=>setShowRelatedModel(true)} style={{ cursor: "pointer" }} /></div>,
+          <Link to="#" onClick={(e) => handleEditIncludeSerialNo(e, row)} className="btn-svg text-white cursor mx-2" data-toggle="modal" data-target="#AddCoverage">
+            <svg version="1.1" viewBox="0 0 1696.162 1696.143" xmlSpace="preserve" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"><g id="pen"><path d="M1648.016,305.367L1390.795,48.149C1359.747,17.098,1318.466,0,1274.555,0c-43.907,0-85.188,17.098-116.236,48.148   L81.585,1124.866c-10.22,10.22-16.808,23.511-18.75,37.833L0.601,1621.186c-2.774,20.448,4.161,41.015,18.753,55.605   c12.473,12.473,29.313,19.352,46.714,19.352c2.952,0,5.923-0.197,8.891-0.601l458.488-62.231   c14.324-1.945,27.615-8.529,37.835-18.752L1648.016,537.844c31.049-31.048,48.146-72.33,48.146-116.237   C1696.162,377.696,1679.064,336.415,1648.016,305.367z M493.598,1505.366l-350.381,47.558l47.56-350.376L953.78,439.557   l302.818,302.819L493.598,1505.366z M1554.575,444.404l-204.536,204.533l-302.821-302.818l204.535-204.532   c8.22-8.218,17.814-9.446,22.802-9.446c4.988,0,14.582,1.228,22.803,9.446l257.221,257.218c8.217,8.217,9.443,17.812,9.443,22.799   S1562.795,436.186,1554.575,444.404z" /></g><g id="Layer_1" /></svg>
+          </Link>
+          <Link to="#" onClick={(e) => handleDeleteIncludeSerialNo(e, row)} className="btn-svg text-white cursor mr-2"><svg data-name="Layer 41" id="Layer_41" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path class="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path class="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg></Link>
+          <Link to="#" className="btn-svg text-white cursor " onClick={() => setShowRelatedModel(true)}><svg data-name="Layer 1" id="Layer_1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ fill: 'none', width: '18px', strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2px' }}><title /><g data-name="&lt;Group&gt;" id="_Group_"><path class="cls-1" d="M13.38,10.79h0a3.5,3.5,0,0,1,0,5L10.52,18.6a3.5,3.5,0,0,1-5,0h0a3.5,3.5,0,0,1,0-5l.86-.86" data-name="&lt;Path&gt;" id="_Path_" /><path class="cls-1" d="M11,13.21h0a3.5,3.5,0,0,1,0-5L13.81,5.4a3.5,3.5,0,0,1,5,0h0a3.5,3.5,0,0,1,0,5l-.86.86" data-name="&lt;Path&gt;" id="_Path_2" /></g></svg></Link>
+        </div>,
     },
   ];
   const columns4 = [
@@ -1788,14 +1812,14 @@ export function CreatePortfolio() {
     {
       name: (
         <>
-          <div>Number seriese</div>
+          <div>Serial Number</div>
         </>
       ),
       selector: (row) => row.noSeriese,
       wrap: true,
       sortable: true,
       format: (row) => row.noSeriese,
-      cell: (row) =><div>{row.noSeriese}<img src={shearchIcon} alt="search" /></div>,
+      cell: (row) => <div><Select className="customselect" options={[{ label: "12345", value: "12345" }, { label: "12345", value: "12345" },]} /></div>,
     },
     {
       name: (
@@ -1818,6 +1842,24 @@ export function CreatePortfolio() {
       wrap: true,
       sortable: true,
       format: (row) => row.startDate,
+      cell: (row) =>
+        <div className="date-box tabledate-box">
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <DatePicker
+              variant="inline"
+              format="dd/MM/yyyy"
+              className="form-controldate border-radius-10"
+              label=""
+            // value={row.startDate}
+            // onChange={(e) =>
+            //   setValidityData({
+            //     ...validityData,
+            //     startDate: e,
+            //   })
+            // }
+            />
+          </MuiPickersUtilsProvider>
+        </div>
     },
     {
       name: (
@@ -1829,6 +1871,24 @@ export function CreatePortfolio() {
       wrap: true,
       sortable: true,
       format: (row) => row.endDate,
+      cell: (row) =>
+        <div className="date-box tabledate-box">
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <DatePicker
+              variant="inline"
+              format="dd/MM/yyyy"
+              className="form-controldate border-radius-10"
+              label=""
+            // value={validityData.fromDate}
+            // onChange={(e) =>
+            //   setValidityData({
+            //     ...validityData,
+            //     fromDate: e,
+            //   })
+            // }
+            />
+          </MuiPickersUtilsProvider>
+        </div>
     },
 
   ];
@@ -1860,7 +1920,7 @@ export function CreatePortfolio() {
             {/* <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5> */}
             <div className="d-flex">
               <div className="ml-3">
-                {/* {generalComponentData.name?generalComponentData.name:""} */}
+                {portfolioId ? generalComponentData.name : ""}
               </div>
               <div className="ml-3">
                 <Select className="customselectbtn1" onChange={(e) => handleOption3(e)} options={options3} value={value3} />
@@ -1905,7 +1965,7 @@ export function CreatePortfolio() {
             <h5 className="d-flex align-items-center mb-0">
               <div className="" style={{ display: "contents" }}>
                 <span className="mr-3" style={{ whiteSpace: "pre" }}>
-                  Portfolio Details
+                  {portfolioId ? "Portfolio Details" : "New Portfolio*"}
                 </span>
                 <a href="#" className="btn-sm">
                   <i className="fa fa-pencil" aria-hidden="true"></i>
@@ -2822,10 +2882,10 @@ export function CreatePortfolio() {
 
                 <TabPanel value={6}>
                   <div
-                    className="custom-table card "
+                    className="custom-table card p-3 "
                     style={{ width: "100%", backgroundColor: "#fff" }}
                   >
-                    <div className="row align-items-center">
+                    <div className="row align-items-center ">
                       {/* <div className="col-2">
                         <div className="d-flex ">
                           <h5 className="mr-4 mb-0">
@@ -2834,7 +2894,7 @@ export function CreatePortfolio() {
                           <p className="ml-4 mb-0"><a onClick={() => handleOpen()} className=" ml-3 font-size-14"><img src={uploadIcon}></img></a><a href="#" className="ml-3 "><img src={shareIcon}></img></a></p>
                         </div>
                       </div> */}
-                      <div className="col-10">
+                      <div className="col-12">
                         {/* <div className="d-flex align-items-center">
                         <div
                               className="search-icon mr-2"
@@ -2845,136 +2905,98 @@ export function CreatePortfolio() {
                             </div>
                                 <span className="mr-3">Search</span>
                         </div> */}
-                        <div className="d-flex justify-content-between align-items-center">
-                          <div className="d-flex align-items-center mt-3 w-100">
+                        <div className="d-flex align-items-center bg-light-dark w-100">
+                          <div className="d-flex justify-content-between align-items-center p-3 border-radius-10 w-100 border-right">
+                            <div className="row align-items-center m-0">
+                              {
+                                querySearchSelector.map((obj, i) => {
+                                  return (
+                                    <>
 
-                            <div className="d-flex justify-content-between align-items-center p-3 bg-light-dark border-radius-10 w-100">
-                              <div className="row align-items-center m-0">
-
-                                {/* <QuerySearchComp count={count}/> */}
-
-                                {
-                                  querySearchSelector.map((obj, i) => {
-                                    return (
-                                      <>
-
-                                        <div className="customselect d-flex align-items-center mr-3 my-2">
-                                          {
-                                            i > 0 ?
-                                              <Select
-                                                isClearable={true}
-                                                defaultValue={{ label: "And", value: "AND" }}
-                                                options={[
-                                                  { label: "And", value: "AND", id: i },
-                                                  { label: "Or", value: "OR", id: i },
-                                                ]}
-                                                placeholder="&amp;"
-                                                onChange={(e) => handleOperator(e, i)}
-                                                // value={querySearchOperator[i]}
-                                                value={obj.selectOperator}
-
-                                              /> : <></>
-                                          }
-
-                                          <div>
+                                      <div className="customselect d-flex align-items-center mr-3 my-2">
+                                        {
+                                          i > 0 ?
                                             <Select
-                                              // isClearable={true}
+                                              isClearable={true}
+                                              defaultValue={{ label: "And", value: "AND" }}
                                               options={[
-                                                { label: "Make", value: "make", id: i },
-                                                { label: "Family", value: "family", id: i },
-                                                { label: "Model", value: "model", id: i },
-                                                { label: "Prefix", value: "prefix", id: i },
+                                                { label: "And", value: "AND", id: i },
+                                                { label: "Or", value: "OR", id: i },
                                               ]}
-                                              onChange={(e) => handleFamily(e, i)}
-                                              value={obj.selectFamily}
-                                            />
-                                          </div>
-                                          <div className="customselectsearch">
-                                            <input className="custom-input-sleact"
-                                              type="text"
-                                              placeholder="Search string"
-                                              value={obj.inputSearch}
-                                              onChange={(e) => handleInputSearch(e, i)}
-                                              id={"inputSearch-" + i}
-                                              autoComplete="off"
-                                            />
+                                              placeholder="&amp;"
+                                              onChange={(e) => handleOperator(e, i)}
+                                              // value={querySearchOperator[i]}
+                                              value={obj.selectOperator}
 
-                                            {
+                                            /> : <></>
+                                        }
 
-                                              <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i}`} id="style">
-                                                {obj.selectOptions.map((currentItem, j) => (
-                                                  <li className="list-group-item" key={j} onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}>{currentItem}</li>
-                                                ))}
-                                              </ul>
-
-                                            }
-                                          </div>
+                                        <div>
+                                          <Select
+                                            // isClearable={true}
+                                            options={[
+                                              { label: "Make", value: "make", id: i },
+                                              { label: "Family", value: "family", id: i },
+                                              { label: "Model", value: "model", id: i },
+                                              { label: "Prefix", value: "prefix", id: i },
+                                            ]}
+                                            onChange={(e) => handleFamily(e, i)}
+                                            value={obj.selectFamily}
+                                          />
                                         </div>
-                                      </>
-                                    );
-                                  })
-                                }
-                                <div
-                                  onClick={(e) => addSearchQuerryHtml(e)}>
-                                  <Link
-                                    to="#"
-                                    className="btn-sm text-violet border"
-                                    style={{ border: "1px solid #872FF7" }}
-                                  >
-                                    +
-                                  </Link>
-                                </div>
-                                <div onClick={handleDeletQuerySearch}>
-                                  <Link to="#" className="btn-sm">
-                                    <DeleteIcon className="font-size-16" />
-                                  </Link>
-                                </div>
+                                        <div className="customselectsearch">
+                                          <input className="custom-input-sleact"
+                                            type="text"
+                                            placeholder="Search string"
+                                            value={obj.inputSearch}
+                                            onChange={(e) => handleInputSearch(e, i)}
+                                            id={"inputSearch-" + i}
+                                            autoComplete="off"
+                                          />
 
+                                          {
+
+                                            <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i}`} id="style">
+                                              {obj.selectOptions.map((currentItem, j) => (
+                                                <li className="list-group-item" key={j} onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}>{currentItem}</li>
+                                              ))}
+                                            </ul>
+
+                                          }
+                                        </div>
+                                      </div>
+                                    </>
+                                  );
+                                })
+                              }
+                              <div
+                                onClick={(e) => addSearchQuerryHtml(e)}>
+                                <Link
+                                  to="#"
+                                  className="btn-sm text-violet border"
+                                  style={{ border: "1px solid #872FF7" }}
+                                >
+                                  +
+                                </Link>
                               </div>
+                              <div onClick={handleDeletQuerySearch}>
+                                <Link to="#" className="btn-sm">
+                                  <svg data-name="Layer 41" id="Layer_41" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path class="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path class="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg>
+                                  {/* <DeleteIcon className="font-size-16" /> */}
+                                </Link>
+                              </div>
+
                             </div>
                           </div>
-                          <div
-                            className="search-icon mr-2"
-                            style={{ lineHeight: "24px", cursor: "pointer" }}
-                            onClick={handleQuerySearchClick}
-                          >
-                            <SearchIcon />
-                          </div>
-                          <span className="mr-3">Search</span>
-
-                        </div>
-
-                      </div>
-                      <div className="col-2">
-                        <div className="d-flex align-items-center justify-content-center">
-                          {/* <div className="col-6 text-center">
-                            <a href="#" className="p-1 more-btn">
-                              + 3 more
-                              <span className="c-btn">C</span>
-                              <span className="b-btn">B</span>
-                              <span className="a-btn">A</span>
-                            </a>
-                          </div> */}
-                          <div className="border-left py-2">
-                            <a
-                              href="#"
-                              data-toggle="modal"
-                              data-target="#AddCoverage"
-                              className="p-1"
-                              style={{ whiteSpace: "pre" }}
-                            >+Add Selected</a>
-                          </div>
-                          <div className="border-left p-4">
-                            <a
-                              href="#"
-                              // data-toggle="modal"
-                              // data-target="#AddCoverage"
-                              className="p-1"
-                            >Upload</a>
+                          <div className="px-3">
+                            <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
+                              <SearchIcon /><span className="ml-1">Search</span>
+                            </Link>
                           </div>
                         </div>
                       </div>
                     </div>
+                    <hr />
                     <DataTable
                       className=""
                       title=""
@@ -2983,14 +3005,22 @@ export function CreatePortfolio() {
                       customStyles={customStyles}
                       pagination
                     />
-                    <h6 className="font-weight-400 text-black mb-2 mt-1">
-                      Included models
-                    </h6>
+                    <div>
+                      <div className="text-right">
+                        <Link to="#" onClick={() => setSelectedMasterData(filterMasterData)} className="btn bg-primary text-white">+ Add Selected</Link></div>
+                    </div>
+                    <hr />
+                    <label htmlFor="Included-model">
+                      <h6 className="font-weight-400 text-black mb-2 mt-1">
+                        Included models
+                      </h6>
+
+                    </label>
                     <DataTable
-                      className=""
+                      className="mt-3"
                       title=""
                       columns={columns2}
-                      data={filterMasterData}
+                      data={selectedMasterData}
                       customStyles={customStyles}
                       pagination
                     />
@@ -3300,49 +3330,49 @@ export function CreatePortfolio() {
             {bundleItems.length > 0 ? (
               <div>
                 {/* <div className="row align-items-center">
-                                    <div className="col-4">
-                                        <div className="d-flex align-items-center pl-2">
-                                            <h6 className="mr-2 mb-0 font-size-12"><span>Repair Option</span></h6>
-                                            <p className="mb-0">Version 1</p>
-                                            <p className="ml-2 mb-0">
-                                                <a href="#" className="ml-3 "><img src={editIcon}></img></a>
-                                                <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="col-5">
-                                        <div className="d-flex align-items-center" style={{ background: '#F9F9F9', padding: '5px 10px 5px 35px', borderRadius: '10px' }}>
-                                            <div className="search-icon1 mr-2" style={{ lineHeight: '24px' }}>
-                                                <img src={searchstatusIcon}></img>
-                                            </div>
-                                            <div className=" mx-2">
-                                                <div className="machine-drop">
-                                                    <FormControl className="" sx={{ m: 1, }}>
-                                                        <Select
-                                                            id="demo-simple-select-autowidth"
-                                                            value={age}
-                                                            onChange={handleChangedrop}
-                                                            autoWidth
-                                                        >
-                                                            <MenuItem value="5">
-                                                                <em>Engine</em>
-                                                            </MenuItem>
-                                                            <MenuItem value={10}>Twenty</MenuItem>
-                                                            <MenuItem value={21}>Twenty one</MenuItem>
-                                                            <MenuItem value={22}>Twenty one and a half</MenuItem>
-                                                        </Select>
-                                                    </FormControl>
-                                                </div>
-                                            </div>
-                                        </div>
+                  <div className="col-4">
+                    <div className="d-flex align-items-center pl-2">
+                      <h6 className="mr-2 mb-0 font-size-12"><span>Repair Option</span></h6>
+                      <p className="mb-0">Version 1</p>
+                      <p className="ml-2 mb-0">
+                        <a href="#" className="ml-3 "><img src={editIcon}></img></a>
+                        <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="col-5">
+                    <div className="d-flex align-items-center" style={{ background: '#F9F9F9', padding: '5px 10px 5px 35px', borderRadius: '10px' }}>
+                      <div className="search-icon1 mr-2" style={{ lineHeight: '24px' }}>
+                        <img src={searchstatusIcon}></img>
+                      </div>
+                      <div className=" mx-2">
+                        <div className="machine-drop">
+                          <FormControl className="" sx={{ m: 1, }}>
+                            <Select
+                              id="demo-simple-select-autowidth"
+                              value={age}
+                              onChange={handleChangedrop}
+                              autoWidth
+                            >
+                              <MenuItem value="5">
+                                <em>Engine</em>
+                              </MenuItem>
+                              <MenuItem value={10}>Twenty</MenuItem>
+                              <MenuItem value={21}>Twenty one</MenuItem>
+                              <MenuItem value={22}>Twenty one and a half</MenuItem>
+                            </Select>
+                          </FormControl>
+                        </div>
+                      </div>
+                    </div>
 
-                                    </div>
-                                    <div className="col-3  text-right">
-                                        <div className="">
-                                            <a href="#" className="border-left  btn">+ Add Part</a>
-                                        </div>
-                                    </div>
-                                </div> */}
+                  </div>
+                  <div className="col-3  text-right">
+                    <div className="">
+                      <a href="#" className="border-left  btn">+ Add Part</a>
+                    </div>
+                  </div>
+                </div> */}
                 <div
                   className="custom-table  card "
                   style={{ height: 400, width: "100%" }}
@@ -4871,8 +4901,9 @@ export function CreatePortfolio() {
                       type="text"
                       className="form-control border-radius-10"
                       disabled
-                      aria-describedby="emailHelp"
                       placeholder="(AUTO GENERATE)"
+                      value={editSerialNo.coverageId}
+                      defaultValue={editSerialNo.coverageId}
                     />
                   </div>
                 </div>
@@ -4891,9 +4922,12 @@ export function CreatePortfolio() {
                       Make
                     </label>
                     <Select
-                      // value={}
                       options={categoryList}
-                      onChange={(e) => HandleCatUsage(e)}
+                      placeholder={editSerialNo.make}
+                      // onChange={(e) => HandleCatUsage(e)}
+                      value={editSerialNo.make}
+                      defaultValue={editSerialNo.make}
+                      onChange={(e) => setEditSerialNo({ ...editSerialNo, make: e.value })}
                     />
 
                   </div>
@@ -4907,9 +4941,12 @@ export function CreatePortfolio() {
                       Family
                     </label>
                     <Select
-                      // value={}
                       options={categoryList}
-                      onChange={(e) => HandleCatUsage(e)}
+                      placeholder={editSerialNo.family}
+                      value={editSerialNo.family}
+                      defaultValue={editSerialNo.family}
+                      onChange={(e) => setEditSerialNo({ ...editSerialNo, family: e.value })}
+                    // onChange={(e) => HandleCatUsage(e)}
                     />
 
                   </div>
@@ -4923,9 +4960,12 @@ export function CreatePortfolio() {
                       Model No
                     </label>
                     <Select
-                      // value={}
                       options={categoryList}
-                      onChange={(e) => HandleCatUsage(e)}
+                      placeholder={editSerialNo.modelNo}
+                      value={editSerialNo.modelNo}
+                      defaultValue={editSerialNo.modelNo}
+                      onChange={(e) => setEditSerialNo({ ...editSerialNo, modelNo: e.value })}
+                    // onChange={(e) => HandleCatUsage(e)}
                     />
 
                   </div>
@@ -4939,9 +4979,12 @@ export function CreatePortfolio() {
                       Serial No Prefix
                     </label>
                     <Select
-                      // value={}
                       options={categoryList}
-                      onChange={(e) => HandleCatUsage(e)}
+                      placeholder={editSerialNo.serialNoPrefix}
+                      value={editSerialNo.serialNoPrefix}
+                      defaultValue={editSerialNo.serialNoPrefix}
+                      onChange={(e) => setEditSerialNo({ ...editSerialNo, serialNoPrefix: e.value })}
+                    // onChange={(e) => HandleCatUsage(e)}
                     />
 
                   </div>
@@ -4949,13 +4992,27 @@ export function CreatePortfolio() {
                 <div className="col-md-4 col-sm-4">
                   <div className="form-group">
                     <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Start Serial No</label>
-                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      placeholder="(Optional)"
+                      value={editSerialNo.startSerialNo}
+                      defaultValue={editSerialNo.startSerialNo}
+                      onChange={(e) => setEditSerialNo({ ...editSerialNo, startSerialNo: e.target.value })}
+                    />
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                   <div className="form-group">
                     <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">End Serial No</label>
-                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      placeholder="(Optional)"
+                      value={editSerialNo.endSerialNo}
+                      defaultValue={editSerialNo.endSerialNo}
+                      onChange={(e) => setEditSerialNo({ ...editSerialNo, endSerialNo: e.target.value })}
+                    />
                   </div>
                 </div>
 
@@ -4964,7 +5021,14 @@ export function CreatePortfolio() {
                 <div className="col-md-4 col-sm-4">
                   <div className="form-group">
                     <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Fleet</label>
-                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      placeholder="(Optional)"
+                      value={editSerialNo.fleet}
+                      defaultValue={editSerialNo.fleet}
+                      onChange={(e) => setEditSerialNo({ ...editSerialNo, fleet: e.target.value })}
+                    />
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
@@ -4976,9 +5040,12 @@ export function CreatePortfolio() {
                       Fleet Size
                     </label>
                     <Select
-                      // value={}
+                      value={editSerialNo.fleetSize}
+                      defaultValue={editSerialNo.fleetSize}
+                      placeholder={editSerialNo.fleetSize}
+                      onChange={(e) => setEditSerialNo({ ...editSerialNo, fleetSize: e.value })}
                       options={categoryList}
-                      onChange={(e) => HandleCatUsage(e)}
+                    // onChange={(e) => HandleCatUsage(e)}
                     />
 
                   </div>
@@ -5032,26 +5099,40 @@ export function CreatePortfolio() {
       <ToastContainer />
       {/* <div className="modal fade" id="relatedTable" tabindex="-1" role="dialog" aria-labelledby="exampleReleted" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered modal-lg" role="document"> */}
-          <Modal
-          show={showRelatedModel}
-          onHide={()=>setShowRelatedModel(false)}
-          size="xl"
-          aria-labelledby="contained-modal-title-vcenter"
-          centered
-          >
-            <Modal.Body>
-              <DataTable
-                className=""
-                title=""
-                columns={columns4}
-                data={data4}
-                customStyles={customStyles}
-                // pagination
-              />
-            </Modal.Body>
-          </Modal>
+      <Modal
+        show={showRelatedModel}
+        onHide={() => setShowRelatedModel(false)}
+        size="xl"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header className="align-items-center">
+          <div>
+            <Modal.Title>Included Serial No</Modal.Title>
+          </div>
+          <div>
+            <Link to="#" className=" btn bg-primary text-white">Add New</Link>
+          </div>
 
-        {/* </div>
+
+        </Modal.Header>
+        <Modal.Body>
+          <DataTable
+            className=""
+            title=""
+            columns={columns4}
+            data={data4}
+            customStyles={customStyles}
+          // pagination
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary">Close</Button>
+          <Button variant="primary">Save changes</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* </div>
       </div> */}
     </>
   );

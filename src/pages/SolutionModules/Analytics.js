@@ -255,7 +255,7 @@ export const Analytics = () => {
       <div className="content-body" style={{ minHeight: '884px' }}>
         <div class="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0">Solution Builde</h5>
+            <h5 className="font-weight-600 mb-0">Solution Builder</h5>
           </div>
           <div className="card p-4 mt-5">
             <div>
@@ -718,10 +718,10 @@ export const Analytics = () => {
                   ?
                   <div className="tableheader">
                     <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
-                      <li><a className="cursor" className="result">RESULTS</a></li>
+                      <li><a className="cursor result">RESULTS</a></li>
                       <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM125</a></li>
                       <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM2</a></li>
-                      <li><a className="cursor" onClick={handleCreateNewServiceBundle} className="lastOption text-violet"><span className="mr-2">+</span>Create New {typeOfSearch != null ? typeOfSearch.value == 'bundle' ? "Bundle" : typeOfSearch.value == 'service' ? "Service" : typeOfSearch.value == 'portfolioItem' ? "Portfolio Item" : "" : ""}</a></li>
+                      <li><a onClick={handleCreateNewServiceBundle} className="lastOption text-violet cursor mr-2"><span>+</span>Create New {typeOfSearch != null ? typeOfSearch.value == 'bundle' ? "Bundle" : typeOfSearch.value == 'service' ? "Service" : typeOfSearch.value == 'portfolioItem' ? "Portfolio Item" : "" : ""}</a></li>
                     </ul>
                   </div>
                   :
