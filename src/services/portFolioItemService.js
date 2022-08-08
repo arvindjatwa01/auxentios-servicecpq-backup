@@ -23,3 +23,23 @@ export const itemCreation = (payLoad) => {
       }
     });
   };
+export const getAllItems = () => {
+    console.log("coverageService > itemCreation called...");
+    return new Promise((resolve, reject) => {
+      try {
+        axios
+          .get(CREATE_PORTFOLIO_ITEM())
+          .then((res) => {
+            console.log("getAllItems > axios res=", res);
+            resolve(res.data);
+          })
+          .catch((err) => {
+            console.log("getAllItems > axios err=", err);
+            reject("Error in getAllItems axios!");
+          });
+      } catch (error) {
+        console.error("in coverageService > getAllItems, Err===", error);
+        reject(SYSTEM_ERROR);
+      }
+    });
+  };
