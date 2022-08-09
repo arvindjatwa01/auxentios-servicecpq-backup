@@ -256,6 +256,7 @@ export function CreatePortfolio() {
     serviceDescription: "",
     externalReference: "",
     customerSegment: null,
+    items: []
   });
   const [newBundle, setNewBundle] = useState({
     serviceDescription: "",
@@ -301,8 +302,6 @@ export function CreatePortfolio() {
     strategyEvents: "",
     templateId: "",
     templateDescription: "",
-    // templateEvents: "",
-    // repairEvents: "",
     repairOption: ""
 
   })
@@ -319,6 +318,12 @@ export function CreatePortfolio() {
     fleetSize: ""
 
   })
+
+const [itemHeaderSearch,setItemHeaderSearch]=useState({
+  searchBy:"",
+  family:"",
+  input:""
+})
 
   const handleCustomerSegmentChange = (e) => {
     setGeneralComponentData({
@@ -480,16 +485,14 @@ export function CreatePortfolio() {
   };
 
   const handleBundleItemSaveAndContinue = () => {
-    console.log("taskItemList", taskItemList);
     console.log("handleBundleItemSaveAndContinue", generalComponentData)
-    const { portFolioId, ...res } = generalComponentData
-
-
+    // if (generalComponentData.portfolioId) {
+    // const { portfolioId, ...res } = generalComponentData
     let reqObj = {
       itemId: 0,
       itemName: "",
       itemHeaderModel: {
-        itemHeaderId: parseInt(generalComponentData.portFolioId),
+        itemHeaderId: parseInt(generalComponentData.portfolioId),
         itemHeaderDescription: generalComponentData.description,
         bundleFlag: "PORTFOLIO",
         reference: generalComponentData.externalReference,
@@ -551,14 +554,13 @@ export function CreatePortfolio() {
         miscPriceBreakDownPercentage: 0,
         totalPrice: 0
       },
-      createdAt: "2022-08-04T05:30:55.930Z"
     }
     itemCreation(reqObj).then((res) => {
       console.log("itemCreation res:", res)
+      setBundleItems([...bundleItems, res])
     }).catch((err) => {
       console.log("itemCreation err:", err)
     })
-    // dispatch(portfolioItemActions.createItem(createItemPayload(reqObj)));
     // dispatch(portfolioItemActions.createItem(createItemPayload(taskItemList)));
     // alert("Save And Continue")
     // var temp = [...bundleItems];
@@ -589,6 +591,21 @@ export function CreatePortfolio() {
     //     draggable: true,
     //     progress: undefined,
     // });
+
+
+    // }
+    // else {
+    //   toast("🙄 Please create item header first", {
+    //     position: "top-right",
+    //     autoClose: 5000,
+    //     hideProgressBar: false,
+    //     closeOnClick: true,
+    //     pauseOnHover: true,
+    //     draggable: true,
+    //     progress: undefined,
+    //   });
+    // }
+
   };
   const handleAddNewBundle = () => {
     // alert("Save And Continue")
@@ -744,7 +761,7 @@ export function CreatePortfolio() {
         name: generalComponentData.name,
         description: generalComponentData.description,
         externalReference: generalComponentData.externalReference,
-        customerSegment: generalComponentData.customerSegment.value,
+        customerSegment: generalComponentData.customerSegment ? generalComponentData.customerSegment.value : "",
 
         strategyTask: "PREVENTIVE_MAINTENANCE",
         taskType: "PM1",
@@ -1157,6 +1174,10 @@ export function CreatePortfolio() {
     dispatch(taskActions.fetchTaskList());
 
   }, [dispatch]);
+  // useEffect(() => {
+
+
+  // }, []);
 
 
   const strategyList = useAppSelector(
@@ -1469,7 +1490,7 @@ export function CreatePortfolio() {
       wrap: true,
       sortable: true,
       maxWidth: "300px",
-      cell: (row) => <Checkbox className="text-black" checked={row.check1} onChange={(e) => handleMasterCheck(e, row)} />,
+      cell: (row) => <Checkbox className="text-black" />,
     },
     {
       name: (
@@ -1569,7 +1590,8 @@ export function CreatePortfolio() {
       cell: (row) => <div><img className="mr-2" src={penIcon} /><img className="mr-2" src={deleticon} /><img src={link1Icon} /></div>,
     },
   ];
-  const columns1 = [
+
+  const masterColumns = [
     {
       name: (
         <>
@@ -1680,7 +1702,7 @@ export function CreatePortfolio() {
     //   cell: (row) => <div><img className="mr-2" src={penIcon} /><img className="mr-2" src={deleticon} /><img src={link1Icon} /></div>,
     // },
   ];
-  const columns2 = [
+  const selectedMasterColumns = [
     {
       name: (
         <>
@@ -1783,6 +1805,142 @@ export function CreatePortfolio() {
           </Link>
           <Link to="#" onClick={(e) => handleDeleteIncludeSerialNo(e, row)} className="btn-svg text-white cursor mr-2"><svg data-name="Layer 41" id="Layer_41" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path class="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path class="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg></Link>
           <Link to="#" className="btn-svg text-white cursor " onClick={() => setShowRelatedModel(true)}><svg data-name="Layer 1" id="Layer_1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ fill: 'none', width: '18px', strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2px' }}><title /><g data-name="&lt;Group&gt;" id="_Group_"><path class="cls-1" d="M13.38,10.79h0a3.5,3.5,0,0,1,0,5L10.52,18.6a3.5,3.5,0,0,1-5,0h0a3.5,3.5,0,0,1,0-5l.86-.86" data-name="&lt;Path&gt;" id="_Path_" /><path class="cls-1" d="M11,13.21h0a3.5,3.5,0,0,1,0-5L13.81,5.4a3.5,3.5,0,0,1,5,0h0a3.5,3.5,0,0,1,0,5l-.86.86" data-name="&lt;Path&gt;" id="_Path_2" /></g></svg></Link>
+        </div>,
+    },
+  ];
+  const bundleItemColumns = [
+    {
+      name: (
+        <>
+          <div>Id</div>
+        </>
+      ),
+      selector: (row) => row.itemId,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemId,
+    },
+    {
+      name: (
+        <>
+          <div>Description</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.itemBodyDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.itemBodyDescription,
+    },
+    {
+      name: (
+        <>
+          <div>Strategy</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel.model,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel.model,
+    },
+    {
+      name: (
+        <>
+          <div>Standard Job Id</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.standardJobId,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.standardJobId,
+    },
+    {
+      name: (
+        <>
+          <div>
+            Repair Options
+          </div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.repairOption,
+      sortable: true,
+      maxWidth: "300px",
+      format: (row) => row.itemBodyModel.repairOption,
+    },
+    {
+      name: (
+        <>
+          <div>
+            Frequency
+          </div>
+
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.frequency,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.frequency,
+    },
+    {
+      name: (
+        <>
+          <div>Quantity</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.quantity,
+    },
+    {
+      name: (
+        <>
+          <div>Parts $</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.sparePartsPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.sparePartsPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Service $</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.servicePrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.servicePrice,
+    },
+    {
+      name: (
+        <>
+          <div>Total $</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.totalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.totalPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Actions</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.type,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.type,
+      cell: (row) =>
+        <div>
+          <Link to="#" className="btn-svg text-white cursor mx-2">
+            <svg version="1.1" viewBox="0 0 1696.162 1696.143" xmlSpace="preserve" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"><g id="pen"><path d="M1648.016,305.367L1390.795,48.149C1359.747,17.098,1318.466,0,1274.555,0c-43.907,0-85.188,17.098-116.236,48.148   L81.585,1124.866c-10.22,10.22-16.808,23.511-18.75,37.833L0.601,1621.186c-2.774,20.448,4.161,41.015,18.753,55.605   c12.473,12.473,29.313,19.352,46.714,19.352c2.952,0,5.923-0.197,8.891-0.601l458.488-62.231   c14.324-1.945,27.615-8.529,37.835-18.752L1648.016,537.844c31.049-31.048,48.146-72.33,48.146-116.237   C1696.162,377.696,1679.064,336.415,1648.016,305.367z M493.598,1505.366l-350.381,47.558l47.56-350.376L953.78,439.557   l302.818,302.819L493.598,1505.366z M1554.575,444.404l-204.536,204.533l-302.821-302.818l204.535-204.532   c8.22-8.218,17.814-9.446,22.802-9.446c4.988,0,14.582,1.228,22.803,9.446l257.221,257.218c8.217,8.217,9.443,17.812,9.443,22.799   S1562.795,436.186,1554.575,444.404z" /></g><g id="Layer_1" /></svg>
+          </Link>
+          <Link to="#" className="btn-svg text-white cursor mr-2"><svg data-name="Layer 41" id="Layer_41" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path class="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path class="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg></Link>
+          <Link to="#" className="btn-svg text-white cursor "><svg data-name="Layer 1" id="Layer_1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ fill: 'none', width: '18px', strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2px' }}><title /><g data-name="&lt;Group&gt;" id="_Group_"><path class="cls-1" d="M13.38,10.79h0a3.5,3.5,0,0,1,0,5L10.52,18.6a3.5,3.5,0,0,1-5,0h0a3.5,3.5,0,0,1,0-5l.86-.86" data-name="&lt;Path&gt;" id="_Path_" /><path class="cls-1" d="M11,13.21h0a3.5,3.5,0,0,1,0-5L13.81,5.4a3.5,3.5,0,0,1,5,0h0a3.5,3.5,0,0,1,0,5l-.86.86" data-name="&lt;Path&gt;" id="_Path_2" /></g></svg></Link>
         </div>,
     },
   ];
@@ -3000,7 +3158,7 @@ export function CreatePortfolio() {
                     <DataTable
                       className=""
                       title=""
-                      columns={columns1}
+                      columns={masterColumns}
                       data={masterData}
                       customStyles={customStyles}
                       pagination
@@ -3019,7 +3177,7 @@ export function CreatePortfolio() {
                     <DataTable
                       className="mt-3"
                       title=""
-                      columns={columns2}
+                      columns={selectedMasterColumns}
                       data={selectedMasterData}
                       customStyles={customStyles}
                       pagination
@@ -3285,6 +3443,88 @@ export function CreatePortfolio() {
                   </a>
                 </span>
               </h6>
+
+              <div className="maintableheader bg-white mt-3 border-radius-10">
+                <div className="d-flex justify-content-between align-items-center pl-2">
+                  <div className="d-flex align-items-center">
+                    <div className="customselect d-flex">
+                      <Select
+                        onChange={handleTypeOfSearchChange}
+                        isClearable={true}
+                        value={typeOfSearch}
+                        options={columnSearchKeyValue}
+                        placeholder="Add by"
+                      />
+                    </div>
+                    {typeOfSearch != null ? (
+                      <div className="customselect d-flex ml-3">
+                        <Select
+                          onChange={handleTypeOfSearchColumnChange}
+                          isClearable={true}
+                          value={typeOfSearchColumn}
+                          options={typeOfSearchColumnKeyValue}
+                          placeholder="Select"
+                        />
+                        {typeOfSearchColumn != null ? (
+                          <input
+                            type="text"
+                            className=""
+                            placeholder="Enter text"
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                              width: "80px",
+                              fontWeight: "600",
+                              paddingLeft: "10px",
+                            }}
+                            value={columnSearchText}
+                            onChange={(e) => setColumnSearchText(e.target.value)}
+                          ></input>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+                </div>
+                {columnSearchText.trim() != "" && typeOfSearchColumn != null ? (
+                  <div className="tableheader">
+                    <ul className="submenu accordion mt-0" style={{ display: "block" }}>
+                      <li>
+                        <a className="result cursor">RESULTS</a>
+                      </li>
+                      <li>
+                        <a className="cursor">PM125</a>
+                      </li>
+                      <li>
+                        <a className="cursor">PM2</a>
+                      </li>
+                      <li>
+                        <a onClick={handleCreateNewServiceBundle} className="lastOption text-violet cursor">
+                          <span className="mr-2">+</span>Create New{" "}
+                          {typeOfSearch != null
+                            ? typeOfSearch.value == "bundle"
+                              ? "Bundle"
+                              : typeOfSearch.value == "service"
+                                ? "Service"
+                                : typeOfSearch.value == "portfolioItem"
+                                  ? "Portfolio Item"
+                                  : ""
+                            : ""}
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </div>
+
+
+
+
               {/* <h6 className="font-weight-600 text-light mb-0 cursor" onClick={handleShowAddSolution}><span className="mr-2">+</span>Add Solution</h6> */}
               <div className="d-flex align-items-center">
                 <h6
@@ -3379,7 +3619,7 @@ export function CreatePortfolio() {
                 >
                   <DataTable
                     title=""
-                    columns={columns}
+                    columns={bundleItemColumns}
                     data={bundleItems}
                     customStyles={customStyles}
                     pagination
@@ -3392,12 +3632,12 @@ export function CreatePortfolio() {
                   className="col-md-6 col-sm-6"
                   onClick={handleNewBundleItem}
                 >
-                  <a href="#" className="add-new-recod">
+                  <Link to="#" className="add-new-recod">
                     <div>
                       <FontAwesomeIcon icon={faPlus} />
                       <p className="font-weight-600">Add Protfolio Item</p>
                     </div>
-                  </a>
+                  </Link>
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="add-new-recod">
@@ -4332,6 +4572,7 @@ export function CreatePortfolio() {
                       // id="exampleInputEmail1"
                       aria-describedby="emailHelp"
                       placeholder="(AUTO GENERATE)"
+
                     />
                   </div>
                 </div>
@@ -4346,8 +4587,8 @@ export function CreatePortfolio() {
                     <input
                       type="text"
                       className="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
+                      // id="exampleInputEmail1"
+                      // aria-describedby="emailHelp"
                       placeholder="DESCRIPTION"
                       onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, description: e.target.value })}
                       value={addPortFolioItem.description}
@@ -4390,8 +4631,10 @@ export function CreatePortfolio() {
                           // defaultValue={1}
                           // onChange={(e) => {setTaskItemList(e)}}
                           // value={taskItemList}
-                          options={taskList}
-                          placeholder="Select Or Search"
+                          options={updatedTaskList}
+                          placeholder={stratgyTaskTypeKeyValue.value}
+                          selectedValue={stratgyTaskTypeKeyValue.value ? stratgyTaskTypeKeyValue.value : ""}
+                          defaultValue={stratgyTaskTypeKeyValue.value ? stratgyTaskTypeKeyValue.value : ""}
                           onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, taskType: e })}
                           value={addPortFolioItem.taskType}
                         />
@@ -5113,8 +5356,6 @@ export function CreatePortfolio() {
           <div>
             <Link to="#" className=" btn bg-primary text-white">Add New</Link>
           </div>
-
-
         </Modal.Header>
         <Modal.Body>
           <DataTable
@@ -5127,7 +5368,7 @@ export function CreatePortfolio() {
           />
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary">Close</Button>
+          <Button variant="primary" onClick={() => setShowRelatedModel(false)}>Close</Button>
           <Button variant="primary">Save changes</Button>
         </Modal.Footer>
       </Modal>
