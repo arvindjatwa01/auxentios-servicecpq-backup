@@ -456,7 +456,7 @@ const columns = [
 
 
                     </div> */}
-                    <div className="card border mt-4">
+                    <div className="card border mt-4 px-3">
             <div className="d-flex align-items-center justify-content-between px-3 py-4 pl-3">
           <div className="">
           <div className="d-flex ">
@@ -478,7 +478,7 @@ const columns = [
             </div>
           </div>
           <DataTable
-                      className="mr-2"
+                      className=""
                       title=""
                       columns={columns}
                       data={data}
@@ -486,7 +486,7 @@ const columns = [
                       pagination
                     />
           <div className="m-3 text-right">
-              <a href="#" className="btn text-white bg-primary">Save</a>
+              <a href="#" className="btn text-white bg-primary">Save Parts</a>
             </div>
           
           </div>
