@@ -31,18 +31,22 @@ const signUpSlice = createSlice({
       state.logging = true;
     },
     signUpSuccess(state, action: PayloadAction<AxiosResponse>) {
+      // alert(`${action.payload.data.firstName}${action.payload.data.lastName} you have registered successfully!!!`)
       state.isLoggedIn = true;
       state.logging = false;
       state.currentUser = action.payload;
-      state.activeStep = 1;
+      // state.activeStep = 1;
     },
     verifyEmail(state, action: PayloadAction<AxiosResponse>) {
+      state.activeStep = 1;
+      
+    },
+    getStarted(state, action: PayloadAction<string>) {
       state.activeStep = 2;
     },
     signUpFailed(state, action: PayloadAction<string>) {
       console.log(action.payload);
     },
-
     logout(state) {
       state.isLoggedIn = false;
       state.currentUser = undefined;

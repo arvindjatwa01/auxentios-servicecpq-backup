@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, SplitButton, Dropdown, ButtonGroup } from "react-bootstrap";
+import { Modal, SplitButton, Dropdown, ButtonGroup, Button } from "react-bootstrap";
 import { DataGrid } from "@mui/x-data-grid";
 import FormGroup from "@mui/material/FormGroup";
 import { ToastContainer, toast } from "react-toastify";
@@ -12,6 +12,7 @@ import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBullet
 import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
 import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
+import SearchIcon from '@mui/icons-material/Search';
 import shearchIcon from "../../assets/icons/svg/search.svg";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Box from "@mui/material/Box";
@@ -23,6 +24,7 @@ import TabPanel from "@mui/lab/TabPanel";
 import FormControl from "@mui/material/FormControl";
 import Checkbox from "@mui/material/Checkbox";
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 
 import { FileUploader } from "react-drag-drop-files";
 import { MuiMenuComponent } from "../Operational/index";
@@ -43,7 +45,12 @@ import searchstatusIcon from "../../assets/icons/svg/search-status.svg";
 import { CommanComponents } from "../../components/index";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
+import deleticon from "../../assets/images/delete.png";
+import link1Icon from "../../assets/images/link1.png";
+import penIcon from "../../assets/images/pen.png";
 
 import { ReactTableNested } from "../Test/ReactTableNested";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -58,6 +65,7 @@ import Portfoliosicon from "../../assets/icons/svg/Portfolios-icon.svg";
 import Buttonarrow from "../../assets/icons/svg/Button-arrow.svg";
 import contract from "../../assets/icons/svg/contract.svg";
 import repairicon from "../../assets/icons/svg/repair-icon.svg";
+
 
 import {
   createPortfolio,
@@ -77,6 +85,9 @@ import {
   getMachineTypeKeyValue,
   getTypeKeyValue,
   getPortfolioCommonConfig,
+  getSearchQueryCoverage,
+  getSearchCoverageForFamily,
+  itemCreation
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -92,10 +103,19 @@ import {
   selectUpdateTaskList,
   taskActions,
 } from "./customerSegment/strategySlice";
-import { useDispatch,useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAppSelector } from "../../app/hooks";
 import { portfolioItemActions } from "./createItem/portfolioSlice";
 import { createItemPayload } from "./createItem/createItemPayload";
+import { Link } from "react-router-dom";
+import $ from "jquery"
+import { display } from "@mui/system";
+
+
+
+
+
+
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 const customStyles = {
   rows: {
@@ -107,7 +127,8 @@ const customStyles = {
     style: {
       paddingLeft: "8px", // override the cell padding for head cells
       paddingRight: "8px",
-      // backgroundColor: "#000"
+      backgroundColor: "#7571f9",
+      color: "#fff"
     },
   },
   cells: {
@@ -118,209 +139,7 @@ const customStyles = {
   },
 };
 
-const columns = [
-  // {
-  //   name: <><div>
-  //     <div>
-  //     <Checkbox {...label} />
-  //   </div>
-  //     </div></>,
-  //   selector: row => row.title,
-  //   sortable: true,
-  //   maxWidth: '600px', // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
-  //   cell: row => <CustomTitle row={row} />,
-  // },
- 
-  {
-    name: (
-      <>
-        <div><Checkbox className="text-white" {...label} /></div>
-      </>
-    ),
-    selector: (row) => row.standardJobId,
-    wrap: true,
-    sortable: true,
-    maxWidth: "300px", 
-    cell: (row) => <Checkbox className="text-black" {...label} />,
-  },
-  {
-    name: (
-      <>
-        <div>Make</div>
-      </>
-    ),
-    selector: (row) => row.standardJobId,
-    wrap: true,
-    sortable: true,
-    format: (row) => row.standardJobId,
-  },
-  {
-    name: (
-      <>
-        <div>Family</div>
-      </>
-    ),
-    selector: (row) => row.frequency,
-    wrap: true,
-    sortable: true,
-    format: (row) => row.frequency,
-  },
-  {
-    name: (
-      <>
-        <div>Model</div>
-      </>
-    ),
-    selector: (row) => row.quantity,
-    wrap: true,
-    sortable: true,
-    format: (row) => row.quantity,
-  },
-  {
-    name: (
-      <>
-        <div>Prefix</div>
-      </>
-    ),
-    selector: (row) => row.part,
-    wrap: true,
-    sortable: true,
-    format: (row) => row.part,
-  },
-  {
-    name: (
-      <>
-        <div>
-         S NO
-        </div>
-      </>
-    ),
-    selector: (row) => row.bundleId,
-    sortable: true,
-    maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
-    // cell: row => row.bundleId,
-    // cell: (row) => <button onClick={() => alert()}>1</button>,
-    // cell: (row) => <Checkbox className="text-black" {...label} />,
-    format: (row) => row.bundleId,
-  },
-  {
-    name: (
-      <>
-        <div>
-          <img className="mr-2" src={boxicon}></img>Start S NO
-        </div>
-        
-      </>
-    ),
-    selector: (row) => row.bundleDescription,
-    wrap: true,
-    sortable: true,
-    format: (row) => row.bundleDescription,
-  },
-  {
-    name: (
-      <>
-        <div>End S NO</div>
-      </>
-    ),
-    selector: (row) => row.strategy,
-    wrap: true,
-    sortable: true,
-    format: (row) => row.strategy,
-  },
-  
-  // {
-  //     name: <><div>Service $
-  //     </div></>,
-  //     selector: row => row.service,
-  //     wrap: true,
-  //     sortable: true,
-  //     format: row => row.service
-  //     ,
-  // },
-  // {
-  //     name: <><div>Total $
-  //     </div></>,
-  //     selector: row => row.total,
-  //     wrap: true,
-  //     sortable: true,
-  //     format: row => row.total
-  // },
-  {
-    name: (
-      <>
-        <div>Action</div>
-      </>
-    ),
-    selector: (row) => row.action,
-    wrap: true,
-    sortable: true,
-    format: (row) => row.action,
-  },
 
-  // {
-  //   name:<><div>Progress
-  //   </div></>,
-  //   selector: row => row.plot,
-  //   wrap: true,
-  //   sortable: true,
-  //   format: row => `${row.plot.slice(0, 200)}...`,
-  // },
-  // {
-  //   name:<><div>Status
-  //   </div></>,
-  //   selector: row => row.plot,
-  //   wrap: true,
-  //   sortable: true,
-  //   format: row => `${row.plot.slice(0, 200)}...`,
-  // },
-  // {
-  //   name:<><div>Consistency status
-  //   </div></>,
-  //   selector: row => row.plot,
-  //   wrap: true,
-  //   sortable: true,
-  //   format: row => `${row.plot.slice(0, 200)}...`,
-  // },
-  // {
-  //   name:<><div>Description
-  //   </div></>,
-  //   selector: row => row.plot,
-  //   wrap: true,
-  //   sortable: true,
-  //   format: row => `${row.plot.slice(0, 200)}...`,
-  // },
-  // {
-  //   name: 'Actions',
-
-  //   cell: row => (
-  //     <div>
-  //       {row.genres.map((genre, i) => (
-  //         <div key={i}>{genre}</div>
-  //       ))}
-  //     </div>
-  //   ),
-  // },
-  // {
-  //   name: 'Thumbnail',
-  //   grow: 0,
-  //   cell: row => <img height="84px" width="56px" alt={row.name} src={row.posterUrl} />,
-  // },
-  // {
-  //   name: 'Poster Link',
-  //   button: true,
-  //   cell: row => (
-  //     <a href={row.posterUrl} target="_blank" rel="noopener noreferrer">
-  //       Download
-  //     </a>
-  //   ),
-  // },
-  // {
-  //     name: 'Actions',
-  //     button: true,
-  //     cell: () => <Button>Download Poster</Button>,
-  // },
-];
 
 export function CreatePortfolio() {
   const [makeKeyValue, setMakeKeyValue] = useState([]);
@@ -332,21 +151,21 @@ export function CreatePortfolio() {
   const [responseTimeTaskKeyValue, setResponseTimeTaskKeyValue] = useState([]);
   const [taskTypeKeyValue, setTaskTypeKeyValue] = useState([]);
 
-  const [value1, setValue1] = React.useState({ value: 'Archived', label: 'Archived' });
-  const [value2, setValue2] = React.useState({ value: 'Archived', label: 'Archived' });
-  const [value3, setValue3] = React.useState({ value: 'Gold', label: 'Gold' });
+  const [value1, setValue1] = useState({ value: 'Archived', label: 'Archived' });
+  const [value2, setValue2] = useState({ value: 'Archived', label: 'Archived' });
+  const [value3, setValue3] = useState({ value: 'Gold', label: 'Gold' });
 
 
   const [bundleItemTaskTypeKeyValue, setBundleItemTaskTypeKeyValue] = useState(
     []
   );
   const [categoryUsageKeyValue, setCategoryUsageKeyValue] = useState([]);
-  const [categoryUsageKeyValue1, setCategoryUsageKeyValue1] = useState([]);
+
   const [productHierarchyKeyValue, setProductHierarchyKeyValue] = useState([]);
   const [geographicKeyValue, setGeographicKeyValue] = useState([]);
   const [typeKeyValue, setTypeKeyValue] = useState([]);
   const [machineTypeKeyValue, setMachineTypeKeyValue] = useState([]);
-  const [age, setAge] = React.useState("5");
+  const [age, setAge] = useState("5");
   const [isView, setIsView] = useState(false); //Use for show data into label format
   const [showExitPrompt, setShowExitPrompt] = useState(true);
   const [createNewBundle, setCreateNewBundle] = useState(false);
@@ -379,6 +198,20 @@ export function CreatePortfolio() {
   const [customerSegmentKeyValue, setCustomerSegmentKeyValue] = useState([]);
   const [strategyOptionals, setStrategyOptionals] = useState([]);
 
+  const [categoryUsageKeyValue1, setCategoryUsageKeyValue1] = useState([]);
+  const [stratgyTaskUsageKeyValue, setStratgyTaskUsageKeyValue] = useState([]);
+  const [stratgyTaskTypeKeyValue, setStratgyTaskTypeKeyValue] = useState([]);
+  const [stratgyOptionalsKeyValue, setStratgyOptionalsKeyValue] = useState([]);
+  const [stratgyResponseTimeKeyValue, setStratgyResponseTimeKeyValue] =
+    useState([]);
+  const [stratgyHierarchyKeyValue, setStratgyHierarchyKeyValue] = useState([]);
+  const [stratgyGeographicKeyValue, setStratgyGeographicKeyValue] = useState(
+    []
+  );
+
+  const [masterData, setMasterData] = useState([])
+  const [filterMasterData, setFilterMasterData] = useState([])
+  const [selectedMasterData, setSelectedMasterData] = useState([])
   const [coverageData, setCoverageData] = useState({
     make: "",
     modal: "",
@@ -400,13 +233,13 @@ export function CreatePortfolio() {
     productHierarchy: null,
     geographic: null,
   });
-  const handleOption=(e)=>{
+  const handleOption = (e) => {
     setValue1(e)
   }
-  const handleOption2=(e)=>{
+  const handleOption2 = (e) => {
     setValue2(e)
   }
-  const handleOption3=(e)=>{
+  const handleOption3 = (e) => {
     setValue3(e)
   }
   const [validityData, setValidityData] = useState({
@@ -423,6 +256,7 @@ export function CreatePortfolio() {
     serviceDescription: "",
     externalReference: "",
     customerSegment: null,
+    items: []
   });
   const [newBundle, setNewBundle] = useState({
     serviceDescription: "",
@@ -431,13 +265,65 @@ export function CreatePortfolio() {
     customerSegment: null,
     machineComponent: null,
   });
-  const [portfolioId, setPortfolioId] = useState(4);
-  const [alignment, setAlignment] = React.useState("Portfolio");
+  const [portfolioId, setPortfolioId] = useState();
+  const [alignment, setAlignment] = useState("Portfolio");
   const [prefixLabelGeneral, setPrefixLabelGeneral] = useState("PORTFOLIO");
   const [priceAgreementOption, setPriceAgreementOption] = useState(false);
-  const [open2, setOpen2] = React.useState(false);
+  const [open2, setOpen2] = useState(false);
   const handleOpen2 = () => setOpen2(true);
   const handleClose2 = () => setOpen2(false);
+
+
+  const [count, setCount] = useState(1)
+  const [updateCount, setUpdateCount] = useState(0)
+  const [querySearchSelector, setQuerySearchSelector] = useState([{
+    id: 0,
+    selectFamily: "",
+    selectOperator: "",
+    inputSearch: "",
+    selectOptions: [],
+    selectedOption: ""
+  }])
+
+  const [autoState, setAutoState] = useState({
+    value: '',
+    suggestions: []
+  })
+
+  const [addPortFolioItem, setAddportFolioItem] = useState({
+    id: "",
+    description: "",
+    usageIn: categoryUsageKeyValue1,
+    taskType: "",
+    frequency: "",
+    unit: "",
+    recomondedValue: "",
+    quantity: "",
+    strategyEvents: "",
+    templateId: "",
+    templateDescription: "",
+    repairOption: ""
+
+  })
+  const [showRelatedModel, setShowRelatedModel] = useState(false)
+  const [editSerialNo, setEditSerialNo] = useState({
+    coverageId: "",
+    make: "",
+    family: "",
+    modelNo: "",
+    serialNoPrefix: "",
+    startSerialNo: "",
+    endSerialNo: "",
+    fleet: "",
+    fleetSize: ""
+
+  })
+
+const [itemHeaderSearch,setItemHeaderSearch]=useState({
+  searchBy:"",
+  family:"",
+  input:""
+})
 
   const handleCustomerSegmentChange = (e) => {
     setGeneralComponentData({
@@ -473,7 +359,7 @@ export function CreatePortfolio() {
           label: d,
         }));
       })
-      .catch((err) => {});
+      .catch((err) => { });
   };
 
   const handleClosePortfolioMenu = () => {
@@ -599,8 +485,83 @@ export function CreatePortfolio() {
   };
 
   const handleBundleItemSaveAndContinue = () => {
-    console.log(taskItemList);
-    dispatch(portfolioItemActions.createItem(createItemPayload(taskItemList)));
+    console.log("handleBundleItemSaveAndContinue", generalComponentData)
+    // if (generalComponentData.portfolioId) {
+    // const { portfolioId, ...res } = generalComponentData
+    let reqObj = {
+      itemId: 0,
+      itemName: "",
+      itemHeaderModel: {
+        itemHeaderId: parseInt(generalComponentData.portfolioId),
+        itemHeaderDescription: generalComponentData.description,
+        bundleFlag: "PORTFOLIO",
+        reference: generalComponentData.externalReference,
+        itemHeaderMake: "",
+        itemHeaderFamily: "",
+        model: "",
+        prefix: "",
+        type: "MACHINE",
+        additional: "",
+        currency: "",
+        netPrice: 0,
+        itemProductHierarchy: generalComponentData.productHierarchy,
+        itemHeaderGeographic: generalComponentData.geographic,
+        responseTime: generalComponentData.responseTime,
+        usage: "",
+        validFrom: generalComponentData.validFrom,
+        validTo: generalComponentData.validTo,
+        estimatedTime: "",
+        servicePrice: 0,
+        status: "NEW"
+      },
+      itemBodyModel: {
+        itemBodyId: parseInt(addPortFolioItem.id),
+        itemBodyDescription: addPortFolioItem.description,
+        quantity: parseInt(addPortFolioItem.quantity),
+        startUsage: "",
+        endUsage: "",
+        standardJobId: "",
+        frequency: addPortFolioItem.frequency.value,
+        additional: "",
+        spareParts: ["WITH_SPARE_PARTS"],
+        labours: ["WITH_LABOUR"],
+        miscellaneous: ["LUBRICANTS"],
+        taskType: ["PM1"],
+        solutionCode: "",
+        usageIn: addPortFolioItem.usageIn.value,
+        recommendedValue: parseInt(addPortFolioItem.recomondedValue.value),
+        usage: "",
+        repairKitId: "",
+        templateDescription: addPortFolioItem.templateDescription.value,
+        partListId: "",
+        serviceEstimateId: "",
+        numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+        repairOption: addPortFolioItem.repairOption.value,
+        priceMethod: "LIST_PRICE",
+        listPrice: 0,
+        priceEscalation: "",
+        calculatedPrice: 0,
+        flatPrice: 0,
+        discountType: "",
+        year: "",
+        avgUsage: 0,
+        unit: addPortFolioItem.unit.value,
+        sparePartsPrice: 0,
+        sparePartsPriceBreakDownPercentage: 0,
+        servicePrice: 0,
+        servicePriceBreakDownPercentage: 0,
+        miscPrice: 0,
+        miscPriceBreakDownPercentage: 0,
+        totalPrice: 0
+      },
+    }
+    itemCreation(reqObj).then((res) => {
+      console.log("itemCreation res:", res)
+      setBundleItems([...bundleItems, res])
+    }).catch((err) => {
+      console.log("itemCreation err:", err)
+    })
+    // dispatch(portfolioItemActions.createItem(createItemPayload(taskItemList)));
     // alert("Save And Continue")
     // var temp = [...bundleItems];
     // var bundleId = Math.floor(Math.random() * 100)
@@ -630,6 +591,21 @@ export function CreatePortfolio() {
     //     draggable: true,
     //     progress: undefined,
     // });
+
+
+    // }
+    // else {
+    //   toast("🙄 Please create item header first", {
+    //     position: "top-right",
+    //     autoClose: 5000,
+    //     hideProgressBar: false,
+    //     closeOnClick: true,
+    //     pauseOnHover: true,
+    //     draggable: true,
+    //     progress: undefined,
+    //   });
+    // }
+
   };
   const handleAddNewBundle = () => {
     // alert("Save And Continue")
@@ -785,8 +761,7 @@ export function CreatePortfolio() {
         name: generalComponentData.name,
         description: generalComponentData.description,
         externalReference: generalComponentData.externalReference,
-        customerSegment: generalComponentData.customerSegment,
-        
+        customerSegment: generalComponentData.customerSegment ? generalComponentData.customerSegment.value : "",
 
         strategyTask: "PREVENTIVE_MAINTENANCE",
         taskType: "PM1",
@@ -802,16 +777,15 @@ export function CreatePortfolio() {
         supportLevel: "PREMIUM",
         serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
       };
-      console.log("Portfolio ceation reqObj",reqData)
+      console.log("Portfolio creation reqObj", reqData);
       createPortfolio(reqData)
         .then((res) => {
           console.log("portFolio id", res.portfolioId);
           setGeneralComponentData({
             ...generalComponentData,
-            ...res       
+            portfolioId: res.portfolioId,
           });
-          setPortfolioId(res.portfolioId)
-          // console.log("res createPortfolio", res);
+          setPortfolioId(res.portfolioId);
         })
         .catch((err) => {
           console.log("err in createPortfolio", err);
@@ -819,16 +793,9 @@ export function CreatePortfolio() {
     } else if (e.target.id == "validity") {
       let reqData;
       if (validityData.fromDate && validityData.toDate) {
-        let yf = validityData.fromDate.getFullYear();
-        let mf = validityData.fromDate.getMonth();
-        let df = validityData.fromDate.getDate();
-
-        let yt = validityData.toDate.getFullYear();
-        let mt = validityData.toDate.getMonth();
-        let dt = validityData.toDate.getDate();
         reqData = {
-          validFrom: `${yf}/${mf}/${df}`,
-          validTo: `${yt}/${mt}/${dt}`,
+          validFrom: validityData.fromDate.toISOString().substring(0, 10),
+          validTo: validityData.toDate.toISOString().substring(0, 10),
         };
       } else if (validityData.fromInput && validityData.toInput) {
         reqData = {
@@ -837,48 +804,108 @@ export function CreatePortfolio() {
         };
       }
       // service Call for updating Date
-      let obj={
+      setGeneralComponentData({
         ...generalComponentData,
         ...reqData,
+      });
+      let obj = {
+        ...generalComponentData,
+        ...reqData
+      };
 
+      console.log("Update Date Data", obj);
+    } else if (e.target.id == "strategy") {
+      setGeneralComponentData({
+        ...generalComponentData,
+        usageCategory: categoryUsageKeyValue1.value,
+        taskType: stratgyTaskTypeKeyValue.value,
+        strategyTask: stratgyTaskUsageKeyValue.value,
+        optionals: stratgyOptionalsKeyValue.value,
+        responseTime: stratgyResponseTimeKeyValue.value,
+        productHierarchy: stratgyHierarchyKeyValue.value,
+        geographic: stratgyGeographicKeyValue.value,
+      });
+
+      const { portfolioId, ...res } = generalComponentData
+      let obj = {
+        ...res,
         visibleInCommerce: true,
         customerId: 0,
         lubricant: true,
-
-        customerSegment:generalComponentData.customerSegment?generalComponentData.customerSegment:"EMPTY",
-        machineType: generalComponentData.machineType?generalComponentData.machineType:"EMPTY",
-        // searchTerm: "EMPTY",
-        status: generalComponentData.status?generalComponentData.status:"EMPTY",
-        strategyTask: generalComponentData.strategyTask?generalComponentData.strategyTask:"EMPTY",
-        taskType: generalComponentData.taskType?generalComponentData.taskType:"EMPTY",
-        usageCategory: generalComponentData.usageCategory?generalComponentData.usageCategory:"EMPTY",
-        productHierarchy: generalComponentData.productHierarchy?generalComponentData.productHierarchy:"EMPTY",
-        geographic: generalComponentData.geographic?generalComponentData.geographic:"EMPTY",
-        availability: generalComponentData.availability?generalComponentData.availability:"EMPTY",
-        responseTime: generalComponentData.responseTime?generalComponentData.responseTime:"EMPTY",
-        type: generalComponentData.type?generalComponentData.type:"EMPTY",
-        application: generalComponentData.application?generalComponentData.application:"EMPTY",
-        contractOrSupport: generalComponentData.contractOrSupport?generalComponentData.contractOrSupport:"EMPTY",
-        lifeStageOfMachine: generalComponentData.lifeStageOfMachine?generalComponentData.lifeStageOfMachine:"EMPTY",
-        supportLevel: generalComponentData.supportLevel?generalComponentData.supportLevel:"EMPTY",
+        customerSegment: generalComponentData.customerSegment.value
+          ? generalComponentData.customerSegment.value
+          : "EMPTY",
+        machineType: generalComponentData.machineType
+          ? generalComponentData.machineType
+          : "EMPTY",
+        status: generalComponentData.status
+          ? generalComponentData.status
+          : "EMPTY",
+        strategyTask: generalComponentData.strategyTask
+          ? generalComponentData.strategyTask
+          : "EMPTY",
+        taskType: generalComponentData.taskType
+          ? generalComponentData.taskType
+          : "EMPTY",
+        usageCategory: generalComponentData.usageCategory
+          ? generalComponentData.usageCategory
+          : "EMPTY",
+        productHierarchy: generalComponentData.productHierarchy
+          ? generalComponentData.productHierarchy
+          : "EMPTY",
+        geographic: generalComponentData.geographic
+          ? generalComponentData.geographic
+          : "EMPTY",
+        availability: generalComponentData.availability
+          ? generalComponentData.availability
+          : "EMPTY",
+        responseTime: generalComponentData.responseTime
+          ? generalComponentData.responseTime
+          : "EMPTY",
+        type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+        application: generalComponentData.application
+          ? generalComponentData.application
+          : "EMPTY",
+        contractOrSupport: generalComponentData.contractOrSupport
+          ? generalComponentData.contractOrSupport
+          : "EMPTY",
+        lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+          ? generalComponentData.lifeStageOfMachine
+          : "EMPTY",
+        supportLevel: generalComponentData.supportLevel
+          ? generalComponentData.supportLevel
+          : "EMPTY",
         items: [],
         coverages: [],
-        customerGroup: generalComponentData.customerGroup?generalComponentData.customerGroup:"EMPTY"
-        // serviceProgramDescription:"EMPTY"
+        customerGroup: generalComponentData.customerGroup
+          ? generalComponentData.customerGroup
+          : "EMPTY",
+        searchTerm: "EMPTY",
+        supportLevel: "EMPTY",
+        portfolioPrice: {},
+        additionalPrice: {},
+        escalationPrice: {},
+
+        usageCategory: categoryUsageKeyValue1.value,
+        taskType: stratgyTaskTypeKeyValue.value,
+        strategyTask: stratgyTaskUsageKeyValue.value,
+        responseTime: stratgyResponseTimeKeyValue.value,
+        productHierarchy: stratgyHierarchyKeyValue.value,
+        geographic: stratgyGeographicKeyValue.value,
+
       }
-      console.log("Update Date Data", obj);
-      updatePortfolio(portfolioId,obj)
+      updatePortfolio(generalComponentData.portfolioId, obj)
         .then((res) => {
-          console.log("updatePortFolio for Date", res);
+          console.log("strategy updating", res);
         })
         .catch((err) => {
-          console.log(" Error in updatePortFolio for Date", err);
+          console.log(" Error in strategy updating", err);
         });
-    } else if (e.target.id == "strategy") {
-      console.log("strategy updating")
+      console.log("strategy updating obj", obj);
+    } else if (e.target.id == "coverage") {
+      console.log("coverage updating");
     }
   };
-
   const handleGeneralInputChange = (e) => {
     var value = e.target.value;
     var name = e.target.name;
@@ -921,7 +948,7 @@ export function CreatePortfolio() {
       getPortfolio(portfolioId)
         .then((res) => {
           const portfolioDetails = res;
-          console.log("portfolioDetails",portfolioDetails);
+          console.log("portfolioDetails", portfolioDetails);
           if (portfolioDetails.portfolioId != null) {
             setGeneralComponentData({
               name: portfolioDetails.name,
@@ -932,7 +959,7 @@ export function CreatePortfolio() {
             });
           }
         })
-        .catch((err) => {});
+        .catch((err) => { });
     }
   };
 
@@ -1133,8 +1160,9 @@ export function CreatePortfolio() {
       .catch((err) => {
         alert(err);
       });
+
   };
-  
+
   const dispatch = useDispatch();
   // const usageIn=useSelector((state)=>state.task.categoryList)
   // console.log("useSelector((state)=>state.categoryList)",usageIn)
@@ -1144,18 +1172,23 @@ export function CreatePortfolio() {
     getPortfolioDetails(portfolioId);
     initFetch();
     dispatch(taskActions.fetchTaskList());
+
   }, [dispatch]);
+  // useEffect(() => {
+
+
+  // }, []);
+
 
   const strategyList = useAppSelector(
     selectStrategyTaskOption(selectStrategyTaskList)
   );
-  
+
   const taskList = useAppSelector(selectStrategyTaskOption(selectTaskList));
-  
+
   const categoryList = useAppSelector(
     selectStrategyTaskOption(selectCategoryList)
   );
-  console.log("categoryList",categoryList)
 
   const rTimeList = useAppSelector(
     selectStrategyTaskOption(selectResponseTimeList)
@@ -1174,21 +1207,21 @@ export function CreatePortfolio() {
   const updatedList = useAppSelector(
     selectStrategyTaskOption(selectUpdateList)
   );
-  
+
   const updatedTaskList = useAppSelector(
     selectStrategyTaskOption(selectUpdateTaskList)
   );
 
-
-
   // const updateList = useSelector((state)=>state.taskReducer)
-console.log("selectUpdateList",selectUpdateList)
   const HandleCatUsage = (e) => {
-    setCategoryUsageKeyValue1(e)
+
+    // console.log("e.target.value", e.target.value);
+    setCategoryUsageKeyValue1(e);
     dispatch(taskActions.updateList(e.value));
   };
-  console.log("categoryUsageKeyValue1",categoryUsageKeyValue1)
+
   const HandleStrategyUsage = (e) => {
+    setStratgyTaskUsageKeyValue(e);
     dispatch(taskActions.updateTask(e.value));
   };
   const initBeforeUnLoad = (showExitPrompt) => {
@@ -1236,11 +1269,11 @@ console.log("selectUpdateList",selectUpdateList)
   ];
   const [selectedOption, setSelectedOption] = useState(null);
 
-  const [value, setValue] = React.useState(1);
+  const [value, setValue] = useState(1);
 
-  const [open, setOpen] = React.useState(false);
-  const [open1, setOpen1] = React.useState(false);
-  const [openCoverage, setOpenCoveragetable] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [open1, setOpen1] = useState(false);
+  const [openCoverage, setOpenCoveragetable] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleClose1 = () => setOpen1(false);
@@ -1320,6 +1353,722 @@ console.log("selectUpdateList",selectUpdateList)
     // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
   ];
 
+  const handleFamily = (e, id) => {
+    let tempArray = [...querySearchSelector]
+    console.log("handleFamily e:", e)
+    let obj = tempArray[id]
+    obj.selectFamily = e
+    tempArray[id] = obj
+    setQuerySearchSelector([...tempArray])
+  }
+  const handleOperator = (e, id) => {
+    let tempArray = [...querySearchSelector]
+    let obj = tempArray[id]
+    obj.selectOperator = e
+    tempArray[id] = obj
+    setQuerySearchSelector([...tempArray])
+  }
+
+  const handleInputSearch = (e, id) => {
+    let tempArray = [...querySearchSelector]
+    let obj = tempArray[id]
+    getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value).then((res) => {
+      obj.selectOptions = res
+      tempArray[id] = obj
+      setQuerySearchSelector([...tempArray]);
+      $(`.scrollbar-${id}`).css("display", "block")
+    }).catch((err) => {
+      console.log("err in api call", err)
+    })
+    obj.inputSearch = e.target.value
+
+  }
+
+  const handleSearchListClick = (e, currentItem, obj1, id) => {
+    let tempArray = [...querySearchSelector]
+    let obj = tempArray[id]
+    obj.inputSearch = currentItem
+    obj.selectedOption = currentItem
+    tempArray[id] = obj
+    setQuerySearchSelector([...tempArray])
+    $(`.scrollbar-${id}`).css("display", "none")
+  }
+
+  const handleQuerySearchClick = () => {
+    $(".scrollbar").css("display", "none")
+    console.log("handleQuerySearchClick", querySearchSelector)
+    var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
+
+    for (let i = 1; i < querySearchSelector.length; i++) {
+      searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + "~" + querySearchSelector[i].inputSearch
+    }
+
+    console.log("searchStr", searchStr)
+    getSearchQueryCoverage(searchStr).then((res) => {
+      console.log("search Query Result :", res)
+      setMasterData(res)
+
+    }).catch((err) => {
+      console.log("error in getSearchQueryCoverage", err)
+    })
+
+  }
+
+  const addSearchQuerryHtml = () => {
+    setQuerySearchSelector([...querySearchSelector, {
+      id: count,
+      selectOperator: "",
+      selectFamily: "",
+      inputSearch: "",
+      selectOptions: [],
+      selectedOption: ""
+    }])
+    setCount(count + 1)
+  }
+
+
+  const handleDeletQuerySearch = () => {
+    setQuerySearchSelector([])
+    setCount(0)
+    setMasterData([])
+    setFilterMasterData([])
+    setSelectedMasterData([])
+  }
+
+  const handleMasterCheck = (e, row) => {
+    if (e.target.checked) {
+      var _masterData = [...masterData]
+      const updated = _masterData.map((currentItem, i) => {
+        if (row.id == currentItem.id) {
+          return { ...currentItem, ["check1"]: e.target.checked }
+        } else return currentItem
+      })
+      setMasterData([...updated])
+      setFilterMasterData([...filterMasterData, { ...row }])
+    } else {
+      var _filterMasterData = [...filterMasterData]
+      const updated = _filterMasterData.filter((currentItem, i) => {
+        if (row.id !== currentItem.id)
+          return currentItem
+      })
+      setFilterMasterData(updated)
+    }
+
+  }
+
+  const handleDeleteIncludeSerialNo = (e, row) => {
+    const updated = selectedMasterData.filter((obj) => {
+      if (obj.id !== row.id)
+        return obj
+    })
+    setSelectedMasterData(updated)
+  }
+  const handleEditIncludeSerialNo = (e, row) => {
+    console.log("handleEditIncludeSerialNo row:", row)
+    let obj = {
+      coverageId: row.id,
+      make: row.make,
+      family: row.family,
+      modelNo: row.model,
+      serialNoPrefix: row.prefix,
+      startSerialNo: row.startSerialNo,
+      endSerialNo: row.endSerialNo,
+      fleet: row.fleet,
+      fleetSize: row.fleetSize,
+    }
+    setEditSerialNo(obj)
+
+  }
+  const columns = [
+    {
+      name: (
+        <>
+          <div><Checkbox className="text-white" {...label} /></div>
+        </>
+      ),
+      selector: (row) => row.standardJobId,
+      wrap: true,
+      sortable: true,
+      maxWidth: "300px",
+      cell: (row) => <Checkbox className="text-black" />,
+    },
+    {
+      name: (
+        <>
+          <div>Make</div>
+        </>
+      ),
+      selector: (row) => row.make,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.make,
+    },
+    {
+      name: (
+        <>
+          <div>Family</div>
+        </>
+      ),
+      selector: (row) => row.family,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.family,
+    },
+    {
+      name: (
+        <>
+          <div>Model</div>
+        </>
+      ),
+      selector: (row) => row.modelDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.modelDescription,
+    },
+    {
+      name: (
+        <>
+          <div>Prefix</div>
+        </>
+      ),
+      selector: (row) => row.prefix,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.prefix,
+    },
+    {
+      name: (
+        <>
+          <div>
+            Serial No
+          </div>
+        </>
+      ),
+      selector: (row) => row.bundleId,
+      sortable: true,
+      maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
+      // cell: row => row.bundleId,
+      // cell: (row) => <button onClick={() => alert()}>1</button>,
+      // cell: (row) => <Checkbox className="text-black" {...label} />,
+      format: (row) => row.bundleId,
+    },
+    {
+      name: (
+        <>
+          <div>
+            <img className="mr-2" src={boxicon}></img>Start Serial No
+          </div>
+
+        </>
+      ),
+      selector: (row) => row.bundleDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.bundleDescription,
+    },
+    {
+      name: (
+        <>
+          <div>End Serial No</div>
+        </>
+      ),
+      selector: (row) => row.strategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.strategy,
+    },
+    {
+      name: (
+        <>
+          <div>Action</div>
+        </>
+      ),
+      selector: (row) => row.action,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.action,
+      cell: (row) => <div><img className="mr-2" src={penIcon} /><img className="mr-2" src={deleticon} /><img src={link1Icon} /></div>,
+    },
+  ];
+
+  const masterColumns = [
+    {
+      name: (
+        <>
+          <div>Select</div>
+        </>
+      ),
+      selector: (row) => row.standardJobId,
+      wrap: true,
+      sortable: true,
+      maxWidth: "300px",
+      cell: (row) => <Checkbox className="text-black" checked={row.check1} onChange={(e) => handleMasterCheck(e, row)} />,
+    },
+    {
+      name: (
+        <>
+          <div>Make</div>
+        </>
+      ),
+      selector: (row) => row.make,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.make,
+    },
+    {
+      name: (
+        <>
+          <div>Family</div>
+        </>
+      ),
+      selector: (row) => row.family,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.family,
+    },
+    {
+      name: (
+        <>
+          <div>Model</div>
+        </>
+      ),
+      selector: (row) => row.model,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.model,
+    },
+    {
+      name: (
+        <>
+          <div>Prefix</div>
+        </>
+      ),
+      selector: (row) => row.prefix,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.prefix,
+    },
+    {
+      name: (
+        <>
+          <div>
+            Serial No
+          </div>
+        </>
+      ),
+      selector: (row) => row.bundleId,
+      sortable: true,
+      maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
+      // cell: row => row.bundleId,
+      // cell: (row) => <button onClick={() => alert()}>1</button>,
+      // cell: (row) => <Checkbox className="text-black" {...label} />,
+      format: (row) => row.bundleId,
+    },
+    {
+      name: (
+        <>
+          <div>
+            <img className="mr-2" src={boxicon}></img>Start Serial No
+          </div>
+
+        </>
+      ),
+      selector: (row) => row.bundleDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.bundleDescription,
+    },
+    {
+      name: (
+        <>
+          <div>End Serial No</div>
+        </>
+      ),
+      selector: (row) => row.strategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.strategy,
+    },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Action</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.action,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.action,
+    //   cell: (row) => <div><img className="mr-2" src={penIcon} /><img className="mr-2" src={deleticon} /><img src={link1Icon} /></div>,
+    // },
+  ];
+  const selectedMasterColumns = [
+    {
+      name: (
+        <>
+          <div>Make</div>
+        </>
+      ),
+      selector: (row) => row.make,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.make,
+    },
+    {
+      name: (
+        <>
+          <div>Family</div>
+        </>
+      ),
+      selector: (row) => row.family,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.family,
+    },
+    {
+      name: (
+        <>
+          <div>Model</div>
+        </>
+      ),
+      selector: (row) => row.model,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.model,
+    },
+    {
+      name: (
+        <>
+          <div>Prefix</div>
+        </>
+      ),
+      selector: (row) => row.prefix,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.prefix,
+    },
+    {
+      name: (
+        <>
+          <div>
+            Serial No
+          </div>
+        </>
+      ),
+      selector: (row) => row.bundleId,
+      sortable: true,
+      maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
+      // cell: row => row.bundleId,
+      // cell: (row) => <button onClick={() => alert()}>1</button>,
+      // cell: (row) => <Checkbox className="text-black" {...label} />,
+      format: (row) => row.bundleId,
+    },
+    {
+      name: (
+        <>
+          <div>
+            <img className="mr-2" src={boxicon}></img>Start Serial No
+          </div>
+
+        </>
+      ),
+      selector: (row) => row.bundleDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.bundleDescription,
+    },
+    {
+      name: (
+        <>
+          <div>End Serial No</div>
+        </>
+      ),
+      selector: (row) => row.strategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.strategy,
+    },
+    {
+      name: (
+        <>
+          <div>Action</div>
+        </>
+      ),
+      selector: (row) => row.action,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.action,
+      cell: (row) =>
+        <div>
+          <Link to="#" onClick={(e) => handleEditIncludeSerialNo(e, row)} className="btn-svg text-white cursor mx-2" data-toggle="modal" data-target="#AddCoverage">
+            <svg version="1.1" viewBox="0 0 1696.162 1696.143" xmlSpace="preserve" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"><g id="pen"><path d="M1648.016,305.367L1390.795,48.149C1359.747,17.098,1318.466,0,1274.555,0c-43.907,0-85.188,17.098-116.236,48.148   L81.585,1124.866c-10.22,10.22-16.808,23.511-18.75,37.833L0.601,1621.186c-2.774,20.448,4.161,41.015,18.753,55.605   c12.473,12.473,29.313,19.352,46.714,19.352c2.952,0,5.923-0.197,8.891-0.601l458.488-62.231   c14.324-1.945,27.615-8.529,37.835-18.752L1648.016,537.844c31.049-31.048,48.146-72.33,48.146-116.237   C1696.162,377.696,1679.064,336.415,1648.016,305.367z M493.598,1505.366l-350.381,47.558l47.56-350.376L953.78,439.557   l302.818,302.819L493.598,1505.366z M1554.575,444.404l-204.536,204.533l-302.821-302.818l204.535-204.532   c8.22-8.218,17.814-9.446,22.802-9.446c4.988,0,14.582,1.228,22.803,9.446l257.221,257.218c8.217,8.217,9.443,17.812,9.443,22.799   S1562.795,436.186,1554.575,444.404z" /></g><g id="Layer_1" /></svg>
+          </Link>
+          <Link to="#" onClick={(e) => handleDeleteIncludeSerialNo(e, row)} className="btn-svg text-white cursor mr-2"><svg data-name="Layer 41" id="Layer_41" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path class="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path class="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg></Link>
+          <Link to="#" className="btn-svg text-white cursor " onClick={() => setShowRelatedModel(true)}><svg data-name="Layer 1" id="Layer_1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ fill: 'none', width: '18px', strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2px' }}><title /><g data-name="&lt;Group&gt;" id="_Group_"><path class="cls-1" d="M13.38,10.79h0a3.5,3.5,0,0,1,0,5L10.52,18.6a3.5,3.5,0,0,1-5,0h0a3.5,3.5,0,0,1,0-5l.86-.86" data-name="&lt;Path&gt;" id="_Path_" /><path class="cls-1" d="M11,13.21h0a3.5,3.5,0,0,1,0-5L13.81,5.4a3.5,3.5,0,0,1,5,0h0a3.5,3.5,0,0,1,0,5l-.86.86" data-name="&lt;Path&gt;" id="_Path_2" /></g></svg></Link>
+        </div>,
+    },
+  ];
+  const bundleItemColumns = [
+    {
+      name: (
+        <>
+          <div>Id</div>
+        </>
+      ),
+      selector: (row) => row.itemId,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemId,
+    },
+    {
+      name: (
+        <>
+          <div>Description</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.itemBodyDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.itemBodyDescription,
+    },
+    {
+      name: (
+        <>
+          <div>Strategy</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel.model,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel.model,
+    },
+    {
+      name: (
+        <>
+          <div>Standard Job Id</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.standardJobId,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.standardJobId,
+    },
+    {
+      name: (
+        <>
+          <div>
+            Repair Options
+          </div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.repairOption,
+      sortable: true,
+      maxWidth: "300px",
+      format: (row) => row.itemBodyModel.repairOption,
+    },
+    {
+      name: (
+        <>
+          <div>
+            Frequency
+          </div>
+
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.frequency,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.frequency,
+    },
+    {
+      name: (
+        <>
+          <div>Quantity</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.quantity,
+    },
+    {
+      name: (
+        <>
+          <div>Parts $</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.sparePartsPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.sparePartsPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Service $</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.servicePrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.servicePrice,
+    },
+    {
+      name: (
+        <>
+          <div>Total $</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.totalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.totalPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Actions</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.type,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.type,
+      cell: (row) =>
+        <div>
+          <Link to="#" className="btn-svg text-white cursor mx-2">
+            <svg version="1.1" viewBox="0 0 1696.162 1696.143" xmlSpace="preserve" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"><g id="pen"><path d="M1648.016,305.367L1390.795,48.149C1359.747,17.098,1318.466,0,1274.555,0c-43.907,0-85.188,17.098-116.236,48.148   L81.585,1124.866c-10.22,10.22-16.808,23.511-18.75,37.833L0.601,1621.186c-2.774,20.448,4.161,41.015,18.753,55.605   c12.473,12.473,29.313,19.352,46.714,19.352c2.952,0,5.923-0.197,8.891-0.601l458.488-62.231   c14.324-1.945,27.615-8.529,37.835-18.752L1648.016,537.844c31.049-31.048,48.146-72.33,48.146-116.237   C1696.162,377.696,1679.064,336.415,1648.016,305.367z M493.598,1505.366l-350.381,47.558l47.56-350.376L953.78,439.557   l302.818,302.819L493.598,1505.366z M1554.575,444.404l-204.536,204.533l-302.821-302.818l204.535-204.532   c8.22-8.218,17.814-9.446,22.802-9.446c4.988,0,14.582,1.228,22.803,9.446l257.221,257.218c8.217,8.217,9.443,17.812,9.443,22.799   S1562.795,436.186,1554.575,444.404z" /></g><g id="Layer_1" /></svg>
+          </Link>
+          <Link to="#" className="btn-svg text-white cursor mr-2"><svg data-name="Layer 41" id="Layer_41" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path class="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path class="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg></Link>
+          <Link to="#" className="btn-svg text-white cursor "><svg data-name="Layer 1" id="Layer_1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ fill: 'none', width: '18px', strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2px' }}><title /><g data-name="&lt;Group&gt;" id="_Group_"><path class="cls-1" d="M13.38,10.79h0a3.5,3.5,0,0,1,0,5L10.52,18.6a3.5,3.5,0,0,1-5,0h0a3.5,3.5,0,0,1,0-5l.86-.86" data-name="&lt;Path&gt;" id="_Path_" /><path class="cls-1" d="M11,13.21h0a3.5,3.5,0,0,1,0-5L13.81,5.4a3.5,3.5,0,0,1,5,0h0a3.5,3.5,0,0,1,0,5l-.86.86" data-name="&lt;Path&gt;" id="_Path_2" /></g></svg></Link>
+        </div>,
+    },
+  ];
+  const columns4 = [
+    {
+      name: (
+        <>
+          <div>Family</div>
+        </>
+      ),
+      selector: (row) => row.family,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.family,
+    },
+    {
+      name: (
+        <>
+          <div>Model</div>
+        </>
+      ),
+      selector: (row) => row.model,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.model,
+    },
+    {
+      name: (
+        <>
+          <div>Serial Number</div>
+        </>
+      ),
+      selector: (row) => row.noSeriese,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.noSeriese,
+      cell: (row) => <div><Select className="customselect" options={[{ label: "12345", value: "12345" }, { label: "12345", value: "12345" },]} /></div>,
+    },
+    {
+      name: (
+        <>
+          <div>Department</div>
+        </>
+      ),
+      selector: (row) => row.department,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.department,
+    },
+    {
+      name: (
+        <>
+          <div>Start Date</div>
+        </>
+      ),
+      selector: (row) => row.startDate,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.startDate,
+      cell: (row) =>
+        <div className="date-box tabledate-box">
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <DatePicker
+              variant="inline"
+              format="dd/MM/yyyy"
+              className="form-controldate border-radius-10"
+              label=""
+            // value={row.startDate}
+            // onChange={(e) =>
+            //   setValidityData({
+            //     ...validityData,
+            //     startDate: e,
+            //   })
+            // }
+            />
+          </MuiPickersUtilsProvider>
+        </div>
+    },
+    {
+      name: (
+        <>
+          <div>End Date</div>
+        </>
+      ),
+      selector: (row) => row.endDate,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.endDate,
+      cell: (row) =>
+        <div className="date-box tabledate-box">
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <DatePicker
+              variant="inline"
+              format="dd/MM/yyyy"
+              className="form-controldate border-radius-10"
+              label=""
+            // value={validityData.fromDate}
+            // onChange={(e) =>
+            //   setValidityData({
+            //     ...validityData,
+            //     fromDate: e,
+            //   })
+            // }
+            />
+          </MuiPickersUtilsProvider>
+        </div>
+    },
+
+  ];
+  const data4 = [
+    {
+      family: "MOTONIVELADORAS",
+      model: 120,
+      noSeriese: "0JAPA000470",
+      department: "LIMA",
+      startDate: "08/04/20017",
+      endDate: "08/04/20017",
+    },
+    {
+      family: "MOTONIVELADORAS",
+      model: 120,
+      noSeriese: "0JAPA000470",
+      department: "LIMA",
+      startDate: "08/04/20017",
+      endDate: "08/04/20017",
+    },
+  ];
+
   return (
     <>
       <CommanComponents />
@@ -1328,22 +2077,24 @@ console.log("selectUpdateList",selectUpdateList)
           <div className="d-flex align-items-center justify-content-between mt-2">
             {/* <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5> */}
             <div className="d-flex">
-            
-            <div className="ml-3">
-              <Select className="customselectbtn1" onChange={(e)=>handleOption3(e)} options={options3} value={value3}/>
-            </div>
-            <div className="ml-3">
-              <Select className="customselectbtn" onChange={(e)=>handleOption2(e)} options={options2} value={value2}/>
-            </div>
-            <div className="rating-star">
-              <span class="fa fa-star checked"></span>
-              <span class="fa fa-star checked"></span>
-              <span class="fa fa-star checked"></span>
-              <span class="fa fa-star"></span>
-              <span class="fa fa-star"></span>
+              <div className="ml-3">
+                {portfolioId ? generalComponentData.name : ""}
               </div>
-           
-          </div>
+              <div className="ml-3">
+                <Select className="customselectbtn1" onChange={(e) => handleOption3(e)} options={options3} value={value3} />
+              </div>
+              <div className="ml-3">
+                <Select className="customselectbtn" onChange={(e) => handleOption2(e)} options={options2} value={value2} />
+              </div>
+              <div className="rating-star">
+                <span className="fa fa-star checked"></span>
+                <span className="fa fa-star checked"></span>
+                <span className="fa fa-star checked"></span>
+                <span className="fa fa-star"></span>
+                <span className="fa fa-star"></span>
+              </div>
+
+            </div>
             <div className="d-flex justify-content-center align-items-center">
               <a href="#" className="ml-3 font-size-14">
                 <img src={shareIcon}></img>
@@ -1372,7 +2123,7 @@ console.log("selectUpdateList",selectUpdateList)
             <h5 className="d-flex align-items-center mb-0">
               <div className="" style={{ display: "contents" }}>
                 <span className="mr-3" style={{ whiteSpace: "pre" }}>
-                  Portfolio Details
+                  {portfolioId ? "Portfolio Details" : "New Portfolio*"}
                 </span>
                 <a href="#" className="btn-sm">
                   <i className="fa fa-pencil" aria-hidden="true"></i>
@@ -1520,7 +2271,7 @@ console.log("selectUpdateList",selectUpdateList)
                           onChange={handleCustomerSegmentChange}
                           value={generalComponentData.customerSegment}
                           options={customerSegmentKeyValue}
-                          // options={strategyList}
+                        // options={strategyList}
                         />
                       </div>
                     </div>
@@ -1594,7 +2345,7 @@ console.log("selectUpdateList",selectUpdateList)
                           <div className="d-flex align-items-center date-box">
                             <label
                               className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
-                              for="exampleInputEmail1"
+                              htmlFor="exampleInputEmail1"
                             >
                               <span className=" mr-2">FROM</span>
                             </label>
@@ -1815,6 +2566,7 @@ console.log("selectUpdateList",selectUpdateList)
                         </label>
                         <Select
                           options={categoryList}
+                          value={categoryUsageKeyValue1}
                           onChange={(e) => HandleCatUsage(e)}
                         />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
@@ -1830,6 +2582,7 @@ console.log("selectUpdateList",selectUpdateList)
                         </label>
                         <Select
                           options={updatedList}
+                          value={stratgyTaskUsageKeyValue}
                           onChange={(e) => HandleStrategyUsage(e)}
                         />
                       </div>
@@ -1842,8 +2595,10 @@ console.log("selectUpdateList",selectUpdateList)
                         >
                           TASK TYPE
                         </label>
-                        <Select 
-                        options={updatedTaskList} 
+                        <Select
+                          options={updatedTaskList}
+                          value={stratgyTaskTypeKeyValue}
+                          onChange={(e) => setStratgyTaskTypeKeyValue(e)}
                         />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                       </div>
@@ -1865,7 +2620,9 @@ console.log("selectUpdateList",selectUpdateList)
                         </label>
                         <Select
                           options={strategyOptionals}
-                          // options={rTimeList}
+                          value={stratgyOptionalsKeyValue}
+                          onChange={(e) => setStratgyOptionalsKeyValue(e)}
+                        // options={rTimeList}
                         />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Optionais" /> */}
                       </div>
@@ -1878,8 +2635,10 @@ console.log("selectUpdateList",selectUpdateList)
                         >
                           RESPONSE TIME
                         </label>
-                        <Select 
-                        options={rTimeList} 
+                        <Select
+                          options={rTimeList}
+                          value={stratgyResponseTimeKeyValue}
+                          onChange={(e) => setStratgyResponseTimeKeyValue(e)}
                         />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Response Time" /> */}
                       </div>
@@ -1892,7 +2651,11 @@ console.log("selectUpdateList",selectUpdateList)
                         >
                           PRODUCT HIERARCHY
                         </label>
-                        <Select options={productList} />
+                        <Select
+                          options={productList}
+                          value={stratgyHierarchyKeyValue}
+                          onChange={(e) => setStratgyHierarchyKeyValue(e)}
+                        />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                       </div>
                     </div>
@@ -1906,6 +2669,8 @@ console.log("selectUpdateList",selectUpdateList)
                         </label>
                         <Select
                           options={geographicList}
+                          value={stratgyGeographicKeyValue}
+                          onChange={(e) => setStratgyGeographicKeyValue(e)}
                           placeholder="Geographic"
                         />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
@@ -2245,8 +3010,8 @@ console.log("selectUpdateList",selectUpdateList)
                         </div>
                       </div>
                     </div>
-                    <div class="table-responsive custometable">
-                      <table class="table">
+                    <div className="table-responsive custometable">
+                      <table className="table">
                         <thead>
                           <tr>
                             <th scope="col">#</th>
@@ -2272,201 +3037,158 @@ console.log("selectUpdateList",selectUpdateList)
                     </button>
                   </div>
                 </TabPanel>
+
                 <TabPanel value={6}>
                   <div
-                    className="custom-table card"
+                    className="custom-table card p-3 "
                     style={{ width: "100%", backgroundColor: "#fff" }}
                   >
-                    <div className="row align-items-center">
-                      <div className="col-2">
+                    <div className="row align-items-center ">
+                      {/* <div className="col-2">
                         <div className="d-flex ">
                           <h5 className="mr-4 mb-0">
                             <span>Master Data</span>
                           </h5>
-                          {/* <p className="ml-4 mb-0">
-                           
-
-                            <a onClick={() => handleOpen()} className=" ml-3 font-size-14">
-                <img src={uploadIcon}></img>
-              </a>
-                            <a href="#" className="ml-3 ">
-                              <img src={shareIcon}></img>
-                            </a>
-                          </p> */}
+                          <p className="ml-4 mb-0"><a onClick={() => handleOpen()} className=" ml-3 font-size-14"><img src={uploadIcon}></img></a><a href="#" className="ml-3 "><img src={shareIcon}></img></a></p>
                         </div>
-                      </div>
-                      <div className="col-8">
-                      <div className="d-flex justify-content-between align-items-center">
-              <div className="d-flex align-items-center mt-3">
-              <div className="search-icon mr-2" style={{ lineHeight: '24px' }}>
-                <img src={searchstatusIcon}></img>
-              </div>
-                <div className="d-flex justify-content-between align-items-center p-3 bg-light-dark border-radius-10">
-                <div className="d-flex align-items-center">
-              <span className="mr-3">Repair Bulider</span>
-                <div className="customselect d-flex align-items-center mr-3">
-                  <div>
-                  <Select
-                      // onChange={handleChangeSelect}
-                      isClearable={true}
-                      // value={dValue}
-                      options={[{label:"Make",value:"Make",},{label:"Family",value:"Family",},{label:"Model",value:"Model",},{label:"Prefix",value:"Prefix",}]}
-                      placeholder="Spare Parts"
-                      />
-                    {/* <span className="px-2">Spare Parts</span> */}
-                    </div>
-                    <span className="px-2">Repair Quote</span>
-                    {/* <Select className="border-left"
-                      // onChange={handleChangeSelect}
-                      isClearable={true}
-                      // value={dValue}
-                      options={[{label:"One",value:"one"}]}
-                      placeholder="Repair Quote"
-                      />  */}
-                      {/* <span>
-                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
-                      </span> */}
-                </div>
-                <div className="customselect d-flex align-items-center mr-3">
-                    <Select
-                      // onChange={handleChangeSelect}
-                      isClearable={true}
-                      // value={dValue}
-                      options={[{label:"And",value:"And"},{label:"Or",value:"Or"}]}
-                      placeholder="&"
-                      />
-                </div>
-                <div className="customselect d-flex align-items-center mr-3">
-                  <div><span className="px-2">Labor</span></div>
-                    <Select className="border-left"
-                      // onChange={handleChangeSelect}
-                      isClearable={true}
-                      // value={dValue}
-                      options={[{label:"One",value:"one"}]}
-                      placeholder="Cost Plus"
-                      /> <span>
-                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
-                      </span>
-                </div>
-                <div className="customselect d-flex align-items-center mr-3">
-                    <Select
-                      // onChange={handleChangeSelect}
-                      isClearable={true}
-                      // value={dValue}
-                      options={[{label:"And",value:"And"},{label:"Or",value:"Or"}]}
-                      placeholder="&"
-                      />
-                </div>
-                <div className="customselect d-flex align-items-center mr-3">
-                  <div><span className="px-2">Consumables</span></div>
-                    <Select className="border-left"
-                      // onChange={handleChangeSelect}
-                      isClearable={true}
-                      // value={dValue}
-                      options={[{label:"One",value:"one"}]}
-                      placeholder="Flat rate"
-                      /> <span>
-                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
-                      </span>
-                </div>
-                <div>
-                  <a href="#" className="btn-sm text-violet border" style={{border:'1px solid #872FF7'}}>+</a>
-                </div>
-              </div>
-                </div>
-                
-              </div>
-              <div>
-              <a href="#" className="btn-sm"><DeleteIcon className="font-size-14 text-danger"/></a>
-              </div>
-              </div>
-                        {/* <div
-                          className="d-flex align-items-center"
-                          style={{
-                            background: "#F9F9F9",
-                            padding: "10px 15px",
-                            borderRadius: "10px",
-                          }}
-                        > */}
-                          
-                          {/* <div
-                            className="search-icon mr-2"
-                            style={{ lineHeight: "24px" }}
-                          >
-                            <img src={searchstatusIcon}></img>
-                          </div> */}
-                          {/* <div className="w-100 mx-2">
-                            <div className="machine-drop d-flex align-items-center"> */}
-                              {/* <div><lable className="label-div">Search By</lable></div> */}
-                              {/* <FormControl className="" sx={{ m: 1 }}>
-                                <Select
-                                  placeholder="Search By"
-                                  id="demo-simple-select-autowidth"
-                                  value={age}
-                                  onChange={handleChangedrop}
-                                  autoWidth
+                      </div> */}
+                      <div className="col-12">
+                        {/* <div className="d-flex align-items-center">
+                        <div
+                              className="search-icon mr-2"
+                              style={{ lineHeight: "24px", cursor: "pointer" }}
+                              onClick={handleQuerySearchClick}
+                            >
+                              <SearchIcon />
+                            </div>
+                                <span className="mr-3">Search</span>
+                        </div> */}
+                        <div className="d-flex align-items-center bg-light-dark w-100">
+                          <div className="d-flex justify-content-between align-items-center p-3 border-radius-10 w-100 border-right">
+                            <div className="row align-items-center m-0">
+                              {
+                                querySearchSelector.map((obj, i) => {
+                                  return (
+                                    <>
+
+                                      <div className="customselect d-flex align-items-center mr-3 my-2">
+                                        {
+                                          i > 0 ?
+                                            <Select
+                                              isClearable={true}
+                                              defaultValue={{ label: "And", value: "AND" }}
+                                              options={[
+                                                { label: "And", value: "AND", id: i },
+                                                { label: "Or", value: "OR", id: i },
+                                              ]}
+                                              placeholder="&amp;"
+                                              onChange={(e) => handleOperator(e, i)}
+                                              // value={querySearchOperator[i]}
+                                              value={obj.selectOperator}
+
+                                            /> : <></>
+                                        }
+
+                                        <div>
+                                          <Select
+                                            // isClearable={true}
+                                            options={[
+                                              { label: "Make", value: "make", id: i },
+                                              { label: "Family", value: "family", id: i },
+                                              { label: "Model", value: "model", id: i },
+                                              { label: "Prefix", value: "prefix", id: i },
+                                            ]}
+                                            onChange={(e) => handleFamily(e, i)}
+                                            value={obj.selectFamily}
+                                          />
+                                        </div>
+                                        <div className="customselectsearch">
+                                          <input className="custom-input-sleact"
+                                            type="text"
+                                            placeholder="Search string"
+                                            value={obj.inputSearch}
+                                            onChange={(e) => handleInputSearch(e, i)}
+                                            id={"inputSearch-" + i}
+                                            autoComplete="off"
+                                          />
+
+                                          {
+
+                                            <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i}`} id="style">
+                                              {obj.selectOptions.map((currentItem, j) => (
+                                                <li className="list-group-item" key={j} onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}>{currentItem}</li>
+                                              ))}
+                                            </ul>
+
+                                          }
+                                        </div>
+                                      </div>
+                                    </>
+                                  );
+                                })
+                              }
+                              <div
+                                onClick={(e) => addSearchQuerryHtml(e)}>
+                                <Link
+                                  to="#"
+                                  className="btn-sm text-violet border"
+                                  style={{ border: "1px solid #872FF7" }}
                                 >
-                                  <MenuItem value="5">
-                                    <em>Engine</em>
-                                  </MenuItem>
-                                  <MenuItem value={10}>Twenty</MenuItem>
-                                  <MenuItem value={21}>Twenty one</MenuItem>
-                                  <MenuItem value={22}>
-                                    Twenty one and a half
-                                  </MenuItem>
-                                </Select>
-                              </FormControl> */}
-                            {/* </div>
-                          </div> */}
-                        {/* </div> */}
-                      </div>
-                      <div className="col-2">
-                        <div className="d-flex align-items-center">
-                          {/* <div className="col-6 text-center">
-                            <a href="#" className="p-1 more-btn">
-                              + 3 more
-                              <span className="c-btn">C</span>
-                              <span className="b-btn">B</span>
-                              <span className="a-btn">A</span>
-                            </a>
-                          </div> */}
-                          <div className="col-6 text-center border-left py-4">
-                            
-                                <a href="#" data-toggle="modal" data-target="#AddCoverage" className="p-1 ">
-                                  + Add Selected Coverages
-                                </a>
-                              
+                                  +
+                                </Link>
+                              </div>
+                              <div onClick={handleDeletQuerySearch}>
+                                <Link to="#" className="btn-sm">
+                                  <svg data-name="Layer 41" id="Layer_41" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path class="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path class="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg>
+                                  {/* <DeleteIcon className="font-size-16" /> */}
+                                </Link>
+                              </div>
+
+                            </div>
+                          </div>
+                          <div className="px-3">
+                            <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
+                              <SearchIcon /><span className="ml-1">Search</span>
+                            </Link>
                           </div>
                         </div>
                       </div>
                     </div>
+                    <hr />
                     <DataTable
                       className=""
                       title=""
-                      columns={columns}
-                      data={data}
+                      columns={masterColumns}
+                      data={masterData}
                       customStyles={customStyles}
                       pagination
                     />
-                    <h6 className="font-weight-400 text-black mb-2 mt-1">
-                      Selected Coverages for this portfolio
-                    </h6>
+                    <div>
+                      <div className="text-right">
+                        <Link to="#" onClick={() => setSelectedMasterData(filterMasterData)} className="btn bg-primary text-white">+ Add Selected</Link></div>
+                    </div>
+                    <hr />
+                    <label htmlFor="Included-model">
+                      <h6 className="font-weight-400 text-black mb-2 mt-1">
+                        Included models
+                      </h6>
 
+                    </label>
                     <DataTable
-                      className=""
+                      className="mt-3"
                       title=""
-                      columns={columns}
-                      data={data}
+                      columns={selectedMasterColumns}
+                      data={selectedMasterData}
                       customStyles={customStyles}
                       pagination
                     />
                   </div>
 
                   <div className="row" style={{ display: "none" }}>
-                  <div className="col-md-4 col-sm-3">
+                    <div className="col-md-4 col-sm-3">
                       <div className="form-group">
                         <label className="text-light-dark font-size-12 font-weight-500">
-                        <Checkbox className="text-white" {...label} />
+                          <Checkbox className="text-white" {...label} />
                         </label>
                         {makeKeyValue.length > 0 ? (
                           <Select
@@ -2721,6 +3443,88 @@ console.log("selectUpdateList",selectUpdateList)
                   </a>
                 </span>
               </h6>
+
+              <div className="maintableheader bg-white mt-3 border-radius-10">
+                <div className="d-flex justify-content-between align-items-center pl-2">
+                  <div className="d-flex align-items-center">
+                    <div className="customselect d-flex">
+                      <Select
+                        onChange={handleTypeOfSearchChange}
+                        isClearable={true}
+                        value={typeOfSearch}
+                        options={columnSearchKeyValue}
+                        placeholder="Add by"
+                      />
+                    </div>
+                    {typeOfSearch != null ? (
+                      <div className="customselect d-flex ml-3">
+                        <Select
+                          onChange={handleTypeOfSearchColumnChange}
+                          isClearable={true}
+                          value={typeOfSearchColumn}
+                          options={typeOfSearchColumnKeyValue}
+                          placeholder="Select"
+                        />
+                        {typeOfSearchColumn != null ? (
+                          <input
+                            type="text"
+                            className=""
+                            placeholder="Enter text"
+                            style={{
+                              border: "none",
+                              background: "transparent",
+                              width: "80px",
+                              fontWeight: "600",
+                              paddingLeft: "10px",
+                            }}
+                            value={columnSearchText}
+                            onChange={(e) => setColumnSearchText(e.target.value)}
+                          ></input>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+                </div>
+                {columnSearchText.trim() != "" && typeOfSearchColumn != null ? (
+                  <div className="tableheader">
+                    <ul className="submenu accordion mt-0" style={{ display: "block" }}>
+                      <li>
+                        <a className="result cursor">RESULTS</a>
+                      </li>
+                      <li>
+                        <a className="cursor">PM125</a>
+                      </li>
+                      <li>
+                        <a className="cursor">PM2</a>
+                      </li>
+                      <li>
+                        <a onClick={handleCreateNewServiceBundle} className="lastOption text-violet cursor">
+                          <span className="mr-2">+</span>Create New{" "}
+                          {typeOfSearch != null
+                            ? typeOfSearch.value == "bundle"
+                              ? "Bundle"
+                              : typeOfSearch.value == "service"
+                                ? "Service"
+                                : typeOfSearch.value == "portfolioItem"
+                                  ? "Portfolio Item"
+                                  : ""
+                            : ""}
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </div>
+
+
+
+
               {/* <h6 className="font-weight-600 text-light mb-0 cursor" onClick={handleShowAddSolution}><span className="mr-2">+</span>Add Solution</h6> */}
               <div className="d-flex align-items-center">
                 <h6
@@ -2729,8 +3533,7 @@ console.log("selectUpdateList",selectUpdateList)
                 >
                   <span className="mr-2">+</span>Add Solution
                 </h6>
-                <Dropdown as={ButtonGroup}>
-                  {/* <div id="dropdown-split-basic" aria-expanded="false" type="button" class="dropdown-toggle dropdown-toggle-split btn"><MoreVertIcon /></div> */}
+                {/* <Dropdown as={ButtonGroup}>
                   <Dropdown.Toggle
                     split
                     variant=""
@@ -2759,7 +3562,7 @@ console.log("selectUpdateList",selectUpdateList)
                       Create Item
                     </Dropdown.Item>
                   </Dropdown.Menu>
-                </Dropdown>
+                </Dropdown> */}
               </div>
 
               {/* <MuiMenuComponent onClick={(event) => handleMenuItemClick(event)} options={portfolioBodyMoreActions} /> */}
@@ -2767,56 +3570,56 @@ console.log("selectUpdateList",selectUpdateList)
             {bundleItems.length > 0 ? (
               <div>
                 {/* <div className="row align-items-center">
-                                    <div className="col-4">
-                                        <div className="d-flex align-items-center pl-2">
-                                            <h6 className="mr-2 mb-0 font-size-12"><span>Repair Option</span></h6>
-                                            <p className="mb-0">Version 1</p>
-                                            <p className="ml-2 mb-0">
-                                                <a href="#" className="ml-3 "><img src={editIcon}></img></a>
-                                                <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="col-5">
-                                        <div className="d-flex align-items-center" style={{ background: '#F9F9F9', padding: '5px 10px 5px 35px', borderRadius: '10px' }}>
-                                            <div className="search-icon1 mr-2" style={{ lineHeight: '24px' }}>
-                                                <img src={searchstatusIcon}></img>
-                                            </div>
-                                            <div className=" mx-2">
-                                                <div className="machine-drop">
-                                                    <FormControl className="" sx={{ m: 1, }}>
-                                                        <Select
-                                                            id="demo-simple-select-autowidth"
-                                                            value={age}
-                                                            onChange={handleChangedrop}
-                                                            autoWidth
-                                                        >
-                                                            <MenuItem value="5">
-                                                                <em>Engine</em>
-                                                            </MenuItem>
-                                                            <MenuItem value={10}>Twenty</MenuItem>
-                                                            <MenuItem value={21}>Twenty one</MenuItem>
-                                                            <MenuItem value={22}>Twenty one and a half</MenuItem>
-                                                        </Select>
-                                                    </FormControl>
-                                                </div>
-                                            </div>
-                                        </div>
+                  <div className="col-4">
+                    <div className="d-flex align-items-center pl-2">
+                      <h6 className="mr-2 mb-0 font-size-12"><span>Repair Option</span></h6>
+                      <p className="mb-0">Version 1</p>
+                      <p className="ml-2 mb-0">
+                        <a href="#" className="ml-3 "><img src={editIcon}></img></a>
+                        <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="col-5">
+                    <div className="d-flex align-items-center" style={{ background: '#F9F9F9', padding: '5px 10px 5px 35px', borderRadius: '10px' }}>
+                      <div className="search-icon1 mr-2" style={{ lineHeight: '24px' }}>
+                        <img src={searchstatusIcon}></img>
+                      </div>
+                      <div className=" mx-2">
+                        <div className="machine-drop">
+                          <FormControl className="" sx={{ m: 1, }}>
+                            <Select
+                              id="demo-simple-select-autowidth"
+                              value={age}
+                              onChange={handleChangedrop}
+                              autoWidth
+                            >
+                              <MenuItem value="5">
+                                <em>Engine</em>
+                              </MenuItem>
+                              <MenuItem value={10}>Twenty</MenuItem>
+                              <MenuItem value={21}>Twenty one</MenuItem>
+                              <MenuItem value={22}>Twenty one and a half</MenuItem>
+                            </Select>
+                          </FormControl>
+                        </div>
+                      </div>
+                    </div>
 
-                                    </div>
-                                    <div className="col-3  text-right">
-                                        <div className="">
-                                            <a href="#" className="border-left  btn">+ Add Part</a>
-                                        </div>
-                                    </div>
-                                </div> */}
+                  </div>
+                  <div className="col-3  text-right">
+                    <div className="">
+                      <a href="#" className="border-left  btn">+ Add Part</a>
+                    </div>
+                  </div>
+                </div> */}
                 <div
                   className="custom-table  card "
                   style={{ height: 400, width: "100%" }}
                 >
                   <DataTable
                     title=""
-                    columns={columns}
+                    columns={bundleItemColumns}
                     data={bundleItems}
                     customStyles={customStyles}
                     pagination
@@ -2829,12 +3632,12 @@ console.log("selectUpdateList",selectUpdateList)
                   className="col-md-6 col-sm-6"
                   onClick={handleNewBundleItem}
                 >
-                  <a href="#" className="add-new-recod">
+                  <Link to="#" className="add-new-recod">
                     <div>
                       <FontAwesomeIcon icon={faPlus} />
                       <p className="font-weight-600">Add Protfolio Item</p>
                     </div>
-                  </a>
+                  </Link>
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="add-new-recod">
@@ -3271,7 +4074,7 @@ console.log("selectUpdateList",selectUpdateList)
                       // <></>
                       <input
                         type="email"
-                        class=""
+                        className=""
                         id="exampleInputEmail1"
                         aria-describedby="emailHelp"
                         placeholder="Enter text"
@@ -3310,7 +4113,7 @@ console.log("selectUpdateList",selectUpdateList)
             </div>
             {columnSearchText.trim() != "" && typeOfSearchColumn != null ? (
               <div className="tableheader">
-                <ul class="submenu accordion mt-0" style={{ display: "block" }}>
+                <ul className="submenu accordion mt-0" style={{ display: "block" }}>
                   <li>
                     <a className="result cursor">RESULTS</a>
                   </li>
@@ -3340,10 +4143,10 @@ console.log("selectUpdateList",selectUpdateList)
                         ? typeOfSearch.value == "bundle"
                           ? "Bundle"
                           : typeOfSearch.value == "service"
-                          ? "Service"
-                          : typeOfSearch.value == "portfolioItem"
-                          ? "Portfolio Item"
-                          : ""
+                            ? "Service"
+                            : typeOfSearch.value == "portfolioItem"
+                              ? "Portfolio Item"
+                              : ""
                         : ""}
                     </a>
                   </li>
@@ -3717,7 +4520,7 @@ console.log("selectUpdateList",selectUpdateList)
             <div className="ligt-greey-bg p-3">
               <div>
                 {/* <span className="mr-3">
-                                    <i class="fa fa-pencil font-size-12" aria-hidden="true"></i><span className="ml-2">Edit</span>
+                                    <i className="fa fa-pencil font-size-12" aria-hidden="true"></i><span className="ml-2">Edit</span>
                                 </span>
                                 <span className="mr-3">
                                     < MonetizationOnOutlinedIcon className=" font-size-16" />
@@ -3753,9 +4556,9 @@ console.log("selectUpdateList",selectUpdateList)
                                 <a href="#" className="btn-sm bg-primary text-white ml-3" onClick={handleBundleItemSaveAndContinue}>Save & Continue</a>
                             </div> */}
               <p className="mt-4">SUMMARY</p>
-              <div class="row mt-4">
+              <div className="row mt-4">
                 <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
+                  <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
                       for="exampleInputEmail1"
@@ -3763,17 +4566,18 @@ console.log("selectUpdateList",selectUpdateList)
                       ID
                     </label>
                     <input
-                      type="email"
-                      class="form-control border-radius-10"
+                      type="text"
+                      className="form-control border-radius-10"
                       disabled
-                      id="exampleInputEmail1"
+                      // id="exampleInputEmail1"
                       aria-describedby="emailHelp"
                       placeholder="(AUTO GENERATE)"
+
                     />
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
+                  <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
                       for="exampleInputEmail1"
@@ -3782,36 +4586,37 @@ console.log("selectUpdateList",selectUpdateList)
                     </label>
                     <input
                       type="text"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
+                      className="form-control border-radius-10"
+                      // id="exampleInputEmail1"
+                      // aria-describedby="emailHelp"
                       placeholder="DESCRIPTION"
+                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, description: e.target.value })}
+                      value={addPortFolioItem.description}
                     />
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
+                  <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
                       for="exampleInputEmail1"
                     >
                       USAGE IN
                     </label>
-                    <input
-                      type="text"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="USAGE IN"
-                      value={categoryUsageKeyValue1.lable}
-                     
+                    <Select
+                      placeholder={categoryUsageKeyValue1.label}
+                      options={categoryList}
+                      selectedValue={categoryUsageKeyValue1.value ? categoryUsageKeyValue1.value : ""}
+                      defaultValue={categoryUsageKeyValue1.value ? categoryUsageKeyValue1.value : ""}
+                      value={addPortFolioItem.usageIn}
+                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, usageIn: e })}
                     />
                   </div>
                 </div>
               </div>
-              
+
               <p className="mt-4">STRATEGY</p>
-              <div class="row mt-4">
+              <div className="row mt-4">
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group">
                     <label
@@ -3824,9 +4629,14 @@ console.log("selectUpdateList",selectUpdateList)
                       <div className="form-control">
                         <Select
                           // defaultValue={1}
-                          onChange={setTaskItemList}
-                          options={taskList}
-                          placeholder="Select Or Search"
+                          // onChange={(e) => {setTaskItemList(e)}}
+                          // value={taskItemList}
+                          options={updatedTaskList}
+                          placeholder={stratgyTaskTypeKeyValue.value}
+                          selectedValue={stratgyTaskTypeKeyValue.value ? stratgyTaskTypeKeyValue.value : ""}
+                          defaultValue={stratgyTaskTypeKeyValue.value ? stratgyTaskTypeKeyValue.value : ""}
+                          onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, taskType: e })}
+                          value={addPortFolioItem.taskType}
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
@@ -3848,6 +4658,8 @@ console.log("selectUpdateList",selectUpdateList)
                         <Select
                           options={frequencyList}
                           placeholder="FREQUENCY"
+                          onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, frequency: e })}
+                          value={addPortFolioItem.frequency}
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
@@ -3864,7 +4676,12 @@ console.log("selectUpdateList",selectUpdateList)
                     >
                       UNIT
                     </label>
-                    <Select options={unitList} placeholder="HOURS" />
+                    <Select
+                      options={unitList}
+                      placeholder="HOURS"
+                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, unit: e })}
+                      value={addPortFolioItem.unit}
+                    />
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -3876,15 +4693,16 @@ console.log("selectUpdateList",selectUpdateList)
                       RECOMMENDED VALUE
                     </label>
                     <Select
-                      defaultValue={selectedOption}
-                      onChange={setSelectedOption}
+                      // defaultValue={selectedOption}
+                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recomondedValue: e })}
+                      value={addPortFolioItem.recomondedValue}
                       options={options}
                       placeholder="RECOMMENDED VALUE"
                     />
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
+                  <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
                       for="exampleInputEmail1"
@@ -3893,15 +4711,17 @@ console.log("selectUpdateList",selectUpdateList)
                     </label>
                     <input
                       type="text"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
+                      className="form-control border-radius-10"
+                      // id="exampleInputEmail1"
+                      // aria-describedby="emailHelp"
                       placeholder="QUANTITY"
+                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, quantity: e.target.value })}
+                      value={addPortFolioItem.quantity}
                     />
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
+                  <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
                       for="exampleInputEmail1"
@@ -3910,10 +4730,12 @@ console.log("selectUpdateList",selectUpdateList)
                     </label>
                     <input
                       type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
+                      className="form-control border-radius-10"
+                      // id="exampleInputEmail1"
+                      // aria-describedby="emailHelp"
                       placeholder="NO. OF EVENTS"
+                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, strategyEvents: e.target.value })}
+                      value={addPortFolioItem.strategyEvents}
                     />
                   </div>
                 </div>
@@ -3931,10 +4753,12 @@ console.log("selectUpdateList",selectUpdateList)
                     <div className="icon-defold">
                       <div className="form-control">
                         <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
+                          // defaultValue={selectedOption}
+                          // onChange={setSelectedOption}
                           options={options}
                           placeholder="TEMPLATE ID"
+                          onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, templateId: e })}
+                          value={addPortFolioItem.templateId}
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
@@ -3954,10 +4778,12 @@ console.log("selectUpdateList",selectUpdateList)
                     <div className="icon-defold">
                       <div className="form-control">
                         <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
+                          // defaultValue={selectedOption}
+                          // onChange={setSelectedOption}
                           options={options}
                           placeholder="TEMPLATE DESCRIPTION"
+                          onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, templateDescription: e })}
+                          value={addPortFolioItem.templateDescription}
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
@@ -3966,7 +4792,7 @@ console.log("selectUpdateList",selectUpdateList)
                     </div>
                   </div>
                 </div>
-                <div className="col-md-6 col-sm-6">
+                {/* <div className="col-md-6 col-sm-6">
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
@@ -3977,11 +4803,14 @@ console.log("selectUpdateList",selectUpdateList)
                     <div className="icon-defold">
                       <input
                         type="text"
-                        class="form-control icon-defold border-radius-10"
+                        className="form-control icon-defold border-radius-10"
                         style={{ paddingLeft: "35px" }}
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
+                        // id="exampleInputEmail1"
+                        // aria-describedby="emailHelp"
                         placeholder="SJ1234"
+                        onChange={(e)=>setAddportFolioItem({...addPortFolioItem,templateEvents:e.target.value})}
+                        value={addPortFolioItem.templateEvents}
+
                       />
                       <span
                         className="search-icon"
@@ -3995,7 +4824,7 @@ console.log("selectUpdateList",selectUpdateList)
                       </span>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group">
                     <div className="mt-4">
@@ -4012,7 +4841,7 @@ console.log("selectUpdateList",selectUpdateList)
 
               <p className="mt-4">REPAIR OPTIONS</p>
               <div className="row">
-                <div className="col-md-4 col-sm-4">
+                {/* <div className="col-md-4 col-sm-4">
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
@@ -4023,11 +4852,13 @@ console.log("selectUpdateList",selectUpdateList)
                     <div className="icon-defold">
                       <input
                         type="email"
-                        class="form-control icon-defold border-radius-10"
+                        className="form-control icon-defold border-radius-10"
                         style={{ paddingLeft: "35px" }}
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
+                        // id="exampleInputEmail1"
+                        // aria-describedby="emailHelp"
                         placeholder="SJ1234"
+                        onChange={(e)=>setAddportFolioItem({...addPortFolioItem,repairEvents:e.target.value})}
+                        value={addPortFolioItem.repairEvents}
                       />
                       <span
                         className="search-icon"
@@ -4041,7 +4872,7 @@ console.log("selectUpdateList",selectUpdateList)
                       </span>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 <div className="col-md-4 col-sm-4">
                   <div className="form-group">
                     <label
@@ -4053,10 +4884,12 @@ console.log("selectUpdateList",selectUpdateList)
                     <div className="icon-defold">
                       <div className="form-control">
                         <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
+                          // defaultValue={selectedOption}
+                          // onChange={setSelectedOption}
                           options={options}
                           placeholder="REPAIR OPTION"
+                          onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, repairOption: e })}
+                          value={addPortFolioItem.repairOption}
                         />
                         <span className="search-icon searchIcon">
                           <SearchOutlinedIcon className="font-size-16" />
@@ -4394,27 +5227,28 @@ console.log("selectUpdateList",selectUpdateList)
 
             </Modal>
               {/* <div class="row mt-4">
+
                                 <div className="col-md-6 col-sm-6">
-                                    <div class="form-group w-100">
+                                    <div className="form-group w-100">
                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOLUTION ID</label>
-                                        <input type="email" class="form-control border-radius-10" disabled id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(AUTO GENERATE)" />
+                                        <input type="email" className="form-control border-radius-10" disabled id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(AUTO GENERATE)" />
                                     </div>
                                 </div>
                                 <div className="col-md-6 col-sm-6">
-                                    <div class="form-group w-100">
+                                    <div className="form-group w-100">
                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOLUTION DESCRIPTION</label>
-                                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace Cranskshaft" />
+                                        <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace Cranskshaft" />
                                     </div>
                                 </div>
                                 <div className="col-md-6 col-sm-6">
-                                    <div class="form-group w-100">
+                                    <div className="form-group w-100">
                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">USAGE IN</label>
-                                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Overhaul" />
+                                        <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Overhaul" />
                                     </div>
                                 </div>
                             </div>
                             <p className="mt-4">STRATEGY</p>
-                            <div class="row mt-4">
+                            <div className="row mt-4">
                                 <div className="col-md-6 col-sm-6">
                                     <div className="form-group">
                                         <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">TASK TYPE</label>
@@ -4500,7 +5334,7 @@ console.log("selectUpdateList",selectUpdateList)
         <Modal.Body>
           <div className="d-flex align-items-center justify-content-between">
             <div>
-              <h5 class="">Choose what solution you want to build</h5>
+              <h5 className="">Choose what solution you want to build</h5>
             </div>
             {/* <div>
                         <a href='#' className='btn border-light font-weight-500 bg-light-grey font-size-18'>Explore available solution</a>
@@ -4587,19 +5421,19 @@ console.log("selectUpdateList",selectUpdateList)
           </div>
         </Modal.Body>
       </Modal>
-      <div class="modal fade" id="AddCoverage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Add Coverage</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <div className="modal fade" id="AddCoverage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="exampleModalLabel">Add Coverage</h5>
+              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <div class="modal-body">
-            <div className="row">
-            <div className="col-md-4 col-sm-4">
-                  <div class="form-group w-100">
+            <div className="modal-body">
+              <div className="row">
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
                       for="exampleInputEmail1"
@@ -4607,169 +5441,240 @@ console.log("selectUpdateList",selectUpdateList)
                       Coverage ID
                     </label>
                     <input
-                      type="email"
-                      class="form-control border-radius-10"
+                      type="text"
+                      className="form-control border-radius-10"
                       disabled
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
                       placeholder="(AUTO GENERATE)"
+                      value={editSerialNo.coverageId}
+                      defaultValue={editSerialNo.coverageId}
+                    />
+                  </div>
+                </div>
+                {/* <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Service ID</label>
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                  </div>
+                </div> */}
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      Make
+                    </label>
+                    <Select
+                      options={categoryList}
+                      placeholder={editSerialNo.make}
+                      // onChange={(e) => HandleCatUsage(e)}
+                      value={editSerialNo.make}
+                      defaultValue={editSerialNo.make}
+                      onChange={(e) => setEditSerialNo({ ...editSerialNo, make: e.value })}
+                    />
+
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      Family
+                    </label>
+                    <Select
+                      options={categoryList}
+                      placeholder={editSerialNo.family}
+                      value={editSerialNo.family}
+                      defaultValue={editSerialNo.family}
+                      onChange={(e) => setEditSerialNo({ ...editSerialNo, family: e.value })}
+                    // onChange={(e) => HandleCatUsage(e)}
+                    />
+
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      Model No
+                    </label>
+                    <Select
+                      options={categoryList}
+                      placeholder={editSerialNo.modelNo}
+                      value={editSerialNo.modelNo}
+                      defaultValue={editSerialNo.modelNo}
+                      onChange={(e) => setEditSerialNo({ ...editSerialNo, modelNo: e.value })}
+                    // onChange={(e) => HandleCatUsage(e)}
+                    />
+
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      Serial No Prefix
+                    </label>
+                    <Select
+                      options={categoryList}
+                      placeholder={editSerialNo.serialNoPrefix}
+                      value={editSerialNo.serialNoPrefix}
+                      defaultValue={editSerialNo.serialNoPrefix}
+                      onChange={(e) => setEditSerialNo({ ...editSerialNo, serialNoPrefix: e.value })}
+                    // onChange={(e) => HandleCatUsage(e)}
+                    />
+
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Start Serial No</label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      placeholder="(Optional)"
+                      value={editSerialNo.startSerialNo}
+                      defaultValue={editSerialNo.startSerialNo}
+                      onChange={(e) => setEditSerialNo({ ...editSerialNo, startSerialNo: e.target.value })}
                     />
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Service ID</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)"/>
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">End Serial No</label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      placeholder="(Optional)"
+                      value={editSerialNo.endSerialNo}
+                      defaultValue={editSerialNo.endSerialNo}
+                      onChange={(e) => setEditSerialNo({ ...editSerialNo, endSerialNo: e.target.value })}
+                    />
+                  </div>
                 </div>
+
+
+
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Fleet</label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      placeholder="(Optional)"
+                      value={editSerialNo.fleet}
+                      defaultValue={editSerialNo.fleet}
+                      onChange={(e) => setEditSerialNo({ ...editSerialNo, fleet: e.target.value })}
+                    />
+                  </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          Make
-                        </label>
-                        <Select
-                          // value={}
-                          options={categoryList}
-                          onChange={(e) => HandleCatUsage(e)}
-                        />
-                        
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          Family
-                        </label>
-                        <Select
-                          // value={}
-                          options={categoryList}
-                          onChange={(e) => HandleCatUsage(e)}
-                        />
-                        
-                      </div>
-                    </div>
-                <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          Model No
-                        </label>
-                        <Select
-                          // value={}
-                          options={categoryList}
-                          onChange={(e) => HandleCatUsage(e)}
-                        />
-                        
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          Serial No Prefix
-                        </label>
-                        <Select
-                          // value={}
-                          options={categoryList}
-                          onChange={(e) => HandleCatUsage(e)}
-                        />
-                        
-                      </div>
-                    </div>
-                <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Start Serial No</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)"/>
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      Fleet Size
+                    </label>
+                    <Select
+                      value={editSerialNo.fleetSize}
+                      defaultValue={editSerialNo.fleetSize}
+                      placeholder={editSerialNo.fleetSize}
+                      onChange={(e) => setEditSerialNo({ ...editSerialNo, fleetSize: e.value })}
+                      options={categoryList}
+                    // onChange={(e) => HandleCatUsage(e)}
+                    />
+
+                  </div>
                 </div>
+                {/* <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      Location
+                    </label>
+                    <Select
+                      // value={}
+                      options={categoryList}
+                      onChange={(e) => HandleCatUsage(e)}
+                    />
+
+                  </div>
+                </div>
+
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Start Date </label>
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                  </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">End Serial No</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)"/>
-                </div>
-                </div>
-                
-                    
-                    
-                <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Fleet</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)"/>
-                </div>
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">End Date </label>
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                  </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          Fleet Size
-                        </label>
-                        <Select
-                          // value={}
-                          options={categoryList}
-                          onChange={(e) => HandleCatUsage(e)}
-                        />
-                        
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          Location
-                        </label>
-                        <Select
-                          // value={}
-                          options={categoryList}
-                          onChange={(e) => HandleCatUsage(e)}
-                        />
-                        
-                      </div>
-                    </div>
-                
-                <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Start Date </label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)"/>
-                </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">End Date </label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)"/>
-                </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                <div class="form-group">
-                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Actions </label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)"/>
-                </div>
-                </div>
-                
-                
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Actions </label>
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                  </div>
+                </div> */}
+
+
               </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn border w-100 bg-white" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary w-100">Save changes</button>
+            <div className="modal-footer">
+              <button type="button" className="btn border w-100 bg-white" data-dismiss="modal">Close</button>
+              <button type="button" className="btn btn-primary w-100">Save changes</button>
             </div>
           </div>
         </div>
       </div>
       <ToastContainer />
+      {/* <div className="modal fade" id="relatedTable" tabindex="-1" role="dialog" aria-labelledby="exampleReleted" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered modal-lg" role="document"> */}
+      <Modal
+        show={showRelatedModel}
+        onHide={() => setShowRelatedModel(false)}
+        size="xl"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header className="align-items-center">
+          <div>
+            <Modal.Title>Included Serial No</Modal.Title>
+          </div>
+          <div>
+            <Link to="#" className=" btn bg-primary text-white">Add New</Link>
+          </div>
+        </Modal.Header>
+        <Modal.Body>
+          <DataTable
+            className=""
+            title=""
+            columns={columns4}
+            data={data4}
+            customStyles={customStyles}
+          // pagination
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={() => setShowRelatedModel(false)}>Close</Button>
+          <Button variant="primary">Save changes</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* </div>
+      </div> */}
     </>
   );
 }

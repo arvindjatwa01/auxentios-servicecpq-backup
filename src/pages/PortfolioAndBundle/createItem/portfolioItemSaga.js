@@ -7,7 +7,7 @@ import {HttpService} from "../../../apiService/HTTPService";
 function* handleItemCreation(payload: any) {
   try {
     const res =  yield call(HttpService, 'post',CREATE_PORTFOLIO_ITEM(),payload.payload);
-    console.log(res);
+    console.log("handleItemCreation=>handleItemCreation",res);
     yield put(
         portfolioItemActions.createItemSuccess({
         res

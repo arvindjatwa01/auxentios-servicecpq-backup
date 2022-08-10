@@ -53,7 +53,7 @@ export function HeaderComponent(props) {
           <div className="header-right">
             <ul className="clearfix">
 
-              <li className="icons dropdown"><a className="header-li-text" href="javascript:void(0)" data-toggle="dropdown">
+              <li className="icons dropdown"><a className="header-li-text" href="#" data-toggle="dropdown">
                 <img src={notificationIcon}></img>
                 {/* <span className="badge badge-pill gradient-2">3</span> */}
                 <div className="li-contant">Notifications</div>

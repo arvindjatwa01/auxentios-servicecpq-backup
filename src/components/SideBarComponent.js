@@ -49,7 +49,7 @@ export function SideBarComponent(props) {
     //         <ul className="metismenu" id="menu">
     //             <li className="nav-label">Dashboard</li>
     //             <li>
-    //                 <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+    //                 <a className="has-arrow" href="#" aria-expanded="false">
     //                     <i className="icon-speedometer menu-icon"></i><span className="nav-text">Dashboard</span>
     //                 </a>
     //                 <ul aria-expanded="false">
@@ -57,7 +57,7 @@ export function SideBarComponent(props) {
     //                 </ul>
     //             </li>
     //             <li className="mega-menu mega-menu-sm">
-    //                 <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+    //                 <a className="has-arrow" href="#" aria-expanded="false">
     //                     <i className="icon-globe-alt menu-icon"></i><span className="nav-text">Layouts</span>
     //                 </a>
     //                 <ul aria-expanded="false">
@@ -77,7 +77,7 @@ export function SideBarComponent(props) {
     //             </li>
     //             <li className="nav-label">Apps</li>
     //             <li>
-    //                 <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+    //                 <a className="has-arrow" href="#" aria-expanded="false">
     //                     <i className="icon-envelope menu-icon"></i> <span className="nav-text">Email</span>
     //                 </a>
     //                 <ul aria-expanded="false">
@@ -87,7 +87,7 @@ export function SideBarComponent(props) {
     //                 </ul>
     //             </li>
     //             <li>
-    //                 <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+    //                 <a className="has-arrow" href="#" aria-expanded="false">
     //                     <i className="icon-screen-tablet menu-icon"></i><span className="nav-text">Apps</span>
     //                 </a>
     //                 <ul aria-expanded="false">
@@ -96,7 +96,7 @@ export function SideBarComponent(props) {
     //                 </ul>
     //             </li>
     //             <li>
-    //                 <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+    //                 <a className="has-arrow" href="#" aria-expanded="false">
     //                     <i className="icon-graph menu-icon"></i> <span className="nav-text">Charts</span>
     //                 </a>
     //                 <ul aria-expanded="false">
@@ -110,7 +110,7 @@ export function SideBarComponent(props) {
     //             </li>
     //             <li className="nav-label">UI Components</li>
     //             <li>
-    //                 <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+    //                 <a className="has-arrow" href="#" aria-expanded="false">
     //                     <i className="icon-grid menu-icon"></i><span className="nav-text">UI Components</span>
     //                 </a>
     //                 <ul aria-expanded="false">
@@ -143,7 +143,7 @@ export function SideBarComponent(props) {
     //             </li>
     //             <li className="nav-label">Forms</li>
     //             <li>
-    //                 <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+    //                 <a className="has-arrow" href="#" aria-expanded="false">
     //                     <i className="icon-note menu-icon"></i><span className="nav-text">Forms</span>
     //                 </a>
     //                 <ul aria-expanded="false">
@@ -156,7 +156,7 @@ export function SideBarComponent(props) {
     //             </li>
     //             <li className="nav-label">Table</li>
     //             <li>
-    //                 <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+    //                 <a className="has-arrow" href="#" aria-expanded="false">
     //                     <i className="icon-menu menu-icon"></i><span className="nav-text">Table</span>
     //                 </a>
     //                 <ul aria-expanded="false">
@@ -166,14 +166,14 @@ export function SideBarComponent(props) {
     //             </li>
     //             <li className="nav-label">Pages</li>
     //             <li>
-    //                 <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+    //                 <a className="has-arrow" href="#" aria-expanded="false">
     //                     <i className="icon-notebook menu-icon"></i><span className="nav-text">Pages</span>
     //                 </a>
     //                 <ul aria-expanded="false">
     //                     <li><a href="./page-login.html">Login</a></li>
     //                     <li><a href="./page-register.html">Register</a></li>
     //                     <li><a href="./page-lock.html">Lock Screen</a></li>
-    //                     <li><a className="has-arrow" href="javascript:void()" aria-expanded="false">Error</a>
+    //                     <li><a className="has-arrow" href="#" aria-expanded="false">Error</a>
     //                         <ul aria-expanded="false">
     //                             <li><a href="./page-error-404.html">Error 404</a></li>
     //                             <li><a href="./page-error-403.html">Error 403</a></li>
@@ -191,76 +191,76 @@ export function SideBarComponent(props) {
       <nav className="main-menu">
         <ul style={{ display: 'none' }}>
           <li className="">
-            <a href="/">
+            <Link to="/">
               <span className="span-icon"><img src={homesidebarIcon}></img></span>
               <span className="nav-text">
                 Dashboard
               </span>
-            </a>
+            </Link>
 
           </li>
 
           <li className="has-subnav">
-            <a href="/workList">
+            <Link to="/workList">
               <span className="span-icon"><img src={VectorStrokeIcon}></img></span>
               <span className="nav-text">
                 Work List
               </span>
-            </a>
+            </Link>
 
           </li>
           <li className="has-subnav">
-            <a href="/repairBuilder">
+            <Link to="/repairBuilder">
               <span className="span-icon"><img src={VectorStrokeIcon}></img></span>
               <span className="nav-text">
                 Repair Builder
               </span>
-            </a>
+            </Link>
 
           </li>
           <li className="has-subnav">
-            <a href="/segments">
+            <Link to="/segments">
               <span className="span-icon"><img src={VectorStrokeIcon}></img></span>
               <span className="nav-text">
                 Segment
               </span>
-            </a>
+            </Link>
 
           </li>
           <li className="has-subnav">
-            <a href="/Repairoption2">
+            <Link to="/Repairoption2">
               <span className="span-icon"><img src={VectorStrokeIcon}></img></span>
               <span className="nav-text">
                 Repair Options
               </span>
-            </a>
+            </Link>
 
           </li>
           <li className="has-subnav">
-            <a href="/Partlistfileupload">
+            <Link to="/Partlistfileupload">
               <span className="span-icon"><img src={VectorStrokeIcon}></img></span>
               <span className="nav-text">
                 Play List
               </span>
-            </a>
+            </Link>
 
           </li>
           <li className="has-subnav">
-            <a href="#">
+            <Link to="#">
               <span className="span-icon"><img src={starIcon}></img></span>
               <span className="nav-text">
                 Forms
               </span>
-            </a>
+            </Link>
 
           </li>
           <li className="has-subnav">
-            <a href="#">
+            <Link to="#">
               <span className="span-icon"><img src={PulseIcon}></img></span>
               <span className="nav-text">
                 Pages
               </span>
-            </a>
+            </Link>
 
           </li>
 
@@ -285,7 +285,7 @@ export function SideBarComponent(props) {
             </li>
             
         <li className="has-subnav sub-li">
-                <a href="javascript:void()">
+                <a href="#">
                 <span className="span-icon"><img src={manu3lineIcon}></img></span>
                     <span className="nav-text">
                         Header
@@ -294,7 +294,7 @@ export function SideBarComponent(props) {
        
             </li> */}
           {/* <li className="has-subnav sub-li">
-            <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+            <a className="has-arrow" href="#" aria-expanded="false">
                 <span className="span-icon"><img src={collIcon}></img></span>
                     <span className="nav-text">
                     <span className="font-size-16 font-weight-600">01</span>
@@ -305,7 +305,7 @@ export function SideBarComponent(props) {
                     </span>
                 </a>
                   <ul aria-expanded="false">
-                     <li><a href="javascript:void()">
+                     <li><a href="#">
                      <span className="span-icon"><img src={Disassemble}></img></span>
                     <span className="nav-text">
                     <span className="font-size-16 font-weight-600">01</span>
@@ -315,7 +315,7 @@ export function SideBarComponent(props) {
                     </span>
                     </span>
                          </a></li>
-                         <li><a href="javascript:void()">
+                         <li><a href="#">
                      <span className="span-icon"><img src={Disassemble}></img></span>
                     <span className="nav-text">
                     <span className="font-size-16 font-weight-600">01</span>
@@ -330,7 +330,7 @@ export function SideBarComponent(props) {
              </li> */}
 
           <li className="has-subnav sub-li">
-            <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+            <a className="has-arrow" href="#" aria-expanded="false">
               <span className="span-icon"><img src={homesidebarIcon}></img></span>
               <span className="nav-text">
                 <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -371,7 +371,7 @@ export function SideBarComponent(props) {
           </li>
           
           <li className="has-subnav sub-li">
-            <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+            <a className="has-arrow" href="#" aria-expanded="false">
               <span className="span-icon"><img src={VectorStrokeIcon}></img></span>
               <span className="nav-text">
                 <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -380,7 +380,7 @@ export function SideBarComponent(props) {
               </span>
             </a>
             <ul aria-expanded="false">
-              <li><a className="has-arrow" href="javascript:void()" aria-expanded="false">
+              <li><a className="has-arrow" href="#" aria-expanded="false">
                 <span className="span-icon"><img src={collIcon}></img></span>
                 <span className="nav-text">
                   <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -389,7 +389,7 @@ export function SideBarComponent(props) {
                 </span>
               </a>
                 <ul aria-expanded="false">
-                  <li><a href="javascript:void()">
+                  <li><a href="#">
                     <span className="span-icon"><img src={Disassemble}></img></span>
                     <span className="nav-text">
                       <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -398,7 +398,7 @@ export function SideBarComponent(props) {
                     </span>
                   </a>
                   </li>
-                  <li><a href="javascript:void()">
+                  <li><a href="#">
                     <span className="span-icon"><img src={Disassemble}></img></span>
                     <span className="nav-text">
                       <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -407,7 +407,7 @@ export function SideBarComponent(props) {
                     </span>
                   </a>
                   </li>
-                  <li><a href="javascript:void()">
+                  <li><a href="#">
                     <span className="span-icon"><img src={Disassemble}></img></span>
                     <span className="nav-text">
                       <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -416,7 +416,7 @@ export function SideBarComponent(props) {
                     </span>
                   </a>
                   </li>
-                  <li><a href="javascript:void()">
+                  <li><a href="#">
                     <span className="span-icon"><img src={Disassemble}></img></span>
                     <span className="nav-text">
                       <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -428,7 +428,7 @@ export function SideBarComponent(props) {
 
                 </ul>
               </li>
-              <li><a className="has-arrow" href="javascript:void()" aria-expanded="false">
+              <li><a className="has-arrow" href="#" aria-expanded="false">
                 <span className="span-icon"><img src={collIcon}></img></span>
                 <span className="nav-text">
                   <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -437,7 +437,7 @@ export function SideBarComponent(props) {
                 </span>
               </a>
                 <ul aria-expanded="false">
-                  <li><a href="javascript:void()">
+                  <li><a href="#">
                     <span className="span-icon"><img src={Disassemble}></img></span>
                     <span className="nav-text">
                       <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -456,7 +456,7 @@ export function SideBarComponent(props) {
                     </span>
                   </a>
                   </li>
-                  {/* <li><a href="javascript:void()">
+                  {/* <li><a href="#">
                     <span className="span-icon"><img src={Disassemble}></img></span>
                     <span className="nav-text">
                       <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -473,7 +473,7 @@ export function SideBarComponent(props) {
           </li>
 
           {/* <li className="has-subnav sub-li">
-                <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+                <a className="has-arrow" href="#" aria-expanded="false">
                 <span className="span-icon"><img src={collIcon}></img></span>
                     <span className="nav-text">
                         Header
@@ -484,7 +484,7 @@ export function SideBarComponent(props) {
         </ul>
         <ul className="metismenu" id="menu">
         <li className="has-subnav sub-li">
-            <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+            <a className="has-arrow" href="#" aria-expanded="false">
               <span className="span-icon"><svg id="uuid-c284ff3d-7bb4-40a6-aa03-9e912e189278" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.43799 91.96899"><path class="uuid-0a55bafd-419d-477c-878d-be91a3e45155" d="M0,91.96899H39.2998V39.32495H0v52.64404ZM7.81592,47.14087H31.48389v37.01221H7.81592V47.14087Z"/><path class="uuid-0a55bafd-419d-477c-878d-be91a3e45155" d="M0,30.59326H39.2998V0H0V30.59326ZM7.81592,7.81592H31.48389v14.96143H7.81592V7.81592Z"/><path class="uuid-0a55bafd-419d-477c-878d-be91a3e45155" d="M49.13818,0V52.64551h39.2998V0H49.13818Zm31.48413,44.82959h-23.66821V7.81592h23.66821V44.82959Z"/><path class="uuid-0a55bafd-419d-477c-878d-be91a3e45155" d="M49.13818,91.96899h39.2998v-30.59326H49.13818v30.59326Zm7.81592-22.77734h23.66821v14.96143h-23.66821v-14.96143Z"/></svg></span>
               <span className="nav-text">
                 <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -526,7 +526,7 @@ export function SideBarComponent(props) {
             </ul>
           </li>
           <li className="has-subnav sub-li">
-            <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+            <a className="has-arrow" href="#" aria-expanded="false">
               <span className="span-icon"><svg id="uuid-0b37c72c-fd44-4acc-9628-08cba1263678" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 94.25342 91.96899"><path class="uuid-69931b71-db43-4993-b706-df8786023ed7" d="M67.55908,0H26.69434V40.86499h40.86475V0Zm-8.14014,32.72485h-24.58447V8.14014h24.58447v24.58472Z"/><path class="uuid-69931b71-db43-4993-b706-df8786023ed7" d="M0,91.96899H40.8667V51.10229H0v40.8667ZM8.14014,59.24268h24.58594v24.58594H8.14014v-24.58594Z"/><path class="uuid-69931b71-db43-4993-b706-df8786023ed7" d="M53.38721,51.10229v40.8667h40.86621V51.10229H53.38721Zm32.72607,32.72632h-24.58594v-24.58594h24.58594v24.58594Z"/></svg></span>
               <span className="nav-text">
                 <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -535,7 +535,7 @@ export function SideBarComponent(props) {
               </span>
             </a>
             <ul aria-expanded="false">
-              <li><a className="has-arrow" href="javascript:void()" aria-expanded="false">
+              <li><a className="has-arrow" href="#" aria-expanded="false">
                 <span className="span-icon"><svg id="uuid-cf613211-c02e-4b21-bff9-68072c5a135d" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 117.90565 117.90565"><path class="uuid-fb98e718-8e74-41c9-b03b-9e5f4426df9d" d="M113.73813,54.78449h-13.54956c-.70239-8.38696-3.91284-16.06738-8.88184-22.29224l9.33228-9.33179c1.62793-1.62622,1.62793-4.26514,0-5.89307-1.62622-1.62964-4.26685-1.62964-5.89307,0l-9.26001,9.25952c-6.1875-5.18115-13.90308-8.59375-22.36572-9.44385V4.16755C63.12021,1.86555,61.25473,.00007,58.95273,.00007,56.65097,.00007,54.78525,1.86555,54.78525,4.16755v12.91553c-8.46191,.8501-16.17725,4.26245-22.36475,9.4436l-9.26001-9.25928c-1.62793-1.62793-4.26587-1.62793-5.8938,0-1.6272,1.62793-1.6272,4.26685,.00073,5.89307l9.33228,9.33179c-4.96899,6.22485-8.17944,13.90527-8.88184,22.29224H4.16757C1.86557,54.78449,.00009,56.65022,.00009,58.95197,.00009,61.25398,1.86557,63.11945,4.16757,63.11945h13.68701c.96143,8.19238,4.31885,15.66064,9.35913,21.68018l-9.94629,9.94556c-1.62793,1.62622-1.62793,4.26514-.00073,5.89307,.81396,.81396,1.88086,1.22095,2.94727,1.22095s2.1333-.40698,2.94653-1.22095l10.01855-10.01782c6.05542,4.83398,13.48511,8.01416,21.6062,8.82983v14.28784c0,2.302,1.86572,4.16748,4.16748,4.16748,2.302,0,4.16748-1.86548,4.16748-4.16748v-14.28784c8.12158-.81567,15.552-3.99585,21.60742-8.83008l10.01831,10.01807c.81323,.81396,1.88037,1.22095,2.94653,1.22095,1.06641,0,2.13354-.40698,2.94653-1.22095,1.62793-1.62793,1.62793-4.26514,0-5.89307l-9.94604-9.9458c5.04004-6.01953,8.39746-13.48755,9.35913-21.67993h13.68604c2.302,0,4.16748-1.86548,4.16748-4.16748,0-2.30176-1.86548-4.16748-4.16748-4.16748Zm-28.96704,24.09326l-9.31348-9.31323c-.01831-.01831-.04053-.03027-.05908-.0481,2.19946-3.20483,3.49219-7.07788,3.49219-11.24976,0-10.99341-8.9436-19.93726-19.93799-19.93726-10.99316,0-19.93701,8.94385-19.93701,19.93726s8.94385,19.93726,19.93701,19.93726c3.82422,0,7.38721-1.10107,10.42505-2.97485,.06494,.07471,.11548,.15747,.18677,.22852l9.23145,9.2312c-5.53052,4.16382-12.40283,6.63623-19.84326,6.63623-18.22778,0-33.05737-14.83057-33.05737-33.05835S40.72495,25.20832,58.95273,25.20832c18.22876,0,33.05835,14.83057,33.05835,33.05835,0,7.79028-2.71509,14.95435-7.23999,20.61108Zm-25.81836-9.00879c-6.39771,0-11.60205-5.20459-11.60205-11.60229s5.20435-11.60229,11.60205-11.60229,11.60303,5.20459,11.60303,11.60229-5.20508,11.60229-11.60303,11.60229Z"/></svg></span>
                 <span className="nav-text">
                   <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -545,7 +545,7 @@ export function SideBarComponent(props) {
               </a>
                 <ul aria-expanded="false">
                   <li>
-                  <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+                  <a className="has-arrow" href="#" aria-expanded="false">
                 <span className="span-icon"><svg id="uuid-bef549ba-ad8e-4cb9-81ef-441e7c48833e" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 95.32319 94.89332"><path class="uuid-32946e73-e2a7-4209-a2ff-299cc331f033" d="M94.10235,71.7311l-8.99902-8.99878c.46387-1.40381,.84351-2.84644,1.12964-4.32568,2.19019-11.32715-1.36597-22.95361-9.51367-31.09985-10.06128-10.06226-25.01953-12.95166-38.11206-7.35815l-5.66846,2.42065,23.81982,23.81982c.77319,.77319,1.19971,1.80225,1.19971,2.896,0,1.09399-.42651,2.1228-1.19971,2.896l-4.35474,4.35498c-1.5481,1.54639-4.24414,1.54639-5.79224,0l-23.81885-23.82153-2.4209,5.66846c-3.61963,8.47339-3.69604,18.2229-.21143,26.74829,3.58203,8.76318,10.66772,15.69653,19.9502,19.52393,3.83691,1.58228,7.95386,2.37183,12.08057,2.37183,3.77539,0,7.55859-.66235,11.1416-1.98364l8.82837,8.8291c.81396,.81396,1.8811,1.2207,2.94727,1.2207s2.13354-.40674,2.94653-1.2207c1.62793-1.62646,1.62793-4.26514,.00098-5.89307l-6.93042-6.93091c4.11841-2.73682,7.54736-6.18164,10.14478-10.16333l6.93896,6.93896c.81299,.81396,1.88013,1.22119,2.94653,1.22119,1.06616,0,2.1333-.40723,2.94653-1.22119,1.62793-1.62793,1.62793-4.26514,0-5.89307Zm-32.56836,4.86108c-5.81885,2.48096-12.46899,2.53784-18.24658,.15625-9.23608-3.80762-13.47925-10.24292-15.41162-14.97046-1.81592-4.44238-2.35889-9.32129-1.63354-14.02441l14.47632,14.47559c4.69482,4.69482,12.8833,4.69482,17.57837,0l4.35474-4.35474c2.34814-2.34741,3.6416-5.46826,3.6416-8.78931,0-3.3208-1.29346-6.44165-3.6416-8.78906l-14.49438-14.49512c8.18604-1.30396,16.60083,1.33325,22.66821,7.39893,6.1875,6.18774,8.88843,15.01929,7.22388,23.62451-1.70435,8.81348-7.72461,16.0188-16.51538,19.76782Z"/><path class="uuid-32946e73-e2a7-4209-a2ff-299cc331f033" d="M21.32744,20.9059c1.62793-1.62646,1.62793-4.26514,.00098-5.89307L11.97271,5.65541c-1.62793-1.62793-4.26587-1.62793-5.8938,0-1.62793,1.62622-1.62793,4.26514-.00098,5.89307l9.35571,9.35742c.81396,.81396,1.8811,1.2207,2.94751,1.2207,1.06616,0,2.13232-.40674,2.94629-1.2207Z"/><path class="uuid-32946e73-e2a7-4209-a2ff-299cc331f033" d="M7.11406,30.12953c-1.62793-1.62451-4.26587-1.62622-5.8938,.00171-1.6272,1.62793-1.6272,4.26685,.00073,5.89478l4.67871,4.677c.81396,.81226,1.88037,1.21924,2.94653,1.21924s2.13354-.40698,2.94751-1.22095c1.62695-1.62793,1.62695-4.2666-.00098-5.89453l-4.67871-4.67725Z"/><path class="uuid-32946e73-e2a7-4209-a2ff-299cc331f033" d="M35.65239,11.79262c.81396,.81396,1.8811,1.22095,2.94751,1.22095,1.06616,0,2.13257-.40698,2.94653-1.22095,1.62793-1.62622,1.62793-4.26514,.00073-5.89307l-4.67773-4.67871c-1.62793-1.62793-4.26611-1.62793-5.89404,0-1.62793,1.62646-1.62793,4.26514-.00073,5.89307l4.67773,4.67871Z"/></svg></span>
                 <span className="nav-text">
                   <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -563,7 +563,7 @@ export function SideBarComponent(props) {
                     </span>
                   </a>
               </li>
-                  <li><a href="/RepairWithoutSpareParts">
+                  <li><a href="/RepairBulidRepairOptions">
                     <span className="span-icon"><svg id="uuid-f3f687df-4645-4e7f-87f1-5ccb3e8264e2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 112.19978 112.19978"><path class="uuid-485402e8-1ced-444e-b4d4-99c05d719b9c" d="M60.2845,21.56987l3.27295,.71973c3.84277,.84473,7.50049,2.34424,10.87695,4.45728,.76587,.47852,1.62134,.71289,2.47046,.71289,1.19727,0,2.38159-.46558,3.28247-1.36743,1.62793-1.62793,1.62793-4.26514,0-5.89307-.68506-.6853-1.54956-1.08252-2.44263-1.18994-2.89282-1.69482-5.94849-3.03442-9.12524-4.00317V4.35625C68.61946,2.05449,66.54622,.00005,64.24446,.00005,61.94246,.00005,60.07698,1.86553,60.07698,4.16753c0,.4541,.07227,.89209,.20752,1.30225V21.56987Z"/><path class="uuid-485402e8-1ced-444e-b4d4-99c05d719b9c" d="M89.90852,48.64067c.42822,1.94702,2.15234,3.27539,4.06665,3.27539,.29614,0,.59668-.03247,.89771-.09912,2.24829-.49341,3.67041-2.71558,3.177-4.96362-.84009-3.82251-2.19775-7.49341-4.04785-10.94946l7.52515-7.52588c1.62793-1.62793,1.62793-4.55981,0-6.18774-1.62646-1.62793-4.26685-1.62793-5.89307,0-.32227,.32227-.5813,.68384-.77588,1.06958l-11.39453,11.39551,1.80615,2.82275c2.20996,3.45288,3.77026,7.2085,4.63867,11.1626Z"/><path class="uuid-485402e8-1ced-444e-b4d4-99c05d719b9c" d="M108.0323,60.07695c-.45581,0-.89453,.07324-1.30469,.20825h-16.10034l-.71875,3.27393c-.84326,3.83862-2.3418,7.49658-4.45312,10.86963-1.15576,1.84424-.89209,4.20972,.64307,5.75293,.8147,.81738,1.88428,1.22754,2.95459,1.22754,1.06299,0,2.12622-.40381,2.93945-1.21289,.69019-.68701,1.08887-1.55469,1.198-2.45166,1.69458-2.89429,3.03369-5.94824,4.0022-9.12451h10.63135c2.30176,0,4.37573-2.07397,4.37573-4.37573,0-2.302-1.86548-4.16748-4.16748-4.16748Z"/><path class="uuid-485402e8-1ced-444e-b4d4-99c05d719b9c" d="M88.94075,94.85918l-11.39697-11.39551-2.82373,1.80688c-3.4502,2.20923-7.20605,3.77051-11.16187,4.63965-2.24805,.49316-3.67017,2.71533-3.17676,4.96362,.49487,2.24805,2.71704,3.68237,4.96436,3.17603,3.82397-.83838,7.49414-2.19604,10.9502-4.04688l7.52588,7.52417c.81323,.81396,1.95337,1.22095,3.09375,1.22095,1.13965,0,2.28003-.40698,3.09302-1.22095,1.62793-1.62793,1.62793-4.26514,0-5.89307-.32129-.32251-.68286-.57959-1.06787-.7749Z"/><path class="uuid-485402e8-1ced-444e-b4d4-99c05d719b9c" d="M51.91438,90.62822l-3.27441-.71948c-3.83789-.8418-7.49585-2.33936-10.87549-4.45581-1.85083-1.15747-4.22021-.88232-5.76123,.66089-1.62305,1.63281-1.61646,4.27173,.01562,5.89478,.68457,.68042,1.54565,1.07446,2.4353,1.18188,2.89526,1.69629,5.94995,3.03613,9.12524,4.00317v10.64966c0,2.302,2.07324,4.35645,4.37524,4.35645,2.30176,0,4.16748-1.86572,4.16748-4.16748,0-.4541-.07324-.89209-.20776-1.30225v-16.10181Z"/><path class="uuid-485402e8-1ced-444e-b4d4-99c05d719b9c" d="M22.29036,63.55913c-.49414-2.24829-2.71387-3.66626-4.96436-3.17627-2.24805,.49341-3.67017,2.71533-3.17676,4.96362,.83984,3.82251,2.19751,7.4917,4.04785,10.94946l-7.52515,7.52588c-1.62793,1.62793-1.62793,4.55981,0,6.18774,.81299,.81396,1.88013,1.22095,2.94653,1.22095,1.06616,0,2.1333-.40698,2.94653-1.22095,.32227-.32227,.58105-.68384,.77563-1.06958l11.39453-11.3938-1.80615-2.82446c-2.20972-3.45288-3.77002-7.20996-4.63867-11.1626Z"/><path class="uuid-485402e8-1ced-444e-b4d4-99c05d719b9c" d="M22.29036,48.64067c.84326-3.84033,2.3418-7.49805,4.45312-10.86963,1.15576-1.84424,.89209-4.20972-.64307-5.75293-1.62378-1.62793-4.26172-1.6394-5.8938-.01465-.69019,.68701-1.08911,1.55469-1.198,2.45166-1.69409,2.89258-3.03369,5.94824-4.00244,9.12451H4.37508C2.07307,43.57964,.00008,45.65337,.00008,47.95537s1.86548,4.16748,4.16748,4.16748c.45581,0,.89453-.07324,1.30469-.20825H21.57161l.71875-3.27393Z"/><path class="uuid-485402e8-1ced-444e-b4d4-99c05d719b9c" d="M23.25813,17.34063l11.39624,11.39551,2.823-1.80688c3.4519-2.20923,7.20752-3.77051,11.16333-4.63965,2.24829-.49341,3.67017-2.71533,3.177-4.96362-.49487-2.24829-2.71777-3.67749-4.96436-3.17603-3.82397,.83838-7.49414,2.19604-10.95117,4.04688l-7.5249-7.52417c-1.62646-1.62793-4.56079-1.62793-6.18701,0-1.62793,1.62793-1.62793,4.26514,0,5.89307,.32153,.32251,.68286,.57959,1.06787,.7749Z"/><path class="uuid-485402e8-1ced-444e-b4d4-99c05d719b9c" d="M38.0804,74.19585c.81323,.81079,1.87695,1.21436,2.94092,1.21436,1.06958,0,2.13916-.40845,2.95312-1.22729l12.13184-12.18359,12.15747,12.15747c.81323,.81396,1.88013,1.22095,2.94653,1.22095s2.1333-.40698,2.94653-1.22095c1.62793-1.62793,1.62793-4.26514,0-5.89307l-12.17017-12.17017,12.14502-12.19653c1.62378-1.63135,1.61816-4.26855-.01221-5.89307-1.63135-1.62646-4.271-1.62158-5.89404,.01294l-12.13184,12.18359-12.15747-12.15747c-1.62622-1.62793-4.26685-1.62793-5.89307,0-1.62793,1.62793-1.62793,4.26514,0,5.89307l12.17017,12.16992-12.14502,12.19678c-1.62378,1.63135-1.61816,4.26855,.01221,5.89307Z"/></svg></span>
                     <span className="nav-text">
                       <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -605,7 +605,7 @@ export function SideBarComponent(props) {
 
                 </ul>
               </li>
-              <li><a className="has-arrow" href="javascript:void()" aria-expanded="false">
+              <li><a className="has-arrow" href="#" aria-expanded="false">
                 <span className="span-icon"><svg id="uuid-3abd2398-f403-4cd5-aa98-d6b336293d57" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 111.40183 111.48743"><path class="uuid-e8804ae8-4d50-4bb6-a060-383a01d280e8" d="M83.78989,36.81138c-1.9519-1.95361-5.11963-1.95361-7.07178,0l-25.64136,25.64136-13.30103-13.30005c-1.95166-1.95361-5.1189-1.95361-7.07227,0-1.95288,1.95337-1.95288,5.11963,.00073,7.07153l20.37256,20.37183,32.71313-32.71313c1.95361-1.9519,1.95361-5.11987,0-7.07153Z"/><path class="uuid-e8804ae8-4d50-4bb6-a060-383a01d280e8" d="M23.43784,88.24058c-12.98267-12.98267-16.96533-32.38916-10.146-49.43848,1.02563-2.56396-.22217-5.47461-2.78613-6.5-2.56885-1.03076-5.47632,.21973-6.50122,2.78516-8.3064,20.76904-3.45435,44.40991,12.36182,60.2251,.78052,.78149,1.57983,1.53516,2.39526,2.25952,.95337,.84814,2.13916,1.26489,3.32178,1.26489,1.37817,0,2.75049-.56641,3.73877-1.67676,1.83545-2.06421,1.65063-5.22559-.41357-7.0603-.67065-.59741-1.32837-1.21753-1.9707-1.85913Z"/><path class="uuid-e8804ae8-4d50-4bb6-a060-383a01d280e8" d="M106.89756,55.94761c-2.74976-.26221-5.19971,1.73047-5.47388,4.47827-1.04688,10.47729-5.73193,20.354-13.19116,27.8147-7.66187,7.66113-17.81909,12.37061-28.6001,13.26123-2.7522,.22778-4.79907,2.64355-4.57202,5.39648,.21558,2.61279,2.40283,4.58911,4.97803,4.58911,.13843,0,.27759-.00488,.41772-.01636,13.13818-1.08569,25.5144-6.82422,34.84814-16.15869,9.08862-9.08691,14.79614-21.12402,16.07251-33.8916,.27417-2.74805-1.73145-5.198-4.47925-5.47314Z"/><path class="uuid-e8804ae8-4d50-4bb6-a060-383a01d280e8" d="M38.59214,13.38072c17.10229-6.93848,36.59009-2.9873,49.63867,10.06201,.8335,.83521,1.62891,1.69312,2.38428,2.57056,.98877,1.15088,2.38721,1.74023,3.79395,1.74023,1.15405,0,2.3147-.39722,3.2583-1.20947,2.09424-1.80054,2.33179-4.95874,.53052-7.05225-.9165-1.06616-1.8811-2.10645-2.89282-3.11914C79.40684,.47447,55.67002-4.3395,34.83335,4.11119c-2.55908,1.03857-3.79297,3.9541-2.75537,6.51318,1.03882,2.56079,3.95605,3.79004,6.51416,2.75635Z"/></svg></span>
                 <span className="nav-text">
                   <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -614,7 +614,7 @@ export function SideBarComponent(props) {
                 </span>
               </a>
                 <ul aria-expanded="false">
-                  <li><a href="javascript:void()">
+                  <li><a href="#">
                     <span className="span-icon"><svg id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 119.30736 133.59966"><path class="uuid-e6c3fd4e-386b-4059-8b00-0f6ea13faef9" d="M119.3072,35.67679c-.00098-.24805-.03125-.49072-.0752-.72974-.01123-.06348-.02441-.12573-.03857-.18799-.05225-.22827-.11768-.45239-.20703-.66675l-.021-.04858c-.09033-.20923-.20215-.40698-.3252-.59839-.03369-.05298-.06836-.10449-.10498-.15576-.13037-.18457-.27197-.36133-.43164-.52295-.00732-.00781-.01367-.0166-.02148-.02441-.16553-.16504-.3501-.31226-.54395-.44897-.0542-.03784-.10889-.073-.16455-.1084-.05908-.0376-.11377-.08057-.17529-.11548L61.71247,.54446c-1.27637-.72607-2.84082-.72607-4.11719,0L2.10895,32.06937c-.06152,.03491-.11621,.07788-.17529,.11548-.05566,.0354-.11035,.07056-.16406,.1084-.19434,.13672-.37891,.28394-.54443,.44897-.00781,.00781-.01367,.0166-.02148,.02441-.15967,.16162-.30078,.33838-.43164,.52295-.03613,.05127-.0708,.10278-.10498,.15576-.12305,.19141-.23486,.38916-.32471,.59839-.00732,.01636-.01465,.03198-.02148,.04858-.08936,.21436-.1543,.43848-.20703,.66675-.01416,.06226-.02734,.12451-.03857,.18799-.04346,.23901-.07422,.48169-.0752,.72974l.00049,.01001-.00049,.0061v63.37842l59.65381,34.52832,59.65332-34.52832V35.6929l-.00049-.0061,.00049-.01001ZM59.65387,8.96097l47.10889,26.76636-18.42969,10.66675L43.24177,18.28592l16.41211-9.32495Zm4.16748,61.25146l21.55762-12.47778v51.34448l-21.55762,12.47754v-51.34424ZM35.00007,22.96854l45.16357,28.15381-20.50977,11.87085L12.54499,35.72732l22.45508-12.75879ZM8.33503,42.92117l47.15137,27.29126v51.34424L8.33503,94.26565V42.92117Zm85.37891,61.33374V52.91043l17.2583-9.98926v51.34448l-17.2583,9.98926Z"/></svg></span>
                     <span className="nav-text">
                       <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -633,7 +633,7 @@ export function SideBarComponent(props) {
                     </span>
                   </a>
                   </li>
-                  {/* <li><a href="javascript:void()">
+                  {/* <li><a href="#">
                     <span className="span-icon"><img src={Disassemble}></img></span>
                     <span className="nav-text">
                       <span className="ml-2 " style={{ display: 'inline-grid' }}>
@@ -650,7 +650,7 @@ export function SideBarComponent(props) {
           </li>
 
           <li className="has-subnav sub-li">
-                <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+                <a className="has-arrow" href="#" aria-expanded="false">
                    <span className="span-icon"><svg id="uuid-44f21729-ee7f-4ae1-a13f-50d052182172" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 79.7229 111.22266"><path class="uuid-fb12aa24-59f9-42ce-94c6-88f0d5606902" d="M23.03735,73.64893h13.76392c2.24805,0,4.07007-1.82227,4.07007-4.07031s-1.82202-4.07007-4.07007-4.07007h-13.76392c-2.24805,0-4.07007,1.82202-4.07007,4.07007s1.82202,4.07031,4.07007,4.07031Z"/><path class="uuid-fb12aa24-59f9-42ce-94c6-88f0d5606902" d="M56.6853,83.09131H23.03735c-2.24805,0-4.07007,1.82178-4.07007,4.07007,0,2.24805,1.82202,4.07007,4.07007,4.07007H56.6853c2.24805,0,4.07007-1.82202,4.07007-4.07007,0-2.24829-1.82202-4.07007-4.07007-4.07007Z"/><path class="uuid-fb12aa24-59f9-42ce-94c6-88f0d5606902" d="M29.16724,40.16895l17.03101-17.03101c1.58984-1.59009,1.58984-4.16553,0-5.75562-1.58813-1.58984-4.16699-1.58984-5.75537,0l-11.27563,11.27563-3.52002-3.52002c-1.58813-1.58984-4.16699-1.58984-5.75537,0-1.58984,1.58984-1.58984,4.16553,0,5.75537l9.27539,9.27563Z"/><path class="uuid-fb12aa24-59f9-42ce-94c6-88f0d5606902" d="M56.6853,47.92578H23.03735c-2.24805,0-4.07007,1.82227-4.07007,4.07031s1.82202,4.07007,4.07007,4.07007H56.6853c2.24805,0,4.07007-1.82202,4.07007-4.07007s-1.82202-4.07031-4.07007-4.07031Z"/><path class="uuid-fb12aa24-59f9-42ce-94c6-88f0d5606902" d="M67.15942,0H0V111.22266H79.7229V12.56348c0-6.92725-5.63623-12.56348-12.56348-12.56348Zm4.4231,103.08252H8.14014V8.14038h59.01929c2.43896,0,4.4231,1.98413,4.4231,4.4231V103.08252Z"/></svg></span>
                         <span class="nav-text">
                         <span className="ml-2 " style={{display:'inline-grid'}}>
@@ -690,7 +690,7 @@ export function SideBarComponent(props) {
                     </ul>
                  </li>
                  <li className="has-subnav sub-li">
-                <a className="has-arrow" href="javascript:void()" aria-expanded="false">
+                <a className="has-arrow" href="#" aria-expanded="false">
                    <span className="span-icon"><svg id="uuid-9ce0e2a9-dce3-4e3c-9203-296e2dedc338" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.73024 106.83911"><path class="uuid-eb24abed-0470-43cd-88a6-7d59d606a7f0" d="M85.59424,21.24414c-2.0271-2.02563-4.6665-3.07959-7.58618-3.13379l-21.5542,.03442V4.07007c0-2.24829-1.82202-4.07007-4.07007-4.07007-2.24829,0-4.07031,1.82178-4.07031,4.07007v14.08789l-16.0293,.02563L1.19238,49.27539c-1.58984,1.58984-1.58984,4.16553,0,5.75537,1.58813,1.59009,4.16699,1.59009,5.75537,0l28.71338-28.71338,12.65234-.02002v11.2251c-3.09717,.73853-5.94507,2.30054-8.25293,4.60962-3.29199,3.29102-5.10522,7.66821-5.10522,12.32324,0,4.65527,1.81323,9.03223,5.10425,12.32324,3.29199,3.29272,7.66895,5.10522,12.32422,5.10522,4.65503,0,9.03223-1.8125,12.32397-5.10522h.00073c3.29199-3.29102,5.10449-7.66797,5.10449-12.32324,0-4.65503-1.81348-9.03223-5.10449-12.32324-2.30908-2.30908-5.15698-3.87134-8.25464-4.60986v-11.23755l21.56763-.03418h.00488c.68433,0,1.32837,.26733,1.8125,.75049,.4856,.48486,.75195,1.13037,.75122,1.81738l-.06372,42.35474-28.71729,28.71826c-1.59009,1.58984-1.59009,4.16553,0,5.75537,.79395,.79492,1.83618,1.19238,2.87744,1.19238,1.0415,0,2.08374-.39746,2.87793-1.19238l31.09741-31.09668,.06836-45.71899c.00415-2.8667-1.10889-5.55981-3.13599-7.58691Zm-23.92163,33.21118c0,2.48022-.96582,4.81274-2.72021,6.56787h-.00073c-3.50903,3.5105-9.62524,3.5105-13.13574,0-1.75439-1.75513-2.72046-4.08765-2.72046-6.56787s.96606-4.8125,2.72119-6.56787c1.75439-1.75513,4.08594-2.72021,6.56714-2.72021,2.48096,0,4.81323,.96509,6.5686,2.72021,1.75439,1.75537,2.72021,4.08765,2.72021,6.56787Z"/><path class="uuid-eb24abed-0470-43cd-88a6-7d59d606a7f0" d="M20.36011,62.68774c-1.58838-1.58984-4.16724-1.58984-5.75562,0-1.58984,1.59009-1.58984,4.16553,0,5.75562l23.79199,23.79102c.79419,.79492,1.83643,1.19238,2.87793,1.19238,1.04126,0,2.0835-.39746,2.87769-1.19238,1.58984-1.58984,1.58984-4.16553,0-5.75537l-23.79199-23.79126Z"/></svg></span>
                         <span class="nav-text">
                         <span className="ml-2 " style={{display:'inline-grid'}}>
