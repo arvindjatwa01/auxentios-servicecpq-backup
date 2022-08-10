@@ -87,7 +87,8 @@ import {
   getPortfolioCommonConfig,
   getSearchQueryCoverage,
   getSearchCoverageForFamily,
-  itemCreation
+  itemCreation,
+  createCoverage
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -110,9 +111,6 @@ import { createItemPayload } from "./createItem/createItemPayload";
 import { Link } from "react-router-dom";
 import $ from "jquery"
 import { display } from "@mui/system";
-
-
-
 
 
 
@@ -156,10 +154,14 @@ export function CreatePortfolio() {
   const [value3, setValue3] = useState({ value: 'Gold', label: 'Gold' });
 
 
-  const [bundleItemTaskTypeKeyValue, setBundleItemTaskTypeKeyValue] = useState(
-    []
-  );
+  const [bundleItemTaskTypeKeyValue, setBundleItemTaskTypeKeyValue] = useState([]);
   const [categoryUsageKeyValue, setCategoryUsageKeyValue] = useState([]);
+
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [value, setValue] = useState(1);
+  const [open, setOpen] = useState(false);
+  const [open1, setOpen1] = useState(false);
+  const [openCoverage, setOpenCoveragetable] = useState(false);
 
   const [productHierarchyKeyValue, setProductHierarchyKeyValue] = useState([]);
   const [geographicKeyValue, setGeographicKeyValue] = useState([]);
@@ -305,6 +307,12 @@ export function CreatePortfolio() {
     repairOption: ""
 
   })
+  const [addMiniPortFolioItem, setAddMiniportFolioItem] = useState({
+    id: "",
+    description: "",
+    usageIn: categoryUsageKeyValue1,
+    taskType: "",
+  })
   const [showRelatedModel, setShowRelatedModel] = useState(false)
   const [editSerialNo, setEditSerialNo] = useState({
     coverageId: "",
@@ -319,11 +327,13 @@ export function CreatePortfolio() {
 
   })
 
-const [itemHeaderSearch,setItemHeaderSearch]=useState({
-  searchBy:"",
-  family:"",
-  input:""
-})
+  const [itemHeaderSearch, setItemHeaderSearch] = useState({
+    searchBy: "",
+    family: "",
+    inputField: ""
+  })
+
+const [openMiniBundleItem,setOpenMiniBundleItem]=useState(false)
 
   const handleCustomerSegmentChange = (e) => {
     setGeneralComponentData({
@@ -515,28 +525,32 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
         status: "NEW"
       },
       itemBodyModel: {
-        itemBodyId: parseInt(addPortFolioItem.id),
-        itemBodyDescription: addPortFolioItem.description,
-        quantity: parseInt(addPortFolioItem.quantity),
+        // itemBodyId: parseInt(addMiniPortFolioItem.id),
+        itemBodyId: 0,
+        itemBodyDescription: "",
+        // itemBodyDescription: addMiniPortFolioItem.description,
+        quantity: 0,
         startUsage: "",
         endUsage: "",
         standardJobId: "",
-        frequency: addPortFolioItem.frequency.value,
+        frequency: "",
         additional: "",
         spareParts: ["WITH_SPARE_PARTS"],
         labours: ["WITH_LABOUR"],
         miscellaneous: ["LUBRICANTS"],
         taskType: ["PM1"],
+        // taskType: addMiniPortFolioItem.taskType.value,
         solutionCode: "",
-        usageIn: addPortFolioItem.usageIn.value,
-        recommendedValue: parseInt(addPortFolioItem.recomondedValue.value),
+        usageIn: "",
+        // usageIn: addMiniPortFolioItem.usageIn.value,
+        recommendedValue: 0,
         usage: "",
         repairKitId: "",
-        templateDescription: addPortFolioItem.templateDescription.value,
+        templateDescription: "",
         partListId: "",
         serviceEstimateId: "",
-        numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
-        repairOption: addPortFolioItem.repairOption.value,
+        numberOfEvents: 0,
+        repairOption: "",
         priceMethod: "LIST_PRICE",
         listPrice: 0,
         priceEscalation: "",
@@ -545,7 +559,7 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
         discountType: "",
         year: "",
         avgUsage: 0,
-        unit: addPortFolioItem.unit.value,
+        unit: "",
         sparePartsPrice: 0,
         sparePartsPriceBreakDownPercentage: 0,
         servicePrice: 0,
@@ -556,6 +570,10 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
       },
     }
     itemCreation(reqObj).then((res) => {
+      if(res.status!==200 ||res.status!==201){
+        alert("something went wrong")
+        return
+    }
       console.log("itemCreation res:", res)
       setBundleItems([...bundleItems, res])
     }).catch((err) => {
@@ -643,7 +661,8 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
   };
 
   const handleNewBundleItem = () => {
-    setOpenAddBundleItem(true);
+    // setOpenAddBundleItem(true);
+    setOpenMiniBundleItem(true)
     setOpenSearchSolution(false);
     setCreateNewBundle(false);
     setOpenAddBundleItemHeader("Add New Portfolio Item");
@@ -660,6 +679,24 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
       setCreateNewBundle(false);
       setOpenAddBundleItemHeader("Add New Service");
     } else if (typeOfSearch.value == "portfolioItem") {
+      setOpenAddBundleItem(true);
+      setOpenSearchSolution(false);
+      setCreateNewBundle(false);
+      setOpenAddBundleItemHeader("Add New Portfolio Item");
+    }
+  };
+  const handleCreateNewItem = () => {
+    if (itemHeaderSearch.searchBy.value == "bundle") {
+      setOpenAddBundleItem(false);
+      setOpenSearchSolution(false);
+      setCreateNewBundle(true);
+      setOpenAddBundleItemHeader("Add New Bundle");
+    } else if (itemHeaderSearch.searchBy.value == "service") {
+      setOpenAddBundleItem(true);
+      setOpenSearchSolution(false);
+      setCreateNewBundle(false);
+      setOpenAddBundleItemHeader("Add New Service");
+    } else if (itemHeaderSearch.searchBy.value == "portfolioItem") {
       setOpenAddBundleItem(true);
       setOpenSearchSolution(false);
       setCreateNewBundle(false);
@@ -752,9 +789,8 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
       });
     }
   };
-
   const handleNextClick = (e) => {
-    setValue(value + 1);
+    value < 6 && setValue(value + 1);
     if (e.target.id == "general") {
       let reqData = {
         type: prefixLabelGeneral,
@@ -903,9 +939,117 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
         });
       console.log("strategy updating obj", obj);
     } else if (e.target.id == "coverage") {
-      console.log("coverage updating");
+
+      console.log("coverage updating", selectedMasterData);
+      let cvgIds = []
+      const tempFun = async () => {
+        try {
+          for (let i = 0; i < selectedMasterData.length; i++) {
+            let reqObj = {
+              coverageId: 0,
+              serviceId: 0,
+              modelNo: selectedMasterData[i].model,
+              serialNumber: "",
+              startSerialNumber: "",
+              endSerialNumber: "",
+              serialNumberPrefix: "",
+              family: selectedMasterData[i].family,
+              make: selectedMasterData[i].make,
+              fleet: "",
+              fleetSize: "SMALL",
+              location: "",
+              startDate: "",
+              endDate: "",
+              actions: "",
+              createdAt: ""
+            }
+            const res = await createCoverage(reqObj)
+            console.log("createCoverage res:", res)
+            cvgIds.push({ coverageId: res.coverageId })
+          }
+          setGeneralComponentData({ ...generalComponentData, coverages: cvgIds })
+          const { portfolioId, ...res } = generalComponentData
+          let obj = {
+            ...res,
+            visibleInCommerce: true,
+            customerId: 0,
+            lubricant: true,
+            customerSegment: generalComponentData.customerSegment.value
+              ? generalComponentData.customerSegment.value
+              : "EMPTY",
+            machineType: generalComponentData.machineType
+              ? generalComponentData.machineType
+              : "EMPTY",
+            status: generalComponentData.status
+              ? generalComponentData.status
+              : "EMPTY",
+            strategyTask: generalComponentData.strategyTask
+              ? generalComponentData.strategyTask
+              : "EMPTY",
+            taskType: generalComponentData.taskType
+              ? generalComponentData.taskType
+              : "EMPTY",
+            usageCategory: generalComponentData.usageCategory
+              ? generalComponentData.usageCategory
+              : "EMPTY",
+            productHierarchy: generalComponentData.productHierarchy
+              ? generalComponentData.productHierarchy
+              : "EMPTY",
+            geographic: generalComponentData.geographic
+              ? generalComponentData.geographic
+              : "EMPTY",
+            availability: generalComponentData.availability
+              ? generalComponentData.availability
+              : "EMPTY",
+            responseTime: generalComponentData.responseTime
+              ? generalComponentData.responseTime
+              : "EMPTY",
+            type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+            application: generalComponentData.application
+              ? generalComponentData.application
+              : "EMPTY",
+            contractOrSupport: generalComponentData.contractOrSupport
+              ? generalComponentData.contractOrSupport
+              : "EMPTY",
+            lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+              ? generalComponentData.lifeStageOfMachine
+              : "EMPTY",
+            supportLevel: generalComponentData.supportLevel
+              ? generalComponentData.supportLevel
+              : "EMPTY",
+            items: [],
+            customerGroup: generalComponentData.customerGroup
+              ? generalComponentData.customerGroup
+              : "EMPTY",
+            searchTerm: "EMPTY",
+            supportLevel: "EMPTY",
+            portfolioPrice: {},
+            additionalPrice: {},
+            escalationPrice: {},
+            coverages: cvgIds,
+            usageCategory: categoryUsageKeyValue1.value,
+            taskType: stratgyTaskTypeKeyValue.value,
+            strategyTask: stratgyTaskUsageKeyValue.value,
+            responseTime: stratgyResponseTimeKeyValue.value,
+            productHierarchy: stratgyHierarchyKeyValue.value,
+            geographic: stratgyGeographicKeyValue.value,
+
+          }
+          const updatePortfolioRes = await updatePortfolio(generalComponentData.portfolioId, obj)
+          console.log("portfolio updated")
+
+
+        } catch (error) {
+          console.log("err in createCoverage", error)
+          alert(error)
+          return
+        }
+
+      }
+      tempFun()
     }
   };
+  console.log("setValue  for navigation:", value)
   const handleGeneralInputChange = (e) => {
     var value = e.target.value;
     var name = e.target.name;
@@ -1267,13 +1411,7 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
     { value: "vanilla", label: "2" },
     { value: "Construction", label: "3" },
   ];
-  const [selectedOption, setSelectedOption] = useState(null);
 
-  const [value, setValue] = useState(1);
-
-  const [open, setOpen] = useState(false);
-  const [open1, setOpen1] = useState(false);
-  const [openCoverage, setOpenCoveragetable] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleClose1 = () => setOpen1(false);
@@ -1397,9 +1535,17 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
   const handleQuerySearchClick = () => {
     $(".scrollbar").css("display", "none")
     console.log("handleQuerySearchClick", querySearchSelector)
+    if (querySearchSelector[0].selectFamily.value == "" || querySearchSelector[0].inputSearch == "") {
+      alert("please fill data properly for search")
+      return
+    }
     var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
 
     for (let i = 1; i < querySearchSelector.length; i++) {
+      if (querySearchSelector[i].selectOperator.value == "" || querySearchSelector[i].selectFamily.value == "" || querySearchSelector[i].inputSearch == "") {
+        alert("please fill data properly for search")
+        return
+      }
       searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + "~" + querySearchSelector[i].inputSearch
     }
 
@@ -2068,6 +2214,27 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
       endDate: "08/04/20017",
     },
   ];
+
+  // const ExpandedComponent = ({ data }) => <>
+  //   <DataTable
+  //     columns={columns}
+  //     data={data}
+  //     customStyles={customStyles}
+  //   />
+  // </>;
+  const handleGetheaderSearch = () => {
+    console.log("handleGetheaderSearch")
+    let { searchBy, family, inputField } = itemHeaderSearch
+    if (searchBy.value == "" || family.value === "" || inputField == "") {
+      alert("Please select/fill values properly")
+      return
+    }
+    const searchStr = `${family.value}~${inputField}`
+    if (searchBy.value === "portfolioItem") {
+      console.log("service called...")
+    }
+
+  }
 
   return (
     <>
@@ -3071,7 +3238,7 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
                                   return (
                                     <>
 
-                                      <div className="customselect d-flex align-items-center mr-3 my-2">
+                                      <div className="customselect d-flex align-items-center mr-3 my-2" key={i}>
                                         {
                                           i > 0 ?
                                             <Select
@@ -3424,6 +3591,7 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
                       type="button"
                       onClick={handleNextClick}
                       className="btn btn-light"
+                      id="coverage"
                     >
                       Save
                     </button>
@@ -3449,23 +3617,31 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
                   <div className="d-flex align-items-center">
                     <div className="customselect d-flex">
                       <Select
-                        onChange={handleTypeOfSearchChange}
-                        isClearable={true}
-                        value={typeOfSearch}
-                        options={columnSearchKeyValue}
+                        onChange={(e) => setItemHeaderSearch({ ...itemHeaderSearch, searchBy: e })}
+                        // isClearable={true}
+                        value={itemHeaderSearch.searchBy}
+                        options={[
+                          { label: "Bundle", value: "bundle" },
+                          { label: "Service", value: "service" },
+                          { label: "Portfolio Item", value: "portfolioItem" },
+                        ]}
                         placeholder="Add by"
                       />
                     </div>
-                    {typeOfSearch != null ? (
+                    {itemHeaderSearch.searchBy != null ? (
                       <div className="customselect d-flex ml-3">
                         <Select
-                          onChange={handleTypeOfSearchColumnChange}
-                          isClearable={true}
-                          value={typeOfSearchColumn}
-                          options={typeOfSearchColumnKeyValue}
+                          onChange={(e) => setItemHeaderSearch({ ...itemHeaderSearch, family: e })}
+                          // isClearable={true}
+                          value={itemHeaderSearch.family}
+                          options={[
+                            { label: "Make", value: "make" },
+                            { label: "Model", value: "model" },
+                            { label: "Prefix", value: "prefix" },
+                          ]}
                           placeholder="Select"
                         />
-                        {typeOfSearchColumn != null ? (
+                        {itemHeaderSearch.family != null ? (
                           <input
                             type="text"
                             className=""
@@ -3477,8 +3653,8 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
                               fontWeight: "600",
                               paddingLeft: "10px",
                             }}
-                            value={columnSearchText}
-                            onChange={(e) => setColumnSearchText(e.target.value)}
+                            value={itemHeaderSearch.inputField}
+                            onChange={(e) => setItemHeaderSearch({ ...itemHeaderSearch, inputField: e.target.value })}
                           ></input>
                         ) : (
                           <></>
@@ -3489,10 +3665,10 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
                     )}
                   </div>
                 </div>
-                {columnSearchText.trim() != "" && typeOfSearchColumn != null ? (
+                {itemHeaderSearch.inputField.trim() != "" && itemHeaderSearch.family.value != null ? (
                   <div className="tableheader">
                     <ul className="submenu accordion mt-0" style={{ display: "block" }}>
-                      <li>
+                      <li onClick={handleGetheaderSearch}>
                         <a className="result cursor">RESULTS</a>
                       </li>
                       <li>
@@ -3502,14 +3678,14 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
                         <a className="cursor">PM2</a>
                       </li>
                       <li>
-                        <a onClick={handleCreateNewServiceBundle} className="lastOption text-violet cursor">
+                        <a onClick={handleCreateNewItem} className="lastOption text-violet cursor">
                           <span className="mr-2">+</span>Create New{" "}
-                          {typeOfSearch != null
-                            ? typeOfSearch.value == "bundle"
+                          {itemHeaderSearch.searchBy != null
+                            ? itemHeaderSearch.searchBy.value == "bundle"
                               ? "Bundle"
-                              : typeOfSearch.value == "service"
+                              : itemHeaderSearch.searchBy.value == "service"
                                 ? "Service"
-                                : typeOfSearch.value == "portfolioItem"
+                                : itemHeaderSearch.searchBy.value == "portfolioItem"
                                   ? "Portfolio Item"
                                   : ""
                             : ""}
@@ -3617,6 +3793,15 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
                   className="custom-table  card "
                   style={{ height: 400, width: "100%" }}
                 >
+                  {/* <DataTable
+                    title=""
+                    columns={bundleItemColumns}
+                    data={bundleItems}
+                    customStyles={customStyles}
+                    expandableRows
+                    expandableRowsComponent={ExpandedComponent}
+                    pagination
+                  /> */}
                   <DataTable
                     title=""
                     columns={bundleItemColumns}
@@ -4919,7 +5104,12 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
                 >
                   Cancel
                 </a>
-                <a onClick={() => setOpen2(true)} href="#" className="btn border mr-4">Save & Continue</a>
+                <Link to="#" className="btn border mr-4"
+                  onClick={() => {
+                    setOpen2(true)
+                    setOpenAddBundleItem(false)
+                  }}
+                >Save & Continue</Link>
                 {/* <a
                   href="#"
                   className="btn bg-primary text-white"
@@ -4928,304 +5118,7 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
                   Save & Continue
                 </a> */}
               </div>
-              <Modal show={open2} onHide={handleClose2} size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered>
-                <Modal.Header >
-                    <Modal.Title>Price Calculator</Modal.Title>
-                </Modal.Header>
-                <Modal.Body className="p-0 bg-white">
-                <div className="ligt-greey-bg p-3">
-            <div>
-              <span className="mr-3">
-              <i class="fa fa-pencil font-size-12" aria-hidden="true"></i><span  className="ml-2">Edit</span>
-              </span>
-              <span className="mr-3">
-             < MonetizationOnOutlinedIcon className=" font-size-16"/>
-             <span className="ml-2"> Adjust price</span>
-              </span>
-              <span className="mr-3">
-                <FormatListBulletedOutlinedIcon className=" font-size-16"/>
-                <span className="ml-2">Related part list(s)</span>
-              </span>
-              <span className="mr-3">
-                <AccessAlarmOutlinedIcon className=" font-size-16"/>
-                <span className="ml-2">Related service estimate(s)</span>
-              </span>
-              <span>
-               <SellOutlinedIcon className=" font-size-16"/>
-               <span className="ml-2">Split price</span>
-              </span>
-            </div>
-          </div>
-          <div>
-            <div className="p-3">
-            <h6 className="text-light-dark font-size-12 font-weight-500">PRICES</h6>
-                  <div className="row">
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          PRICE TYPE
-                        </label>
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          LIST PRICE{" "}
-                        </label>
-                        <input
-                          type="email"
-                          className="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="$100"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group date-box">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          ADDITIONAL
-                        </label>
-                        <div className=" d-flex form-control-date">
-                          {/* <Select className="select-input"
-                                                        defaultValue={selectedOption}
-                                                        onChange={setSelectedOption}
-                                                        options={options}
-                                                        placeholder="placeholder "
-                                                    /> */}
-                          <div className="">
-                            <Select
-                              onChange={setSelectedOption}
-                              isClearable={true}
-                              // value={options}
-                              options={options}
-                              placeholder="Select"
-                            />
-                          </div>
-                          <input
-                            type="email"
-                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                            id="exampleInputEmail1"
-                            aria-describedby="emailHelp"
-                            placeholder="10%"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group date-box">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          PRICE ESCALATON
-                        </label>
-                        <div className=" d-flex align-items-center form-control-date">
-                          <Select
-                            className="select-input"
-                            defaultValue={selectedOption}
-                            onChange={setSelectedOption}
-                            options={options}
-                            placeholder="placeholder "
-                          />
-                          <input
-                            type="email"
-                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                            id="exampleInputEmail1"
-                            aria-describedby="emailHelp"
-                            placeholder="20%"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          CALCULATED PRICE
-                        </label>
-                        <input
-                          type="email"
-                          className="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="$100"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          FLAT PRICE / ADJUSTED PRICE
-                        </label>
-                        <input
-                          type="email"
-                          className="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="$100"
-                        />
-                      </div>
-                    </div>
-                   
-                  </div>
-                  <div className="row">
-                  <div className="col-md-6 col-sm-6">
-                      <div className="form-group date-box">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          DISCOUNT TYPE
-                        </label>
-                        <div className=" d-flex form-control-date">
-                          {/* <Select className="select-input"
-                                                        defaultValue={selectedOption}
-                                                        onChange={setSelectedOption}
-                                                        options={options}
-                                                        placeholder="placeholder "
-                                                    /> */}
-                          <div className="">
-                            <Select
-                              onChange={setSelectedOption}
-                              isClearable={true}
-                              // value={options}
-                              options={options}
-                              placeholder="Select"
-                            />
-                          </div>
-                          <input
-                            type="email"
-                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                            id="exampleInputEmail1"
-                            aria-describedby="emailHelp"
-                            placeholder="10%"
-                          />
-                        </div>
-                      </div>
-                    </div>
 
-                  </div>
-                  <div className="card">
-                  <div className="row">
-                  <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          PRICE TYPE
-                        </label>
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  </div>
-              {/* <div className="row mt-4">
-              <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">GROUP NUMBER</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="1000 ENGINE"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TYPE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="0123 REPLACE"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PART NUMBER</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace left side of the Engine"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QTY</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="List Price"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT PRICE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$35000"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">EXTENDED PRICE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$10000"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$5000"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">% USAGE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EA"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TOTAL PRICE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COMMENTS</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DESCRIPTION</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE"/>
-                </div>
-                </div>
-              </div> */}
-            </div>
-            <div className="m-3 text-right">
-              <a href="#" onClick={handleClose2}  className="btn border mr-3 "> Cancel</a>
-              <a href="#" className="btn text-white bg-primary">Save</a>
-            </div>
-          </div>
-                </Modal.Body>
-
-
-            </Modal>
               {/* <div class="row mt-4">
 
                                 <div className="col-md-6 col-sm-6">
@@ -5320,6 +5213,331 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
           </Modal.Body>
         </Modal.Body>
       </Modal>
+
+      <Modal show={open2} onHide={handleClose2} size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered>
+        <Modal.Header >
+          <Modal.Title>Price Calculator</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-0 bg-white">
+          <div className="ligt-greey-bg p-3">
+            <div>
+              <span className="mr-3">
+                <i class="fa fa-pencil font-size-12" aria-hidden="true"></i><span className="ml-2">Edit</span>
+              </span>
+              <span className="mr-3">
+                < MonetizationOnOutlinedIcon className=" font-size-16" />
+                <span className="ml-2"> Adjust price</span>
+              </span>
+              <span className="mr-3">
+                <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                <span className="ml-2">Related part list(s)</span>
+              </span>
+              <span className="mr-3">
+                <AccessAlarmOutlinedIcon className=" font-size-16" />
+                <span className="ml-2">Related service estimate(s)</span>
+              </span>
+              <span>
+                <SellOutlinedIcon className=" font-size-16" />
+                <span className="ml-2">Split price</span>
+              </span>
+            </div>
+          </div>
+          <div>
+            <div className="p-3">
+              <h6 className="text-light-dark font-size-12 font-weight-500">PRICES</h6>
+              <div className="row">
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      PRICE TYPE
+                    </label>
+                    <Select
+                      defaultValue={selectedOption}
+                      onChange={setSelectedOption}
+                      options={options}
+                      placeholder="placeholder (Optional)"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      LIST PRICE{" "}
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control border-radius-10"
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp"
+                      placeholder="$100"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group date-box">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      ADDITIONAL
+                    </label>
+                    <div className=" d-flex form-control-date">
+                      {/* <Select className="select-input"
+                                                        defaultValue={selectedOption}
+                                                        onChange={setSelectedOption}
+                                                        options={options}
+                                                        placeholder="placeholder "
+                                                    /> */}
+                      <div className="">
+                        <Select
+                          onChange={setSelectedOption}
+                          isClearable={true}
+                          // value={options}
+                          options={options}
+                          placeholder="Select"
+                        />
+                      </div>
+                      <input
+                        type="email"
+                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="10%"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group date-box">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      PRICE ESCALATON
+                    </label>
+                    <div className=" d-flex align-items-center form-control-date">
+                      <Select
+                        className="select-input"
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options}
+                        placeholder="placeholder "
+                      />
+                      <input
+                        type="email"
+                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="20%"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      CALCULATED PRICE
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control border-radius-10"
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp"
+                      placeholder="$100"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      FLAT PRICE / ADJUSTED PRICE
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control border-radius-10"
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp"
+                      placeholder="$100"
+                    />
+                  </div>
+                </div>
+
+              </div>
+              <div className="row">
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group date-box">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      DISCOUNT TYPE
+                    </label>
+                    <div className=" d-flex form-control-date">
+                      {/* <Select className="select-input"
+                                                        defaultValue={selectedOption}
+                                                        onChange={setSelectedOption}
+                                                        options={options}
+                                                        placeholder="placeholder "
+                                                    /> */}
+                      <div className="">
+                        <Select
+                          onChange={setSelectedOption}
+                          isClearable={true}
+                          // value={options}
+                          options={options}
+                          placeholder="Select"
+                        />
+                      </div>
+                      <input
+                        type="email"
+                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="10%"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              <div className="card">
+                <div className="row">
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                      <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        PRICE TYPE
+                      </label>
+                      <Select
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options}
+                        placeholder="placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group date-box">
+                      <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        DISCOUNT TYPE
+                      </label>
+                      <div className=" d-flex form-control-date">
+                        <input
+                          type="email"
+                          className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                          id="exampleInputEmail1"
+                          aria-describedby="emailHelp"
+                          placeholder="10%"
+                        />
+                        <span className="hours-div">
+                          hours
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* <div className="row mt-4">
+              <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">GROUP NUMBER</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="1000 ENGINE"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TYPE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="0123 REPLACE"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PART NUMBER</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace left side of the Engine"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QTY</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="List Price"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT PRICE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$35000"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">EXTENDED PRICE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$10000"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$5000"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">% USAGE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EA"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TOTAL PRICE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COMMENTS</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DESCRIPTION</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE"/>
+                </div>
+                </div>
+              </div> */}
+            </div>
+            <div className="m-3 text-right">
+              <a href="#" onClick={handleClose2} className="btn border mr-3 "> Cancel</a>
+              <a href="#" className="btn text-white bg-primary">Save</a>
+            </div>
+          </div>
+        </Modal.Body>
+
+
+      </Modal>
+
+
 
       <Modal
         show={showAddSolutionModal}
@@ -5673,8 +5891,116 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
         </Modal.Footer>
       </Modal>
 
-      {/* </div>
-      </div> */}
+
+
+      <Modal
+        show={openMiniBundleItem}
+        onHide={()=>setOpenMiniBundleItem(false)}
+        size="xl"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Body className="p-0 bg-white">
+            <div className="px-3">
+              <p className="mt-4">SUMMARY</p>
+              <div className="row mt-4">
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group w-100">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      ID
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      disabled
+                      placeholder="(AUTO GENERATE)"
+                      value={addMiniPortFolioItem.id?addMiniPortFolioItem.id:""}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group w-100">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      DESCRIPTION
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      placeholder="DESCRIPTION"
+                      onChange={(e) => setAddMiniportFolioItem({ ...addMiniPortFolioItem, description: e.target.value })}
+                      value={addMiniPortFolioItem.description}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group w-100">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      USAGE IN
+                    </label>
+                    <Select
+                      placeholder={categoryUsageKeyValue1.label}
+                      options={categoryList}
+                      selectedValue={categoryUsageKeyValue1.value ? categoryUsageKeyValue1.value : ""}
+                      defaultValue={categoryUsageKeyValue1.value ? categoryUsageKeyValue1.value : ""}
+                      value={addMiniPortFolioItem.usageIn}
+                      onChange={(e) => setAddMiniportFolioItem({ ...addMiniPortFolioItem, usageIn: e })}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      TASK TYPE
+                    </label>
+                    <div className="icon-defold">
+                      <div className="form-control">
+                        <Select
+                          options={updatedTaskList}
+                          placeholder={stratgyTaskTypeKeyValue.value}
+                          selectedValue={stratgyTaskTypeKeyValue.value ? stratgyTaskTypeKeyValue.value : ""}
+                          defaultValue={stratgyTaskTypeKeyValue.value ? stratgyTaskTypeKeyValue.value : ""}
+                          onChange={(e) => setAddMiniportFolioItem({ ...addMiniPortFolioItem, taskType: e })}
+                          value={addPortFolioItem.taskType}
+                        />
+                        <span className="search-icon searchIcon">
+                          <SearchOutlinedIcon className="font-size-16" />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              <div className="text-right pb-2">
+                <a
+                  href="#"
+                  className="btn border mr-4"
+                  onClick={()=>setOpenMiniBundleItem(false)}
+                >
+                  Cancel
+                </a>
+                <Link to="#" className="btn border mr-4"
+                onClick={handleBundleItemSaveAndContinue}
+                >Save & Continue</Link>
+              </div>
+
+              
+            </div>
+          </Modal.Body>
+      </Modal>
+
     </>
   );
 }
