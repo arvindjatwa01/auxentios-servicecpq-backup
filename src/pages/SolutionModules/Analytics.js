@@ -255,7 +255,7 @@ export const Analytics = () => {
       <div className="content-body" style={{ minHeight: '884px' }}>
         <div class="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0">Solution Builde</h5>
+            <h5 className="font-weight-600 mb-0">Solution Builder</h5>
           </div>
           <div className="card p-4 mt-5">
             <div>

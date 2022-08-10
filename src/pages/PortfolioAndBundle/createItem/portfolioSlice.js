@@ -28,7 +28,7 @@ const portfolioSlice = createSlice({
     },
     createItemFailed(state, action: PayloadAction<string>) {
       state.isLoading = false;
-      console.log(action.payload);
+      console.log("createItemFailed=>portfolioSlice",action.payload);
     },
   },
 });
