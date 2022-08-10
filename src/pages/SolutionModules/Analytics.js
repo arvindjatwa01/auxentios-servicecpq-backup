@@ -721,7 +721,7 @@ export const Analytics = () => {
                       <li><a className="cursor result">RESULTS</a></li>
                       <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM125</a></li>
                       <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM2</a></li>
-                      <li><a onClick={handleCreateNewServiceBundle} className="lastOption text-violet cursor mr-2"><span>+</span>Create New {typeOfSearch != null ? typeOfSearch.value == 'bundle' ? "Bundle" : typeOfSearch.value == 'service' ? "Service" : typeOfSearch.value == 'portfolioItem' ? "Portfolio Item" : "" : ""}</a></li>
+                      <li><a className="cursor lastOption text-violet" onClick={handleCreateNewServiceBundle}><span className="mr-2">+</span>Create New {typeOfSearch != null ? typeOfSearch.value == 'bundle' ? "Bundle" : typeOfSearch.value == 'service' ? "Service" : typeOfSearch.value == 'portfolioItem' ? "Portfolio Item" : "" : ""}</a></li>
                     </ul>
                   </div>
                   :

@@ -4919,15 +4919,315 @@ const [itemHeaderSearch,setItemHeaderSearch]=useState({
                 >
                   Cancel
                 </a>
-                <a
+                <a onClick={() => setOpen2(true)} href="#" className="btn border mr-4">Save & Continue</a>
+                {/* <a
                   href="#"
                   className="btn bg-primary text-white"
                   onClick={handleBundleItemSaveAndContinue}
                 >
                   Save & Continue
-                </a>
+                </a> */}
               </div>
+              <Modal show={open2} onHide={handleClose2} size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <Modal.Header >
+                    <Modal.Title>Price Calculator</Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="p-0 bg-white">
+                <div className="ligt-greey-bg p-3">
+            <div>
+              <span className="mr-3">
+              <i class="fa fa-pencil font-size-12" aria-hidden="true"></i><span  className="ml-2">Edit</span>
+              </span>
+              <span className="mr-3">
+             < MonetizationOnOutlinedIcon className=" font-size-16"/>
+             <span className="ml-2"> Adjust price</span>
+              </span>
+              <span className="mr-3">
+                <FormatListBulletedOutlinedIcon className=" font-size-16"/>
+                <span className="ml-2">Related part list(s)</span>
+              </span>
+              <span className="mr-3">
+                <AccessAlarmOutlinedIcon className=" font-size-16"/>
+                <span className="ml-2">Related service estimate(s)</span>
+              </span>
+              <span>
+               <SellOutlinedIcon className=" font-size-16"/>
+               <span className="ml-2">Split price</span>
+              </span>
+            </div>
+          </div>
+          <div>
+            <div className="p-3">
+            <h6 className="text-light-dark font-size-12 font-weight-500">PRICES</h6>
+                  <div className="row">
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          PRICE TYPE
+                        </label>
+                        <Select
+                          defaultValue={selectedOption}
+                          onChange={setSelectedOption}
+                          options={options}
+                          placeholder="placeholder (Optional)"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          LIST PRICE{" "}
+                        </label>
+                        <input
+                          type="email"
+                          className="form-control border-radius-10"
+                          id="exampleInputEmail1"
+                          aria-describedby="emailHelp"
+                          placeholder="$100"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          ADDITIONAL
+                        </label>
+                        <div className=" d-flex form-control-date">
+                          {/* <Select className="select-input"
+                                                        defaultValue={selectedOption}
+                                                        onChange={setSelectedOption}
+                                                        options={options}
+                                                        placeholder="placeholder "
+                                                    /> */}
+                          <div className="">
+                            <Select
+                              onChange={setSelectedOption}
+                              isClearable={true}
+                              // value={options}
+                              options={options}
+                              placeholder="Select"
+                            />
+                          </div>
+                          <input
+                            type="email"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            id="exampleInputEmail1"
+                            aria-describedby="emailHelp"
+                            placeholder="10%"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          PRICE ESCALATON
+                        </label>
+                        <div className=" d-flex align-items-center form-control-date">
+                          <Select
+                            className="select-input"
+                            defaultValue={selectedOption}
+                            onChange={setSelectedOption}
+                            options={options}
+                            placeholder="placeholder "
+                          />
+                          <input
+                            type="email"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            id="exampleInputEmail1"
+                            aria-describedby="emailHelp"
+                            placeholder="20%"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          CALCULATED PRICE
+                        </label>
+                        <input
+                          type="email"
+                          className="form-control border-radius-10"
+                          id="exampleInputEmail1"
+                          aria-describedby="emailHelp"
+                          placeholder="$100"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          FLAT PRICE / ADJUSTED PRICE
+                        </label>
+                        <input
+                          type="email"
+                          className="form-control border-radius-10"
+                          id="exampleInputEmail1"
+                          aria-describedby="emailHelp"
+                          placeholder="$100"
+                        />
+                      </div>
+                    </div>
+                   
+                  </div>
+                  <div className="row">
+                  <div className="col-md-6 col-sm-6">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          DISCOUNT TYPE
+                        </label>
+                        <div className=" d-flex form-control-date">
+                          {/* <Select className="select-input"
+                                                        defaultValue={selectedOption}
+                                                        onChange={setSelectedOption}
+                                                        options={options}
+                                                        placeholder="placeholder "
+                                                    /> */}
+                          <div className="">
+                            <Select
+                              onChange={setSelectedOption}
+                              isClearable={true}
+                              // value={options}
+                              options={options}
+                              placeholder="Select"
+                            />
+                          </div>
+                          <input
+                            type="email"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            id="exampleInputEmail1"
+                            aria-describedby="emailHelp"
+                            placeholder="10%"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                  <div className="card">
+                  <div className="row">
+                  <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          PRICE TYPE
+                        </label>
+                        <Select
+                          defaultValue={selectedOption}
+                          onChange={setSelectedOption}
+                          options={options}
+                          placeholder="placeholder (Optional)"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  </div>
               {/* <div className="row mt-4">
+              <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">GROUP NUMBER</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="1000 ENGINE"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TYPE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="0123 REPLACE"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PART NUMBER</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace left side of the Engine"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QTY</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="List Price"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT PRICE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$35000"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">EXTENDED PRICE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$10000"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$5000"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">% USAGE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EA"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TOTAL PRICE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COMMENTS</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DESCRIPTION</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE"/>
+                </div>
+                </div>
+              </div> */}
+            </div>
+            <div className="m-3 text-right">
+              <a href="#" onClick={handleClose2}  className="btn border mr-3 "> Cancel</a>
+              <a href="#" className="btn text-white bg-primary">Save</a>
+            </div>
+          </div>
+                </Modal.Body>
+
+
+            </Modal>
+              {/* <div class="row mt-4">
+
                                 <div className="col-md-6 col-sm-6">
                                     <div className="form-group w-100">
                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOLUTION ID</label>

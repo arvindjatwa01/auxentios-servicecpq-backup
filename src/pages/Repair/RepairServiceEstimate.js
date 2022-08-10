@@ -31,6 +31,8 @@ function RepairServiceEstimate(){
     setValue(newValue);
   };
   const [open1, setOpen1] = React.useState(false);
+  const [open2, setOpen2] = React.useState(false);
+  const handleClose2 = () => setOpen2(false);
   const handleOpen1 = () => setOpen1(true);
   const handleClose1 = () => setOpen1(false);
   const activityOptions = [
@@ -240,21 +242,24 @@ function RepairServiceEstimate(){
                 </div>
               </div>
               <div className="Add-new-segment-div p-3 border-radius-10">
-              <Link onClick={() => setOpen1(true)} className="btn bg-primary text-white mr-3">
+              {/* <Link onClick={() => setOpen1(true)} className="btn bg-primary text-white mr-3">
               <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add Labor
-                </Link>
+                </Link> */}
+                <a onClick={() => setOpen2(true)} href="#" className="btn bg-primary text-white mr-3">
+                <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add Labor
+                </a>
           
         </div>
         </div>
         </div>
-        <Modal show={open1} onHide={handleClose1} size="lg"
-  aria-labelledby="contained-modal-title-vcenter"
-  centered>
-        <Modal.Header closeButton>
-          <Modal.Title className="font-size-14">1000-Engine|23-Replace Engine|Replace Engine</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="p-0 bg-white">
-          <div className="ligt-greey-bg p-3">
+        <Modal show={open2} onHide={handleClose2} size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>1000-Engine|23-Replace Engine|Replace Engine</Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="p-0 bg-white">
+                <div className="ligt-greey-bg p-3">
             <div>
               <span className="mr-3">
               <i class="fa fa-pencil font-size-12" aria-hidden="true"></i><span  className="ml-2">Edit</span>
@@ -340,28 +345,17 @@ function RepairServiceEstimate(){
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE"/>
                 </div>
                 </div>
-                {/* <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">EXTENDED PRICE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000"/>
-                </div>
-                </div> */}
-                {/* <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PAYER TYPE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="CUSTOMER (100%)"/>
-                </div>
-                </div> */}
               </div>
             </div>
             <div className="m-3 text-right">
-              <a href="#" onClick={()=>handleClose1()}  className="btn border mr-3 "> Cancel</a>
+              <a href="#" onClick={handleClose2}  className="btn border mr-3 "> Cancel</a>
               <a href="#" className="btn text-white bg-primary">Save</a>
             </div>
           </div>
-       
-        </Modal.Body>
-      </Modal>
+                </Modal.Body>
+
+
+            </Modal>
         </div>
         </>
     )
