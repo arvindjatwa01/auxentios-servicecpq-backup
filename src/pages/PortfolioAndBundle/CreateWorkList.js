@@ -34,7 +34,8 @@ import Portfoliosicon from '../../assets/icons/svg/Portfolios-icon.svg'
 import Buttonarrow from '../../assets/icons/svg/Button-arrow.svg'
 import contract from '../../assets/icons/svg/contract.svg'
 import repairicon from '../../assets/icons/svg/repair-icon.svg'
-import OwlCarousel from 'react-owl-carousel';
+import OwlCarousel from 'react-owl-carousel'
+import { Link } from "react-router-dom"
 import 'owl.carousel/dist/assets/owl.carousel.css';
 import 'owl.carousel/dist/assets/owl.theme.default.css';
 
@@ -55,7 +56,7 @@ export function CreateWorkList(props) {
 
     return (
         <>
-            <CommanComponents />
+            {/* <CommanComponents /> */}
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid mt-3">
                     <div className="card  mt-3 p-3">
@@ -139,7 +140,7 @@ export function CreateWorkList(props) {
                             </div>
                             <div className="col-md-12 col-sm-12">
                                 <div className="Add-new-segment-div p-3 border-radius-10 bg-light-blue">
-                                    <a href="/workList" className="btn bg-primary text-white"><span className="mr-2">+</span>Add Attachments</a>
+                                    <Link to="/workList" className="btn bg-primary text-white"><span className="mr-2">+</span>Add Attachments</Link>
                                 </div>
                             </div>
                         </div>

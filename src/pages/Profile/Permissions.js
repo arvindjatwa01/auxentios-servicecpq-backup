@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal } from 'react-bootstrap';
+import { Link } from "react-router-dom";
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
@@ -58,7 +59,7 @@ export function Permissions(props) {
 
     return (
         <>
-            <CommanComponents />
+            {/* <CommanComponents /> */}
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid mt-3">
                     <h5 className="">Permission</h5>
@@ -76,7 +77,7 @@ export function Permissions(props) {
                                                 <th scope="col"><VisibilityOutlinedIcon className="mr-2" />View</th>
                                                 <th scope="col"><SmsOutlinedIcon className="mr-2" />Comment</th>
                                                 <th scope="col"><ShareOutlinedIcon className="mr-2" />Share</th>
-                                                <th scope="col"><a href="/permission/settings" className="text-white"><ModeEditOutlineOutlinedIcon className="mr-2" />Edit access</a></th>
+                                                <th scope="col"><Link to="/permission/settings" className="text-white"><ModeEditOutlineOutlinedIcon className="mr-2" />Edit access</Link></th>
                                             </tr>
                                         </thead>
                                         <tbody >

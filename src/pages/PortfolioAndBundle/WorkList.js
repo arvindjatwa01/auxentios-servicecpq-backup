@@ -34,6 +34,7 @@ import Portfoliosicon from '../../assets/icons/svg/Portfolios-icon.svg'
 import Buttonarrow from '../../assets/icons/svg/Button-arrow.svg'
 import contract from '../../assets/icons/svg/contract.svg'
 import repairicon from '../../assets/icons/svg/repair-icon.svg'
+import { Link } from "react-router-dom"
 import OwlCarousel from 'react-owl-carousel';
 import 'owl.carousel/dist/assets/owl.carousel.css';
 import 'owl.carousel/dist/assets/owl.theme.default.css';
@@ -279,14 +280,14 @@ export function WorkList(props) {
 
     return (
         <>
-            <CommanComponents />
+            {/* <CommanComponents /> */}
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid mt-3">
                     <div className="custom-table card " style={{ height: 400, width: '100%' }}>
                         <DataTable title="" selectableRows columns={columns} data={data} customStyles={customStyles} pagination />
                     </div>
                     <div className="Add-new-segment-div p-3 border-radius-10">
-                        <a href="/workList/new" className="btn bg-primary text-white">Create Worklist</a>
+                        <Link to="/workList/new" className="btn bg-primary text-white">Create Worklist</Link>
                     </div>
                 </div>
             </div>
@@ -316,7 +317,7 @@ export function WorkList(props) {
                                             Examples of Portfolios are Premium Maintenance Plan, Value added plan etc. A service program is a marketing or product improvement program.
                                         </p>
                                         <div className=''>
-                                            <a href="/portfolio/summary" className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></a>
+                                            <Link to="/portfolio/summary" className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></Link>
                                         </div>
 
                                     </div>

@@ -58,7 +58,7 @@ export const AnalyticsDashboard = () => {
 
     return (
         <div>
-            <CommanComponents />
+            {/* <CommanComponents /> */}
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid mt-3">
                     <h5 className="">Analytics</h5>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -121,7 +122,7 @@ export function Register() {
                     </div>
                     <div className="col-md-6 col-sm-6">
                         <div className="form-group mt-3 text-right">
-                            <a href="/AccountComponent" className="btn bg-violet text-white">Update</a>
+                            <Link to="/AccountComponent" className="btn bg-violet text-white">Update</Link>
                         </div>
                     </div>
                 </div>
