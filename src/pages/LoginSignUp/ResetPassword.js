@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, SplitButton, Dropdown, ButtonGroup } from 'react-bootstrap';
-import { useHistory, useLocation } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -106,7 +106,7 @@ export function ResetPassword() {
                                         </div>
                                         <div className="col-md-6 col-sm-6">
                                             <div class="form-group mt-3">
-                                                <a href="/login" className="btn bg-secondary text-white d-block">Return To Log In</a>
+                                                <Link to="/login" className="btn bg-secondary text-white d-block">Return To Log In</Link>
                                             </div>
                                         </div>
 

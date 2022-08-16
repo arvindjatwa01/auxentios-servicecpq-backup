@@ -195,7 +195,7 @@ export function HeaderComponent(props) {
                   <div className="dropdown-content-body">
                     <ul>
                       <li>
-                        <a href="/profile"><i className="icon-user"></i> <span>Profile</span></a>
+                        <Link to="/profile"><i className="icon-user"></i> <span>Profile</span></Link>
                       </li>
                       <li>
                         <a href="javascript:void()">
@@ -455,13 +455,13 @@ export function HeaderComponent(props) {
                   <div className="dropdown-content-body">
                     <ul>
                       <li>
-                        <a href="/profile"><i className="icon-user"></i> <span>Profile</span></a>
+                        <Link to="/profile"><i className="icon-user"></i> <span>Profile</span></Link>
                       </li>
                       <li>
-                        <a href="#"><i className="icon-user"></i> <span>Help</span></a>
+                        <Link to="#"><i className="icon-user"></i> <span>Help</span></Link>
                       </li>
                       <li>
-                        <a href="/account"><i className="icon-user"></i> <span>Account</span></a>
+                        <Link to="/account"><i className="icon-user"></i> <span>Account</span></Link>
                       </li>
                       {/* <li>
                         <a href="page-lock.html"><i className="icon-lock"></i> <span>Lock Screen</span></a>

@@ -63,7 +63,7 @@ export function PermissionsSetting(props) {
 
     return (
         <>
-            <CommanComponents />
+            {/* <CommanComponents /> */}
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid mt-3">
                     <div className="maintableheader card mb-0">

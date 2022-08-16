@@ -1158,7 +1158,7 @@ export function CreateService() {
     ];
     return (
         <>
-            <CommanComponents />
+            {/* <CommanComponents /> */}
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div className="container-fluid ">
                     <div className="d-flex align-items-center justify-content-between mt-2">

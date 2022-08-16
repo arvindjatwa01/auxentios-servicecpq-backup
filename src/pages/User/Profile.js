@@ -67,7 +67,7 @@ export function Profile() {
 
     return (
         <>
-            <CommanComponents />
+            {/* <CommanComponents /> */}
             <div class="container mt-4 p-t-150">
                 <div className="row">
                     <div className="col-md-12 col-sm-12 mx-auto">

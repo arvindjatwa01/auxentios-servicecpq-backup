@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, SplitButton, Dropdown, ButtonGroup } from 'react-bootstrap';
-import { useHistory, useLocation } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -80,7 +80,7 @@ export function VerifyEmail(props) {
                                         <p className="text-white mt-2">We’ll email you instructions to reset your password.</p>
                                     </div>
                                     <div className="mt-4">
-                                        <p className="text-white mt-2">If you don’t have access to your email anymore, <a href="/login" className="text-white text-decoration-line text-underline-offset">click here</a> to sign in
+                                        <p className="text-white mt-2">If you don’t have access to your email anymore, <Link to="/login" className="text-white text-decoration-line text-underline-offset">click here</Link> to sign in
                                         </p>
                                     </div>
                                 </div>

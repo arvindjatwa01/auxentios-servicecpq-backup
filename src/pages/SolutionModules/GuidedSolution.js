@@ -815,7 +815,7 @@ export const GuidedSolution = () => {
 
   return (
     <>
-      <CommanComponents />
+      {/* <CommanComponents /> */}
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid mt-4">
           <div className="row">
