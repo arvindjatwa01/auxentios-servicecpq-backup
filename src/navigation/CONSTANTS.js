@@ -20,6 +20,11 @@ export const RIPAIR_OPTION01 = "/RepairOption01";
 export const RIPAIR_SERVICE_ESTIMATE = "/RepairServiceEstimate";
 export const WITHOUTSPARE_REPAIR_OPTION = "/WithoutSpareParts";
 export const PART_LIST = "/PartList";
+export const REPAIR_PARTLIST = "/RepairPartlist";
+export const REPAIR_WITH_SPARE_PARTS = "/RepairWithSpareParts";
+export const REPAIR_WITHOUT_SPARE_PARTS = "/RepairWithoutSpareParts";
+export const REPAIR_STANDARD_JOBS = "/RepairStandardJobs";
+export const REPAIR_KITS = "/RepairKits";
 export const STANDARD_JOBS = "/StandardJobs";
 export const KITS = "/Kits";
 

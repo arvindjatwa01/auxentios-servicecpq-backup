@@ -337,12 +337,310 @@ function PartList() {
             <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions}/></a> */}
             </div>
           </div>
+          
           <div className="card p-4 mt-5">
             <h5 className="d-flex align-items-center mb-0">
               <div className="" style={{ display: 'contents' }}><span className="mr-3">Header</span><a href="#" className="btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i></a> <a href="#" className="btn-sm"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a> <a href="#" className="btn-sm"><i class="fa fa-folder-o" aria-hidden="true"></i></a></div>
               <div className="hr"></div>
             </h5>
-            <div className="row mt-5">
+            <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
+          <TabContext value={value}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <TabList onChange={handleChange} aria-label="lab API tabs example">
+                <Tab label="Customer" value="1" />
+                <Tab label="Machine " value="2" />
+                <Tab label="Estimation Team" value="3" />
+                <Tab label="Estimate" value="4" />
+                <Tab label="Pricing/Billing" value="5" />
+              </TabList>
+            </Box>
+            <TabPanel value="1">
+            <div className="row">
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">SOURCE ID</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">SOURCE NAME</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">CUSTOMER FIRST NAME</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">CUSTOMER FIRST NAME</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">CUSTOMER EMAIL</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">CUSTOMER ZIPCODE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                
+              </div>
+              <div className="row mt-3">
+       <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">ACCOUNT NAME</p>
+              <h6 class="font-weight-600">Koolan lran Ore pty Ltd</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">ACCOUNT NUMBER</p>
+              <h6 class="font-weight-600">357418</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">CONTACT NAME</p>
+              <h6 class="font-weight-600">Damon Farrell</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">CONTACT PH</p>
+              <h6 class="font-weight-600">08 6311 5741</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">CUSTOMER GROUP</p>
+              <h6 class="font-weight-600">Large Mining</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">BUSINESS AREA</p>
+              <h6 class="font-weight-600">Australia-Direct Sale</h6>
+              </div>
+            </div>
+         </div>
+         <div>
+                <div class="form-group mb-0">
+                  <Link to={"/BulidRepairOptions"} className="btn bg-primary text-white">
+                 Next
+                  </Link>
+                </div>
+
+         </div>
+
+            </TabPanel>
+            <TabPanel value="2">
+            <div className="row mt-3">
+       <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">MODAL</p>
+              <h6 class="font-weight-600">992K</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">SERIAL NO</p>
+              <h6 class="font-weight-600">H4COO450 </h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">SMU</p>
+              <h6 class="font-weight-600">12,580</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2"> UNIT NO / FLEET NO</p>
+              <h6 class="font-weight-600">WL006</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">REGISTRATION NO</p>
+              <h6 class="font-weight-600">LAJOOt6t31</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">CHASSIS NO</p>
+              <h6 class="font-weight-600">797</h6>
+              </div>
+            </div>
+         </div>
+            </TabPanel>
+            <TabPanel value="3">
+            <div className="row mt-3">
+       <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">PRIPARED BY</p>
+              <h6 class="font-weight-600">Dan Ham</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">PREPARED ON</p>
+              <h6 class="font-weight-600">01.09.2021</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">APPROVER</p>
+              <h6 class="font-weight-600">Steve Eckersley</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">REVISED BY </p>
+              <h6 class="font-weight-600">Dan Ham</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">REVISED ON</p>
+              <h6 class="font-weight-600">10.09.2021</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">SALES OFFICE</p>
+              <h6 class="font-weight-600">Sales Office</h6>
+              </div>
+            </div>
+         </div>
+            </TabPanel>
+            <TabPanel value="4">
+            <div className="row mt-3">
+       <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">QUOTE DATE </p>
+              <h6 class="font-weight-600">3/10/2021</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">QUOTE NO</p>
+              <h6 class="font-weight-600">1005583 </h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">DESCRIPTION</p>
+              <h6 class="font-weight-600">Koolan 992k WL006(revised)</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">REFERENCE </p>
+              <h6 class="font-weight-600">KM1305RE</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">QUOTE VALIDTITY</p>
+              <h6 class="font-weight-600">30 days </h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">VERSION</p>
+              <h6 class="font-weight-600">2</h6>
+              </div>
+            </div>
+         </div>
+            </TabPanel>
+            <TabPanel value="5">
+              <div className="row">
+              <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                      <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">PRICE LIST</label>
+                      <Select
+                          defaultValue={selectedOption}
+                          onChange={setSelectedOption}
+                          options={options}
+                          placeholder="placeholder (Optional)"
+                      />
+                  </div>
+              </div>
+              <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                      <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">PRICE METHOD</label>
+                      <Select
+                          defaultValue={selectedOption}
+                          onChange={setSelectedOption}
+                          options={options}
+                          placeholder="placeholder (Optional)"
+                      />
+                  </div>
+              </div>
+              <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                      <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">PRICE DATE</label>
+                      <Select
+                          defaultValue={selectedOption}
+                          onChange={setSelectedOption}
+                          options={options}
+                          placeholder="placeholder (Optional)"
+                      />
+                  </div>
+              </div>
+              <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                      <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
+                      <Select
+                          defaultValue={selectedOption}
+                          onChange={setSelectedOption}
+                          options={options}
+                          placeholder="placeholder (Optional)"
+                      />
+                  </div>
+              </div>
+              </div>
+              <div className="row mt-3">
+       <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">PRICE LIST</p>
+              <h6 class="font-weight-600">Mining</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">PRICE METHOD</p>
+              <h6 class="font-weight-600">List Price </h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">PRICE DATE</p>
+              <h6 class="font-weight-600">01.09
+2021</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">CURRENCY </p>
+              <h6 class="font-weight-600">AUD</h6>
+              </div>
+            </div>
+         </div>
+              
+            </TabPanel>
+          </TabContext>
+        </Box>
+            {/* <div className="row mt-5">
               <div className="col-md-4 col-sm-4">
                 <div class="form-group">
                   <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">JOB CODE</label>
@@ -413,8 +711,9 @@ function PartList() {
                   <h6 class="font-weight-600">Transmission</h6>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
+
           {/* <div className="card mt-5">
                         <div className="fileheader p-4 border-bottom d-flex justify-content-between align-items-center custom-portfolio-dropdown">
                             <h6 className="font-weight-600 text-light mb-0">Table Name<span> <a onClick={() => setOpen2(true)} href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faPen} /></a></span></h6>
@@ -468,7 +767,7 @@ function PartList() {
 
 
                     </div> */}
-          <div className="card border mt-4">
+          <div className="card border mt-4 px-2">
             <div className="d-flex align-items-center justify-content-between px-3 py-4 pl-3">
               <div className="">
                 <div className="d-flex ">

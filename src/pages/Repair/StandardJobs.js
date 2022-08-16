@@ -31,6 +31,39 @@ import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 function StandardJobs(){
   const [selectedOption, setSelectedOption] = useState(null);
   const [value, setValue] = React.useState('1');
+
+  const [portfolioId, setPortfolioId] = useState();
+  const [generalComponentData, setGeneralComponentData] = useState({
+    name: "",
+    description: "",
+    serviceDescription: "",
+    externalReference: "",
+    customerSegment: null,
+    items: []
+  });
+  const handleOption2 = (e) => {
+    setValue2(e)
+  }
+  const handleOption3 = (e) => {
+    setValue3(e)
+  }
+
+  const [value2, setValue2] = useState({ value: 'Archived', label: 'Archived' });
+  const [value3, setValue3] = useState({ value: 'Gold', label: 'Gold' });
+
+  const options2 = [
+    { value: "chocolate", label: "Archived" },
+    { value: "strawberry", label: "Draft" },
+    { value: "vanilla", label: "Active" },
+    { value: "Construction", label: "Revised" },
+  ];
+  const options3 = [
+    { value: "chocolate", label: "Gold" },
+    { value: "strawberry", label: "1" },
+    { value: "vanilla", label: "2" },
+    { value: "Construction", label: "3" },
+  ];
+
   const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -52,7 +85,25 @@ function StandardJobs(){
       <div className="content-body" style={{ minHeight: '884px' }}>
       <div class="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
+          
+          <div className="d-flex">
           <h5 className="font-weight-600 mb-0">Repair Option</h5>
+              <div className="ml-3">
+                {portfolioId ? generalComponentData.name : ""}
+              </div>
+            
+              <div className="ml-3">
+                <Select className="customselectbtn" onChange={(e) => handleOption2(e)} options={options2} value={value2} />
+              </div>
+              <div className="rating-star">
+                <span className="fa fa-star checked"></span>
+                <span className="fa fa-star checked"></span>
+                <span className="fa fa-star checked"></span>
+                <span className="fa fa-star"></span>
+                <span className="fa fa-star"></span>
+              </div>
+
+            </div>
           <div className="d-flex justify-content-center align-items-center">
           <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
             <a href="#" className="ml-3 font-size-14" title="Items to Review"><img src={folderaddIcon}></img></a>
