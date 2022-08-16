@@ -73,7 +73,7 @@ function Kits() {
     { value: "Construction", label: "3" },
   ];
 
-  const options = [
+  const options = [ 
     { value: 'chocolate', label: 'Construction-Heavy' },
     { value: 'strawberry', label: 'Construction-Low' },
     { value: 'vanilla', label: 'Construction-Medium' },
