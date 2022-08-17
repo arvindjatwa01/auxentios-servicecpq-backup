@@ -73,3 +73,22 @@ export const getPrefixKeyValue = () => {
     }
   });
 };
+export const createCoverage = (data) => {
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(COVERAGE_REST(),data)
+        .then((res) => {
+          console.log("createCoverage > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("createCoverage > axios err=", err);
+          reject("Error in createCoverage axios!");
+        });
+    } catch (error) {
+      console.error("in coverageService > createCoverage, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};

@@ -11,7 +11,7 @@ export const itemCreation = (payLoad) => {
           .post(CREATE_PORTFOLIO_ITEM(),payLoad)
           .then((res) => {
             console.log("itemCreation > axios res=", res);
-            resolve(res.data);
+            resolve(res);
           })
           .catch((err) => {
             console.log("itemCreation > axios err=", err);
