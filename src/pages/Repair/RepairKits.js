@@ -258,7 +258,7 @@ export const RepairKits = () => {
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid">
                     <div className="d-flex align-items-center justify-content-between mt-2">
-                        <h5 className="font-weight-600 mb-0">Repair Kits</h5>
+                        <h5 className="font-weight-600 mb-0">Kits</h5>
                         <div>
                             <Link to="/Kits" style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
                                 <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create New<span className="ml-2"></span>

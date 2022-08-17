@@ -258,7 +258,7 @@ export const RepairStandardJobs = () => {
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid">
                     <div className="d-flex align-items-center justify-content-between mt-2">
-                        <h5 className="font-weight-600 mb-0">Repair Standard Jobs</h5>
+                        <h5 className="font-weight-600 mb-0">Standard Jobs</h5>
                         <div>
                             <Link to="/StandardJobs" style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
                                 <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create New<span className="ml-2"></span>

@@ -52,7 +52,7 @@ function WithoutSpareParts(){
       <div className="content-body" style={{ minHeight: '884px' }}>
       <div class="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
-          <h5 className="font-weight-600 mb-0">Repair Option</h5>
+          <h5 className="font-weight-600 mb-0">Without Spare Parts</h5>
           <div className="d-flex justify-content-center align-items-center">
           <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
             <a href="#" className="ml-3 font-size-14" title="Items to Review"><img src={folderaddIcon}></img></a>

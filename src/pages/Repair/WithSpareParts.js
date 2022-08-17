@@ -26,7 +26,7 @@ import {Link, useHistory} from 'react-router-dom'
 import { CommanComponents } from "components";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
-function BulidRepairOptions(){
+function WithSpareParts(){
   const history=useHistory()
   const [selectedOption, setSelectedOption] = useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -258,7 +258,7 @@ function BulidRepairOptions(){
          </div>
          <div>
                 <div class="form-group mb-0">
-                  <Link to={"/BulidRepairOptions"} className="btn bg-primary text-white">
+                  <Link to={"/WithSpareParts"} className="btn bg-primary text-white">
                  Next
                   </Link>
                 </div>
@@ -565,4 +565,4 @@ function BulidRepairOptions(){
 }
 
 
-export default BulidRepairOptions
+export default WithSpareParts

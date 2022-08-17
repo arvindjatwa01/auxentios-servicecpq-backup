@@ -316,14 +316,50 @@ function PartList() {
     { value: 'vanilla', label: 'Construction-Medium' },
     { value: 'Construction', label: 'Construction' },
   ];
-
+  const [portfolioId, setPortfolioId] = useState();
+  const [generalComponentData, setGeneralComponentData] = useState({
+    name: "",
+    description: "",
+    serviceDescription: "",
+    externalReference: "",
+    customerSegment: null,
+    items: []
+  });
+  const handleOption2 = (e) => {
+    setValue2(e)
+  }
+  const options2 = [
+    { value: "chocolate", label: "Archived" },
+    { value: "strawberry", label: "Draft" },
+    { value: "vanilla", label: "Active" },
+    { value: "Construction", label: "Revised" },
+  ];
+  const [value2, setValue2] = useState({ value: 'Archived', label: 'Archived' });
   return (
     <>
       {/* <CommanComponents /> */}
       <div className="content-body" style={{ minHeight: '884px' }}>
         <div class="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0">Part Lists</h5>
+           
+            <div className="d-flex">
+          <h5 className="font-weight-600 mb-0">Part Lists</h5>
+              <div className="ml-3">
+                {portfolioId ? generalComponentData.name : ""}
+              </div>
+            
+              <div className="ml-3">
+                <Select className="customselectbtn" onChange={(e) => handleOption2(e)} options={options2} value={value2} />
+              </div>
+              <div className="rating-star">
+                <span className="fa fa-star checked"></span>
+                <span className="fa fa-star checked"></span>
+                <span className="fa fa-star checked"></span>
+                <span className="fa fa-star"></span>
+                <span className="fa fa-star"></span>
+              </div>
+
+            </div>
             <div className="d-flex justify-content-center align-items-center">
               {/* <Link to="#" className="btn-sm bg-primary text-white">
               <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add New
@@ -350,8 +386,8 @@ function PartList() {
                 <Tab label="Customer" value="1" />
                 <Tab label="Machine " value="2" />
                 <Tab label="Estimation Team" value="3" />
-                <Tab label="Estimate" value="4" />
-                <Tab label="Pricing/Billing" value="5" />
+                <Tab label="General Details" value="4" />
+                <Tab label="Pricing" value="5" />
               </TabList>
             </Box>
             <TabPanel value="1">
@@ -434,7 +470,7 @@ function PartList() {
          </div>
          <div>
                 <div class="form-group mb-0">
-                  <Link to={"/BulidRepairOptions"} className="btn bg-primary text-white">
+                  <Link to={"/WithSpareParts"} className="btn bg-primary text-white">
                  Next
                   </Link>
                 </div>
@@ -486,7 +522,7 @@ function PartList() {
             <div className="row mt-3">
        <div class="col-md-4 col-sm-4">
             <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">PRIPARED BY</p>
+              <p class="font-size-12 font-weight-500 mb-2">PREPARED BY</p>
               <h6 class="font-weight-600">Dan Ham</h6>
               </div>
             </div>
@@ -526,13 +562,13 @@ function PartList() {
             <div className="row mt-3">
        <div class="col-md-4 col-sm-4">
             <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">QUOTE DATE </p>
+              <p class="font-size-12 font-weight-500 mb-2">ESTIMATION DATE </p>
               <h6 class="font-weight-600">3/10/2021</h6>
               </div>
             </div>
             <div class="col-md-4 col-sm-4">
             <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">QUOTE NO</p>
+              <p class="font-size-12 font-weight-500 mb-2">ESTIMATION #</p>
               <h6 class="font-weight-600">1005583 </h6>
               </div>
             </div>
@@ -550,7 +586,7 @@ function PartList() {
             </div>
             <div class="col-md-4 col-sm-4">
             <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">QUOTE VALIDTITY</p>
+              <p class="font-size-12 font-weight-500 mb-2">VALIDTITY</p>
               <h6 class="font-weight-600">30 days </h6>
               </div>
             </div>
@@ -566,18 +602,7 @@ function PartList() {
               <div className="row">
               <div className="col-md-4 col-sm-4">
                   <div className="form-group">
-                      <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">PRICE LIST</label>
-                      <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="placeholder (Optional)"
-                      />
-                  </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                  <div className="form-group">
-                      <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">PRICE METHOD</label>
+                      <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">NET PRICE</label>
                       <Select
                           defaultValue={selectedOption}
                           onChange={setSelectedOption}
@@ -599,6 +624,41 @@ function PartList() {
               </div>
               <div className="col-md-4 col-sm-4">
                   <div className="form-group">
+                      <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">COST PRICE</label>
+                      <Select
+                          defaultValue={selectedOption}
+                          onChange={setSelectedOption}
+                          options={options}
+                          placeholder="placeholder (Optional)"
+                      />
+                  </div>
+              </div>
+              <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                      <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">PRICE METHOD</label>
+                      <Select
+                          defaultValue={selectedOption}
+                          onChange={setSelectedOption}
+                          options={options}
+                          placeholder="placeholder (Optional)"
+                      />
+                  </div>
+              </div>
+              <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                      <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">ADJUSTED PRICE</label>
+                      <Select
+                          defaultValue={selectedOption}
+                          onChange={setSelectedOption}
+                          options={options}
+                          placeholder="placeholder (Optional)"
+                      />
+                  </div>
+              </div>
+              
+              
+              <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
                       <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
                       <Select
                           defaultValue={selectedOption}
@@ -610,10 +670,22 @@ function PartList() {
               </div>
               </div>
               <div className="row mt-3">
-       <div class="col-md-4 col-sm-4">
+              <div class="col-md-4 col-sm-4">
             <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">PRICE LIST</p>
+              <p class="font-size-12 font-weight-500 mb-2">NET PRICE</p>
               <h6 class="font-weight-600">Mining</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">PRICE DATE</p>
+              <h6 class="font-weight-600">01.09.2021</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">COST PRICE</p>
+              <h6 class="font-weight-600">01.09.2021</h6>
               </div>
             </div>
             <div class="col-md-4 col-sm-4">
@@ -622,13 +694,14 @@ function PartList() {
               <h6 class="font-weight-600">List Price </h6>
               </div>
             </div>
-            <div class="col-md-4 col-sm-4">
+       <div class="col-md-4 col-sm-4">
             <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">PRICE DATE</p>
-              <h6 class="font-weight-600">01.09
-2021</h6>
+              <p class="font-size-12 font-weight-500 mb-2">ADJUSTED PRICE </p>
+              <h6 class="font-weight-600">Mining</h6>
               </div>
             </div>
+            
+            
             <div class="col-md-4 col-sm-4">
             <div class="form-group">
               <p class="font-size-12 font-weight-500 mb-2">CURRENCY </p>
@@ -814,10 +887,18 @@ function PartList() {
                     <i class="fa fa-pencil font-size-12" aria-hidden="true"></i><span className="ml-2">Edit</span>
                   </span>
                   <span className="mr-3">
+                    <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                    <span className="ml-2 cursor"  data-toggle="modal" data-target="#Substitute" onClick={handleClose2}>Substitute parts</span>
+                  </span>
+                  <span className="mr-3">
+                    <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                    <span className="ml-2 cursor" data-toggle="modal" data-target="#Recommended" onClick={handleClose2}>Recommended price</span>
+                  </span>
+                  <span className="mr-3">
                     < MonetizationOnOutlinedIcon className=" font-size-16" />
                     <span className="ml-2"> Adjust price</span>
                   </span>
-                  <span className="mr-3">
+                  {/* <span className="mr-3">
                     <FormatListBulletedOutlinedIcon className=" font-size-16" />
                     <span className="ml-2">Related part list(s)</span>
                   </span>
@@ -828,7 +909,7 @@ function PartList() {
                   <span>
                     <SellOutlinedIcon className=" font-size-16" />
                     <span className="ml-2">Split price</span>
-                  </span>
+                  </span> */}
                 </div>
               </div>
               <div>
@@ -1440,6 +1521,44 @@ function PartList() {
 
           </div> */}
         </div>
+        <div class="modal fade" id="Substitute" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{zIndex:'1200'}}>
+        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">RECOMMENDED DISCOUNT PRICE</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              
+            </div>
+            {/* <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div> */}
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="Recommended" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{zIndex:'1200'}}>
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            {/* <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div> */}
+            <div class="modal-body">
+              
+            </div>
+            {/* <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div> */}
+          </div>
+        </div>
+      </div>
       </div>
     </>
   )
