@@ -416,7 +416,13 @@ export function CreateService() {
     const [openAddBundleItemHeader, setOpenAddBundleItemHeader] = useState("")
     const [portfolioMenuOpen, setPortfolioMenuOpen] = useState(false)
     const [priceAgreementRows, setPriceAgreementRows] = useState([])
-
+    const [portfolioId, setPortfolioId] = useState(4);
+    const [alignment, setAlignment] = React.useState('Portfolio');
+    const [prefixLabelGeneral, setPrefixLabelGeneral] = useState("PORTFOLIO")
+    const [priceAgreementOption, setPriceAgreementOption] = useState(false)
+    const [open2, setOpen2] = React.useState(false);
+    const handleOpen2 = () => setOpen2(true);
+    const handleClose2 = () => setOpen2(false);
 
     const [coverageData, setCoverageData] = useState({
         make: '',
@@ -463,13 +469,7 @@ export function CreateService() {
         customerSegment: null,
         machineComponent: null
     })
-    const [portfolioId, setPortfolioId] = useState(4);
-    const [alignment, setAlignment] = React.useState('Portfolio');
-    const [prefixLabelGeneral, setPrefixLabelGeneral] = useState("PORTFOLIO")
-    const [priceAgreementOption, setPriceAgreementOption] = useState(false)
-    const [open2, setOpen2] = React.useState(false);
-    const handleOpen2 = () => setOpen2(true);
-    const handleClose2 = () => setOpen2(false);
+    
 
     const handleCustomerSegmentChange = (e) => {
         setGeneralComponetData({
@@ -2155,10 +2155,10 @@ export function CreateService() {
                             ?
                             <div className="tableheader">
                                 <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
-                                    <li><a className="cursor" className="result">RESULTS</a></li>
+                                    <li><a className="cursor result">RESULTS</a></li>
                                     <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM125</a></li>
                                     <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM2</a></li>
-                                    <li><a className="cursor" onClick={handleCreateNewServiceBundle} className="lastOption text-violet"><span className="mr-2">+</span>Create New {typeOfSearch != null ? typeOfSearch.value == 'bundle' ? "Bundle" : typeOfSearch.value == 'service' ? "Service" : typeOfSearch.value == 'portfolioItem' ? "Portfolio Item" : "" : ""}</a></li>
+                                    <li><a className="cursor lastOption text-violet" onClick={handleCreateNewServiceBundle}><span className="mr-2">+</span>Create New {typeOfSearch != null ? typeOfSearch.value == 'bundle' ? "Bundle" : typeOfSearch.value == 'service' ? "Service" : typeOfSearch.value == 'portfolioItem' ? "Portfolio Item" : "" : ""}</a></li>
                                 </ul>
                             </div>
                             :
