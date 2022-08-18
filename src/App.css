@@ -2489,6 +2489,9 @@ cursor: pointer;
 .btn-svg{} 
 .btn-svg svg{ width: 16px; fill: #707070; stroke:#707070;}     
 .tabledate-box{}
-.tabledate-box .form-controldate{border: none !important;}   
-.hours-div{padding: 0.375rem 0.75rem;
-  background: #f5f5f5;}        
+.tabledate-box .form-controldate{border: none !important;}  
+.listcheckbox{}  
+.listcheckbox input[type="checkbox"]:after {
+  border: 1px solid #bfbfbf;
+  border-radius: 50px;
+}       
