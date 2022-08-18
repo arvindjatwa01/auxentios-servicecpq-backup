@@ -25,6 +25,7 @@ import FormControl from "@mui/material/FormControl";
 import Checkbox from "@mui/material/Checkbox";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 
 import { FileUploader } from "react-drag-drop-files";
 import { MuiMenuComponent } from "../Operational/index";
@@ -65,6 +66,7 @@ import Portfoliosicon from "../../assets/icons/svg/Portfolios-icon.svg";
 import Buttonarrow from "../../assets/icons/svg/Button-arrow.svg";
 import contract from "../../assets/icons/svg/contract.svg";
 import repairicon from "../../assets/icons/svg/repair-icon.svg";
+
 
 
 import {
@@ -111,7 +113,7 @@ import { createItemPayload } from "./createItem/createItemPayload";
 import { Link } from "react-router-dom";
 import $ from "jquery"
 import { display } from "@mui/system";
-
+import { CreateService } from "pages/Service";
 
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
@@ -352,8 +354,22 @@ export function CreatePortfolio() {
     netPrice: 1200,
     totalPrice: 1200
   })
-
   const [openMiniBundleItem, setOpenMiniBundleItem] = useState(false)
+  const [serviceOrBundleShow, setServiceOrBundleShow] = useState(false)
+  const [serviceOrBundlePrefix, setServiceOrBundlePrefix] = useState("")
+  const [createServiceOrBundle, setCreateServiceOrBundle] = useState({
+    id: '',
+    description: "",
+    bundleFlag: "",
+    reference: "",
+    customerSegment: "",
+    make: "",
+    models: "",
+    prefix: "",
+    machine: "",
+    additional: "",
+  })
+
   const frequencyOptions = [
     { label: "Cyclic", value: "Cyclic" },
     { label: "once", value: "once" },
@@ -596,8 +612,8 @@ export function CreatePortfolio() {
         alert("something went wrong")
         return
       }
-
       setBundleItems([...bundleItems, res.data])
+      setOpen2(false)   //Hide Price Calculator Screen
     }).catch((err) => {
       console.log("itemCreation err:", err)
     })
@@ -1998,13 +2014,13 @@ export function CreatePortfolio() {
     {
       name: (
         <>
-          <div>Strategy(type)</div>
+          <div>Strategy</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel.type,
+      selector: (row) => row.itemHeaderModel.strategy,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel.type,
+      format: (row) => row.itemHeaderModel.strategy,
     },
     {
       name: (
@@ -2104,8 +2120,8 @@ export function CreatePortfolio() {
             options={[{ label: "Service", value: "Service" }, { label: "Bundle", value: "Bundle" }]}
             placeholder="Include"
           /> */}
-          <div className="mr-2" onClick={handleBundleItemOpen}>Add Bundle</div>
-          <div onClick={handleServiceItemOpen}>Add Service</div>
+          <div className="m-2 cursor" onClick={handleBundleItemOpen}>Add Bundle</div>
+          <div className="cursor" onClick={handleServiceItemOpen}>Add Service</div>
 
         </div>,
     },
@@ -2257,17 +2273,42 @@ export function CreatePortfolio() {
   }
 
   const handleServiceItemOpen = () => {
+    setServiceOrBundlePrefix("SERVICE")
+    setServiceOrBundleShow(true)
     console.log("handleServiceItemOpen")
   }
   const handleBundleItemOpen = () => {
+    setServiceOrBundlePrefix("BUNDLE")
+    setServiceOrBundleShow(true)
     console.log("handleBundleItemOpen")
   }
 
+  const handleAddServiceBundleChange = (e) => {
+    setCreateServiceOrBundle({
+      ...createServiceOrBundle,
+      [e.target.name]: e.target.value
+    })
+
+  }
+const handleAddNewServiceOrBundle=()=>{
+  if(serviceOrBundlePrefix==="SERVICE"){
+    setServiceOrBundleShow(false)
+    setOpen2(true)
+  }
+  if(serviceOrBundlePrefix==="BUNDLE"){
+    setServiceOrBundleShow(false)
+    setOpenAddBundleItem(true);
+
+  }
+
+  
 
 
+}
   return (
     <>
       <CommanComponents />
+      {/* <CreateService/> */}
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
@@ -3239,7 +3280,7 @@ export function CreatePortfolio() {
                     className="custom-table card p-3 "
                     style={{ width: "100%", backgroundColor: "#fff" }}
                   >
-                    <div className="row align-items-center ">
+                    <div className="row align-items-center m-0" style={{ flexFlow: 'unset' }}>
                       {/* <div className="col-2">
                         <div className="d-flex ">
                           <h5 className="mr-4 mb-0">
@@ -3248,17 +3289,7 @@ export function CreatePortfolio() {
                           <p className="ml-4 mb-0"><a onClick={() => handleOpen()} className=" ml-3 font-size-14"><img src={uploadIcon}></img></a><a href="#" className="ml-3 "><img src={shareIcon}></img></a></p>
                         </div>
                       </div> */}
-                      <div className="col-12">
-                        {/* <div className="d-flex align-items-center">
-                        <div
-                              className="search-icon mr-2"
-                              style={{ lineHeight: "24px", cursor: "pointer" }}
-                              onClick={handleQuerySearchClick}
-                            >
-                              <SearchIcon />
-                            </div>
-                                <span className="mr-3">Search</span>
-                        </div> */}
+                      <div className="w-100">
                         <div className="d-flex align-items-center bg-light-dark w-100">
                           <div className="d-flex justify-content-between align-items-center p-3 border-radius-10 w-100 border-right">
                             <div className="row align-items-center m-0">
@@ -3348,6 +3379,11 @@ export function CreatePortfolio() {
                             </Link>
                           </div>
                         </div>
+                      </div>
+                      <div className=" ml-3">
+                        <Link to="#" className="btn bg-primary text-white">
+                          <FileUploadOutlinedIcon /> <span className="ml-1">Upload</span>
+                        </Link>
                       </div>
                     </div>
                     <hr />
@@ -4895,7 +4931,6 @@ export function CreatePortfolio() {
                       UNIT
                     </label>
                     <Select
-                      // options={unitList}
                       options={[
                         { value: "per Hr", label: "per Hr" },
                         { value: "per Km", label: "per Km" },
@@ -5293,7 +5328,6 @@ export function CreatePortfolio() {
                       PRICE TYPE
                     </label>
                     <Select
-                      // defaultValue={selectedOption}
                       options={options}
                       value={priceCalculator.priceType}
                       onChange={(e) => setPriceCalculator({ ...priceCalculator, priceType: e })}
@@ -6118,6 +6152,184 @@ export function CreatePortfolio() {
             </div>
 
 
+          </div>
+        </Modal.Body>
+      </Modal>
+
+
+      <Modal show={serviceOrBundleShow} onHide={() => setServiceOrBundleShow(false)} size="xl"
+        aria-labelledby="contained-modal-title-vcenter">
+        <Modal.Body className="">
+          <div className="container-fluid ">
+            <div className="d-flex align-items-center justify-content-between mt-2">
+              <h5 className="font-weight-600 mb-0">ADD {serviceOrBundlePrefix}</h5>
+              <div className="d-flex justify-content-center align-items-center">
+                <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
+                <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
+                <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>
+                <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
+                <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
+                <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
+                <a href="#" className="ml-2"><MuiMenuComponent onClick={() => alert()} options={activityOptions} /></a>
+
+              </div>
+            </div>
+            <div className="card p-4 mt-5">
+              <h5 className="d-flex align-items-center mb-0">
+                <div className="" style={{ display: 'contents' }}><span className="mr-3">Header</span><a href="#" className="btn-sm"><i className="fa fa-pencil" aria-hidden="true"></i></a>
+                  <a href="#" className="btn-sm"><i className="fa fa-bookmark-o" aria-hidden="true"></i></a>
+                  <a href="#" className="btn-sm"><img style={{ width: '14px' }} src={folderaddIcon}></img></a></div>
+                <div className="input-group icons border-radius-10 border">
+                  <div className="input-group-prepend">
+                    <span className="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
+                      <img src={shearchIcon} /></span>
+                  </div>
+                  <input
+                    type="search"
+                    className="form-control search-form-control"
+                    aria-label="Search Dashboard"
+                  />
+                </div>
+              </h5>
+              <div className="row mt-4">
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-500" >{serviceOrBundlePrefix} ID</label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      disabled
+                      name="id"
+                      placeholder="ID(AUTO)"
+                      value={createServiceOrBundle.id ? createServiceOrBundle.id : ""}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-500" >{serviceOrBundlePrefix} DESCRIPTION</label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      name="description"
+                      placeholder="Description"
+                      value={createServiceOrBundle.description}
+                      onChange={handleAddServiceBundleChange}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-500" >BUNDLE FLAG</label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      name="bundleFlag"
+                      placeholder="Bundle Flag"
+                      value={serviceOrBundlePrefix==="SERVICE"?"SERVICE":"BUNDLE_ITEM"}
+                      // value={createServiceOrBundle.bundleFlag}
+                      onChange={handleAddServiceBundleChange}
+                      disabled
+                    />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REFERENCE</label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      name="reference"
+                      placeholder="Reference"
+                      value={createServiceOrBundle.reference}
+                      onChange={handleAddServiceBundleChange}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-500" >CUSTOMER SEGMENT</label>
+                    <Select
+                      // defaultValue={selectedOption}
+                      onChange={(e) => setCreateServiceOrBundle({ ...createServiceOrBundle, customerSegment: e })}
+                      value={createServiceOrBundle.customerSegment}
+                      options={options}
+                      placeholder="Customer Segment"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-500" >MAKE</label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      name="make"
+                      placeholder="Make"
+                      value={createServiceOrBundle.make}
+                      onChange={handleAddServiceBundleChange}
+                    />
+
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-500" >MODEL(S)</label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      name="models"
+                      placeholder="Model(S)"
+                      value={createServiceOrBundle.models}
+                      onChange={handleAddServiceBundleChange}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-500" >PREFIX(S)</label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      name="prefix"
+                      placeholder="Prefix(S)"
+                      value={createServiceOrBundle.prefix}
+                      onChange={handleAddServiceBundleChange}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MACHINE/COMPONENT</label>
+                    <Select
+                      isClearable={true}
+                      onChange={(e) => setCreateServiceOrBundle({ ...createServiceOrBundle, machineComponent: e })}
+                      value={newBundle.machineComponent}
+                      isLoading={typeKeyValue.length > 0 ? false : true}
+                      options={typeKeyValue}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ADDITIONALS</label>
+                    <Select
+                      // defaultValue={selectedOption}
+                      onChange={(e) => setCreateServiceOrBundle({ ...createServiceOrBundle, additional: e })}
+                      value={createServiceOrBundle.additional}
+                      options={options}
+                      placeholder="Preventive Maintenance"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="row" style={{ justifyContent: 'right' }}>
+                <button
+                  type="button"
+                  onClick={handleAddNewServiceOrBundle} 
+                  className="btn btn-light">Save</button>
+              </div>
+            </div>
           </div>
         </Modal.Body>
       </Modal>
