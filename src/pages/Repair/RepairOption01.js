@@ -149,7 +149,7 @@ function RepairOption01(){
                 </div>
               </div>
               <div className="Add-new-segment-div p-3 border-radius-10">
-              <Link to="/PartList" className="btn bg-primary text-white mr-3">
+              <Link to="/AddPartlist" className="btn bg-primary text-white mr-3">
               <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add part list
                 </Link>
                 <Link to="/RepairServiceEstimate" className="btn bg-primary text-white">

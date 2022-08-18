@@ -28,6 +28,43 @@ import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import ThumbDownOffAltOutlinedIcon from '@mui/icons-material/ThumbDownOffAltOutlined';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
+import DataTable from "react-data-table-component";
+import SearchIcon from '@mui/icons-material/Search';
+import $ from "jquery"
+import { faPen } from '@fortawesome/free-solid-svg-icons'
+import { Modal, SplitButton, Dropdown, ButtonGroup } from 'react-bootstrap';
+import boxicon from "../../assets/icons/png/box.png";
+import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined';
+import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined'
+import FormGroup from '@mui/material/FormGroup';
+import { faFileAlt, faFolderPlus } from '@fortawesome/free-solid-svg-icons'
+import { faShareAlt } from '@fortawesome/free-solid-svg-icons'
+import { faUpload } from '@fortawesome/free-solid-svg-icons'
+import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
+import { FileUploader } from "react-drag-drop-files";
+import FormControlLabel from '@mui/material/FormControlLabel';
+import {
+  createPortfolio,
+  getPortfolio,
+  getPortfolioSchema,
+  getMakeKeyValue,
+  getModelKeyValue,
+  getPrefixKeyValue,
+  updatePortfolio,
+  getUsageCategoryKeyValue,
+  getTaskTypeKeyValue,
+  getResponseTimeTaskKeyValue,
+  getValidityKeyValue,
+  getStrategyTaskKeyValue,
+  getProductHierarchyKeyValue,
+  getGergraphicKeyValue,
+  getMachineTypeKeyValue,
+  getTypeKeyValue,
+  getPortfolioCommonConfig,
+  getSearchQueryCoverage,
+  getSearchCoverageForFamily,
+  itemCreation
+} from "../../services/index";
 function Kits() {
   const [selectedOption, setSelectedOption] = useState(null);
   const [value, setValue] = React.useState('1');
@@ -40,7 +77,7 @@ function Kits() {
     'Atria',
     'Callisto'
   ];
-
+  const [openCoverage, setOpenCoveragetable] = React.useState(false);
   const [portfolioId, setPortfolioId] = useState();
   const [generalComponentData, setGeneralComponentData] = useState({
     name: "",
@@ -79,6 +116,566 @@ function Kits() {
     { value: 'vanilla', label: 'Construction-Medium' },
     { value: 'Construction', label: 'Construction' },
   ];
+
+  const masterColumns = [
+    {
+      name: (
+        <>
+          <div>Select</div>
+        </>
+      ),
+      selector: (row) => row.standardJobId,
+      wrap: true,
+      sortable: true,
+      maxWidth: "300px",
+      cell: (row) => <Checkbox className="text-black" checked={row.check1} onChange={(e) => handleMasterCheck(e, row)} />,
+    },
+    {
+      name: (
+        <>
+          <div>Make</div>
+        </>
+      ),
+      selector: (row) => row.make,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.make,
+    },
+    {
+      name: (
+        <>
+          <div>Family</div>
+        </>
+      ),
+      selector: (row) => row.family,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.family,
+    },
+    {
+      name: (
+        <>
+          <div>Model</div>
+        </>
+      ),
+      selector: (row) => row.model,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.model,
+    },
+    {
+      name: (
+        <>
+          <div>Prefix</div>
+        </>
+      ),
+      selector: (row) => row.prefix,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.prefix,
+    },
+    {
+      name: (
+        <>
+          <div>
+            Serial No
+          </div>
+        </>
+      ),
+      selector: (row) => row.bundleId,
+      sortable: true,
+      maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
+      // cell: row => row.bundleId,
+      // cell: (row) => <button onClick={() => alert()}>1</button>,
+      // cell: (row) => <Checkbox className="text-black" {...label} />,
+      format: (row) => row.bundleId,
+    },
+    {
+      name: (
+        <>
+          <div>
+            <img className="mr-2" src={boxicon}></img>Start Serial No
+          </div>
+  
+        </>
+      ),
+      selector: (row) => row.bundleDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.bundleDescription,
+    },
+    {
+      name: (
+        <>
+          <div>End Serial No</div>
+        </>
+      ),
+      selector: (row) => row.strategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.strategy,
+    },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Action</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.action,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.action,
+    //   cell: (row) => <div><img className="mr-2" src={penIcon} /><img className="mr-2" src={deleticon} /><img src={link1Icon} /></div>,
+    // },
+  ];
+  const fileTypes = ["JPG", "PNG", "GIF"];
+  const handleQuerySearchClick = () => {
+    $(".scrollbar").css("display", "none")
+    console.log("handleQuerySearchClick", querySearchSelector)
+    var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
+
+    for (let i = 1; i < querySearchSelector.length; i++) {
+      searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + "~" + querySearchSelector[i].inputSearch
+    }
+
+    console.log("searchStr", searchStr)
+    getSearchQueryCoverage(searchStr).then((res) => {
+      console.log("search Query Result :", res)
+      setMasterData(res)
+
+    }).catch((err) => {
+      console.log("error in getSearchQueryCoverage", err)
+    })
+
+  }
+  const handleDeletQuerySearch = () => {
+    setQuerySearchSelector([])
+    setCount(0)
+    setMasterData([])
+    setFilterMasterData([])
+    setSelectedMasterData([])
+  }
+  const addSearchQuerryHtml = () => {
+    setQuerySearchSelector([...querySearchSelector, {
+      id: count,
+      selectOperator: "",
+      selectFamily: "",
+      inputSearch: "",
+      selectOptions: [],
+      selectedOption: ""
+    }])
+    setCount(count + 1)
+  }
+  const handleSearchListClick = (e, currentItem, obj1, id) => {
+    let tempArray = [...querySearchSelector]
+    let obj = tempArray[id]
+    obj.inputSearch = currentItem
+    obj.selectedOption = currentItem
+    tempArray[id] = obj
+    setQuerySearchSelector([...tempArray])
+    $(`.scrollbar-${id}`).css("display", "none")
+  }
+  const handleInputSearch = (e, id) => {
+    let tempArray = [...querySearchSelector]
+    let obj = tempArray[id]
+    getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value).then((res) => {
+      obj.selectOptions = res
+      tempArray[id] = obj
+      setQuerySearchSelector([...tempArray]);
+      $(`.scrollbar-${id}`).css("display", "block")
+    }).catch((err) => {
+      console.log("err in api call", err)
+    })
+    obj.inputSearch = e.target.value
+  
+  }
+  const handleFamily = (e, id) => {
+    let tempArray = [...querySearchSelector]
+    console.log("handleFamily e:", e)
+    let obj = tempArray[id]
+    obj.selectFamily = e
+    tempArray[id] = obj
+    setQuerySearchSelector([...tempArray])
+  }
+  const handleOperator = (e, id) => {
+    let tempArray = [...querySearchSelector]
+    let obj = tempArray[id]
+    obj.selectOperator = e
+    tempArray[id] = obj
+    setQuerySearchSelector([...tempArray])
+  }
+  const customStyles = {
+    rows: {
+      style: {
+        minHeight: "72px", // override the row height
+      },
+    },
+    headCells: {
+      style: {
+        paddingLeft: "8px", // override the cell padding for head cells
+        paddingRight: "8px",
+        backgroundColor: "#7571f9",
+        color: "#fff"
+      },
+    },
+    cells: {
+      style: {
+        paddingLeft: "8px", // override the cell padding for data cells
+        paddingRight: "8px",
+      },
+    },
+  };
+  const selectedMasterColumns = [
+    {
+      name: (
+        <>
+          <div>Make</div>
+        </>
+      ),
+      selector: (row) => row.make,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.make,
+    },
+    {
+      name: (
+        <>
+          <div>Family</div>
+        </>
+      ),
+      selector: (row) => row.family,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.family,
+    },
+    {
+      name: (
+        <>
+          <div>Model</div>
+        </>
+      ),
+      selector: (row) => row.model,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.model,
+    },
+    {
+      name: (
+        <>
+          <div>Prefix</div>
+        </>
+      ),
+      selector: (row) => row.prefix,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.prefix,
+    },
+    {
+      name: (
+        <>
+          <div>
+            Serial No
+          </div>
+        </>
+      ),
+      selector: (row) => row.bundleId,
+      sortable: true,
+      maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
+      // cell: row => row.bundleId,
+      // cell: (row) => <button onClick={() => alert()}>1</button>,
+      // cell: (row) => <Checkbox className="text-black" {...label} />,
+      format: (row) => row.bundleId,
+    },
+    {
+      name: (
+        <>
+          <div>
+            <img className="mr-2" src={boxicon}></img>Start Serial No
+          </div>
+  
+        </>
+      ),
+      selector: (row) => row.bundleDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.bundleDescription,
+    },
+    {
+      name: (
+        <>
+          <div>End Serial No</div>
+        </>
+      ),
+      selector: (row) => row.strategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.strategy,
+    },
+    {
+      name: (
+        <>
+          <div>Action</div>
+        </>
+      ),
+      selector: (row) => row.action,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.action,
+      cell: (row) =>
+        <div>
+          <Link to="#" onClick={(e) => handleEditIncludeSerialNo(e, row)} className="btn-svg text-white cursor mx-2" data-toggle="modal" data-target="#AddCoverage">
+            <svg version="1.1" viewBox="0 0 1696.162 1696.143" xmlSpace="preserve" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"><g id="pen"><path d="M1648.016,305.367L1390.795,48.149C1359.747,17.098,1318.466,0,1274.555,0c-43.907,0-85.188,17.098-116.236,48.148   L81.585,1124.866c-10.22,10.22-16.808,23.511-18.75,37.833L0.601,1621.186c-2.774,20.448,4.161,41.015,18.753,55.605   c12.473,12.473,29.313,19.352,46.714,19.352c2.952,0,5.923-0.197,8.891-0.601l458.488-62.231   c14.324-1.945,27.615-8.529,37.835-18.752L1648.016,537.844c31.049-31.048,48.146-72.33,48.146-116.237   C1696.162,377.696,1679.064,336.415,1648.016,305.367z M493.598,1505.366l-350.381,47.558l47.56-350.376L953.78,439.557   l302.818,302.819L493.598,1505.366z M1554.575,444.404l-204.536,204.533l-302.821-302.818l204.535-204.532   c8.22-8.218,17.814-9.446,22.802-9.446c4.988,0,14.582,1.228,22.803,9.446l257.221,257.218c8.217,8.217,9.443,17.812,9.443,22.799   S1562.795,436.186,1554.575,444.404z" /></g><g id="Layer_1" /></svg>
+          </Link>
+          <Link to="#" onClick={(e) => handleDeleteIncludeSerialNo(e, row)} className="btn-svg text-white cursor mr-2"><svg data-name="Layer 41" id="Layer_41" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path class="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path class="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg></Link>
+          <Link to="#" className="btn-svg text-white cursor " onClick={() => setShowRelatedModel(true)}><svg data-name="Layer 1" id="Layer_1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ fill: 'none', width: '18px', strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2px' }}><title /><g data-name="&lt;Group&gt;" id="_Group_"><path class="cls-1" d="M13.38,10.79h0a3.5,3.5,0,0,1,0,5L10.52,18.6a3.5,3.5,0,0,1-5,0h0a3.5,3.5,0,0,1,0-5l.86-.86" data-name="&lt;Path&gt;" id="_Path_" /><path class="cls-1" d="M11,13.21h0a3.5,3.5,0,0,1,0-5L13.81,5.4a3.5,3.5,0,0,1,5,0h0a3.5,3.5,0,0,1,0,5l-.86.86" data-name="&lt;Path&gt;" id="_Path_2" /></g></svg></Link>
+        </div>,
+    },
+  ];
+  const handleDeleteIncludeSerialNo = (e, row) => {
+    const updated = selectedMasterData.filter((obj) => {
+      if (obj.id !== row.id)
+        return obj
+    })
+    setSelectedMasterData(updated)
+  }
+  const handleEditIncludeSerialNo = (e, row) => {
+    console.log("handleEditIncludeSerialNo row:", row)
+    let obj = {
+      coverageId: row.id,
+      make: row.make,
+      family: row.family,
+      modelNo: row.model,
+      serialNoPrefix: row.prefix,
+      startSerialNo: row.startSerialNo,
+      endSerialNo: row.endSerialNo,
+      fleet: row.fleet,
+      fleetSize: row.fleetSize,
+    }
+    setEditSerialNo(obj)
+  
+  }
+  const [editSerialNo, setEditSerialNo] = useState({
+    coverageId: "",
+    make: "",
+    family: "",
+    modelNo: "",
+    serialNoPrefix: "",
+    startSerialNo: "",
+    endSerialNo: "",
+    fleet: "",
+    fleetSize: ""
+
+  })
+  const [querySearchSelector, setQuerySearchSelector] = useState([{
+    id: 0,
+    selectFamily: "",
+    selectOperator: "",
+    inputSearch: "",
+    selectOptions: [],
+    selectedOption: ""
+  }])
+  const handleMasterCheck = (e, row) => {
+    if (e.target.checked) {
+      var _masterData = [...masterData]
+      const updated = _masterData.map((currentItem, i) => {
+        if (row.id == currentItem.id) {
+          return { ...currentItem, ["check1"]: e.target.checked }
+        } else return currentItem
+      })
+      setMasterData([...updated])
+      setFilterMasterData([...filterMasterData, { ...row }])
+    } else {
+      var _filterMasterData = [...filterMasterData]
+      const updated = _filterMasterData.filter((currentItem, i) => {
+        if (row.id !== currentItem.id)
+          return currentItem
+      })
+      setFilterMasterData(updated)
+    }
+  
+  }
+  const columns = [
+
+    {
+      name: (
+        <>
+          <div><Checkbox className="text-white" {...label} /></div>
+        </>
+      ),
+      selector: (row) => row.standardJobId,
+      wrap: true,
+      sortable: true,
+      maxWidth: "300px",
+      cell: (row) => <Checkbox className="text-black" {...label} />,
+    },
+    {
+      name: (
+        <>
+          <div>
+            <img className="mr-2" src={boxicon}></img>Group Number
+          </div>
+
+        </>
+      ),
+      selector: (row) => row.bundleDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.bundleDescription,
+    },
+    {
+      name: (
+        <>
+          <div>
+            <img className="mr-2" src={boxicon}></img>Type
+          </div>
+
+        </>
+      ),
+      selector: (row) => row.bundleDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.bundleDescription,
+    },
+    {
+      name: (
+        <>
+          <div>
+            <img className="mr-2" src={boxicon}></img>Part Number
+          </div>
+
+        </>
+      ),
+      selector: (row) => row.strategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.strategy,
+    },
+    {
+      name: (
+        <>
+          <div>Qty</div>
+        </>
+      ),
+      selector: (row) => row.strategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.strategy,
+    },
+    {
+      name: (
+        <>
+          <div>Unit Price</div>
+        </>
+      ),
+      selector: (row) => row.strategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.strategy,
+    },
+    {
+      name: (
+        <>
+          <div>Extended Price</div>
+        </>
+      ),
+      selector: (row) => row.frequency,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.frequency,
+    },
+    {
+      name: (
+        <>
+          <div>Currency</div>
+        </>
+      ),
+      selector: (row) => row.frequency,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.frequency,
+    },
+    {
+      name: (
+        <>
+          <div>% Usage</div>
+        </>
+      ),
+      selector: (row) => row.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.quantity,
+    },
+    {
+      name: (
+        <>
+          <div>Total Price</div>
+        </>
+      ),
+      selector: (row) => row.part,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.part,
+    },
+    {
+      name: (
+        <>
+          <div>
+            Comments
+          </div>
+        </>
+      ),
+      selector: (row) => row.bundleId,
+      sortable: true,
+      maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
+      // cell: row => row.bundleId,
+      // cell: (row) => <button onClick={() => alert()}>1</button>,
+      // cell: (row) => <Checkbox className="text-black" {...label} />,
+      format: (row) => row.bundleId,
+    },
+    {
+      name: (
+        <>
+          <div>
+            Action
+          </div>
+        </>
+      ),
+      selector: (row) => row.bundleId,
+      sortable: true,
+      maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
+      // cell: row => row.bundleId,
+      // cell: (row) => <button onClick={() => alert()}>1</button>,
+      // cell: (row) => <Checkbox className="text-black" {...label} />,
+      cell: (row) => <a onClick={() => setOpen2(true)} href="#"><FontAwesomeIcon icon={faPen} /></a>,
+      format: (row) => row.bundleId,
+    },
+  ];
+  const data = [
+    {
+      id: 1,
+      caseId: 13322,
+      BundleId: "Pc",
+      Bundledescription: "Ex2487518",
+      S1: "CAT DEO",
+      strategy: "3",
+      Standardjob: "$43.09",
+      repairoption: "$100",
+      frequency: "USD",
+      quantity: "80%",
+      part$: "$80",
+      srevic$: "80% usage observed on previous work.",
+      Total$: "80% usage observed on previous work.",
+    },
+  ];
+  const handleClose = () => setOpen(false);
+  const handleClose2 = () => setOpen2(false);
+  const [open, setOpen] = React.useState(false);
+  const [open2, setOpen2] = React.useState(false);
+  const [showRelatedModel, setShowRelatedModel] = useState(false)
+  const [masterData, setMasterData] = useState([])
+  const [selectedMasterData, setSelectedMasterData] = useState([])
+  const [filterMasterData, setFilterMasterData] = useState([])
+  const [count, setCount] = useState(1)
   return (
     <>
       {/* <CommanComponents /> */}
@@ -87,7 +684,7 @@ function Kits() {
           <div className="d-flex align-items-center justify-content-between mt-2">
             
             <div className="d-flex">
-          <h5 className="font-weight-600 mb-0">Repair Option</h5>
+          <h5 className="font-weight-600 mb-0">Kits</h5>
               <div className="ml-3">
                 {portfolioId ? generalComponentData.name : ""}
               </div>
@@ -129,6 +726,7 @@ function Kits() {
                     <Tab label="Estimation Team" value="3" />
                     <Tab label="Estimate" value="4" />
                     <Tab label="Pricing/Billing" value="5" />
+                    <Tab label="Coverage" value="6" />
                   </TabList>
                 </Box>
                 <TabPanel value="1">
@@ -211,7 +809,7 @@ function Kits() {
                   </div>
                   <div>
                     <div class="form-group mb-0">
-                      <Link to={"/BulidRepairOptions"} className="btn bg-primary text-white">
+                      <Link to={"/WithSpareParts"} className="btn bg-primary text-white">
                         Next
                       </Link>
                     </div>
@@ -415,9 +1013,385 @@ function Kits() {
                   </div>
 
                 </TabPanel>
+                <TabPanel value="6">
+            <div
+                    className="custom-table card p-3 "
+                    style={{ width: "100%", backgroundColor: "#fff" }}
+                  >
+                    <div className="row align-items-center ">
+                      {/* <div className="col-2">
+                        <div className="d-flex ">
+                          <h5 className="mr-4 mb-0">
+                            <span>Master Data</span>
+                          </h5>
+                          <p className="ml-4 mb-0"><a onClick={() => handleOpen()} className=" ml-3 font-size-14"><img src={uploadIcon}></img></a><a href="#" className="ml-3 "><img src={shareIcon}></img></a></p>
+                        </div>
+                      </div> */}
+                      <div className="col-12">
+                        {/* <div className="d-flex align-items-center">
+                        <div
+                              className="search-icon mr-2"
+                              style={{ lineHeight: "24px", cursor: "pointer" }}
+                              onClick={handleQuerySearchClick}
+                            >
+                              <SearchIcon />
+                            </div>
+                                <span className="mr-3">Search</span>
+                        </div> */}
+                        <div className="d-flex align-items-center bg-light-dark w-100">
+                          <div className="d-flex justify-content-between align-items-center p-3 border-radius-10 w-100 border-right">
+                            <div className="row align-items-center m-0">
+                              {
+                                querySearchSelector.map((obj, i) => {
+                                  return (
+                                    <>
+
+                                      <div className="customselect d-flex align-items-center mr-3 my-2">
+                                        {
+                                          i > 0 ?
+                                            <Select
+                                              isClearable={true}
+                                              defaultValue={{ label: "And", value: "AND" }}
+                                              options={[
+                                                { label: "And", value: "AND", id: i },
+                                                { label: "Or", value: "OR", id: i },
+                                              ]}
+                                              placeholder="&amp;"
+                                              onChange={(e) => handleOperator(e, i)}
+                                              // value={querySearchOperator[i]}
+                                              value={obj.selectOperator}
+
+                                            /> : <></>
+                                        }
+
+                                        <div>
+                                          <Select
+                                            // isClearable={true}
+                                            options={[
+                                              { label: "Make", value: "make", id: i },
+                                              { label: "Family", value: "family", id: i },
+                                              { label: "Model", value: "model", id: i },
+                                              { label: "Prefix", value: "prefix", id: i },
+                                            ]}
+                                            onChange={(e) => handleFamily(e, i)}
+                                            value={obj.selectFamily}
+                                          />
+                                        </div>
+                                        <div className="customselectsearch">
+                                          <input className="custom-input-sleact"
+                                            type="text"
+                                            placeholder="Search string"
+                                            value={obj.inputSearch}
+                                            onChange={(e) => handleInputSearch(e, i)}
+                                            id={"inputSearch-" + i}
+                                            autoComplete="off"
+                                          />
+
+                                          {
+
+                                            <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i}`} id="style">
+                                              {obj.selectOptions.map((currentItem, j) => (
+                                                <li className="list-group-item" key={j} onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}>{currentItem}</li>
+                                              ))}
+                                            </ul>
+
+                                          }
+                                        </div>
+                                      </div>
+                                    </>
+                                  );
+                                })
+                              }
+                              <div
+                                onClick={(e) => addSearchQuerryHtml(e)}>
+                                <Link
+                                  to="#"
+                                  className="btn-sm text-violet border"
+                                  style={{ border: "1px solid #872FF7" }}
+                                >
+                                  +
+                                </Link>
+                              </div>
+                              <div onClick={handleDeletQuerySearch}>
+                                <Link to="#" className="btn-sm">
+                                  <svg data-name="Layer 41" id="Layer_41" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path class="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path class="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg>
+                                  {/* <DeleteIcon className="font-size-16" /> */}
+                                </Link>
+                              </div>
+
+                            </div>
+                          </div>
+                          <div className="px-3">
+                            <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
+                              <SearchIcon /><span className="ml-1">Search</span>
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <hr />
+                    <DataTable
+                      className=""
+                      title=""
+                      columns={masterColumns}
+                      data={masterData}
+                      customStyles={customStyles}
+                      pagination
+                    />
+                    <div>
+                      <div className="text-right">
+                        <Link to="#" onClick={() => setSelectedMasterData(filterMasterData)} className="btn bg-primary text-white">+ Add Selected</Link></div>
+                    </div>
+                    <hr />
+                    <label htmlFor="Included-model">
+                      <h6 className="font-weight-400 text-black mb-2 mt-1">
+                        Included models
+                      </h6>
+
+                    </label>
+                    <DataTable
+                      className="mt-3"
+                      title=""
+                      columns={selectedMasterColumns}
+                      data={selectedMasterData}
+                      customStyles={customStyles}
+                      pagination
+                    />
+                  </div>
+              
+            </TabPanel>
               </TabContext>
             </Box>
           </div>
+          <div className="card border mt-4 px-2">
+            <div className="d-flex align-items-center justify-content-between px-3 py-4 pl-3">
+              <div className="">
+                <div className="d-flex ">
+                  <h5 className=" mb-0"><span>Parts Table</span></h5>
+                  <p className=" mb-0">
+
+
+                    {/* <a onClick={() => setOpen1(true)} className="ml-3 "><img src={editIcon}></img></a> */}
+                    <a href="#" className="ml-3"><FontAwesomeIcon icon={faPen} /></a>
+                    {/* <a href="#" className="ml-3 "><img src={shareIcon}></img></a> */}
+                  </p>
+                </div>
+              </div>
+              <div className="d-flex align-items-center ">
+                <div className=" text-center  ">
+                  <a onClick={() => setOpen(true)} style={{ cursor: 'pointer' }} className="btn-sm bg-primary text-white ml-3">Upload</a>
+                  <a onClick={() => setOpen2(true)} href="#" className="btn-sm bg-primary text-white ml-3">+ Add Part</a>
+                </div>
+              </div>
+            </div>
+            <DataTable
+              className="mr-2"
+              title=""
+              columns={columns}
+              data={data}
+              customStyles={customStyles}
+              pagination
+            />
+            <div className="m-3 text-right">
+              <a href="#" className="btn text-white bg-primary">Save</a>
+            </div>
+
+          </div>
+          <Modal show={open2} onHide={handleClose2} size="lg"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered>
+            <Modal.Header >
+              <Modal.Title>1000-Engine|23-Replace Engine|Replace Engine</Modal.Title>
+            </Modal.Header>
+            <Modal.Body className="p-0 bg-white">
+              <div className="ligt-greey-bg p-3">
+                <div>
+                  <span className="mr-3">
+                    <i class="fa fa-pencil font-size-12" aria-hidden="true"></i><span className="ml-2">Edit</span>
+                  </span>
+                  <span className="mr-3">
+                    <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                    <span className="ml-2 cursor"  data-toggle="modal" data-target="#Substitute" onClick={handleClose2}>Substitute parts</span>
+                  </span>
+                  <span className="mr-3">
+                    <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                    <span className="ml-2 cursor" data-toggle="modal" data-target="#Recommended" onClick={handleClose2}>Recommended price</span>
+                  </span>
+                  <span className="mr-3">
+                    < MonetizationOnOutlinedIcon className=" font-size-16" />
+                    <span className="ml-2"> Adjust price</span>
+                  </span>
+                  {/* <span className="mr-3">
+                    <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                    <span className="ml-2">Related part list(s)</span>
+                  </span>
+                  <span className="mr-3">
+                    <AccessAlarmOutlinedIcon className=" font-size-16" />
+                    <span className="ml-2">Related service estimate(s)</span>
+                  </span>
+                  <span>
+                    <SellOutlinedIcon className=" font-size-16" />
+                    <span className="ml-2">Split price</span>
+                  </span> */}
+                </div>
+              </div>
+              <div>
+                <div className="p-3">
+                  <div className="row mt-4">
+                    <div className="col-md-6 col-sm-6">
+                      <div class="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">GROUP NUMBER</label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="1000 ENGINE" />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div class="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TYPE</label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="0123 REPLACE" />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div class="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PART NUMBER</label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace left side of the Engine" />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div class="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QTY</label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="List Price" />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div class="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT PRICE</label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$35000" />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div class="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">EXTENDED PRICE</label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$10000" />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div class="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$5000" />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div class="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">% USAGE</label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EA" />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div class="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TOTAL PRICE</label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000" />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div class="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COMMENTS</label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE" />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div class="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DESCRIPTION</label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="m-3 text-right">
+                  <a href="#" onClick={handleClose2} className="btn border mr-3 "> Cancel</a>
+                  <a href="#" className="btn text-white bg-primary">Save</a>
+                </div>
+              </div>
+            </Modal.Body>
+
+
+          </Modal>
+
+          <Modal show={open} onHide={handleClose} size="md"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered>
+            <Modal.Header>
+              <Modal.Title>Import Files</Modal.Title>
+            </Modal.Header>
+            <Modal.Body className="p-0">
+              <div className="p-3">
+                <div className="add-new-recod">
+                  <div>
+                    <FontAwesomeIcon className="cloudupload" icon={faCloudUploadAlt} />
+                    <h6 className="font-weight-500 mt-3">Drag and drop files to upload <br /> or</h6>
+                    <FileUploader handleChange={handleChange} name="file" types={fileTypes} />
+                  </div>
+                </div>
+                <p className="mt-3">Single upload file should not be more than 10MB. Only the  .xls, .xlsx file types are allowed</p>
+              </div>
+              <div className="recent-div p-3">
+                <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
+                <div className="recent-items mt-3">
+                  <div className="d-flex justify-content-between align-items-center ">
+                    <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Engine Partlist</span></p>
+                    <div className="d-flex align-items-center">
+                      <div className="white-space custom-checkbox">
+                        <FormGroup>
+                          <FormControlLabel control={<Checkbox defaultChecked />} label="" />
+                        </FormGroup>
+                      </div>
+                      <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                      <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                      <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                      <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                    </div>
+                  </div>
+
+                </div>
+                <div className="d-flex justify-content-between align-items-center mt-2">
+                  <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                  <p className="font-size-12 mb-0">Part List </p>
+                </div>
+                <div className="recent-items mt-3">
+                  <div className="d-flex justify-content-between align-items-center ">
+                    <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Engine Partlist</span></p>
+                    <div className="d-flex align-items-center">
+                      <div className="white-space custom-checkbox">
+                        <FormGroup>
+                          <FormControlLabel control={<Checkbox />} label="" />
+                        </FormGroup>
+                      </div>
+                      <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                      <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                      <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                      <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                    </div>
+                  </div>
+
+                </div>
+                <div className="d-flex justify-content-between align-items-center mt-2">
+                  <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                  <p className="font-size-12 mb-0">Part List </p>
+                </div>
+              </div>
+
+
+            </Modal.Body>
+            <div className="row m-0 p-3">
+              <div className="col-md-6 col-sm-6">
+                <button className="btn border w-100 bg-white" onClick={handleClose}>Cancel</button>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <button className="btn btn-primary w-100" onClick={() => setOpenCoveragetable(true)} style={{ cursor: 'pointer' }}><FontAwesomeIcon className="mr-2" icon={faCloudUploadAlt} />Upload</button>
+              </div>
+            </div>
+
+
+          </Modal>
 
           {/* comment below code on 12/08 */}
           
