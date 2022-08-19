@@ -276,7 +276,7 @@ export const RepairStandardJobs = () => {
                                     <div className="col-md-4">
                                         <div className="recent-items mt-3">
                                             <div className="d-flex justify-content-between align-items-center ">
-                                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Portfolio Solution </span></p>
+                                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Standard Jobs </span></p>
                                                 <div className="d-flex align-items-center">
                                                     <div className="white-space custom-checkbox">
                                                         <FormGroup>
@@ -299,7 +299,7 @@ export const RepairStandardJobs = () => {
                                     <div className="col-md-4">
                                         <div className="recent-items mt-3">
                                             <div className="d-flex justify-content-between align-items-center ">
-                                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Service Bundles</span></p>
+                                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Standard Jobs</span></p>
                                                 <div className="d-flex align-items-center">
                                                     <div className="white-space custom-checkbox">
                                                         <FormGroup>
@@ -322,7 +322,7 @@ export const RepairStandardJobs = () => {
                                     <div className="col-md-4">
                                         <div className="recent-items mt-3">
                                             <div className="d-flex justify-content-between align-items-center ">
-                                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Service Bundles</span></p>
+                                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Standard Jobs</span></p>
                                                 <div className="d-flex align-items-center">
                                                     <div className="white-space custom-checkbox">
                                                         <FormGroup>
@@ -345,7 +345,7 @@ export const RepairStandardJobs = () => {
                                     <div className="col-md-4">
                                         <div className="recent-items mt-3">
                                             <div className="d-flex justify-content-between align-items-center ">
-                                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Portfolio Solution </span></p>
+                                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Standard Jobs</span></p>
                                                 <div className="d-flex align-items-center">
                                                     <div className="white-space custom-checkbox">
                                                         <FormGroup>
@@ -368,7 +368,7 @@ export const RepairStandardJobs = () => {
                                     <div className="col-md-4">
                                         <div className="recent-items mt-3">
                                             <div className="d-flex justify-content-between align-items-center ">
-                                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Service Bundles</span></p>
+                                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Standard Jobs</span></p>
                                                 <div className="d-flex align-items-center">
                                                     <div className="white-space custom-checkbox">
                                                         <FormGroup>
@@ -391,7 +391,7 @@ export const RepairStandardJobs = () => {
                                     <div className="col-md-4">
                                         <div className="recent-items mt-3">
                                             <div className="d-flex justify-content-between align-items-center ">
-                                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Stardegy Task</span></p>
+                                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Standard Jobs</span></p>
                                                 <div className="d-flex align-items-center">
                                                     <div className="white-space custom-checkbox">
                                                         <FormGroup>
@@ -415,7 +415,7 @@ export const RepairStandardJobs = () => {
                                 </div>
 
                             </div>
-                            <div className="recent-div p-3">
+                            {/* <div className="recent-div p-3">
                                 <h6 className="font-weight-600 text-grey mb-0">SERVICE BUNDLES</h6>
                                 <div className="row">
                                     <div className="col-md-4">
@@ -488,14 +488,14 @@ export const RepairStandardJobs = () => {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                     <div className="bg-primary px-3 mb-3">
            <div className="row align-items-center">
           <div className="col-3">
           <div className="d-flex ">
-          <h5 className="mr-4 mb-0 text-white"><span>Templates</span></h5>
+          <h5 className="mr-4 mb-0 text-white"><span>Standard Jobs</span></h5>
           <p className="ml-4 mb-0">
             <a href="#" className="ml-3 text-white"><EditOutlinedIcon/></a>
             <a href="#" className="ml-3 text-white"><ShareOutlinedIcon/></a>

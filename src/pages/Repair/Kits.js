@@ -18,7 +18,7 @@ import uploadIcon from '../../assets/icons/svg/upload.svg'
 import cpqIcon from '../../assets/icons/svg/CPQ.svg'
 import deleteIcon from '../../assets/icons/svg/delete.svg'
 import copyIcon from '../../assets/icons/svg/Copy.svg'
-import { Link } from 'react-router-dom'
+// import { Link } from 'react-router-dom'
 import { CommanComponents } from "components";
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
@@ -43,6 +43,16 @@ import { faUpload } from '@fortawesome/free-solid-svg-icons'
 import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
 import { FileUploader } from "react-drag-drop-files";
 import FormControlLabel from '@mui/material/FormControlLabel';
+import CheckOutlinedIcon from '@mui/icons-material/CheckOutlined';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import MultiSelect from '@mui/material/Select';
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import FormControl from '@mui/material/FormControl';
+import {Link, useHistory} from 'react-router-dom'
 import {
   createPortfolio,
   getPortfolio,
@@ -66,6 +76,7 @@ import {
   itemCreation
 } from "../../services/index";
 function Kits() {
+  const history=useHistory()
   const [selectedOption, setSelectedOption] = useState(null);
   const [value, setValue] = React.useState('1');
   const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
@@ -73,9 +84,9 @@ function Kits() {
     setValue(newValue);
   };
   const activityOptions = [
-    'None',
-    'Atria',
-    'Callisto'
+    'Give Versions',
+    'Show Errors',
+    'Review'
   ];
   const [openCoverage, setOpenCoveragetable] = React.useState(false);
   const [portfolioId, setPortfolioId] = useState();
@@ -549,6 +560,7 @@ function Kits() {
       wrap: true,
       sortable: true,
       format: (row) => row.strategy,
+      cell: (row) => <a href="#"  data-toggle="modal" data-target="#Recommended">3</a>,
     },
     {
       name: (
@@ -560,6 +572,7 @@ function Kits() {
       wrap: true,
       sortable: true,
       format: (row) => row.strategy,
+      
     },
     {
       name: (
@@ -571,6 +584,7 @@ function Kits() {
       wrap: true,
       sortable: true,
       format: (row) => row.strategy,
+      cell: (row) => <a href="#"  data-toggle="modal" data-target="#Substitute">3</a>,
     },
     {
       name: (
@@ -671,46 +685,139 @@ function Kits() {
   const handleClose2 = () => setOpen2(false);
   const [open, setOpen] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
+  const [open3, setOpen3] = React.useState(false);
   const [showRelatedModel, setShowRelatedModel] = useState(false)
   const [masterData, setMasterData] = useState([])
   const [selectedMasterData, setSelectedMasterData] = useState([])
   const [filterMasterData, setFilterMasterData] = useState([])
   const [count, setCount] = useState(1)
+  const handleClick = (event) => {
+    console.log("event",event)
+    setAnchorEl(event.currentTarget);
+    setOpen(true)
+  };
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const handleChangedrop = (event) => {
+    setAge(event.target.value);
+  };
+  const handleChangedrop1 = (event) => {
+    setAge1(event.target.value);
+  };
+  const handleChangedrop2 = (event) => {
+    setAge2(event.target.value);
+  };
+  const [age, setAge] = React.useState('5');
+  const [age1, setAge1] = React.useState('5');
+   const [age2, setAge2] = React.useState('5');
+   const handleCreate=()=>{
+    history.push('/quoteTemplate')
+  }
   return (
     <>
       {/* <CommanComponents /> */}
       <div className="content-body" style={{ minHeight: '884px' }}>
         <div class="container-fluid ">
-          <div className="d-flex align-items-center justify-content-between mt-2">
-            
-            <div className="d-flex">
+        <div className="d-flex align-items-center justify-content-between mt-2">
+            <div className="d-flex justify-content-center align-items-center">
           <h5 className="font-weight-600 mb-0">Kits</h5>
-              <div className="ml-3">
-                {portfolioId ? generalComponentData.name : ""}
+          <div className="d-flex justify-content-center align-items-center">
+            {/* <div className="ml-3"><a href="#" className="bg-yellow text-white btn-sm rounded-pill">* Gold <KeyboardArrowDownIcon className="font-size-14"/></a></div> */}
+            <div className="ml-3">
+                <Select className="customselectbtn1" onChange={(e) => handleOption3(e)} options={options3} value={value3} />
               </div>
             
               <div className="ml-3">
                 <Select className="customselectbtn" onChange={(e) => handleOption2(e)} options={options2} value={value2} />
               </div>
-              <div className="rating-star">
-                <span className="fa fa-star checked"></span>
-                <span className="fa fa-star checked"></span>
-                <span className="fa fa-star checked"></span>
-                <span className="fa fa-star"></span>
-                <span className="fa fa-star"></span>
+            <div className="rating-star">
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star"></span>
+              <span class="fa fa-star"></span>
               </div>
+           
+          </div>
+          </div>
+          <div className="d-flex">
+          <div className="d-flex justify-content-center align-items-center">
+          <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
+            <a href="#" className="ml-3 font-size-14" title="Items to Review"><img src={folderaddIcon}></img></a>
+            <a href="#" className="ml-3 font-size-14" title="Upload"><img src={uploadIcon}></img></a>
+            {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
+            <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
+            <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
+            <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions}/></a>
+           
+          </div>
+          <div>
+          <React.Fragment>
+      <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+      
+          <IconButton className="btn bg-primary text-white font-size-14 pr-0" style={{borderRadius:'5px'}}
+            onClick={handleClick}
+            size="small"
+            aria-controls={open ? 'account-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+          >
+           <span>Convert to<span><KeyboardArrowDownIcon/></span></span>
+          </IconButton>
 
-            </div>
-            <div className="d-flex justify-content-center align-items-center">
-              <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
-              <a href="#" className="ml-3 font-size-14" title="Items to Review"><img src={folderaddIcon}></img></a>
-              <a href="#" className="ml-3 font-size-14" title="Upload"><img src={uploadIcon}></img></a>
-              {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
-              <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
-              <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
-              <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+      </Box>
+      <Menu
+        anchorEl={anchorEl}
+        id="account-menu"
+        open={open}
+        onClose={handleClose}
+        onClick={handleClose}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+            mt: 1.5,
+            '& .MuiAvatar-root': {
+              width: 32,
+              height: 32,
+              ml: -0.5,
+              mr: 1,
+            },
+            '&:before': {
+              content: '""',
+              display: 'block',
+              position: 'absolute',
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              bgcolor: 'background.paper',
+              transform: 'translateY(-50%) rotate(45deg)',
+              zIndex: 0,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        <MenuItem >
+         Templates
+        </MenuItem>
+        <MenuItem >
+         Standard Job
+        </MenuItem>
+        <MenuItem>
+         Kit
+        </MenuItem>
+        <MenuItem data-toggle="modal" data-target="#quotecreat">
+        Quote
+        </MenuItem>
+        <Divider />
 
-            </div>
+      </Menu>
+    </React.Fragment>
+          </div>
+          </div>
           </div>
           <div className="card p-4 mt-5">
             <h5 className="d-flex align-items-center mb-0">
@@ -724,295 +831,472 @@ function Kits() {
                     <Tab label="Customer" value="1" />
                     <Tab label="Machine " value="2" />
                     <Tab label="Estimation Team" value="3" />
-                    <Tab label="Estimate" value="4" />
-                    <Tab label="Pricing/Billing" value="5" />
+                    <Tab label="General Details" value="4" />
+                    <Tab label="Price" value="5" />
                     <Tab label="Coverage" value="6" />
                   </TabList>
                 </Box>
                 <TabPanel value="1">
-                  <div className="row">
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">SOURCE ID</label>
-                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">SOURCE NAME</label>
-                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">CUSTOMER FIRST NAME</label>
-                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">CUSTOMER FIRST NAME</label>
-                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">CUSTOMER EMAIL</label>
-                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">CUSTOMER ZIPCODE</label>
-                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                      </div>
-                    </div>
-
-                  </div>
-                  <div className="row mt-3">
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">ACCOUNT NAME</p>
-                        <h6 class="font-weight-600">Koolan lran Ore pty Ltd</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">ACCOUNT NUMBER</p>
-                        <h6 class="font-weight-600">357418</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">CONTACT NAME</p>
-                        <h6 class="font-weight-600">Damon Farrell</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">CONTACT PH</p>
-                        <h6 class="font-weight-600">08 6311 5741</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">CUSTOMER GROUP</p>
-                        <h6 class="font-weight-600">Large Mining</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">BUSINESS AREA</p>
-                        <h6 class="font-weight-600">Australia-Direct Sale</h6>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="form-group mb-0">
-                      <Link to={"/WithSpareParts"} className="btn bg-primary text-white">
-                        Next
-                      </Link>
-                    </div>
-
-                  </div>
-
-                </TabPanel>
-                <TabPanel value="2">
-                  <div className="row mt-3">
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">MODAL</p>
-                        <h6 class="font-weight-600">992K</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">SERIAL NO</p>
-                        <h6 class="font-weight-600">H4COO450 </h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">SMU</p>
-                        <h6 class="font-weight-600">12,580</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2"> UNIT NO / FLEET NO</p>
-                        <h6 class="font-weight-600">WL006</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">REGISTRATION NO</p>
-                        <h6 class="font-weight-600">LAJOOt6t31</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">CHASSIS NO</p>
-                        <h6 class="font-weight-600">797</h6>
-                      </div>
-                    </div>
-                  </div>
-                </TabPanel>
-                <TabPanel value="3">
-                  <div className="row mt-3">
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">PRIPARED BY</p>
-                        <h6 class="font-weight-600">Dan Ham</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">PREPARED ON</p>
-                        <h6 class="font-weight-600">01.09.2021</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">APPROVER</p>
-                        <h6 class="font-weight-600">Steve Eckersley</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">REVISED BY </p>
-                        <h6 class="font-weight-600">Dan Ham</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">REVISED ON</p>
-                        <h6 class="font-weight-600">10.09.2021</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">SALES OFFICE</p>
-                        <h6 class="font-weight-600">Sales Office</h6>
-                      </div>
-                    </div>
-                  </div>
-                </TabPanel>
-                <TabPanel value="4">
-                  <div className="row mt-3">
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">QUOTE DATE </p>
-                        <h6 class="font-weight-600">3/10/2021</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">QUOTE NO</p>
-                        <h6 class="font-weight-600">1005583 </h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">DESCRIPTION</p>
-                        <h6 class="font-weight-600">Koolan 992k WL006(revised)</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">REFERENCE </p>
-                        <h6 class="font-weight-600">KM1305RE</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">QUOTE VALIDTITY</p>
-                        <h6 class="font-weight-600">30 days </h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">VERSION</p>
-                        <h6 class="font-weight-600">2</h6>
-                      </div>
-                    </div>
-                  </div>
-                </TabPanel>
-                <TabPanel value="5">
-                  <div className="row">
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">PRICE LIST</label>
-                        <Select
+            <div className="row">
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOURCE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER ID</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER NAME</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONTACT EMAIL</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONTACT PHONE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER GROUP</label>
+                      <Select
                           defaultValue={selectedOption}
                           onChange={setSelectedOption}
                           options={options}
                           placeholder="placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">PRICE METHOD</label>
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">PRICE DATE</label>
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
+                      />
                   </div>
-                  <div className="row mt-3">
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">PRICE LIST</p>
-                        <h6 class="font-weight-600">Mining</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">PRICE METHOD</p>
-                        <h6 class="font-weight-600">List Price </h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">PRICE DATE</p>
-                        <h6 class="font-weight-600">01.09
-                          2021</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">CURRENCY </p>
-                        <h6 class="font-weight-600">AUD</h6>
-                      </div>
-                    </div>
+              </div>
+                
+              </div>
+              <div className="row mt-3">
+       <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">SOURCE</p>
+              <h6 class="font-weight-500">Koolan lran Ore pty Ltd</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">CUSTOMER ID</p>
+              <h6 class="font-weight-500">357418</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">CUSTOMER NAME</p>
+              <h6 class="font-weight-500">Damon Farrell</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">CUSTOMER EMAIL</p>
+              <h6 class="font-weight-500">08 6311 5741</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">CONTACT PHONE</p>
+              <h6 class="font-weight-500">Large Mining</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">CUSTOMER GROUP</p>
+              <h6 class="font-weight-500">Australia-Direct Sale</h6>
+              </div>
+            </div>
+         </div>
+         <div>
+         <div className="row" style={{ justifyContent: "right" }}>
+                    <button type="button" className="btn btn-light bg-primary text-white">
+                      Save & Next
+                    </button>
                   </div>
+                {/* <div class="form-group mb-0">
+                  <Link to={"/WithSpareParts"} className="btn bg-primary text-white">
+                 Next
+                  </Link>
+                </div> */}
 
-                </TabPanel>
+         </div>
+
+            </TabPanel>
+            <TabPanel value="2">
+            <div className="row">
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MODEL</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SERIAL #</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SMU</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT NO / FLEET NO</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REGISTRATION NO</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CHASIS NO</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                
+                
+              </div>
+            <div className="row mt-3">
+       <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">MODEL</p>
+              <h6 class="font-weight-500">992K</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">SERIAL NO</p>
+              <h6 class="font-weight-500">H4COO450 </h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">SMU</p>
+              <h6 class="font-weight-500">12,580</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2"> UNIT NO / FLEET NO</p>
+              <h6 class="font-weight-500">WL006</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">REGISTRATION NO</p>
+              <h6 class="font-weight-500">LAJOOt6t31</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">CHASSIS NO</p>
+              <h6 class="font-weight-500">797</h6>
+              </div>
+            </div>
+         </div>
+         <div className="row" style={{ justifyContent: "right" }}>
+                    <button type="button" className="btn btn-light bg-primary text-white">
+                      Save & Next
+                    </button>
+                  </div>
+            </TabPanel>
+            <TabPanel value="3">
+            <div className="row">
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED BY</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">APPROVED BY</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED ON</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REVISED BY</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REVISED ON</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SALES OFFICE / BRANCH</label>
+                      <Select
+                          defaultValue={selectedOption}
+                          onChange={setSelectedOption}
+                          options={options}
+                          placeholder="placeholder (Optional)"
+                      />
+                  </div>
+              </div>
+                
+                
+              </div>
+            <div className="row mt-3">
+       <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">PREPARED BY</p>
+              <h6 class="font-weight-500">Dan Ham</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">APPROVED BY</p>
+              <h6 class="font-weight-500">01.09.2021</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">PREPARED ON</p>
+              <h6 class="font-weight-500">Steve Eckersley</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">REVISED BY </p>
+              <h6 class="font-weight-500">Dan Ham</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">REVISED ON</p>
+              <h6 class="font-weight-500">10.09.2021</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">SALES OFFICE / BRANCH</p>
+              <h6 class="font-weight-500">Sales Office</h6>
+              </div>
+            </div>
+         </div>
+         <div className="row" style={{ justifyContent: "right" }}>
+                    <button type="button" className="btn btn-light bg-primary text-white">
+                      Save & Next
+                    </button>
+                  </div>
+            </TabPanel>
+            <TabPanel value="4">
+            <div className="row">
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ESTIMATION DATE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ESTIMATION #</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DESCRIPTION</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REFERENCE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VALIDITY</label>
+                      <Select
+                          defaultValue={selectedOption}
+                          onChange={setSelectedOption}
+                          options={options}
+                          placeholder="placeholder (Optional)"
+                      />
+                  </div>
+              </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VERSION</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                
+                
+              </div>
+            <div className="row mt-3">
+       <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">ESTIMATION DATE </p>
+              <h6 class="font-weight-500">3/10/2021</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">ESTIMATION #</p>
+              <h6 class="font-weight-500">1005583 </h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">DESCRIPTION</p>
+              <h6 class="font-weight-500">Koolan 992k WL006(revised)</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">REFERENCE </p>
+              <h6 class="font-weight-500">KM1305RE</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">VALIDTITY</p>
+              <h6 class="font-weight-500">30 days </h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">VERSION</p>
+              <h6 class="font-weight-500">2</h6>
+              </div>
+            </div>
+         </div>
+         <div className="row" style={{ justifyContent: "right" }}>
+                    <button type="button" className="btn btn-light bg-primary text-white">
+                      Save & Next
+                    </button>
+                  </div>
+            </TabPanel>
+            <TabPanel value="5">
+              <div className="row">
+              <div className="col-md-4 col-sm-4">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PRICE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PRICE DATE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COST PRICE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+              <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PRICE METHOD</label>
+                      <Select
+                          defaultValue={selectedOption}
+                          onChange={setSelectedOption}
+                          options={options}
+                          placeholder="placeholder (Optional)"
+                      />
+                  </div>
+              </div>
+              <div className="col-md-4 col-sm-4">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ADJUSTED PRICE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+              
+              
+              <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
+                      <Select
+                          defaultValue={selectedOption}
+                          onChange={setSelectedOption}
+                          options={options}
+                          placeholder="placeholder (Optional)"
+                      />
+                  </div>
+              </div>
+              </div>
+              <div className="row mt-3">
+              <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">NET PRICE</p>
+              <h6 class="font-weight-500">Mining</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">PRICE DATE</p>
+              <h6 class="font-weight-500">01.09.2021</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">COST PRICE</p>
+              <h6 class="font-weight-500">01.09.2021</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">PRICE METHOD</p>
+              <h6 class="font-weight-500">List Price </h6>
+              </div>
+            </div>
+       <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">ADJUSTED PRICE </p>
+              <h6 class="font-weight-500">Mining</h6>
+              </div>
+            </div>
+            
+            
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">CURRENCY </p>
+              <h6 class="font-weight-500">AUD</h6>
+              </div>
+            </div>
+         </div>
+         <div className="row" style={{ justifyContent: "right" }}>
+                    <button type="button" className="btn btn-light bg-primary text-white">
+                      Next
+                    </button>
+                  </div>
+              
+            </TabPanel>
                 <TabPanel value="6">
             <div
                     className="custom-table card p-3 "
@@ -1163,8 +1447,8 @@ function Kits() {
               </TabContext>
             </Box>
           </div>
-          <div className="card border mt-4 px-2">
-            <div className="d-flex align-items-center justify-content-between px-3 py-4 pl-3">
+          <div className="card border mt-4 px-4">
+            <div className="d-flex align-items-center justify-content-between py-4">
               <div className="">
                 <div className="d-flex ">
                   <h5 className=" mb-0"><span>Parts Table</span></h5>
@@ -1177,10 +1461,80 @@ function Kits() {
                   </p>
                 </div>
               </div>
+              <div className="d-flex align-items-center">
+              <div className="search-icon mr-2 text-black" style={{lineHeight:'24px'}}>
+              <SearchOutlinedIcon/>
+              </div>
+              <div className="w-100 mx-2">
+              <div className="machine-drop d-flex align-items-center bg-white">
+             <div><lable className="label-div">Model</lable></div>
+            <FormControl className="" sx={{ m: 1,}}>
+              <MultiSelect 
+                id="demo-simple-select-autowidth"
+                value={age}
+                onChange={handleChangedrop}
+                autoWidth
+              >
+                <MenuItem value="5">
+                  <em>797</em>
+                </MenuItem>
+                <MenuItem value={10}>797</MenuItem>
+                <MenuItem value={21}>Twenty one</MenuItem>
+                <MenuItem value={22}>Twenty one and a half</MenuItem>
+              </MultiSelect>
+            </FormControl>
+          </div>
+              </div>
+              <div className="w-100 mx-2">
+              <div className="machine-drop d-flex align-items-center bg-white">
+             <div><lable className="label-div">Make</lable></div>
+            <FormControl className="" sx={{ m: 1,}}>
+              <MultiSelect 
+                id="demo-simple-select-autowidth"
+                value={age1}
+                onChange={handleChangedrop1}
+                autoWidth
+              >
+                <MenuItem value="5">
+                  <em>2018</em>
+                </MenuItem>
+                <MenuItem value={10}>2018</MenuItem>
+                <MenuItem value={21}>Twenty one</MenuItem>
+                <MenuItem value={22}>Twenty one and a half</MenuItem>
+              </MultiSelect>
+            </FormControl>
+          </div>
+              </div>
+              <div className="w-100 mx-2">
+              <div className="machine-drop d-flex align-items-center bg-white">
+             <div><lable className="label-div">Family </lable></div>
+            <FormControl className="" sx={{ m: 1,}}>
+              <MultiSelect 
+                id="demo-simple-select-autowidth"
+                value={age2}
+                onChange={handleChangedrop2}
+                autoWidth
+              >
+                <MenuItem value="5">
+                  <em>Dozer</em>
+                </MenuItem>
+                <MenuItem value={10}>Twenty</MenuItem>
+                <MenuItem value={21}>Twenty one</MenuItem>
+                <MenuItem value={22}>Twenty one and a half</MenuItem>
+              </MultiSelect>
+            </FormControl>
+          </div>
+              </div>
+              <div className="w-100" style={{display:'flex',justifyContent:'space-between',alignItems:'center',color:'#fff',border:'1px solid #fff',borderRadius:'5px',padding:'0px 15px'
+}}>
+                <lable>Search By</lable>
+                {/* <Checkbox {...label} /> */}
+                </div>
+            </div>
               <div className="d-flex align-items-center ">
                 <div className=" text-center  ">
-                  <a onClick={() => setOpen(true)} style={{ cursor: 'pointer' }} className="btn-sm bg-primary text-white ml-3">Upload</a>
-                  <a onClick={() => setOpen2(true)} href="#" className="btn-sm bg-primary text-white ml-3">+ Add Part</a>
+                  <a onClick={() => setOpen3(true)} style={{ cursor: 'pointer' }} className="btn bg-primary text-white ml-3">Upload</a>
+                  <a onClick={() => setOpen2(true)} href="#" className="btn bg-primary text-white ml-3">+ Add Part</a>
                 </div>
               </div>
             </div>
@@ -1192,7 +1546,7 @@ function Kits() {
               customStyles={customStyles}
               pagination
             />
-            <div className="m-3 text-right">
+            <div className=" my-3 text-right">
               <a href="#" className="btn text-white bg-primary">Save</a>
             </div>
 
@@ -1211,11 +1565,11 @@ function Kits() {
                   </span>
                   <span className="mr-3">
                     <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                    <span className="ml-2 cursor"  data-toggle="modal" data-target="#Substitute" onClick={handleClose2}>Substitute parts</span>
+                    <span className="ml-2 cursor"  data-toggle="modal" data-target="#Recommended" >Substitute parts</span>
                   </span>
                   <span className="mr-3">
                     <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                    <span className="ml-2 cursor" data-toggle="modal" data-target="#Recommended" onClick={handleClose2}>Recommended price</span>
+                    <span className="ml-2 cursor" data-toggle="modal" data-target="#Substitute" >Recommended price</span>
                   </span>
                   <span className="mr-3">
                     < MonetizationOnOutlinedIcon className=" font-size-16" />
@@ -1316,7 +1670,7 @@ function Kits() {
 
           </Modal>
 
-          <Modal show={open} onHide={handleClose} size="md"
+          <Modal show={open3} onHide={() => setOpen3(false)} size="md"
             aria-labelledby="contained-modal-title-vcenter"
             centered>
             <Modal.Header>
@@ -1836,6 +2190,260 @@ function Kits() {
             </Link>
 
           </div> */}
+        </div>
+        <div class="modal fade" id="Substitute" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{zIndex:'1200'}}>
+        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header p-0 ">
+              <div className="card w-100 p-2 m-0" style={{backgroundColor: '#F3F4FE'}}>
+              <div className="d-flex justify-content-between mt-3 px-3" >
+              <h6>RECOMMENDED DISCOUNT PRICE</h6>
+              <a href="" >$500</a>
+              </div>
+              <p className="mt-2 px-3">The best suited discount for this type of quotation.</p>
+              <div className="mx-3 mb-3">
+              <button className="btn border w-100 bg-white" style={{ borderRadius: '0.5rem'}}>Apply recommendation</button>
+              </div>
+              </div>
+            </div>
+            <div class="modal-body m-2">
+            <div className="card w-100 border mb-0">
+            <div className="row mt-3 px-2">
+             <div class="col-md-5 col-sm-5  pl-5">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2 ">PART TYPE</p>
+              <h6 class="font-weight-500">New</h6>
+              </div>
+            </div>
+            <div class="col-md-5 col-sm-5">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">ALLOWED DISCOUNT</p>
+              <h6 class="font-weight-500">20%</h6>
+              </div>
+            </div>
+            <div class="col-md-2 col-sm-2">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></input>
+            </div>
+            </div>
+            </div>
+            <div className="hr w-100"></div>
+            <div className="row mt-3 px-2">
+            <div class="col-md-5 col-sm-5 pl-5">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">PART TYPE</p>
+              <h6 class="font-weight-500">Refurb</h6>
+              </div>
+            </div>
+            <div class="col-md-5 col-sm-5">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">ALLOWED DISCOUNT</p>
+              <h6 class="font-weight-500">30%</h6>
+              </div>
+            </div>
+            <div class="col-md-2 col-sm-2">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></input>
+            </div>
+            </div>
+            </div>
+            <div className="hr w-100"></div>
+            <div className="row mt-3 px-2">
+            <div class="col-md-5 col-sm-5 pl-5">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">PART TYPE</p>
+              <h6 class="font-weight-500">Reman</h6>
+              </div>
+            </div>
+            <div class="col-md-5 col-sm-5">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">ALLOWED DISCOUNT</p>
+              <h6 class="font-weight-500">40%</h6>
+              </div>
+            </div> 
+            <div class="col-md-2 col-sm-2">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></input>
+            </div>
+            </div>
+         </div>
+         </div>
+            </div>
+
+            <div className="mx-4 mb-5">
+              <button className="btn border w-100 text-white bg-primary" style={{ borderRadius: '0.5rem'}}><span className="mr-2"><CheckOutlinedIcon /></span>Apply selection</button>
+              </div>
+             
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="Recommended" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{zIndex:'1200'}}>
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header p-4">
+           <div className="card w-100 border mb-0">
+            <div className="row mt-3 px-2">
+             <div class="col-md-5 col-sm-5 pl-5">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">PART TYPE</p>
+              <h6 class="font-weight-500">New</h6>
+              </div>
+            </div>
+            <div class="col-md-5 col-sm-5">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">ALLOWED DISCOUNT</p>
+              <h6 class="font-weight-500">20%</h6>
+              </div>
+            </div>
+            <div class="col-md-2 col-sm-2">
+            <div class="form-check">
+  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></input>
+</div>
+            {/* <div className="listcheckbox">
+            <input class="form-check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="..." />
+            </div> */}
+            </div>
+            </div>
+            <div className="hr w-100"></div>
+            <div className="row mt-3 px-2">
+            <div class="col-md-5 col-sm-5 pl-5">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">PART TYPE</p>
+              <h6 class="font-weight-500">Refurb</h6>
+              </div>
+            </div>
+            <div class="col-md-5 col-sm-5">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">ALLOWED DISCOUNT</p>
+              <h6 class="font-weight-500">30%</h6>
+              </div>
+            </div>
+            <div class="col-md-2 col-sm-2">
+            <div class="form-check">
+  <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></input>
+</div>
+            {/* <div className="listcheckbox">
+            <input class="form-check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="..." />
+            </div> */}
+            </div>
+            </div>
+            <div className="hr w-100"></div>
+            <div className="row mt-3 px-2">
+            <div class="col-md-5 col-sm-5 pl-5">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">PART TYPE</p>
+              <h6 class="font-weight-500">Reman</h6>
+              </div>
+            </div>
+            <div class="col-md-5 col-sm-5">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">ALLOWED DISCOUNT</p>
+              <h6 class="font-weight-500">40%</h6>
+              </div>
+            </div> 
+            <div class="col-md-2 col-sm-2">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1"></input>
+            </div>
+            {/* <div className="listcheckbox">
+            <input class="form-check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="..." />
+            </div> */}
+            </div>
+         </div>
+         </div>
+            </div>
+           
+            <div className="mx-4 mb-5">
+              <button className="btn border w-100 text-white bg-primary" style={{ borderRadius: '0.5rem'}}><span className="mr-2"><CheckOutlinedIcon /></span>Apply selection</button>
+              </div>
+          
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="quotecreat" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content bg-white border-none">
+              <div class="modal-header border-none">
+                <h5 class="modal-title" id="exampleModalLabel">Quote Create</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+               
+              </div>
+              <p className="d-block px-3">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</p>
+              <hr className="my-1"/>
+              <div class="modal-body">
+             <div className="row">
+             <div className="col-md-12 col-sm-12">
+              <div className="form-group">
+              <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">Quote Type</label>
+              <Select
+                defaultValue={selectedOption}
+                onChange={setSelectedOption}
+                options={options}
+                placeholder="Cyclical"
+              />
+            </div>
+              </div>
+              <div className="col-md-12 col-sm-12">
+              <div class="form-group">
+              <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">Quote ID</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email"/>
+              </div>
+              </div>
+              <div className="col-md-12 col-sm-12">
+              <div class="form-group">
+              <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">Description</label>
+              <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            </div>
+              </div>
+              <div className="col-md-12 col-sm-12">
+              <div class="form-group">
+              <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">Reference</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email"/>
+              </div>
+              </div>
+             </div>
+
+             <div className="row">
+             <div class="col-md-12 col-sm-12">
+               <div class="form-group mt-3">
+                 <p class="font-size-12 font-weight-500 mb-2">QUOTE TYPE </p>
+                 <h6 class="font-weight-500">Repair Quote with Spare Parts</h6>
+                 </div>
+                 </div>
+                 <div class="col-md-12 col-sm-12">
+               <div class="form-group mt-3">
+                 <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
+                 <h6 class="font-weight-500">SB12345</h6>
+                 </div>
+                 </div>
+                 <div class="col-md-12 col-sm-12">
+               <div class="form-group mt-3">
+                 <p class="font-size-12 font-weight-500 mb-2">QUOTE DESCRIPTION</p>
+                 <h6 class="font-weight-500">Holder text</h6>
+                 </div>
+                 </div>
+                 <div class="col-md-12 col-sm-12">
+               <div class="form-group mt-3">
+                 <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
+                 <h6 class="font-weight-500">Holder text</h6>
+                 </div>
+                 </div>
+               
+             </div>
+              </div>
+              <div class="modal-footer"style={{display:'unset'}}>
+                <div className="mb-2">
+                  <a href="#" onClick={()=>handleCreate()} data-dismiss="modal" className="btn bg-primary d-block text-white">Done</a>
+                </div>
+                <div>
+                <button class="btn  btn-primary">Create</button>
+                <button type="button" class="btn pull-right border" data-dismiss="modal">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>

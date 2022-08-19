@@ -1835,11 +1835,12 @@ nav.main-menu li.active>a,
 } */
 
 .form-control {
-  font-size: 13px;
+  font-size: 0.75rem;
   color: #616161;
   min-height: 38px;
   height: 38px;
   border-radius: 4px;
+  font-weight: 500;
 }
 
 .search-form-control {
@@ -1969,7 +1970,7 @@ nav.main-menu li.active>a,
 }
 
 .font-size-12 {
-  font-size: 12px !important;
+  font-size: 0.75rem !important;
 }
 
 .font-size-14 {
