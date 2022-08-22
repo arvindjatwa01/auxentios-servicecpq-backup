@@ -810,7 +810,7 @@ const history=useHistory()
           <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
       
-          <IconButton className="btn bg-primary text-white font-size-14 pr-0" style={{borderRadius:'5px'}}
+          <IconButton className="btn bg-primary text-white font-size-14 pr-0 ml-2" style={{borderRadius:'5px'}}
             onClick={handleClick}
             size="small"
             aria-controls={open ? 'account-menu' : undefined}
