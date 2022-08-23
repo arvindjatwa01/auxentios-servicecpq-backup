@@ -219,6 +219,7 @@ export function CreatePortfolio() {
   const [flagIs, setFlagIs] = useState(false)
   const [openModelBoxData, setOpenModelBoxData] = useState("")
   const [openModelRowData, setOpenModelRowData] = useState({})
+  const [openedModelBoxData, setOpenedModelBoxData] = useState([])
 
   const [coverageData, setCoverageData] = useState({
     make: "",
@@ -1829,7 +1830,23 @@ export function CreatePortfolio() {
       });
 
       if (!isFound) {
-        setFilterMasterData([...filterMasterData, { ...row }])
+        const _filterMasterData = [...filterMasterData, { ...row }];
+        const updatedItems = _filterMasterData.map((currentItem, i) => {
+          return {
+            ...currentItem,
+            items: [{
+              family: row.family,
+              model: row.model,
+              noSeriese: "0JAPA000470",
+              location: "LIMA",
+              startDate: "08/04/20017",
+              endDate: "08/04/20017"
+            }],
+          };
+        });
+        // console.log("updatedItems", updatedItems)
+        setFilterMasterData(updatedItems);
+        // setFilterMasterData([...filterMasterData, { ...row }])
       }
       // console.log(isFound, "data already exist");
 
@@ -1852,17 +1869,28 @@ export function CreatePortfolio() {
 
   }
 
-  useEffect(()=>{
-    if(masterData.some(masterDataitem => masterDataitem.check1 === true)){
+  useEffect(() => {
+    if (masterData.some(masterDataitem => masterDataitem.check1 === true)) {
       setFlagIs(true)
-    }else{
+    } else {
       setFlagIs(false)
     }
-    
-  },[masterData])
 
-  // console.log(masterData, " master data")
-  console.log(filterMasterData, "Filter master data")
+  }, [masterData])
+
+
+  // useEffect(() => {
+  //   const _selectedDataWithOutItems = [...selectedMasterData]
+  //   const selectedDataWithitemsArr = _selectedDataWithOutItems.map(selectedData =>
+  //   ({ ...selectedData, items: [] }
+  //   ))
+  //   setSelectedMasterData(selectedDataWithitemsArr)
+  // }, [selectedMasterData])
+
+
+
+  // console.log(selectedMasterData, "selected master data")
+  // console.log(filterMasterData, "Filter master data")
 
   const handleDeleteIncludeSerialNo = (e, row) => {
     const updated = selectedMasterData.filter((obj) => {
@@ -1870,6 +1898,7 @@ export function CreatePortfolio() {
         return obj
     })
     setSelectedMasterData(updated)
+    setFilterMasterData(updated)
   }
   const handleEditIncludeSerialNo = (e, row) => {
     console.log("handleEditIncludeSerialNo row:", row)
@@ -2513,9 +2542,94 @@ export function CreatePortfolio() {
   }
 
 
-  const ShowRelatedIncludeModelBox = (dataRow) =>{
+  const ShowRelatedIncludeModelBox = (dataRow) => {
+    setOpenedModelBoxData([])
     setShowRelatedModel(true)
-    console.log(dataRow)
+    var _selecteddDataWithoutItemsKey = [...selectedMasterData]
+
+    // const selectedDataWithitemsArr = _selecteddDataWithoutItemsKey.map((currentItem, i) => {
+    //   if (dataRow.id == currentItem.id) {
+    //     return currentItem.items
+    //   } else return 
+    // })
+
+    const selectedDataWithitemsArr = _selecteddDataWithoutItemsKey.filter(function (el) {
+      if (dataRow.id == el.id)
+        return el.items
+    })
+
+    // setMasterData([...updated])
+    // const selectedDataWithitemsArr = _selecteddDataWithoutItemsKey.map((selectedData, i) => {
+    //   if (dataRow.id == selectedData.id) {
+    //     if (selectedData.items) {
+
+    //       selectedData.items.push({
+    //         family: dataRow.family,
+    //         model: dataRow.model,
+    //         noSeriese: "0JAPA000470",
+    //         location: "LIMA",
+    //         startDate: "08/04/20017",
+    //         endDate: "08/04/20017"
+    //       })
+    //     } return {
+    //       ...selectedData, items: [{
+    //         family: dataRow.family,
+    //         model: dataRow.model,
+    //         noSeriese: "0JAPA000470",
+    //         location: "LIMA",
+    //         startDate: "08/04/20017",
+    //         endDate: "08/04/20017"
+    //       }]
+    //     }
+    //   }
+    //   return ({
+    //     ...selectedData, items: [...selectedData.items, {
+    //       family: dataRow.family,
+    //       model: dataRow.model,
+    //       noSeriese: "0JAPA000470",
+    //       location: "LIMA",
+    //       startDate: "08/04/20017",
+    //       endDate: "08/04/20017"
+    //     }]
+    //   })
+
+    //   // if (!selectedData.items) {
+    //   //   return ({ ...selectedData, items: [] })
+    //   // } else return selectedData
+    // })
+    setOpenedModelBoxData(selectedDataWithitemsArr)
+    console.log('selectedDataWithitemsArr REsultttt', selectedDataWithitemsArr)
+
+    // setSelectedMasterData(selectedDataWithitemsArr)
+    setOpenModelBoxData(dataRow.id)
+    console.log(dataRow, "opened row data")
+
+
+  }
+
+  const AddNewRowData = (rowId) => {
+    if (showRelatedModel === true) {
+      const _selectedDataWithOutItems = [...selectedMasterData]
+      const selectedDataWithitemsArr = _selectedDataWithOutItems.map(selectedData => {
+        if (selectedData.id == rowId) {
+          // return ({ ...selectedData, items: [] })
+          selectedData.items.push({
+            family: selectedData.family,
+            model: selectedData.model,
+            noSeriese: "0JAPA000470",
+            location: "LIMA",
+            startDate: "08/04/20017",
+            endDate: "08/04/20017"
+          })
+        } else return (selectedData)
+      })
+
+      // setSelectedMasterData(selectedDataWithitemsArr)
+
+      console.log(rowId, "Opened Moodel Row ID");
+      console.log(selectedDataWithitemsArr, "NEeeew selecteMAster data WIth Items")
+    }
+
   }
 
 
@@ -2545,7 +2659,7 @@ export function CreatePortfolio() {
 
 
     {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
-      <div id="row-0" role="row" className="sc-evZas cMMpBL rdt_TableRow" style={{backgroundColor:"#f1f1f1"}} >
+      <div id="row-0" role="row" className="sc-evZas cMMpBL rdt_TableRow" style={{ backgroundColor: "#f1f1f1" }} >
         <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco"  >
 
         </div>
@@ -6357,7 +6471,7 @@ export function CreatePortfolio() {
             <Modal.Title>Included Serial No</Modal.Title>
           </div>
           <div>
-            <Link to="#" className=" btn bg-primary text-white" >Add New</Link>
+            <Link to="#" className=" btn bg-primary text-white" onClick={() => AddNewRowData(openModelBoxData)}>Add New</Link>
           </div>
         </Modal.Header>
         <Modal.Body>
@@ -6365,10 +6479,12 @@ export function CreatePortfolio() {
             className=""
             title=""
             columns={columns4}
-            data={data4}
+            data={openedModelBoxData}
+            // data={data4}
             customStyles={customStyles}
           // pagination
           />
+          {console.log("selected naster data new ", selectedMasterData)}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => setShowRelatedModel(false)}>Close</Button>
