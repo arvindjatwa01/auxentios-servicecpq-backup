@@ -216,6 +216,10 @@ export function CreatePortfolio() {
   const [masterData, setMasterData] = useState([])
   const [filterMasterData, setFilterMasterData] = useState([])
   const [selectedMasterData, setSelectedMasterData] = useState([])
+  const [flagIs, setFlagIs] = useState(false)
+  const [openModelBoxData, setOpenModelBoxData] = useState("")
+  const [openModelRowData, setOpenModelRowData] = useState({})
+
   const [coverageData, setCoverageData] = useState({
     make: "",
     modal: "",
@@ -1751,6 +1755,7 @@ export function CreatePortfolio() {
   }
 
   const handleQuerySearchClick = () => {
+    setFlagIs(false)
     $(".scrollbar").css("display", "none")
     console.log("handleQuerySearchClick", querySearchSelector)
     if (querySearchSelector[0]?.selectFamily?.value == "" || querySearchSelector[0]?.inputSearch == "" || querySearchSelector[0]?.selectFamily?.value === undefined) {
@@ -1776,6 +1781,8 @@ export function CreatePortfolio() {
       console.log("error in getSearchQueryCoverage", err)
     })
 
+
+
   }
 
   const addSearchQuerryHtml = () => {
@@ -1798,17 +1805,35 @@ export function CreatePortfolio() {
     setSelectedMasterData([])
   }
 
-  const handleMasterCheck = (e, row) => {
+
+  const handleCheckboxData = (e, row) => {
+
+
     if (e.target.checked) {
-      var _masterData = [...masterData]
-      const updated = _masterData.map((currentItem, i) => {
+      var _searchedData = [...masterData]
+
+      const updated = _searchedData.map((currentItem, i) => {
         if (row.id == currentItem.id) {
           return { ...currentItem, ["check1"]: e.target.checked }
-        } else return { currentItem, ["check1"]: !e.target.checked }
+        } else return currentItem
       })
+
       setMasterData([...updated])
-      setFilterMasterData([...filterMasterData, { ...row }])
-      
+
+      const isFound = filterMasterData.some(element => {
+        if (element.id === row.id) {
+          return true;
+        }
+
+        return false;
+      });
+
+      if (!isFound) {
+        setFilterMasterData([...filterMasterData, { ...row }])
+      }
+      // console.log(isFound, "data already exist");
+
+      // console.log(filterMasterData, "filtermasterDataaaaa")
     } else {
       var _masterData = [...masterData]
       const updated1 = _masterData.map((currentItem, i) => {
@@ -1976,7 +2001,7 @@ export function CreatePortfolio() {
       wrap: true,
       sortable: true,
       maxWidth: "300px",
-      cell: (row) => <Checkbox className="text-black" checked={row.check1} onChange={(e) => handleMasterCheck(e, row)} />,
+      cell: (row) => <Checkbox className="text-black" checked={row.check1} onChange={(e) => handleCheckboxData(e, row)} />,
     },
     {
       name: (
@@ -2414,6 +2439,8 @@ export function CreatePortfolio() {
     },
 
   ];
+
+
   const data4 = [
     {
       family: "MOTONIVELADORAS",
@@ -3619,7 +3646,7 @@ export function CreatePortfolio() {
                             <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
                               <SearchIcon /><span className="ml-1">Search</span>
                             </Link>
-                            {console.log(selectedMasterData, "Selected MAster data")}
+
                           </div>
                         </div>
                       </div>
@@ -3648,8 +3675,8 @@ export function CreatePortfolio() {
                               setMasterData([])
                             }}
                               className="btn bg-primary text-white" value="+ Add Selected"
-                              disabled={filterMasterData.length == 0} />
-                              
+                              disabled={!flagIs} />
+
                             {/* <Link to="#"
                           onClick={() => {
                             setSelectedMasterData(filterMasterData)
@@ -6316,7 +6343,7 @@ export function CreatePortfolio() {
             <Modal.Title>Included Serial No</Modal.Title>
           </div>
           <div>
-            <Link to="#" className=" btn bg-primary text-white">Add New</Link>
+            <Link to="#" className=" btn bg-primary text-white" onClick={AddNewRowData(openModelRowData)}>Add New</Link>
           </div>
         </Modal.Header>
         <Modal.Body>
