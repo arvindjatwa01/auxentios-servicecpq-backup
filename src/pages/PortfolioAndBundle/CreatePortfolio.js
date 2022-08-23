@@ -66,7 +66,7 @@ import Portfoliosicon from "../../assets/icons/svg/Portfolios-icon.svg";
 import Buttonarrow from "../../assets/icons/svg/Button-arrow.svg";
 import contract from "../../assets/icons/svg/contract.svg";
 import repairicon from "../../assets/icons/svg/repair-icon.svg";
-
+import Table from 'react-bootstrap/Table';
 
 
 import {
@@ -264,7 +264,8 @@ export function CreatePortfolio() {
     serviceDescription: "",
     externalReference: "",
     customerSegment: null,
-    items: []
+    items: [],
+    coverages: [],
   });
   const [newBundle, setNewBundle] = useState({
     serviceDescription: "",
@@ -373,6 +374,8 @@ export function CreatePortfolio() {
     machine: "",
     additional: "",
   })
+  const [serviceOrBundleList, setServiceOrBundleList] = useState([])
+  const [tabs, setTabs] = useState("2")
 
   const frequencyOptions = [
     { label: "Cyclic", value: "Cyclic" },
@@ -539,134 +542,316 @@ export function CreatePortfolio() {
     }
   };
 
-  const handleBundleItemSaveAndContinue = () => {
-    console.log("handleBundleItemSaveAndContinue", generalComponentData)
-    let reqObj = {
-      itemId: 0,
-      itemName: "",
-      itemHeaderModel: {
-        itemHeaderId: 0,
-        // itemHeaderId: parseInt(generalComponentData.portfolioId),
-        itemHeaderDescription: generalComponentData.description,
-        bundleFlag: "PORTFOLIO",
-        reference: generalComponentData.externalReference,
-        itemHeaderMake: "",
-        itemHeaderFamily: "",
-        model: "",
-        prefix: "",
-        type: "MACHINE",
-        additional: "",
-        currency: "",
-        netPrice: 0,
-        itemProductHierarchy: generalComponentData.productHierarchy,
-        itemHeaderGeographic: generalComponentData.geographic,
-        responseTime: generalComponentData.responseTime,
-        usage: "",
-        validFrom: generalComponentData.validFrom,
-        validTo: generalComponentData.validTo,
-        estimatedTime: "",
-        servicePrice: 0,
-        status: "NEW"
-      },
-      itemBodyModel: {
-        itemBodyId: parseInt(addPortFolioItem.id),
-        itemBodyDescription: addPortFolioItem.description,
-        quantity: parseInt(addPortFolioItem.quantity),
-        startUsage: priceCalculator.startUsage,
-        endUsage: priceCalculator.endUsage,
-        standardJobId: "",
-        frequency: addPortFolioItem.frequency.value,
-        additional: "",
-        spareParts: ["WITH_SPARE_PARTS"],
-        labours: ["WITH_LABOUR"],
-        miscellaneous: ["LUBRICANTS"],
-        taskType: [addPortFolioItem.taskType.value],
-        solutionCode: "",
-        usageIn: addPortFolioItem.usageIn.value,
-        recommendedValue: 0,
-        usage: "",
-        repairKitId: "",
-        templateDescription: addPortFolioItem.description.value,
-        partListId: "",
-        serviceEstimateId: "",
-        numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
-        repairOption: addPortFolioItem.repairOption.value,
-        priceMethod: "LIST_PRICE",
-        listPrice: parseInt(priceCalculator.listPrice),
-        priceEscalation: "",
-        calculatedPrice: parseInt(priceCalculator.calculatedPrice),
-        flatPrice: parseInt(priceCalculator.flatPrice),
-        discountType: "",
-        year: priceCalculator.priceYear.value,
-        avgUsage: 0,
-        unit: addPortFolioItem.unit.value,
-        sparePartsPrice: 0,
-        sparePartsPriceBreakDownPercentage: 0,
-        servicePrice: 0,
-        servicePriceBreakDownPercentage: 0,
-        miscPrice: 0,
-        miscPriceBreakDownPercentage: 0,
-        totalPrice: 0
-      },
+  const handleBundleItemSaveAndContinue = async () => {
+    try {
+      let reqObj = {
+        itemId: 0,
+        itemName: "",
+        itemHeaderModel: {
+          itemHeaderId: 0,
+          // itemHeaderId: parseInt(generalComponentData.portfolioId),
+          itemHeaderDescription: generalComponentData.description,
+          bundleFlag: "PORTFOLIO",
+          reference: generalComponentData.externalReference,
+          itemHeaderMake: "",
+          itemHeaderFamily: "",
+          model: "",
+          prefix: "",
+          type: "MACHINE",
+          additional: "",
+          currency: "",
+          netPrice: 0,
+          itemProductHierarchy: generalComponentData.productHierarchy,
+          itemHeaderGeographic: generalComponentData.geographic,
+          responseTime: generalComponentData.responseTime,
+          usage: "",
+          validFrom: generalComponentData.validFrom,
+          validTo: generalComponentData.validTo,
+          estimatedTime: "",
+          servicePrice: 0,
+          status: "NEW"
+        },
+        itemBodyModel: {
+          itemBodyId: parseInt(addPortFolioItem.id),
+          itemBodyDescription: addPortFolioItem.description,
+          quantity: parseInt(addPortFolioItem.quantity),
+          startUsage: priceCalculator.startUsage,
+          endUsage: priceCalculator.endUsage,
+          standardJobId: "",
+          frequency: addPortFolioItem.frequency.value,
+          additional: "",
+          spareParts: ["WITH_SPARE_PARTS"],
+          labours: ["WITH_LABOUR"],
+          miscellaneous: ["LUBRICANTS"],
+          taskType: [addPortFolioItem.taskType.value],
+          solutionCode: "",
+          usageIn: addPortFolioItem.usageIn.value,
+          recommendedValue: 0,
+          usage: "",
+          repairKitId: "",
+          templateDescription: addPortFolioItem.description.value,
+          partListId: "",
+          serviceEstimateId: "",
+          numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+          repairOption: addPortFolioItem.repairOption.value,
+          priceMethod: "LIST_PRICE",
+          listPrice: parseInt(priceCalculator.listPrice),
+          priceEscalation: "",
+          calculatedPrice: parseInt(priceCalculator.calculatedPrice),
+          flatPrice: parseInt(priceCalculator.flatPrice),
+          discountType: "",
+          year: priceCalculator.priceYear.value,
+          avgUsage: 0,
+          unit: addPortFolioItem.unit.value,
+          sparePartsPrice: 0,
+          sparePartsPriceBreakDownPercentage: 0,
+          servicePrice: 0,
+          servicePriceBreakDownPercentage: 0,
+          miscPrice: 0,
+          miscPriceBreakDownPercentage: 0,
+          totalPrice: 0
+        },
+      }
+      const itemRes = await itemCreation(reqObj)
+      console.log("itemCreation res:", itemRes)
+      if (itemRes.status !== 200) {
+        alert("something went wrong")
+        return
+      }
+      const _generalComponentData = { ...generalComponentData }
+      _generalComponentData.items?.push({ itemId: itemRes.data.itemId })
+      setGeneralComponentData(_generalComponentData)
+      // put API for porfolio update Item id 
+      // call here
+
+      const { portfolioId, ...res } = generalComponentData
+      let obj = {
+        ...res,
+        visibleInCommerce: true,
+        customerId: 0,
+        lubricant: true,
+        customerSegment: generalComponentData.customerSegment
+          ? generalComponentData.customerSegment.value
+          : "EMPTY",
+        machineType: generalComponentData.machineType
+          ? generalComponentData.machineType
+          : "EMPTY",
+        status: generalComponentData.status
+          ? generalComponentData.status
+          : "EMPTY",
+        strategyTask: generalComponentData.strategyTask
+          ? generalComponentData.strategyTask
+          : "EMPTY",
+        taskType: generalComponentData.taskType
+          ? generalComponentData.taskType
+          : "EMPTY",
+        usageCategory: generalComponentData.usageCategory
+          ? generalComponentData.usageCategory
+          : "EMPTY",
+        productHierarchy: generalComponentData.productHierarchy
+          ? generalComponentData.productHierarchy
+          : "EMPTY",
+        geographic: generalComponentData.geographic
+          ? generalComponentData.geographic
+          : "EMPTY",
+        availability: generalComponentData.availability
+          ? generalComponentData.availability
+          : "EMPTY",
+        responseTime: generalComponentData.responseTime
+          ? generalComponentData.responseTime
+          : "EMPTY",
+        type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+        application: generalComponentData.application
+          ? generalComponentData.application
+          : "EMPTY",
+        contractOrSupport: generalComponentData.contractOrSupport
+          ? generalComponentData.contractOrSupport
+          : "EMPTY",
+        lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+          ? generalComponentData.lifeStageOfMachine
+          : "EMPTY",
+        supportLevel: generalComponentData.supportLevel
+          ? generalComponentData.supportLevel
+          : "EMPTY",
+        customerGroup: generalComponentData.customerGroup
+          ? generalComponentData.customerGroup
+          : "EMPTY",
+        searchTerm: "EMPTY",
+        supportLevel: "EMPTY",
+        portfolioPrice: {},
+        additionalPrice: {},
+        escalationPrice: {},
+        coverages: [],
+        items: _generalComponentData.items,
+        usageCategory: categoryUsageKeyValue1.value,
+        taskType: stratgyTaskTypeKeyValue.value,
+        strategyTask: stratgyTaskUsageKeyValue.value,
+        responseTime: stratgyResponseTimeKeyValue.value,
+        productHierarchy: stratgyHierarchyKeyValue.value,
+        geographic: stratgyGeographicKeyValue.value,
+
+      }
+      if (generalComponentData.portfolioId) {
+        const updatePortfolioRes = await updatePortfolio(generalComponentData.portfolioId, obj)
+
+        console.log("portfolio updated:", updatePortfolioRes)
+
+      }
+
+
+      setOpen2(false)   //Hide Price Calculator Screen
+      setGeneralComponentData(_generalComponentData)
+      setBundleItems([...bundleItems, itemRes.data])
+      // setServiceOrBundleList([itemRes.data])
+
+      // dispatch(portfolioItemActions.createItem(createItemPayload(taskItemList)));
+      // alert("Save And Continue")
+      // var temp = [...bundleItems];
+      // var bundleId = Math.floor(Math.random() * 100)
+      // var dict = {
+      //     id: 1,
+      //     bundleId: "PM" + bundleId,
+      //     bundleDescription: 'Preventive Maintenance ' + bundleId,
+      //     strategy: 'Preventive Maintenance',
+      //     standardJobId: 'SJ1034',
+      //     frequency: '125 hours',
+      //     quantity: '4',
+      //     part: '$1250',
+      //     service: '$350',
+      //     total: '$1575',
+      //     action: "-"
+      // }
+      // temp.push(dict)
+      // setBundleItems(temp)
+      setOpenAddBundleItem(false);
+      setOpenSearchSolution(false);
+      // toast('👏 Item Added', {
+      //     position: "top-right",
+      //     autoClose: 5000,
+      //     hideProgressBar: false,
+      //     closeOnClick: true,
+      //     pauseOnHover: true,
+      //     draggable: true,
+      //     progress: undefined,
+      // });
+
+
+      // }
+      // else {
+      //   toast("🙄 Please create item header first", {
+      //     position: "top-right",
+      //     autoClose: 5000,
+      //     hideProgressBar: false,
+      //     closeOnClick: true,
+      //     pauseOnHover: true,
+      //     draggable: true,
+      //     progress: undefined,
+      //   });
+      // }
+    } catch (error) {
+      console.log("error in item creation err:", error)
     }
 
-    itemCreation(reqObj).then((res) => {
-      console.log("itemCreation res:", res)
+  };
+
+  const saveAddNewServiceOrBundle = async () => {
+    try {
+      // alert("handleAddNewServiceOrBundle called")
+      let reqObj = {
+        itemId: 0,
+        itemName: "",
+        itemHeaderModel: {
+          itemHeaderId: 0,
+          // itemHeaderId: parseInt(generalComponentData.portfolioId),
+          itemHeaderDescription: createServiceOrBundle.description,
+          bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+          reference: createServiceOrBundle.reference,
+          itemHeaderMake: createServiceOrBundle.make,
+          itemHeaderFamily: "",
+          model: createServiceOrBundle.models,
+          prefix: createServiceOrBundle.prefix,
+          type: "MACHINE",
+          additional: createServiceOrBundle.additional,
+          currency: "",
+          netPrice: 0,
+          itemProductHierarchy: generalComponentData.productHierarchy,
+          itemHeaderGeographic: generalComponentData.geographic,
+          responseTime: generalComponentData.responseTime,
+          usage: "",
+          validFrom: generalComponentData.validFrom,
+          validTo: generalComponentData.validTo,
+          estimatedTime: "",
+          servicePrice: 0,
+          status: "NEW"
+        },
+        itemBodyModel: {
+          itemBodyId: parseInt(addPortFolioItem.id),
+          itemBodyDescription: addPortFolioItem.description,
+          quantity: parseInt(addPortFolioItem.quantity),
+          startUsage: priceCalculator.startUsage,
+          endUsage: priceCalculator.endUsage,
+          standardJobId: "",
+          frequency: addPortFolioItem.frequency.value,
+          additional: "",
+          spareParts: ["WITH_SPARE_PARTS"],
+          labours: ["WITH_LABOUR"],
+          miscellaneous: ["LUBRICANTS"],
+          taskType: [addPortFolioItem.taskType.value],
+          solutionCode: "",
+          usageIn: addPortFolioItem.usageIn.value,
+          recommendedValue: 0,
+          usage: "",
+          repairKitId: "",
+          templateDescription: addPortFolioItem.description.value,
+          partListId: "",
+          serviceEstimateId: "",
+          numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+          repairOption: addPortFolioItem.repairOption.value,
+          priceMethod: "LIST_PRICE",
+          listPrice: parseInt(priceCalculator.listPrice),
+          priceEscalation: "",
+          calculatedPrice: parseInt(priceCalculator.calculatedPrice),
+          flatPrice: parseInt(priceCalculator.flatPrice),
+          discountType: "",
+          year: priceCalculator.priceYear.value,
+          avgUsage: 0,
+          unit: addPortFolioItem.unit.value,
+          sparePartsPrice: 0,
+          sparePartsPriceBreakDownPercentage: 0,
+          servicePrice: 0,
+          servicePriceBreakDownPercentage: 0,
+          miscPrice: 0,
+          miscPriceBreakDownPercentage: 0,
+          totalPrice: 0
+        },
+      }
+      setOpen2(false)   //Hide Price Calculator Screen
+
+      const res = await itemCreation(reqObj)
+      console.log("service or bundle res:", res)
       if (res.status !== 200) {
         alert("something went wrong")
         return
       }
-      setBundleItems([...bundleItems, res.data])
-      setOpen2(false)   //Hide Price Calculator Screen
-    }).catch((err) => {
-      console.log("itemCreation err:", err)
-    })
-    // dispatch(portfolioItemActions.createItem(createItemPayload(taskItemList)));
-    // alert("Save And Continue")
-    // var temp = [...bundleItems];
-    // var bundleId = Math.floor(Math.random() * 100)
-    // var dict = {
-    //     id: 1,
-    //     bundleId: "PM" + bundleId,
-    //     bundleDescription: 'Preventive Maintenance ' + bundleId,
-    //     strategy: 'Preventive Maintenance',
-    //     standardJobId: 'SJ1034',
-    //     frequency: '125 hours',
-    //     quantity: '4',
-    //     part: '$1250',
-    //     service: '$350',
-    //     total: '$1575',
-    //     action: "-"
-    // }
-    // temp.push(dict)
-    // setBundleItems(temp)
-    setOpenAddBundleItem(false);
-    setOpenSearchSolution(false);
-    // toast('👏 Item Added', {
-    //     position: "top-right",
-    //     autoClose: 5000,
-    //     hideProgressBar: false,
-    //     closeOnClick: true,
-    //     pauseOnHover: true,
-    //     draggable: true,
-    //     progress: undefined,
-    // });
+      // call update API for portfolio to update item with service or bundle 
+      const _bundleItems = [...bundleItems]
+
+      if (_bundleItems[0].associatedServiceOrBundle) {
+        _bundleItems[0].associatedServiceOrBundle.push(res.data)
+      } else {
+        _bundleItems[0] = { ..._bundleItems[0], associatedServiceOrBundle: [res.data] }
+      }
+      setBundleItems(_bundleItems)
 
 
-    // }
-    // else {
-    //   toast("🙄 Please create item header first", {
-    //     position: "top-right",
-    //     autoClose: 5000,
-    //     hideProgressBar: false,
-    //     closeOnClick: true,
-    //     pauseOnHover: true,
-    //     draggable: true,
-    //     progress: undefined,
-    //   });
-    // }
 
-  };
+
+    } catch (error) {
+      console.log("itemCreation err:", error)
+    }
+
+  }
+
   const handleAddNewBundle = () => {
     // alert("Save And Continue")
     var temp = [...bundleItems];
@@ -887,12 +1072,7 @@ export function CreatePortfolio() {
         ...generalComponentData,
         ...reqData,
       });
-      let obj = {
-        ...generalComponentData,
-        ...reqData
-      };
 
-      console.log("Update Date Data", obj);
     } else if (e.target.id == "strategy") {
       setGeneralComponentData({
         ...generalComponentData,
@@ -980,10 +1160,7 @@ export function CreatePortfolio() {
         .catch((err) => {
           console.log(" Error in strategy updating", err);
         });
-      console.log("strategy updating obj", obj);
     } else if (e.target.id == "coverage") {
-
-      console.log("coverage updating", selectedMasterData);
       let cvgIds = []
       const tempFun = async () => {
         try {
@@ -1140,6 +1317,7 @@ export function CreatePortfolio() {
           console.log("portfolioDetails", portfolioDetails);
           if (portfolioDetails.portfolioId != null) {
             setGeneralComponentData({
+              ...generalComponentData,
               name: portfolioDetails.name,
               description: portfolioDetails.description,
               externalReference: portfolioDetails.externalReference,
@@ -1148,7 +1326,7 @@ export function CreatePortfolio() {
             });
           }
         })
-        .catch((err) => { });
+        .catch((err) => { console.log("error:", err) });
     }
   };
 
@@ -1357,7 +1535,7 @@ export function CreatePortfolio() {
   // console.log("useSelector((state)=>state.categoryList)",usageIn)
 
   useEffect(() => {
-    const portfolioId = 4;
+    const portfolioId = 80;
     getPortfolioDetails(portfolioId);
     initFetch();
     dispatch(taskActions.fetchTaskList());
@@ -1672,66 +1850,10 @@ export function CreatePortfolio() {
       setFilterMasterData(updated)
     }
 
-
   }
 
-  useEffect(() => {
-    if (masterData.some(masterDataCheckExist => masterDataCheckExist.check1 === true)) {
-      // console.log(true, "check1 is true")
-      setFlagIs(true);
-    } else {
-      // console.log(false, "check1 is false")
-      setFlagIs(false);
-    }
-  }, [masterData])
-
-
-
-
-  // const handleMasterCheck = (e, row) => {
-  //   if (e.target.checked) {
-  //     var _masterData = [...masterData]
-  //     const updated = _masterData.map((currentItem, i) => {
-  //       if (row.id == currentItem.id) {
-  //         return { ...currentItem, ["check1"]: e.target.checked }
-  //       } else return currentItem
-  //     })
-  //     console.log(updated, "New updateda data");
-  //     setMasterData([...updated])
-
-  //     var _masterFilterData = [...filterMasterData]
-
-
-  //     setFilterMasterData([...filterMasterData, { ...row }])
-
-  //     const arrObjOne = [...new Map(filterMasterData.map(item => [JSON.stringify(item), item])).values()];
-  //     // setFilterMasterData(arrObjOne)
-  //     console.log(filterMasterData, "filter master dataaaaaaa")
-  //     console.log(arrObjOne, "filter master arrayObjOneeeeeeeeee")
-  //     // setSelectedMasterData(arrObjOne)
-
-
-  //     console.log(filterMasterData, "Filter master data if cond.")
-  //   } else {
-  //     var _masterData = [...masterData]
-  //     const updated1 = _masterData.map((currentItem, i) => {
-  //       if (row.id == currentItem.id) {
-  //         return { ...currentItem, ["check1"]: e.target.checked }
-  //       } else return currentItem
-  //     })
-  //     setMasterData([...updated1])
-  //     var _filterMasterData = [...filterMasterData]
-  //     const updated = _filterMasterData.filter((currentItem, i) => {
-  //       if (row.id !== currentItem.id)
-  //         return currentItem
-  //     })
-  //     setFilterMasterData(updated)
-  //   }
-
-
-  // }
-
-
+  // console.log(masterData, " master data")
+  // console.log(filterMasterData, "Filter master data")
 
   const handleDeleteIncludeSerialNo = (e, row) => {
     const updated = selectedMasterData.filter((obj) => {
@@ -1875,7 +1997,7 @@ export function CreatePortfolio() {
           <div>Select</div>
         </>
       ),
-      selector: (row) => row.standardJobId,
+      selector: (row) => row.check1,
       wrap: true,
       sortable: true,
       maxWidth: "300px",
@@ -2068,8 +2190,8 @@ export function CreatePortfolio() {
           <Link to="#" onClick={(e) => handleEditIncludeSerialNo(e, row)} className="btn-svg text-white cursor mx-2" data-toggle="modal" data-target="#AddCoverage">
             <svg version="1.1" viewBox="0 0 1696.162 1696.143" xmlSpace="preserve" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"><g id="pen"><path d="M1648.016,305.367L1390.795,48.149C1359.747,17.098,1318.466,0,1274.555,0c-43.907,0-85.188,17.098-116.236,48.148   L81.585,1124.866c-10.22,10.22-16.808,23.511-18.75,37.833L0.601,1621.186c-2.774,20.448,4.161,41.015,18.753,55.605   c12.473,12.473,29.313,19.352,46.714,19.352c2.952,0,5.923-0.197,8.891-0.601l458.488-62.231   c14.324-1.945,27.615-8.529,37.835-18.752L1648.016,537.844c31.049-31.048,48.146-72.33,48.146-116.237   C1696.162,377.696,1679.064,336.415,1648.016,305.367z M493.598,1505.366l-350.381,47.558l47.56-350.376L953.78,439.557   l302.818,302.819L493.598,1505.366z M1554.575,444.404l-204.536,204.533l-302.821-302.818l204.535-204.532   c8.22-8.218,17.814-9.446,22.802-9.446c4.988,0,14.582,1.228,22.803,9.446l257.221,257.218c8.217,8.217,9.443,17.812,9.443,22.799   S1562.795,436.186,1554.575,444.404z" /></g><g id="Layer_1" /></svg>
           </Link>
-          <Link to="#" onClick={(e) => handleDeleteIncludeSerialNo(e, row)} className="btn-svg text-white cursor mr-2"><svg data-name="Layer 41" id="Layer_41" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path class="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path class="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg></Link>
-          <Link to="#" className="btn-svg text-white cursor " onClick={(e) => ShowRelatedModelBox(e, row)}><svg data-name="Layer 1" id="Layer_1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ fill: 'none', width: '18px', strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2px' }}><title /><g data-name="&lt;Group&gt;" id="_Group_"><path class="cls-1" d="M13.38,10.79h0a3.5,3.5,0,0,1,0,5L10.52,18.6a3.5,3.5,0,0,1-5,0h0a3.5,3.5,0,0,1,0-5l.86-.86" data-name="&lt;Path&gt;" id="_Path_" /><path class="cls-1" d="M11,13.21h0a3.5,3.5,0,0,1,0-5L13.81,5.4a3.5,3.5,0,0,1,5,0h0a3.5,3.5,0,0,1,0,5l-.86.86" data-name="&lt;Path&gt;" id="_Path_2" /></g></svg></Link>
+          <Link to="#" onClick={(e) => handleDeleteIncludeSerialNo(e, row)} className="btn-svg text-white cursor mr-2"><svg data-name="Layer 41" id="Layer_41" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path className="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path className="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg></Link>
+          <Link to="#" className="btn-svg text-white cursor " onClick={() => setShowRelatedModel(true)}><svg data-name="Layer 1" id="Layer_1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ fill: 'none', width: '18px', strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2px' }}><title /><g data-name="&lt;Group&gt;" id="_Group_"><path className="cls-1" d="M13.38,10.79h0a3.5,3.5,0,0,1,0,5L10.52,18.6a3.5,3.5,0,0,1-5,0h0a3.5,3.5,0,0,1,0-5l.86-.86" data-name="&lt;Path&gt;" id="_Path_" /><path className="cls-1" d="M11,13.21h0a3.5,3.5,0,0,1,0-5L13.81,5.4a3.5,3.5,0,0,1,5,0h0a3.5,3.5,0,0,1,0,5l-.86.86" data-name="&lt;Path&gt;" id="_Path_2" /></g></svg></Link>
         </div>,
     },
   ];
@@ -2338,76 +2460,6 @@ export function CreatePortfolio() {
     },
   ];
 
-
-
-  const newData4 = {
-    family: "MOTONIVELADORAS",
-    model: 120999,
-    noSeriese: "0JAPA000470",
-    location: "LIMA",
-    startDate: "08/04/20017",
-    endDate: "08/04/20017",
-  };
-
-
-  const ShowRelatedModelBox = (e, data) => {
-    setShowRelatedModel(true)
-    setOpenModelRowData(data.id);
-    console.log(data, "Open model box data")
-    // data.items = []
-
-    if (data.items) {
-      console.log(data, "find")
-    } else {
-      data.items = [{
-        family: "MOTONIVELADORAS",
-        model: 120,
-        noSeriese: "0JAPA000470",
-        location: "LIMA",
-        startDate: "08/04/20017",
-        endDate: "08/04/20017",
-      }];
-      console.log(data, "addded is find")
-    }
-  }
-
-  const AddNewRowData = (openModelId) => {
-    console.log(openModelId, "Open Model ID")
-
-    selectedMasterData.map((obj, i) => {
-      if (obj.id == openModelId) {
-        obj.items.push({
-          family: "MOTONIVELADORAS",
-          model: 120999,
-          noSeriese: "0JAPA000470",
-          location: "LIMA",
-          startDate: "08/04/20017",
-          endDate: "08/04/20017",
-        })
-      }
-    })
-    // let newCreateData = [...includedDataRow, {
-    //   family: "MOTONIVELADORAS",
-    //   model: 120999,
-    //   noSeriese: "0JAPA000470",
-    //   location: "LIMA",
-    //   startDate: "08/04/20017",
-    //   endDate: "08/04/20017",
-    // }]
-    // setIncludedDataRow(newCreateData)
-
-    // console.log(includedDataRow, "new includeeddd datttaaaaaaa")
-  }
-
-  // console.log(includedDataRow, "includedaterowwwwww data")
-
-  // const ExpandedComponent = ({ data }) => <>
-  //   <DataTable
-  //     columns={columns}
-  //     data={data}
-  //     customStyles={customStyles}
-  //   />
-  // </>;
   const handleGetheaderSearch = () => {
     console.log("handleGetheaderSearch")
     let { searchBy, family, inputField } = itemHeaderSearch
@@ -2441,20 +2493,87 @@ export function CreatePortfolio() {
 
   }
   const handleAddNewServiceOrBundle = () => {
+
+    setServiceOrBundleShow(false)
     if (serviceOrBundlePrefix === "SERVICE") {
-      setServiceOrBundleShow(false)
       setOpen2(true)
     }
     if (serviceOrBundlePrefix === "BUNDLE") {
-      setServiceOrBundleShow(false)
       setOpenAddBundleItem(true);
-
     }
-
-
-
-
   }
+
+
+
+
+  // const ExpandedComponent = ({ data }) => <pre>{JSON.stringify(data, null, 2)}</pre>;
+  const ExpandedComponent = ({ data }) => <>
+    {/* <Table className="ml-5">
+      <tbody>
+        {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
+          <div className="sc-evZas cMMpBL rdt_TableRow" key={i}>
+            <div className="sc-iBkjds eLCUDv hUvRIg">{bundleAndService.itemId}</div>
+            <div className="sc-iBkjds eLCUDv hUvRIg">{bundleAndService.itemBodyModel.itemBodyDescription}</div>
+            <div className="sc-iBkjds eLCUDv hUvRIg">{bundleAndService.itemHeaderModel.strategy}</div>
+            <div className="sc-iBkjds eLCUDv hUvRIg">{bundleAndService.itemBodyModel.standardJobId}</div>
+            <div className="sc-iBkjds eLCUDv hUvRIg">{bundleAndService.itemBodyModel.repairOption}</div>
+            <div className="sc-iBkjds eLCUDv hUvRIg">{bundleAndService.itemBodyModel.frequency}</div>
+            <div className="sc-iBkjds eLCUDv hUvRIg">{bundleAndService.itemBodyModel.quantity}</div>
+            <div className="sc-iBkjds eLCUDv hUvRIg">{bundleAndService.itemBodyModel.sparePartsPrice}</div>
+            <div className="sc-iBkjds eLCUDv hUvRIg">{bundleAndService.itemBodyModel.servicePrice}</div>
+            <div className="sc-iBkjds eLCUDv hUvRIg">{bundleAndService.itemBodyModel.totalPrice}</div>
+            <div className="sc-iBkjds eLCUDv hUvRIg">icon1 icon2</div>
+
+          </div>
+        ))}
+      </tbody>
+    </Table> */}
+
+
+    {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
+      <div id="row-0" role="row" className="sc-evZas cMMpBL rdt_TableRow" style={{backgroundColor:"#f1f1f1"}} >
+        <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco"  >
+
+        </div>
+        <div id="cell-1-undefined" data-column-id="1" role="gridcell" className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell" data-tag="allowRowEvents">
+          <div>{bundleAndService.itemId}</div>
+        </div>
+        <div id="cell-2-undefined" data-column-id="2" role="gridcell" className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell" data-tag="allowRowEvents">
+          <div data-tag="allowRowEvents">{bundleAndService.itemBodyModel.itemBodyDescription}</div>
+        </div>
+        <div id="cell-3-undefined" data-column-id="3" role="gridcell" className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell" data-tag="allowRowEvents">
+          <div data-tag="allowRowEvents">{bundleAndService.itemHeaderModel.strategy}</div>
+        </div>
+        <div id="cell-4-undefined" data-column-id="4" role="gridcell" className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell" data-tag="allowRowEvents">
+          <div data-tag="allowRowEvents">{bundleAndService.itemBodyModel.standardJobId}</div>
+        </div>
+        <div id="cell-5-undefined" data-column-id="5" role="gridcell" className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY rdt_TableCell" data-tag="allowRowEvents">
+          <div data-tag="allowRowEvents">{bundleAndService.itemBodyModel.repairOption}</div>
+        </div>
+        <div id="cell-6-undefined" data-column-id="6" role="gridcell" className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell" data-tag="allowRowEvents">
+          <div data-tag="allowRowEvents">{bundleAndService.itemBodyModel.frequency}</div>
+        </div>
+        <div id="cell-7-undefined" data-column-id="7" role="gridcell" className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell" data-tag="allowRowEvents">
+          <div data-tag="allowRowEvents">{bundleAndService.itemBodyModel.quantity}</div>
+        </div>
+        <div id="cell-8-undefined" data-column-id="8" role="gridcell" className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell" data-tag="allowRowEvents">
+          <div data-tag="allowRowEvents">{bundleAndService.itemBodyModel.sparePartsPrice}</div>
+        </div>
+        <div id="cell-9-undefined" data-column-id="9" role="gridcell" className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell" data-tag="allowRowEvents">
+          <div data-tag="allowRowEvents">{bundleAndService.itemBodyModel.servicePrice}</div>
+        </div>
+        <div id="cell-10-undefined" data-column-id="10" role="gridcell" className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell" data-tag="allowRowEvents">
+          <div data-tag="allowRowEvents">{bundleAndService.itemBodyModel.totalPrice}</div>
+        </div>
+        <div id="cell-11-undefined" data-column-id="11" role="gridcell" className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz rdt_TableCell" data-tag="allowRowEvents">
+          <div>
+            <div className="m-2 cursor">icon1 </div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </>;
+
   return (
     <>
       <CommanComponents />
@@ -3516,7 +3635,7 @@ export function CreatePortfolio() {
                               </div>
                               <div onClick={handleDeletQuerySearch}>
                                 <Link to="#" className="btn-sm">
-                                  <svg data-name="Layer 41" id="Layer_41" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path class="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path class="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg>
+                                  <svg data-name="Layer 41" id="Layer_41" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path className="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path className="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg>
                                   {/* <DeleteIcon className="font-size-16" /> */}
                                 </Link>
                               </div>
@@ -4034,7 +4153,23 @@ export function CreatePortfolio() {
                   className="custom-table  card "
                   style={{ height: 400, width: "100%" }}
                 >
-                  {/* <DataTable
+                  {/* <Box sx={{ width: '100%', typography: 'body1' }}>
+                    <TabContext value={tabs}>
+                      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <TabList onChange={(e, newValue) => setTabs(newValue)} aria-label="lab API tabs example">
+                          <Tab label="Solution Data" value="1" />
+                          <Tab label="Component Data" value="2" />
+                          <Tab label="Price" value="3" />
+                        </TabList>
+                      </Box>
+                      <TabPanel value="1">Solution Data</TabPanel>
+                      <TabPanel value="2">
+
+                      </TabPanel>
+                      <TabPanel value="3">Price</TabPanel>
+                    </TabContext>
+                  </Box> */}
+                  <DataTable
                     title=""
                     columns={bundleItemColumns}
                     data={bundleItems}
@@ -4042,14 +4177,22 @@ export function CreatePortfolio() {
                     expandableRows
                     expandableRowsComponent={ExpandedComponent}
                     pagination
-                  /> */}
-                  <DataTable
+                  />
+                  {/* <DataTable
                     title=""
                     columns={bundleItemColumns}
-                    data={bundleItems}
+                    data={serviceOrBundleList}
                     customStyles={customStyles}
+                    expandableRows
+                    expandableRowsComponent={ExpandedComponent}
                     pagination
-                  />
+                  /> */}
+
+
+
+
+
+
                 </div>
               </div>
             ) : (
@@ -5360,7 +5503,7 @@ export function CreatePortfolio() {
                 >Save & Continue</Link>
               </div>
 
-              {/* <div class="row mt-4">
+              {/* <div className="row mt-4">
 
                                 <div className="col-md-6 col-sm-6">
                                     <div className="form-group w-100">
@@ -5465,7 +5608,7 @@ export function CreatePortfolio() {
           <div className="ligt-greey-bg p-3">
             <div>
               <span className="mr-3">
-                <i class="fa fa-pencil font-size-12" aria-hidden="true"></i><span className="ml-2">Edit</span>
+                <i className="fa fa-pencil font-size-12" aria-hidden="true"></i><span className="ml-2">Edit</span>
               </span>
               <span className="mr-3">
                 < MonetizationOnOutlinedIcon className=" font-size-16" />
@@ -5785,76 +5928,79 @@ export function CreatePortfolio() {
               </div>
               {/* <div className="row mt-4">
               <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
+                <div className="form-group w-100">
                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">GROUP NUMBER</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="1000 ENGINE"/>
+                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="1000 ENGINE"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
+                <div className="form-group w-100">
                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TYPE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="0123 REPLACE"/>
+                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="0123 REPLACE"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
+                <div className="form-group w-100">
                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PART NUMBER</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace left side of the Engine"/>
+                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace left side of the Engine"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
+                <div className="form-group w-100">
                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QTY</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="List Price"/>
+                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="List Price"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
+                <div className="form-group w-100">
                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT PRICE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$35000"/>
+                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$35000"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
+                <div className="form-group w-100">
                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">EXTENDED PRICE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$10000"/>
+                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$10000"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
+                <div className="form-group w-100">
                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$5000"/>
+                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$5000"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
+                <div className="form-group w-100">
                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">% USAGE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EA"/>
+                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EA"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
+                <div className="form-group w-100">
                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TOTAL PRICE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000"/>
+                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
+                <div className="form-group w-100">
                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COMMENTS</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE"/>
+                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
-                <div class="form-group w-100">
+                <div className="form-group w-100">
                 <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DESCRIPTION</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE"/>
+                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE"/>
                 </div>
                 </div>
               </div> */}
             </div>
             <div className="m-3 text-right">
               <a href="#" onClick={() => setOpen2(false)} className="btn border mr-3 "> Cancel</a>
-              <a href="#" className="btn text-white bg-primary" onClick={handleBundleItemSaveAndContinue}>Save</a>
+              <a href="#"
+                className="btn text-white bg-primary"
+                onClick={serviceOrBundlePrefix === "" ? handleBundleItemSaveAndContinue : saveAddNewServiceOrBundle}
+              >Save</a>
             </div>
           </div>
         </Modal.Body>
