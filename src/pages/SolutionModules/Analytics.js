@@ -38,6 +38,32 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 
 import { SolutionBuilderModal } from "../../pages/SolutionModules/index"
 
+import SelectFilter from 'react-select';
+import SearchIcon from '@mui/icons-material/Search';
+import $ from "jquery"
+import {
+    createPortfolio,
+    getPortfolio,
+    getPortfolioSchema,
+    getMakeKeyValue,
+    getModelKeyValue,
+    getPrefixKeyValue,
+    updatePortfolio,
+    getUsageCategoryKeyValue,
+    getTaskTypeKeyValue,
+    getResponseTimeTaskKeyValue,
+    getValidityKeyValue,
+    getStrategyTaskKeyValue,
+    getProductHierarchyKeyValue,
+    getGergraphicKeyValue,
+    getMachineTypeKeyValue,
+    getTypeKeyValue,
+    getPortfolioCommonConfig,
+    getSearchQueryCoverage,
+    getSearchCoverageForFamily,
+    itemCreation
+  } from "../../services/index";
+
 export const Analytics = () => {
   const [value, setValue] = React.useState('1');
   const [openSolutionSelector, setOpenSolutionSelector] = useState(false)
@@ -248,22 +274,160 @@ export const Analytics = () => {
 
   }
 
+  const handleOperator = (e, id) => {
+    let tempArray = [...querySearchSelector]
+    let obj = tempArray[id]
+    obj.selectOperator = e
+    tempArray[id] = obj
+    setQuerySearchSelector([...tempArray])
+  }
+  const handleInputSearch = (e, id) => {
+    let tempArray = [...querySearchSelector]
+    let obj = tempArray[id]
+    getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value).then((res) => {
+      obj.selectOptions = res
+      tempArray[id] = obj
+      setQuerySearchSelector([...tempArray]);
+      $(`.scrollbar-${id}`).css("display", "block")
+    }).catch((err) => {
+      console.log("err in api call", err)
+    })
+    obj.inputSearch = e.target.value
+  
+  }
+  const handleQuerySearchClick = () => {
+    $(".scrollbar").css("display", "none")
+    console.log("handleQuerySearchClick", querySearchSelector)
+    var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
+
+    for (let i = 1; i < querySearchSelector.length; i++) {
+      searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + "~" + querySearchSelector[i].inputSearch
+    }
+
+    console.log("searchStr", searchStr)
+    getSearchQueryCoverage(searchStr).then((res) => {
+      console.log("search Query Result :", res)
+      setMasterData(res)
+
+    }).catch((err) => {
+      console.log("error in getSearchQueryCoverage", err)
+    })
+
+  }
+  const addSearchQuerryHtml = () => {
+    setQuerySearchSelector([...querySearchSelector, {
+      id: count,
+      selectOperator: "",
+      selectFamily: "",
+      inputSearch: "",
+      selectOptions: [],
+      selectedOption: ""
+    }])
+    setCount(count + 1)
+  }
+  const handleFamily = (e, id) => {
+    let tempArray = [...querySearchSelector]
+    console.log("handleFamily e:", e)
+    let obj = tempArray[id]
+    obj.selectFamily = e
+    tempArray[id] = obj
+    setQuerySearchSelector([...tempArray])
+  }
+  const [querySearchSelector, setQuerySearchSelector] = useState([{
+    id: 0,
+    selectFamily: "",
+    selectOperator: "",
+    inputSearch: "",
+    selectOptions: [],
+    selectedOption: ""
+  }])
+  const handleDeletQuerySearch = () => {
+    setQuerySearchSelector([])
+    setCount(0)
+    setMasterData([])
+    setFilterMasterData([])
+    setSelectedMasterData([])
+  }
+  const handleSearchListClick = (e, currentItem, obj1, id) => {
+    let tempArray = [...querySearchSelector]
+    let obj = tempArray[id]
+    obj.inputSearch = currentItem
+    obj.selectedOption = currentItem
+    tempArray[id] = obj
+    setQuerySearchSelector([...tempArray])
+    $(`.scrollbar-${id}`).css("display", "none")
+  }
+  const handleMasterCheck = (e, row) => {
+    if (e.target.checked) {
+      var _masterData = [...masterData]
+      const updated = _masterData.map((currentItem, i) => {
+        if (row.id == currentItem.id) {
+          return { ...currentItem, ["check1"]: e.target.checked }
+        } else return currentItem
+      })
+      setMasterData([...updated])
+      setFilterMasterData([...filterMasterData, { ...row }])
+    } else {
+      var _filterMasterData = [...filterMasterData]
+      const updated = _filterMasterData.filter((currentItem, i) => {
+        if (row.id !== currentItem.id)
+          return currentItem
+      })
+      setFilterMasterData(updated)
+    }
+  
+  }
+  const [filterMasterData, setFilterMasterData] = useState([])
+  const [selectedMasterData, setSelectedMasterData] = useState([])
+  const [masterData, setMasterData] = useState([])
+    const [count, setCount] = useState(1)
+  const handleDeleteIncludeSerialNo = (e, row) => {
+    const updated = selectedMasterData.filter((obj) => {
+      if (obj.id !== row.id)
+        return obj
+    })
+    setSelectedMasterData(updated)
+  }
+
+  const columns2 = [
+    { field: 'GroupNumber', headerName: 'ID#', flex:1, width: 70 },
+    { field: 'Type', headerName: 'Description',  flex:1, width: 130 },
+    { field: 'Partnumber', headerName: 'Customer#',  flex:1, width: 130 },
+    { field: 'PriceExtended', headerName: 'Make',  flex:1, width: 130 },
+    { field: 'Pricecurrency', headerName: 'Model',  flex:1, width: 130 },
+    { field: 'Usage', headerName: 'Family',  flex:1, width: 130 },
+    { field: 'TotalPrice', headerName: 'Serial#',  flex:1, width: 130 },
+    { field: 'Comments', headerName: 'Created by',  flex:1, width: 130 },
+    { field: 'Created', headerName: 'Created On',  flex:1, width: 130 },
+    { field: 'Total', headerName: 'Total $',  flex:1, width: 130 },
+    { field: 'Status', headerName: 'Status',  flex:1, width: 130 },
+    // { field: 'Actions', headerName: 'Actions',  flex:1, width: 130 },
+    // { field: 'Actions', headerName: 'Total $',  flex:1, width: 130 },
+    // { field: 'Actions', headerName: 'Status',  flex:1, width: 130 },
+    // {field: 'age',headerName: 'Age',type: 'number', width: 90,},
+    // {field: 'fullName',headerName: 'Full name',description: 'This column has a value getter and is not sortable.',sortable: false,width: 160,valueGetter: (params) =>
+    //   `${params.getValue(params.id, 'firstName') || ''} ${
+    //       params.getValue(params.id, 'DocumentType') || ''
+    //     }`,
+    
+  ];
+
 
   return (
     <>
       {/* <CommanComponents /> */}
       <div className="content-body" style={{ minHeight: '884px' }}>
         <div class="container-fluid ">
-          <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0">Solution Builder</h5>
-          </div>
-          <div className="card p-4 mt-5">
-            <div>
-              <a href="#" onClick={handleShow} style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
+        <div className="d-flex align-items-center justify-content-between mt-2">
+                        <h5 className="font-weight-600 mb-0">Solution Builder</h5>
+                        <div>
+                        <a href="#" onClick={handleShow} style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
                 <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create New<span className="ml-2"></span>
               </a>
-            </div>
-            <div className="mt-5">
+                        </div>
+                    </div>
+          <div className="card p-4 mt-5">
+            <div className="mt-1">
               <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6>
               <div className="recent-div p-3">
                 <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
@@ -288,7 +452,7 @@ export const Analytics = () => {
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Part List </p>
+                      <p className="font-size-12 mb-0">Portfolio Solution</p>
                     </div>
                   </div>
                   <div className="col-md-4">
@@ -311,7 +475,7 @@ export const Analytics = () => {
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Part List </p>
+                      <p className="font-size-12 mb-0">Service Bundles</p>
                     </div>
                   </div>
                   <div className="col-md-4">
@@ -334,7 +498,7 @@ export const Analytics = () => {
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Part List </p>
+                      <p className="font-size-12 mb-0">Service Bundles</p>
                     </div>
                   </div>
                   <div className="col-md-4">
@@ -357,7 +521,7 @@ export const Analytics = () => {
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Part List </p>
+                      <p className="font-size-12 mb-0">Portfolio Solution</p>
                     </div>
                   </div>
                   <div className="col-md-4">
@@ -380,13 +544,13 @@ export const Analytics = () => {
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Part List </p>
+                      <p className="font-size-12 mb-0">Service Bundles</p>
                     </div>
                   </div>
                   <div className="col-md-4">
                     <div className="recent-items mt-3">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Stardegy Task</span></p>
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Strategy Task</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -403,7 +567,7 @@ export const Analytics = () => {
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Part List </p>
+                      <p className="font-size-12 mb-0">Strategy Task</p>
                     </div>
                   </div>
 
@@ -433,7 +597,7 @@ export const Analytics = () => {
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Part List </p>
+                      <p className="font-size-12 mb-0">Service Bundles</p>
                     </div>
                   </div>
                   <div className="col-md-4">
@@ -456,13 +620,13 @@ export const Analytics = () => {
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Part List </p>
+                      <p className="font-size-12 mb-0">Service Bundles</p>
                     </div>
                   </div>
                   <div className="col-md-4">
                     <div className="recent-items mt-3">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Stardegy Task</span></p>
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Strategy Task</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -479,7 +643,7 @@ export const Analytics = () => {
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Part List </p>
+                      <p className="font-size-12 mb-0">Strategy Task</p>
                     </div>
                   </div>
                 </div>
@@ -488,104 +652,126 @@ export const Analytics = () => {
           </div>
           <div className="bg-primary px-3 mb-3">
            <div className="row align-items-center">
-          <div className="col-3">
-          <div className="d-flex ">
-          <h5 className="mr-4 mb-0 text-white"><span>Templates</span></h5>
-          <p className="ml-4 mb-0">
-            <a href="#" className="ml-3 text-white"><EditOutlinedIcon/></a>
-            <a href="#" className="ml-3 text-white"><ShareOutlinedIcon/></a>
-          </p>
-          </div>
-          </div>
-          <div className="col-6">
-            <div className="d-flex align-items-center">
-              <div className="search-icon mr-2 text-white" style={{lineHeight:'24px'}}>
-              <SearchOutlinedIcon/>
-              </div>
-              <div className="w-100 mx-2">
-              <div className="machine-drop d-flex align-items-center bg-white">
-             <div><lable className="label-div">Model</lable></div>
-            <FormControl className="" sx={{ m: 1,}}>
-              <Select 
-                id="demo-simple-select-autowidth"
-                value={age}
-                onChange={handleChangedrop}
-                autoWidth
-              >
-                <MenuItem value="5">
-                  <em>797</em>
-                </MenuItem>
-                <MenuItem value={10}>797</MenuItem>
-                <MenuItem value={21}>Twenty one</MenuItem>
-                <MenuItem value={22}>Twenty one and a half</MenuItem>
-              </Select>
-            </FormControl>
-          </div>
-              </div>
-              <div className="w-100 mx-2">
-              <div className="machine-drop d-flex align-items-center bg-white">
-             <div><lable className="label-div">Make</lable></div>
-            <FormControl className="" sx={{ m: 1,}}>
-              <Select 
-                id="demo-simple-select-autowidth"
-                value={age1}
-                onChange={handleChangedrop1}
-                autoWidth
-              >
-                <MenuItem value="5">
-                  <em>2018</em>
-                </MenuItem>
-                <MenuItem value={10}>2018</MenuItem>
-                <MenuItem value={21}>Twenty one</MenuItem>
-                <MenuItem value={22}>Twenty one and a half</MenuItem>
-              </Select>
-            </FormControl>
-          </div>
-              </div>
-              <div className="w-100 mx-2">
-              <div className="machine-drop d-flex align-items-center bg-white">
-             <div><lable className="label-div">Family </lable></div>
-            <FormControl className="" sx={{ m: 1,}}>
-              <Select 
-                id="demo-simple-select-autowidth"
-                value={age2}
-                onChange={handleChangedrop2}
-                autoWidth
-              >
-                <MenuItem value="5">
-                  <em>Dozer</em>
-                </MenuItem>
-                <MenuItem value={10}>Twenty</MenuItem>
-                <MenuItem value={21}>Twenty one</MenuItem>
-                <MenuItem value={22}>Twenty one and a half</MenuItem>
-              </Select>
-            </FormControl>
-          </div>
-              </div>
-              <div className="w-100" style={{display:'flex',justifyContent:'space-between',alignItems:'center',color:'#fff',border:'1px solid #fff',borderRadius:'5px',padding:'0px 15px'
-}}>
-                <lable>Search By</lable>
-                {/* <Checkbox {...label} /> */}
-                </div>
-            </div>
+          
+           <div className="col-11 mx-2">
          
+         <div className="d-flex align-items-center bg-primary w-100">
+         <div className="d-flex mr-3" style={{whiteSpace:'pre'}}>
+         <h5 className="mr-2 mb-0 text-white"><span>Search</span></h5>
+         <p className="ml-4 mb-0">
+           <a href="#" className="ml-3 text-white"><EditOutlinedIcon/></a>
+           <a href="#" className="ml-3 text-white"><ShareOutlinedIcon/></a>
+         </p>
+         </div>
+                         <div className="d-flex justify-content-between align-items-center w-100 ">
+                           <div className="row align-items-center m-0">
+                             {
+                               querySearchSelector.map((obj, i) => {
+                                 return (
+                                   <>
+
+                                     <div className="customselect d-flex align-items-center mr-3 my-2">
+                                       {
+                                         i > 0 ?
+                                           <SelectFilter
+                                             isClearable={true}
+                                             defaultValue={{ label: "And", value: "AND" }}
+                                             options={[
+                                               { label: "And", value: "AND", id: i },
+                                               { label: "Or", value: "OR", id: i },
+                                             ]}
+                                             placeholder="&amp;"
+                                             onChange={(e) => handleOperator(e, i)}
+                                             // value={querySearchOperator[i]}
+                                             value={obj.selectOperator}
+
+                                           /> : <></>
+                                       }
+
+                                       <div>
+                                         <SelectFilter
+                                           // isClearable={true}
+                                           options={[
+                                             { label: "Make", value: "make", id: i },
+                                             { label: "Family", value: "family", id: i },
+                                             { label: "Model", value: "model", id: i },
+                                             { label: "Prefix", value: "prefix", id: i },
+                                           ]}
+                                           onChange={(e) => handleFamily(e, i)}
+                                           value={obj.selectFamily}
+                                         />
+                                       </div>
+                                       <div className="customselectsearch">
+                                         <input className="custom-input-sleact"
+                                           type="text"
+                                           placeholder="Search string"
+                                           value={obj.inputSearch}
+                                           onChange={(e) => handleInputSearch(e, i)}
+                                           id={"inputSearch-" + i}
+                                           autoComplete="off"
+                                         />
+
+                                         {
+
+                                           <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i}`} id="style">
+                                             {obj.selectOptions.map((currentItem, j) => (
+                                               <li className="list-group-item" key={j} onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}>{currentItem}</li>
+                                             ))}
+                                           </ul>
+
+                                         }
+                                       </div>
+                                     </div>
+                                   </>
+                                 );
+                               })
+                             }
+                             <div
+                               onClick={(e) => addSearchQuerryHtml(e)}>
+                               <Link
+                                 to="#"
+                                 className="btn-sm text-white border mr-2"
+                                 style={{ border: "1px solid #872FF7" }}
+                               >
+                                 +
+                               </Link>
+                             </div>
+                             <div onClick={handleDeletQuerySearch}>
+                               <Link to="#" className="btn-sm border">
+                                 <svg data-name="Layer 41" id="Layer_41" fill="white" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path class="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path class="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg>
+                                 {/* <DeleteIcon className="font-size-16" /> */}
+                               </Link>
+                             </div>
+
+                           </div>
+                         </div>
+                         {/* <div className="px-3">
+                           <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
+                             <SearchIcon /><span className="ml-1">Search</span>
+                           </Link>
+                         </div> */}
+                       </div>
+        
+         </div>
+         <div className="col-auto">
+         <div className="text-center border-left pl-3 py-3">
+             <Link to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable">
+                <SearchIcon /><span className="ml-1">Search</span>
+             </Link>
+            
+         </div>
+        
+         </div>
+         {/* <div className="col-auto">
+           <div className="d-flex align-items-center justify-content-center">
+             <div className="text-center border-left pl-3 py-3">
+             <Link to="/repairOptions" className="p-1 text-white">+ Add Part</Link>
+             
+             </div>
+           </div>
+         </div> */}
           </div>
-          <div className="col-3">
-            <div className="d-flex align-items-center">
-              <div className="col-8 text-center">
-              <a href="#" className="p-1 more-btn text-white">+ 3 more
-              <span className="c-btn">C</span>
-              <span className="b-btn">B</span>
-              <span className="a-btn">A</span>
-              </a>
-              </div>
-              <div className="col-4 text-center border-left py-3">
-              <Link to="/repairOptions" className="p-1 text-white">+ Add Part</Link>
-              </div>
-            </div>
-          </div>
-          </div>
-             </div>   
+                    </div>    
         <div className="card">
     
         <div className="" style={{ height: 400, width: '100%', backgroundColor:'#fff' }}>
@@ -802,6 +988,50 @@ export const Analytics = () => {
           <ToastContainer />
         </div>
         {modalComponent}
+        <div class="modal fade" id="Datatable" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{zIndex:'1200'}}>
+        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+          <div class="modal-content">
+          
+            <div class="modal-header p-3">
+            <div className="d-flex" >
+              <h5>Search Result</h5>
+             
+              </div>
+            </div>
+             <div>
+            <div className="card w-100 p-2">
+    
+    <div className="" style={{ height: 400, width: '100%', backgroundColor:'#fff' }}>
+        <DataGrid
+        sx={{
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: '#7380E4', color:'#fff'
+          }
+        }}
+          rows={rows}
+          columns={columns2}
+          pageSize={5}
+          rowsPerPageOptions={[5]}
+          checkboxSelection
+          onCellClick={(e)=>handleRowClick(e)}
+          
+          
+        />
+      </div> 
+      
+    </div>
+    <div className="m-2 text-right">
+        <a href="#" className="btn text-white bg-primary">+ Add Selected</a>
+             
+        </div>
+    </div>
+            
+           
+            
+          
+          </div>
+        </div>
+      </div>
       </div>
     </>
   )
