@@ -139,7 +139,28 @@ export const RepairWithoutSpareParts = () => {
         //     }`,
         
       ];
-
+      const columns2 = [
+        { field: 'GroupNumber', headerName: 'ID#', flex:1, width: 70 },
+        { field: 'Type', headerName: 'Description',  flex:1, width: 130 },
+        { field: 'Partnumber', headerName: 'Customer#',  flex:1, width: 130 },
+        { field: 'PriceExtended', headerName: 'Make',  flex:1, width: 130 },
+        { field: 'Pricecurrency', headerName: 'Model',  flex:1, width: 130 },
+        { field: 'Usage', headerName: 'Family',  flex:1, width: 130 },
+        { field: 'TotalPrice', headerName: 'Serial#',  flex:1, width: 130 },
+        { field: 'Comments', headerName: 'Created by',  flex:1, width: 130 },
+        { field: 'Created', headerName: 'Created On',  flex:1, width: 130 },
+        { field: 'Total', headerName: 'Total $',  flex:1, width: 130 },
+        { field: 'Status', headerName: 'Status',  flex:1, width: 130 },
+        // { field: 'Actions', headerName: 'Actions',  flex:1, width: 130 },
+        // { field: 'Actions', headerName: 'Total $',  flex:1, width: 130 },
+        // { field: 'Actions', headerName: 'Status',  flex:1, width: 130 },
+        // {field: 'age',headerName: 'Age',type: 'number', width: 90,},
+        // {field: 'fullName',headerName: 'Full name',description: 'This column has a value getter and is not sortable.',sortable: false,width: 160,valueGetter: (params) =>
+        //   `${params.getValue(params.id, 'firstName') || ''} ${
+        //       params.getValue(params.id, 'DocumentType') || ''
+        //     }`,
+        
+      ];
       
 
     const handleBuildSolution = (e) => {
@@ -641,7 +662,7 @@ export const RepairWithoutSpareParts = () => {
             <a href="#" className="ml-3 text-white"><ShareOutlinedIcon/></a>
           </p>
           </div>
-                          <div className="d-flex justify-content-between align-items-center w-100 border-right">
+                          <div className="d-flex justify-content-between align-items-center w-100 ">
                             <div className="row align-items-center m-0">
                               {
                                 querySearchSelector.map((obj, i) => {
@@ -723,15 +744,23 @@ export const RepairWithoutSpareParts = () => {
 
                             </div>
                           </div>
-                          <div className="px-3">
+                          {/* <div className="px-3">
                             <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
                               <SearchIcon /><span className="ml-1">Search</span>
                             </Link>
-                          </div>
+                          </div> */}
                         </div>
          
           </div>
           <div className="col-1">
+          <div className="text-center border-left pl-3 py-3">
+              <Link to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable">
+                 <SearchIcon /><span className="ml-1">Search</span>
+              </Link>
+              {/* <div className="text-center border-left pl-3 py-3">
+              <Link to="/repairOptions" className="p-1 text-white">+ Add Part</Link>
+              </div> */}
+          </div>
           {/* <div className="text-center">
               <a href="#" className="p-1 more-btn text-white">+ 3 more
               <span className="c-btn">C</span>
@@ -741,7 +770,7 @@ export const RepairWithoutSpareParts = () => {
               </div> */}
           </div>
           <div className="col-auto">
-            <div className="d-flex align-items-center">
+            <div className="d-flex align-items-center justify-content-center">
               {/* <div className="col-8 text-center">
               <a href="#" className="p-1 more-btn text-white">+ 3 more
               <span className="c-btn">C</span>
@@ -749,13 +778,14 @@ export const RepairWithoutSpareParts = () => {
               <span className="a-btn">A</span>
               </a>
               </div> */}
-              <div className="text-center border-left px-2 py-3">
+              <div className="text-center border-left pl-3 py-3">
               <Link to="/repairOptions" className="p-1 text-white">+ Add Part</Link>
+              
               </div>
             </div>
           </div>
           </div>
-             </div>   
+                    </div>   
         <div className="card">
     
         <div className="" style={{ height: 400, width: '100%', backgroundColor:'#fff' }}>
@@ -780,6 +810,50 @@ export const RepairWithoutSpareParts = () => {
 
                     <ToastContainer />
                 </div>
+                <div class="modal fade" id="Datatable" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{zIndex:'1200'}}>
+        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+          <div class="modal-content">
+          
+            <div class="modal-header p-3">
+            <div className="d-flex" >
+              <h5>Search Result</h5>
+             
+              </div>
+            </div>
+             <div>
+            <div className="card w-100 p-2">
+    
+    <div className="" style={{ height: 400, width: '100%', backgroundColor:'#fff' }}>
+        <DataGrid
+        sx={{
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: '#7380E4', color:'#fff'
+          }
+        }}
+          rows={rows}
+          columns={columns2}
+          pageSize={5}
+          rowsPerPageOptions={[5]}
+          checkboxSelection
+          onCellClick={(e)=>handleRowClick(e)}
+          
+          
+        />
+      </div> 
+      
+    </div>
+    <div className="m-2 text-right">
+        <a href="#" className="btn text-white bg-primary">+ Add Selected</a>
+             
+        </div>
+    </div>
+            
+           
+            
+          
+          </div>
+        </div>
+      </div>
             </div>
         </>
     )

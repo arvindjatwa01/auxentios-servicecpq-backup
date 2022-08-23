@@ -53,6 +53,8 @@ import MultiSelect from '@mui/material/Select';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import FormControl from '@mui/material/FormControl';
 import {Link, useHistory} from 'react-router-dom'
+import SelectFilter from 'react-select';
+import { DataGrid } from '@mui/x-data-grid';
 import {
   createPortfolio,
   getPortfolio,
@@ -712,6 +714,31 @@ function Kits() {
    const handleCreate=()=>{
     history.push('/quoteTemplate')
   }
+  const columns2 = [
+    { field: 'GroupNumber', headerName: 'ID#', flex:1, width: 70 },
+    { field: 'Type', headerName: 'Description',  flex:1, width: 130 },
+    { field: 'Partnumber', headerName: 'Customer#',  flex:1, width: 130 },
+    { field: 'PriceExtended', headerName: 'Make',  flex:1, width: 130 },
+    { field: 'Pricecurrency', headerName: 'Model',  flex:1, width: 130 },
+    { field: 'Usage', headerName: 'Family',  flex:1, width: 130 },
+    { field: 'TotalPrice', headerName: 'Serial#',  flex:1, width: 130 },
+    { field: 'Comments', headerName: 'Created by',  flex:1, width: 130 },
+    { field: 'Created', headerName: 'Created On',  flex:1, width: 130 },
+    { field: 'Total', headerName: 'Total $',  flex:1, width: 130 },
+    { field: 'Status', headerName: 'Status',  flex:1, width: 130 },
+   
+    
+  ];
+  const rows = [
+    { id: 1, GroupNumber: 'Snow', Type: 'Jon', Partnumber: 35, PriceExtended:'pending', Pricecurrency:'Open',  Usage:'Inconsistent', TotalPrice:'Inconsistent', Comments:'Inconsistent', Created:'Created On', Total:'25', Status:'Status', Actions:'Action',  },
+    { id: 2, GroupNumber: 'Lannister',Type: 'Cersei', Partnumber: 42, PriceExtended: 'pending', Pricecurrency:'Open',  Usage:'Consistent', TotalPrice:'Inconsistent', Comments:'Inconsistent',  Created:'Created On', Total:'25', Status:'Status', Actions:'Action', },
+    { id: 3, GroupNumber: 'Lannister', Type: 'Jaime', Partnumber: 45, PriceExtended: 'pending', Pricecurrency:'Open',  Usage:'Consistent', TotalPrice:'Inconsistent', Comments:'Inconsistent', Created:'Created On', Total:'25', Status:'Status', Actions:'Action', },
+ 
+  ];
+  const handleRowClick=(e)=>{
+    setShow(true)
+  }
+  const [show, setShow] = React.useState(false);
   return (
     <>
       {/* <CommanComponents /> */}
@@ -754,7 +781,7 @@ function Kits() {
           <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
       
-          <IconButton className="btn bg-primary text-white font-size-14 pr-0" style={{borderRadius:'5px'}}
+          <IconButton className="btn bg-primary text-white font-size-14 pr-0 ml-2" style={{borderRadius:'5px'}}
             onClick={handleClick}
             size="small"
             aria-controls={open ? 'account-menu' : undefined}
@@ -1448,96 +1475,126 @@ function Kits() {
             </Box>
           </div>
           <div className="card border mt-4 px-4">
-            <div className="d-flex align-items-center justify-content-between py-4">
-              <div className="">
-                <div className="d-flex ">
-                  <h5 className=" mb-0"><span>Parts Table</span></h5>
-                  <p className=" mb-0">
+          <div className="row align-items-center">
+          
+          <div className="col-9 mx-1">
+         
+          <div className="d-flex align-items-center w-100">
+          <div className="d-flex mr-3" style={{whiteSpace:'pre'}}>
+          <h5 className="mr-2 mb-0 text-black"><span>Parts Table</span></h5>
+          <p className="ml-4 mb-0">
+          <a href="#" className="ml-3"><FontAwesomeIcon icon={faPen} /></a>
+          </p>
+          </div>
+                          <div className="d-flex justify-content-between align-items-center w-100 ">
+                            <div className="row align-items-center m-0">
+                              {
+                                querySearchSelector.map((obj, i) => {
+                                  return (
+                                    <>
 
+                                      <div className="customselect d-flex align-items-center mr-3 my-2">
+                                        {
+                                          i > 0 ?
+                                            <SelectFilter
+                                              isClearable={true}
+                                              defaultValue={{ label: "And", value: "AND" }}
+                                              options={[
+                                                { label: "And", value: "AND", id: i },
+                                                { label: "Or", value: "OR", id: i },
+                                              ]}
+                                              placeholder="&amp;"
+                                              onChange={(e) => handleOperator(e, i)}
+                                              // value={querySearchOperator[i]}
+                                              value={obj.selectOperator}
 
-                    {/* <a onClick={() => setOpen1(true)} className="ml-3 "><img src={editIcon}></img></a> */}
-                    <a href="#" className="ml-3"><FontAwesomeIcon icon={faPen} /></a>
-                    {/* <a href="#" className="ml-3 "><img src={shareIcon}></img></a> */}
-                  </p>
-                </div>
-              </div>
-              <div className="d-flex align-items-center">
-              <div className="search-icon mr-2 text-black" style={{lineHeight:'24px'}}>
-              <SearchOutlinedIcon/>
-              </div>
-              <div className="w-100 mx-2">
-              <div className="machine-drop d-flex align-items-center bg-white">
-             <div><lable className="label-div">Model</lable></div>
-            <FormControl className="" sx={{ m: 1,}}>
-              <MultiSelect 
-                id="demo-simple-select-autowidth"
-                value={age}
-                onChange={handleChangedrop}
-                autoWidth
-              >
-                <MenuItem value="5">
-                  <em>797</em>
-                </MenuItem>
-                <MenuItem value={10}>797</MenuItem>
-                <MenuItem value={21}>Twenty one</MenuItem>
-                <MenuItem value={22}>Twenty one and a half</MenuItem>
-              </MultiSelect>
-            </FormControl>
+                                            /> : <></>
+                                        }
+
+                                        <div>
+                                          <SelectFilter
+                                            // isClearable={true}
+                                            options={[
+                                              { label: "Make", value: "make", id: i },
+                                              { label: "Family", value: "family", id: i },
+                                              { label: "Model", value: "model", id: i },
+                                              { label: "Prefix", value: "prefix", id: i },
+                                            ]}
+                                            onChange={(e) => handleFamily(e, i)}
+                                            value={obj.selectFamily}
+                                          />
+                                        </div>
+                                        <div className="customselectsearch">
+                                          <input className="custom-input-sleact"
+                                            type="text"
+                                            placeholder="Search string"
+                                            value={obj.inputSearch}
+                                            onChange={(e) => handleInputSearch(e, i)}
+                                            id={"inputSearch-" + i}
+                                            autoComplete="off"
+                                          />
+
+                                          {
+
+                                            <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i}`} id="style">
+                                              {obj.selectOptions.map((currentItem, j) => (
+                                                <li className="list-group-item" key={j} onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}>{currentItem}</li>
+                                              ))}
+                                            </ul>
+
+                                          }
+                                        </div>
+                                      </div>
+                                    </>
+                                  );
+                                })
+                              }
+                              <div
+                                onClick={(e) => addSearchQuerryHtml(e)}>
+                                <Link
+                                  to="#"
+                                  className="btn-sm text-black border mr-2"
+                                  style={{ border: "1px solid #872FF7" }}
+                                >
+                                  +
+                                </Link>
+                              </div>
+                              <div onClick={handleDeletQuerySearch}>
+                                <Link to="#" className="btn-sm border">
+                                  <svg data-name="Layer 41" id="Layer_41" fill="black" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path class="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path class="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg>
+                                  {/* <DeleteIcon className="font-size-16" /> */}
+                                </Link>
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+         
           </div>
-              </div>
-              <div className="w-100 mx-2">
-              <div className="machine-drop d-flex align-items-center bg-white">
-             <div><lable className="label-div">Make</lable></div>
-            <FormControl className="" sx={{ m: 1,}}>
-              <MultiSelect 
-                id="demo-simple-select-autowidth"
-                value={age1}
-                onChange={handleChangedrop1}
-                autoWidth
-              >
-                <MenuItem value="5">
-                  <em>2018</em>
-                </MenuItem>
-                <MenuItem value={10}>2018</MenuItem>
-                <MenuItem value={21}>Twenty one</MenuItem>
-                <MenuItem value={22}>Twenty one and a half</MenuItem>
-              </MultiSelect>
-            </FormControl>
+          <div className="col-1">
+          <div className="text-center pl-3 py-3">
+          <a className="btn bg-primary text-white ml-3" data-toggle="modal" data-target="#Datatable"><SearchIcon /><span className="ml-1">Search</span></a>
+                  
           </div>
-              </div>
-              <div className="w-100 mx-2">
-              <div className="machine-drop d-flex align-items-center bg-white">
-             <div><lable className="label-div">Family </lable></div>
-            <FormControl className="" sx={{ m: 1,}}>
-              <MultiSelect 
-                id="demo-simple-select-autowidth"
-                value={age2}
-                onChange={handleChangedrop2}
-                autoWidth
-              >
-                <MenuItem value="5">
-                  <em>Dozer</em>
-                </MenuItem>
-                <MenuItem value={10}>Twenty</MenuItem>
-                <MenuItem value={21}>Twenty one</MenuItem>
-                <MenuItem value={22}>Twenty one and a half</MenuItem>
-              </MultiSelect>
-            </FormControl>
+          
           </div>
-              </div>
-              <div className="w-100" style={{display:'flex',justifyContent:'space-between',alignItems:'center',color:'#fff',border:'1px solid #fff',borderRadius:'5px',padding:'0px 15px'
-}}>
-                <lable>Search By</lable>
-                {/* <Checkbox {...label} /> */}
-                </div>
+          {/* <div className="col-1">
+            <div className="d-flex align-items-center justify-content-center">
+            <a onClick={() => setOpen3(true)} style={{ cursor: 'pointer' }} className="btn bg-primary text-white ml-3">Upload</a>
+                  
+             
             </div>
-              <div className="d-flex align-items-center ">
-                <div className=" text-center  ">
-                  <a onClick={() => setOpen3(true)} style={{ cursor: 'pointer' }} className="btn bg-primary text-white ml-3">Upload</a>
-                  <a onClick={() => setOpen2(true)} href="#" className="btn bg-primary text-white ml-3">+ Add Part</a>
-                </div>
-              </div>
+          </div> */}
+          <div className="col-auto">
+            <div className="d-flex align-items-center justify-content-center">
+            <a onClick={() => setOpen3(true)} style={{ cursor: 'pointer' }} className="btn bg-primary text-white ml-3">Upload</a>
+            <a onClick={() => setOpen2(true)} href="#" className="btn bg-primary text-white ml-3">+ Add Part</a>
+                  
+             
             </div>
+          </div>
+          </div>
+
             <DataTable
               className="mr-2"
               title=""
@@ -2445,6 +2502,50 @@ function Kits() {
             </div>
           </div>
         </div>
+        <div class="modal fade" id="Datatable" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{zIndex:'1200'}}>
+        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+          <div class="modal-content">
+          
+            <div class="modal-header p-3">
+            <div className="d-flex" >
+              <h5>Search Result</h5>
+             
+              </div>
+            </div>
+             <div>
+            <div className="card w-100 p-2">
+    
+    <div className="" style={{ height: 400, width: '100%', backgroundColor:'#fff' }}>
+        <DataGrid
+        sx={{
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: '#7380E4', color:'#fff'
+          }
+        }}
+          rows={rows}
+          columns={columns2}
+          pageSize={5}
+          rowsPerPageOptions={[5]}
+          checkboxSelection
+          onCellClick={(e)=>handleRowClick(e)}
+          
+          
+        />
+      </div> 
+      
+    </div>
+    <div className="m-2 text-right">
+        <a href="#" className="btn text-white bg-primary">+ Add Selected</a>
+             
+        </div>
+    </div>
+            
+           
+            
+          
+          </div>
+        </div>
+      </div>
       </div>
     </>
   )
