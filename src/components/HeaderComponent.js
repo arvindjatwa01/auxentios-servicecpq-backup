@@ -224,13 +224,28 @@ export function HeaderComponent(props) {
         </div>
         <div className="header-content clearfix">
           <div className="header-right">
+         
             <ul className="clearfix">
             <li className="icons" style={{border:'none'}}>
-            <div className="input-group" style={{border:'1px solid #cfcfcf', borderRadius:'50px', overflow:'hidden', width:'500px'}}>
+            <div className="input-group" style={{border:'1px solid #cfcfcf', borderRadius:'50px',}}>
               <div className="input-group-prepend">
                 <span className="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1"><img src={shearchIcon}></img></span>
               </div>
-              <input type="search" className="form-control search-form-control" placeholder="Search" aria-label="Search Dashboard" />
+
+             
+              <div class="">
+              <input type="search" className="form-control search-form-control dropdown-toggle" role="button" placeholder="Search" aria-label="Search Dashboard" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" />
+            <div class="dropdown-menu search-drop-div" aria-labelledby="dropdownMenuLink">
+              <li class="dropdown-item">Repair With Spare Parts</li>
+              <li class="dropdown-item" >Repair Without Spare Parts</li>
+              <li class="dropdown-item">Part List</li>
+              <li class="dropdown-item">Standard Job</li>
+              <li class="dropdown-item">Kit</li>
+              <li class="dropdown-item">Portfolio and bundle</li>
+              <li class="dropdown-item">Solution builder</li>
+              <li class="dropdown-item">Quote</li>
+            </div>
+          </div>
               <div class="input-group-prepend align-items-center">
               <div className="w-100 mx-2">
               <div className="machine-droped d-flex align-items-center bg-white">

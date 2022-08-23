@@ -18,7 +18,7 @@ import uploadIcon from '../../assets/icons/svg/upload.svg'
 import cpqIcon from '../../assets/icons/svg/CPQ.svg'
 import deleteIcon from '../../assets/icons/svg/delete.svg'
 import copyIcon from '../../assets/icons/svg/Copy.svg'
-import {Link} from 'react-router-dom'
+
 import { CommanComponents } from "components";
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
@@ -28,7 +28,14 @@ import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
 import ThumbDownOffAltOutlinedIcon from '@mui/icons-material/ThumbDownOffAltOutlined';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import {Link, useHistory} from 'react-router-dom'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 function WithoutSpareParts(){
+  const history=useHistory()
   const [selectedOption, setSelectedOption] = useState(null);
   const [value, setValue] = React.useState('1');
   const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
@@ -36,9 +43,9 @@ function WithoutSpareParts(){
     setValue(newValue);
   };
   const activityOptions = [
-    'None',
-    'Atria',
-    'Callisto'
+    'Create Versions',
+    'Show Errors',
+    'Review'
   ];
   const options = [
     { value: 'chocolate', label: 'Construction-Heavy' },
@@ -46,13 +53,72 @@ function WithoutSpareParts(){
     { value: 'vanilla', label: 'Construction-Medium' },
     { value: 'Construction', label: 'Construction' },
 ];
+const handleOption2 = (e) => {
+  setValue2(e)
+}
+const handleOption3 = (e) => {
+  setValue3(e)
+}
+
+const [value2, setValue2] = useState({ value: 'Archived', label: 'Archived' });
+const [value3, setValue3] = useState({ value: 'Gold', label: 'Gold' });
+const handleClose = () => setOpen(false);
+const handleClose2 = () => setOpen2(false);
+const [open2, setOpen2] = React.useState(false);
+const [open3, setOpen3] = React.useState(false);
+const [anchorEl, setAnchorEl] = React.useState(null);
+const [open, setOpen] = React.useState(false);
+
+const options2 = [
+  { value: "chocolate", label: "Archived" },
+  { value: "strawberry", label: "Draft" },
+  { value: "vanilla", label: "Active" },
+  { value: "Construction", label: "Revised" },
+];
+const options3 = [
+  { value: "chocolate", label: "Gold" },
+  { value: "strawberry", label: "1" },
+  { value: "vanilla", label: "2" },
+  { value: "Construction", label: "3" },
+];
+const handleClick = (event) => {
+  console.log("event",event)
+  setAnchorEl(event.currentTarget);
+  setOpen(true)
+};
+const handleCreate=()=>{
+  history.push('/quoteTemplate')
+}
+
+
     return(
       <>
       {/* <CommanComponents/> */}
       <div className="content-body" style={{ minHeight: '884px' }}>
       <div class="container-fluid ">
-          <div className="d-flex align-items-center justify-content-between mt-2">
+      <div className="d-flex align-items-center justify-content-between mt-2">
+            <div className="d-flex justify-content-center align-items-center">
           <h5 className="font-weight-600 mb-0">Without Spare Parts</h5>
+          <div className="d-flex justify-content-center align-items-center">
+            {/* <div className="ml-3"><a href="#" className="bg-yellow text-white btn-sm rounded-pill">* Gold <KeyboardArrowDownIcon className="font-size-14"/></a></div> */}
+            <div className="ml-3">
+                <Select className="customselectbtn1" onChange={(e) => handleOption3(e)} options={options3} value={value3} />
+              </div>
+            
+              <div className="ml-3">
+                <Select className="customselectbtn" onChange={(e) => handleOption2(e)} options={options2} value={value2} />
+              </div>
+            <div className="rating-star">
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star"></span>
+              <span class="fa fa-star"></span>
+              </div>
+           
+          </div>
+          </div>
+          <div className="d-flex">
           <div className="d-flex justify-content-center align-items-center">
           <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
             <a href="#" className="ml-3 font-size-14" title="Items to Review"><img src={folderaddIcon}></img></a>
@@ -63,6 +129,74 @@ function WithoutSpareParts(){
             <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions}/></a>
            
           </div>
+          <div>
+          <React.Fragment>
+      <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+      
+          <IconButton className="btn bg-primary text-white font-size-14 pr-0 ml-2" style={{borderRadius:'5px'}}
+            onClick={handleClick}
+            size="small"
+            aria-controls={open ? 'account-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+          >
+           <span>Convert to<span><KeyboardArrowDownIcon/></span></span>
+          </IconButton>
+
+      </Box>
+      <Menu
+        anchorEl={anchorEl}
+        id="account-menu"
+        open={open}
+        onClose={handleClose}
+        onClick={handleClose}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+            mt: 1.5,
+            '& .MuiAvatar-root': {
+              width: 32,
+              height: 32,
+              ml: -0.5,
+              mr: 1,
+            },
+            '&:before': {
+              content: '""',
+              display: 'block',
+              position: 'absolute',
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              bgcolor: 'background.paper',
+              transform: 'translateY(-50%) rotate(45deg)',
+              zIndex: 0,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        <MenuItem >
+         Templates
+        </MenuItem>
+        <MenuItem >
+         Standard Job
+        </MenuItem>
+        <MenuItem>
+         Kit
+        </MenuItem>
+        <MenuItem data-toggle="modal" data-target="#quotecreat">
+        Quote
+        </MenuItem>
+        <Divider />
+
+      </Menu>
+    </React.Fragment>
+          </div>
+          </div>
           </div>
           <div className="card p-4 mt-5">
             <h5 className="d-flex align-items-center mb-0">
@@ -72,7 +206,7 @@ function WithoutSpareParts(){
               <div className="row mt-4">
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">JOB CODE</label>
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">JOB CODE</label>
                   {/* <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/> */}
                   <Select
                           defaultValue={selectedOption}
@@ -84,13 +218,13 @@ function WithoutSpareParts(){
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">TITLE</label>
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TITLE</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">COMPONENT CODE</label>
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COMPONENT CODE</label>
                   {/* <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/> */}
                   <Select
                           defaultValue={selectedOption}
@@ -102,7 +236,7 @@ function WithoutSpareParts(){
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">DESCRIPTION</label>
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DESCRIPTION</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
@@ -139,7 +273,7 @@ function WithoutSpareParts(){
                       options={[{label:"One",value:"one"}]}
                       placeholder="Cost Plus"
                       /> <span>
-                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
+                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-18"/></a>
                       </span>
                 </div>
                 <div className="customselect d-flex align-items-center mr-3">
@@ -160,7 +294,7 @@ function WithoutSpareParts(){
                       options={[{label:"One",value:"one"}]}
                       placeholder="Flat rate"
                       /> <span>
-                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
+                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-18"/></a>
                       </span>
                 </div>
                 <div>
@@ -171,7 +305,7 @@ function WithoutSpareParts(){
                 
               </div>
               <div>
-              <a href="#" className="btn-sm"><DeleteIcon className="font-size-14 text-danger"/></a>
+              <a href="#" className="btn-sm "><DeleteIcon className="font-size-18"/></a>
               </div>
               </div>
               <div className="d-flex justify-content-between align-items-center">
@@ -192,7 +326,7 @@ function WithoutSpareParts(){
                       options={[{label:"One",value:"one"}]}
                       placeholder="Cost Plus"
                       /> <span>
-                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
+                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-18"/></a>
                       </span>
                 </div>
                 <div className="customselect d-flex align-items-center mr-3">
@@ -213,7 +347,7 @@ function WithoutSpareParts(){
                       options={[{label:"One",value:"one"}]}
                       placeholder="Flat rate"
                       /> <span>
-                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
+                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-18"/></a>
                       </span>
                 </div>
                 <div>
@@ -224,7 +358,7 @@ function WithoutSpareParts(){
                 
               </div>
               <div>
-              <a href="#" className="btn-sm"><DeleteIcon className="font-size-14 text-danger"/></a>
+              <a href="#" className="btn-sm"><DeleteIcon className="font-size-18 "/></a>
               </div>
               </div>
            <div className=" text-right">
@@ -239,6 +373,91 @@ function WithoutSpareParts(){
                 </Link>
           
         </div>
+        </div>
+        <div class="modal fade" id="quotecreat" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content bg-white border-none">
+              <div class="modal-header border-none">
+                <h5 class="modal-title" id="exampleModalLabel">Quote Create</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+               
+              </div>
+              <p className="d-block px-3">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</p>
+              <hr className="my-1"/>
+              <div class="modal-body">
+             <div className="row">
+             <div className="col-md-12 col-sm-12">
+              <div className="form-group">
+              <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">Quote Type</label>
+              <Select
+                defaultValue={selectedOption}
+                onChange={setSelectedOption}
+                options={options}
+                placeholder="Cyclical"
+              />
+            </div>
+              </div>
+              <div className="col-md-12 col-sm-12">
+              <div class="form-group">
+              <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">Quote ID</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email"/>
+              </div>
+              </div>
+              <div className="col-md-12 col-sm-12">
+              <div class="form-group">
+              <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">Description</label>
+              <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            </div>
+              </div>
+              <div className="col-md-12 col-sm-12">
+              <div class="form-group">
+              <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">Reference</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email"/>
+              </div>
+              </div>
+             </div>
+
+             <div className="row">
+             <div class="col-md-12 col-sm-12">
+               <div class="form-group mt-3">
+                 <p class="font-size-12 font-weight-500 mb-2">QUOTE TYPE </p>
+                 <h6 class="font-weight-500">Repair Quote with Spare Parts</h6>
+                 </div>
+                 </div>
+                 <div class="col-md-12 col-sm-12">
+               <div class="form-group mt-3">
+                 <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
+                 <h6 class="font-weight-500">SB12345</h6>
+                 </div>
+                 </div>
+                 <div class="col-md-12 col-sm-12">
+               <div class="form-group mt-3">
+                 <p class="font-size-12 font-weight-500 mb-2">QUOTE DESCRIPTION</p>
+                 <h6 class="font-weight-500">Holder text</h6>
+                 </div>
+                 </div>
+                 <div class="col-md-12 col-sm-12">
+               <div class="form-group mt-3">
+                 <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
+                 <h6 class="font-weight-500">Holder text</h6>
+                 </div>
+                 </div>
+               
+             </div>
+              </div>
+              <div class="modal-footer"style={{display:'unset'}}>
+                <div className="mb-2">
+                  <a href="#" onClick={()=>handleCreate()} data-dismiss="modal" className="btn bg-primary d-block text-white">Done</a>
+                </div>
+                <div>
+                <button class="btn  btn-primary">Create</button>
+                <button type="button" class="btn pull-right border" data-dismiss="modal">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         </div>
         </>

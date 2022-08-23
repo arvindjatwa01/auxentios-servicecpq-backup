@@ -1804,10 +1804,11 @@ export function CreatePortfolio() {
       const updated = _masterData.map((currentItem, i) => {
         if (row.id == currentItem.id) {
           return { ...currentItem, ["check1"]: e.target.checked }
-        } else return currentItem
+        } else return { currentItem, ["check1"]: !e.target.checked }
       })
       setMasterData([...updated])
       setFilterMasterData([...filterMasterData, { ...row }])
+      
     } else {
       var _masterData = [...masterData]
       const updated1 = _masterData.map((currentItem, i) => {
@@ -1825,6 +1826,9 @@ export function CreatePortfolio() {
     }
 
   }
+
+  // console.log(masterData, " master data")
+  // console.log(filterMasterData, "Filter master data")
 
   const handleDeleteIncludeSerialNo = (e, row) => {
     const updated = selectedMasterData.filter((obj) => {
@@ -2462,6 +2466,7 @@ export function CreatePortfolio() {
 
   }
   const handleAddNewServiceOrBundle = () => {
+
     setServiceOrBundleShow(false)
     if (serviceOrBundlePrefix === "SERVICE") {
       setOpen2(true)
@@ -2541,7 +2546,6 @@ export function CreatePortfolio() {
       </div>
     ))}
   </>;
-
 
   return (
     <>
@@ -3615,6 +3619,7 @@ export function CreatePortfolio() {
                             <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
                               <SearchIcon /><span className="ml-1">Search</span>
                             </Link>
+                            {console.log(selectedMasterData, "Selected MAster data")}
                           </div>
                         </div>
                       </div>
@@ -3624,40 +3629,56 @@ export function CreatePortfolio() {
                         </Link>
                       </div>
                     </div>
-                    <hr />
-                    <DataTable
-                      className=""
-                      title=""
-                      columns={masterColumns}
-                      data={masterData}
-                      customStyles={customStyles}
-                      pagination
-                    />
-                    <div>
-                      <div className="text-right">
-                        <Link to="#"
+                    {masterData.length > 0 ?
+                      <>
+                        <hr />
+                        <DataTable
+                          className=""
+                          title=""
+                          columns={masterColumns}
+                          data={masterData}
+                          customStyles={customStyles}
+                          pagination
+                        />
+                        <div>
+
+                          <div className="text-right">
+                            <input onClick={() => {
+                              setSelectedMasterData(filterMasterData)
+                              setMasterData([])
+                            }}
+                              className="btn bg-primary text-white" value="+ Add Selected"
+                              disabled={filterMasterData.length == 0} />
+                              
+                            {/* <Link to="#"
                           onClick={() => {
                             setSelectedMasterData(filterMasterData)
                             setMasterData([])
                           }}
                           className="btn bg-primary text-white"
-                        >+ Add Selected</Link></div>
-                    </div>
-                    <hr />
-                    <label htmlFor="Included-model">
-                      <h5 className="font-weight-400 text-black mb-2 mt-1">
-                        Included models
-                      </h5>
+                        >+ Add Selected</Link> */}
+                          </div>
+                        </div>
+                      </> : <></>}
+                    {selectedMasterData.length > 0 ?
+                      <>
 
-                    </label>
-                    <DataTable
-                      className="mt-3"
-                      title=""
-                      columns={selectedMasterColumns}
-                      data={selectedMasterData}
-                      customStyles={customStyles}
-                      pagination
-                    />
+                        <hr />
+                        <label htmlFor="Included-model">
+                          <h5 className="font-weight-400 text-black mb-2 mt-1">
+                            Included models
+                          </h5>
+
+                        </label>
+                        <DataTable
+                          className="mt-3"
+                          title=""
+                          columns={selectedMasterColumns}
+                          data={selectedMasterData}
+                          customStyles={customStyles}
+                          pagination
+                        />
+                      </> : <></>}
                   </div>
 
                   <div className="row" style={{ display: "none" }}>
@@ -3895,15 +3916,18 @@ export function CreatePortfolio() {
                   ) : (
                     <></>
                   )}
+
                   <div className="row" style={{ justifyContent: "right" }}>
-                    <button
-                      type="button"
-                      onClick={handleNextClick}
-                      className="btn btn-light"
-                      id="coverage"
-                    >
-                      Save
-                    </button>
+                    {selectedMasterData.length > 0 ?
+                      <button
+                        type="button"
+                        onClick={handleNextClick}
+                        className="btn btn-light"
+                        id="coverage"
+                      >
+                        Save
+                      </button>
+                      : <></>}
                   </div>
                 </TabPanel>
               </TabContext>
