@@ -1252,13 +1252,13 @@ function PartList() {
                     </div> */}
           <div className="card border mt-4 px-4">
           <div className="row align-items-center">
-          
           <div className="col-9 mx-1">
          
           <div className="d-flex align-items-center w-100">
-          <div className="d-flex mr-3" style={{whiteSpace:'pre'}}>
+          <div className="d-flex mr-3 col-auto pl-0" style={{whiteSpace:'pre'}}>
           <h5 className="mr-2 mb-0 text-black"><span>Parts Table</span></h5>
-          <p className="ml-4 mb-0">
+          <Select className="customselectbtn1 col-auto" onChange={(e) => handleOption3(e)} options={options3} value={value3} />
+          <p className=" mb-0">
           <a href="#" className="ml-3"><FontAwesomeIcon icon={faPen} /></a>
           </p>
           </div>
