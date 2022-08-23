@@ -2496,5 +2496,10 @@ cursor: pointer;
   border: 1px solid #bfbfbf;
   border-radius: 50px;
 }       
+
+.hours-div{padding: 0.375rem 0.75rem;
+  background: #f5f5f5;display: flex;
+  align-items: center;}
+
 .search-drop-div{}
 .search-drop-div.show{top: 37px !important;}
