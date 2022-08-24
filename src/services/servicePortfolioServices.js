@@ -15,7 +15,7 @@ export const createPortfolio = (data) => {
         .post(PORTFOLIO_URL(), data)
         .then((res) => {
           console.log("createPortfolio > axios res=", res);
-          resolve(res.data);
+          resolve(res);
         })
         .catch((err) => {
           console.log("createPortfolio > axios err=", err);
@@ -38,7 +38,7 @@ export const updatePortfolio = (portfolioId, data) => {
         .put(PORTFOLIO_URL() + "/" + portfolioId, data)
         .then((res) => {
           console.log("updatePortfolio > axios res=", res);
-          resolve(res.data);
+          resolve(res);
         })
         .catch((err) => {
           console.log("updatePortfolio > axios err=", err);
