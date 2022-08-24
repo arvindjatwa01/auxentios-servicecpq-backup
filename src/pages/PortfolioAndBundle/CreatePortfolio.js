@@ -2901,7 +2901,6 @@ export function CreatePortfolio() {
         console.log(rowId, "Opened Moodel Row ID");
         console.log(selectedDataWithitemsArr, "NEeeew selecteMAster data WIth Items")
     }
-
 }
 
   // const ExpandedComponent = ({ data }) => <pre>{JSON.stringify(data, null, 2)}</pre>;
