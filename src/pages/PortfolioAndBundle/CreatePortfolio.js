@@ -1992,7 +1992,7 @@ export function CreatePortfolio() {
     }
   };
 
-  }
+  
 
   useEffect(() => {
     if (masterData.some(masterDataitem => masterDataitem.check1 === true)) {
@@ -2901,10 +2901,7 @@ export function CreatePortfolio() {
 
   }
 
-  const ShowRelatedIncludeModelBox = (dataRow) => {
-    setShowRelatedModel(true);
-    console.log(dataRow);
-  };
+
 
   // const ExpandedComponent = ({ data }) => <pre>{JSON.stringify(data, null, 2)}</pre>;
   const ExpandedComponent = ({ data }) => (
