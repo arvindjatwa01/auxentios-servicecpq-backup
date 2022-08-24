@@ -114,6 +114,7 @@ import { Link } from "react-router-dom";
 import $ from "jquery"
 import { display } from "@mui/system";
 import { CreateService } from "pages/Service";
+import SelectFilter from 'react-select';
 
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
@@ -2540,6 +2541,25 @@ export function CreatePortfolio() {
       setOpenAddBundleItem(true);
     }
   }
+  const columns2 = [
+    { field: 'GroupNumber', headerName: 'ID#', flex:1, width: 70 },
+    { field: 'Type', headerName: 'Description',  flex:1, width: 130 },
+    { field: 'Partnumber', headerName: 'Customer#',  flex:1, width: 130 },
+    { field: 'PriceExtended', headerName: 'Make',  flex:1, width: 130 },
+    { field: 'Pricecurrency', headerName: 'Model',  flex:1, width: 130 },
+    { field: 'Usage', headerName: 'Family',  flex:1, width: 130 },
+    { field: 'TotalPrice', headerName: 'Serial#',  flex:1, width: 130 },
+    { field: 'Comments', headerName: 'Created by',  flex:1, width: 130 },
+    { field: 'Created', headerName: 'Created On',  flex:1, width: 130 },
+    { field: 'Total', headerName: 'Total $',  flex:1, width: 130 },
+    { field: 'Status', headerName: 'Status',  flex:1, width: 130 },
+   
+    
+  ];
+  const handleRowClick=(e)=>{
+    setShow(true)
+  }
+  const [show, setShow] = React.useState(false);
 
 
   const ShowRelatedIncludeModelBox = (dataRow) => {
@@ -2631,7 +2651,6 @@ export function CreatePortfolio() {
     }
 
   }
-
 
 
   // const ExpandedComponent = ({ data }) => <pre>{JSON.stringify(data, null, 2)}</pre>;
@@ -2927,7 +2946,7 @@ export function CreatePortfolio() {
                           <p className="font-size-12 font-weight-500 mb-2">
                             PORTFOLIO ID
                           </p>
-                          <h6 className="font-weight-600">
+                          <h6 className="font-weight-500">
                             CVA - Premium plan
                           </h6>
                         </div>
@@ -2937,7 +2956,7 @@ export function CreatePortfolio() {
                           <p className="font-size-12 font-weight-500 mb-2">
                             PORTFOLIO DESCRIPTION
                           </p>
-                          <h6 className="font-weight-600">
+                          <h6 className="font-weight-500">
                             Premium Customer Value Agreement D8T and D6T
                           </h6>
                         </div>
@@ -2947,7 +2966,7 @@ export function CreatePortfolio() {
                           <p className="font-size-12 font-weight-500 mb-2">
                             SERVICE PROGRAM DESCRIPTION (IF ANY)
                           </p>
-                          <h6 className="font-weight-600">NA</h6>
+                          <h6 className="font-weight-500">NA</h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-3">
@@ -2955,7 +2974,7 @@ export function CreatePortfolio() {
                           <p className="font-size-12 font-weight-500 mb-2">
                             REFERENCE
                           </p>
-                          <h6 className="font-weight-600">NA</h6>
+                          <h6 className="font-weight-500">NA</h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-3">
@@ -2963,7 +2982,7 @@ export function CreatePortfolio() {
                           <p className="font-size-12 font-weight-500 mb-2">
                             CUSTOMER SEGMENT
                           </p>
-                          <h6 className="font-weight-600">Construction</h6>
+                          <h6 className="font-weight-500">Construction</h6>
                         </div>
                       </div>
                     </div>
@@ -3033,7 +3052,7 @@ export function CreatePortfolio() {
                         style={{ textAlign: "center", margin: "8px" }}
                       >
                         <div className="col-6">
-                          <h6 className="font-weight-600">OR</h6>
+                          <h6 className="font-weight-500">OR</h6>
                         </div>
                         <div className="col-6"></div>
                       </div>
@@ -3318,7 +3337,7 @@ export function CreatePortfolio() {
                           <p className="font-size-12 font-weight-500 mb-2">
                             STRATEGY TASK
                           </p>
-                          <h6 className="font-weight-600">PM</h6>
+                          <h6 className="font-weight-500">PM</h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
@@ -3326,7 +3345,7 @@ export function CreatePortfolio() {
                           <p className="font-size-12 font-weight-500 mb-2">
                             CATEGORY USAGE
                           </p>
-                          <h6 className="font-weight-600">Contract</h6>
+                          <h6 className="font-weight-500">Contract</h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
@@ -3334,7 +3353,7 @@ export function CreatePortfolio() {
                           <p className="font-size-12 font-weight-500 mb-2">
                             OPTIONALS
                           </p>
-                          <h6 className="font-weight-600">Misc</h6>
+                          <h6 className="font-weight-500">Misc</h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
@@ -3342,7 +3361,7 @@ export function CreatePortfolio() {
                           <p className="font-size-12 font-weight-500 mb-2">
                             RESPONSE TIME
                           </p>
-                          <h6 className="font-weight-600">
+                          <h6 className="font-weight-500">
                             Fast - 24x7 available,response within 4 hours of
                             call
                           </h6>
@@ -3353,7 +3372,7 @@ export function CreatePortfolio() {
                           <p className="font-size-12 font-weight-500 mb-2">
                             PRODUCT HIERARCHY
                           </p>
-                          <h6 className="font-weight-600">End Product</h6>
+                          <h6 className="font-weight-500">End Product</h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
@@ -3361,7 +3380,7 @@ export function CreatePortfolio() {
                           <p className="font-size-12 font-weight-500 mb-2">
                             GEOGRAPHIC
                           </p>
-                          <h6 className="font-weight-600">Field Support</h6>
+                          <h6 className="font-weight-500">Field Support</h6>
                         </div>
                       </div>
                     </div>
@@ -4088,149 +4107,121 @@ export function CreatePortfolio() {
               </TabContext>
             </Box>
           </div>
-          <div className="card mt-5">
-            <div className="fileheader p-4 border-bottom d-flex justify-content-between align-items-center customMenu">
-              <h6 className="font-weight-600 text-light mb-0">
-                Portfolio Items
-                <span>
-                  {" "}
-                  <a href="#" className="ml-3 font-size-14">
-                    <FontAwesomeIcon icon={faPen} />
-                  </a>
-                </span>
-              </h6>
+          <div className="card mt-4 px-4">
+            <div className="row align-items-center">
+          
+          <div className="col-10 mx-1">
+         
+          <div className="d-flex align-items-center w-100">
+          <div className="d-flex mr-3" style={{whiteSpace:'pre'}}>
+          <h5 className="mb-0 text-black"><span>Portfolio Items</span></h5>
+          <p className="ml-2 mb-0">
+          <a href="#" className="ml-3"><FontAwesomeIcon icon={faPen} /></a>
+          </p>
+          </div>
+                          <div className="d-flex justify-content-between align-items-center w-100 ">
+                            <div className="row align-items-center m-0">
+                              {
+                                querySearchSelector.map((obj, i) => {
+                                  return (
+                                    <>
 
-              <div className="maintableheader bg-white mt-3 border-radius-10">
-                <div className="d-flex justify-content-between align-items-center pl-2">
-                  <div className="d-flex align-items-center">
-                    <div className="customselect d-flex">
-                      <Select
-                        onChange={(e) => setItemHeaderSearch({ ...itemHeaderSearch, searchBy: e })}
-                        // isClearable={true}
-                        value={itemHeaderSearch.searchBy}
-                        options={[
-                          { label: "Bundle", value: "bundle" },
-                          { label: "Service", value: "service" },
-                          { label: "Portfolio Item", value: "portfolioItem" },
-                        ]}
-                        placeholder="Add by"
-                      />
-                    </div>
-                    {itemHeaderSearch.searchBy != null ? (
-                      <div className="customselect d-flex ml-3">
-                        <Select
-                          onChange={(e) => setItemHeaderSearch({ ...itemHeaderSearch, family: e })}
-                          // isClearable={true}
-                          value={itemHeaderSearch.family}
-                          options={[
-                            { label: "Make", value: "make" },
-                            { label: "Model", value: "model" },
-                            { label: "Prefix", value: "prefix" },
-                          ]}
-                          placeholder="Select"
-                        />
-                        {itemHeaderSearch.family != null ? (
-                          <input
-                            type="text"
-                            className=""
-                            placeholder="Enter text"
-                            style={{
-                              border: "none",
-                              background: "transparent",
-                              width: "80px",
-                              fontWeight: "600",
-                              paddingLeft: "10px",
-                            }}
-                            value={itemHeaderSearch.inputField}
-                            onChange={(e) => setItemHeaderSearch({ ...itemHeaderSearch, inputField: e.target.value })}
-                          ></input>
-                        ) : (
-                          <></>
-                        )}
-                      </div>
-                    ) : (
-                      <></>
-                    )}
-                  </div>
-                </div>
-                {itemHeaderSearch.inputField.trim() != "" && itemHeaderSearch.family.value != null ? (
-                  <div className="tableheader">
-                    <ul className="submenu accordion mt-0" style={{ display: "block" }}>
-                      <li onClick={handleGetheaderSearch}>
-                        <a className="result cursor">RESULTS</a>
-                      </li>
-                      <li>
-                        <a className="cursor">PM125</a>
-                      </li>
-                      <li>
-                        <a className="cursor">PM2</a>
-                      </li>
-                      <li>
-                        <a onClick={handleCreateNewItem} className="lastOption text-violet cursor">
-                          <span className="mr-2">+</span>Create New{" "}
-                          {itemHeaderSearch.searchBy != null
-                            ? itemHeaderSearch.searchBy.value == "bundle"
-                              ? "Bundle"
-                              : itemHeaderSearch.searchBy.value == "service"
-                                ? "Service"
-                                : itemHeaderSearch.searchBy.value == "portfolioItem"
-                                  ? "Portfolio Item"
-                                  : ""
-                            : ""}
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                ) : (
-                  <></>
-                )}
-              </div>
+                                      <div className="customselect d-flex align-items-center mr-3 my-2">
+                                        {
+                                          i > 0 ?
+                                            <SelectFilter
+                                              isClearable={true}
+                                              defaultValue={{ label: "And", value: "AND" }}
+                                              options={[
+                                                { label: "And", value: "AND", id: i },
+                                                { label: "Or", value: "OR", id: i },
+                                              ]}
+                                              placeholder="&amp;"
+                                              onChange={(e) => handleOperator(e, i)}
+                                              // value={querySearchOperator[i]}
+                                              value={obj.selectOperator}
 
+                                            /> : <></>
+                                        }
 
+                                        <div>
+                                          <SelectFilter
+                                            // isClearable={true}
+                                            options={[
+                                              { label: "Make", value: "make", id: i },
+                                              { label: "Family", value: "family", id: i },
+                                              { label: "Model", value: "model", id: i },
+                                              { label: "Prefix", value: "prefix", id: i },
+                                            ]}
+                                            onChange={(e) => handleFamily(e, i)}
+                                            value={obj.selectFamily}
+                                          />
+                                        </div>
+                                        <div className="customselectsearch">
+                                          <input className="custom-input-sleact"
+                                            type="text"
+                                            placeholder="Search string"
+                                            value={obj.inputSearch}
+                                            onChange={(e) => handleInputSearch(e, i)}
+                                            id={"inputSearch-" + i}
+                                            autoComplete="off"
+                                          />
 
+                                          {
 
-              {/* <h6 className="font-weight-600 text-light mb-0 cursor" onClick={handleShowAddSolution}><span className="mr-2">+</span>Add Solution</h6> */}
-              <div className="d-flex align-items-center">
-                <h6
+                                            <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i}`} id="style">
+                                              {obj.selectOptions.map((currentItem, j) => (
+                                                <li className="list-group-item" key={j} onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}>{currentItem}</li>
+                                              ))}
+                                            </ul>
+
+                                          }
+                                        </div>
+                                      </div>
+                                    </>
+                                  );
+                                })
+                              }
+                              <div
+                                onClick={(e) => addSearchQuerryHtml(e)}>
+                                <Link
+                                  to="#"
+                                  className="btn-sm text-black border mr-2"
+                                  style={{ border: "1px solid #872FF7" }}
+                                >
+                                  +
+                                </Link>
+                              </div>
+                              <div onClick={handleDeletQuerySearch}>
+                                <Link to="#" className="btn-sm border">
+                                  <svg data-name="Layer 41" id="Layer_41" fill="black" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path class="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path class="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg>
+                                  {/* <DeleteIcon className="font-size-16" /> */}
+                                </Link>
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+         
+          </div>
+          <div className="col-1">
+          <div className="text-center py-3">
+          <a className="btn bg-primary text-white " data-toggle="modal" data-target="#Datatable"><SearchIcon /><span className="ml-1">Search</span></a>
+                  
+          </div>
+          
+          </div>
+          <div className="col-auto">
+            <h6
                   className="font-weight-600 text-light mb-0 cursor"
                   onClick={handleAddSolutionPress}
                 >
                   <span className="mr-2">+</span>Add Solution
                 </h6>
-                {/* <Dropdown as={ButtonGroup}>
-                  <Dropdown.Toggle
-                    split
-                    variant=""
-                    id="dropdown-split-basic"
-                    className="dropdownBtnCustom"
-                  >
-                    <MoreVertIcon />
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    <Dropdown.Item
-                      className="cursor"
-                      onClick={() => handleMoreAction(1)}
-                    >
-                      Create Bundle
-                    </Dropdown.Item>
-                    <Dropdown.Item
-                      className="cursor"
-                      onClick={() => handleMoreAction(2)}
-                    >
-                      Create Service
-                    </Dropdown.Item>
-                    <Dropdown.Item
-                      className="cursor"
-                      onClick={() => handleMoreAction(3)}
-                    >
-                      Create Item
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown> */}
-              </div>
-
-              {/* <MuiMenuComponent onClick={(event) => handleMenuItemClick(event)} options={portfolioBodyMoreActions} /> */}
-            </div>
+                  
+            
+          </div>
+          </div>
             {bundleItems.length > 0 ? (
               <div>
                 {/* <div className="row align-items-center">
@@ -6779,6 +6770,50 @@ export function CreatePortfolio() {
           </div>
         </Modal.Body>
       </Modal>
+      <div class="modal fade" id="Datatable" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{zIndex:'1200'}}>
+        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+          <div class="modal-content">
+          
+            <div class="modal-header p-3">
+            <div className="d-flex" >
+              <h5>Search Result</h5>
+             
+              </div>
+            </div>
+             <div>
+            <div className="card w-100 p-2">
+    
+    <div className="" style={{ height: 400, width: '100%', backgroundColor:'#fff' }}>
+        <DataGrid
+        sx={{
+          '& .MuiDataGrid-columnHeaders': {
+            backgroundColor: '#7380E4', color:'#fff'
+          }
+        }}
+          rows={rows}
+          columns={columns2}
+          pageSize={5}
+          rowsPerPageOptions={[5]}
+          checkboxSelection
+          onCellClick={(e)=>handleRowClick(e)}
+          
+          
+        />
+      </div> 
+      
+    </div>
+    <div className="m-2 text-right">
+        <a href="#" className="btn text-white bg-primary">+ Add Selected</a>
+             
+        </div>
+    </div>
+            
+           
+            
+          
+          </div>
+        </div>
+      </div>
 
     </>
   );
