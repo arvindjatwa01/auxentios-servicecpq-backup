@@ -653,138 +653,123 @@ export const RepairStandardJobs = () => {
                     <div className="bg-primary px-3 mb-3">
            <div className="row align-items-center">
           
-          <div className="col-10 mx-2">
+           <div className="col-11 mx-2">
          
-          <div className="d-flex align-items-center bg-primary w-100">
-          <div className="d-flex mr-3" style={{whiteSpace:'pre'}}>
-          <h5 className="mr-2 mb-0 text-white"><span>Search</span></h5>
-          <p className="ml-4 mb-0">
-            <a href="#" className="ml-3 text-white"><EditOutlinedIcon/></a>
-            <a href="#" className="ml-3 text-white"><ShareOutlinedIcon/></a>
-          </p>
-          </div>
-                          <div className="d-flex justify-content-between align-items-center w-100 ">
-                            <div className="row align-items-center m-0">
-                              {
-                                querySearchSelector.map((obj, i) => {
-                                  return (
-                                    <>
+         <div className="d-flex align-items-center bg-primary w-100">
+         <div className="d-flex mr-3" style={{whiteSpace:'pre'}}>
+         <h5 className="mr-2 mb-0 text-white"><span>Search</span></h5>
+         <p className="ml-4 mb-0">
+           <a href="#" className="ml-3 text-white"><EditOutlinedIcon/></a>
+           <a href="#" className="ml-3 text-white"><ShareOutlinedIcon/></a>
+         </p>
+         </div>
+                         <div className="d-flex justify-content-between align-items-center w-100 ">
+                           <div className="row align-items-center m-0">
+                             {
+                               querySearchSelector.map((obj, i) => {
+                                 return (
+                                   <>
 
-                                      <div className="customselect d-flex align-items-center mr-3 my-2">
-                                        {
-                                          i > 0 ?
-                                            <SelectFilter
-                                              isClearable={true}
-                                              defaultValue={{ label: "And", value: "AND" }}
-                                              options={[
-                                                { label: "And", value: "AND", id: i },
-                                                { label: "Or", value: "OR", id: i },
-                                              ]}
-                                              placeholder="&amp;"
-                                              onChange={(e) => handleOperator(e, i)}
-                                              // value={querySearchOperator[i]}
-                                              value={obj.selectOperator}
+                                     <div className="customselect d-flex align-items-center mr-3 my-2">
+                                       {
+                                         i > 0 ?
+                                           <SelectFilter
+                                             isClearable={true}
+                                             defaultValue={{ label: "And", value: "AND" }}
+                                             options={[
+                                               { label: "And", value: "AND", id: i },
+                                               { label: "Or", value: "OR", id: i },
+                                             ]}
+                                             placeholder="&amp;"
+                                             onChange={(e) => handleOperator(e, i)}
+                                             // value={querySearchOperator[i]}
+                                             value={obj.selectOperator}
 
-                                            /> : <></>
-                                        }
+                                           /> : <></>
+                                       }
 
-                                        <div>
-                                          <SelectFilter
-                                            // isClearable={true}
-                                            options={[
-                                              { label: "Make", value: "make", id: i },
-                                              { label: "Family", value: "family", id: i },
-                                              { label: "Model", value: "model", id: i },
-                                              { label: "Prefix", value: "prefix", id: i },
-                                            ]}
-                                            onChange={(e) => handleFamily(e, i)}
-                                            value={obj.selectFamily}
-                                          />
-                                        </div>
-                                        <div className="customselectsearch">
-                                          <input className="custom-input-sleact"
-                                            type="text"
-                                            placeholder="Search string"
-                                            value={obj.inputSearch}
-                                            onChange={(e) => handleInputSearch(e, i)}
-                                            id={"inputSearch-" + i}
-                                            autoComplete="off"
-                                          />
+                                       <div>
+                                         <SelectFilter
+                                           // isClearable={true}
+                                           options={[
+                                             { label: "Make", value: "make", id: i },
+                                             { label: "Family", value: "family", id: i },
+                                             { label: "Model", value: "model", id: i },
+                                             { label: "Prefix", value: "prefix", id: i },
+                                           ]}
+                                           onChange={(e) => handleFamily(e, i)}
+                                           value={obj.selectFamily}
+                                         />
+                                       </div>
+                                       <div className="customselectsearch">
+                                         <input className="custom-input-sleact"
+                                           type="text"
+                                           placeholder="Search string"
+                                           value={obj.inputSearch}
+                                           onChange={(e) => handleInputSearch(e, i)}
+                                           id={"inputSearch-" + i}
+                                           autoComplete="off"
+                                         />
 
-                                          {
+                                         {
 
-                                            <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i}`} id="style">
-                                              {obj.selectOptions.map((currentItem, j) => (
-                                                <li className="list-group-item" key={j} onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}>{currentItem}</li>
-                                              ))}
-                                            </ul>
+                                           <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i}`} id="style">
+                                             {obj.selectOptions.map((currentItem, j) => (
+                                               <li className="list-group-item" key={j} onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}>{currentItem}</li>
+                                             ))}
+                                           </ul>
 
-                                          }
-                                        </div>
-                                      </div>
-                                    </>
-                                  );
-                                })
-                              }
-                              <div
-                                onClick={(e) => addSearchQuerryHtml(e)}>
-                                <Link
-                                  to="#"
-                                  className="btn-sm text-white border mr-2"
-                                  style={{ border: "1px solid #872FF7" }}
-                                >
-                                  +
-                                </Link>
-                              </div>
-                              <div onClick={handleDeletQuerySearch}>
-                                <Link to="#" className="btn-sm border">
-                                  <svg data-name="Layer 41" id="Layer_41" fill="white" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path class="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path class="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg>
-                                  {/* <DeleteIcon className="font-size-16" /> */}
-                                </Link>
-                              </div>
+                                         }
+                                       </div>
+                                     </div>
+                                   </>
+                                 );
+                               })
+                             }
+                             <div
+                               onClick={(e) => addSearchQuerryHtml(e)}>
+                               <Link
+                                 to="#"
+                                 className="btn-sm text-white border mr-2"
+                                 style={{ border: "1px solid #872FF7" }}
+                               >
+                                 +
+                               </Link>
+                             </div>
+                             <div onClick={handleDeletQuerySearch}>
+                               <Link to="#" className="btn-sm border">
+                                 <svg data-name="Layer 41" id="Layer_41" fill="white" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title /><path className="cls-1" d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z" /><path class="cls-1" d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z" /><path class="cls-1" d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z" /></svg>
+                                 {/* <DeleteIcon className="font-size-16" /> */}
+                               </Link>
+                             </div>
 
-                            </div>
-                          </div>
-                          {/* <div className="px-3">
-                            <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
-                              <SearchIcon /><span className="ml-1">Search</span>
-                            </Link>
-                          </div> */}
-                        </div>
-         
-          </div>
-          <div className="col-1">
-          <div className="text-center border-left pl-3 py-3">
-              <Link to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable">
-                 <SearchIcon /><span className="ml-1">Search</span>
-              </Link>
-              {/* <div className="text-center border-left pl-3 py-3">
-              <Link to="/repairOptions" className="p-1 text-white">+ Add Part</Link>
-              </div> */}
-          </div>
-          {/* <div className="text-center">
-              <a href="#" className="p-1 more-btn text-white">+ 3 more
-              <span className="c-btn">C</span>
-              <span className="b-btn">B</span>
-              <span className="a-btn">A</span>
-              </a>
-              </div> */}
-          </div>
-          <div className="col-auto">
-            <div className="d-flex align-items-center justify-content-center">
-              {/* <div className="col-8 text-center">
-              <a href="#" className="p-1 more-btn text-white">+ 3 more
-              <span className="c-btn">C</span>
-              <span className="b-btn">B</span>
-              <span className="a-btn">A</span>
-              </a>
-              </div> */}
-              <div className="text-center border-left pl-3 py-3">
-              <Link to="/repairOptions" className="p-1 text-white">+ Add Part</Link>
-              
-              </div>
-            </div>
-          </div>
+                           </div>
+                         </div>
+                         {/* <div className="px-3">
+                           <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
+                             <SearchIcon /><span className="ml-1">Search</span>
+                           </Link>
+                         </div> */}
+                       </div>
+        
+         </div>
+         <div className="col-auto">
+         <div className="text-center border-left pl-3 py-3">
+             <Link to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable">
+                <SearchIcon /><span className="ml-1">Search</span>
+             </Link>
+            
+         </div>
+        
+         </div>
+         {/* <div className="col-auto">
+           <div className="d-flex align-items-center justify-content-center">
+             <div className="text-center border-left pl-3 py-3">
+             <Link to="/repairOptions" className="p-1 text-white">+ Add Part</Link>
+             
+             </div>
+           </div>
+         </div> */}
           </div>
                     </div>  
         <div className="card">

@@ -654,7 +654,7 @@ export const RepairWithSpareParts = () => {
                     <div className="bg-primary px-3 mb-3">
            <div className="row align-items-center">
           
-          <div className="col-10 mx-2">
+          <div className="col-11 mx-2">
          
           <div className="d-flex align-items-center bg-primary w-100">
           <div className="d-flex mr-3" style={{whiteSpace:'pre'}}>
@@ -754,38 +754,23 @@ export const RepairWithSpareParts = () => {
                         </div>
          
           </div>
-          <div className="col-1">
+          <div className="col-auto">
           <div className="text-center border-left pl-3 py-3">
               <Link to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable">
                  <SearchIcon /><span className="ml-1">Search</span>
               </Link>
-              {/* <div className="text-center border-left pl-3 py-3">
-              <Link to="/repairOptions" className="p-1 text-white">+ Add Part</Link>
-              </div> */}
+             
           </div>
-          {/* <div className="text-center">
-              <a href="#" className="p-1 more-btn text-white">+ 3 more
-              <span className="c-btn">C</span>
-              <span className="b-btn">B</span>
-              <span className="a-btn">A</span>
-              </a>
-              </div> */}
+         
           </div>
-          <div className="col-auto">
+          {/* <div className="col-auto">
             <div className="d-flex align-items-center justify-content-center">
-              {/* <div className="col-8 text-center">
-              <a href="#" className="p-1 more-btn text-white">+ 3 more
-              <span className="c-btn">C</span>
-              <span className="b-btn">B</span>
-              <span className="a-btn">A</span>
-              </a>
-              </div> */}
               <div className="text-center border-left pl-3 py-3">
               <Link to="/repairOptions" className="p-1 text-white">+ Add Part</Link>
               
               </div>
             </div>
-          </div>
+          </div> */}
           </div>
                     </div>  
         <div className="card">

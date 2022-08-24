@@ -72,37 +72,49 @@ function RepairServiceEstimate(){
               <div className="row mt-4">
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">ID</label>
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">CUSTOMER</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">REFERENCE ID</label>
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">MODEL</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">OPERATION ID</label>
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">SERIAL #</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">VALIDITY PERIOD</label>
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">REFERENCE</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">PRIORITY INFORMATION</label>
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">DESCRIPTION</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">SOURCE DESCRIPTION</label>
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">SEGMENT #</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                <div class="form-group mt-3">
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">OPERATION #</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                <div class="form-group mt-3">
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">JOB CODE</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
@@ -114,31 +126,19 @@ function RepairServiceEstimate(){
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">NET VALUE</label>
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">PRICE METHOD</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">VERSION NO.</label>
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">PRICE DATE</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">MACHINE NAME </label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
-                </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">MACHINE MAKE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
-                </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">MACHINE MODEL</label>
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">CURRENCY</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
