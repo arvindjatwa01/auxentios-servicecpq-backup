@@ -1305,6 +1305,7 @@ nav.main-menu li.active>a,
   border-radius: 8px;
   color: #4D4D4D !important;
   font-size: 12px !important;
+  z-index: 2;
 }
 
 .customselectPortfolio {
@@ -2449,7 +2450,7 @@ color: #ffffff;
 .customselectsearch .customselectsearch-list{
   width: 100%;
   position: absolute;
-  z-index: 1100;
+  z-index: 1;
 }
 .customselectsearch .customselectsearch-list .list-group-item{
 padding:5px 10px;
@@ -2503,3 +2504,5 @@ cursor: pointer;
 
 .search-drop-div{}
 .search-drop-div.show{top: 37px !important;}
+.eLCUDv{ min-width: auto !important;}
+.sc-iBkjds:last-child{min-width:150px !important;}
