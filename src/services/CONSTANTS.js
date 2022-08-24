@@ -63,6 +63,8 @@ export const GET_PRODUCT_HIERARCHY = () =>
 export const GET_GEOGRAPHIC = () =>
   SOLUTION_BUILDER_URI + "common-config/geographic";
 export const CREATE_PORTFOLIO_ITEM = () => SOLUTION_BUILDER_URI + "item";
+export const PORTFOLIO_ITEM_SEARCH = () => CREATE_PORTFOLIO_ITEM()+ "/search?search=";
+
 
 //Schema Config
 export const SCHEMA_CONFIG = () => SOLUTION_BUILDER_URI + "schema";
