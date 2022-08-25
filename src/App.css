@@ -2298,6 +2298,8 @@ nav.main-menu li.active>a,
        -o-transform: translate3d(0%, 0, 0);
           transform: translate3d(0%, 0, 0);
 }
+.svg-div{}
+.svg-div svg{ fill: #fff;}
 
 .modal.right .modal-content {
   height: 100%;

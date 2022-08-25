@@ -418,7 +418,7 @@ export const RepairWithoutSpareParts = () => {
                     <div className="d-flex align-items-center justify-content-between mt-2">
                         <h5 className="font-weight-600 mb-0">Without Spare Parts</h5>
                         <div>
-                            <Link to="/WithoutSpareParts" style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
+                            <Link to="/WithoutSparePartsHeader" style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
                                 <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create New<span className="ml-2"></span>
                             </Link>
                         </div>
@@ -752,7 +752,7 @@ export const RepairWithoutSpareParts = () => {
                        </div>
         
          </div>
-         <div className="col-auto">
+         <div className="">
          <div className="text-center border-left pl-3 py-3">
              <Link to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable">
                 <SearchIcon /><span className="ml-1">Search</span>

@@ -2,7 +2,7 @@ import React from "react";
 import { Switch, Route } from "react-router-dom";
 import Dashboard from "pages/Dashboard";
 import { NotFound } from "navigation/NotFound";
-import { ROOT, RESET, VERIFY_EMAIL, WORK_LIST_NEW, SOLUTION_BUILDER_NEW, PERMISSION, PERMISSION_SETTING, SERVICE_NEW, LOGIN, PORTFOLIO_SUMMARY, ANALYTICS, WORK_LIST, REPORTS, PROFILE, DASHBOARD, PAGE1, AUTH_PAGE1, TEST_REACT_TABLE_NESTED, GUIDED_SOLUTION_BUILDER, PORTFOLIO_AND_BUILDER_NEW, SOLUTION_BUILDER_ANALYTICS, SOLUTION_BUILDER_SERVICE_PORTFOLIO, ACCOUNT, BULID_REPAIR_OPTION, RIPAIR_SEGMENT01_TRANSMISSION, RIPAIR_SEGMENT01_DISASSEMBLE, RIPAIR_OPTION01, RIPAIR_SERVICE_ESTIMATE, WITHOUTSPARE_REPAIR_OPTION, PART_LIST, REPAIR_PARTLIST, REPAIR_WITH_SPARE_PARTS, REPAIR_WITHOUT_SPARE_PARTS, WITH_SPARE_PARTS, REPAIR_STANDARD_JOBS, REPAIR_KITS, ADD_PARTLIST, STANDARD_JOBS, KITS, } from "navigation/CONSTANTS";
+import { ROOT, RESET, VERIFY_EMAIL, WORK_LIST_NEW, SOLUTION_BUILDER_NEW, PERMISSION, PERMISSION_SETTING, SERVICE_NEW, LOGIN, PORTFOLIO_SUMMARY, ANALYTICS, WORK_LIST, REPORTS, PROFILE, DASHBOARD, PAGE1, AUTH_PAGE1, TEST_REACT_TABLE_NESTED, GUIDED_SOLUTION_BUILDER, PORTFOLIO_AND_BUILDER_NEW, SOLUTION_BUILDER_ANALYTICS, SOLUTION_BUILDER_SERVICE_PORTFOLIO, ACCOUNT, BULID_REPAIR_OPTION, RIPAIR_SEGMENT01_TRANSMISSION, RIPAIR_SEGMENT01_DISASSEMBLE, RIPAIR_OPTION01, RIPAIR_SERVICE_ESTIMATE, WITHOUTSPARE_REPAIR_OPTION, PART_LIST, REPAIR_PARTLIST, REPAIR_WITH_SPARE_PARTS, REPAIR_WITHOUT_SPARE_PARTS, WITH_SPARE_PARTS, REPAIR_STANDARD_JOBS, REPAIR_KITS, ADD_PARTLIST, STANDARD_JOBS, WITHOUT_SPARE_PARTS_HEADER, KITS, } from "navigation/CONSTANTS";
 import { Analytics, ServicePortfolio, SolutionBuilderCreate } from "../pages/SolutionModules/index"
 import { Profile } from '../pages/User/index'
 import { CreatePortfolio, WorkList, CreateWorkList, PortfolioSummary } from "../pages/PortfolioAndBundle/index"
@@ -32,6 +32,7 @@ import Kits from "pages/Repair/Kits";
 import { CommanComponents } from "../components/CommanComponents";
 import AddPartlist from "pages/Repair/AddPartlist";
 import WithSpareParts from "pages/Repair/WithSpareParts";
+import WithoutSparePartsHeader from "pages/Repair/WithoutSparePartsHeader";
 
 
 export const RouterConfig = () => {
@@ -69,6 +70,7 @@ export const RouterConfig = () => {
         <Route exact path={WITH_SPARE_PARTS} component={WithSpareParts} />
         <Route exact path={PART_LIST} component={PartList} />
         <Route exact path={REPAIR_PARTLIST} component={RepairPartlist} />
+        <Route exact path={WITHOUT_SPARE_PARTS_HEADER} component={WithoutSparePartsHeader} />
         <Route exact path={REPAIR_WITH_SPARE_PARTS} component={RepairWithSpareParts} />
         <Route exact path={REPAIR_WITHOUT_SPARE_PARTS} component={RepairWithoutSpareParts} />
         <Route exact path={REPAIR_STANDARD_JOBS} component={RepairStandardJobs} />
