@@ -6,10 +6,12 @@ import SearchIcon from "@mui/icons-material/Search";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getSearchCoverageForFamily, getSearchQueryCoverage, itemSearch, itemSearchSuggestion } from "../../services/index"
+import { useEffect } from 'react';
 
 
 const QuerySearchComp = (props) => {
   const [count, setCount] = useState(1)
+  const [dumy, setDumy] = useState(0)
   const [querySearchSelector, setQuerySearchSelector] = useState([
     {
       id: 0,
@@ -18,7 +20,7 @@ const QuerySearchComp = (props) => {
       inputSearch: "",
       selectOptions: [],
       selectedOption: "",
-      itemFlag: ""
+      itemFlag: { label: '', value: '' }
     },
   ]);
 
@@ -27,8 +29,13 @@ const QuerySearchComp = (props) => {
     let obj = tempArray[id];
     obj.itemFlag = e;
     tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
+    if (e.value === "portfolioItem") {
+      setDumy(dumy + 1);
+    }
+    setQuerySearchSelector(tempArray);
+    console.log("tempArray", tempArray)
   }
+
   const handleOperator = (e, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
@@ -116,9 +123,9 @@ const QuerySearchComp = (props) => {
   const handleDeletQuerySearch = () => {
     setQuerySearchSelector([]);
     setCount(0);
-     props.compoFlag === "coverage" && props?.setMasterData([]);
-     props.compoFlag === "coverage" && props?.setFilterMasterData([]);
-     props.compoFlag === "coverage" && props?.setSelectedMasterData([]);
+    props.compoFlag === "coverage" && props?.setMasterData([]);
+    props.compoFlag === "coverage" && props?.setFilterMasterData([]);
+    props.compoFlag === "coverage" && props?.setSelectedMasterData([]);
   };
   const handleQuerySearchClick = () => {
     props.compoFlag === "coverage" && props?.setFlagIs(false);
@@ -151,7 +158,15 @@ const QuerySearchComp = (props) => {
         querySearchSelector[i]?.selectFamily?.value == "" ||
         querySearchSelector[i]?.inputSearch == ""
       ) {
-        alert("please fill data properly for search");
+        toast(`Please fill data properly`, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
         return;
       }
       searchStr =
@@ -163,8 +178,7 @@ const QuerySearchComp = (props) => {
         "~" +
         querySearchSelector[i].inputSearch;
     }
-
-    console.log("searchStr", searchStr);
+    // searchStr is ready call API 
     if (props.compoFlag === "coverage") {
       getSearchQueryCoverage(searchStr)
         .then((res) => {
@@ -177,7 +191,16 @@ const QuerySearchComp = (props) => {
     } else if (props.compoFlag === "itemSearch") {
       itemSearch(searchStr)
         .then((res) => {
-          console.log("search Query Result for item :", res);
+          let temArray = []
+          for (let i = 0; i <= res.length; i++) {
+            if (res[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
+              temArray[0] = res[i]
+              res.splice(i,1)
+              break
+            }
+          }
+          temArray[0].associatedServiceOrBundle = res
+          props.setBundleItems(temArray)
         })
         .catch((err) => {
           console.log("error in getSearchQueryCoverage", err);
@@ -192,99 +215,77 @@ const QuerySearchComp = (props) => {
   return (
     <>
       <div className="w-100">
-        <div className="d-flex align-items-center bg-light-dark w-100">
+        <div className="d-flex align-items-center bg-light-dark w-100 border-radius-10">
           <div className="d-flex justify-content-between align-items-center p-3 border-radius-10 w-100 border-right">
             <div className="row align-items-center m-0">
-              {/* {props.children} */}
               {querySearchSelector.map((obj, i) => {
                 return (
-                  <>
-                    <div
-                      className="customselect d-flex align-items-center mr-3 my-2"
-                      key={i}
-                    >
-                      {props.compoFlag === "itemSearch" && <Select
-                        options={[
-                          { label: "Bundle", value: "bundle" },
-                          { label: "Service", value: "service" },
-                          { label: "Portfolio Item", value: "portfolioItem" },
-                        ]}
-                        value={querySearchSelector.itemFlag}
-                        onChange={(e) => handleItemFlag(e, i)}
-                      />}
+                  <div className="customselect d-flex align-items-center mr-3 my-2" key={i}>
+                    {props.compoFlag === "itemSearch" && <Select
+                      options={[
+                        { label: "Bundle", value: "bundle" },
+                        { label: "Service", value: "service" },
+                        { label: "Portfolio Item", value: "portfolioItem" },
+                      ]}
+                      value={querySearchSelector.itemFlag}
+                      onChange={(e) => handleItemFlag(e, i)}
+                    />}
 
-                      {i > 0 ? (
-                        <Select
-                          isClearable={true}
-                          defaultValue={{
-                            label: "And",
-                            value: "AND",
-                          }}
-                          options={[
-                            {
-                              label: "And",
-                              value: "AND",
-                              id: i,
-                            },
-                            { label: "Or", value: "OR", id: i },
-                          ]}
-                          placeholder="&amp;"
-                          onChange={(e) => handleOperator(e, i)}
-                          value={obj.selectOperator}
-                        />
-                      ) : (
-                        <></>
-                      )}
+                    {i > 0 ? (
+                      <Select
+                        isClearable={true}
+                        defaultValue={{ label: "And", value: "AND" }}
+                        options={[{ label: "And", value: "AND", id: i }, { label: "Or", value: "OR", id: i }]}
+                        placeholder="&amp;"
+                        onChange={(e) => handleOperator(e, i)}
+                        value={obj.selectOperator}
+                      />
+                    ) : (
+                      <></>
+                    )}
 
-                      <div>
-                        <Select
-                          isClearable={true}
-                          options={props.options}
-                          onChange={(e) => handleFamily(e, i)}
-                          value={obj.selectFamily}
-                        />
-                      </div>
-                      <div className="customselectsearch">
-                        <input
-                          className="custom-input-sleact"
-                          type="text"
-                          placeholder="Search string"
-                          value={obj.inputSearch}
-                          onChange={(e) =>
-                            handleInputSearch(e, i)
-                          }
-                          id={"inputSearch-" + i}
-                          autoComplete="off"
-                        />
+                    <div>
+                      {(props.compoFlag === "itemSearch" && querySearchSelector[i].itemFlag?.value === "portfolioItem") || (props.compoFlag !== "itemSearch") ? (<Select
+                        isClearable={true}
+                        options={props.options}
+                        onChange={(e) => handleFamily(e, i)}
+                        value={obj.selectFamily}
+                      />) : ('')}
 
-                        {
-                          <ul
-                            className={`list-group customselectsearch-list scrollbar scrollbar-${i}`}
-                            id="style"
-                          >
-                            {obj.selectOptions.map(
-                              (currentItem, j) => (
-                                <li
-                                  className="list-group-item"
-                                  key={j}
-                                  onClick={(e) =>
-                                    handleSearchListClick(
-                                      e,
-                                      currentItem,
-                                      obj,
-                                      i
-                                    )
-                                  }
-                                >
-                                  {currentItem}
-                                </li>
-                              )
-                            )}
-                          </ul>
-                        }
-                      </div>
                     </div>
-                  </>
+                    <div className="customselectsearch">
+                      <input
+                        className="custom-input-sleact"
+                        type="text"
+                        placeholder="Search string"
+                        value={obj.inputSearch}
+                        onChange={(e) =>
+                          handleInputSearch(e, i)
+                        }
+                        id={"inputSearch-" + i}
+                        autoComplete="off"
+                      />
+
+                      {
+                        <ul
+                          className={`list-group customselectsearch-list scrollbar scrollbar-${i}`}
+                          id="style"
+                        >
+                          {obj.selectOptions.map(
+                            (currentItem, j) => (
+                              <li
+                                className="list-group-item"
+                                key={j}
+                                onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}
+                              >
+                                {currentItem}
+                              </li>
+                            )
+                          )}
+                        </ul>
+                      }
+                    </div>
+                  </div>
                 );
               })}
               <div onClick={(e) => addSearchQuerryHtml(e)}>
