@@ -126,6 +126,9 @@ const QuerySearchComp = (props) => {
     props.compoFlag === "coverage" && props?.setMasterData([]);
     props.compoFlag === "coverage" && props?.setFilterMasterData([]);
     props.compoFlag === "coverage" && props?.setSelectedMasterData([]);
+    props.compoFlag === "itemSearch" && props?.setBundleItems([]);
+    props.compoFlag === "coverage" && props?.setOpenedModelBoxData([]);
+
   };
   const handleQuerySearchClick = () => {
     props.compoFlag === "coverage" && props?.setFlagIs(false);
@@ -189,18 +192,22 @@ const QuerySearchComp = (props) => {
           console.log("error in getSearchQueryCoverage", err);
         });
     } else if (props.compoFlag === "itemSearch") {
+      props.setBundleItems([]);
+      props.setLoadingItem(true)
       itemSearch(searchStr)
         .then((res) => {
           let temArray = []
           for (let i = 0; i <= res.length; i++) {
             if (res[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
               temArray[0] = res[i]
-              res.splice(i,1)
+              res.splice(i, 1)
               break
             }
           }
           temArray[0].associatedServiceOrBundle = res
           props.setBundleItems(temArray)
+          props.setLoadingItem(false)
+
         })
         .catch((err) => {
           console.log("error in getSearchQueryCoverage", err);
@@ -221,16 +228,6 @@ const QuerySearchComp = (props) => {
               {querySearchSelector.map((obj, i) => {
                 return (
                   <div className="customselect d-flex align-items-center mr-3 my-2" key={i}>
-                    {props.compoFlag === "itemSearch" && <Select
-                      options={[
-                        { label: "Bundle", value: "bundle" },
-                        { label: "Service", value: "service" },
-                        { label: "Portfolio Item", value: "portfolioItem" },
-                      ]}
-                      value={querySearchSelector.itemFlag}
-                      onChange={(e) => handleItemFlag(e, i)}
-                    />}
-
                     {i > 0 ? (
                       <Select
                         isClearable={true}
@@ -243,7 +240,15 @@ const QuerySearchComp = (props) => {
                     ) : (
                       <></>
                     )}
-
+                    {props.compoFlag === "itemSearch" && <Select
+                      options={[
+                        { label: "Bundle", value: "bundle" },
+                        { label: "Service", value: "service" },
+                        { label: "Portfolio Item", value: "portfolioItem" },
+                      ]}
+                      value={querySearchSelector.itemFlag}
+                      onChange={(e) => handleItemFlag(e, i)}
+                    />}
                     <div>
                       {(props.compoFlag === "itemSearch" && querySearchSelector[i].itemFlag?.value === "portfolioItem") || (props.compoFlag !== "itemSearch") ? (<Select
                         isClearable={true}
@@ -341,113 +346,3 @@ const QuerySearchComp = (props) => {
 }
 
 export default QuerySearchComp
-
-
-{/* <div className="maintableheader bg-white mt-3 border-radius-10">
-                <div className="d-flex justify-content-between align-items-center pl-2">
-                  <div className="d-flex align-items-center">
-                    <div className="customselect d-flex">
-                      <Select
-                        onChange={(e) =>
-                          setItemHeaderSearch({
-                            ...itemHeaderSearch,
-                            searchBy: e,
-                          })
-                        }
-                        // isClearable={true}
-                        value={itemHeaderSearch.searchBy}
-                        options={[
-                          { label: "Bundle", value: "bundle" },
-                          { label: "Service", value: "service" },
-                          { label: "Portfolio Item", value: "portfolioItem" },
-                        ]}
-                        placeholder="Add by"
-                      />
-                    </div>
-                    {itemHeaderSearch.searchBy != null ? (
-                      <div className="customselect d-flex ml-3">
-                        <Select
-                          onChange={(e) =>
-                            setItemHeaderSearch({
-                              ...itemHeaderSearch,
-                              family: e,
-                            })
-                          }
-                          // isClearable={true}
-                          value={itemHeaderSearch.family}
-                          options={[
-                            { label: "Make", value: "make" },
-                            { label: "Model", value: "model" },
-                            { label: "Prefix", value: "prefix" },
-                          ]}
-                          placeholder="Select"
-                        />
-                        {itemHeaderSearch.family != null ? (
-                          <input
-                            type="text"
-                            className=""
-                            placeholder="Enter text"
-                            style={{
-                              border: "none",
-                              background: "transparent",
-                              width: "80px",
-                              fontWeight: "600",
-                              paddingLeft: "10px",
-                            }}
-                            value={itemHeaderSearch.inputField}
-                            onChange={(e) =>
-                              setItemHeaderSearch({
-                                ...itemHeaderSearch,
-                                inputField: e.target.value,
-                              })
-                            }
-                          ></input>
-                        ) : (
-                          <></>
-                        )}
-                      </div>
-                    ) : (
-                      <></>
-                    )}
-                  </div>
-                </div>
-                {itemHeaderSearch.inputField.trim() != "" &&
-                itemHeaderSearch.family.value != null ? (
-                  <div className="tableheader">
-                    <ul
-                      className="submenu accordion mt-0"
-                      style={{ display: "block" }}
-                    >
-                      <li onClick={handleGetheaderSearch}>
-                        <a className="result cursor">RESULTS</a>
-                      </li>
-                      <li>
-                        <a className="cursor">PM125</a>
-                      </li>
-                      <li>
-                        <a className="cursor">PM2</a>
-                      </li>
-                      <li>
-                        <a
-                          onClick={handleCreateNewItem}
-                          className="lastOption text-violet cursor"
-                        >
-                          <span className="mr-2">+</span>Create New{" "}
-                          {itemHeaderSearch.searchBy != null
-                            ? itemHeaderSearch.searchBy.value == "bundle"
-                              ? "Bundle"
-                              : itemHeaderSearch.searchBy.value == "service"
-                              ? "Service"
-                              : itemHeaderSearch.searchBy.value ==
-                                "portfolioItem"
-                              ? "Portfolio Item"
-                              : ""
-                            : ""}
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                ) : (
-                  <></>
-                )}
-              </div>  */}

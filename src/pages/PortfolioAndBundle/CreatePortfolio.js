@@ -74,8 +74,8 @@ import Table from "react-bootstrap/Table";
 import BusinessCenterOutlinedIcon from "@mui/icons-material/BusinessCenterOutlined";
 import LayersOutlinedIcon from "@mui/icons-material/LayersOutlined";
 import Tooltip from "@mui/material/Tooltip";
-import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
-
+import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
+import Loader from "react-js-loader";
 
 import {
   createPortfolio,
@@ -125,6 +125,8 @@ import { CreateService } from "pages/Service";
 import SelectFilter from "react-select";
 import QuerySearchComp from "./QuerySearchComp";
 import { FormControlLabel, Switch } from "@material-ui/core";
+import AddPortfolioItem from "./AddPortfolioItem";
+import PriceCalculator from "./PriceCalculator";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 const customStyles = {
@@ -232,10 +234,10 @@ export function CreatePortfolio() {
   const [filterMasterData, setFilterMasterData] = useState([]);
   const [selectedMasterData, setSelectedMasterData] = useState([]);
   const [flagIs, setFlagIs] = useState(false);
-  const [openModelBoxDataId, setOpenModelBoxDataId] = useState({})
-    const [openModelRowData, setOpenModelRowData] = useState({})
-    const [openedModelBoxData, setOpenedModelBoxData] = useState([])
-    const [modelIncludedData, setModelIncludedData] = useState([])
+  const [openModelBoxDataId, setOpenModelBoxDataId] = useState({});
+  const [openModelRowData, setOpenModelRowData] = useState({});
+  const [openedModelBoxData, setOpenedModelBoxData] = useState([]);
+  const [modelIncludedData, setModelIncludedData] = useState([]);
 
   const [coverageData, setCoverageData] = useState({
     make: "",
@@ -296,22 +298,9 @@ export function CreatePortfolio() {
   const [prefilgabelGeneral, setPrefilgabelGeneral] = useState("PORTFOLIO");
   const [priceAgreementOption, setPriceAgreementOption] = useState(false);
   const [open2, setOpen2] = useState(false);
-  // const handleOpen2 = () => setOpen2(true);
-  // const handleClose2 = () => setOpen2(false);
 
   const [count, setCount] = useState(1);
   const [updateCount, setUpdateCount] = useState(0);
-  // const [querySearchSelector, setQuerySearchSelector] = useState([
-  //   {
-  //     id: 0,
-  //     selectFamily: "",
-  //     selectOperator: "",
-  //     inputSearch: "",
-  //     selectOptions: [],
-  //     selectedOption: "",
-  //   },
-  // ]);
-
   const [autoState, setAutoState] = useState({
     value: "",
     suggestions: [],
@@ -392,7 +381,9 @@ export function CreatePortfolio() {
     additional: "",
   });
   const [serviceOrBundleList, setServiceOrBundleList] = useState([]);
-  const [tabs, setTabs] = useState("2");
+  const [tabs, setTabs] = useState("1");
+  const [itemReviewShow, setItemReviewShow] = useState(false);
+  const [loadingItem, setLoadingItem] = useState(false);
 
   const frequencyOptions = [
     { label: "Cyclic", value: "Cyclic" },
@@ -560,6 +551,7 @@ export function CreatePortfolio() {
   };
 
   const handleBundleItemSaveAndContinue = async () => {
+    setLoadingItem(true);
     try {
       let reqObj = {
         itemId: 0,
@@ -716,16 +708,16 @@ export function CreatePortfolio() {
         if (updatePortfolioRes.status != 200) {
           throw `${updatePortfolioRes.status}:Something went wrong`;
         }
-        console.log("portfolio updated:", updatePortfolioRes);
       }
 
       setOpen2(false); //Hide Price Calculator Screen
       setGeneralComponentData(_generalComponentData);
-      setBundleItems([...bundleItems, itemRes.data]);
+      setBundleItems([itemRes.data]);
       // setServiceOrBundleList([itemRes.data])
 
       setOpenAddBundleItem(false);
       setOpenSearchSolution(false);
+      setLoadingItem(false);
     } catch (error) {
       console.log("error in item creation err:", error);
     }
@@ -963,15 +955,18 @@ export function CreatePortfolio() {
   };
 
   const handleNewBundleItem = () => {
+    // setTabs("1")
+    // setItemReviewShow(true);
     setOpenAddBundleItem(true);
-    // setOpenMiniBundleItem(true)
+
     setOpenSearchSolution(false);
     setCreateNewBundle(false);
     setOpenAddBundleItemHeader("Add New Portfolio Item");
   };
 
   const handleServiceItemEdit = (e, row) => {
-    alert("edit bundle Item");
+    setOpenAddBundleItem(true);
+    console.log("handleServiceItemEdit", row);
   };
   const handleServiceItemDelete = (e, row) => {
     const _bundleItems = [...bundleItems];
@@ -982,9 +977,9 @@ export function CreatePortfolio() {
     });
     setBundleItems(updated);
   };
- 
+
   const handleServiceItemSave = (e, row) => {
-    alert("save")
+    alert("save");
   };
 
   const handleCreateNewServiceBundle = () => {
@@ -1707,11 +1702,16 @@ export function CreatePortfolio() {
   // const updateList = useSelector((state)=>state.taskReducer)
   const HandleCatUsage = (e) => {
     // console.log("e.target.value", e.target.value);
+    setStratgyTaskUsageKeyValue([]);
+    setStratgyTaskTypeKeyValue([]);
+    addPortFolioItem.taskType = "";
     setCategoryUsageKeyValue1(e);
     dispatch(taskActions.updateList(e.value));
   };
 
   const HandleStrategyUsage = (e) => {
+    setStratgyTaskTypeKeyValue([]);
+    addPortFolioItem.taskType = "";
     setStratgyTaskUsageKeyValue(e);
     dispatch(taskActions.updateTask(e.value));
   };
@@ -1838,125 +1838,6 @@ export function CreatePortfolio() {
     // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
   ];
 
-  // const handleFamily = (e, id) => {
-  //   let tempArray = [...querySearchSelector];
-  //   let obj = tempArray[id];
-  //   obj.selectFamily = e;
-  //   tempArray[id] = obj;
-  //   setQuerySearchSelector([...tempArray]);
-  // };
-  // const handleOperator = (e, id) => {
-  //   let tempArray = [...querySearchSelector];
-  //   let obj = tempArray[id];
-  //   obj.selectOperator = e;
-  //   tempArray[id] = obj;
-  //   setQuerySearchSelector([...tempArray]);
-  // };
-
-  // const handleInputSearch = (e, id) => {
-  //   let tempArray = [...querySearchSelector];
-  //   let obj = tempArray[id];
-  //   getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
-  //     .then((res) => {
-  //       obj.selectOptions = res;
-  //       tempArray[id] = obj;
-  //       setQuerySearchSelector([...tempArray]);
-  //       $(`.scrollbar-${id}`).css("display", "block");
-  //     })
-  //     .catch((err) => {
-  //       console.log("err in api call", err);
-  //     });
-  //   obj.inputSearch = e.target.value;
-  // };
-
-  // const handleSearchListClick = (e, currentItem, obj1, id) => {
-  //   let tempArray = [...querySearchSelector];
-  //   let obj = tempArray[id];
-  //   obj.inputSearch = currentItem;
-  //   obj.selectedOption = currentItem;
-  //   tempArray[id] = obj;
-  //   setQuerySearchSelector([...tempArray]);
-  //   $(`.scrollbar-${id}`).css("display", "none");
-  // };
-
-  // const handleQuerySearchClick = () => {
-  //   setFlagIs(false);
-  //   $(".scrollbar").css("display", "none");
-  //   console.log("handleQuerySearchClick", querySearchSelector);
-  //   if (
-  //     querySearchSelector[0]?.selectFamily?.value == "" ||
-  //     querySearchSelector[0]?.inputSearch == "" ||
-  //     querySearchSelector[0]?.selectFamily?.value === undefined
-  //   ) {
-  //     toast(`Please fill data properly`, {
-  //       position: "top-right",
-  //       autoClose: 5000,
-  //       hideProgressBar: false,
-  //       closeOnClick: true,
-  //       pauseOnHover: true,
-  //       draggable: true,
-  //       progress: undefined,
-  //     });
-  //     return;
-  //   }
-  //   var searchStr =
-  //     querySearchSelector[0]?.selectFamily?.value +
-  //     "~" +
-  //     querySearchSelector[0]?.inputSearch;
-
-  //   for (let i = 1; i < querySearchSelector.length; i++) {
-  //     if (
-  //       querySearchSelector[i]?.selectOperator?.value == "" ||
-  //       querySearchSelector[i]?.selectFamily?.value == "" ||
-  //       querySearchSelector[i]?.inputSearch == ""
-  //     ) {
-  //       alert("please fill data properly for search");
-  //       return;
-  //     }
-  //     searchStr =
-  //       searchStr +
-  //       " " +
-  //       querySearchSelector[i].selectOperator.value +
-  //       " " +
-  //       querySearchSelector[i].selectFamily.value +
-  //       "~" +
-  //       querySearchSelector[i].inputSearch;
-  //   }
-
-  //   console.log("searchStr", searchStr);
-  //   getSearchQueryCoverage(searchStr)
-  //     .then((res) => {
-  //       console.log("search Query Result :", res);
-  //       setMasterData(res);
-  //     })
-  //     .catch((err) => {
-  //       console.log("error in getSearchQueryCoverage", err);
-  //     });
-  // };
-
-  // const addSearchQuerryHtml = () => {
-  //   setQuerySearchSelector([
-  //     ...querySearchSelector,
-  //     {
-  //       id: count,
-  //       selectOperator: "",
-  //       selectFamily: "",
-  //       inputSearch: "",
-  //       selectOptions: [],
-  //       selectedOption: "",
-  //     },
-  //   ]);
-  //   setCount(count + 1);
-  // };
-
-  // const handleDeletQuerySearch = () => {
-  //   setQuerySearchSelector([]);
-  //   setCount(0);
-  //   setMasterData([]);
-  //   setFilterMasterData([]);
-  //   setSelectedMasterData([]);
-  // };
-
   const handleCheckboxData = (e, row) => {
     if (e.target.checked) {
       var _searchedData = [...masterData];
@@ -2038,27 +1919,22 @@ export function CreatePortfolio() {
 
   const handleDeleteIncludeSerialNo = (e, row) => {
     const updated = selectedMasterData.filter((obj) => {
-        if (obj.id !== row.id)
-            return obj
-    })
+      if (obj.id !== row.id) return obj;
+    });
 
-
-    const _IncludedDataList = [...openedModelBoxData]
+    const _IncludedDataList = [...openedModelBoxData];
 
     const NewAddedData = _IncludedDataList.map((currentItem, i) => {
-
-        for (var j in currentItem) {
-            if (j == row.id) {
-                openedModelBoxData.splice(i, 1);
-            }
+      for (var j in currentItem) {
+        if (j == row.id) {
+          openedModelBoxData.splice(i, 1);
         }
-    })
+      }
+    });
 
-    setSelectedMasterData(updated)
-    setFilterMasterData(updated)
-
-
-}
+    setSelectedMasterData(updated);
+    setFilterMasterData(updated);
+  };
   const handleEditIncludeSerialNo = (e, row) => {
     console.log("handleEditIncludeSerialNo row:", row);
     let obj = {
@@ -2602,17 +2478,21 @@ export function CreatePortfolio() {
       format: (row) => row.itemBodyModel.type,
       cell: (row) => (
         <div
-          className="d-flex justify-content-center align-items-center"
-          style={{ minWidth: "150px !important" }}
+          className="d-flex justify-content-center align-items-center row-svg-div"
+          style={{ minWidth: "180px !important" }}
         >
-          <div className="m-2 cursor" onClick={handleBundleItemOpen}>
+          <div className=" cursor" onClick={handleBundleItemOpen}>
             <Tooltip title="Create Bundle">
-              <BusinessCenterOutlinedIcon />
+              <Link to="#" className="px-1">
+                <BusinessCenterOutlinedIcon />
+              </Link>
             </Tooltip>
           </div>
           <div className="cursor" onClick={handleServiceItemOpen}>
             <Tooltip title="Create Service">
-              <LayersOutlinedIcon />
+              <Link to="#" className="px-1">
+                <LayersOutlinedIcon />
+              </Link>
             </Tooltip>
           </div>
           <div
@@ -2620,16 +2500,16 @@ export function CreatePortfolio() {
             onClick={(e) => handleServiceItemEdit(e, row)}
           >
             <Tooltip title="Edit">
-              <img className="m-1" src={penIcon} style={{ width: "14px" }} />
+              <Link to="#" className="px-1">
+                <img className="m-1" src={penIcon} />
+              </Link>
             </Tooltip>
           </div>
-          <div
-            className=" cursor"
-            data-toggle="modal" 
-            data-target="#myModal2"
-          >
+          <div className=" cursor" data-toggle="modal" data-target="#myModal2">
             <Tooltip title="Inclusion">
-              <img src={cpqIcon}></img>
+              <Link to="#" className="px-1">
+                <img src={cpqIcon}></img>
+              </Link>
             </Tooltip>
           </div>
           <div
@@ -2637,16 +2517,17 @@ export function CreatePortfolio() {
             onClick={(e) => handleServiceItemSave(e, row)}
           >
             <Tooltip title="Save">
-             <SaveOutlinedIcon />
+              <Link to="#" className="px-1">
+                <SaveOutlinedIcon />
+              </Link>
             </Tooltip>
           </div>
           <div className="" onClick={(e) => handleServiceItemDelete(e, row)}>
             <Tooltip title="Delete">
-              <Link to="#" className="btn-sm">
+              <Link to="#" className="px-1">
                 <svg
                   data-name="Layer 41"
                   id="Layer_41"
-                  width="14px"
                   viewBox="0 0 50 50"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -2866,96 +2747,93 @@ export function CreatePortfolio() {
   const [show, setShow] = React.useState(false);
 
   const ShowRelatedIncludeModelBox = (dataRow) => {
-    setModelIncludedData([])
+    setModelIncludedData([]);
 
     var ModelBoxKeys = [];
     var KeyValues = [];
 
     for (var key in openedModelBoxData) {
-        ModelBoxKeys.push(Object.keys(openedModelBoxData[key]));
+      ModelBoxKeys.push(Object.keys(openedModelBoxData[key]));
     }
 
     const ValIs = ModelBoxKeys.map((i, data) => {
-        KeyValues.push(Number(i[0]));
-    })
+      KeyValues.push(Number(i[0]));
+    });
 
     if (!KeyValues.includes(dataRow.id)) {
-        openedModelBoxData.push({
-            [dataRow.id]: [{
-                family: dataRow.family,
-                model: dataRow.model,
-                noSeriese: "0JAPA000470",
-                location: "LIMA",
-                startDate: "08/04/20017",
-                endDate: "08/04/20017",
-            }]
-        })
-
+      openedModelBoxData.push({
+        [dataRow.id]: [
+          {
+            family: dataRow.family,
+            model: dataRow.model,
+            noSeriese: "0JAPA000470",
+            location: "LIMA",
+            startDate: "08/04/20017",
+            endDate: "08/04/20017",
+          },
+        ],
+      });
     }
-
 
     setOpenedModelBoxData([...openedModelBoxData]);
 
     const NewAddedData = openedModelBoxData.map((currentItem, i) => {
-        if (currentItem.hasOwnProperty(dataRow.id)) {
-            var valueOf = Object.values(currentItem)
-            const Addval = valueOf.map((myVal, i) => {
-                setModelIncludedData([...myVal])
-            })
-        }
-    })
+      if (currentItem.hasOwnProperty(dataRow.id)) {
+        var valueOf = Object.values(currentItem);
+        const Addval = valueOf.map((myVal, i) => {
+          setModelIncludedData([...myVal]);
+        });
+      }
+    });
 
-    setShowRelatedModel(true)
-    setOpenModelBoxDataId(dataRow)
-
-    // console.log(NewAddedData, "NewAddedData NewAddedData dd")
-
-    // console.log("openModel Box daatttta", openedModelBoxData)
-
-    // console.log(modelIncludedData, "data tableee")
-
-    // console.log(dataRow, "opened row data")
-
-}
-
+    setShowRelatedModel(true);
+    setOpenModelBoxDataId(dataRow);
+  };
 
   const AddNewRowData = (rowItem) => {
     if (showRelatedModel === true) {
+      const _IncludedDataList = [...openedModelBoxData];
 
-        const _IncludedDataList = [...openedModelBoxData]
+      const NewAddedData = _IncludedDataList.map((currentItem, i) => {
+        for (var j in currentItem) {
+          if (j == rowItem.id) {
+            currentItem[j].push({
+              family: rowItem.family,
+              model: rowItem.model,
+              noSeriese: "0JAPA000470",
+              location: "LIMA",
+              startDate: "08/04/20017",
+              endDate: "08/04/20017",
+            });
+            setModelIncludedData([...currentItem[j]]);
 
-        const NewAddedData = _IncludedDataList.map((currentItem, i) => {
-            for (var j in currentItem) {
-                if (j == rowItem.id) {
-                    currentItem[j].push({
-                        family: rowItem.family,
-                        model: rowItem.model,
-                        noSeriese: "0JAPA000470",
-                        location: "LIMA",
-                        startDate: "08/04/20017",
-                        endDate: "08/04/20017",
-                    })
-                    setModelIncludedData([...currentItem[j]])
+            setOpenedModelBoxData([...openedModelBoxData]);
+          }
+        }
+      });
 
-                    setOpenedModelBoxData([...openedModelBoxData])
-                }
-            }
-        })
+      // setModelIncludedData([...modelIncludedData])
 
+      // setSelectedMasterData(selectedDataWithitemsArr)
 
-        // setModelIncludedData([...modelIncludedData])
-
-        // setSelectedMasterData(selectedDataWithitemsArr)
-
-        // console.log(rowId, "Opened Moodel Row ID");
-        // console.log(selectedDataWithitemsArr, "NEeeew selecteMAster data WIth Items")
+      // console.log(rowId, "Opened Moodel Row ID");
+      // console.log(selectedDataWithitemsArr, "NEeeew selecteMAster data WIth Items")
     }
+  };
 
-}
+  const handleExpandedRowDelete = (e, id) => {
+    const _bundleItems = [...bundleItems];
+    _bundleItems[0].associatedServiceOrBundle.splice(id, 1);
+    setBundleItems(_bundleItems);
+  };
+
+  const handleExpandedRowEdit = (e, id) => {
+    alert("Edit row");
+  };
 
   // const ExpandedComponent = ({ data }) => <pre>{JSON.stringify(data, null, 2)}</pre>;
   const ExpandedComponent = ({ data }) => (
-    <>
+    <div className="scrollbar" id="style">
       {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
         <div
           key={i}
@@ -3080,14 +2958,20 @@ export function CreatePortfolio() {
             className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz rdt_TableCell"
             data-tag="allowRowEvents"
           >
-            <div className=" cursor">
+            <div
+              className="cursor"
+              onClick={(e) => handleExpandedRowEdit(e, i)}
+            >
               <Tooltip title="Edit">
-                <img className="mr-2" src={penIcon} style={{ width: "14px" }} />
+                <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
               </Tooltip>
             </div>
-            <div className="">
+            <div
+              className="cursor"
+              onClick={(e) => handleExpandedRowDelete(e, i)}
+            >
               <Tooltip title="Delete">
-                <Link to="#" className="btn-sm">
+                <Link to="#" className="mx-1">
                   <svg
                     data-name="Layer 41"
                     id="Layer_41"
@@ -3115,7 +2999,7 @@ export function CreatePortfolio() {
           </div>
         </div>
       ))}
-    </>
+    </div>
   );
 
   return (
@@ -3657,7 +3541,8 @@ export function CreatePortfolio() {
                         <Select
                           options={updatedTaskList}
                           value={stratgyTaskTypeKeyValue}
-                          onChange={(e) => setStratgyTaskTypeKeyValue(e)}
+                          // onChange={(e) => setStratgyTaskTypeKeyValue(e)}
+                          onChange={(e) => setStratgyTaskTypeKeyValue(e) (addPortFolioItem.taskType = "")}
                         />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                       </div>
@@ -4461,6 +4346,8 @@ export function CreatePortfolio() {
                       { label: "Family", value: "family" },
                     ]}
                     setBundleItems={setBundleItems}
+                    setLoadingItem={setLoadingItem}
+                    setOpenedModelBoxData={setOpenedModelBoxData}
                   />
                 </div>
               </div>
@@ -4475,70 +4362,10 @@ export function CreatePortfolio() {
             </div>
             {bundleItems.length > 0 ? (
               <div>
-                {/* <div className="row align-items-center">
-                  <div className="col-4">
-                    <div className="d-flex align-items-center pl-2">
-                      <h6 className="mr-2 mb-0 font-size-12"><span>Repair Option</span></h6>
-                      <p className="mb-0">Version 1</p>
-                      <p className="ml-2 mb-0">
-                        <a href="#" className="ml-3 "><img src={editIcon}></img></a>
-                        <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-5">
-                    <div className="d-flex align-items-center" style={{ background: '#F9F9F9', padding: '5px 10px 5px 35px', borderRadius: '10px' }}>
-                      <div className="search-icon1 mr-2" style={{ lineHeight: '24px' }}>
-                        <img src={searchstatusIcon}></img>
-                      </div>
-                      <div className=" mx-2">
-                        <div className="machine-drop">
-                          <FormControl className="" sx={{ m: 1, }}>
-                            <Select
-                              id="demo-simple-select-autowidth"
-                              value={age}
-                              onChange={handleChangedrop}
-                              autoWidth
-                            >
-                              <MenuItem value="5">
-                                <em>Engine</em>
-                              </MenuItem>
-                              <MenuItem value={10}>Twenty</MenuItem>
-                              <MenuItem value={21}>Twenty one</MenuItem>
-                              <MenuItem value={22}>Twenty one and a half</MenuItem>
-                            </Select>
-                          </FormControl>
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-                  <div className="col-3  text-right">
-                    <div className="">
-                      <a href="#" className="border-left  btn">+ Add Part</a>
-                    </div>
-                  </div>
-                </div> */}
                 <div
                   className="custom-table  card"
                   style={{ height: 400, width: "100%" }}
                 >
-                  {/* <Box sx={{ width: '100%', typography: 'body1' }}>
-                    <TabContext value={tabs}>
-                      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                        <TabList onChange={(e, newValue) => setTabs(newValue)} aria-label="lab API tabs example">
-                          <Tab label="Solution Data" value="1" />
-                          <Tab label="Component Data" value="2" />
-                          <Tab label="Price" value="3" />
-                        </TabList>
-                      </Box>
-                      <TabPanel value="1">Solution Data</TabPanel>
-                      <TabPanel value="2">
-
-                      </TabPanel>
-                      <TabPanel value="3">Price</TabPanel>
-                    </TabContext>
-                  </Box> */}
                   <DataTable
                     title=""
                     columns={bundleItemColumns}
@@ -4548,16 +4375,17 @@ export function CreatePortfolio() {
                     expandableRowsComponent={ExpandedComponent}
                     pagination
                   />
-                  {/* <DataTable
-                    title=""
-                    columns={bundleItemColumns}
-                    data={serviceOrBundleList}
-                    customStyles={customStyles}
-                    expandableRows
-                    expandableRowsComponent={ExpandedComponent}
-                    pagination
-                  /> */}
                 </div>
+              </div>
+            ) : loadingItem ? (
+              <div className="d-flex align-items-center justify-content-center">
+                <Loader
+                  type="spinner-default"
+                  bgColor={"#7571f9"}
+                  title={"spinner-default"}
+                  color={"#FFFFFF"}
+                  size={35}
+                />
               </div>
             ) : (
               <div className="p-4  row">
@@ -5572,9 +5400,6 @@ export function CreatePortfolio() {
                     <div className="icon-defold">
                       <div className="form-control">
                         <Select
-                          // defaultValue={1}
-                          // onChange={(e) => {setTaskItemList(e)}}
-                          // value={taskItemList}
                           options={updatedTaskList}
                           placeholder={stratgyTaskTypeKeyValue.value}
                           // selectedValue={stratgyTaskTypeKeyValue.value ? stratgyTaskTypeKeyValue.value : ""}
@@ -7351,137 +7176,233 @@ export function CreatePortfolio() {
         </Modal.Body>
       </Modal>
 
-
-      <div className="modal right fade" id="myModal2" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel2">
-                    <div className="modal-dialog" role="document">
-                      <div className="modal-content">
-                        <div className="modal-header d-block">
-                          <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                          <h4 className="modal-title" id="myModalLabel2">Inclusion/Exclusion</h4>
-                        </div>
-                        <div className="modal-body p-0">
-                          <div className="bg-light-blue p-3">
-                            <h5 className="font-weight-normal text-violet mb-0">CHOICE OF SPARE PARTS</h5>
-                          </div>
-                          <div className="bg-white p-3">
-                            <FormGroup>
-                              <FormControlLabel control={<Switch defaultChecked />} label="With Spare Parts" />
-                              <FormControlLabel control={<Switch />} label="I have Spare Parts" />
-                              <FormControlLabel control={<Switch />} label="I need only Spare Parts" />
-                            </FormGroup>
-                          </div>
-                          <div className="bg-light-blue p-3">
-                            <h5 className="font-weight-normal text-violet mb-0">CHOICE OF LABOR</h5>
-                          </div>
-                          <div className="bg-white p-3">
-                            <div className=" d-flex justify-content-between ">
-                              <div>
-                                <FormGroup>
-                                  <FormControlLabel control={<Switch defaultChecked />} label="With Labor" />
-                                  <FormControlLabel control={<Switch />} label="Without Labor" />
-                                </FormGroup>
-                              </div>
-                              <div>
-                                <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="bg-light-blue p-3">
-                            <h5 className="font-weight-normal text-violet mb-0">CHOICE MISC.</h5>
-                          </div>
-                          <div className="bg-white p-3">
-                            <FormGroup>
-                              <FormControlLabel control={<Switch />} label=" Lubricants" />
-                              <FormControlLabel control={<Switch />} label="Travel Expenses" />
-                              <FormControlLabel control={<Switch />} label="Tools" />
-                              <FormControlLabel control={<Switch />} label="External Work" />
-                            </FormGroup>
-                            <h5 className="d-flex align-items-center mb-0"><div className="" style={{ display: 'contents' }}><span className="mr-3 white-space">Includes</span></div><div className="hr"></div></h5>
-                          </div>
-                          <div className="bg-light-blue p-3">
-                            <h5 className="font-weight-normal text-violet mb-0">SERVICES</h5>
-                          </div>
-                          <div className="bg-white p-3">
-                            <div className=" d-flex justify-content-between align-items-center">
-                              <div>
-                                <FormGroup>
-                                  <FormControlLabel control={<Switch />} label=" Changee Oil and Filter" />
-                                </FormGroup>
-                              </div>
-                              <div>
-                                <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
-                              </div>
-                            </div>
-                            <h5 className="d-flex align-items-center mb-0"><div className="" style={{ display: 'contents' }}><span className="mr-3 white-space">Optianal services</span></div><div className="hr"></div></h5>
-                            <FormGroup>
-                              <FormControlLabel control={<Switch />} label="Air Filter Replacement" />
-                              <FormControlLabel control={<Switch />} label="Cabin Air Filter" />
-                              <FormControlLabel control={<Switch />} label="Rotete Tires" />
-                            </FormGroup>
-                            <h5 className="d-flex align-items-center mb-0"><div className="" style={{ display: 'contents' }}><span className="mr-3 white-space">Includes</span></div><div className="hr"></div></h5>
-                            <div className="mt-3">
-                              <h6><a href="#" className="btn-sm text-white mr-2" style={{ background: '#79CBA2' }}>Free</a> 50 Point Inspection</h6>
-                              <h6 className="mt-3"><a href="#" className="btn-sm text-white mr-2 " style={{ background: '#79CBA2' }}>Free</a> 50 Point Inspection</h6>
-                            </div>
-                            <div className=" d-flex justify-content-between mt-4">
-                              <div>
-                                <a href="#" className="btn text-violet bg-light-blue"><b><span className="mr-2">+</span>Add more services</b></a>
-                              </div>
-                              <div>
-                                <a href="#" className="btn text-violet"><b>I Have Parts</b></a>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                      </div>
-                    </div>
+      <div
+        className="modal right fade"
+        id="myModal2"
+        tabIndex="-1"
+        role="dialog"
+        aria-labelledby="myModalLabel2"
+      >
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header d-block">
+              <button
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <h4 className="modal-title" id="myModalLabel2">
+                Inclusion/Exclusion
+              </h4>
+            </div>
+            <div className="modal-body p-0">
+              <div className="bg-light-blue p-3">
+                <h5 className="font-weight-normal text-violet mb-0">
+                  CHOICE OF SPARE PARTS
+                </h5>
+              </div>
+              <div className="bg-white p-3">
+                <FormGroup>
+                  <FormControlLabel
+                    control={<Switch defaultChecked />}
+                    label="With Spare Parts"
+                  />
+                  <FormControlLabel
+                    control={<Switch />}
+                    label="I have Spare Parts"
+                  />
+                  <FormControlLabel
+                    control={<Switch />}
+                    label="I need only Spare Parts"
+                  />
+                </FormGroup>
+              </div>
+              <div className="bg-light-blue p-3">
+                <h5 className="font-weight-normal text-violet mb-0">
+                  CHOICE OF LABOR
+                </h5>
+              </div>
+              <div className="bg-white p-3">
+                <div className=" d-flex justify-content-between ">
+                  <div>
+                    <FormGroup>
+                      <FormControlLabel
+                        control={<Switch defaultChecked />}
+                        label="With Labor"
+                      />
+                      <FormControlLabel
+                        control={<Switch />}
+                        label="Without Labor"
+                      />
+                    </FormGroup>
                   </div>
-
-      {/*    <div class="modal fade" id="Datatable" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{zIndex:'1200'}}>
-        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
-          <div class="modal-content">
-          
-            <div class="modal-header p-3">
-            <div className="d-flex" >
-              <h5>Search Result</h5>
-             
+                  <div>
+                    <a href="#" className="ml-3 font-size-14">
+                      <img src={deleteIcon}></img>
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-light-blue p-3">
+                <h5 className="font-weight-normal text-violet mb-0">
+                  CHOICE MISC.
+                </h5>
+              </div>
+              <div className="bg-white p-3">
+                <FormGroup>
+                  <FormControlLabel control={<Switch />} label=" Lubricants" />
+                  <FormControlLabel
+                    control={<Switch />}
+                    label="Travel Expenses"
+                  />
+                  <FormControlLabel control={<Switch />} label="Tools" />
+                  <FormControlLabel
+                    control={<Switch />}
+                    label="External Work"
+                  />
+                </FormGroup>
+                <h5 className="d-flex align-items-center mb-0">
+                  <div className="" style={{ display: "contents" }}>
+                    <span className="mr-3 white-space">Includes</span>
+                  </div>
+                  <div className="hr"></div>
+                </h5>
+              </div>
+              <div className="bg-light-blue p-3">
+                <h5 className="font-weight-normal text-violet mb-0">
+                  SERVICES
+                </h5>
+              </div>
+              <div className="bg-white p-3">
+                <div className=" d-flex justify-content-between align-items-center">
+                  <div>
+                    <FormGroup>
+                      <FormControlLabel
+                        control={<Switch />}
+                        label=" Changee Oil and Filter"
+                      />
+                    </FormGroup>
+                  </div>
+                  <div>
+                    <a href="#" className="ml-3 font-size-14">
+                      <img src={deleteIcon}></img>
+                    </a>
+                  </div>
+                </div>
+                <h5 className="d-flex align-items-center mb-0">
+                  <div className="" style={{ display: "contents" }}>
+                    <span className="mr-3 white-space">Optianal services</span>
+                  </div>
+                  <div className="hr"></div>
+                </h5>
+                <FormGroup>
+                  <FormControlLabel
+                    control={<Switch />}
+                    label="Air Filter Replacement"
+                  />
+                  <FormControlLabel
+                    control={<Switch />}
+                    label="Cabin Air Filter"
+                  />
+                  <FormControlLabel control={<Switch />} label="Rotete Tires" />
+                </FormGroup>
+                <h5 className="d-flex align-items-center mb-0">
+                  <div className="" style={{ display: "contents" }}>
+                    <span className="mr-3 white-space">Includes</span>
+                  </div>
+                  <div className="hr"></div>
+                </h5>
+                <div className="mt-3">
+                  <h6>
+                    <a
+                      href="#"
+                      className="btn-sm text-white mr-2"
+                      style={{ background: "#79CBA2" }}
+                    >
+                      Free
+                    </a>{" "}
+                    50 Point Inspection
+                  </h6>
+                  <h6 className="mt-3">
+                    <a
+                      href="#"
+                      className="btn-sm text-white mr-2 "
+                      style={{ background: "#79CBA2" }}
+                    >
+                      Free
+                    </a>{" "}
+                    50 Point Inspection
+                  </h6>
+                </div>
+                <div className=" d-flex justify-content-between mt-4">
+                  <div>
+                    <a href="#" className="btn text-violet bg-light-blue">
+                      <b>
+                        <span className="mr-2">+</span>Add more services
+                      </b>
+                    </a>
+                  </div>
+                  <div>
+                    <a href="#" className="btn text-violet">
+                      <b>I Have Parts</b>
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
-             <div>
-            <div className="card w-100 p-2">
-    
-    <div className="" style={{ height: 400, width: '100%', backgroundColor:'#fff' }}>
-        <DataGrid
-        sx={{
-          '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: '#7380E4', color:'#fff'
-          }
-        }}
-          rows={rows}
-          columns={columns2}
-          pageSize={5}
-          rowsPerPageOptions={[5]}
-          checkboxSelection
-          onCellClick={(e)=>handleRowClick(e)}
-          
-          
-        />
-      </div> 
-      
-    </div>
-    <div className="m-2 text-right">
-        <a href="#" className="btn text-white bg-primary">+ Add Selected</a>
-             
-        </div>
-    </div>
-            
-           
-            
-          
           </div>
         </div>
-      </div> */}
+      </div>
+
+      <Modal
+        size="lg"
+        show={itemReviewShow}
+        onHide={() => setItemReviewShow(false)}
+      >
+        <Modal.Body>
+          <Box sx={{ typography: "body1" }}>
+            <TabContext value={tabs}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <TabList
+                  onChange={(e, newValue) => setTabs(newValue)}
+                  aria-label="lab API tabs example"
+                >
+                  <Tab label="Add New Portfolio Item" value="1" />
+                  <Tab label="Price Calculator" value="2" />
+                  <Tab label="Component Data" value="3" />
+                </TabList>
+              </Box>
+              <TabPanel value="1">
+                <AddPortfolioItem
+                  openAddBundleItemHeader={openAddBundleItemHeader}
+                  categoryList={categoryList}
+                  updatedTaskList={updatedTaskList}
+                />
+              </TabPanel>
+              <TabPanel value="2">
+                <PriceCalculator 
+                
+                />
+              </TabPanel>
+              <TabPanel value="3">Item Three</TabPanel>
+            </TabContext>
+          </Box>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setItemReviewShow(false)}>
+            Close
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => setTabs(`${parseInt(tabs) + 1}`)}
+          >
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }

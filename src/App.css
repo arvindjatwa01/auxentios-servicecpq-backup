@@ -2507,4 +2507,11 @@ cursor: pointer;
 .search-drop-div{}
 .search-drop-div.show{top: 37px !important;}
 .eLCUDv{ min-width: auto !important;}
-.sc-iBkjds:last-child{min-width:150px !important;}
+.sc-iBkjds:last-child{min-width:180px !important;}
+.row-svg-div{}
+.row-svg-div svg{font-size: 24px;
+  width: 14px;
+  fill: #706e6e;}
+  .row-svg-div img{
+    width: 14px;}
+	
