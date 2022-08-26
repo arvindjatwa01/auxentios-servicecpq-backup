@@ -86,7 +86,7 @@ function WithSpareParts(){
         <div class="container-fluid ">
         <div className="d-flex align-items-center justify-content-between mt-2">
         <div className="d-flex justify-content-center align-items-center">
-          <h5 className="font-weight-600 mb-0">Standard Jobs</h5>
+          <h5 className="font-weight-600 mb-0">With Spare Parts</h5>
           <div className="d-flex justify-content-center align-items-center">
             {/* <div className="ml-3"><a href="#" className="bg-yellow text-white btn-sm rounded-pill">* Gold <KeyboardArrowDownIcon className="font-size-14"/></a></div> */}
             <div className="ml-3">

@@ -19,6 +19,7 @@ import {Link} from 'react-router-dom'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import { CommanComponents } from "components";
+import AddIcon from '@mui/icons-material/Add';
 
 function RepairOption01(){
   const [selectedOption, setSelectedOption] = useState(null);
@@ -60,7 +61,7 @@ function RepairOption01(){
           <div className="d-flex justify-content-end align-items-center mb-0">
           <div className="text-right">
           <a href="#" className="text-primary"><span><KeyboardArrowLeftIcon/></span>Operation 07<span><KeyboardArrowRightIcon/></span></a>
-             <a href="#" className="text-primary ml-2"><span><KeyboardArrowLeftIcon/></span>Add New<span><KeyboardArrowRightIcon/></span></a>
+             <a href="#" className="text-primary ml-2 border-left "><span className="ml-2"><AddIcon/></span>Add New</a>
            </div>
            </div>
             <h5 className="d-flex align-items-center mb-0">
@@ -161,7 +162,7 @@ function RepairOption01(){
            </div>
               
         </div>
-        <div className="Add-new-segment-div p-3 border-radius-10">
+        <div className="Add-new-segment-div p-3 border-radius-10 mb-3">
               {/* <Link to="/AddPartlist" className="btn bg-primary text-white mr-3">
               <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add part list
                 </Link> */}
