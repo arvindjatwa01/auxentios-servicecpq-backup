@@ -28,6 +28,7 @@ export const ADD_PARTLIST = "/AddPartlist";
 export const REPAIR_KITS = "/RepairKits";
 export const STANDARD_JOBS = "/StandardJobs";
 export const KITS = "/Kits";
+export const WITHOUT_SPARE_PARTS_HEADER = "/WithoutSparePartsHeader";
 
 export const VERIFY_EMAIL = "/verify-email/:id";
 
