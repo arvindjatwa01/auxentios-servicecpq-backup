@@ -74,6 +74,8 @@ import Table from "react-bootstrap/Table";
 import BusinessCenterOutlinedIcon from "@mui/icons-material/BusinessCenterOutlined";
 import LayersOutlinedIcon from "@mui/icons-material/LayersOutlined";
 import Tooltip from "@mui/material/Tooltip";
+import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
+
 
 import {
   createPortfolio,
@@ -122,6 +124,7 @@ import { display } from "@mui/system";
 import { CreateService } from "pages/Service";
 import SelectFilter from "react-select";
 import QuerySearchComp from "./QuerySearchComp";
+import { FormControlLabel, Switch } from "@material-ui/core";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 const customStyles = {
@@ -229,9 +232,10 @@ export function CreatePortfolio() {
   const [filterMasterData, setFilterMasterData] = useState([]);
   const [selectedMasterData, setSelectedMasterData] = useState([]);
   const [flagIs, setFlagIs] = useState(false);
-  const [openModelBoxData, setOpenModelBoxData] = useState("");
-  const [openModelRowData, setOpenModelRowData] = useState({});
-  const [openedModelBoxData, setOpenedModelBoxData] = useState([]);
+  const [openModelBoxDataId, setOpenModelBoxDataId] = useState({})
+    const [openModelRowData, setOpenModelRowData] = useState({})
+    const [openedModelBoxData, setOpenedModelBoxData] = useState([])
+    const [modelIncludedData, setModelIncludedData] = useState([])
 
   const [coverageData, setCoverageData] = useState({
     make: "",
@@ -965,6 +969,24 @@ export function CreatePortfolio() {
     setCreateNewBundle(false);
     setOpenAddBundleItemHeader("Add New Portfolio Item");
   };
+
+  const handleServiceItemEdit = (e, row) => {
+    alert("edit bundle Item");
+  };
+  const handleServiceItemDelete = (e, row) => {
+    const _bundleItems = [...bundleItems];
+    const updated = _bundleItems.filter((currentItem) => {
+      if (currentItem.id !== row.id) {
+        return currentItem;
+      }
+    });
+    setBundleItems(updated);
+  };
+ 
+  const handleServiceItemSave = (e, row) => {
+    alert("save")
+  };
+
   const handleCreateNewServiceBundle = () => {
     if (typeOfSearch.value == "bundle") {
       setOpenAddBundleItem(false);
@@ -2016,11 +2038,27 @@ export function CreatePortfolio() {
 
   const handleDeleteIncludeSerialNo = (e, row) => {
     const updated = selectedMasterData.filter((obj) => {
-      if (obj.id !== row.id) return obj;
-    });
-    setSelectedMasterData(updated);
-    setFilterMasterData(updated);
-  };
+        if (obj.id !== row.id)
+            return obj
+    })
+
+
+    const _IncludedDataList = [...openedModelBoxData]
+
+    const NewAddedData = _IncludedDataList.map((currentItem, i) => {
+
+        for (var j in currentItem) {
+            if (j == row.id) {
+                openedModelBoxData.splice(i, 1);
+            }
+        }
+    })
+
+    setSelectedMasterData(updated)
+    setFilterMasterData(updated)
+
+
+}
   const handleEditIncludeSerialNo = (e, row) => {
     console.log("handleEditIncludeSerialNo row:", row);
     let obj = {
@@ -2577,12 +2615,32 @@ export function CreatePortfolio() {
               <LayersOutlinedIcon />
             </Tooltip>
           </div>
-          <div className=" cursor">
+          <div
+            className=" cursor"
+            onClick={(e) => handleServiceItemEdit(e, row)}
+          >
             <Tooltip title="Edit">
               <img className="m-1" src={penIcon} style={{ width: "14px" }} />
             </Tooltip>
           </div>
-          <div className="">
+          <div
+            className=" cursor"
+            data-toggle="modal" 
+            data-target="#myModal2"
+          >
+            <Tooltip title="Inclusion">
+              <img src={cpqIcon}></img>
+            </Tooltip>
+          </div>
+          <div
+            className=" cursor"
+            onClick={(e) => handleServiceItemSave(e, row)}
+          >
+            <Tooltip title="Save">
+             <SaveOutlinedIcon />
+            </Tooltip>
+          </div>
+          <div className="" onClick={(e) => handleServiceItemDelete(e, row)}>
             <Tooltip title="Delete">
               <Link to="#" className="btn-sm">
                 <svg
@@ -2808,99 +2866,91 @@ export function CreatePortfolio() {
   const [show, setShow] = React.useState(false);
 
   const ShowRelatedIncludeModelBox = (dataRow) => {
-    setOpenedModelBoxData([]);
-    setShowRelatedModel(true);
-    var _selecteddDataWithoutItemsKey = [...selectedMasterData];
+    setModelIncludedData([])
 
-    // const selectedDataWithitemsArr = _selecteddDataWithoutItemsKey.map((currentItem, i) => {
-    //   if (dataRow.id == currentItem.id) {
-    //     return currentItem.items
-    //   } else return
-    // })
+    var ModelBoxKeys = [];
+    var KeyValues = [];
 
-    const selectedDataWithitemsArr = _selecteddDataWithoutItemsKey.filter(
-      function (el) {
-        if (dataRow.id == el.id) return el.items;
-      }
-    );
+    for (var key in openedModelBoxData) {
+        ModelBoxKeys.push(Object.keys(openedModelBoxData[key]));
+    }
 
-    // setMasterData([...updated])
-    // const selectedDataWithitemsArr = _selecteddDataWithoutItemsKey.map((selectedData, i) => {
-    //   if (dataRow.id == selectedData.id) {
-    //     if (selectedData.items) {
+    const ValIs = ModelBoxKeys.map((i, data) => {
+        KeyValues.push(Number(i[0]));
+    })
 
-    //       selectedData.items.push({
-    //         family: dataRow.family,
-    //         model: dataRow.model,
-    //         noSeriese: "0JAPA000470",
-    //         location: "LIMA",
-    //         startDate: "08/04/20017",
-    //         endDate: "08/04/20017"
-    //       })
-    //     } return {
-    //       ...selectedData, items: [{
-    //         family: dataRow.family,
-    //         model: dataRow.model,
-    //         noSeriese: "0JAPA000470",
-    //         location: "LIMA",
-    //         startDate: "08/04/20017",
-    //         endDate: "08/04/20017"
-    //       }]
-    //     }
-    //   }
-    //   return ({
-    //     ...selectedData, items: [...selectedData.items, {
-    //       family: dataRow.family,
-    //       model: dataRow.model,
-    //       noSeriese: "0JAPA000470",
-    //       location: "LIMA",
-    //       startDate: "08/04/20017",
-    //       endDate: "08/04/20017"
-    //     }]
-    //   })
-
-    //   // if (!selectedData.items) {
-    //   //   return ({ ...selectedData, items: [] })
-    //   // } else return selectedData
-    // })
-    setOpenedModelBoxData(selectedDataWithitemsArr);
-    console.log("selectedDataWithitemsArr REsultttt", selectedDataWithitemsArr);
-
-    // setSelectedMasterData(selectedDataWithitemsArr)
-    setOpenModelBoxData(dataRow.id);
-    console.log(dataRow, "opened row data");
-  };
-
-  const AddNewRowData = (rowId) => {
-    if (showRelatedModel === true) {
-        const _selectedDataWithOutItems = [...selectedMasterData]
-        const selectedDataWithitemsArr = _selectedDataWithOutItems.map(selectedData => {
-            if (selectedData.id == rowId) {
-                // return ({ ...selectedData, items: [] })
-                selectedData.items.push({
-                    family: selectedData.family,
-                    model: selectedData.model,
-                    noSeriese: "0JAPA000470",
-                    location: "LIMA",
-                    startDate: "08/04/20017",
-                    endDate: "08/04/20017"
-                })
-                setOpenedModelBoxData([...openedModelBoxData, {
-                    family: selectedData.family,
-                    model: selectedData.model,
-                    noSeriese: "0JAPA000470",
-                    location: "LIMA",
-                    startDate: "08/04/20017",
-                    endDate: "08/04/20017"
-                }])
-            } else return (selectedData)
+    if (!KeyValues.includes(dataRow.id)) {
+        openedModelBoxData.push({
+            [dataRow.id]: [{
+                family: dataRow.family,
+                model: dataRow.model,
+                noSeriese: "0JAPA000470",
+                location: "LIMA",
+                startDate: "08/04/20017",
+                endDate: "08/04/20017",
+            }]
         })
+
+    }
+
+
+    setOpenedModelBoxData([...openedModelBoxData]);
+
+    const NewAddedData = openedModelBoxData.map((currentItem, i) => {
+        if (currentItem.hasOwnProperty(dataRow.id)) {
+            var valueOf = Object.values(currentItem)
+            const Addval = valueOf.map((myVal, i) => {
+                setModelIncludedData([...myVal])
+            })
+        }
+    })
+
+    setShowRelatedModel(true)
+    setOpenModelBoxDataId(dataRow)
+
+    // console.log(NewAddedData, "NewAddedData NewAddedData dd")
+
+    // console.log("openModel Box daatttta", openedModelBoxData)
+
+    // console.log(modelIncludedData, "data tableee")
+
+    // console.log(dataRow, "opened row data")
+
+}
+
+
+  const AddNewRowData = (rowItem) => {
+    if (showRelatedModel === true) {
+
+        const _IncludedDataList = [...openedModelBoxData]
+
+        const NewAddedData = _IncludedDataList.map((currentItem, i) => {
+            for (var j in currentItem) {
+                if (j == rowItem.id) {
+                    currentItem[j].push({
+                        family: rowItem.family,
+                        model: rowItem.model,
+                        noSeriese: "0JAPA000470",
+                        location: "LIMA",
+                        startDate: "08/04/20017",
+                        endDate: "08/04/20017",
+                    })
+                    setModelIncludedData([...currentItem[j]])
+
+                    setOpenedModelBoxData([...openedModelBoxData])
+                }
+            }
+        })
+
+
+        // setModelIncludedData([...modelIncludedData])
 
         // setSelectedMasterData(selectedDataWithitemsArr)
 
-        console.log(rowId, "Opened Moodel Row ID");
-        console.log(selectedDataWithitemsArr, "NEeeew selecteMAster data WIth Items")
+        // console.log(rowId, "Opened Moodel Row ID");
+        // console.log(selectedDataWithitemsArr, "NEeeew selecteMAster data WIth Items")
     }
+
 }
 
   // const ExpandedComponent = ({ data }) => <pre>{JSON.stringify(data, null, 2)}</pre>;
@@ -2908,6 +2958,7 @@ export function CreatePortfolio() {
     <>
       {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
         <div
+          key={i}
           id="row-0"
           role="row"
           className="sc-evZas cMMpBL rdt_TableRow"
@@ -4061,9 +4112,12 @@ export function CreatePortfolio() {
                         setSelectedMasterData={setSelectedMasterData}
                         setFlagIs={setFlagIs}
                         compoFlag="coverage"
-                        options={[ { label: "Make", value: "make" },
-                        { label: "Model", value: "model" },
-                        { label: "Prefix", value: "prefix" },{ label: "Family", value: "family" }]}
+                        options={[
+                          { label: "Make", value: "make" },
+                          { label: "Model", value: "model" },
+                          { label: "Prefix", value: "prefix" },
+                          { label: "Family", value: "family" },
+                        ]}
                       />
                       <div className=" ml-3">
                         <Link to="#" className="btn bg-primary text-white">
@@ -4385,8 +4439,8 @@ export function CreatePortfolio() {
             </Box>
           </div>
           <div className="card mt-4 px-4">
-            <div className="row align-items-center">
-              <div className="col-10 mx-1">
+            <div className="row align-items-center mt-3">
+              <div className="col-11 mx-1">
                 <div className="d-flex align-items-center w-100">
                   <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
                     <h5 className="mb-0 text-black">
@@ -4398,15 +4452,19 @@ export function CreatePortfolio() {
                       </a>
                     </p>
                   </div>
-                  <QuerySearchComp 
-                  compoFlag="itemSearch" 
-                  options={[{ label: "Make", value: "itemHeaderMake" },
-                  { label: "Model", value: "model" },
-                  { label: "Prefix", value: "prefix" },{ label: "Family", value: "itemHeaderFamily" }]}
+                  <QuerySearchComp
+                    compoFlag="itemSearch"
+                    options={[
+                      { label: "Make", value: "make" },
+                      { label: "Model", value: "model" },
+                      { label: "Prefix", value: "prefix" },
+                      { label: "Family", value: "family" },
+                    ]}
+                    setBundleItems={setBundleItems}
                   />
                 </div>
               </div>
-              <div className="col-auto">
+              <div className="">
                 <h6
                   className="font-weight-600 text-light mb-0 cursor"
                   onClick={handleAddSolutionPress}
@@ -4462,7 +4520,7 @@ export function CreatePortfolio() {
                   </div>
                 </div> */}
                 <div
-                  className="custom-table  card "
+                  className="custom-table  card"
                   style={{ height: 400, width: "100%" }}
                 >
                   {/* <Box sx={{ width: '100%', typography: 'body1' }}>
@@ -6870,7 +6928,7 @@ export function CreatePortfolio() {
             <Link
               to="#"
               className=" btn bg-primary text-white"
-              onClick={() => AddNewRowData(openModelBoxData)}
+              onClick={() => AddNewRowData(openModelBoxDataId)}
             >
               Add New
             </Link>
@@ -6881,12 +6939,11 @@ export function CreatePortfolio() {
             className=""
             title=""
             columns={columns4}
-            data={openedModelBoxData}
+            data={modelIncludedData}
             // data={data4}
             customStyles={customStyles}
             // pagination
           />
-          {console.log("selected naster data new ", selectedMasterData)}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => setShowRelatedModel(false)}>
@@ -7293,6 +7350,93 @@ export function CreatePortfolio() {
           </div>
         </Modal.Body>
       </Modal>
+
+
+      <div className="modal right fade" id="myModal2" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel2">
+                    <div className="modal-dialog" role="document">
+                      <div className="modal-content">
+                        <div className="modal-header d-block">
+                          <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          <h4 className="modal-title" id="myModalLabel2">Inclusion/Exclusion</h4>
+                        </div>
+                        <div className="modal-body p-0">
+                          <div className="bg-light-blue p-3">
+                            <h5 className="font-weight-normal text-violet mb-0">CHOICE OF SPARE PARTS</h5>
+                          </div>
+                          <div className="bg-white p-3">
+                            <FormGroup>
+                              <FormControlLabel control={<Switch defaultChecked />} label="With Spare Parts" />
+                              <FormControlLabel control={<Switch />} label="I have Spare Parts" />
+                              <FormControlLabel control={<Switch />} label="I need only Spare Parts" />
+                            </FormGroup>
+                          </div>
+                          <div className="bg-light-blue p-3">
+                            <h5 className="font-weight-normal text-violet mb-0">CHOICE OF LABOR</h5>
+                          </div>
+                          <div className="bg-white p-3">
+                            <div className=" d-flex justify-content-between ">
+                              <div>
+                                <FormGroup>
+                                  <FormControlLabel control={<Switch defaultChecked />} label="With Labor" />
+                                  <FormControlLabel control={<Switch />} label="Without Labor" />
+                                </FormGroup>
+                              </div>
+                              <div>
+                                <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="bg-light-blue p-3">
+                            <h5 className="font-weight-normal text-violet mb-0">CHOICE MISC.</h5>
+                          </div>
+                          <div className="bg-white p-3">
+                            <FormGroup>
+                              <FormControlLabel control={<Switch />} label=" Lubricants" />
+                              <FormControlLabel control={<Switch />} label="Travel Expenses" />
+                              <FormControlLabel control={<Switch />} label="Tools" />
+                              <FormControlLabel control={<Switch />} label="External Work" />
+                            </FormGroup>
+                            <h5 className="d-flex align-items-center mb-0"><div className="" style={{ display: 'contents' }}><span className="mr-3 white-space">Includes</span></div><div className="hr"></div></h5>
+                          </div>
+                          <div className="bg-light-blue p-3">
+                            <h5 className="font-weight-normal text-violet mb-0">SERVICES</h5>
+                          </div>
+                          <div className="bg-white p-3">
+                            <div className=" d-flex justify-content-between align-items-center">
+                              <div>
+                                <FormGroup>
+                                  <FormControlLabel control={<Switch />} label=" Changee Oil and Filter" />
+                                </FormGroup>
+                              </div>
+                              <div>
+                                <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
+                              </div>
+                            </div>
+                            <h5 className="d-flex align-items-center mb-0"><div className="" style={{ display: 'contents' }}><span className="mr-3 white-space">Optianal services</span></div><div className="hr"></div></h5>
+                            <FormGroup>
+                              <FormControlLabel control={<Switch />} label="Air Filter Replacement" />
+                              <FormControlLabel control={<Switch />} label="Cabin Air Filter" />
+                              <FormControlLabel control={<Switch />} label="Rotete Tires" />
+                            </FormGroup>
+                            <h5 className="d-flex align-items-center mb-0"><div className="" style={{ display: 'contents' }}><span className="mr-3 white-space">Includes</span></div><div className="hr"></div></h5>
+                            <div className="mt-3">
+                              <h6><a href="#" className="btn-sm text-white mr-2" style={{ background: '#79CBA2' }}>Free</a> 50 Point Inspection</h6>
+                              <h6 className="mt-3"><a href="#" className="btn-sm text-white mr-2 " style={{ background: '#79CBA2' }}>Free</a> 50 Point Inspection</h6>
+                            </div>
+                            <div className=" d-flex justify-content-between mt-4">
+                              <div>
+                                <a href="#" className="btn text-violet bg-light-blue"><b><span className="mr-2">+</span>Add more services</b></a>
+                              </div>
+                              <div>
+                                <a href="#" className="btn text-violet"><b>I Have Parts</b></a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
 
       {/*    <div class="modal fade" id="Datatable" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{zIndex:'1200'}}>
         <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
