@@ -16,6 +16,8 @@ import cpqIcon from '../../assets/icons/svg/CPQ.svg'
 import deleteIcon from '../../assets/icons/svg/delete.svg'
 import copyIcon from '../../assets/icons/svg/Copy.svg'
 import {Link} from 'react-router-dom'
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import { CommanComponents } from "components";
 
 function RepairOption01(){
@@ -55,6 +57,12 @@ function RepairOption01(){
           </div>
           </div>
           <div className="card p-4 mt-5">
+          <div className="d-flex justify-content-end align-items-center mb-0">
+          <div className="text-right">
+          <a href="#" className="text-primary"><span><KeyboardArrowLeftIcon/></span>Operation 07<span><KeyboardArrowRightIcon/></span></a>
+             <a href="#" className="text-primary ml-2"><span><KeyboardArrowLeftIcon/></span>Add New<span><KeyboardArrowRightIcon/></span></a>
+           </div>
+           </div>
             <h5 className="d-flex align-items-center mb-0">
               <div className="" style={{ display:'contents'}}><span className="mr-3 white-space">Operation 01</span></div>
               <div className="hr"></div>
@@ -148,10 +156,15 @@ function RepairOption01(){
                 </div>
                 </div>
               </div>
-              <div className="Add-new-segment-div p-3 border-radius-10">
-              <Link to="/AddPartlist" className="btn bg-primary text-white mr-3">
+              <div className=" text-right">
+             <a href="#" className="btn border bg-primary text-white">Save</a>
+           </div>
+              
+        </div>
+        <div className="Add-new-segment-div p-3 border-radius-10">
+              {/* <Link to="/AddPartlist" className="btn bg-primary text-white mr-3">
               <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add part list
-                </Link>
+                </Link> */}
                 <Link to="/RepairServiceEstimate" className="btn bg-primary text-white">
               <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add Service Estimate
                 </Link>
@@ -159,7 +172,6 @@ function RepairOption01(){
               <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add Srvice Estimates
                 </a> */}
                
-        </div>
         </div>
         </div>
         </div>

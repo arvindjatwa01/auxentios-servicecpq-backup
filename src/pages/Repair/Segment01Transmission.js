@@ -29,6 +29,10 @@ import ThumbDownOffAltOutlinedIcon from '@mui/icons-material/ThumbDownOffAltOutl
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 function Segment01Transmission(){
   const [selectedOption, setSelectedOption] = useState(null);
   const [value, setValue] = React.useState('1');
@@ -66,14 +70,21 @@ function Segment01Transmission(){
           </div>
           </div>
           <div className="card p-4 mt-5">
+          <div className="d-flex justify-content-end align-items-center mb-0">
+          <div className="text-right">
+          <a href="#" className="text-primary"><span><KeyboardArrowLeftIcon/></span>Operation 07<span><KeyboardArrowRightIcon/></span></a>
+             <a href="#" className="text-primary ml-2"><span><KeyboardArrowLeftIcon/></span>Add New<span><KeyboardArrowRightIcon/></span></a>
+           </div>
+           </div>
             <h5 className="d-flex align-items-center mb-0">
+            
               <div className="" style={{ display:'contents'}}><span className="mr-3 white-space">Segment 01- Transmission</span></div>
               <div className="hr"></div>
               </h5>
               <div className="row mt-4">
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">JOB CODE</label>
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">JOB CODE</label>
                   {/* <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/> */}
                   <Select
                           defaultValue={selectedOption}
@@ -85,13 +96,13 @@ function Segment01Transmission(){
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">TITLE</label>
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TITLE</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">COMPONENT CODE</label>
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COMPONENT CODE</label>
                   {/* <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/> */}
                   <Select
                           defaultValue={selectedOption}
@@ -103,17 +114,54 @@ function Segment01Transmission(){
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">DESCRIPTION</label>
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DESCRIPTION</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
-                <div className="col-md-12">
+               
+              </div>
+              <div className="row mt-4">
+              
+                <div className="col-md-4 col-sm-4">
+                <div class="form-group">
+                <p className="font-size-12 font-weight-500 mb-2">JOB CODE</p>
+                 <h6 className="font-weight-500">15</h6>
+                </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                <div class="form-group">
+                <p className="font-size-12 font-weight-500 mb-2">TITLE</p>
+                 <h6 className="font-weight-500">Disassemble </h6>
+                </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                <div class="form-group">
+                <p className="font-size-12 font-weight-500 mb-2">COMPONENT CODE</p>
+                 <h6 className="font-weight-500">300</h6>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                <p className="font-size-12 font-weight-500 mb-2">DESCRIPTION </p>
+                 <h6 className="font-weight-500">Transmission</h6>
+                </div>
+                </div>
+                {/* <div className="col-md-12">
                 <div class="form-group mt-3">
                  <Link to="/Segment01Disassemble" className="btn bg-primary text-white">Next</Link>
                 </div>
-                </div>
+                </div> */}
+                
               </div>
-              
+              <div className=" text-right">
+             <a href="#" className="btn border bg-primary text-white">Save</a>
+           </div>
+        </div>
+        <div className="Add-new-segment-div p-3 border-radius-10">
+        <Link to={"/RepairOption01"} className="btn bg-primary text-white">
+        <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add Opretion<span className="ml-2"><FontAwesomeIcon icon={faAngleDown} /></span>
+          </Link>
+         
         </div>
         <div className="card p-4 mt-5">
           <div className="d-flex justify-content-between align-items-center">
@@ -139,7 +187,7 @@ function Segment01Transmission(){
                       options={[{label:"One",value:"one"}]}
                       placeholder="Repair Quote"
                       /> <span>
-                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
+                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-18"/></a>
                       </span>
                 </div>
                 <div className="customselect d-flex align-items-center mr-3">
@@ -160,7 +208,7 @@ function Segment01Transmission(){
                       options={[{label:"One",value:"one"}]}
                       placeholder="Cost Plus"
                       /> <span>
-                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
+                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-18"/></a>
                       </span>
                 </div>
                 <div className="customselect d-flex align-items-center mr-3">
@@ -181,7 +229,7 @@ function Segment01Transmission(){
                       options={[{label:"One",value:"one"}]}
                       placeholder="Flat rate"
                       /> <span>
-                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
+                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-18"/></a>
                       </span>
                 </div>
                 <div>
@@ -192,7 +240,7 @@ function Segment01Transmission(){
                 
               </div>
               <div>
-              <a href="#" className="btn-sm"><DeleteIcon className="font-size-14 text-danger"/></a>
+              <a href="#" className="btn-sm"><DeleteIcon className="font-size-18 text-light-grey"/></a>
               </div>
               </div>
               <div className="d-flex justify-content-between align-items-center">
@@ -212,7 +260,7 @@ function Segment01Transmission(){
                       options={[{label:"One",value:"one"}]}
                       placeholder="Repair Quote"
                       /> <span>
-                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
+                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-18"/></a>
                       </span>
                 </div>
                 <div className="customselect d-flex align-items-center mr-3">
@@ -233,7 +281,7 @@ function Segment01Transmission(){
                       options={[{label:"One",value:"one"}]}
                       placeholder="Cost Plus"
                       /> <span>
-                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
+                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-18"/></a>
                       </span>
                 </div>
                 <div className="customselect d-flex align-items-center mr-3">
@@ -254,7 +302,7 @@ function Segment01Transmission(){
                       options={[{label:"One",value:"one"}]}
                       placeholder="Flat rate"
                       /> <span>
-                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-14"/></a>
+                      <a href="#" className="btn-sm"><DeleteIcon className="font-size-18"/></a>
                       </span>
                 </div>
                 <div>
@@ -265,7 +313,7 @@ function Segment01Transmission(){
                 
               </div>
               <div>
-              <a href="#" className="btn-sm"><DeleteIcon className="font-size-14 text-danger"/></a>
+              <a href="#" className="btn-sm"><DeleteIcon className="font-size-18 text-light-grey"/></a>
               </div>
               </div>
            <div className=" text-right">
@@ -283,16 +331,18 @@ function Segment01Transmission(){
               <div className="card border" style={{overflow: "hidden"}}>
               <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
           <div className="" style={{ display:'contents'}}><span className="mr-3 white-space font-size-16 text-white">023-Remove Engine partlist</span></div>
-         <div className="d-flex">
-         <div>
-        
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
+          <div className="d-flex">
+          <div>
+          <Checkbox className="p-0 text-white" {...label} />
         </div>
-          
+        <a href="#"><FileUploadOutlinedIcon className="ml-3 font-size-21 text-white" titleAccess="Upload"/></a>
+           <a href="#"><ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><ContentCopyIcon className="ml-3 font-size-21 text-white"/></a>
+           <a  className="ml-3 text-white svg-div"><MuiMenuComponent options={activityOptions}/></a>
+           
+         
          </div>
           </div>
           <div className="bg-white p-3">
@@ -412,16 +462,16 @@ function Segment01Transmission(){
               <div className="card border" style={{overflow: "hidden"}}>
               <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
           <div className="" style={{ display:'contents'}}><span className="mr-3 white-space font-size-16 text-white">023-Remove Engine partlist</span></div>
-         <div className="d-flex">
-         <div>
-        
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
+          <div className="d-flex">
+          <div>
+          <Checkbox className="p-0 text-white" {...label} />
         </div>
-          
+        <a href="#"><FileUploadOutlinedIcon className="ml-3 font-size-21 text-white" titleAccess="Upload"/></a>
+           <a href="#"><ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><ContentCopyIcon className="ml-3 font-size-21 text-white"/></a>
+           <a  className="ml-3 text-white svg-div"><MuiMenuComponent options={activityOptions}/></a>
          </div>
           </div>
           <div className="bg-white p-3">
@@ -541,16 +591,16 @@ function Segment01Transmission(){
               <div className="card border" style={{overflow: "hidden"}}>
               <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
           <div className="" style={{ display:'contents'}}><span className="mr-3 white-space font-size-16 text-white">023-Remove Engine partlist</span></div>
-         <div className="d-flex">
-         <div>
-        
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
+          <div className="d-flex">
+          <div>
+          <Checkbox className="p-0 text-white" {...label} />
         </div>
-          
+        <a href="#"><FileUploadOutlinedIcon className="ml-3 font-size-21 text-white" titleAccess="Upload"/></a>
+           <a href="#"><ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><ContentCopyIcon className="ml-3 font-size-21 text-white"/></a>
+           <a  className="ml-3 text-white svg-div"><MuiMenuComponent options={activityOptions}/></a>
          </div>
           </div>
           <div className="bg-white p-3">
@@ -670,16 +720,16 @@ function Segment01Transmission(){
               <div className="card border" style={{overflow: "hidden"}}>
               <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
           <div className="" style={{ display:'contents'}}><span className="mr-3 white-space font-size-16 text-white">023-Remove Engine partlist</span></div>
-         <div className="d-flex">
-         <div>
-        
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
-          <a href="#"><FileUploadOutlinedIcon className="ml-3 text-white" style={{fontSize: "30px"}} titleAccess="Share"/></a>
+          <div className="d-flex">
+          <div>
+          <Checkbox className="p-0 text-white" {...label} />
         </div>
-          
+        <a href="#"><FileUploadOutlinedIcon className="ml-3 font-size-21 text-white" titleAccess="Upload"/></a>
+           <a href="#"><ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><ContentCopyIcon className="ml-3 font-size-21 text-white"/></a>
+           <a  className="ml-3 text-white svg-div"><MuiMenuComponent options={activityOptions}/></a>
          </div>
           </div>
           <div className="bg-white p-3">
@@ -790,9 +840,7 @@ function Segment01Transmission(){
            
           </div>
           </div>
-          {/* <div className="bg-light-grey p-3">
-            <a href="#" class="text-violet">Go to Service Estimates <span><ArrowRightAltIcon /></span></a>
-          </div> */}
+
               </div>
             </div>
             
@@ -908,7 +956,7 @@ function Segment01Transmission(){
             </div> */}
           </div>
         </div>
-        <div className="Add-new-segment-div p-3 border-radius-10">
+        <div className="Add-new-segment-div p-3 border-radius-10 mt-2 mb-4">
                 <Link to="/RepairServiceEstimate" className="btn bg-primary text-white">
               <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add Service Estimates
                 </Link>

@@ -41,7 +41,7 @@ import 'owl.carousel/dist/assets/owl.theme.default.css';
 
 var tempShow = false
 
-const Actions = () => <><span className="mr-3 btn bg-primary text-white cursor" style={{ width: '50%' }} onClick={() => tempShow = true}><img className='mr-2' src={PartIcons}></img>Build</span></>;
+const Actions = () => <><span className="mr-3 btn bg-primary text-white cursor" style={{ width: '50% ' }} onClick={() => tempShow = true}><img className='mr-2' src={PartIcons}></img>Build</span></>;
 
 
 
@@ -194,7 +194,7 @@ export function WorkList(props) {
             name: 'Actions',
             button: true,
             minWidth: '200px',
-            cell: () => <><span className="mr-3 btn bg-primary text-white cursor" style={{ width: '50%' }} onClick={() => setShow(true)}><img className='mr-2' src={PartIcons}></img>Build</span></>,
+            cell: () => <><span className="mr-3 btn bg-primary text-white cursor" style={{ width: '100%' }} onClick={() => setShow(true)}><img className='mr-2' src={PartIcons}></img>Build</span></>,
         },
     ];
 
@@ -398,10 +398,10 @@ export function WorkList(props) {
                             ?
                             <div className="tableheader">
                                 <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
-                                    <li><a className="cursor" className="result">RESULTS</a></li>
+                                    <li><a className="cursor result" >RESULTS</a></li>
                                     <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM125</a></li>
                                     <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM2</a></li>
-                                    <li><a className="cursor" onClick={handleCreateNewServiceBundle} className="lastOption text-violet"><span className="mr-2">+</span>Create New {typeOfSearch != null ? typeOfSearch.value == 'bundle' ? "Bundle" : typeOfSearch.value == 'service' ? "Service" : typeOfSearch.value == 'portfolioItem' ? "Portfolio Item" : "" : ""}</a></li>
+                                    <li><a className="cursor lastOption text-violet" onClick={handleCreateNewServiceBundle}><span className="mr-2">+</span>Create New {typeOfSearch != null ? typeOfSearch.value == 'bundle' ? "Bundle" : typeOfSearch.value == 'service' ? "Service" : typeOfSearch.value == 'portfolioItem' ? "Portfolio Item" : "" : ""}</a></li>
                                 </ul>
                             </div>
                             :
@@ -463,10 +463,10 @@ export function WorkList(props) {
                             ?
                             <div className="tableheader">
                                 <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
-                                    <li><a className="cursor" className="result">RESULTS</a></li>
+                                    <li><a className="cursor result">RESULTS</a></li>
                                     <li><a className="cursor" onClick={() => window.location.href = "/service/new"}>PM125</a></li>
                                     <li><a className="cursor" onClick={() => window.location.href = "/service/new"}>PM2</a></li>
-                                    <li><a className="cursor" onClick={() => window.location.href = "/service/new"} className="lastOption text-violet"><span className="mr-2">+</span>Create New {typeOfSearch != null ? typeOfSearch.value == 'bundle' ? "Bundle" : typeOfSearch.value == 'service' ? "Service" : typeOfSearch.value == 'portfolioItem' ? "Portfolio Item" : "" : ""}</a></li>
+                                    <li><a className="cursor lastOption text-violet" onClick={() => window.location.href = "/service/new"}><span className="mr-2">+</span>Create New {typeOfSearch != null ? typeOfSearch.value == 'bundle' ? "Bundle" : typeOfSearch.value == 'service' ? "Service" : typeOfSearch.value == 'portfolioItem' ? "Portfolio Item" : "" : ""}</a></li>
                                 </ul>
                             </div>
                             :

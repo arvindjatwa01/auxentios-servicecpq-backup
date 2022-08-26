@@ -27,6 +27,8 @@ import SellOutlinedIcon from '@mui/icons-material/SellOutlined';
 import SelectFilter from 'react-select';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import $ from "jquery"
 import {
   createPortfolio,
@@ -60,6 +62,10 @@ function RepairServiceEstimate() {
   };
   const [open1, setOpen1] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
+  const [open3, setOpen3] = React.useState(false);
+  const [open4, setOpen4] = React.useState(false);
+  const handleClose4 = () => setOpen4(false);
+  const handleClose3 = () => setOpen3(false);
   const handleClose2 = () => setOpen2(false);
   const handleOpen1 = () => setOpen1(true);
   const handleClose1 = () => setOpen1(false);
@@ -411,6 +417,9 @@ function RepairServiceEstimate() {
               </a>
 
             </div> */}
+            <div className=" text-right">
+             <a href="#" className="btn border bg-primary text-white">Save</a>
+           </div>
           </div>
           <div className="card p-4 mt-5">
             <Box sx={{ width: '100%', typography: 'body1' }}>
@@ -472,7 +481,7 @@ function RepairServiceEstimate() {
                       </div>
                     </div>
                     <div className="col-md-12">
-                      <div class="form-group mt-3 mb-0">
+                      <div class="form-group mt-3 mb-0 text-right">
                         <a href="#" className="btn bg-primary text-white">Save</a>
                       </div>
                     </div>
@@ -583,7 +592,7 @@ function RepairServiceEstimate() {
                           </div>
 
                         </div>
-                        <div className="col-auto">
+                        <div className="">
                           <div className="text-center border-left pl-3 py-3">
                             <Link onClick={() => setOpen2(true)} to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable">
                               <span className="ml-1">Add Items</span>
@@ -607,6 +616,10 @@ function RepairServiceEstimate() {
                         onCellClick={(e) => handleRowClick(e)}
 
                       />
+                     
+                    </div>
+                    <div className=" text-right mt-3">
+                      <a href="#" className="btn border bg-primary text-white">Save</a>
                     </div>
                   </div>
                 </TabPanel>
@@ -642,7 +655,7 @@ function RepairServiceEstimate() {
                       </div>
                     </div>
                     <div className="col-md-12">
-                      <div class="form-group mt-3 mb-0">
+                      <div class="form-group mt-3 mb-0 text-right">
                         <a href="#" className="btn bg-primary text-white">Save</a>
                       </div>
                     </div>
@@ -657,7 +670,7 @@ function RepairServiceEstimate() {
 
                           <div className="d-flex align-items-center bg-primary w-100">
                             <div className="d-flex mr-3" style={{ whiteSpace: 'pre' }}>
-                              <h5 className="mr-2 mb-0 text-white"><span>Labor</span></h5>
+                              <h5 className="mr-2 mb-0 text-white"><span>Consumables</span></h5>
                               <p className="ml-4 mb-0">
                                 <a href="#" className="ml-3 text-white"><EditOutlinedIcon /></a>
                                 <a href="#" className="ml-3 text-white"><ShareOutlinedIcon /></a>
@@ -755,7 +768,7 @@ function RepairServiceEstimate() {
                         </div>
                         <div className="col-auto">
                           <div className="text-center border-left pl-3 py-3">
-                            <Link onClick={() => setOpen2(true)} to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable">
+                            <Link onClick={() => setOpen3(true)} to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatableconsumables">
                               <span className="ml-1">Add Items</span>
                             </Link>
                           </div>
@@ -777,6 +790,9 @@ function RepairServiceEstimate() {
                         onCellClick={(e) => handleRowClick(e)}
 
                       />
+                    </div>
+                    <div className=" text-right mt-3">
+                      <a href="#" className="btn border bg-primary text-white">Save</a>
                     </div>
                   </div>
                 </TabPanel>
@@ -812,6 +828,11 @@ function RepairServiceEstimate() {
                         <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                       </div>
                     </div>
+                    <div className="col-md-12">
+                      <div class="form-group mt-3 mb-0 text-right">
+                        <a href="#" className="btn bg-primary text-white">Save</a>
+                      </div>
+                    </div>
                   </div>
                   <hr />
 
@@ -823,7 +844,7 @@ function RepairServiceEstimate() {
 
                           <div className="d-flex align-items-center bg-primary w-100">
                             <div className="d-flex mr-3" style={{ whiteSpace: 'pre' }}>
-                              <h5 className="mr-2 mb-0 text-white"><span>Labor</span></h5>
+                              <h5 className="mr-2 mb-0 text-white"><span>External Work</span></h5>
                               <p className="ml-4 mb-0">
                                 <a href="#" className="ml-3 text-white"><EditOutlinedIcon /></a>
                                 <a href="#" className="ml-3 text-white"><ShareOutlinedIcon /></a>
@@ -921,7 +942,7 @@ function RepairServiceEstimate() {
                         </div>
                         <div className="col-auto">
                           <div className="text-center border-left pl-3 py-3">
-                            <Link onClick={() => setOpen2(true)} to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable">
+                            <Link onClick={() => setOpen4(true)} to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable">
                               <span className="ml-1">Add Items</span>
                             </Link>
                           </div>
@@ -943,6 +964,9 @@ function RepairServiceEstimate() {
                         onCellClick={(e) => handleRowClick(e)}
 
                       />
+                    </div>
+                    <div className=" text-right mt-3">
+                      <a href="#" className="btn border bg-primary text-white">Save</a>
                     </div>
                   </div>
                 </TabPanel>
@@ -973,7 +997,7 @@ function RepairServiceEstimate() {
                   </div>
                   <div className="col-md-4 col-sm-4">
                     <div class="form-group mt-3">
-                      <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">APPROVED NEEDED</label>
+                      <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">APPROVAL NEEDED</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                     </div>
                   </div>
@@ -983,6 +1007,11 @@ function RepairServiceEstimate() {
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                     </div>
                   </div>
+                  <div className="col-md-12">
+                      <div class="form-group mt-3 mb-0 text-right">
+                        <a href="#" className="btn bg-primary text-white">Save</a>
+                      </div>
+                    </div>
                 </div></TabPanel>
               </TabContext>
             </Box>
@@ -1002,20 +1031,20 @@ function RepairServiceEstimate() {
                   <i class="fa fa-pencil font-size-12" aria-hidden="true"></i><span className="ml-2">Edit</span>
                 </span>
                 <span className="mr-3">
+                  <DeleteIcon className=" font-size-16" />
+                  <span className="ml-2">Delete</span>
+                </span>
+                <span className="mr-3">
                   < MonetizationOnOutlinedIcon className=" font-size-16" />
                   <span className="ml-2"> Adjust price</span>
                 </span>
                 <span className="mr-3">
-                  <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                  <span className="ml-2">Related part list(s)</span>
+                  <SettingsBackupRestoreIcon className=" font-size-16" />
+                  <span className="ml-2">Go back to operations</span>
                 </span>
                 <span className="mr-3">
-                  <AccessAlarmOutlinedIcon className=" font-size-16" />
-                  <span className="ml-2">Related service estimate(s)</span>
-                </span>
-                <span>
-                  <SellOutlinedIcon className=" font-size-16" />
-                  <span className="ml-2">Split price</span>
+                  <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                  <span className="ml-2">Related part list(s)</span>
                 </span>
               </div>
             </div>
@@ -1024,7 +1053,7 @@ function RepairServiceEstimate() {
                 <div className="row mt-4">
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">LABOR CODE</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CHARGE CODE</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="1000 ENGINE" />
                     </div>
                   </div>
@@ -1036,49 +1065,61 @@ function RepairServiceEstimate() {
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QTY</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SERVICE TYPE</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace left side of the Engine" />
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT OF MEASURES</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="List Price" />
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT PRICE</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ESTIMATED HOURS</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$35000" />
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">EXTENDED PRICE</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TARGET HOURS</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$10000" />
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PLANNED HOURS</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$5000" />
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">% USAGE</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT PRICE / H</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EA" />
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TOTAL PRICE</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">EXTENDED PRICE</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000" />
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COMMENTS</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PRICE</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ADJUSTED PRICE</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE" />
                     </div>
                   </div>
@@ -1086,6 +1127,227 @@ function RepairServiceEstimate() {
               </div>
               <div className="m-3 text-right">
                 <a href="#" onClick={handleClose2} className="btn border mr-3 "> Cancel</a>
+                <a href="#" className="btn text-white bg-primary">Save</a>
+              </div>
+            </div>
+          </Modal.Body>
+
+
+        </Modal>
+        <Modal show={open3} onHide={handleClose3} size="lg"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered>
+          <Modal.Header closeButton>
+            <Modal.Title>1000-Engine|23-Replace Engine|Replace Engine</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="p-0 bg-white">
+            <div className="ligt-greey-bg p-3">
+              <div>
+                <span className="mr-3">
+                  <i class="fa fa-pencil font-size-12" aria-hidden="true"></i><span className="ml-2">Edit</span>
+                </span>
+                <span className="mr-3">
+                  <DeleteIcon className=" font-size-16" />
+                  <span className="ml-2">Delete</span>
+                </span>
+                <span className="mr-3">
+                  < MonetizationOnOutlinedIcon className=" font-size-16" />
+                  <span className="ml-2"> Adjust price</span>
+                </span>
+                <span className="mr-3">
+                  <SettingsBackupRestoreIcon className=" font-size-16" />
+                  <span className="ml-2">Go back to operations</span>
+                </span>
+                <span className="mr-3">
+                  <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                  <span className="ml-2">Related part list(s)</span>
+                </span>
+              </div>
+            </div>
+            <div>
+              <div className="p-3">
+                <div className="row mt-4">
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONSUMABLE ID</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="1000 ENGINE" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DESCRIPTION</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="0123 REPLACE" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUANTITY</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace left side of the Engine" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT OF MEASURES</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="List Price" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TYPE</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$35000" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VENDOR</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$10000" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT PRICE</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$5000" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">EXTENDED PRICE</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EA" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">FLAT RATE</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="m-3 text-right">
+                <a href="#" onClick={handleClose3} className="btn border mr-3 "> Cancel</a>
+                <a href="#" className="btn text-white bg-primary">Save</a>
+              </div>
+            </div>
+          </Modal.Body>
+
+
+        </Modal>
+        
+        <Modal show={open4} onHide={handleClose4} size="lg"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered>
+          <Modal.Header closeButton>
+            <Modal.Title>1000-Engine|23-Replace Engine|Replace Engine</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="p-0 bg-white">
+            <div className="ligt-greey-bg p-3">
+              <div>
+                <span className="mr-3">
+                  <i class="fa fa-pencil font-size-12" aria-hidden="true"></i><span className="ml-2">Edit</span>
+                </span>
+                <span className="mr-3">
+                  <DeleteIcon className=" font-size-16" />
+                  <span className="ml-2">Delete</span>
+                </span>
+                <span className="mr-3">
+                  < MonetizationOnOutlinedIcon className=" font-size-16" />
+                  <span className="ml-2"> Adjust price</span>
+                </span>
+                <span className="mr-3">
+                  <SettingsBackupRestoreIcon className=" font-size-16" />
+                  <span className="ml-2">Go back to operations</span>
+                </span>
+                <span className="mr-3">
+                  <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                  <span className="ml-2">Related part list(s)</span>
+                </span>
+              </div>
+            </div>
+            <div>
+              <div className="p-3">
+                <div className="row mt-4">
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">FIELD NAME / DESCRIPTION</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="1000 ENGINE" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ACTIVITY NAME</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="0123 REPLACE" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ACTIVITY ID</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace left side of the Engine" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SHORT DESCRIPTION</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="List Price" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUANTITY</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$35000" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT OF MEASURE</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$10000" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DIMENSIONS</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$5000" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SUPPLYING VENDOR CODE</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EA" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SUPPLYING VENDOR NAME</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">LIST PRICE ($)</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">FLAT RATE ($)</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="m-3 text-right">
+                <a href="#" onClick={handleClose4} className="btn border mr-3 "> Cancel</a>
                 <a href="#" className="btn text-white bg-primary">Save</a>
               </div>
             </div>
