@@ -4,20 +4,33 @@ import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlin
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
 import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
-const PriceCalculator = () => {
-    const [priceCalculator, setPriceCalculator] = useState({
-        priceType: "",
-        listPrice: "",
-        priceAdditionalSelect: "",
-        priceAdditionalInput: "",
-        priceEscalationSelect: "",
-        priceEscalationInput: "",
-        calculatedPrice: "",
-        flatPrice: "",
-        discountTypeSelect: "",
-        discountTypeInput: "",
+import {itemCreation,updatePortfolio} from "../../services/index"
+
+
+
+const PriceCalculator = (props) => {
+  const [categoryUsageKeyValue1, setCategoryUsageKeyValue1] = useState([]);
+  const [stratgyTaskTypeKeyValue, setStratgyTaskTypeKeyValue] = useState([]);
+  const [stratgyTaskUsageKeyValue, setStratgyTaskUsageKeyValue] = useState([]);
+  const [stratgyResponseTimeKeyValue, setStratgyResponseTimeKeyValue] =useState([]);
+  const [stratgyHierarchyKeyValue, setStratgyHierarchyKeyValue] = useState([]);
+  const [stratgyGeographicKeyValue, setStratgyGeographicKeyValue] = useState([]);
+
+  const [priceCalculator, setPriceCalculator] = useState({
+    priceType: "",
+    listPrice: "",
+    priceAdditionalSelect: "",
+    priceAdditionalInput: "",
+    priceEscalationSelect: "",
+    priceEscalationInput: "",
+    calculatedPrice: "",
+    flatPrice: "",
+    discountTypeSelect: "",
+    discountTypeInput: "",
         priceYear: "",
         startUsage: "",
         endUsage: "",
@@ -28,7 +41,12 @@ const PriceCalculator = () => {
         netPrice: 1200,
         totalPrice: 1200,
       });
+      
 
+
+
+
+      const {setOpenAddBundleItem,setOpenSearchSolution,generalComponentData,setGeneralComponentData,addPortFolioItem,bundleItems,setBundleItems,createServiceOrBundle}=props
 
       const frequencyOptions = [
         { label: "Cyclic", value: "Cyclic" },
@@ -42,6 +60,389 @@ const PriceCalculator = () => {
         { value: "vanilla", label: "Construction-Medium" },
         { value: "Construction", label: "Construction" },
       ];
+
+      const handleBundleItemSaveAndContinue = async () => {
+        // setLoadingItem(true);
+        try {
+          let reqObj = {
+            itemId: 0,
+            itemName: "",
+            itemHeaderModel: {
+              itemHeaderId: 0,
+              // itemHeaderId: parseInt(generalComponentData.portfolioId),
+              itemHeaderDescription: generalComponentData.description,
+              bundleFlag: "PORTFOLIO",
+              reference: generalComponentData.externalReference,
+              itemHeaderMake: "",
+              itemHeaderFamily: "",
+              model: "",
+              prefix: "",
+              type: "MACHINE",
+              additional: "",
+              currency: "",
+              netPrice: 0,
+              itemProductHierarchy: generalComponentData.productHierarchy,
+              itemHeaderGeographic: generalComponentData.geographic,
+              responseTime: generalComponentData.responseTime,
+              usage: "",
+              validFrom: generalComponentData.validFrom,
+              validTo: generalComponentData.validTo,
+              estimatedTime: "",
+              servicePrice: 0,
+              status: "NEW",
+            },
+            itemBodyModel: {
+              itemBodyId: parseInt(addPortFolioItem.id),
+              itemBodyDescription: addPortFolioItem.description,
+              quantity: parseInt(addPortFolioItem.quantity),
+              startUsage: priceCalculator.startUsage,
+              endUsage: priceCalculator.endUsage,
+              standardJobId: "",
+              frequency: addPortFolioItem.frequency.value,
+              additional: "",
+              spareParts: ["WITH_SPARE_PARTS"],
+              labours: ["WITH_LABOUR"],
+              miscellaneous: ["LUBRICANTS"],
+              taskType: [addPortFolioItem.taskType.value],
+              solutionCode: "",
+              usageIn: addPortFolioItem.usageIn.value,
+              recommendedValue: 0,
+              usage: "",
+              repairKitId: "",
+              templateDescription: addPortFolioItem.description.value,
+              partListId: "",
+              serviceEstimateId: "",
+              numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+              repairOption: addPortFolioItem.repairOption.value,
+              priceMethod: "LIST_PRICE",
+              listPrice: parseInt(priceCalculator.listPrice),
+              priceEscalation: "",
+              calculatedPrice: parseInt(priceCalculator.calculatedPrice),
+              flatPrice: parseInt(priceCalculator.flatPrice),
+              discountType: "",
+              year: priceCalculator.priceYear.value,
+              avgUsage: 0,
+              unit: addPortFolioItem.unit.value,
+              sparePartsPrice: 0,
+              sparePartsPriceBreakDownPercentage: 0,
+              servicePrice: 0,
+              servicePriceBreakDownPercentage: 0,
+              miscPrice: 0,
+              miscPriceBreakDownPercentage: 0,
+              totalPrice: 0,
+            },
+          };
+          const itemRes = await itemCreation(reqObj);
+          console.log("itemCreation res:", itemRes);
+          if (itemRes.status !== 200) {
+            alert("something went wrong");
+            return;
+          }
+          const _generalComponentData = { ...generalComponentData };
+          _generalComponentData.items?.push({ itemId: itemRes.data.itemId });
+          setGeneralComponentData(_generalComponentData);
+          // put API for porfolio update Item id
+          // call here
+          const { portfolioId, ...res } = generalComponentData;
+          let obj = {
+            ...res,
+            visibleInCommerce: true,
+            customerId: 0,
+            lubricant: true,
+            customerSegment: generalComponentData.customerSegment
+              ? generalComponentData.customerSegment.value
+              : "EMPTY",
+            machineType: generalComponentData.machineType
+              ? generalComponentData.machineType
+              : "EMPTY",
+            status: generalComponentData.status
+              ? generalComponentData.status
+              : "EMPTY",
+            strategyTask: generalComponentData.strategyTask
+              ? generalComponentData.strategyTask
+              : "EMPTY",
+            taskType: generalComponentData.taskType
+              ? generalComponentData.taskType
+              : "EMPTY",
+            usageCategory: generalComponentData.usageCategory
+              ? generalComponentData.usageCategory
+              : "EMPTY",
+            productHierarchy: generalComponentData.productHierarchy
+              ? generalComponentData.productHierarchy
+              : "EMPTY",
+            geographic: generalComponentData.geographic
+              ? generalComponentData.geographic
+              : "EMPTY",
+            availability: generalComponentData.availability
+              ? generalComponentData.availability
+              : "EMPTY",
+            responseTime: generalComponentData.responseTime
+              ? generalComponentData.responseTime
+              : "EMPTY",
+            type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+            application: generalComponentData.application
+              ? generalComponentData.application
+              : "EMPTY",
+            contractOrSupport: generalComponentData.contractOrSupport
+              ? generalComponentData.contractOrSupport
+              : "EMPTY",
+            lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+              ? generalComponentData.lifeStageOfMachine
+              : "EMPTY",
+            supportLevel: generalComponentData.supportLevel
+              ? generalComponentData.supportLevel
+              : "EMPTY",
+            customerGroup: generalComponentData.customerGroup
+              ? generalComponentData.customerGroup
+              : "EMPTY",
+            searchTerm: "EMPTY",
+            supportLevel: "EMPTY",
+            portfolioPrice: {},
+            additionalPrice: {},
+            escalationPrice: {},
+            coverages: generalComponentData.coverages
+              ? generalComponentData.coverages
+              : [],
+            items: _generalComponentData.items,
+            usageCategory: categoryUsageKeyValue1.value,
+            taskType: stratgyTaskTypeKeyValue.value,
+            strategyTask: stratgyTaskUsageKeyValue.value,
+            responseTime: stratgyResponseTimeKeyValue.value,
+            productHierarchy: stratgyHierarchyKeyValue.value,
+            geographic: stratgyGeographicKeyValue.value,
+          };
+          if (generalComponentData.portfolioId) {
+            const updatePortfolioRes = await updatePortfolio(
+              generalComponentData.portfolioId,
+              obj
+            );
+            if (updatePortfolioRes.status != 200) {
+              throw `${updatePortfolioRes.status}:Something went wrong`;
+            }
+          }
+    
+          // setOpen2(false); //Hide Price Calculator Screen
+          setGeneralComponentData(_generalComponentData);
+          setBundleItems([itemRes.data]);
+    
+          setOpenAddBundleItem(false);
+          setOpenSearchSolution(false);
+          // setLoadingItem(false);
+        } catch (error) {
+          console.log("error in item creation err:", error);
+          toast("😐" + error, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          return;
+        }
+      };
+    
+      const saveAddNewServiceOrBundle = async () => {
+        try {
+          let reqObj = {
+            itemId: 0,
+            itemName: "",
+            itemHeaderModel: {
+              itemHeaderId: 0,
+              // itemHeaderId: parseInt(generalComponentData.portfolioId),
+              itemHeaderDescription: createServiceOrBundle.description,
+              bundleFlag:
+                props.serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+              reference: createServiceOrBundle.reference,
+              itemHeaderMake: createServiceOrBundle.make,
+              itemHeaderFamily: "",
+              model: createServiceOrBundle.models,
+              prefix: createServiceOrBundle.prefix,
+              type: "MACHINE",
+              additional: createServiceOrBundle.additional.value,
+              currency: "",
+              netPrice: 0,
+              itemProductHierarchy: generalComponentData.productHierarchy,
+              itemHeaderGeographic: generalComponentData.geographic,
+              responseTime: generalComponentData.responseTime,
+              usage: "",
+              validFrom: generalComponentData.validFrom,
+              validTo: generalComponentData.validTo,
+              estimatedTime: "",
+              servicePrice: 0,
+              status: "NEW",
+            },
+            itemBodyModel: {
+              itemBodyId: parseInt(addPortFolioItem.id),
+              itemBodyDescription: addPortFolioItem.description,
+              quantity: parseInt(addPortFolioItem.quantity),
+              startUsage: priceCalculator.startUsage,
+              endUsage: priceCalculator.endUsage,
+              standardJobId: "",
+              frequency: addPortFolioItem.frequency.value,
+              additional: "",
+              spareParts: ["WITH_SPARE_PARTS"],
+              labours: ["WITH_LABOUR"],
+              miscellaneous: ["LUBRICANTS"],
+              taskType: [addPortFolioItem.taskType.value],
+              solutionCode: "",
+              usageIn: addPortFolioItem.usageIn.value,
+              recommendedValue: 0,
+              usage: "",
+              repairKitId: "",
+              templateDescription: addPortFolioItem.description.value,
+              partListId: "",
+              serviceEstimateId: "",
+              numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+              repairOption: addPortFolioItem.repairOption.value,
+              priceMethod: "LIST_PRICE",
+              listPrice: parseInt(priceCalculator.listPrice),
+              priceEscalation: "",
+              calculatedPrice: parseInt(priceCalculator.calculatedPrice),
+              flatPrice: parseInt(priceCalculator.flatPrice),
+              discountType: "",
+              year: priceCalculator.priceYear.value,
+              avgUsage: 0,
+              unit: addPortFolioItem.unit.value,
+              sparePartsPrice: 0,
+              sparePartsPriceBreakDownPercentage: 0,
+              servicePrice: 0,
+              servicePriceBreakDownPercentage: 0,
+              miscPrice: 0,
+              miscPriceBreakDownPercentage: 0,
+              totalPrice: 0,
+            },
+          };
+          // setOpen2(false); //Hide Price Calculator Screen
+    
+          const res = await itemCreation(reqObj);
+          console.log("service or bundle res:", res);
+          if (res.status == 200) {
+            toast(`👏 ${props.serviceOrBundlePrefix} created`, {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            // call update API for portfolio to update item with service or bundle
+            const _bundleItems = [...bundleItems];
+            if (_bundleItems[0].associatedServiceOrBundle) {
+              _bundleItems[0].associatedServiceOrBundle.push(res.data);
+            } else {
+              _bundleItems[0] = {
+                ..._bundleItems[0],
+                associatedServiceOrBundle: [res.data],
+              };
+            }
+            setBundleItems(_bundleItems);
+            // API call to update portfolio for service or bundle
+            const { portfolioId, ...rest } = generalComponentData;
+            let obj = {
+              ...rest,
+              visibleInCommerce: true,
+              customerId: 0,
+              lubricant: true,
+              customerSegment: generalComponentData.customerSegment
+                ? generalComponentData.customerSegment.value
+                : "EMPTY",
+              machineType: generalComponentData.machineType
+                ? generalComponentData.machineType
+                : "EMPTY",
+              status: generalComponentData.status
+                ? generalComponentData.status
+                : "EMPTY",
+              strategyTask: generalComponentData.strategyTask
+                ? generalComponentData.strategyTask
+                : "EMPTY",
+              taskType: generalComponentData.taskType
+                ? generalComponentData.taskType
+                : "EMPTY",
+              usageCategory: generalComponentData.usageCategory
+                ? generalComponentData.usageCategory
+                : "EMPTY",
+              productHierarchy: generalComponentData.productHierarchy
+                ? generalComponentData.productHierarchy
+                : "EMPTY",
+              geographic: generalComponentData.geographic
+                ? generalComponentData.geographic
+                : "EMPTY",
+              availability: generalComponentData.availability
+                ? generalComponentData.availability
+                : "EMPTY",
+              responseTime: generalComponentData.responseTime
+                ? generalComponentData.responseTime
+                : "EMPTY",
+              type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+              application: generalComponentData.application
+                ? generalComponentData.application
+                : "EMPTY",
+              contractOrSupport: generalComponentData.contractOrSupport
+                ? generalComponentData.contractOrSupport
+                : "EMPTY",
+              lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                ? generalComponentData.lifeStageOfMachine
+                : "EMPTY",
+              supportLevel: generalComponentData.supportLevel
+                ? generalComponentData.supportLevel
+                : "EMPTY",
+              customerGroup: generalComponentData.customerGroup
+                ? generalComponentData.customerGroup
+                : "EMPTY",
+              searchTerm: "EMPTY",
+              supportLevel: "EMPTY",
+              portfolioPrice: {},
+              additionalPrice: {},
+              escalationPrice: {},
+              coverages: generalComponentData.coverages
+                ? generalComponentData.coverages
+                : [],
+              items: [...generalComponentData.items, { itemId: res.data.itemId }],
+              usageCategory: categoryUsageKeyValue1.value,
+              taskType: stratgyTaskTypeKeyValue.value,
+              strategyTask: stratgyTaskUsageKeyValue.value,
+              responseTime: stratgyResponseTimeKeyValue.value,
+              productHierarchy: stratgyHierarchyKeyValue.value,
+              geographic: stratgyGeographicKeyValue.value,
+            };
+            console.log("request obj for update:", obj);
+            if (generalComponentData.portfolioId) {
+              const updatePortfolioRes = await updatePortfolio(
+                generalComponentData.portfolioId,
+                obj
+              );
+              if (updatePortfolioRes.status != 200) {
+                throw `${updatePortfolioRes.status}:Something went wrong`;
+              }
+              console.log("portfolio updated:", updatePortfolioRes);
+            } else {
+              throw `Please Create portfolio`;
+            }
+          } else {
+            throw `${res.status}: ${props.serviceOrBundlePrefix} not created`;
+          }
+        } catch (error) {
+          console.log("itemCreation err:", error);
+          toast("😐" + error, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          return;
+        }
+      };
+    
+
+
+
+
 
   return (
     <>
@@ -448,11 +849,11 @@ const PriceCalculator = () => {
           <a
             href="#"
             className="btn text-white bg-primary"
-            // onClick={
-            //   serviceOrBundlePrefix === ""
-            //     ? handleBundleItemSaveAndContinue
-            //     : saveAddNewServiceOrBundle
-            // }
+            onClick={
+              props.serviceOrBundlePrefix === ""
+                ? handleBundleItemSaveAndContinue
+                : saveAddNewServiceOrBundle
+            }
           >
             Save
           </a>
