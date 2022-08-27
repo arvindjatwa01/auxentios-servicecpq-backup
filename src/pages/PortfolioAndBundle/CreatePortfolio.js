@@ -220,15 +220,15 @@ export function CreatePortfolio() {
   const [strategyOptionals, setStrategyOptionals] = useState([]);
 
   const [categoryUsageKeyValue1, setCategoryUsageKeyValue1] = useState([]);
-  const [stratgyTaskUsageKeyValue, setStratgyTaskUsageKeyValue] = useState([]);
   const [stratgyTaskTypeKeyValue, setStratgyTaskTypeKeyValue] = useState([]);
-  const [stratgyOptionalsKeyValue, setStratgyOptionalsKeyValue] = useState([]);
+  const [stratgyTaskUsageKeyValue, setStratgyTaskUsageKeyValue] = useState([]);
   const [stratgyResponseTimeKeyValue, setStratgyResponseTimeKeyValue] =
     useState([]);
   const [stratgyHierarchyKeyValue, setStratgyHierarchyKeyValue] = useState([]);
   const [stratgyGeographicKeyValue, setStratgyGeographicKeyValue] = useState(
     []
   );
+  const [stratgyOptionalsKeyValue, setStratgyOptionalsKeyValue] = useState([]);
 
   const [masterData, setMasterData] = useState([]);
   const [filterMasterData, setFilterMasterData] = useState([]);
@@ -380,10 +380,12 @@ export function CreatePortfolio() {
     machine: "",
     additional: "",
   });
-  const [serviceOrBundleList, setServiceOrBundleList] = useState([]);
   const [tabs, setTabs] = useState("1");
   const [itemReviewShow, setItemReviewShow] = useState(false);
   const [loadingItem, setLoadingItem] = useState(false);
+  const [tempBundleItems, setTempBundleItems] = useState([]);
+  const [valueOfUseCase, setValueOfUseCase] = useState(3);
+  const [tempBundleItemCheckList, setTempBundleItemCheckList] = useState({});
 
   const frequencyOptions = [
     { label: "Cyclic", value: "Cyclic" },
@@ -551,6 +553,7 @@ export function CreatePortfolio() {
   };
 
   const handleBundleItemSaveAndContinue = async () => {
+    setTabs(`${parseInt(tabs) + 1}`);
     setLoadingItem(true);
     try {
       let reqObj = {
@@ -710,10 +713,8 @@ export function CreatePortfolio() {
         }
       }
 
-      setOpen2(false); //Hide Price Calculator Screen
       setGeneralComponentData(_generalComponentData);
-      setBundleItems([itemRes.data]);
-      // setServiceOrBundleList([itemRes.data])
+      setTempBundleItems([...tempBundleItems, itemRes.data]);
 
       setOpenAddBundleItem(false);
       setOpenSearchSolution(false);
@@ -724,6 +725,7 @@ export function CreatePortfolio() {
   };
 
   const saveAddNewServiceOrBundle = async () => {
+    setTabs(`${parseInt(tabs) + 1}`);
     try {
       let reqObj = {
         itemId: 0,
@@ -818,7 +820,7 @@ export function CreatePortfolio() {
             associatedServiceOrBundle: [res.data],
           };
         }
-        setBundleItems(_bundleItems);
+        setBundleItems([..._bundleItems]);
         // API call to update portfolio for service or bundle
         const { portfolioId, ...rest } = generalComponentData;
         let obj = {
@@ -955,9 +957,9 @@ export function CreatePortfolio() {
   };
 
   const handleNewBundleItem = () => {
-    // setTabs("1")
-    // setItemReviewShow(true);
-    setOpenAddBundleItem(true);
+    setTabs("1");
+    setItemReviewShow(true);
+    // setOpenAddBundleItem(true);
 
     setOpenSearchSolution(false);
     setCreateNewBundle(false);
@@ -1701,7 +1703,6 @@ export function CreatePortfolio() {
 
   // const updateList = useSelector((state)=>state.taskReducer)
   const HandleCatUsage = (e) => {
-    // console.log("e.target.value", e.target.value);
     setStratgyTaskUsageKeyValue([]);
     setStratgyTaskTypeKeyValue([]);
     addPortFolioItem.taskType = "";
@@ -1875,13 +1876,9 @@ export function CreatePortfolio() {
             ],
           };
         });
-        // console.log("updatedItems", updatedItems)
         setFilterMasterData(updatedItems);
         // setFilterMasterData([...filterMasterData, { ...row }])
       }
-      // console.log(isFound, "data already exist");
-
-      // console.log(filterMasterData, "filtermasterDataaaaa")
     } else {
       var _masterData = [...masterData];
       const updated1 = _masterData.map((currentItem, i) => {
@@ -1905,17 +1902,6 @@ export function CreatePortfolio() {
       setFlagIs(false);
     }
   }, [masterData]);
-
-  // useEffect(() => {
-  //   const _selectedDataWithOutItems = [...selectedMasterData]
-  //   const selectedDataWithitemsArr = _selectedDataWithOutItems.map(selectedData =>
-  //   ({ ...selectedData, items: [] }
-  //   ))
-  //   setSelectedMasterData(selectedDataWithitemsArr)
-  // }, [selectedMasterData])
-
-  // console.log(selectedMasterData, "selected master data")
-  // console.log(filterMasterData, "Filter master data")
 
   const handleDeleteIncludeSerialNo = (e, row) => {
     const updated = selectedMasterData.filter((obj) => {
@@ -1950,6 +1936,43 @@ export function CreatePortfolio() {
     };
     setEditSerialNo(obj);
   };
+
+  const handleTempbundleItemSelection = (e, row) => {
+    if (e.target.name === "selectedId") {
+      setTempBundleItemCheckList({
+        [e.target.name]: e.target.value,
+      });
+      return;
+    }
+    let _tempBundleItemCheckList={...tempBundleItemCheckList}
+    if (e.target.checked) {
+      _tempBundleItemCheckList[row.itemId] =
+        !_tempBundleItemCheckList[row.itemId];
+    } else {
+      _tempBundleItemCheckList[row.itemId] =
+        !_tempBundleItemCheckList[row.itemId];
+    }
+    setTempBundleItemCheckList(_tempBundleItemCheckList);
+  };
+
+  const addTempItemIntobundleItem = () => {
+    setLoadingItem(true)
+    setItemReviewShow(false)
+    let temp = [];
+    for (let key1 in tempBundleItemCheckList) {
+      for (let i = 0; i < tempBundleItems.length; i++) {
+        if((tempBundleItems[i].itemId == key1 && tempBundleItemCheckList[key1])||tempBundleItems[i].itemId==tempBundleItemCheckList.selectedId){
+          temp.push(tempBundleItems[i])
+          break;
+        }
+      }
+    }
+    setBundleItems(temp)
+    setLoadingItem(false)
+    setTabs("1")
+    console.log("temp",temp)
+  }
+
   const columns = [
     {
       name: (
@@ -2552,6 +2575,151 @@ export function CreatePortfolio() {
       ),
     },
   ];
+  const tempBundleItemColumns = [
+    {
+      name: (
+        <>
+          <div>Select</div>
+        </>
+      ),
+      selector: (row) => row.check1,
+      wrap: true,
+      sortable: true,
+      maxWidth: "300px",
+      cell: (row) => (
+        <>
+          {valueOfUseCase == 3 ? (
+            <input
+              type="radio"
+              name="selectedId"
+              value={row.itemId}
+              onChange={(e) => handleTempbundleItemSelection(e, row.id)}
+              style={{ border: "1px solid #000" }}
+            />
+          ) : (
+            <input
+              type="checkbox"
+              name={row.itemId}
+              value={tempBundleItemCheckList[row.itemId]}
+              checked={tempBundleItemCheckList[row.itemId]}
+              onChange={(e) => handleTempbundleItemSelection(e, row)}
+              style={{ border: "1px solid #000" }}
+            />
+          )}
+        </>
+      ),
+    },
+    {
+      name: (
+        <>
+          <div>Id</div>
+        </>
+      ),
+      selector: (row) => row.itemId,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemId,
+    },
+    {
+      name: (
+        <>
+          <div>Description</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.itemBodyDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.itemBodyDescription,
+    },
+    {
+      name: (
+        <>
+          <div>Strategy</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel.strategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel.strategy,
+    },
+    {
+      name: (
+        <>
+          <div>Standard Job Id</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.standardJobId,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.standardJobId,
+    },
+    {
+      name: (
+        <>
+          <div>Repair Options</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.repairOption,
+      sortable: true,
+      maxWidth: "300px",
+      format: (row) => row.itemBodyModel.repairOption,
+    },
+    {
+      name: (
+        <>
+          <div>Frequency</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.frequency,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.frequency,
+    },
+    {
+      name: (
+        <>
+          <div>Quantity</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.quantity,
+    },
+    {
+      name: (
+        <>
+          <div>Parts $</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.sparePartsPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.sparePartsPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Service $</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.servicePrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.servicePrice,
+    },
+    {
+      name: (
+        <>
+          <div>Total $</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.totalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.totalPrice,
+    },
+  ];
   const columns4 = [
     {
       name: (
@@ -2705,12 +2873,10 @@ export function CreatePortfolio() {
   const handleServiceItemOpen = () => {
     setServiceOrBundlePrefix("SERVICE");
     setServiceOrBundleShow(true);
-    console.log("handleServiceItemOpen");
   };
   const handleBundleItemOpen = () => {
     setServiceOrBundlePrefix("BUNDLE");
     setServiceOrBundleShow(true);
-    console.log("handleBundleItemOpen");
   };
 
   const handleAddServiceBundleChange = (e) => {
@@ -2725,7 +2891,9 @@ export function CreatePortfolio() {
       setOpen2(true);
     }
     if (serviceOrBundlePrefix === "BUNDLE") {
-      setOpenAddBundleItem(true);
+      // setOpenAddBundleItem(true);
+      setItemReviewShow(true)
+      setTabs("1")
     }
   };
   const columns2 = [
@@ -3542,7 +3710,11 @@ export function CreatePortfolio() {
                           options={updatedTaskList}
                           value={stratgyTaskTypeKeyValue}
                           // onChange={(e) => setStratgyTaskTypeKeyValue(e)}
-                          onChange={(e) => setStratgyTaskTypeKeyValue(e) (addPortFolioItem.taskType = "")}
+                          onChange={(e) =>
+                            setStratgyTaskTypeKeyValue(e)(
+                              (addPortFolioItem.taskType = "")
+                            )
+                          }
                         />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                       </div>
@@ -6765,7 +6937,6 @@ export function CreatePortfolio() {
             title=""
             columns={columns4}
             data={modelIncludedData}
-            // data={data4}
             customStyles={customStyles}
             // pagination
           />
@@ -7358,7 +7529,7 @@ export function CreatePortfolio() {
       </div>
 
       <Modal
-        size="lg"
+        size="xl"
         show={itemReviewShow}
         onHide={() => setItemReviewShow(false)}
       >
@@ -7376,31 +7547,878 @@ export function CreatePortfolio() {
                 </TabList>
               </Box>
               <TabPanel value="1">
-                <AddPortfolioItem
+                {/* <AddPortfolioItem
                   openAddBundleItemHeader={openAddBundleItemHeader}
                   categoryList={categoryList}
                   updatedTaskList={updatedTaskList}
-                />
+                /> */}
+
+                {openAddBundleItemHeader}
+                <div className="ligt-greey-bg p-3">
+                  <div>
+                    <span className="mr-3">
+                      <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                      <span className="ml-2">Related part list(s)</span>
+                    </span>
+                    <span className="mr-3">
+                      <AccessAlarmOutlinedIcon className=" font-size-16" />
+                      <span className="ml-2">Related service estimate(s)</span>
+                    </span>
+                    <span>
+                      <SellOutlinedIcon className=" font-size-16" />
+                      <span className="ml-2">Split price</span>
+                    </span>
+                  </div>
+                </div>
+                <div className="px-3">
+                  <p className="mt-4">SUMMARY</p>
+                  <div className="row mt-4">
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group w-100">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          ID
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          disabled
+                          aria-describedby="emailHelp"
+                          placeholder="(AUTO GENERATE)"
+                          value={addPortFolioItem.id ? addPortFolioItem.id : ""}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group w-100">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          DESCRIPTION
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="DESCRIPTION"
+                          onChange={(e) =>
+                            setAddportFolioItem({
+                              ...addPortFolioItem,
+                              description: e.target.value,
+                            })
+                          }
+                          value={addPortFolioItem.description}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group w-100">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          USAGE IN
+                        </label>
+                        <Select
+                          placeholder={categoryUsageKeyValue1.label}
+                          options={categoryList}
+                          // selectedValue={categoryUsageKeyValue1.value ? categoryUsageKeyValue1.value : ""}
+                          defaultValue={
+                            categoryUsageKeyValue1.value
+                              ? categoryUsageKeyValue1.value
+                              : ""
+                          }
+                          value={addPortFolioItem.usageIn}
+                          onChange={(e) =>
+                            setAddportFolioItem({
+                              ...addPortFolioItem,
+                              usageIn: e,
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="mt-4">STRATEGY</p>
+                  <div className="row mt-4">
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          TASK TYPE
+                        </label>
+                        <div className="icon-defold">
+                          <div className="form-control">
+                            <Select
+                              options={updatedTaskList}
+                              placeholder={stratgyTaskTypeKeyValue.value}
+                              // selectedValue={stratgyTaskTypeKeyValue.value ? stratgyTaskTypeKeyValue.value : ""}
+                              defaultValue={
+                                stratgyTaskTypeKeyValue.value
+                                  ? stratgyTaskTypeKeyValue.value
+                                  : ""
+                              }
+                              onChange={(e) =>
+                                setAddportFolioItem({
+                                  ...addPortFolioItem,
+                                  taskType: e,
+                                })
+                              }
+                              value={addPortFolioItem.taskType}
+                            />
+                            <span className="search-icon searchIcon">
+                              <SearchOutlinedIcon className="font-size-16" />
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          FREQUENCY
+                        </label>
+                        <div className="icon-defold">
+                          <div className="form-control">
+                            <Select
+                              options={frequencyOptions}
+                              placeholder="FREQUENCY"
+                              onChange={(e) =>
+                                setAddportFolioItem({
+                                  ...addPortFolioItem,
+                                  frequency: e,
+                                })
+                              }
+                              value={addPortFolioItem.frequency}
+                            />
+                            <span className="search-icon searchIcon">
+                              <SearchOutlinedIcon className="font-size-16" />
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          UNIT
+                        </label>
+                        <Select
+                          options={[
+                            { value: "per Hr", label: "per Hr" },
+                            { value: "per Km", label: "per Km" },
+                            { value: "per Miles", label: "per Miles" },
+                            { value: "per year", label: "per year" },
+                            { value: "per month", label: "per month" },
+                            { value: "per day", label: "per day" },
+                            { value: "per quarter", label: "per quarter" },
+                          ]}
+                          placeholder="HOURS"
+                          onChange={(e) =>
+                            setAddportFolioItem({
+                              ...addPortFolioItem,
+                              unit: e,
+                            })
+                          }
+                          value={addPortFolioItem.unit}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          RECOMMENDED VALUE
+                        </label>
+                        <Select
+                          // defaultValue={selectedOption}
+                          onChange={(e) =>
+                            setAddportFolioItem({
+                              ...addPortFolioItem,
+                              recomondedValue: e,
+                            })
+                          }
+                          value={addPortFolioItem.recomondedValue}
+                          options={options}
+                          placeholder="RECOMMENDED VALUE"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group w-100">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          QUANTITY
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="QUANTITY"
+                          onChange={(e) =>
+                            setAddportFolioItem({
+                              ...addPortFolioItem,
+                              quantity: e.target.value,
+                            })
+                          }
+                          value={addPortFolioItem.quantity}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group w-100">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          NO. OF EVENTS
+                        </label>
+                        <input
+                          type="email"
+                          className="form-control border-radius-10"
+                          placeholder="NO. OF EVENTS"
+                          onChange={(e) =>
+                            setAddportFolioItem({
+                              ...addPortFolioItem,
+                              strategyEvents: e.target.value,
+                            })
+                          }
+                          value={addPortFolioItem.strategyEvents}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="mt-4">TEMPLATES</p>
+                  <div className="row">
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          TEMPLATE ID
+                        </label>
+                        <div className="icon-defold">
+                          <div className="form-control">
+                            <Select
+                              // defaultValue={selectedOption}
+                              // onChange={setSelectedOption}
+                              options={options}
+                              placeholder="TEMPLATE ID"
+                              onChange={(e) =>
+                                setAddportFolioItem({
+                                  ...addPortFolioItem,
+                                  templateId: e,
+                                })
+                              }
+                              value={addPortFolioItem.templateId}
+                            />
+                            <span className="search-icon searchIcon">
+                              <SearchOutlinedIcon className="font-size-16" />
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          TEMPLATE DESCRIPTION
+                        </label>
+                        <div className="icon-defold">
+                          <div className="form-control">
+                            <Select
+                              // defaultValue={selectedOption}
+                              // onChange={setSelectedOption}
+                              options={options}
+                              placeholder="TEMPLATE DESCRIPTION"
+                              onChange={(e) =>
+                                setAddportFolioItem({
+                                  ...addPortFolioItem,
+                                  templateDescription: e,
+                                })
+                              }
+                              value={addPortFolioItem.templateDescription}
+                            />
+                            <span className="search-icon searchIcon">
+                              <SearchOutlinedIcon className="font-size-16" />
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <div className="mt-4">
+                          <a
+                            href="#"
+                            className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
+                          >
+                            <span className="mr-2">+</span>Add Template / Kit
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="mt-4">REPAIR OPTIONS</p>
+                  <div className="row">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          REPAIR OPTION
+                        </label>
+                        <div className="icon-defold">
+                          <div className="form-control">
+                            <Select
+                              // defaultValue={selectedOption}
+                              // onChange={setSelectedOption}
+                              options={options}
+                              placeholder="REPAIR OPTION"
+                              onChange={(e) =>
+                                setAddportFolioItem({
+                                  ...addPortFolioItem,
+                                  repairOption: e,
+                                })
+                              }
+                              value={addPortFolioItem.repairOption}
+                            />
+                            <span className="search-icon searchIcon">
+                              <SearchOutlinedIcon className="font-size-16" />
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <div className="mt-4">
+                          <a
+                            href="#"
+                            className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
+                          >
+                            <span className="mr-2">+</span>Add Repair Option
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right pb-2">
+                    <a
+                      href="#"
+                      className="btn border mr-4"
+                      onClick={() => setOpenAddBundleItem(false)}
+                    >
+                      Cancel
+                    </a>
+                    <Link
+                      to="#"
+                      className="btn border mr-4"
+                      onClick={() => {
+                        setTabs(`${parseInt(tabs) + 1}`);
+                      }}
+                    >
+                      Save & Continue
+                    </Link>
+                  </div>
+                </div>
               </TabPanel>
               <TabPanel value="2">
-                <PriceCalculator 
-                
-                />
+                <div className="ligt-greey-bg p-3">
+                  <div>
+                    <span className="mr-3">
+                      <i
+                        className="fa fa-pencil font-size-12"
+                        aria-hidden="true"
+                      ></i>
+                      <span className="ml-2">Edit</span>
+                    </span>
+                    <span className="mr-3">
+                      <MonetizationOnOutlinedIcon className=" font-size-16" />
+                      <span className="ml-2"> Adjust price</span>
+                    </span>
+                    <span className="mr-3">
+                      <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                      <span className="ml-2">Related part list(s)</span>
+                    </span>
+                    <span className="mr-3">
+                      <AccessAlarmOutlinedIcon className=" font-size-16" />
+                      <span className="ml-2">Related service estimate(s)</span>
+                    </span>
+                    <span>
+                      <SellOutlinedIcon className=" font-size-16" />
+                      <span className="ml-2">Split price</span>
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <div className="p-3">
+                    <h6 className="text-light-dark font-size-12 font-weight-500">
+                      PRICES
+                    </h6>
+                    <div className="row">
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            PRICE TYPE
+                          </label>
+                          <Select
+                            options={options}
+                            value={priceCalculator.priceType}
+                            onChange={(e) =>
+                              setPriceCalculator({
+                                ...priceCalculator,
+                                priceType: e,
+                              })
+                            }
+                            placeholder="placeholder (Optional)"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            LIST PRICE{" "}
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            aria-describedby="emailHelp"
+                            placeholder="$100"
+                            value={priceCalculator.listPrice}
+                            onChange={(e) =>
+                              setPriceCalculator({
+                                ...priceCalculator,
+                                listPrice: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group date-box">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            ADDITIONAL
+                          </label>
+                          <div className=" d-flex form-control-date">
+                            <div className="">
+                              <Select
+                                isClearable={true}
+                                value={priceCalculator.priceAdditionalSelect}
+                                onChange={(e) =>
+                                  setPriceCalculator({
+                                    ...priceCalculator,
+                                    priceAdditionalSelect: e,
+                                  })
+                                }
+                                options={options}
+                                placeholder="Select"
+                              />
+                            </div>
+                            <input
+                              type="text"
+                              className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                              placeholder="10%"
+                              value={priceCalculator.priceAdditionalInput}
+                              onChange={(e) =>
+                                setPriceCalculator({
+                                  ...priceCalculator,
+                                  priceAdditionalInput: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group date-box">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            PRICE ESCALATON
+                          </label>
+                          <div className=" d-flex align-items-center form-control-date">
+                            <Select
+                              className="select-input"
+                              // defaultValue={selectedOption}
+                              value={priceCalculator.priceEscalationSelect}
+                              onChange={(e) =>
+                                setPriceCalculator({
+                                  ...priceCalculator,
+                                  priceEscalationSelect: e,
+                                })
+                              }
+                              options={options}
+                              placeholder="placeholder "
+                            />
+                            <input
+                              type="text"
+                              className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                              placeholder="20%"
+                              value={priceCalculator.priceEscalationInput}
+                              onChange={(e) =>
+                                setPriceCalculator({
+                                  ...priceCalculator,
+                                  priceEscalationInput: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            CALCULATED PRICE
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            value={priceCalculator.calculatedPrice}
+                            onChange={(e) =>
+                              setPriceCalculator({
+                                ...priceCalculator,
+                                calculatedPrice: e.target.value,
+                              })
+                            }
+                            placeholder="$100"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            FLAT PRICE / ADJUSTED PRICE
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            value={priceCalculator.flatPrice}
+                            onChange={(e) =>
+                              setPriceCalculator({
+                                ...priceCalculator,
+                                flatPrice: e.target.value,
+                              })
+                            }
+                            placeholder="$100"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group date-box">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            DISCOUNT TYPE
+                          </label>
+                          <div className=" d-flex form-control-date">
+                            <div className="">
+                              <Select
+                                value={priceCalculator.discountTypeSelect}
+                                onChange={(e) =>
+                                  setPriceCalculator({
+                                    ...priceCalculator,
+                                    discountTypeSelect: e,
+                                  })
+                                }
+                                isClearable={true}
+                                options={options}
+                                placeholder="Select"
+                              />
+                            </div>
+                            <input
+                              type="text"
+                              className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                              value={priceCalculator.discountTypeInput}
+                              onChange={(e) =>
+                                setPriceCalculator({
+                                  ...priceCalculator,
+                                  discountTypeInput: e.target.value,
+                                })
+                              }
+                              placeholder="10%"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            YEAR
+                          </label>
+                          <Select
+                            // defaultValue={selectedOption}
+                            value={priceCalculator.priceYear}
+                            onChange={(e) =>
+                              setPriceCalculator({
+                                ...priceCalculator,
+                                priceYear: e,
+                              })
+                            }
+                            options={options}
+                            placeholder="Year"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <h6 className="text-light-dark font-size-12 font-weight-500">
+                      USAGE
+                    </h6>
+                    <div className="row">
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group date-box">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            START USAGE
+                          </label>
+                          <div
+                            className=" d-flex form-control-date"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <input
+                              type="text"
+                              className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                              placeholder="per hour"
+                              value={priceCalculator.startUsage}
+                              onChange={(e) =>
+                                setPriceCalculator({
+                                  ...priceCalculator,
+                                  startUsage: e.target.value,
+                                })
+                              }
+                            />
+                            <span className="hours-div">hours</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group date-box">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            END USAGE
+                          </label>
+                          <div
+                            className=" d-flex form-control-date"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <input
+                              type="text"
+                              className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                              placeholder="10%"
+                              value={priceCalculator.endUsage}
+                              onChange={(e) =>
+                                setPriceCalculator({
+                                  ...priceCalculator,
+                                  endUsage: e.target.value,
+                                })
+                              }
+                            />
+                            <span className="hours-div">hours</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            USAGE TYPE
+                          </label>
+                          <Select
+                            defaultValue={selectedOption}
+                            options={options}
+                            value={priceCalculator.usageType}
+                            onChange={(e) =>
+                              setPriceCalculator({
+                                ...priceCalculator,
+                                usageType: e,
+                              })
+                            }
+                            placeholder="placeholder (Optional)"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <h6 className="text-light-dark font-size-12 font-weight-500">
+                      QUANTITY
+                    </h6>
+                    <div className="row">
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            FREQUENCY
+                          </label>
+                          <Select
+                            defaultValue={addPortFolioItem.frequency}
+                            // selectedValue={addPortFolioItem.frequency}
+                            options={frequencyOptions}
+                            value={priceCalculator.frequency}
+                            onChange={(e) =>
+                              setPriceCalculator({
+                                ...priceCalculator,
+                                frequency: e,
+                              })
+                            }
+                            placeholder="Cyclical"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group date-box">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            CYCLE
+                          </label>
+                          <div
+                            className=" d-flex form-control-date"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <input
+                              type="text"
+                              className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                              placeholder="250"
+                              value={priceCalculator.cycle}
+                              onChange={(e) =>
+                                setPriceCalculator({
+                                  ...priceCalculator,
+                                  cycle: e.target.value,
+                                })
+                              }
+                            />
+                            <span className="hours-div">hours</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="d-flex align-items-center">
+                      <div>
+                        <h6 className="text-light-dark font-size-12 font-weight-500 mr-4">
+                          NET PRICE
+                        </h6>
+                        ${priceCalculator.netPrice}
+                      </div>
+                      <div>
+                        <h6 className="text-light-dark font-size-12 font-weight-500">
+                          TOTAL PRICE
+                        </h6>
+                        ${priceCalculator.netPrice}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="m-3 text-right">
+                    <a
+                      href="#"
+                      onClick={() => setOpen2(false)}
+                      className="btn border mr-3 "
+                    >
+                      {" "}
+                      Cancel
+                    </a>
+                    <a
+                      href="#"
+                      className="btn text-white bg-primary"
+                      onClick={
+                        serviceOrBundlePrefix === ""
+                          ? handleBundleItemSaveAndContinue
+                          : saveAddNewServiceOrBundle
+                      }
+                    >
+                      Save
+                    </a>
+                  </div>
+                </div>
               </TabPanel>
-              <TabPanel value="3">Item Three</TabPanel>
+              <TabPanel value="3">
+                {loadingItem ? (
+                  <div className="d-flex align-items-center justify-content-center">
+                    <Loader
+                      type="spinner-default"
+                      bgColor={"#7571f9"}
+                      title={"spinner-default"}
+                      color={"#FFFFFF"}
+                      size={35}
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="custom-table  card"
+                    style={{ height: 400, width: "100%" }}
+                  >
+                    <DataTable
+                      title=""
+                      columns={tempBundleItemColumns}
+                      data={tempBundleItems}
+                      customStyles={customStyles}
+                      pagination
+                    />
+                  </div>
+                )}
+              </TabPanel>
             </TabContext>
           </Box>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setItemReviewShow(false)}>
-            Close
-          </Button>
-          <Button
-            variant="primary"
-            onClick={() => setTabs(`${parseInt(tabs) + 1}`)}
-          >
-            Save Changes
-          </Button>
+          {tabs === "3" && (
+            <Button variant="primary" onClick={addTempItemIntobundleItem}>
+              Add Selected
+            </Button>
+          )}
         </Modal.Footer>
       </Modal>
     </>

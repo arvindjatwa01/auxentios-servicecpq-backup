@@ -401,7 +401,6 @@ const AddPortfolioItem = (props) => {
                 <a
                   href="#"
                   className="btn border mr-4"
-                //   onClick={() => setOpenAddBundleItem(false)}
                 >
                   Cancel
                 </a>
