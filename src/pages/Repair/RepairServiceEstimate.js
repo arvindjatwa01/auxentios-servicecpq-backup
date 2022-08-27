@@ -186,50 +186,57 @@ function RepairServiceEstimate() {
     { field: 'GroupNumber', headerName: 'Charge Code', flex: 1, width: 70 },
     { field: 'Type', headerName: 'Labor Type', flex: 1, width: 130 },
     { field: 'Partnumber', headerName: 'Service Type', flex: 1, width: 130 },
-    { field: 'PriceExtended', headerName: 'Unit of neasure', flex: 1, width: 130 },
+    { field: 'PriceExtended', headerName: 'Unit of measure', flex: 1, width: 130 },
     { field: 'Pricecurrency', headerName: 'Estimated hours', flex: 1, width: 130 },
-    { field: 'Usage', headerName: 'Unit Price/H', flex: 1, width: 130 },
+    { field: 'Usage', headerName: 'Unit Price', flex: 1, width: 130 },
     { field: 'TotalPrice', headerName: 'Extended Price', flex: 1, width: 130 },
-    { field: 'Comments', headerName: 'Net Price', flex: 1, width: 130 },
+    { field: 'Comments', headerName: 'Comments', flex: 1, width: 130 },
     { field: 'Created', headerName: 'Currency', flex: 1, width: 130 },
-    { field: 'Total', headerName: 'Adjusted Price', flex: 1, width: 130 },
+    { field: 'Total', headerName: 'Total Price', flex: 1, width: 130 },
+    { field: 'Actions', headerName: 'Action', flex: 1, width: 130 },
   ];
 
   const rowsConsumables = [
-    { id: 1, GroupNumber: 'Snow', Type: 'Jon', Partnumber: 35, PriceExtended: 'pending', Pricecurrency: 'Open', Usage: 'Inconsistent', TotalPrice: 'Inconsistent', Comments: 'Inconsistent', Created: 'Created On', Total: '25', Status: 'Status', Actions: 'Action', },
-    { id: 2, GroupNumber: 'Lannister', Type: 'Cersei', Partnumber: 42, PriceExtended: 'pending', Pricecurrency: 'Open', Usage: 'Consistent', TotalPrice: 'Inconsistent', Comments: 'Inconsistent', Created: 'Created On', Total: '25', Status: 'Status', Actions: 'Action', },
-    { id: 3, GroupNumber: 'Lannister', Type: 'Jaime', Partnumber: 45, PriceExtended: 'pending', Pricecurrency: 'Open', Usage: 'Consistent', TotalPrice: 'Inconsistent', Comments: 'Inconsistent', Created: 'Created On', Total: '25', Status: 'Status', Actions: 'Action', },
+    { id: 1, ConsumableId: 'Snow', ConsumableType:'Type', Description:34, Quantity:'4', UnitMeasures:'5', Vendor:'Consistent', UnitPrice:'Inconsistent', ExtendedPrice:'Consistent', Currency:'$', TotalPrice:'37', Actions:'Action',},
+    { id: 2, ConsumableId: 'Lannister', ConsumableType: 'Cersei', Description:34, Quantity:'4', UnitMeasures:'5', Vendor:'Consistent', UnitPrice:'Inconsistent', ExtendedPrice:'Consistent', Currency:'$', TotalPrice:'37', Actions:'Action', },
+    { id: 3, ConsumableId: 'Lannister', ConsumableType: 'Jaime', Description:34, Quantity:'4', UnitMeasures:'5', Vendor:'Consistent', UnitPrice:'Inconsistent', ExtendedPrice:'Consistent', Currency:'$', TotalPrice:'37', Actions:'Action', },
   ];
 
   const columnsConsumables = [
-    { field: 'GroupNumber', headerName: 'Consumable ID', flex: 1, width: 70 },
-    { field: 'Type', headerName: 'Description', flex: 1, width: 130 },
-    { field: 'Partnumber', headerName: ' Quantity', flex: 1, width: 130 },
-    { field: 'PriceExtended', headerName: 'Unit of measure', flex: 1, width: 130 },
-    { field: 'Pricecurrency', headerName: 'Type', flex: 1, width: 130 },
-    { field: 'Usage', headerName: 'Vendor', flex: 1, width: 130 },
-    { field: 'TotalPrice', headerName: 'Unit price', flex: 1, width: 130 },
-    { field: 'Comments', headerName: 'Extended price', flex: 1, width: 130 },
-    { field: 'Created', headerName: 'Flat rate', flex: 1, width: 130 },
+    { field: 'ConsumableId', headerName: 'Consumable ID', flex: 1, width: 70 },
+    { field: 'ConsumableType', headerName: 'Consumable Type', flex: 1, width: 70 },
+    { field: 'Description', headerName: 'Consumable Description', flex: 1, width: 130 },
+    { field: 'Quantity', headerName: ' Quantity', flex: 1, width: 130 },
+    { field: 'UnitMeasures', headerName: 'Unit of measure', flex: 1, width: 130 },
+    { field: 'Vendor', headerName: 'Vendor', flex: 1, width: 130 },
+    { field: 'UnitPrice', headerName: 'Unit Price', flex: 1, width: 130 },
+    { field: 'ExtendedPrice', headerName: 'Extended price', flex: 1, width: 130 },
+    { field: 'Currency', headerName: 'Currency', flex: 1, width: 130 },
+    { field: 'TotalPrice', headerName: 'Total price', flex: 1, width: 130 },
+    { field: 'Actions', headerName: 'Action', flex: 1, width: 130 },
   ];
 
   const rowsExternal = [
-    { id: 1, GroupNumber: 'Snow', Type: 'Jon', Partnumber: 35, PriceExtended: 'pending', Pricecurrency: 'Open', Usage: 'Inconsistent', TotalPrice: 'Inconsistent', Comments: 'Inconsistent', Created: 'Created On', Total: '25', Status: 'Status', Actions: 'Action', },
-    { id: 2, GroupNumber: 'Lannister', Type: 'Cersei', Partnumber: 42, PriceExtended: 'pending', Pricecurrency: 'Open', Usage: 'Consistent', TotalPrice: 'Inconsistent', Comments: 'Inconsistent', Created: 'Created On', Total: '25', Status: 'Status', Actions: 'Action', },
-    { id: 3, GroupNumber: 'Lannister', Type: 'Jaime', Partnumber: 45, PriceExtended: 'pending', Pricecurrency: 'Open', Usage: 'Consistent', TotalPrice: 'Inconsistent', Comments: 'Inconsistent', Created: 'Created On', Total: '25', Status: 'Status', Actions: 'Action', },
+    { id: 1, ActivityId: 'Snow', ActivityName: 'Jon', Description: 35, Quantity:'24', UnitMeasures: '24', UnitPrice:'Inconsistent', ExtendedPrice:'Consistent', Currency:'$', TotalPrice:'37', Dimensions:'Inconsistent', SupplyingVendor:'Created On', Actions: 'Action', },
+    { id: 2, ActivityId: 'Lannister', ActivityName: 'Cersei', Description: 35, Quantity:'24', UnitMeasures: '24', UnitPrice:'Inconsistent', ExtendedPrice:'Consistent', Currency:'$', TotalPrice:'37', Dimensions:'Inconsistent', SupplyingVendor:'Created On', Actions: 'Action',},
+    { id: 3, ActivityId: 'Lannister', ActivityName: 'Jaime', Description: 35, Quantity:'24', UnitMeasures: '24', UnitPrice:'Inconsistent', ExtendedPrice:'Consistent', Currency:'$', TotalPrice:'37', Dimensions:'Inconsistent', SupplyingVendor:'Created On', Actions: 'Action', },
   ];
 
   const columnsExternal = [
-    { field: 'GroupNumber', headerName: 'Activity code', flex: 1, width: 70 },
-    { field: 'Type', headerName: 'Activity name', flex: 1, width: 130 },
-    { field: 'Partnumber', headerName: ' description', flex: 1, width: 130 },
-    { field: 'PriceExtended', headerName: 'quantity', flex: 1, width: 130 },
-    { field: 'Pricecurrency', headerName: 'unit', flex: 1, width: 130 },
-    { field: 'Usage', headerName: 'List price', flex: 1, width: 130 },
-    { field: 'TotalPrice', headerName: 'supplying vendor', flex: 1, width: 130 },
-    { field: 'Comments', headerName: 'Total price', flex: 1, width: 130 },
-    { field: 'Created', headerName: 'currency', flex: 1, width: 130 },
-    { field: 'Total', headerName: 'actions', flex: 1, width: 130 },
+    { field: 'ActivityId', headerName: 'Activity ID', flex: 1, width: 70 },
+    { field: 'ActivityName', headerName: 'Activity Name', flex: 1, width: 70 },
+    { field: 'Description', headerName: 'Short Description', flex: 1, width: 70 },
+    { field: 'Quantity', headerName: 'Quantity', flex: 1, width: 70 },
+    { field: 'UnitMeasures', headerName: 'Unit of measure', flex: 1, width: 130 },
+    { field: 'UnitPrice', headerName: 'Unit Price', flex: 1, width: 130 },
+    { field: 'ExtendedPrice', headerName: 'Extended price', flex: 1, width: 130 },
+    { field: 'Currency', headerName: 'Currency', flex: 1, width: 130 },
+    { field: 'TotalPrice', headerName: 'Total price', flex: 1, width: 130 },
+    { field: 'Dimensions', headerName: 'Dimension', flex: 1, width: 130 },
+    { field: 'SupplyingVendor', headerName: 'Supplying Vendor', flex: 1, width: 130 },
+    { field: 'Actions', headerName: 'Action', flex: 1, width: 130 },
+
+    
   ];
   return (
     <>
@@ -257,24 +264,6 @@ function RepairServiceEstimate() {
             <div className="row mt-4">
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">CUSTOMER</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">MODEL</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">SERIAL #</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">REFERENCE</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                 </div>
@@ -287,25 +276,13 @@ function RepairServiceEstimate() {
               </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">SEGMENT #</label>
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">SEGMENT TITLE</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">OPERATION #</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">JOB CODE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">COMPONENT CODE</label>
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">JOB OPERATION</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                 </div>
               </div>
@@ -327,79 +304,73 @@ function RepairServiceEstimate() {
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                 </div>
               </div>
+              <div className="col-md-4 col-sm-4">
+                <div class="form-group mt-3">
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">NET PRICE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                </div>
+              </div>
+              <div className="col-md-4 col-sm-4">
+                <div class="form-group mt-3">
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">JOB CODE</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                </div>
+              </div>
 
             </div>
             <div className="row mt-4">
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <p className="font-size-12 font-weight-600 mb-2">CUSTOMER</p>
+                  <p className="font-size-12 font-weight-600 mb-2">REFERENCE</p>
                   <h6 className="font-weight-600">Chinalco SA, Beijing,China (code 203027)</h6>
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <p className="font-size-12 font-weight-600 mb-2">MODEL </p>
+                  <p className="font-size-12 font-weight-600 mb-2">DESCRIPTION </p>
                   <h6 className="font-weight-600">Alberto Franco, Head of purchase</h6>
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <p className="font-size-12 font-weight-600 mb-2">SERIAL#</p>
+                  <p className="font-size-12 font-weight-600 mb-2">SEGMENT TITLE</p>
                   <h6 className="font-weight-600">SF1234 </h6>
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <p className="font-size-12 font-weight-600 mb-2">REFERENCE</p>
+                  <p className="font-size-12 font-weight-600 mb-2">JOB OPERATION</p>
                   <h6 className="font-weight-600">Sales Opportunity for Chinalco for recondition </h6>
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <p className="font-size-12 font-weight-600 mb-2">DESCRIPTION</p>
+                  <p className="font-size-12 font-weight-600 mb-2">PRICE METHOD</p>
                   <h6 className="font-weight-600">LAJ00t6t31</h6>
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <p className="font-size-12 font-weight-600 mb-2">SEGMENT #</p>
+                  <p className="font-size-12 font-weight-600 mb-2">PRICE DATE</p>
                   <h6 className="font-weight-600">CAT</h6>
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <p className="font-size-12 font-weight-600 mb-2">OPERATION #</p>
+                  <p className="font-size-12 font-weight-600 mb-2">CURRENCY</p>
                   <h6 className="font-weight-600">Customer 50%, Insurer 50%</h6>
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <p className="font-size-12 font-weight-600 mb-2">JOB CODE</p>
+                  <p className="font-size-12 font-weight-600 mb-2">NET PRICE</p>
                   <h6 className="font-weight-600">30days</h6>
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <p className="font-size-12 font-weight-600 mb-2">COMPONENT CODE </p>
+                  <p className="font-size-12 font-weight-600 mb-2">JOB CODE </p>
                   <h6 className="font-weight-600">Standard</h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group mt-3">
-                  <p className="font-size-12 font-weight-600 mb-2">PRICE METHOD</p>
-                  <h6 className="font-weight-600">Standard</h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group mt-3">
-                  <p className="font-size-12 font-weight-600 mb-2">PRICE DATE</p>
-                  <h6 className="font-weight-600">01.10.2021 to 01.02.2022</h6>
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div class="form-group mt-3">
-                  <p className="font-size-12 font-weight-600 mb-2">CURRENCY</p>
-                  <h6 className="font-weight-600">Employee responsible</h6>
                 </div>
               </div>
               {/* <div className="col-md-12">
@@ -477,6 +448,42 @@ function RepairServiceEstimate() {
                     <div className="col-md-4 col-sm-4">
                       <div class="form-group mt-3">
                         <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">TOTAL PRICE</label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div class="form-group mt-3">
+                        <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">NET PRICE - LABOR</label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div class="form-group mt-3">
+                        <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">NET PRICE - MISC.</label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div class="form-group mt-3">
+                        <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">SUPPLYING VENDOR</label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div class="form-group mt-3">
+                        <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">PAYER</label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div class="form-group mt-3">
+                        <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">TYPE OF MISC. </label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div class="form-group mt-3">
+                        <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">ADJUSTED PRICE</label>
                         <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                       </div>
                     </div>
@@ -1081,21 +1088,10 @@ function RepairServiceEstimate() {
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$35000" />
                     </div>
                   </div>
+                  
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TARGET HOURS</label>
-                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$10000" />
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PLANNED HOURS</label>
-                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$5000" />
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT PRICE / H</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT PRICE</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EA" />
                     </div>
                   </div>
@@ -1107,7 +1103,7 @@ function RepairServiceEstimate() {
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PRICE</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TOTAL PRICE</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE" />
                     </div>
                   </div>
@@ -1119,7 +1115,13 @@ function RepairServiceEstimate() {
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ADJUSTED PRICE</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COMMENTS</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ACTION</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE" />
                     </div>
                   </div>
@@ -1169,13 +1171,19 @@ function RepairServiceEstimate() {
                 <div className="row mt-4">
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONSUMABLE TYPE</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="1000 ENGINE" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
                       <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONSUMABLE ID</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="1000 ENGINE" />
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DESCRIPTION</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONSUMABLE DESCRIPTION</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="0123 REPLACE" />
                     </div>
                   </div>
@@ -1189,12 +1197,6 @@ function RepairServiceEstimate() {
                     <div class="form-group w-100">
                       <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT OF MEASURES</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="List Price" />
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TYPE</label>
-                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$35000" />
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
@@ -1217,7 +1219,19 @@ function RepairServiceEstimate() {
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">FLAT RATE</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TOTAL PRICE</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ACTION</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000" />
                     </div>
                   </div>
@@ -1268,7 +1282,7 @@ function RepairServiceEstimate() {
                 <div className="row mt-4">
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">FIELD NAME / DESCRIPTION</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ACTIVITY ID</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="1000 ENGINE" />
                     </div>
                   </div>
@@ -1276,12 +1290,6 @@ function RepairServiceEstimate() {
                     <div class="form-group w-100">
                       <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ACTIVITY NAME</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="0123 REPLACE" />
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ACTIVITY ID</label>
-                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace left side of the Engine" />
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
@@ -1304,43 +1312,43 @@ function RepairServiceEstimate() {
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DIMENSIONS</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT PRICE</label>
+                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$10000" />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">EXTENDED PRICE</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$5000" />
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SUPPLYING VENDOR CODE</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EA" />
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SUPPLYING VENDOR NAME</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TOTAL PRICE</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000" />
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DIMENSIONS</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000" />
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">LIST PRICE ($)</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SUPPLYING VENDOR</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000" />
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
-                      <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000" />
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div class="form-group w-100">
-                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">FLAT RATE ($)</label>
+                      <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ACTION</label>
                       <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000" />
                     </div>
                   </div>

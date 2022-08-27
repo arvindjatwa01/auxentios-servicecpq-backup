@@ -213,6 +213,12 @@ const handleCreate=()=>{
               <div className="hr"></div>
               </h5>
               <div className="row mt-4">
+              <div className="col-md-4 col-sm-4">
+                <div class="form-group mt-3">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SEGMENT #</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">JOB CODE</label>
@@ -245,43 +251,49 @@ const handleCreate=()=>{
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DESCRIPTION</label>
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COMPONENT CODE DESCRIPTION</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
-                
+               
               </div>
               <div className="row mt-4">
               <div className="col-md-4 col-sm-4">
                 <div class="form-group">
-                <p className="font-size-12 font-weight-500 mb-2">SEGMENT</p>
-                 <h6 className="font-weight-600">01</h6>
+                <p className="font-size-12 font-weight-500 mb-2">SEGMENT #</p>
+                 <h6 className="font-weight-500">15</h6>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group">
                 <p className="font-size-12 font-weight-500 mb-2">JOB CODE</p>
-                 <h6 className="font-weight-600">15</h6>
+                 <h6 className="font-weight-500">15</h6>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group">
                 <p className="font-size-12 font-weight-500 mb-2">TITLE</p>
-                 <h6 className="font-weight-600">Disassemble </h6>
+                 <h6 className="font-weight-500">Disassemble </h6>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group">
-                <p className="font-size-12 font-weight-500 mb-2">COMP CODE</p>
-                 <h6 className="font-weight-600">300</h6>
+                <p className="font-size-12 font-weight-500 mb-2">COMPONENT CODE</p>
+                 <h6 className="font-weight-500">300</h6>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
-                <p className="font-size-12 font-weight-500 mb-2">DESCRIPTION </p>
-                 <h6 className="font-weight-600">Transmission</h6>
+                <p className="font-size-12 font-weight-500 mb-2">COMPONENT CODE DESCRIPTION </p>
+                 <h6 className="font-weight-500">Transmission</h6>
                 </div>
                 </div>
+                {/* <div className="col-md-12">
+                <div class="form-group mt-3">
+                 <Link to="/Segment01Disassemble" className="btn bg-primary text-white">Next</Link>
+                </div>
+                </div> */}
+                
               </div>
               <div className=" text-right">
              <a href="#" className="btn border bg-primary text-white">Save</a>
@@ -289,12 +301,12 @@ const handleCreate=()=>{
               
         </div>
         <div className="Add-new-segment-div p-3 border-radius-10">
-        <Link to={"/RepairOption01"} className="btn bg-primary text-white">
+        <Link to={"/WithoutRepairOption01"} className="btn bg-primary text-white">
         <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add Opretion<span className="ml-2"><FontAwesomeIcon icon={faAngleDown} /></span>
           </Link>
          
         </div>
-        <div className="card p-4 mt-5">
+        <div className="card p-4 mt-5 d-none">
           <div className="d-flex justify-content-between align-items-center">
           <div className=" ml-3 pl-2">
                 <a href="#" className="btn alert-messges ">Add Filter<AddBoxOutlinedIcon className="font-size-16"/></a>
@@ -412,13 +424,6 @@ const handleCreate=()=>{
              <a href="#" className="btn border">Cancel</a>
            </div>
           </div>
-        
-        <div className="Add-new-segment-div p-3 border-radius-10 mb-4">
-                <Link to="/RepairServiceEstimate" className="btn bg-primary text-white">
-              <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add Service Estimates
-                </Link>
-          
-        </div>
         </div>
         <div class="modal fade" id="quotecreat" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
