@@ -1948,7 +1948,7 @@ const history=useHistory()
             </div>
           </div>
         </div>
-        <div className="Add-new-segment-div p-3 border-radius-10">
+        <div className="Add-new-segment-div p-3 border-radius-10 mb-2">
                 <Link to="/Segment01Transmission" className="btn bg-primary text-white">
               <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add New Segment
                 </Link>

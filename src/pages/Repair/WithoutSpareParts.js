@@ -34,6 +34,9 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import {Link, useHistory} from 'react-router-dom'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import AddIcon from '@mui/icons-material/Add';
 function WithoutSpareParts(){
   const history=useHistory()
   const [selectedOption, setSelectedOption] = useState(null);
@@ -199,6 +202,12 @@ const handleCreate=()=>{
           </div>
           </div>
           <div className="card p-4 mt-5">
+          <div className="d-flex justify-content-end align-items-center mb-0">
+          <div className="text-right">
+          <a href="#" className="text-primary"><span><KeyboardArrowLeftIcon/></span>Segment 07<span><KeyboardArrowRightIcon/></span></a>
+             <a href="#" className="text-primary ml-2 border-left "><span className="ml-2"><AddIcon/></span>Add New</a>
+           </div>
+           </div>
             <h5 className="d-flex align-items-center mb-0">
               <div className="" style={{ display:'contents'}}><span className="mr-3 white-space">Segment 01- Transmission</span></div>
               <div className="hr"></div>
@@ -240,13 +249,50 @@ const handleCreate=()=>{
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
-                <div className="col-md-12">
-                <div class="form-group mt-3">
-                 <Link to="/Segment01Disassemble" className="btn bg-primary text-white">Next</Link>
+                
+              </div>
+              <div className="row mt-4">
+              <div className="col-md-4 col-sm-4">
+                <div class="form-group">
+                <p className="font-size-12 font-weight-500 mb-2">SEGMENT</p>
+                 <h6 className="font-weight-600">01</h6>
+                </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                <div class="form-group">
+                <p className="font-size-12 font-weight-500 mb-2">JOB CODE</p>
+                 <h6 className="font-weight-600">15</h6>
+                </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                <div class="form-group">
+                <p className="font-size-12 font-weight-500 mb-2">TITLE</p>
+                 <h6 className="font-weight-600">Disassemble </h6>
+                </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                <div class="form-group">
+                <p className="font-size-12 font-weight-500 mb-2">COMP CODE</p>
+                 <h6 className="font-weight-600">300</h6>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
+                <p className="font-size-12 font-weight-500 mb-2">DESCRIPTION </p>
+                 <h6 className="font-weight-600">Transmission</h6>
                 </div>
                 </div>
               </div>
+              <div className=" text-right">
+             <a href="#" className="btn border bg-primary text-white">Save</a>
+           </div>
               
+        </div>
+        <div className="Add-new-segment-div p-3 border-radius-10">
+        <Link to={"/RepairOption01"} className="btn bg-primary text-white">
+        <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add Opretion<span className="ml-2"><FontAwesomeIcon icon={faAngleDown} /></span>
+          </Link>
+         
         </div>
         <div className="card p-4 mt-5">
           <div className="d-flex justify-content-between align-items-center">
@@ -367,7 +413,7 @@ const handleCreate=()=>{
            </div>
           </div>
         
-        <div className="Add-new-segment-div p-3 border-radius-10">
+        <div className="Add-new-segment-div p-3 border-radius-10 mb-4">
                 <Link to="/RepairServiceEstimate" className="btn bg-primary text-white">
               <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add Service Estimates
                 </Link>

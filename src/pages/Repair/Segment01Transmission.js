@@ -33,6 +33,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import AddIcon from '@mui/icons-material/Add';
 function Segment01Transmission(){
   const [selectedOption, setSelectedOption] = useState(null);
   const [value, setValue] = React.useState('1');
@@ -72,8 +73,8 @@ function Segment01Transmission(){
           <div className="card p-4 mt-5">
           <div className="d-flex justify-content-end align-items-center mb-0">
           <div className="text-right">
-          <a href="#" className="text-primary"><span><KeyboardArrowLeftIcon/></span>Operation 07<span><KeyboardArrowRightIcon/></span></a>
-             <a href="#" className="text-primary ml-2"><span><KeyboardArrowLeftIcon/></span>Add New<span><KeyboardArrowRightIcon/></span></a>
+          <a href="#" className="text-primary"><span><KeyboardArrowLeftIcon/></span>Segment 07<span><KeyboardArrowRightIcon/></span></a>
+             <a href="#" className="text-primary ml-2 border-left "><span className="ml-2"><AddIcon/></span>Add New</a>
            </div>
            </div>
             <h5 className="d-flex align-items-center mb-0">
@@ -843,6 +844,7 @@ function Segment01Transmission(){
 
               </div>
             </div>
+           
             
             
             {/* <div className="col-md-6">
@@ -954,7 +956,11 @@ function Segment01Transmission(){
           </div>
               </div>
             </div> */}
+           
           </div>
+          <div className=" text-right">
+             <a href="#" className="btn border bg-primary text-white">Save</a>
+           </div>
         </div>
         <div className="Add-new-segment-div p-3 border-radius-10 mt-2 mb-4">
                 <Link to="/RepairServiceEstimate" className="btn bg-primary text-white">
