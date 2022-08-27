@@ -224,6 +224,12 @@ function WithoutSparePartsHeader(){
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONTACT NAME</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONTACT EMAIL</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
@@ -263,6 +269,12 @@ function WithoutSparePartsHeader(){
             <div class="col-md-4 col-sm-4">
             <div class="form-group">
               <p class="font-size-12 font-weight-500 mb-2">CUSTOMER NAME</p>
+              <h6 class="font-weight-500">Damon Farrell</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">CONTACT NAME</p>
               <h6 class="font-weight-500">Damon Farrell</h6>
               </div>
             </div>
@@ -615,6 +627,24 @@ function WithoutSparePartsHeader(){
                       />
                   </div>
               </div>
+              <div className="col-md-4 col-sm-4">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PARTS</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET LABOR</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                <div class="form-group">
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET MISC.</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
               </div>
               <div className="row mt-3">
               <div class="col-md-4 col-sm-4">
@@ -655,6 +685,24 @@ function WithoutSparePartsHeader(){
               <h6 class="font-weight-500">AUD</h6>
               </div>
             </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">NET PARTS</p>
+              <h6 class="font-weight-500">AUD</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">NET LABOR</p>
+              <h6 class="font-weight-500">AUD</h6>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-4">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">NET MISC.</p>
+              <h6 class="font-weight-500">AUD</h6>
+              </div>
+            </div>
          </div>
          <div className="row" style={{ justifyContent: "right" }}>
                     <button type="button" className="btn btn-light bg-primary text-white">
@@ -668,7 +716,7 @@ function WithoutSparePartsHeader(){
         </div>
       
 
-          <div className="Add-new-segment-div p-3 border-radius-10">
+          <div className="Add-new-segment-div p-3 border-radius-10 mb-3">
                 <Link to="/WithoutSpareParts" className="btn bg-primary text-white">
               <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add New Segment
                 </Link>

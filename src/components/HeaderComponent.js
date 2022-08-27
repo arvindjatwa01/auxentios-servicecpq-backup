@@ -358,7 +358,7 @@ export function HeaderComponent(props) {
                       <li className="dropdown-item">Quote</li>
                     </div>
                   </div>
-                  <div className="input-group-prepend align-items-center">
+                  <div className="input-group-prepend align-items-center d-none">
                     <div className="w-100 mx-2">
                       <div className="machine-droped d-flex align-items-center bg-white">
                         <div>

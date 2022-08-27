@@ -75,7 +75,7 @@ import BusinessCenterOutlinedIcon from "@mui/icons-material/BusinessCenterOutlin
 import LayersOutlinedIcon from "@mui/icons-material/LayersOutlined";
 import Tooltip from "@mui/material/Tooltip";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
-import Loader from "react-js-loader";
+// import Loader from "react-js-loader";
 
 import {
   createPortfolio,
@@ -4379,13 +4379,14 @@ export function CreatePortfolio() {
               </div>
             ) : loadingItem ? (
               <div className="d-flex align-items-center justify-content-center">
-                <Loader
+                {/* <Loader
                   type="spinner-default"
                   bgColor={"#7571f9"}
                   title={"spinner-default"}
                   color={"#FFFFFF"}
                   size={35}
-                />
+                /> */}
+                "loading"
               </div>
             ) : (
               <div className="p-4  row">

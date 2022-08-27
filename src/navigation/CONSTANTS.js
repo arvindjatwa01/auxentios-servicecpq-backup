@@ -16,6 +16,7 @@ export const ACCOUNT = "/account";
 export const RIPAIR_SEGMENT01_TRANSMISSION = "/Segment01Transmission";
 export const RIPAIR_SEGMENT01_DISASSEMBLE = "/Segment01Disassemble";
 export const RIPAIR_OPTION01 = "/RepairOption01";
+export const WITHOUT_REPAIR_OPTION01 = "/WithoutRepairOption01";
 export const RIPAIR_SERVICE_ESTIMATE = "/RepairServiceEstimate";
 export const WITHOUTSPARE_REPAIR_OPTION = "/WithoutSpareParts";
 export const WITH_SPARE_PARTS = "/WithSpareParts";

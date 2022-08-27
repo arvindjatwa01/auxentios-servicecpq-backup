@@ -20,10 +20,18 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import { CommanComponents } from "components";
 import AddIcon from '@mui/icons-material/Add';
+import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
+import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
+import ThumbDownOffAltOutlinedIcon from '@mui/icons-material/ThumbDownOffAltOutlined';
+import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import Checkbox from '@mui/material/Checkbox';
 
 function RepairOption01(){
   const [selectedOption, setSelectedOption] = useState(null);
   const [value, setValue] = React.useState('1');
+  const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -71,19 +79,7 @@ function RepairOption01(){
               <div className="row mt-4">
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">OPERATION NO</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
-                </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">JOB CODE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholdEr="Placeholder (Optional)"/>
-                </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">DESCRIPTION</label>
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">OPERATION #</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
@@ -95,7 +91,20 @@ function RepairOption01(){
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
-                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">DESCIPTION</label>
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">JOB CODE DESCRIPTION</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholdEr="Placeholder (Optional)"/>
+                </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                <div class="form-group mt-3">
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">COMPONENT CODE DESCRIPTION</label>
+                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                </div>
+                </div>
+                
+                <div className="col-md-4 col-sm-4">
+                <div class="form-group mt-3">
+                  <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">JOB CODE</label>
                   <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
@@ -116,31 +125,31 @@ function RepairOption01(){
               <div className="row mt-4">
               <div className="col-md-4 col-sm-4">
                 <div class="form-group">
-                <p className="font-size-12 font-weight-500 mb-2">OPERATION NO</p>
+                <p className="font-size-12 font-weight-500 mb-2">OPERATION #</p>
                  <h6 className="font-weight-600">001</h6>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group">
-                <p className="font-size-12 font-weight-500 mb-2">JOB CODE</p>
+                <p className="font-size-12 font-weight-500 mb-2">COMPONENT CODE</p>
                  <h6 className="font-weight-600">15</h6>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group">
-                <p className="font-size-12 font-weight-500 mb-2">DESCRIPTION </p>
+                <p className="font-size-12 font-weight-500 mb-2"> JOB CODE DESCRIPTION </p>
                  <h6 className="font-weight-600">Disassemble </h6>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group">
-                <p className="font-size-12 font-weight-500 mb-2">COMPONENT CODE</p>
+                <p className="font-size-12 font-weight-500 mb-2">COMPONENT CODE DESCRIPTION</p>
                  <h6 className="font-weight-600">3066</h6>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group">
-                <p className="font-size-12 font-weight-500 mb-2">DESCRIPTION </p>
+                <p className="font-size-12 font-weight-500 mb-2">JOB CODE</p>
                  <h6 className="font-weight-600">BOMB Aceite-Transmission</h6>
                 </div>
                 </div>
@@ -160,12 +169,650 @@ function RepairOption01(){
               <div className=" text-right">
              <a href="#" className="btn border bg-primary text-white">Save</a>
            </div>
-              
+            
+           <h5 className="d-flex align-items-center  mb-0 mt-2">
+          <div className="" style={{ display:'contents'}}><span className="mr-3 white-space">Part List</span></div>
+          <div className="hr"></div>
+          </h5>
+          <div className="row">
+            <div className="col-md-6">
+              <div className="card border" style={{overflow: "hidden"}}>
+              <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
+          <div className="" style={{ display:'contents'}}><span className="mr-3 white-space font-size-16 text-white">023-Remove Engine partlist</span></div>
+          <div className="d-flex">
+          <div>
+          <Checkbox className="p-0 text-white" {...label} />
+        </div>
+        <a href="#"><FileUploadOutlinedIcon className="ml-3 font-size-21 text-white" titleAccess="Upload"/></a>
+           <a href="#"><ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><ContentCopyIcon className="ml-3 font-size-21 text-white"/></a>
+           <a  className="ml-3 text-white svg-div"><MuiMenuComponent options={activityOptions}/></a>
+           
+         
+         </div>
+          </div>
+          <div className="bg-white p-3">
+          <div className="d-flex align-items-center justify-content-between mb-0">
+          <div className="" style={{ display:'contents'}}>
+          <a href="#" className="btn-sm text-white bg-primary mr-3">Version 1</a>
+          </div>
+          </div>
+          <div className="hr"></div>
+          <p class="font-size-12 font-weight-500 my-2">TOTAL PARTS</p>
+          <div className="row mt-4">
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+
+                         <div>
+                             <h6 className="mr-2 font-size-16"><b>New</b></h6>
+                           </div>
+                           <div className="d-flex justify-content-center align-items-center bg-light-grey rounded-circle text-white" style={{width:'45px',height:'45px'}}>
+                             <span className="text-primary font-size-18 font-weight-600">7</span>
+                           </div>
+                       </div>
+            </div>
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16"><b>Refurbished</b></h6>
+                           </div>
+                           <div className="d-flex justify-content-center align-items-center bg-light-grey rounded-circle text-white" style={{width:'45px',height:'45px'}}>
+                             <span className="text-primary font-size-18 font-weight-600">6</span>
+                           </div>
+                       </div>
+            </div>
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16 d-flex justify-content-center align-items-center"><b>Total Costs</b></h6>
+                           </div>
+                           <div className=" ">
+                             <span className="text-black font-size-25 font-weight-600 d-flex justify-content-center align-items-center " style={{fontSize: "24px"}}>$48</span>
+                           </div>
+                           </div>
+            </div>
+          </div>
+          <div className="form-group my-3">
+          <div className="d-flex ">
+          <p class="font-size-12 font-weight-500 mr-2">STATUS</p>
+              <h6 class="font-weight-600">6/8</h6>
+              </div>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style={{width:'75%'}} aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          </div>
+          <div style={{textAlign: "right"}}>
+            <a href="#" class="text-black font-size-12">Go to Version <span className="text-black" ><ArrowForwardIosOutlinedIcon /></span></a>
+           </div>
+          </div>
+          <div className="bg-white p-3">
+          <div className="d-flex align-items-center justify-content-between mb-0">
+          <div className="" style={{ display:'contents'}}>
+          <a href="#" className="btn-sm text-white bg-primary mr-3">Version 2</a>
+          </div>
+          </div>
+          <div className="hr"></div>
+          <p class="font-size-12 font-weight-500 my-2">TOTAL PARTS</p>
+          <div className="row mt-4">
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16"><b>New</b></h6>
+                           </div>
+                           <div className="d-flex justify-content-center align-items-center bg-light-grey rounded-circle text-white" style={{width:'45px',height:'45px'}}>
+                             <span className="text-primary font-size-18 font-weight-600">7</span>
+                           </div>
+                            </div>
+            </div>
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16"><b>Refurbished</b></h6>
+                           </div>
+                           <div className="d-flex justify-content-center align-items-center bg-light-grey rounded-circle text-white" style={{width:'45px',height:'45px'}}>
+                             <span className="text-primary font-size-18 font-weight-600">6</span>
+                           </div>
+                            </div>
+            </div>
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16 d-flex justify-content-center align-items-center"><b>Total Costs</b></h6>
+                           </div>
+                           <div className=" ">
+                             <span className="text-black font-size-25 font-weight-600 d-flex justify-content-center align-items-center " style={{fontSize: "24px"}}>$48</span>
+                           </div>
+                            </div>
+            </div>
+          </div>
+          <div className="form-group my-3">
+          <div className="d-flex ">
+          <p class="font-size-12 font-weight-500 mr-2">STATUS</p>
+              <h6 class="font-weight-600">6/8</h6>
+              </div>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style={{width:'75%'}} aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          </div>
+          <div style={{textAlign: "right"}}>
+            <a href="#" class="text-black font-size-12">Go to Version <span className="text-black" ><ArrowForwardIosOutlinedIcon /></span></a>
+           
+          </div>
+          </div>
+          {/* <div className="bg-light-grey p-3">
+            <a href="#" class="text-violet">Go to Service Estimates <span><ArrowRightAltIcon /></span></a>
+          </div> */}
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="card border" style={{overflow: "hidden"}}>
+              <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
+          <div className="" style={{ display:'contents'}}><span className="mr-3 white-space font-size-16 text-white">023-Remove Engine partlist</span></div>
+          <div className="d-flex">
+          <div>
+          <Checkbox className="p-0 text-white" {...label} />
+        </div>
+        <a href="#"><FileUploadOutlinedIcon className="ml-3 font-size-21 text-white" titleAccess="Upload"/></a>
+           <a href="#"><ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><ContentCopyIcon className="ml-3 font-size-21 text-white"/></a>
+           <a  className="ml-3 text-white svg-div"><MuiMenuComponent options={activityOptions}/></a>
+         </div>
+          </div>
+          <div className="bg-white p-3">
+          <div className="d-flex align-items-center justify-content-between mb-0">
+          <div className="" style={{ display:'contents'}}>
+          <a href="#" className="btn-sm text-white bg-primary mr-3">Version 1</a>
+          </div>
+          </div>
+          <div className="hr"></div>
+          <p class="font-size-12 font-weight-500 my-2">TOTAL PARTS</p>
+          <div className="row mt-4">
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+
+                         <div>
+                             <h6 className="mr-2 font-size-16"><b>New</b></h6>
+                           </div>
+                           <div className="d-flex justify-content-center align-items-center bg-light-grey rounded-circle text-white" style={{width:'45px',height:'45px'}}>
+                             <span className="text-primary font-size-18 font-weight-600">7</span>
+                           </div>
+                       </div>
+            </div>
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16"><b>Refurbished</b></h6>
+                           </div>
+                           <div className="d-flex justify-content-center align-items-center bg-light-grey rounded-circle text-white" style={{width:'45px',height:'45px'}}>
+                             <span className="text-primary font-size-18 font-weight-600">6</span>
+                           </div>
+                       </div>
+            </div>
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16 d-flex justify-content-center align-items-center"><b>Total Costs</b></h6>
+                           </div>
+                           <div className=" ">
+                             <span className="text-black font-size-25 font-weight-600 d-flex justify-content-center align-items-center " style={{fontSize: "24px"}}>$48</span>
+                           </div>
+                           </div>
+            </div>
+          </div>
+          <div className="form-group my-3">
+          <div className="d-flex ">
+          <p class="font-size-12 font-weight-500 mr-2">STATUS</p>
+              <h6 class="font-weight-600">6/8</h6>
+              </div>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style={{width:'75%'}} aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          </div>
+          <div style={{textAlign: "right"}}>
+            <a href="#" class="text-black font-size-12">Go to Version <span className="text-black" ><ArrowForwardIosOutlinedIcon /></span></a>
+           </div>
+          </div>
+          <div className="bg-white p-3">
+          <div className="d-flex align-items-center justify-content-between mb-0">
+          <div className="" style={{ display:'contents'}}>
+          <a href="#" className="btn-sm text-white bg-primary mr-3">Version 2</a>
+          </div>
+          </div>
+          <div className="hr"></div>
+          <p class="font-size-12 font-weight-500 my-2">TOTAL PARTS</p>
+          <div className="row mt-4">
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16"><b>New</b></h6>
+                           </div>
+                           <div className="d-flex justify-content-center align-items-center bg-light-grey rounded-circle text-white" style={{width:'45px',height:'45px'}}>
+                             <span className="text-primary font-size-18 font-weight-600">7</span>
+                           </div>
+                            </div>
+            </div>
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16"><b>Refurbished</b></h6>
+                           </div>
+                           <div className="d-flex justify-content-center align-items-center bg-light-grey rounded-circle text-white" style={{width:'45px',height:'45px'}}>
+                             <span className="text-primary font-size-18 font-weight-600">6</span>
+                           </div>
+                            </div>
+            </div>
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16 d-flex justify-content-center align-items-center"><b>Total Costs</b></h6>
+                           </div>
+                           <div className=" ">
+                             <span className="text-black font-size-25 font-weight-600 d-flex justify-content-center align-items-center " style={{fontSize: "24px"}}>$48</span>
+                           </div>
+                            </div>
+            </div>
+          </div>
+          <div className="form-group my-3">
+          <div className="d-flex ">
+          <p class="font-size-12 font-weight-500 mr-2">STATUS</p>
+              <h6 class="font-weight-600">6/8</h6>
+              </div>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style={{width:'75%'}} aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          </div>
+          <div style={{textAlign: "right"}}>
+            <a href="#" class="text-black font-size-12">Go to Version <span className="text-black" ><ArrowForwardIosOutlinedIcon /></span></a>
+           
+          </div>
+          </div>
+          {/* <div className="bg-light-grey p-3">
+            <a href="#" class="text-violet">Go to Service Estimates <span><ArrowRightAltIcon /></span></a>
+          </div> */}
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="card border" style={{overflow: "hidden"}}>
+              <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
+          <div className="" style={{ display:'contents'}}><span className="mr-3 white-space font-size-16 text-white">023-Remove Engine partlist</span></div>
+          <div className="d-flex">
+          <div>
+          <Checkbox className="p-0 text-white" {...label} />
+        </div>
+        <a href="#"><FileUploadOutlinedIcon className="ml-3 font-size-21 text-white" titleAccess="Upload"/></a>
+           <a href="#"><ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><ContentCopyIcon className="ml-3 font-size-21 text-white"/></a>
+           <a  className="ml-3 text-white svg-div"><MuiMenuComponent options={activityOptions}/></a>
+         </div>
+          </div>
+          <div className="bg-white p-3">
+          <div className="d-flex align-items-center justify-content-between mb-0">
+          <div className="" style={{ display:'contents'}}>
+          <a href="#" className="btn-sm text-white bg-primary mr-3">Version 1</a>
+          </div>
+          </div>
+          <div className="hr"></div>
+          <p class="font-size-12 font-weight-500 my-2">TOTAL PARTS</p>
+          <div className="row mt-4">
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+
+                         <div>
+                             <h6 className="mr-2 font-size-16"><b>New</b></h6>
+                           </div>
+                           <div className="d-flex justify-content-center align-items-center bg-light-grey rounded-circle text-white" style={{width:'45px',height:'45px'}}>
+                             <span className="text-primary font-size-18 font-weight-600">7</span>
+                           </div>
+                       </div>
+            </div>
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16"><b>Refurbished</b></h6>
+                           </div>
+                           <div className="d-flex justify-content-center align-items-center bg-light-grey rounded-circle text-white" style={{width:'45px',height:'45px'}}>
+                             <span className="text-primary font-size-18 font-weight-600">6</span>
+                           </div>
+                       </div>
+            </div>
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16 d-flex justify-content-center align-items-center"><b>Total Costs</b></h6>
+                           </div>
+                           <div className=" ">
+                             <span className="text-black font-size-25 font-weight-600 d-flex justify-content-center align-items-center " style={{fontSize: "24px"}}>$48</span>
+                           </div>
+                           </div>
+            </div>
+          </div>
+          <div className="form-group my-3">
+          <div className="d-flex ">
+          <p class="font-size-12 font-weight-500 mr-2">STATUS</p>
+              <h6 class="font-weight-600">6/8</h6>
+              </div>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style={{width:'75%'}} aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          </div>
+          <div style={{textAlign: "right"}}>
+            <a href="#" class="text-black font-size-12">Go to Version <span className="text-black" ><ArrowForwardIosOutlinedIcon /></span></a>
+           </div>
+          </div>
+          <div className="bg-white p-3">
+          <div className="d-flex align-items-center justify-content-between mb-0">
+          <div className="" style={{ display:'contents'}}>
+          <a href="#" className="btn-sm text-white bg-primary mr-3">Version 2</a>
+          </div>
+          </div>
+          <div className="hr"></div>
+          <p class="font-size-12 font-weight-500 my-2">TOTAL PARTS</p>
+          <div className="row mt-4">
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16"><b>New</b></h6>
+                           </div>
+                           <div className="d-flex justify-content-center align-items-center bg-light-grey rounded-circle text-white" style={{width:'45px',height:'45px'}}>
+                             <span className="text-primary font-size-18 font-weight-600">7</span>
+                           </div>
+                            </div>
+            </div>
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16"><b>Refurbished</b></h6>
+                           </div>
+                           <div className="d-flex justify-content-center align-items-center bg-light-grey rounded-circle text-white" style={{width:'45px',height:'45px'}}>
+                             <span className="text-primary font-size-18 font-weight-600">6</span>
+                           </div>
+                            </div>
+            </div>
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16 d-flex justify-content-center align-items-center"><b>Total Costs</b></h6>
+                           </div>
+                           <div className=" ">
+                             <span className="text-black font-size-25 font-weight-600 d-flex justify-content-center align-items-center " style={{fontSize: "24px"}}>$48</span>
+                           </div>
+                            </div>
+            </div>
+          </div>
+          <div className="form-group my-3">
+          <div className="d-flex ">
+          <p class="font-size-12 font-weight-500 mr-2">STATUS</p>
+              <h6 class="font-weight-600">6/8</h6>
+              </div>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style={{width:'75%'}} aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          </div>
+          <div style={{textAlign: "right"}}>
+            <a href="#" class="text-black font-size-12">Go to Version <span className="text-black" ><ArrowForwardIosOutlinedIcon /></span></a>
+           
+          </div>
+          </div>
+          {/* <div className="bg-light-grey p-3">
+            <a href="#" class="text-violet">Go to Service Estimates <span><ArrowRightAltIcon /></span></a>
+          </div> */}
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="card border" style={{overflow: "hidden"}}>
+              <div className="d-flex align-items-center justify-content-between mb-0 p-3 bg-primary">
+          <div className="" style={{ display:'contents'}}><span className="mr-3 white-space font-size-16 text-white">023-Remove Engine partlist</span></div>
+          <div className="d-flex">
+          <div>
+          <Checkbox className="p-0 text-white" {...label} />
+        </div>
+        <a href="#"><FileUploadOutlinedIcon className="ml-3 font-size-21 text-white" titleAccess="Upload"/></a>
+           <a href="#"><ThumbUpOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><DeleteOutlineOutlinedIcon className="ml-3 font-size-21 text-white"/></a>
+           <a href="#"><ContentCopyIcon className="ml-3 font-size-21 text-white"/></a>
+           <a  className="ml-3 text-white svg-div"><MuiMenuComponent options={activityOptions}/></a>
+         </div>
+          </div>
+          <div className="bg-white p-3">
+          <div className="d-flex align-items-center justify-content-between mb-0">
+          <div className="" style={{ display:'contents'}}>
+          <a href="#" className="btn-sm text-white bg-primary mr-3">Version 1</a>
+          </div>
+          </div>
+          <div className="hr"></div>
+          <p class="font-size-12 font-weight-500 my-2">TOTAL PARTS</p>
+          <div className="row mt-4">
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+
+                         <div>
+                             <h6 className="mr-2 font-size-16"><b>New</b></h6>
+                           </div>
+                           <div className="d-flex justify-content-center align-items-center bg-light-grey rounded-circle text-white" style={{width:'45px',height:'45px'}}>
+                             <span className="text-primary font-size-18 font-weight-600">7</span>
+                           </div>
+                       </div>
+            </div>
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16"><b>Refurbished</b></h6>
+                           </div>
+                           <div className="d-flex justify-content-center align-items-center bg-light-grey rounded-circle text-white" style={{width:'45px',height:'45px'}}>
+                             <span className="text-primary font-size-18 font-weight-600">6</span>
+                           </div>
+                       </div>
+            </div>
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16 d-flex justify-content-center align-items-center"><b>Total Costs</b></h6>
+                           </div>
+                           <div className=" ">
+                             <span className="text-black font-size-25 font-weight-600 d-flex justify-content-center align-items-center " style={{fontSize: "24px"}}>$48</span>
+                           </div>
+                           </div>
+            </div>
+          </div>
+          <div className="form-group my-3">
+          <div className="d-flex ">
+          <p class="font-size-12 font-weight-500 mr-2">STATUS</p>
+              <h6 class="font-weight-600">6/8</h6>
+              </div>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style={{width:'75%'}} aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          </div>
+          <div style={{textAlign: "right"}}>
+            <a href="#" class="text-black font-size-12">Go to Version <span className="text-black" ><ArrowForwardIosOutlinedIcon /></span></a>
+           </div>
+          </div>
+          <div className="bg-white p-3">
+          <div className="d-flex align-items-center justify-content-between mb-0">
+          <div className="" style={{ display:'contents'}}>
+          <a href="#" className="btn-sm text-white bg-primary mr-3">Version 2</a>
+          </div>
+          </div>
+          <div className="hr"></div>
+          <p class="font-size-12 font-weight-500 my-2">TOTAL PARTS</p>
+          <div className="row mt-4">
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16"><b>New</b></h6>
+                           </div>
+                           <div className="d-flex justify-content-center align-items-center bg-light-grey rounded-circle text-white" style={{width:'45px',height:'45px'}}>
+                             <span className="text-primary font-size-18 font-weight-600">7</span>
+                           </div>
+                            </div>
+            </div>
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16"><b>Refurbished</b></h6>
+                           </div>
+                           <div className="d-flex justify-content-center align-items-center bg-light-grey rounded-circle text-white" style={{width:'45px',height:'45px'}}>
+                             <span className="text-primary font-size-18 font-weight-600">6</span>
+                           </div>
+                            </div>
+            </div>
+            <div className="col-4">
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                         <div>
+                             <h6 className="mr-2 font-size-16 d-flex justify-content-center align-items-center"><b>Total Costs</b></h6>
+                           </div>
+                           <div className=" ">
+                             <span className="text-black font-size-25 font-weight-600 d-flex justify-content-center align-items-center " style={{fontSize: "24px"}}>$48</span>
+                           </div>
+                            </div>
+            </div>
+          </div>
+          <div className="form-group my-3">
+          <div className="d-flex ">
+          <p class="font-size-12 font-weight-500 mr-2">STATUS</p>
+              <h6 class="font-weight-600">6/8</h6>
+              </div>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style={{width:'75%'}} aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          </div>
+          <div style={{textAlign: "right"}}>
+            <a href="#" class="text-black font-size-12">Go to Version <span className="text-black" ><ArrowForwardIosOutlinedIcon /></span></a>
+           
+          </div>
+          </div>
+
+              </div>
+            </div>
+           
+            
+            
+            {/* <div className="col-md-6">
+              <div className="card border">
+              <div className="d-flex align-items-center justify-content-between mb-0 p-3">
+          <div className="" style={{ display:'contents'}}><span className="mr-3 white-space font-size-16 text-black">023-Remove Engine-Engine partlist</span></div>
+         <div className="d-flex">
+         <div>
+          <Checkbox className="p-0" {...label} />
+        </div>
+        <a href="#"><ShareOutlinedIcon className="ml-3 font-size-21" titleAccess="Share"/></a>
+           <a href="#"><CreateNewFolderOutlinedIcon className="ml-3 font-size-21" titleAccess="Item to Review"/></a>
+           <a href="#"><FileUploadOutlinedIcon className="ml-3 font-size-21" titleAccess="Upload"/></a>
+           <a href="#"><ThumbUpOutlinedIcon className="ml-3 font-size-21"/></a>
+           <a href="#"><ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21"/></a>
+           <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
+            <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
+            <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
+            <a href="#" className="ml-2"><MoreVertOutlinedIcon/></a>
+         </div>
+          </div>
+          <div className="bg-light-grey p-3">
+          <div className="d-flex align-items-center justify-content-between mb-0">
+          <div className="" style={{ display:'contents'}}><span className="mr-3 white-space font-size-12 text-black">Version 1</span></div>
+         <div className="d-flex">
+          <div>
+          <Checkbox className="p-0" {...label} />
+        </div>
+        <a href="#"><FileUploadOutlinedIcon className="ml-3 font-size-21" titleAccess="Upload"/></a>
+           <a href="#"><ThumbUpOutlinedIcon className="ml-3 font-size-21"/></a>
+           <a href="#"><ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21"/></a>
+           <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
+            <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
+            <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
+            <a href="#" className="ml-2"><MoreVertOutlinedIcon/></a>
+         </div>
+          </div>
+          <div className="row mt-4">
+            <div className="col-6">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">TOTAL PARTS</p>
+              <h6 class="font-weight-600">New(8)/ Refurbished (6)</h6>
+              </div>
+            </div>
+            <div className="col-6">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">TOTAL COSTS</p>
+              <h6 class="font-weight-600">$38</h6>
+              </div>
+            </div>
+          </div>
+          <div className="form-group">
+          <p class="font-size-12 font-weight-500 mb-2">STATUS</p>
+              <h6 class="font-weight-600">6/8</h6>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style={{width:'75%'}} aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          </div>
+          <div>
+            <a href="#" class="text-violet">Go to Version <span><ArrowRightAltIcon /></span></a>
+           
+          </div>
+          </div>
+          <div className=" p-3">
+          <div className="d-flex align-items-center justify-content-between mb-0">
+          <div className="" style={{ display:'contents'}}><span className="mr-3 white-space font-size-12 text-black">Version 1</span></div>
+         <div className="d-flex">
+          <div>
+          <Checkbox className="p-0" {...label} />
+        </div>
+        <a href="#"><FileUploadOutlinedIcon className="ml-3 font-size-21" titleAccess="Upload"/></a>
+           <a href="#"><ThumbUpOutlinedIcon className="ml-3 font-size-21"/></a>
+           <a href="#"><ThumbDownOffAltOutlinedIcon className="ml-3 font-size-21"/></a>
+      
+            <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
+            <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
+            <a href="#" className="ml-2"><MoreVertOutlinedIcon/></a>
+         </div>
+          </div>
+          <div className="row mt-4">
+            <div className="col-6">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">TOTAL PARTS</p>
+              <h6 class="font-weight-600">New(8)/ Refurbished (6)</h6>
+              </div>
+            </div>
+            <div className="col-6">
+            <div class="form-group">
+              <p class="font-size-12 font-weight-500 mb-2">TOTAL COSTS</p>
+              <h6 class="font-weight-600">$38</h6>
+              </div>
+            </div>
+          </div>
+          <div className="form-group">
+          <p class="font-size-12 font-weight-500 mb-2">STATUS</p>
+              <h6 class="font-weight-600">6/8</h6>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style={{width:'75%'}} aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          </div>
+          <div>
+            <a href="#" class="text-violet">Go to Version <span><ArrowRightAltIcon /></span></a>
+           
+          </div>
+          </div>
+          <div className="bg-light-grey p-3">
+            <a href="#" class="text-violet">Go to Service Estimates <span><ArrowRightAltIcon /></span></a>
+           
+          </div>
+              </div>
+            </div> */}
+           
+          </div>
+          <div className=" text-right">
+             <a href="#" className="btn border bg-primary text-white">Save</a>
+           </div>
         </div>
         <div className="Add-new-segment-div p-3 border-radius-10 mb-3">
-              {/* <Link to="/AddPartlist" className="btn bg-primary text-white mr-3">
+              <Link to="/AddPartlist" className="btn bg-primary text-white mr-3">
               <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add part list
-                </Link> */}
+                </Link>
                 <Link to="/RepairServiceEstimate" className="btn bg-primary text-white">
               <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add Service Estimate
                 </Link>
