@@ -11,7 +11,6 @@ import { useEffect } from 'react';
 
 const QuerySearchComp = (props) => {
   const [count, setCount] = useState(1)
-  const [dumy, setDumy] = useState(0)
   const [querySearchSelector, setQuerySearchSelector] = useState([
     {
       id: 0,
@@ -29,9 +28,6 @@ const QuerySearchComp = (props) => {
     let obj = tempArray[id];
     obj.itemFlag = e;
     tempArray[id] = obj;
-    if (e.value === "portfolioItem") {
-      setDumy(dumy + 1);
-    }
     setQuerySearchSelector(tempArray);
     console.log("tempArray", tempArray)
   }
