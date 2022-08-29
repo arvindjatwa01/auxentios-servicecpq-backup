@@ -91,15 +91,15 @@ export const GuidedSolution = () => {
 
   // const handleContinuePress = (counter) => {
   //   var tempQuestionNoCounter = questionNoCounter;
-  //   if (questionNoCounter == 4 && state.guidedSolution.guidedQuestions[1].value == 'Routine Maintenance Tasks') {
+  //   if (questionNoCounter == 4 && state.guidedSolution?.guidedQuestions[1].value == 'Routine Maintenance Tasks') {
   //     tempQuestionNoCounter = 5
   //     setQuestionNoCounter(6)
   //   } else {
   //     if (state != null) {
   //       if (state.guidedSolution != null) {
-  //         var questionsData = state.guidedSolution.guidedQuestions;
+  //         var questionsData = state.guidedSolution?.guidedQuestions;
   //         var valueSelected = false;
-  //         if (!state.guidedSolution.withDropDown && tempQuestionNoCounter != 5) {
+  //         if (!state.guidedSolution?.withDropDown && tempQuestionNoCounter != 5) {
   //           if (questionsData[counter].value == "") {
   //             toast('🙁' + "Please Select Option !!", {
   //               position: "top-center",
@@ -130,19 +130,19 @@ export const GuidedSolution = () => {
   //           // }
   //           if (counter == 1) {
   //             if (questionsData[counter].value == 'Standard Rapair or Replacement') {
-  //               addPrevFormControlLabel(state.guidedSolution.formLabels)
+  //               addPrevFormControlLabel(state.guidedSolution?.formLabels)
   //               addFormControlLabel(["Used", "New"])
   //               addWithDescription(false)
   //               addWithDropdown(false)
   //               addQuestionHeader("Is it for new/used machine?")
   //             } else if (questionsData[counter].value == 'Routine Maintenance Tasks') {
-  //               addPrevFormControlLabel(state.guidedSolution.formLabels)
+  //               addPrevFormControlLabel(state.guidedSolution?.formLabels)
   //               addFormControlLabel(["Machine configuration", "Customization", "Assembly", "Extended Warranty", "Support Agreements", "Spare Parts", "Installation", "Other Services"])
   //               addWithDescription(false)
   //               addWithDropdown(false)
   //               addQuestionHeader("What additional maintenace options are needed?")
   //             } else if (questionsData[counter].value == 'Service Contracts or Warranty') {
-  //               addPrevFormControlLabel(state.guidedSolution.formLabels)
+  //               addPrevFormControlLabel(state.guidedSolution?.formLabels)
   //               addFormControlLabel(["5-10", "10-50", "50-100", "100+"])
   //               addWithDescription(false)
   //               addWithDropdown(false)
@@ -151,13 +151,13 @@ export const GuidedSolution = () => {
   //           }
   //           if (counter == 2) {
   //             if (questionsData[counter - 1].value == 'Standard Rapair or Replacement' || questionsData[counter - 1].value == 'Routine Maintenance Tasks') {
-  //               addPrevFormControlLabel(state.guidedSolution.formLabels)
+  //               addPrevFormControlLabel(state.guidedSolution?.formLabels)
   //               addFormControlLabel([])
   //               addWithDescription(false)
   //               addWithDropdown(true)
   //               addQuestionHeader("If you know the make and model choose the options")
   //             } else {
-  //               addPrevFormControlLabel(state.guidedSolution.formLabels)
+  //               addPrevFormControlLabel(state.guidedSolution?.formLabels)
   //               var arrayOfDict = [{ "header": "Level 1 contract", "description": "For Simple scheduled inspections,oil change,filter replacement,subscription etc" },
   //               { "header": "Level 2 contract", "description": "For preventive maintenance,value added services,unplanned downtime etc." },
   //               { "header": "Level 3 contract", "description": "Total Maintenance and repair,comprehensive coverage." },
@@ -171,13 +171,13 @@ export const GuidedSolution = () => {
   //           }
   //           if (counter == 3) {
   //             if (questionsData[counter - 2].value == 'Standard Rapair or Replacement') {
-  //               addPrevFormControlLabel(state.guidedSolution.formLabels)
+  //               addPrevFormControlLabel(state.guidedSolution?.formLabels)
   //               addFormControlLabel([])
   //               addWithDescription(false)
   //               addWithDropdown(true)
   //               addQuestionHeader("Please choose the component that you want to be replaced")
   //             } else if (questionsData[counter - 2].value == 'Routine Maintenance Tasks') {
-  //               addPrevFormControlLabel(state.guidedSolution.formLabels)
+  //               addPrevFormControlLabel(state.guidedSolution?.formLabels)
   //               addFormControlLabel([])
   //               addWithDescription(false)
   //               addWithDropdown(false)
@@ -185,7 +185,7 @@ export const GuidedSolution = () => {
   //             }
 
   //             else {
-  //               addPrevFormControlLabel(state.guidedSolution.formLabels)
+  //               addPrevFormControlLabel(state.guidedSolution?.formLabels)
   //               addFormControlLabel([])
   //               addWithDescription(false)
   //               addWithDropdown(true)
@@ -193,7 +193,7 @@ export const GuidedSolution = () => {
   //             }
   //           }
   //           if (counter == 4) {
-  //             addPrevFormControlLabel(state.guidedSolution.formLabels)
+  //             addPrevFormControlLabel(state.guidedSolution?.formLabels)
   //             addFormControlLabel([])
   //             addWithDescription(false)
   //             addWithDropdown(false)
@@ -216,10 +216,10 @@ export const GuidedSolution = () => {
     if (currentCounter == 0) {
       var guidedSolutionNames = [];
       if (
-        state.guidedSolution.guidedSolutionResponse != null &&
-        state.guidedSolution.guidedSolutionResponse.length > 0
+        state.guidedSolution?.guidedSolutionResponse != null &&
+        state.guidedSolution?.guidedSolutionResponse.length > 0
       ) {
-        state.guidedSolution.guidedSolutionResponse.map(
+        state.guidedSolution?.guidedSolutionResponse.map(
           (solutionNameRes, index) => {
             var dict = {
               key: solutionNameRes.solutionName,
@@ -237,41 +237,41 @@ export const GuidedSolution = () => {
     //Question 2
     if (currentCounter == 1) {
       //Check Which parent flow it is;
-      var flowIndex = parseInt(state.guidedSolution.guidedQuestions[1].value);
+      var flowIndex = parseInt(state.guidedSolution?.guidedQuestions[1].value);
       var guidedSolutionNames = [];
       if (
-        state.guidedSolution.guidedSolutionResponse != null &&
-        state.guidedSolution.guidedSolutionResponse.length > 0 &&
-        state.guidedSolution.guidedSolutionResponse[flowIndex].questions
+        state.guidedSolution?.guidedSolutionResponse != null &&
+        state.guidedSolution?.guidedSolutionResponse.length > 0 &&
+        state.guidedSolution?.guidedSolutionResponse[flowIndex].questions
           .length > 0
       ) {
         var childArray = [];
         if (
-          state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+          state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
             currentCounter
           ] != null
         ) {
           addQuestionHeader(
-            state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+            state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               currentCounter
             ].description
           );
           if (
-            state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+            state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               currentCounter
             ].options.length > 0
           ) {
             if (flowIndex == 0) {
               if (
-                state.guidedSolution.guidedSolutionResponse[flowIndex]
+                state.guidedSolution?.guidedSolutionResponse[flowIndex]
                   .questions[currentCounter].options[0].machineType.length > 0
               ) {
                 addFieldName("machineType");
                 addFieldName(
-                  state.guidedSolution.guidedSolutionResponse[flowIndex]
+                  state.guidedSolution?.guidedSolutionResponse[flowIndex]
                     .questions[currentCounter].fieldName
                 );
-                state.guidedSolution.guidedSolutionResponse[
+                state.guidedSolution?.guidedSolutionResponse[
                   flowIndex
                 ].questions[currentCounter].options[0].machineType.map(
                   (option, index) => {
@@ -289,14 +289,14 @@ export const GuidedSolution = () => {
               // machineType
             } else if (flowIndex == 1) {
               if (
-                state.guidedSolution.guidedSolutionResponse[flowIndex]
+                state.guidedSolution?.guidedSolutionResponse[flowIndex]
                   .questions[currentCounter].options[0].taskType.length > 0
               ) {
                 addFieldName(
-                  state.guidedSolution.guidedSolutionResponse[flowIndex]
+                  state.guidedSolution?.guidedSolutionResponse[flowIndex]
                     .questions[currentCounter].fieldName
                 );
-                state.guidedSolution.guidedSolutionResponse[
+                state.guidedSolution?.guidedSolutionResponse[
                   flowIndex
                 ].questions[currentCounter].options[0].taskType.map(
                   (option, index) => {
@@ -314,14 +314,14 @@ export const GuidedSolution = () => {
               // taskType
             } else {
               if (
-                state.guidedSolution.guidedSolutionResponse[flowIndex]
+                state.guidedSolution?.guidedSolutionResponse[flowIndex]
                   .questions[currentCounter].options[0].fleet.length > 0
               ) {
                 addFieldName(
-                  state.guidedSolution.guidedSolutionResponse[flowIndex]
+                  state.guidedSolution?.guidedSolutionResponse[flowIndex]
                     .questions[currentCounter].fieldName
                 );
-                state.guidedSolution.guidedSolutionResponse[
+                state.guidedSolution?.guidedSolutionResponse[
                   flowIndex
                 ].questions[currentCounter].options[0].fleet.map(
                   (option, index) => {
@@ -348,37 +348,37 @@ export const GuidedSolution = () => {
     //Question 3
     if (currentCounter == 2) {
       //Check Which parent flow it is;
-      var flowIndex = parseInt(state.guidedSolution.guidedQuestions[1].value);
+      var flowIndex = parseInt(state.guidedSolution?.guidedQuestions[1].value);
       var guidedSolutionNames = [];
       var tempDropdownFormLables = [];
       if (
-        state.guidedSolution.guidedSolutionResponse != null &&
-        state.guidedSolution.guidedSolutionResponse.length > 0 &&
-        state.guidedSolution.guidedSolutionResponse[flowIndex].questions
+        state.guidedSolution?.guidedSolutionResponse != null &&
+        state.guidedSolution?.guidedSolutionResponse.length > 0 &&
+        state.guidedSolution?.guidedSolutionResponse[flowIndex].questions
           .length > 0
       ) {
         var childArray = [];
         if (
-          state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+          state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
             currentCounter
           ] != null
         ) {
           if (
-            state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+            state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               currentCounter
             ].type == "API"
           ) {
             addQuestionHeader(
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 currentCounter
               ].description
             );
             addDropdownAPI(
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 currentCounter
               ].apiUrl
             );
-            state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+            state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               currentCounter
             ].options[0].coverage.map((option, index) => {
               var dict = {
@@ -392,7 +392,7 @@ export const GuidedSolution = () => {
             addResultFound(false);
           } else {
             addQuestionHeader(
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 currentCounter
               ].description
             );
@@ -402,10 +402,10 @@ export const GuidedSolution = () => {
             tempDropdownFormLables = [];
             if (flowIndex == 2) {
               addFieldName(
-                state.guidedSolution.guidedSolutionResponse[flowIndex]
+                state.guidedSolution?.guidedSolutionResponse[flowIndex]
                   .questions[currentCounter].fieldName
               );
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 currentCounter
               ].options[0].contract.map((option, index) => {
                 var dict = {
@@ -422,29 +422,29 @@ export const GuidedSolution = () => {
         } else {
           //It mean next question is dropdown type
           var questionIndex =
-            state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+            state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               currentCounter - 1
             ] != null
               ? currentCounter - 1
-              : state.guidedSolution.guidedSolutionResponse[flowIndex].questions
+              : state.guidedSolution?.guidedSolutionResponse[flowIndex].questions
                   .length - 1;
           if (
-            state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+            state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               questionIndex
             ].guidedSolutionModel.questions.length > 0
           ) {
             addQuestionHeader(
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 questionIndex
               ].guidedSolutionModel.questions[0].description
             );
             addDropdownAPI(
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 questionIndex
               ].guidedSolutionModel.questions[0].apiUrl
             );
 
-            state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+            state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               questionIndex
             ].guidedSolutionModel.questions[0].options[0].coverage.map(
               (option, index) => {
@@ -471,37 +471,37 @@ export const GuidedSolution = () => {
     //Question 4
     if (currentCounter == 3) {
       //Check Which parent flow it is;
-      var flowIndex = parseInt(state.guidedSolution.guidedQuestions[1].value);
+      var flowIndex = parseInt(state.guidedSolution?.guidedQuestions[1].value);
       var guidedSolutionNames = [];
       var tempDropdownFormLables = [];
       if (
-        state.guidedSolution.guidedSolutionResponse != null &&
-        state.guidedSolution.guidedSolutionResponse.length > 0 &&
-        state.guidedSolution.guidedSolutionResponse[flowIndex].questions
+        state.guidedSolution?.guidedSolutionResponse != null &&
+        state.guidedSolution?.guidedSolutionResponse.length > 0 &&
+        state.guidedSolution?.guidedSolutionResponse[flowIndex].questions
           .length > 0
       ) {
         var childArray = [];
         if (
-          state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+          state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
             currentCounter
           ] != null
         ) {
           if (
-            state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+            state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               currentCounter
             ].type == "API"
           ) {
             addQuestionHeader(
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 currentCounter
               ].description
             );
             addDropdownAPI(
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 currentCounter
               ].apiUrl
             );
-            state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+            state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               currentCounter
             ].options[0].coverage.map((option, index) => {
               var dict = {
@@ -515,7 +515,7 @@ export const GuidedSolution = () => {
             addResultFound(false);
           } else {
             addQuestionHeader(
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 currentCounter
               ].description
             );
@@ -524,7 +524,7 @@ export const GuidedSolution = () => {
             addResultFound(false);
             tempDropdownFormLables = [];
             if (flowIndex == 2) {
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 currentCounter
               ].options[0].contract.map((option, index) => {
                 var dict = {
@@ -541,35 +541,35 @@ export const GuidedSolution = () => {
         } else {
           //It mean next question is dropdown type
           var questionIndex =
-            state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+            state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               currentCounter - 1
             ] != null
               ? currentCounter - 1
-              : state.guidedSolution.guidedSolutionResponse[flowIndex].questions
+              : state.guidedSolution?.guidedSolutionResponse[flowIndex].questions
                   .length - 1;
           //Check whether is last or more
           if (
-            state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+            state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               questionIndex
             ].guidedSolutionModel != null
           ) {
             if (
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 questionIndex
               ].guidedSolutionModel.questions.length > 0
             ) {
               addQuestionHeader(
-                state.guidedSolution.guidedSolutionResponse[flowIndex]
+                state.guidedSolution?.guidedSolutionResponse[flowIndex]
                   .questions[questionIndex].guidedSolutionModel.questions[1]
                   .description
               );
               addDropdownAPI(
-                state.guidedSolution.guidedSolutionResponse[flowIndex]
+                state.guidedSolution?.guidedSolutionResponse[flowIndex]
                   .questions[questionIndex].guidedSolutionModel.questions[1]
                   .apiUrl
               );
 
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 questionIndex
               ].guidedSolutionModel.questions[1].options[0].component.map(
                 (option, index) => {
@@ -592,29 +592,29 @@ export const GuidedSolution = () => {
             var query = "";
             for (
               let i = 1;
-              i < state.guidedSolution.guidedQuestions.length;
+              i < state.guidedSolution?.guidedQuestions.length;
               i++
             ) {
-              if (i != 1 && i != state.guidedSolution.guidedQuestions.length) {
+              if (i != 1 && i != state.guidedSolution?.guidedQuestions.length) {
                 query += " AND ";
               }
               if (
-                state.guidedSolution.guidedQuestions[i].fieldName == "fleetSize"
+                state.guidedSolution?.guidedQuestions[i].fieldName == "fleetSize"
               ) {
                 var splitValue =
-                  state.guidedSolution.guidedQuestions[i].fieldValue.split("-");
+                  state.guidedSolution?.guidedQuestions[i].fieldValue.split("-");
                 query +=
-                  state.guidedSolution.guidedQuestions[i].fieldName +
+                  state.guidedSolution?.guidedQuestions[i].fieldName +
                   ">" +
                   splitValue[0] +
                   " " +
-                  state.guidedSolution.guidedQuestions[i].fieldName +
+                  state.guidedSolution?.guidedQuestions[i].fieldName +
                   "<" +
                   splitValue[1];
               } else {
                 query +=
-                  state.guidedSolution.guidedQuestions[i].fieldName + ": ";
-                query += state.guidedSolution.guidedQuestions[i].fieldValue;
+                  state.guidedSolution?.guidedQuestions[i].fieldName + ": ";
+                query += state.guidedSolution?.guidedQuestions[i].fieldValue;
               }
             }
             console.log(query);
@@ -630,37 +630,37 @@ export const GuidedSolution = () => {
     //Question 5
     if (currentCounter == 4) {
       //Check Which parent flow it is;
-      var flowIndex = parseInt(state.guidedSolution.guidedQuestions[1].value);
+      var flowIndex = parseInt(state.guidedSolution?.guidedQuestions[1].value);
       var guidedSolutionNames = [];
       var tempDropdownFormLables = [];
       if (
-        state.guidedSolution.guidedSolutionResponse != null &&
-        state.guidedSolution.guidedSolutionResponse.length > 0 &&
-        state.guidedSolution.guidedSolutionResponse[flowIndex].questions
+        state.guidedSolution?.guidedSolutionResponse != null &&
+        state.guidedSolution?.guidedSolutionResponse.length > 0 &&
+        state.guidedSolution?.guidedSolutionResponse[flowIndex].questions
           .length > 0
       ) {
         var childArray = [];
         if (
-          state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+          state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
             currentCounter
           ] != null
         ) {
           if (
-            state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+            state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               currentCounter
             ].type == "API"
           ) {
             addQuestionHeader(
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 currentCounter
               ].description
             );
             addDropdownAPI(
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 currentCounter
               ].apiUrl
             );
-            state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+            state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               currentCounter
             ].options[0].coverage.map((option, index) => {
               var dict = {
@@ -674,7 +674,7 @@ export const GuidedSolution = () => {
             addResultFound(false);
           } else {
             addQuestionHeader(
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 currentCounter
               ].description
             );
@@ -683,7 +683,7 @@ export const GuidedSolution = () => {
             addResultFound(false);
             tempDropdownFormLables = [];
             if (flowIndex == 2) {
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 currentCounter
               ].options[0].contract.map((option, index) => {
                 var dict = {
@@ -700,38 +700,38 @@ export const GuidedSolution = () => {
         } else {
           //It mean next question is dropdown type
           var questionIndex =
-            state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+            state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               currentCounter - 1
             ] != null
               ? currentCounter - 1
-              : state.guidedSolution.guidedSolutionResponse[flowIndex].questions
+              : state.guidedSolution?.guidedSolutionResponse[flowIndex].questions
                   .length - 1;
           //Check whether is last or more
           if (
-            state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+            state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               questionIndex
             ].guidedSolutionModel != null &&
-            state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+            state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               questionIndex
             ].guidedSolutionModel.questions[2] != null
           ) {
             if (
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 questionIndex
               ].guidedSolutionModel.questions.length > 0
             ) {
               addQuestionHeader(
-                state.guidedSolution.guidedSolutionResponse[flowIndex]
+                state.guidedSolution?.guidedSolutionResponse[flowIndex]
                   .questions[questionIndex].guidedSolutionModel.questions[2]
                   .description
               );
               addDropdownAPI(
-                state.guidedSolution.guidedSolutionResponse[flowIndex]
+                state.guidedSolution?.guidedSolutionResponse[flowIndex]
                   .questions[questionIndex].guidedSolutionModel.questions[2]
                   .apiUrl
               );
 
-              state.guidedSolution.guidedSolutionResponse[flowIndex].questions[
+              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
                 questionIndex
               ].guidedSolutionModel.questions[2].options[0].component.map(
                 (option, index) => {
@@ -754,29 +754,29 @@ export const GuidedSolution = () => {
             var query = "";
             for (
               let i = 1;
-              i < state.guidedSolution.guidedQuestions.length;
+              i < state.guidedSolution?.guidedQuestions.length;
               i++
             ) {
-              if (i != 1 && i != state.guidedSolution.guidedQuestions.length) {
+              if (i != 1 && i != state.guidedSolution?.guidedQuestions.length) {
                 query += " AND ";
               }
               if (
-                state.guidedSolution.guidedQuestions[i].fieldName == "fleetSize"
+                state.guidedSolution?.guidedQuestions[i].fieldName == "fleetSize"
               ) {
                 var splitValue =
-                  state.guidedSolution.guidedQuestions[i].fieldValue.split("-");
+                  state.guidedSolution?.guidedQuestions[i].fieldValue.split("-");
                 query +=
-                  state.guidedSolution.guidedQuestions[i].fieldName +
+                  state.guidedSolution?.guidedQuestions[i].fieldName +
                   ">" +
                   splitValue[0] +
                   " " +
-                  state.guidedSolution.guidedQuestions[i].fieldName +
+                  state.guidedSolution?.guidedQuestions[i].fieldName +
                   "<" +
                   splitValue[1];
               } else {
                 query +=
-                  state.guidedSolution.guidedQuestions[i].fieldName + ": ";
-                query += state.guidedSolution.guidedQuestions[i].fieldValue;
+                  state.guidedSolution?.guidedQuestions[i].fieldName + ": ";
+                query += state.guidedSolution?.guidedQuestions[i].fieldValue;
               }
             }
             console.log(query);
@@ -795,7 +795,7 @@ export const GuidedSolution = () => {
   const handlePreviousPress = () => {
     if (questionNoCounter > 0) {
       setQuestionNoCounter(questionNoCounter - 1);
-      var tempQuestionArray = state.guidedSolution.guidedQuestions.slice();
+      var tempQuestionArray = state.guidedSolution?.guidedQuestions.slice();
       tempQuestionArray.splice(questionNoCounter, 1);
       resetQuestion(tempQuestionArray);
     }
@@ -910,7 +910,7 @@ export const GuidedSolution = () => {
                 ) : (
                   <></>
                 )}
-                {state.guidedSolution.isResultFound &&
+                {state.guidedSolution?.isResultFound &&
                 questionNoCounter == 6 ? (
                   <div className="d-flex align-items-center justify-content-between mt-5">
                     <div>
@@ -927,7 +927,7 @@ export const GuidedSolution = () => {
                   </div>
                 ) : (
                   <>
-                    {state.guidedSolution.isResultFound &&
+                    {state.guidedSolution?.isResultFound &&
                     questionNoCounter != 6 ? (
                       <div className="d-flex align-items-center justify-content-between mt-5">
                         <div>
