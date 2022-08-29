@@ -62,7 +62,10 @@ export const GET_PRODUCT_HIERARCHY = () =>
   SOLUTION_BUILDER_URI + "common-config/product-hierarchy";
 export const GET_GEOGRAPHIC = () =>
   SOLUTION_BUILDER_URI + "common-config/geographic";
+
 export const CREATE_PORTFOLIO_ITEM = () => SOLUTION_BUILDER_URI + "item";
+export const PORTFOLIO_ITEM_PRICE_RKID = () => CREATE_PORTFOLIO_ITEM() + "/get-RB-price-update-item-rkid";
+export const PORTFOLIO_ITEM_PRICE_SJID = () => CREATE_PORTFOLIO_ITEM() + "/get-RB-price-update-item-sjid";
 export const PORTFOLIO_ITEM_SEARCH = () => CREATE_PORTFOLIO_ITEM()+ "/search?search=";
 
 

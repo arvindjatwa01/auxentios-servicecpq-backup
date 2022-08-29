@@ -1,6 +1,6 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { CREATE_PORTFOLIO_ITEM,PORTFOLIO_ITEM_SEARCH } from "./CONSTANTS";
+import { CREATE_PORTFOLIO_ITEM,PORTFOLIO_ITEM_SEARCH,PORTFOLIO_ITEM_PRICE_RKID } from "./CONSTANTS";
 
 
 export const itemCreation = (payLoad) => {
@@ -84,6 +84,26 @@ export const itemSearch = (searchStr) => {
           });
       } catch (error) {
         console.error("in portfolioItemService > itemSearch, Err===", error);
+        reject(SYSTEM_ERROR);
+      }
+    });
+  };
+export const getItemPrice = (payLoad) => {
+    console.log("portfolioItemService > getItemPrice called...");
+    return new Promise((resolve, reject) => {
+      try {
+        axios
+          .put(PORTFOLIO_ITEM_PRICE_RKID(),payLoad)
+          .then((res) => {
+            console.log("getItemPrice > axios res=", res);
+            resolve(res.data);
+          })
+          .catch((err) => {
+            console.log("getItemPrice > axios err=", err);
+            reject("Error in getItemPrice axios!");
+          });
+      } catch (error) {
+        console.error("in portfolioItemService > getItemPrice, Err===", error);
         reject(SYSTEM_ERROR);
       }
     });
