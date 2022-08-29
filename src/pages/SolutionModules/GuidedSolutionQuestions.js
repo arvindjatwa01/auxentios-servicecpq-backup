@@ -41,8 +41,8 @@ const InitQuestion = (props) => {
   }
 
   useEffect(() => {
-    if (state.guidedSolution.guidedQuestions.length > 0) {
-      setDefaultValue(state.guidedSolution.guidedQuestions[0].value)
+    if (state.guidedSolution?.guidedQuestions.length > 0) {
+      setDefaultValue(state.guidedSolution?.guidedQuestions[0].value)
     } else {
       var dict = {
         "key": 0,
@@ -87,7 +87,7 @@ const Question1 = (props) => {
   const handleParentCallback = (value) => {
     var dict = {
       "key": 1,
-      "fieldName": state.guidedSolution.fieldName,
+      "fieldName": state.guidedSolution?.fieldName,
       "fieldValue": value.value,
       "value": value.key
     }
@@ -96,8 +96,8 @@ const Question1 = (props) => {
   }
 
   useEffect(() => {
-    if (state.guidedSolution.guidedQuestions.length > 1) {
-      setDefaultValue(state.guidedSolution.guidedQuestions[1].value)
+    if (state.guidedSolution?.guidedQuestions.length > 1) {
+      setDefaultValue(state.guidedSolution?.guidedQuestions[1].value)
     } else {
       var dict = {
         "key": 1,
@@ -117,7 +117,7 @@ const Question1 = (props) => {
           <h4>I am looking solution for</h4>
         </div>
       </div>
-      <RadioGroupComponent withDescription={false} dValue={defaultValue} parentCallback={handleParentCallback} formControlLabels={state.guidedSolution.formLabels} />
+      <RadioGroupComponent withDescription={false} dValue={defaultValue} parentCallback={handleParentCallback} formControlLabels={state.guidedSolution?.formLabels} />
     </div>
   </>
 }
@@ -139,8 +139,8 @@ const Question1 = (props) => {
 //     addQuestion(dict)
 //   }
 //   useEffect(() => {
-//     if (state.guidedSolution.guidedQuestions.length > 1) {
-//       setDefaultValue(state.guidedSolution.guidedQuestions[1].value)
+//     if (state.guidedSolution?.guidedQuestions.length > 1) {
+//       setDefaultValue(state.guidedSolution?.guidedQuestions[1].value)
 //     }
 //     else {
 //       var dict = {
@@ -174,20 +174,20 @@ const Question2 = (props) => {
   const handleParentCallback = (value) => {
     var dict = {
       "key": 2,
-      "fieldName": state.guidedSolution.fieldName,
+      "fieldName": state.guidedSolution?.fieldName,
       "fieldValue": value.value,
       "value": value.key
     }
     addQuestion(dict)
   }
   useEffect(() => {
-    if (state.guidedSolution.guidedQuestions.length > 2) {
-      setDefaultValue(state.guidedSolution.guidedQuestions[2].value)
-      setFormLbls(state.guidedSolution.prevFormLabels)
-      addFormControlLabel(state.guidedSolution.prevFormLabels)
-      addWithDropdown(state.guidedSolution.prevWithDropDown)
-      addWithDescription(state.guidedSolution.prevWithDescription)
-      addQuestionHeader(state.guidedSolution.prevQuestionHeader)
+    if (state.guidedSolution?.guidedQuestions.length > 2) {
+      setDefaultValue(state.guidedSolution?.guidedQuestions[2].value)
+      setFormLbls(state.guidedSolution?.prevFormLabels)
+      addFormControlLabel(state.guidedSolution?.prevFormLabels)
+      addWithDropdown(state.guidedSolution?.prevWithDropDown)
+      addWithDescription(state.guidedSolution?.prevWithDescription)
+      addQuestionHeader(state.guidedSolution?.prevQuestionHeader)
     } else {
       var dict = {
         "key": 2,
@@ -204,10 +204,10 @@ const Question2 = (props) => {
       <div className="d-flex">
         <div className="col-12">
           <p>QUESTION 02/10</p>
-          <h4> {state.guidedSolution.questionHeader}</h4>
+          <h4> {state.guidedSolution?.questionHeader}</h4>
         </div>
       </div>
-      <RadioGroupComponent withDescription={false} dValue={defaultValue} parentCallback={handleParentCallback} formControlLabels={state.guidedSolution.formLabels} />
+      <RadioGroupComponent withDescription={false} dValue={defaultValue} parentCallback={handleParentCallback} formControlLabels={state.guidedSolution?.formLabels} />
     </div>
   </>;
 }
@@ -240,7 +240,7 @@ const Question3 = (props) => {
   const handleParentCallback = (value) => {
     var dict = {
       "key": 3,
-      "fieldName": state.guidedSolution.fieldName,
+      "fieldName": state.guidedSolution?.fieldName,
       "fieldValue": value.value,
       "value": value.key
     }
@@ -260,15 +260,15 @@ const Question3 = (props) => {
   }
 
   useEffect(() => {
-    if (state.guidedSolution.guidedQuestions.length > 3) {
-      setDefaultValue(state.guidedSolution.guidedQuestions[3].value)
-      // setFormLbls(state.guidedSolution.prevFormLabels)
-      addWithDropdown(state.guidedSolution.prevWithDropDown)
-      addWithDescription(state.guidedSolution.prevWithDescription)
-      addQuestionHeader(state.guidedSolution.prevQuestionHeader)
+    if (state.guidedSolution?.guidedQuestions.length > 3) {
+      setDefaultValue(state.guidedSolution?.guidedQuestions[3].value)
+      // setFormLbls(state.guidedSolution?.prevFormLabels)
+      addWithDropdown(state.guidedSolution?.prevWithDropDown)
+      addWithDescription(state.guidedSolution?.prevWithDescription)
+      addQuestionHeader(state.guidedSolution?.prevQuestionHeader)
     } else {
 
-      if (state.guidedSolution.withDropDown) {
+      if (state.guidedSolution?.withDropDown) {
 
       } else {
 
@@ -309,7 +309,7 @@ const Question3 = (props) => {
           }));
           prefixKeyValue = options2
           // setPrefixKeyValuePair(options2)
-          state.guidedSolution.dropdownFormLbls.map((opt) => {
+          state.guidedSolution?.dropdownFormLbls.map((opt) => {
             if (opt.secondValue == 'Make') {
               tempDropdownList.push(<div className="col-md-4">
                 <div className="form-group">
@@ -360,7 +360,7 @@ const Question3 = (props) => {
     })
 
 
-    // setWithDropDown(state.guidedSolution.withDropDown)
+    // setWithDropDown(state.guidedSolution?.withDropDown)
   }, []);
 
   return <>
@@ -368,10 +368,10 @@ const Question3 = (props) => {
       <div className="d-flex">
         <div className="col-12">
           <p>QUESTION 03/10</p>
-          <h4> {state.guidedSolution.questionHeader}</h4>
+          <h4> {state.guidedSolution?.questionHeader}</h4>
         </div>
       </div>
-      {state.guidedSolution.withDropDown
+      {state.guidedSolution?.withDropDown
         ?
         <div className="card option-box">
           <div className="header-box">
@@ -415,7 +415,7 @@ const Question3 = (props) => {
           </div>
         </div>
         :
-        <RadioGroupComponent withDescription={state.guidedSolution.withDescription} dValue={defaultValue} parentCallback={handleParentCallback} formControlLabels={state.guidedSolution.formLabels} />
+        <RadioGroupComponent withDescription={state.guidedSolution?.withDescription} dValue={defaultValue} parentCallback={handleParentCallback} formControlLabels={state.guidedSolution?.formLabels} />
       }
 
     </div>
@@ -446,7 +446,7 @@ const Question4 = (props) => {
   const handleParentCallback = (value) => {
     var dict = {
       "key": 4,
-      "fieldName": state.guidedSolution.fieldName,
+      "fieldName": state.guidedSolution?.fieldName,
       "fieldValue": value.value,
       "value": value.key
     }
@@ -473,14 +473,14 @@ const Question4 = (props) => {
   }
 
   useEffect(() => {
-    if (state.guidedSolution.guidedQuestions.length > 4) {
-      setDefaultValue(state.guidedSolution.guidedQuestions[4].value)
-      // setFormLbls(state.guidedSolution.prevFormLabels)
-      addWithDropdown(state.guidedSolution.prevWithDropDown)
-      addWithDescription(state.guidedSolution.prevWithDescription)
-      addQuestionHeader(state.guidedSolution.prevQuestionHeader)
+    if (state.guidedSolution?.guidedQuestions.length > 4) {
+      setDefaultValue(state.guidedSolution?.guidedQuestions[4].value)
+      // setFormLbls(state.guidedSolution?.prevFormLabels)
+      addWithDropdown(state.guidedSolution?.prevWithDropDown)
+      addWithDescription(state.guidedSolution?.prevWithDescription)
+      addQuestionHeader(state.guidedSolution?.prevQuestionHeader)
     } else {
-      if (state.guidedSolution.withDropDown) {
+      if (state.guidedSolution?.withDropDown) {
 
       } else {
 
@@ -521,7 +521,7 @@ const Question4 = (props) => {
           }));
           prefixKeyValue = options2
           // setPrefixKeyValuePair(options2)
-          state.guidedSolution.dropdownFormLbls.map((opt) => {
+          state.guidedSolution?.dropdownFormLbls.map((opt) => {
             if (opt.secondValue == 'Make') {
               tempDropdownList.push(<div className="col-md-4">
                 <div className="form-group">
@@ -571,7 +571,7 @@ const Question4 = (props) => {
       alert(err)
     })
 
-    // state.guidedSolution.dropdownFormLbls.map((opt) => {
+    // state.guidedSolution?.dropdownFormLbls.map((opt) => {
     //   tempDropdownList.push(<div className="col-md-4">
     //     <div className="form-group">
     //       <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">{opt.secondValue}</label>
@@ -586,11 +586,11 @@ const Question4 = (props) => {
     //   </div>)
     // })
     // setDropdownList(tempDropdownList)
-    // setWithDropDown(state.guidedSolution.withDropDown)
+    // setWithDropDown(state.guidedSolution?.withDropDown)
   }, []);
 
   return <>
-    {state.guidedSolution.isResultFound ?
+    {state.guidedSolution?.isResultFound ?
       <>
         <ResultQuestion />
       </>
@@ -599,10 +599,10 @@ const Question4 = (props) => {
         <div className="d-flex">
           <div className="col-12">
             <p>QUESTION 04/10</p>
-            <h4> {state.guidedSolution.questionHeader}</h4>
+            <h4> {state.guidedSolution?.questionHeader}</h4>
           </div>
         </div>
-        {state.guidedSolution.withDropDown
+        {state.guidedSolution?.withDropDown
           ?
           <div className="card option-box">
             <div className="header-box">
@@ -646,7 +646,7 @@ const Question4 = (props) => {
             </div>
           </div>
           :
-          <RadioGroupComponent withDescription={state.guidedSolution.withDescription} dValue={defaultValue} parentCallback={handleParentCallback} formControlLabels={state.guidedSolution.formLabels} />
+          <RadioGroupComponent withDescription={state.guidedSolution?.withDescription} dValue={defaultValue} parentCallback={handleParentCallback} formControlLabels={state.guidedSolution?.formLabels} />
         }
 
       </div>
@@ -697,10 +697,10 @@ const Question5 = (props) => {
       <div className="d-flex">
         <div className="col-12">
           <p>QUESTION 05/10</p>
-          <h4> {state.guidedSolution.questionHeader}</h4>
+          <h4> {state.guidedSolution?.questionHeader}</h4>
         </div>
       </div>
-      {state.guidedSolution.withDropDown
+      {state.guidedSolution?.withDropDown
         ?
         <div className="card option-box">
           <div className="header-box">
@@ -835,7 +835,7 @@ const Question6 = (props) => {
       <div className="d-flex">
         <div className="col-12">
           <p>QUESTION 06/10</p>
-          <h4> {state.guidedSolution.questionHeader}</h4>
+          <h4> {state.guidedSolution?.questionHeader}</h4>
         </div>
       </div>
       <div class="contain-slider mt-3">
@@ -1003,7 +1003,7 @@ const ResultQuestion = (props) => {
       <div className="d-flex">
         <div className="col-12">
           <p>QUESTION 05/10</p>
-          <h4> {state.guidedSolution.questionHeader}</h4>
+          <h4> {state.guidedSolution?.questionHeader}</h4>
         </div>
       </div>
       <div class="contain-slider mt-3">
