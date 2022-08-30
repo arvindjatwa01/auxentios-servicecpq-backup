@@ -15,5 +15,5 @@ export { getPortfolioCommonConfig } from './pricingCommonConfig'
 export { getMakeKeyValue, getModelKeyValue, getPrefixKeyValue,createCoverage } from './coverageService'
 export { getUsageCategoryKeyValue, getStrategyTaskKeyValue, getTaskTypeKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getTypeKeyValue, getResponseTimeTaskKeyValue, getValidityKeyValue } from './commonSolutionBuilderServices'
 export {getSearchQueryCoverage,getSearchCoverageForFamily} from "./searchQueryService"
-export { itemCreation,itemSearchSuggestion,itemSearch,getItemPrice } from './portFolioItemService';
+export { itemCreation,itemSearchSuggestion,itemSearch,getItemPrice,saveItemPrice } from './portFolioItemService';
 

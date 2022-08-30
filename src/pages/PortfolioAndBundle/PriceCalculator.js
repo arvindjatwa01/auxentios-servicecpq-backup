@@ -1,4 +1,4 @@
-import React,{useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
@@ -7,437 +7,73 @@ import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
-import {itemCreation,updatePortfolio} from "../../services/index"
-
-
+import { itemCreation, updatePortfolio } from "../../services/index";
 
 const PriceCalculator = (props) => {
-  const [categoryUsageKeyValue1, setCategoryUsageKeyValue1] = useState([]);
-  const [stratgyTaskTypeKeyValue, setStratgyTaskTypeKeyValue] = useState([]);
-  const [stratgyTaskUsageKeyValue, setStratgyTaskUsageKeyValue] = useState([]);
-  const [stratgyResponseTimeKeyValue, setStratgyResponseTimeKeyValue] =useState([]);
-  const [stratgyHierarchyKeyValue, setStratgyHierarchyKeyValue] = useState([]);
-  const [stratgyGeographicKeyValue, setStratgyGeographicKeyValue] = useState([]);
-
   const [priceCalculator, setPriceCalculator] = useState({
-    priceMethod: props.priceCalculator.priceMethod,
-    listPrice: props.priceCalculator.listPrice,
+    priceMethod: "",
+    listPrice: "",
     priceAdditionalSelect: "",
-    priceAdditionalInput: props.priceCalculator.priceAdditionalInput,
+    priceAdditionalInput: "",
     priceEscalationSelect: "",
-    priceEscalationInput: props.priceCalculator.priceEscalationInput,
-    calculatedPrice: props.priceCalculator.calculatedPrice,
-    flatPrice: props.priceCalculator.priceMethod,
+    priceEscalationInput: "",
+    calculatedPrice: "",
+    flatPrice: "",
     discountTypeSelect: "",
-    discountTypeInput: props.priceCalculator.discountTypeInput,
-        priceYear: "",
-        startUsage: "",
-        endUsage: "",
-        usageType: "",
-        frequency: "",
-        cycle: "",
-        suppresion: "",
-        netPrice: 1200,
-        totalPrice: props.priceCalculator.totalPrice,
-      });
-    
-      const {setOpenAddBundleItem,setOpenSearchSolution,generalComponentData,
-        setGeneralComponentData,addPortFolioItem,bundleItems,setBundleItems,
-        createServiceOrBundle,setTempBundleItems,tempBundleItems}=props
-console.log("props.priceCalculator",props.priceCalculator)
-      const frequencyOptions = [
-        { label: "Cyclic", value: "Cyclic" },
-        { label: "once", value: "once" },
-        { label: "alternate", value: "alternate" },
-        { label: "Custom", value: "Custom" },
-      ];
-      const options = [
-        { value: "chocolate", label: "Construction-Heavy" },
-        { value: "strawberry", label: "Construction-Low" },
-        { value: "vanilla", label: "Construction-Medium" },
-        { value: "Construction", label: "Construction" },
-      ];
+    discountTypeInput: "",
+    priceYear: "",
+    startUsage: "",
+    endUsage: "",
+    usageType: "",
+    frequency: "",
+    cycle: "",
+    suppresion: "",
+    netPrice: 1200,
+    totalPrice: 1200,
+  });
 
-      // const handleBundleItemSaveAndContinue = async () => {
-      //   props.setTabs("3");
-      //   props.setLoadingItem(true);
-      //   try {
-      //     let reqObj = {
-      //       itemId: 0,
-      //       itemName: "",
-      //       itemHeaderModel: {
-      //         itemHeaderId: 0,
-      //         // itemHeaderId: parseInt(generalComponentData.portfolioId),
-      //         itemHeaderDescription: generalComponentData.description,
-      //         bundleFlag: "PORTFOLIO",
-      //         reference: generalComponentData.externalReference,
-      //         itemHeaderMake: "",
-      //         itemHeaderFamily: "",
-      //         model: "",
-      //         prefix: "",
-      //         type: "MACHINE",
-      //         additional: "",
-      //         currency: "",
-      //         netPrice: 0,
-      //         itemProductHierarchy: generalComponentData.productHierarchy,
-      //         itemHeaderGeographic: generalComponentData.geographic,
-      //         responseTime: generalComponentData.responseTime,
-      //         usage: "",
-      //         validFrom: generalComponentData.validFrom,
-      //         validTo: generalComponentData.validTo,
-      //         estimatedTime: "",
-      //         servicePrice: 0,
-      //         status: "NEW",
-      //       },
-      //       itemBodyModel: {
-      //         itemBodyId: parseInt(addPortFolioItem.id),
-      //         itemBodyDescription: addPortFolioItem.description,
-      //         quantity: parseInt(addPortFolioItem.quantity),
-      //         startUsage: priceCalculator.startUsage,
-      //         endUsage: priceCalculator.endUsage,
-      //         standardJobId: "",
-      //         frequency: addPortFolioItem.frequency.value,
-      //         additional: "",
-      //         spareParts: ["WITH_SPARE_PARTS"],
-      //         labours: ["WITH_LABOUR"],
-      //         miscellaneous: ["LUBRICANTS"],
-      //         taskType: [addPortFolioItem.taskType.value],
-      //         solutionCode: "",
-      //         usageIn: addPortFolioItem.usageIn.value,
-      //         recommendedValue: 0,
-      //         usage: "",
-      //         repairKitId: "",
-      //         templateDescription: addPortFolioItem.description.value,
-      //         partListId: "",
-      //         serviceEstimateId: "",
-      //         numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
-      //         repairOption: addPortFolioItem.repairOption.value,
-      //         priceMethod: "LIST_PRICE",
-      //         listPrice: parseInt(priceCalculator.listPrice),
-      //         priceEscalation: "",
-      //         calculatedPrice: parseInt(priceCalculator.calculatedPrice),
-      //         flatPrice: parseInt(priceCalculator.flatPrice),
-      //         discountType: "",
-      //         year: priceCalculator.priceYear.value,
-      //         avgUsage: 0,
-      //         unit: addPortFolioItem.unit.value,
-      //         sparePartsPrice: 0,
-      //         sparePartsPriceBreakDownPercentage: 0,
-      //         servicePrice: 0,
-      //         servicePriceBreakDownPercentage: 0,
-      //         miscPrice: 0,
-      //         miscPriceBreakDownPercentage: 0,
-      //         totalPrice: 0,
-      //       },
-      //     };
-      //     const itemRes = await itemCreation(reqObj);
-      //     console.log("itemCreation res:", itemRes);
-      //     if (itemRes.status !== 200) {
-      //       alert("something went wrong");
-      //       return;
-      //     }
-      //     const _generalComponentData = { ...generalComponentData };
-      //     _generalComponentData.items?.push({ itemId: itemRes.data.itemId });
-      //     setGeneralComponentData(_generalComponentData);
-      //     // put API for porfolio update Item id
-      //     // call here
-      //     const { portfolioId, ...res } = generalComponentData;
-      //     let obj = {
-      //       ...res,
-      //       visibleInCommerce: true,
-      //       customerId: 0,
-      //       lubricant: true,
-      //       customerSegment: generalComponentData.customerSegment
-      //         ? generalComponentData.customerSegment.value
-      //         : "EMPTY",
-      //       machineType: generalComponentData.machineType
-      //         ? generalComponentData.machineType
-      //         : "EMPTY",
-      //       status: generalComponentData.status
-      //         ? generalComponentData.status
-      //         : "EMPTY",
-      //       strategyTask: generalComponentData.strategyTask
-      //         ? generalComponentData.strategyTask
-      //         : "EMPTY",
-      //       taskType: generalComponentData.taskType
-      //         ? generalComponentData.taskType
-      //         : "EMPTY",
-      //       usageCategory: generalComponentData.usageCategory
-      //         ? generalComponentData.usageCategory
-      //         : "EMPTY",
-      //       productHierarchy: generalComponentData.productHierarchy
-      //         ? generalComponentData.productHierarchy
-      //         : "EMPTY",
-      //       geographic: generalComponentData.geographic
-      //         ? generalComponentData.geographic
-      //         : "EMPTY",
-      //       availability: generalComponentData.availability
-      //         ? generalComponentData.availability
-      //         : "EMPTY",
-      //       responseTime: generalComponentData.responseTime
-      //         ? generalComponentData.responseTime
-      //         : "EMPTY",
-      //       type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-      //       application: generalComponentData.application
-      //         ? generalComponentData.application
-      //         : "EMPTY",
-      //       contractOrSupport: generalComponentData.contractOrSupport
-      //         ? generalComponentData.contractOrSupport
-      //         : "EMPTY",
-      //       lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-      //         ? generalComponentData.lifeStageOfMachine
-      //         : "EMPTY",
-      //       supportLevel: generalComponentData.supportLevel
-      //         ? generalComponentData.supportLevel
-      //         : "EMPTY",
-      //       customerGroup: generalComponentData.customerGroup
-      //         ? generalComponentData.customerGroup
-      //         : "EMPTY",
-      //       searchTerm: "EMPTY",
-      //       supportLevel: "EMPTY",
-      //       portfolioPrice: {},
-      //       additionalPrice: {},
-      //       escalationPrice: {},
-      //       coverages: generalComponentData.coverages
-      //         ? generalComponentData.coverages
-      //         : [],
-      //       items: _generalComponentData.items,
-      //       usageCategory: categoryUsageKeyValue1.value,
-      //       taskType: stratgyTaskTypeKeyValue.value,
-      //       strategyTask: stratgyTaskUsageKeyValue.value,
-      //       responseTime: stratgyResponseTimeKeyValue.value,
-      //       productHierarchy: stratgyHierarchyKeyValue.value,
-      //       geographic: stratgyGeographicKeyValue.value,
-      //     };
-      //     if (generalComponentData.portfolioId) {
-      //       const updatePortfolioRes = await updatePortfolio(
-      //         generalComponentData.portfolioId,
-      //         obj
-      //       );
-      //       if (updatePortfolioRes.status != 200) {
-      //         throw `${updatePortfolioRes.status}:Something went wrong`;
-      //       }
-      //     }
-    
-      //     setGeneralComponentData(_generalComponentData);
-      //     setTempBundleItems([...tempBundleItems, itemRes.data]);
-    
-      //     setOpenAddBundleItem(false);
-      //     setOpenSearchSolution(false);
-      //     props.setLoadingItem(false);
-          
-      //   } catch (error) {
-      //     console.log("error in item creation err:", error);
-      //   }
-      // };
-    
-      // const saveAddNewServiceOrBundle = async () => {
-      //   props.setLoadingItem(true);
-      //   try {
-      //     let reqObj = {
-      //       itemId: 0,
-      //       itemName: "",
-      //       itemHeaderModel: {
-      //         itemHeaderId: 0,
-      //         // itemHeaderId: parseInt(generalComponentData.portfolioId),
-      //         itemHeaderDescription: createServiceOrBundle.description,
-      //         bundleFlag:
-      //           props.serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
-      //         reference: createServiceOrBundle.reference,
-      //         itemHeaderMake: createServiceOrBundle.make,
-      //         itemHeaderFamily: "",
-      //         model: createServiceOrBundle.models,
-      //         prefix: createServiceOrBundle.prefix,
-      //         type: "MACHINE",
-      //         additional: createServiceOrBundle.additional.value,
-      //         currency: "",
-      //         netPrice: 0,
-      //         itemProductHierarchy: generalComponentData.productHierarchy,
-      //         itemHeaderGeographic: generalComponentData.geographic,
-      //         responseTime: generalComponentData.responseTime,
-      //         usage: "",
-      //         validFrom: generalComponentData.validFrom,
-      //         validTo: generalComponentData.validTo,
-      //         estimatedTime: "",
-      //         servicePrice: 0,
-      //         status: "NEW",
-      //       },
-      //       itemBodyModel: {
-      //         itemBodyId: parseInt(addPortFolioItem.id),
-      //         itemBodyDescription: addPortFolioItem.description,
-      //         quantity: parseInt(addPortFolioItem.quantity),
-      //         startUsage: priceCalculator.startUsage,
-      //         endUsage: priceCalculator.endUsage,
-      //         standardJobId: "",
-      //         frequency: addPortFolioItem.frequency.value,
-      //         additional: "",
-      //         spareParts: ["WITH_SPARE_PARTS"],
-      //         labours: ["WITH_LABOUR"],
-      //         miscellaneous: ["LUBRICANTS"],
-      //         taskType: [addPortFolioItem.taskType.value],
-      //         solutionCode: "",
-      //         usageIn: addPortFolioItem.usageIn.value,
-      //         recommendedValue: 0,
-      //         usage: "",
-      //         repairKitId: "",
-      //         templateDescription: addPortFolioItem.description.value,
-      //         partListId: "",
-      //         serviceEstimateId: "",
-      //         numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
-      //         repairOption: addPortFolioItem.repairOption.value,
-      //         priceMethod: "LIST_PRICE",
-      //         listPrice: parseInt(priceCalculator.listPrice),
-      //         priceEscalation: "",
-      //         calculatedPrice: parseInt(priceCalculator.calculatedPrice),
-      //         flatPrice: parseInt(priceCalculator.flatPrice),
-      //         discountType: "",
-      //         year: priceCalculator.priceYear.value,
-      //         avgUsage: 0,
-      //         unit: addPortFolioItem.unit.value,
-      //         sparePartsPrice: 0,
-      //         sparePartsPriceBreakDownPercentage: 0,
-      //         servicePrice: 0,
-      //         servicePriceBreakDownPercentage: 0,
-      //         miscPrice: 0,
-      //         miscPriceBreakDownPercentage: 0,
-      //         totalPrice: 0,
-      //       },
-      //     };
-          
-      //     const res = await itemCreation(reqObj);
-      //     console.log("service or bundle res:", res);
-      //     if (res.status == 200) {
-      //       toast(`👏 ${props.serviceOrBundlePrefix} created`, {
-      //         position: "top-right",
-      //         autoClose: 5000,
-      //         hideProgressBar: false,
-      //         closeOnClick: true,
-      //         pauseOnHover: true,
-      //         draggable: true,
-      //         progress: undefined,
-      //       });
-      //       // call update API for portfolio to update item with service or bundle
-      //       const _bundleItems = [...bundleItems];
-      //       if (_bundleItems[0].associatedServiceOrBundle) {
-      //         _bundleItems[0].associatedServiceOrBundle.push(res.data);
-      //       } else {
-      //         _bundleItems[0] = {
-      //           ..._bundleItems[0],
-      //           associatedServiceOrBundle: [res.data],
-      //         };
-      //       }
-      //       props.setBundleServiceShow(false)
-      //       setBundleItems(_bundleItems);
-      //       props.setLoadingItem(false);
-      //       // API call to update portfolio for service or bundle
-      //       const { portfolioId, ...rest } = generalComponentData;
-      //       let obj = {
-      //         ...rest,
-      //         visibleInCommerce: true,
-      //         customerId: 0,
-      //         lubricant: true,
-      //         customerSegment: generalComponentData.customerSegment
-      //           ? generalComponentData.customerSegment.value
-      //           : "EMPTY",
-      //         machineType: generalComponentData.machineType
-      //           ? generalComponentData.machineType
-      //           : "EMPTY",
-      //         status: generalComponentData.status
-      //         ? generalComponentData.status
-      //         : "EMPTY",
-      //         strategyTask: generalComponentData.strategyTask
-      //         ? generalComponentData.strategyTask
-      //           : "EMPTY",
-      //         taskType: generalComponentData.taskType
-      //           ? generalComponentData.taskType
-      //           : "EMPTY",
-      //         usageCategory: generalComponentData.usageCategory
-      //           ? generalComponentData.usageCategory
-      //           : "EMPTY",
-      //         productHierarchy: generalComponentData.productHierarchy
-      //           ? generalComponentData.productHierarchy
-      //           : "EMPTY",
-      //         geographic: generalComponentData.geographic
-      //           ? generalComponentData.geographic
-      //           : "EMPTY",
-      //         availability: generalComponentData.availability
-      //         ? generalComponentData.availability
-      //         : "EMPTY",
-      //         responseTime: generalComponentData.responseTime
-      //           ? generalComponentData.responseTime
-      //           : "EMPTY",
-      //         type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-      //         application: generalComponentData.application
-      //           ? generalComponentData.application
-      //           : "EMPTY",
-      //         contractOrSupport: generalComponentData.contractOrSupport
-      //           ? generalComponentData.contractOrSupport
-      //           : "EMPTY",
-      //         lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-      //         ? generalComponentData.lifeStageOfMachine
-      //         : "EMPTY",
-      //         supportLevel: generalComponentData.supportLevel
-      //           ? generalComponentData.supportLevel
-      //           : "EMPTY",
-      //         customerGroup: generalComponentData.customerGroup
-      //         ? generalComponentData.customerGroup
-      //         : "EMPTY",
-      //         searchTerm: "EMPTY",
-      //         supportLevel: "EMPTY",
-      //         portfolioPrice: {},
-      //         additionalPrice: {},
-      //         escalationPrice: {},
-      //         coverages: generalComponentData.coverages
-      //         ? generalComponentData.coverages
-      //         : [],
-      //         items: [...generalComponentData.items, { itemId: res.data.itemId }],
-      //         usageCategory: categoryUsageKeyValue1.value,
-      //         taskType: stratgyTaskTypeKeyValue.value,
-      //         strategyTask: stratgyTaskUsageKeyValue.value,
-      //         responseTime: stratgyResponseTimeKeyValue.value,
-      //         productHierarchy: stratgyHierarchyKeyValue.value,
-      //         geographic: stratgyGeographicKeyValue.value,
-      //       };
-      //       console.log("request obj for update:", obj);
-      //       if (generalComponentData.portfolioId) {
-      //         const updatePortfolioRes = await updatePortfolio(
-      //           generalComponentData.portfolioId,
-      //           obj
-      //           );
-      //         if (updatePortfolioRes.status != 200) {
-      //           throw `${updatePortfolioRes.status}:Something went wrong`;
-      //           return
-      //         }
-      //         console.log("portfolio updated:", updatePortfolioRes);
-      //       } else {
-      //         throw `Please Create portfolio`;
-      //       }
-      //     } else {
-      //       throw `${res.status}: ${props.serviceOrBundlePrefix} not created`;
-      //     }
-      //   } catch (error) {
-      //     console.log("itemCreation err:", error);
-      //     toast("😐" + error, {
-      //       position: "top-right",
-      //       autoClose: 5000,
-      //       hideProgressBar: false,
-      //       closeOnClick: true,
-      //       pauseOnHover: true,
-      //       draggable: true,
-      //       progress: undefined,
-      //     });
-      //     return;
-      //   }
-      // };
-    
+  useEffect(() => {
+    setPriceCalculator(props.priceCalculator);
+  }, [props]);
 
-    
-      
+  const {
+    setOpenAddBundleItem,
+    setOpenSearchSolution,
+    generalComponentData,
+    setGeneralComponentData,
+    addPortFolioItem,
+    bundleItems,
+    setBundleItems,
+    createServiceOrBundle,
+    setTempBundleItems,
+    tempBundleItems,
+    serviceOrBundlePrefix
+  } = props;
 
-
-
-      return (
+  const frequencyOptions = [
+    { label: "Cyclic", value: "Cyclic" },
+    { label: "once", value: "once" },
+    { label: "alternate", value: "alternate" },
+    { label: "Custom", value: "Custom" },
+  ];
+  const options = [
+    { value: "chocolate", label: "Construction-Heavy" },
+    { value: "strawberry", label: "Construction-Low" },
+    { value: "vanilla", label: "Construction-Medium" },
+    { value: "Construction", label: "Construction" },
+  ];
+const handleItemPriceSave=()=>{
+  props.setTabs("3")
+  props.getPriceCalculatorDataFun(priceCalculator)
+  props.handleSavePrices()
+}
+const handleBundlePriceSave=()=>{
+  props.setBundleServiceShow(false)
+  props.getPriceCalculatorDataFun(priceCalculator)
+  props.handleSavePrices()
+}
+ 
+  return (
     <>
       <div className="ligt-greey-bg p-3">
         <div>
@@ -479,6 +115,7 @@ console.log("props.priceCalculator",props.priceCalculator)
                 </label>
                 <Select
                   options={options}
+                  defaultValue={props?.priceCalculator?.priceMethod}
                   value={priceCalculator.priceMethod}
                   onChange={(e) =>
                     setPriceCalculator({ ...priceCalculator, priceMethod: e })
@@ -493,13 +130,14 @@ console.log("props.priceCalculator",props.priceCalculator)
                   className="text-light-dark font-size-12 font-weight-500"
                   for="exampleInputEmail1"
                 >
-                  LIST PRICE{" "}
+                  LIST PRICE
                 </label>
                 <input
                   type="text"
                   className="form-control border-radius-10"
                   aria-describedby="emailHelp"
                   placeholder="$100"
+                  defaultValue={props?.priceCalculator?.listPrice}
                   value={priceCalculator.listPrice}
                   onChange={(e) =>
                     setPriceCalculator({
@@ -537,6 +175,7 @@ console.log("props.priceCalculator",props.priceCalculator)
                     type="text"
                     className="form-control rounded-top-left-0 rounded-bottom-left-0"
                     placeholder="10%"
+                    defaultValue={props?.priceCalculator?.priceAdditionalInput}
                     value={priceCalculator.priceAdditionalInput}
                     onChange={(e) =>
                       setPriceCalculator({
@@ -573,6 +212,7 @@ console.log("props.priceCalculator",props.priceCalculator)
                     type="text"
                     className="form-control rounded-top-left-0 rounded-bottom-left-0"
                     placeholder="20%"
+                    defaultValue={props?.priceCalculator?.priceEscalationInput}
                     value={priceCalculator.priceEscalationInput}
                     onChange={(e) =>
                       setPriceCalculator({
@@ -595,6 +235,7 @@ console.log("props.priceCalculator",props.priceCalculator)
                 <input
                   type="text"
                   className="form-control border-radius-10"
+                  defaultValue={props?.priceCalculator?.calculatedPrice}
                   value={priceCalculator.calculatedPrice}
                   onChange={(e) =>
                     setPriceCalculator({
@@ -679,6 +320,7 @@ console.log("props.priceCalculator",props.priceCalculator)
                   YEAR
                 </label>
                 <Select
+                  defaultValue={props?.priceCalculator?.priceYear}
                   value={priceCalculator.priceYear}
                   onChange={(e) =>
                     setPriceCalculator({ ...priceCalculator, priceYear: e })
@@ -710,6 +352,7 @@ console.log("props.priceCalculator",props.priceCalculator)
                     type="text"
                     className="form-control rounded-top-left-0 rounded-bottom-left-0"
                     placeholder="per hour"
+                    defaultValue={props?.priceCalculator?.startUsage}
                     value={priceCalculator.startUsage}
                     onChange={(e) =>
                       setPriceCalculator({
@@ -738,6 +381,7 @@ console.log("props.priceCalculator",props.priceCalculator)
                     type="text"
                     className="form-control rounded-top-left-0 rounded-bottom-left-0"
                     placeholder="10%"
+                    defaultValue={props?.priceCalculator?.endUsage}
                     value={priceCalculator.endUsage}
                     onChange={(e) =>
                       setPriceCalculator({
@@ -760,6 +404,7 @@ console.log("props.priceCalculator",props.priceCalculator)
                 </label>
                 <Select
                   options={options}
+                  defaultValue={props?.priceCalculator?.usageType}
                   value={priceCalculator.usageType}
                   onChange={(e) =>
                     setPriceCalculator({ ...priceCalculator, usageType: e })
@@ -783,7 +428,7 @@ console.log("props.priceCalculator",props.priceCalculator)
                   FREQUENCY
                 </label>
                 <Select
-                //   defaultValue={addPortFolioItem.frequency}
+                      defaultValue={props?.priceCalculator?.frequency}
                   options={frequencyOptions}
                   value={priceCalculator.frequency}
                   onChange={(e) =>
@@ -842,8 +487,7 @@ console.log("props.priceCalculator",props.priceCalculator)
           <a
             href="#"
             className="btn text-white bg-primary"
-            // onClick={props.serviceOrBundlePrefix === ""? handleBundleItemSaveAndContinue: saveAddNewServiceOrBundle}
-            onClick={()=>alert("hello")}
+            onClick={props.serviceOrBundlePrefix === ""?handleItemPriceSave : handleBundlePriceSave}
           >
             Save
           </a>
