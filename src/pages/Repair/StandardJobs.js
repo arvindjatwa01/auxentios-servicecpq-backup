@@ -796,16 +796,6 @@ const history=useHistory()
           </div>
           </div>
           <div className="d-flex">
-          <div className="d-flex justify-content-center align-items-center">
-          <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
-            <a href="#" className="ml-3 font-size-14" title="Items to Review"><img src={folderaddIcon}></img></a>
-            <a href="#" className="ml-3 font-size-14" title="Upload"><img src={uploadIcon}></img></a>
-            {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
-            <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
-            <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
-            <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions}/></a>
-           
-          </div>
           <div>
           <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -872,6 +862,16 @@ const history=useHistory()
 
       </Menu>
     </React.Fragment>
+          </div>
+          <div className="d-flex justify-content-center align-items-center">
+          <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
+            <a href="#" className="ml-3 font-size-14" title="Items to Review"><img src={folderaddIcon}></img></a>
+            <a href="#" className="ml-3 font-size-14" title="Upload"><img src={uploadIcon}></img></a>
+            {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
+            <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
+            <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
+            <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions}/></a>
+           
           </div>
           </div>
           </div>

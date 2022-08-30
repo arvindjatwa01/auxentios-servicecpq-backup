@@ -564,16 +564,6 @@ function PartList() {
           </div>
           </div>
           <div className="d-flex">
-          <div className="d-flex justify-content-center align-items-center">
-          <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
-            <a href="#" className="ml-3 font-size-14" title="Items to Review"><img src={folderaddIcon}></img></a>
-            <a href="#" className="ml-3 font-size-14" title="Upload"><img src={uploadIcon}></img></a>
-            {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
-            <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
-            <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
-            <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions}/></a>
-           
-          </div>
           <div>
           <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -640,6 +630,16 @@ function PartList() {
 
       </Menu>
     </React.Fragment>
+          </div>
+          <div className="d-flex justify-content-center align-items-center">
+          <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
+            <a href="#" className="ml-3 font-size-14" title="Items to Review"><img src={folderaddIcon}></img></a>
+            <a href="#" className="ml-3 font-size-14" title="Upload"><img src={uploadIcon}></img></a>
+            {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
+            <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
+            <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
+            <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions}/></a>
+           
           </div>
           </div>
           </div>
@@ -1347,7 +1347,7 @@ function PartList() {
                         </div>
          
           </div>
-          <div className="col-1">
+          <div className="col-1 mr-2">
           <div className="text-center pl-3 py-3">
           <a className="btn bg-primary text-white ml-3" data-toggle="modal" data-target="#Datatable"><SearchIcon /><span className="ml-1">Search</span></a>
                   

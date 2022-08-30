@@ -321,7 +321,7 @@ export function HeaderComponent(props) {
               <li className="icons" style={{ border: "none" }}>
                 <div
                   className="input-group"
-                  style={{ border: "1px solid #cfcfcf", borderRadius: "50px" }}
+                  style={{ border: "1px solid #cfcfcf", borderRadius:"5px" }}
                 >
                   <div className="input-group-prepend">
                     <span
