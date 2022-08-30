@@ -36,8 +36,8 @@ const AddPortfolioItem = (props) => {
   ];
 
   const handleSaveAndNextItem = () => {
-    props.getAddportfolioItemDataFun(addPortFolioItem);
     props.setTabs("2");
+    props.getAddportfolioItemDataFun(addPortFolioItem);
     props.handleBundleItemSaveAndContinue()
   };
   const handleSaveAndNextbundle = () => {

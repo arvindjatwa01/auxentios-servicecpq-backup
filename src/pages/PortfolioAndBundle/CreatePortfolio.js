@@ -99,7 +99,8 @@ import {
   getSearchCoverageForFamily,
   itemCreation,
   createCoverage,
-  getItemPrice
+  getItemPrice,
+  saveItemPrice
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -296,6 +297,7 @@ export function CreatePortfolio() {
     machineComponent: null,
   });
   const [portfolioId, setPortfolioId] = useState();
+  const [currentItemId, setCurrentItemId] = useState();
   const [alignment, setAlignment] = useState("Portfolio");
   const [prefilgabelGeneral, setPrefilgabelGeneral] = useState("PORTFOLIO");
   const [priceAgreementOption, setPriceAgreementOption] = useState(false);
@@ -557,7 +559,6 @@ export function CreatePortfolio() {
   };
 
   const handleBundleItemSaveAndContinue = async () => {
-    setTabs(`${parseInt(tabs) + 1}`);
     setLoadingItem(true);
     try {
       let reqObj = {
@@ -634,35 +635,34 @@ export function CreatePortfolio() {
         alert("something went wrong");
         return;
       }
-const itemPriceRes=await getItemPrice({
-  standardJobId: itemRes.data.itemBodyModel.standardJobId,
-  repairKitId: itemRes.data.itemBodyModel.repairKitId,
-  itemId: itemRes.data.itemId
-})
-const {priceMethod,listPrice,
-  priceEscalation,additional,
-  calculatedPrice,flatPrice,
-  discountType,year,
-  totalPrice,
-}=itemRes.data.itemBodyModel
+      setCurrentItemId(itemRes.data.itemId)
+      const itemPriceRes = await getItemPrice({
+        standardJobId: itemRes.data.itemBodyModel.standardJobId,
+        repairKitId: itemRes.data.itemBodyModel.repairKitId,
+        itemId: itemRes.data.itemId,
+      });
+      const {priceMethod,listPrice,priceEscalation,additional,calculatedPrice,flatPrice,discountType,year,totalPrice,usage,avgUsage,frequency} = itemPriceRes.itemBodyModel;
 
-setPriceCalculator({
-  ...priceCalculator,
-  priceMethod,listPrice,
-  priceEscalationInput:priceEscalation,
-  priceAdditionalInput:additional,
-  calculatedPrice,flatPrice,
-  discountTypeInput:discountType,
-  year,
-  totalPrice,
-  
-})
+      setPriceCalculator({
+        ...priceCalculator,
+        priceMethod: { label: priceMethod, value: priceMethod },
+        listPrice,
+        priceEscalationInput: priceEscalation,
+        priceAdditionalInput: additional,
+        calculatedPrice,
+        flatPrice,
+        discountTypeInput: discountType,
+        priceYear: { label: year, value: year },
+        totalPrice,
+        frequency:{label:frequency,value:frequency},
+        usageType:{label:usage,value:usage},
+        startUsage:avgUsage,
+        endUsage:avgUsage
 
-console.log("itemPriceRes",itemPriceRes)
+      });
 
       const _generalComponentData = { ...generalComponentData };
       _generalComponentData.items?.push({ itemId: itemRes.data.itemId });
-      setGeneralComponentData(_generalComponentData);
       // put API for porfolio update Item id
       // call here
       const { portfolioId, ...res } = generalComponentData;
@@ -755,7 +755,6 @@ console.log("itemPriceRes",itemPriceRes)
   };
 
   const saveAddNewServiceOrBundle = async () => {
-    setTabs(`${parseInt(tabs) + 1}`);
     try {
       let reqObj = {
         itemId: 0,
@@ -826,10 +825,10 @@ console.log("itemPriceRes",itemPriceRes)
           totalPrice: 0,
         },
       };
-      setOpen2(false); //Hide Price Calculator Screen
 
       const res = await itemCreation(reqObj);
       console.log("service or bundle res:", res);
+      setCurrentItemId(res.data.itemId)
       if (res.status == 200) {
         toast(`👏 ${serviceOrBundlePrefix} created`, {
           position: "top-right",
@@ -840,6 +839,31 @@ console.log("itemPriceRes",itemPriceRes)
           draggable: true,
           progress: undefined,
         });
+
+        const itemPriceRes = await getItemPrice({
+          standardJobId: res.data.itemBodyModel.standardJobId,
+          repairKitId: res.data.itemBodyModel.repairKitId,
+          itemId: res.data.itemId,
+        });
+        const {priceMethod,listPrice,priceEscalation,additional,calculatedPrice,flatPrice,discountType,year,totalPrice,usage,avgUsage,frequency} = itemPriceRes.itemBodyModel;
+
+      setPriceCalculator({
+        ...priceCalculator,
+        priceMethod: { label: priceMethod, value: priceMethod },
+        listPrice,
+        priceEscalationInput: priceEscalation,
+        priceAdditionalInput: additional,
+        calculatedPrice,
+        flatPrice,
+        discountTypeInput: discountType,
+        priceYear: { label: year, value: year },
+        totalPrice,
+        frequency:{label:frequency,value:frequency},
+        usageType:{label:usage,value:usage},
+        startUsage:avgUsage,
+        endUsage:avgUsage
+
+      });
         // call update API for portfolio to update item with service or bundle
         const _bundleItems = [...bundleItems];
         if (_bundleItems[0].associatedServiceOrBundle) {
@@ -950,6 +974,86 @@ console.log("itemPriceRes",itemPriceRes)
       return;
     }
   };
+
+const handleSavePrices= async()=>{
+  try{
+    let reqObj = {
+      itemId: 0,
+      itemName: "",
+      itemHeaderModel: {
+        itemHeaderId: 0,
+        // itemHeaderId: parseInt(generalComponentData.portfolioId),
+        itemHeaderDescription: createServiceOrBundle.description,
+        bundleFlag: serviceOrBundlePrefix===""?"PORTFOLIO":serviceOrBundlePrefix==="SERVICE"?"SERVICE":"BUNDLE_ITEM",
+        reference: createServiceOrBundle.reference,
+        itemHeaderMake: createServiceOrBundle.make,
+        itemHeaderFamily: "",
+        model: createServiceOrBundle.models,
+        prefix: createServiceOrBundle.prefix,
+        type: "MACHINE",
+        additional: createServiceOrBundle.additional.value,
+        currency: "",
+        netPrice: 0,
+        itemProductHierarchy: generalComponentData.productHierarchy,
+        itemHeaderGeographic: generalComponentData.geographic,
+        responseTime: generalComponentData.responseTime,
+        usage: "",
+        validFrom: generalComponentData.validFrom,
+        validTo: generalComponentData.validTo,
+        estimatedTime: "",
+        servicePrice: 0,
+        status: "NEW",
+      },
+      itemBodyModel: {
+        itemBodyId: parseInt(addPortFolioItem.id),
+        itemBodyDescription: addPortFolioItem.description,
+        quantity: parseInt(addPortFolioItem.quantity),
+        startUsage: priceCalculator.startUsage,
+        endUsage: priceCalculator.endUsage,
+        standardJobId: "",
+        frequency: addPortFolioItem.frequency.value,
+        additional: "",
+        spareParts: ["WITH_SPARE_PARTS"],
+        labours: ["WITH_LABOUR"],
+        miscellaneous: ["LUBRICANTS"],
+        taskType: [addPortFolioItem.taskType.value],
+        solutionCode: "",
+        usageIn: addPortFolioItem.usageIn.value,
+        recommendedValue: 0,
+        usage: "",
+        repairKitId: "",
+        templateDescription: addPortFolioItem.description.value,
+        partListId: "",
+        serviceEstimateId: "",
+        numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+        repairOption: addPortFolioItem.repairOption.value,
+        priceMethod: "LIST_PRICE",
+        listPrice: parseInt(priceCalculator.listPrice),
+        priceEscalation: "",
+        calculatedPrice: parseInt(priceCalculator.calculatedPrice),
+        flatPrice: parseInt(priceCalculator.flatPrice),
+        discountType: "",
+        year: priceCalculator.priceYear.value,
+        avgUsage: 0,
+        unit: addPortFolioItem.unit.value,
+        sparePartsPrice: 0,
+        sparePartsPriceBreakDownPercentage: 0,
+        servicePrice: 0,
+        servicePriceBreakDownPercentage: 0,
+        miscPrice: 0,
+        miscPriceBreakDownPercentage: 0,
+        totalPrice: 0,
+      },
+    };
+    const res=await saveItemPrice(currentItemId,reqObj)
+    console.log("handleSavePrices res",res)
+  
+  }catch(error){
+    console.log("error in handleSavePrices",error)
+  }
+}
+
+
 
   const handleAddNewBundle = () => {
     // alert("Save And Continue")
@@ -2625,6 +2729,7 @@ console.log("itemPriceRes",itemPriceRes)
             <input
               type="radio"
               name="selectedId"
+              className="cursor"
               value={row.itemId}
               onChange={(e) => handleTempbundleItemSelection(e, row.id)}
               style={{ border: "1px solid #000" }}
@@ -2632,6 +2737,7 @@ console.log("itemPriceRes",itemPriceRes)
           ) : (
             <input
               type="checkbox"
+              className="cursor"
               name={row.itemId}
               value={tempBundleItemCheckList[row.itemId]}
               checked={tempBundleItemCheckList[row.itemId]}
@@ -2907,13 +3013,13 @@ console.log("itemPriceRes",itemPriceRes)
     setServiceOrBundlePrefix("SERVICE");
     // setServiceOrBundleShow(true);
     setBundleServiceShow(true);
-    setBundleTabs("1")
+    setBundleTabs("1");
   };
   const handleBundleItemOpen = () => {
     setServiceOrBundlePrefix("BUNDLE");
     // setServiceOrBundleShow(true);
     setBundleServiceShow(true);
-    setBundleTabs("1")
+    setBundleTabs("1");
   };
 
   const handleAddServiceBundleChange = (e) => {
@@ -2923,14 +3029,15 @@ console.log("itemPriceRes",itemPriceRes)
     });
   };
   const handleAddNewServiceOrBundle = () => {
-    // setServiceOrBundleShow(false);
-    if (serviceOrBundlePrefix === "SERVICE") {
-      setBundleTabs("3")
-    }
     if (serviceOrBundlePrefix === "BUNDLE") {
-      // setOpenAddBundleItem(true);
-      setBundleTabs("2")
+      setBundleTabs("2");
     }
+    if (serviceOrBundlePrefix === "SERVICE") {
+      setBundleTabs("3");
+      saveAddNewServiceOrBundle()
+
+    }
+   
   };
   const columns2 = [
     { field: "GroupNumber", headerName: "ID#", flex: 1, width: 70 },
@@ -3028,11 +3135,13 @@ console.log("itemPriceRes",itemPriceRes)
     alert("Edit row");
   };
 
-
-const getAddportfolioItemDataFun=(data)=>{
-  setAddportFolioItem(data)
-}
-
+  const getAddportfolioItemDataFun = (data) => {
+    setAddportFolioItem(data);
+  };
+  const getPriceCalculatorDataFun = (data) => {
+    setPriceCalculator(data);
+    
+  };
 
   // const ExpandedComponent = ({ data }) => <pre>{JSON.stringify(data, null, 2)}</pre>;
   const ExpandedComponent = ({ data }) => (
@@ -3323,6 +3432,7 @@ const getAddportfolioItemDataFun=(data)=>{
                         </label>
                         <Select
                           placeholder="Select"
+                          required
                           options={headerTypeKeyValue}
                           value={headerType}
                           onChange={handleHeaderTypeChange}
@@ -3385,7 +3495,7 @@ const getAddportfolioItemDataFun=(data)=>{
                           type="text"
                           className="form-control border-radius-10"
                           name="description"
-                          placeholder="Description"
+                          placeholder="Optional"
                           value={generalComponentData.description}
                           onChange={handleGeneralInputChange}
                         />
@@ -3415,6 +3525,7 @@ const getAddportfolioItemDataFun=(data)=>{
                           onChange={handleCustomerSegmentChange}
                           value={generalComponentData.customerSegment}
                           options={customerSegmentKeyValue}
+                          placeholder="Optionals"
                           // options={strategyList}
                         />
                       </div>
@@ -3742,6 +3853,7 @@ const getAddportfolioItemDataFun=(data)=>{
                         <Select
                           options={updatedTaskList}
                           value={stratgyTaskTypeKeyValue}
+                          placeholder="Optional"
                           // onChange={(e) => setStratgyTaskTypeKeyValue(e)}
                           onChange={(e) =>
                             setStratgyTaskTypeKeyValue(e)(
@@ -3768,6 +3880,7 @@ const getAddportfolioItemDataFun=(data)=>{
                           OPTIONALS
                         </label>
                         <Select
+                          placeholder="Optional"
                           options={strategyOptionals}
                           value={stratgyOptionalsKeyValue}
                           onChange={(e) => setStratgyOptionalsKeyValue(e)}
@@ -3785,6 +3898,7 @@ const getAddportfolioItemDataFun=(data)=>{
                           RESPONSE TIME
                         </label>
                         <Select
+                         placeholder="Optional"
                           options={rTimeList}
                           value={stratgyResponseTimeKeyValue}
                           onChange={(e) => setStratgyResponseTimeKeyValue(e)}
@@ -3801,6 +3915,7 @@ const getAddportfolioItemDataFun=(data)=>{
                           PRODUCT HIERARCHY
                         </label>
                         <Select
+                         placeholder="Optional"
                           options={productList}
                           value={stratgyHierarchyKeyValue}
                           onChange={(e) => setStratgyHierarchyKeyValue(e)}
@@ -3817,10 +3932,10 @@ const getAddportfolioItemDataFun=(data)=>{
                           GEOGRAPHIC
                         </label>
                         <Select
+                         placeholder="Optional"
                           options={geographicList}
                           value={stratgyGeographicKeyValue}
                           onChange={(e) => setStratgyGeographicKeyValue(e)}
-                          placeholder="Geographic"
                         />
                         {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                       </div>
@@ -3926,7 +4041,6 @@ const getAddportfolioItemDataFun=(data)=>{
                           onChange={setSelectedOption}
                           options={priceMethodKeyValue}
                           //   options={options}
-                          placeholder="placeholder (Optional)"
                         />
                       </div>
                     </div>
@@ -3975,11 +4089,11 @@ const getAddportfolioItemDataFun=(data)=>{
                           PRICE{" "}
                         </label>
                         <input
-                          type="email"
+                          type="text"
                           className="form-control border-radius-10"
                           id="exampleInputEmail1"
                           aria-describedby="emailHelp"
-                          placeholder="$100"
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
@@ -4010,11 +4124,11 @@ const getAddportfolioItemDataFun=(data)=>{
                             />
                           </div>
                           <input
-                            type="email"
+                            type="text"
                             className="form-control rounded-top-left-0 rounded-bottom-left-0"
                             id="exampleInputEmail1"
                             aria-describedby="emailHelp"
-                            placeholder="10%"
+                            placeholder="optional"
                           />
                         </div>
                       </div>
@@ -4036,11 +4150,11 @@ const getAddportfolioItemDataFun=(data)=>{
                             placeholder="placeholder "
                           />
                           <input
-                            type="email"
+                            type="text"
                             className="form-control rounded-top-left-0 rounded-bottom-left-0"
                             id="exampleInputEmail1"
                             aria-describedby="emailHelp"
-                            placeholder="20%"
+                            placeholder="optional"
                           />
                         </div>
                       </div>
@@ -4057,11 +4171,11 @@ const getAddportfolioItemDataFun=(data)=>{
                           CALCULATED PRICE
                         </label>
                         <input
-                          type="email"
+                          type="text"
                           className="form-control border-radius-10"
                           id="exampleInputEmail1"
                           aria-describedby="emailHelp"
-                          placeholder="$100"
+                          placeholder="optional"
                         />
                       </div>
                     </div>
@@ -4082,11 +4196,11 @@ const getAddportfolioItemDataFun=(data)=>{
                             placeholder="placeholder "
                           />
                           <input
-                            type="email"
+                            type="text"
                             className="form-control rounded-top-left-0 rounded-bottom-left-0"
                             id="exampleInputEmail1"
                             aria-describedby="emailHelp"
-                            placeholder="20%"
+                            placeholder="optional"
                           />
                         </div>
                       </div>
@@ -4108,11 +4222,11 @@ const getAddportfolioItemDataFun=(data)=>{
                             placeholder="placeholder "
                           />
                           <input
-                            type="email"
+                            type="text"
                             className="form-control rounded-top-left-0 rounded-bottom-left-0"
                             id="exampleInputEmail1"
                             aria-describedby="emailHelp"
-                            placeholder="20%"
+                            placeholder="optional"
                           />
                         </div>
                       </div>
@@ -4638,8 +4752,6 @@ const getAddportfolioItemDataFun=(data)=>{
               </div>
             )}
           </div>
-
-
         </div>
       </div>
       <Modal
@@ -5935,7 +6047,10 @@ const getAddportfolioItemDataFun=(data)=>{
                       options={options}
                       value={priceCalculator.priceMethod}
                       onChange={(e) =>
-                        setPriceCalculator({ ...priceCalculator, priceMethod: e })
+                        setPriceCalculator({
+                          ...priceCalculator,
+                          priceMethod: e,
+                        })
                       }
                       placeholder="placeholder (Optional)"
                     />
@@ -7415,29 +7530,19 @@ const getAddportfolioItemDataFun=(data)=>{
                   setTabs={setTabs}
                   getAddportfolioItemDataFun={getAddportfolioItemDataFun}
                   compoFlag="ITEM"
-                  handleBundleItemSaveAndContinue={handleBundleItemSaveAndContinue}
+                  handleBundleItemSaveAndContinue={
+                    handleBundleItemSaveAndContinue
+                  }
                 />
               </TabPanel>
 
               <TabPanel value="2">
-                <PriceCalculator 
-                generalComponentData={generalComponentData}
-                setGeneralComponentData={setGeneralComponentData}
-
-                setBundleItems={setBundleItems}
-                bundleItems={bundleItems}
-                tempBundleItems={tempBundleItems}
-                setTempBundleItems={setTempBundleItems}
-                setOpenAddBundleItem={setOpenAddBundleItem}
-                setOpenSearchSolution={setOpenSearchSolution}
-                createServiceOrBundle={createServiceOrBundle}
-                addPortFolioItem={addPortFolioItem}
-                serviceOrBundlePrefix={serviceOrBundlePrefix}
-                setLoadingItem={setLoadingItem}
-                setTabs={ setTabs}
-
+                <PriceCalculator
+                setTabs={setTabs}
                 priceCalculator={priceCalculator}
-                
+                serviceOrBundlePrefix={serviceOrBundlePrefix}
+                getPriceCalculatorDataFun={getPriceCalculatorDataFun}
+                handleSavePrices={handleSavePrices}
                 />
               </TabPanel>
 
@@ -7467,7 +7572,6 @@ const getAddportfolioItemDataFun=(data)=>{
                   </div>
                 )}
               </TabPanel>
-
             </TabContext>
           </Box>
         </Modal.Body>
@@ -7494,7 +7598,9 @@ const getAddportfolioItemDataFun=(data)=>{
                   aria-label="lab API tabs example"
                 >
                   <Tab label={`${serviceOrBundlePrefix} HEADER`} value="1" />
-                  {serviceOrBundlePrefix==="BUNDLE"&&<Tab label={`${serviceOrBundlePrefix} BODY`} value="2" />}
+                  {serviceOrBundlePrefix === "BUNDLE" && (
+                    <Tab label={`${serviceOrBundlePrefix} BODY`} value="2" />
+                  )}
                   <Tab label="PRICE CALCULATOR" value="3" />
                 </TabList>
               </Box>
@@ -7502,7 +7608,7 @@ const getAddportfolioItemDataFun=(data)=>{
                 <div className="container-fluid ">
                   <div className="d-flex align-items-center justify-content-between mt-2">
                     <h5 className="font-weight-600 mb-0">
-                      ADD {serviceOrBundlePrefix}
+                      {/* ADD {serviceOrBundlePrefix} */}
                     </h5>
                     <div className="d-flex justify-content-center align-items-center">
                       <a href="#" className="ml-3 font-size-14">
@@ -7760,29 +7866,22 @@ const getAddportfolioItemDataFun=(data)=>{
                 </div>
               </TabPanel>
               <TabPanel value="2">
-                <AddPortfolioItem 
-                setBundleTabs={setBundleTabs}
-                compoFlag="BUNDLE"
-                saveAddNewServiceOrBundle={saveAddNewServiceOrBundle}
-
+                <AddPortfolioItem
+                  setBundleTabs={setBundleTabs}
+                  compoFlag="BUNDLE"
+                  saveAddNewServiceOrBundle={saveAddNewServiceOrBundle}
                 />
-
               </TabPanel>
               <TabPanel value="3">
-                <PriceCalculator 
-                serviceOrBundlePrefix={serviceOrBundlePrefix} 
-                generalComponentData={generalComponentData}
-                setGeneralComponentData={setGeneralComponentData}
-                createServiceOrBundle={createServiceOrBundle} 
-                addPortFolioItem={addPortFolioItem}
-                bundleItems={bundleItems}
-                setBundleItems={setBundleItems}
-                setLoadingItem={setLoadingItem}
-                setBundleServiceShow={setBundleServiceShow}
-                
+                <PriceCalculator
+                  serviceOrBundlePrefix={serviceOrBundlePrefix}
+                  setBundleTabs={setBundleTabs}
+                  setBundleServiceShow={setBundleServiceShow}
+                  priceCalculator={priceCalculator}
+                  getPriceCalculatorDataFun={getPriceCalculatorDataFun}
+                  handleSavePrices={handleSavePrices}
                 />
               </TabPanel>
-
             </TabContext>
           </Box>
         </Modal.Body>

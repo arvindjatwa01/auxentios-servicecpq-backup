@@ -48,7 +48,6 @@ export const getAllItems = () => {
     console.log("portfolioItemService > itemSearchSuggestion called...");
     return new Promise((resolve, reject) => {
       try {
-        console.log("CREATE_PORTFOLIO_ITEM()+`/${family}?${family}=${familyValue}`",CREATE_PORTFOLIO_ITEM()+`/${family}?${family}=${familyValue}`)
         axios
           .get(CREATE_PORTFOLIO_ITEM()+`/${family}?${family}=${familyValue}`)
           .then((res) => {
@@ -104,6 +103,26 @@ export const getItemPrice = (payLoad) => {
           });
       } catch (error) {
         console.error("in portfolioItemService > getItemPrice, Err===", error);
+        reject(SYSTEM_ERROR);
+      }
+    });
+  };
+  export const saveItemPrice = (id,payLoad) => {
+    console.log("portfolioItemService > saveItemPrice called...");
+    return new Promise((resolve, reject) => {
+      try {
+        axios
+          .put(`${CREATE_PORTFOLIO_ITEM()}/${id}`,payLoad)
+          .then((res) => {
+            console.log("saveItemPrice > axios res=", res);
+            resolve(res.data);
+          })
+          .catch((err) => {
+            console.log("saveItemPrice > axios err=", err);
+            reject("Error in saveItemPrice axios!");
+          });
+      } catch (error) {
+        console.error("in portfolioItemService > saveItemPrice, Err===", error);
         reject(SYSTEM_ERROR);
       }
     });
