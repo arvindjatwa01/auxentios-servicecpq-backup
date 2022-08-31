@@ -305,7 +305,7 @@ h5 {
 }
 
 .text-light {
-  color: #837fef !important;
+  color: #872ff7 !important;
 }
 
 .text-light-dark {
@@ -412,7 +412,7 @@ h5 {
 
 a.text-light:hover,
 a.text-light:focus {
-  color: #7571f9 !important;
+  color: #872ff7 !important;
 }
 
 .align-itemsstart {
@@ -482,7 +482,7 @@ a.text-light:focus {
 }
 
 .css-1h9z7r5-MuiButtonBase-root-MuiTab-root.Mui-selected {
-  color: #7571f9 !important;
+  color: #872ff7 !important;
 }
 
 .css-1aquho2-MuiTabs-indicator {
@@ -492,7 +492,7 @@ a.text-light:focus {
   width: 100%;
   -webkit-transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
   transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-  background-color: #7571f9 !important;
+  background-color: #872ff7 !important;
 }
 
 button:focus {
@@ -500,7 +500,7 @@ button:focus {
 }
 
 .Add-new-segment-div {
-  border: dashed 2px #7380e4;
+  border: dashed 2px #872ff7;
 }
 
 .has-search .form-control {
@@ -521,7 +521,7 @@ button:focus {
 }
 
 .add-new-recod {
-  border: dashed 1px #7380e4;
+  border: dashed 1px #872ff7;
   width: 100%;
   display: flex;
   height: 275px;
@@ -543,7 +543,7 @@ button:focus {
 
 .add-new-recod .iciELI {
   border: none;
-  background: #7571f9;
+  background: #872ff7;
   color: #fff !important;
   padding: 7px 25px;
   height: auto;
@@ -1063,7 +1063,7 @@ nav.main-menu li.active>a,
 }
 
 .custom-tabs .css-1h9z7r5-MuiButtonBase-root-MuiTab-root.Mui-selected {
-  background: #7571f9;
+  background: #872ff7;
   color: #fff !important;
 }
 
@@ -1492,7 +1492,7 @@ nav.main-menu li.active>a,
 .custom-table {}
 
 .custom-table .rdt_TableHeadRow {
-  background: #7571f9!important;
+  background: #872ff7!important;
   color: white !important;
 
 }
@@ -1773,7 +1773,7 @@ nav.main-menu li.active>a,
   background-color: #fff;
   color: #000;
   height: 300px;
-  border: 1px solid #7571f9;
+  border: 1px solid #872ff7;
   padding: 30px;
   border-radius: 10px;
   position: relative;
@@ -1898,7 +1898,7 @@ nav.main-menu li.active>a,
 }
 
 .text-light {
-  color: #837fef !important;
+  color: #872ff7 !important;
 }
 
 .text-light-dark {
@@ -1914,7 +1914,7 @@ nav.main-menu li.active>a,
 }
 
 .bg-perpal {
-  background: #15C3F4;
+  background: #872ff7;
 }
 
 .bg-green {
@@ -1943,7 +1943,7 @@ nav.main-menu li.active>a,
 
 
 .bg-primary {
-  background: #7571f9 !important;
+  background: #872ff7 !important;
 }
 
 .bg-light-blue {
@@ -2123,7 +2123,7 @@ nav.main-menu li.active>a,
 /* .customBuildBtnTableAction {
   width: 50%;
   color: white;
-  background-color: #7380e4;
+  background-color: #872ff7;
   height: 50%;
   text-align: center;
   border-radius: 5px;
@@ -2281,7 +2281,7 @@ nav.main-menu li.active>a,
   color: #fff;
   text-align: center;
   white-space: nowrap;
-  background-color: #7571f9;
+  background-color: #872ff7;
   transition: width .6s ease;
 }
 .p-t-200{margin-top: 200px !important;}
@@ -2514,4 +2514,25 @@ cursor: pointer;
   fill: #706e6e;}
   .row-svg-div img{
     width: 14px;}
-	
+	.btn-primary {
+    color: #fff;
+    background-color: #872ff7;
+    border-color: #872ff7;
+}
+.css-vqmohf-MuiButtonBase-root-MuiRadio-root.Mui-checked {
+    color: #872ff7 !important;
+}
+.css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.Mui-checked, .css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.MuiCheckbox-indeterminate {
+    color: #872ff7 !important;
+}
+.text-primary {
+    color: #872ff7 !important;
+}
+.kiHXWb{border: dashed 2px #872ff7 !important;}
+.kiHXWb svg path{ fill: #872ff7 !important }
+.css-1u4zpwo-MuiSvgIcon-root-MuiStepIcon-root.Mui-completed {
+    color: #872ff7 !important;
+}
+.css-1u4zpwo-MuiSvgIcon-root-MuiStepIcon-root.Mui-active {
+    color: #872ff7 !important;
+}

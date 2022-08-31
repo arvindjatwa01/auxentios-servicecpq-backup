@@ -434,7 +434,7 @@ export function ServicePortfolio(props) {
                             <DataGrid
                                 sx={{
                                     '& .MuiDataGrid-columnHeaders': {
-                                        backgroundColor: '#7380E4', color: '#fff'
+                                        backgroundColor: '#872ff7', color: '#fff'
                                     }
                                 }}
                                 rows={rows}
@@ -648,7 +648,7 @@ export function ServicePortfolio(props) {
                                     <DataGrid
                                         sx={{
                                             '& .MuiDataGrid-columnHeaders': {
-                                                backgroundColor: '#7380E4', color: '#fff'
+                                                backgroundColor: '#872ff7', color: '#fff'
                                             }
                                         }}
                                         rows={rows}

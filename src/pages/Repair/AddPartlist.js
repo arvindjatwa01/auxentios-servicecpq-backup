@@ -131,7 +131,7 @@ const customStyles = {
     style: {
       paddingLeft: "8px", // override the cell padding for head cells
       paddingRight: "8px",
-      backgroundColor: "#7380E4",
+      backgroundColor: "#872ff7",
       color: "#fff"
     },
   },
@@ -324,10 +324,20 @@ const options3 = [
   { value: "vanilla", label: "2" },
   { value: "Construction", label: "3" },
 ];
+const options4 = [
+  { value: "chocolate", label: "Gold" },
+  { value: "strawberry", label: "1" },
+  { value: "vanilla", label: "2" },
+  { value: "Construction", label: "3" },
+];
 const handleOption3 = (e) => {
   setValue3(e)
 }
+const handleOption4 = (e) => {
+  setValue4(e)
+}
 const [value3, setValue3] = useState({ value: 'Gold', label: 'Gold' });
+const [value4, setValue4] = useState({ value: 'Gold', label: 'Gold' });
 const handleQuerySearchClick = () => {
   $(".scrollbar").css("display", "none")
   console.log("handleQuerySearchClick", querySearchSelector)
@@ -609,12 +619,12 @@ const history=useHistory()
           </div>
           <div className="card border mt-4 px-4">
           <div className="row align-items-center">
-          <div className="col-9 mx-1">
+          <div className="col-8">
          
           <div className="d-flex align-items-center w-100">
           <div className="d-flex mr-3 col-auto pl-0" style={{whiteSpace:'pre'}}>
           <h5 className="mr-2 mb-0 text-black"><span>Parts Table</span></h5>
-          <Select className="customselectbtn1 col-auto" onChange={(e) => handleOption3(e)} options={options3} value={value3} />
+          <Select className="customselectbtn1 col-auto" onChange={(e) => handleOption4(e)} options={options4} value={value4} />
           <p className=" mb-0">
           <a href="#" className="ml-3"><FontAwesomeIcon icon={faPen} /></a>
           </p>
@@ -704,30 +714,14 @@ const history=useHistory()
                         </div>
          
           </div>
-          <div className="col-1">
-          <div className="text-center pl-3 py-3">
-          <a className="btn bg-primary text-white ml-3" data-toggle="modal" data-target="#Datatable"><SearchIcon /><span className="ml-1">Search</span></a>
-                  
-          </div>
-          
-          </div>
-          {/* <div className="col-1">
-            <div className="d-flex align-items-center justify-content-center">
-            <a onClick={() => setOpen3(true)} style={{ cursor: 'pointer' }} className="btn bg-primary text-white ml-3">Upload</a>
-                  
-             
-            </div>
-          </div> */}
-          <div className="col-auto">
-            <div className="d-flex align-items-center justify-content-center">
-            <a onClick={() => setOpen3(true)} style={{ cursor: 'pointer' }} className="btn bg-primary text-white ml-3">Upload</a>
-            <a onClick={() => setOpen2(true)} href="#" className="btn bg-primary text-white ml-3">+ Add Part</a>
-                  
-             
-            </div>
+          <div className="col-4">
+          <div className="text-right pl-3 py-3">
+          <a className="btn bg-primary text-white" data-toggle="modal" data-target="#Datatable"><SearchIcon /><span className="ml-1">Search</span></a>
+          <a onClick={() => setOpen3(true)} style={{ cursor: 'pointer' }} className="btn bg-primary text-white mx-2">Upload</a>
+          <a onClick={() => setOpen2(true)} href="#" className="btn bg-primary text-white ">+ Add Part</a>      
           </div>
           </div>
-           
+          </div>
             <DataTable
               className="mr-2"
               title=""
@@ -1112,7 +1106,7 @@ const history=useHistory()
         <DataGrid
         sx={{
           '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: '#7380E4', color:'#fff'
+            backgroundColor: '#872ff7', color:'#fff'
           }
         }}
           rows={rows}

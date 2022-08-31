@@ -142,7 +142,7 @@ const customStyles = {
     style: {
       paddingLeft: "8px", // override the cell padding for head cells
       paddingRight: "8px",
-      backgroundColor: "#7571f9",
+      backgroundColor: "#872ff7",
       color: "#fff",
     },
   },
@@ -4702,7 +4702,7 @@ const handleSavePrices= async()=>{
               <div className="d-flex align-items-center justify-content-center">
                 <Loader
                   type="spinner-default"
-                  bgColor={"#7571f9"}
+                  bgColor={"#872ff7"}
                   title={"spinner-default"}
                   color={"#FFFFFF"}
                   size={35}
@@ -5102,7 +5102,7 @@ const handleSavePrices= async()=>{
               <DataGrid
                 sx={{
                   "& .MuiDataGrid-columnHeaders": {
-                    backgroundColor: "#7380E4",
+                    backgroundColor: "#872ff7",
                     color: "#fff",
                   },
                 }}
@@ -7551,7 +7551,7 @@ const handleSavePrices= async()=>{
                   <div className="d-flex align-items-center justify-content-center">
                     <Loader
                       type="spinner-default"
-                      bgColor={"#7571f9"}
+                      bgColor={"#872ff7"}
                       title={"spinner-default"}
                       color={"#FFFFFF"}
                       size={35}
