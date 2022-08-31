@@ -126,36 +126,15 @@ const QuerySearchComp = (props) => {
     props.compoFlag === "coverage" && props?.setOpenedModelBoxData([]);
 
   };
-  const handleQuerySearchClick = () => {
-    props.compoFlag === "coverage" && props?.setFlagIs(false);
-    $(".scrollbar").css("display", "none");
-    console.log("handleQuerySearchClick", querySearchSelector);
-    if (
-      querySearchSelector[0]?.selectFamily?.value == "" ||
-      querySearchSelector[0]?.inputSearch == "" ||
-      querySearchSelector[0]?.selectFamily?.value === undefined
-    ) {
-      toast(`Please fill data properly`, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      return;
-    }
-    var searchStr =
-      querySearchSelector[0]?.selectFamily?.value +
-      "~" +
-      querySearchSelector[0]?.inputSearch;
-
-    for (let i = 1; i < querySearchSelector.length; i++) {
+  const handleQuerySearchClick = async () => {
+    try {
+      props.compoFlag === "coverage" && props?.setFlagIs(false);
+      $(".scrollbar").css("display", "none");
+      console.log("handleQuerySearchClick", querySearchSelector);
       if (
-        querySearchSelector[i]?.selectOperator?.value == "" ||
-        querySearchSelector[i]?.selectFamily?.value == "" ||
-        querySearchSelector[i]?.inputSearch == ""
+        querySearchSelector[0]?.selectFamily?.value == "" ||
+        querySearchSelector[0]?.inputSearch == "" ||
+        querySearchSelector[0]?.selectFamily?.value === undefined
       ) {
         toast(`Please fill data properly`, {
           position: "top-right",
@@ -168,51 +147,72 @@ const QuerySearchComp = (props) => {
         });
         return;
       }
-      searchStr =
-        searchStr +
-        " " +
-        querySearchSelector[i].selectOperator.value +
-        " " +
-        querySearchSelector[i].selectFamily.value +
+      var searchStr =
+        querySearchSelector[0]?.selectFamily?.value +
         "~" +
-        querySearchSelector[i].inputSearch;
-    }
-    // searchStr is ready call API 
-    if (props.compoFlag === "coverage") {
-      getSearchQueryCoverage(searchStr)
-        .then((res) => {
-          console.log("search Query Result for coverage :", res);
-          props?.setMasterData(res);
-        })
-        .catch((err) => {
-          console.log("error in getSearchQueryCoverage", err);
-        });
-    } else if (props.compoFlag === "itemSearch") {
-      props.setBundleItems([]);
-      props.setLoadingItem(true)
-      itemSearch(searchStr)
-        .then((res) => {
-          let temArray = []
-          for (let i = 0; i <= res.length; i++) {
-            if (res[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
-              temArray[0] = res[i]
-              res.splice(i, 1)
-              break
-            }
+        querySearchSelector[0]?.inputSearch;
+
+      for (let i = 1; i < querySearchSelector.length; i++) {
+        if (
+          querySearchSelector[i]?.selectOperator?.value == "" ||
+          querySearchSelector[i]?.selectFamily?.value == "" ||
+          querySearchSelector[i]?.inputSearch == ""
+        ) {
+          toast(`Please fill data properly`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          return;
+        }
+        searchStr =
+          searchStr +
+          " " +
+          querySearchSelector[i].selectOperator.value +
+          " " +
+          querySearchSelector[i].selectFamily.value +
+          "~" +
+          querySearchSelector[i].inputSearch;
+      }
+      // searchStr is ready call API 
+      if (props.compoFlag === "coverage") {
+        const res1 = await getSearchQueryCoverage(searchStr)
+        console.log("search Query Result for coverage :", res1);
+        props?.setMasterData(res1);
+      } else if (props.compoFlag === "itemSearch") {
+        props.setBundleItems([]);
+        props.setLoadingItem(true)
+        const res2 = await itemSearch(searchStr)
+        let temArray = []
+        for (let i = 0; i <= res2.length; i++) {
+          if (res2[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
+            temArray[0] = res2[i]
+            res2.splice(i, 1)
+            break
           }
-          temArray[0].associatedServiceOrBundle = res
-          props.setBundleItems(temArray)
-          props.setLoadingItem(false)
+        }
+        temArray[0].associatedServiceOrBundle = res2
+        props.setBundleItems(temArray)
+        props.setLoadingItem(false)
+      }
 
-        })
-        .catch((err) => {
-          console.log("error in getSearchQueryCoverage", err);
-          alert(err)
-          return
-        });
+    } catch (error) {
+      console.log("error in getSearchQueryCoverage", error);
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return
     }
-
-
   };
 
   return (

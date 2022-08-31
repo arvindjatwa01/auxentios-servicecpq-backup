@@ -107,22 +107,22 @@ export const getItemPrice = (payLoad) => {
       }
     });
   };
-  export const saveItemPrice = (id,payLoad) => {
-    console.log("portfolioItemService > saveItemPrice called...");
+  export const updateItemData = (id,payLoad) => {
+    console.log("portfolioItemService > updateItemData called...");
     return new Promise((resolve, reject) => {
       try {
         axios
           .put(`${CREATE_PORTFOLIO_ITEM()}/${id}`,payLoad)
           .then((res) => {
-            console.log("saveItemPrice > axios res=", res);
+            console.log("updateItemData > axios res=", res);
             resolve(res.data);
           })
           .catch((err) => {
-            console.log("saveItemPrice > axios err=", err);
-            reject("Error in saveItemPrice axios!");
+            console.log("updateItemData > axios err=", err);
+            reject("Error in updateItemData axios!");
           });
       } catch (error) {
-        console.error("in portfolioItemService > saveItemPrice, Err===", error);
+        console.error("in portfolioItemService > updateItemData, Err===", error);
         reject(SYSTEM_ERROR);
       }
     });

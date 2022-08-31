@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
 import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Link } from "react-router-dom";
+import { Button } from "react-bootstrap";
 
 const AddPortfolioItem = (props) => {
   const [addPortFolioItem, setAddportFolioItem] = useState({
@@ -35,15 +36,54 @@ const AddPortfolioItem = (props) => {
     { value: "Construction", label: "Construction" },
   ];
 
-  const handleSaveAndNextItem = () => {
-    props.setTabs("2");
-    props.getAddportfolioItemDataFun(addPortFolioItem);
-    props.handleBundleItemSaveAndContinue()
-  };
-  const handleSaveAndNextbundle = () => {
-    props.setBundleTabs("3")
-    props.saveAddNewServiceOrBundle()
+  useEffect(() => {
+    if (props.passItemEditRowData) {
+      // setIt accordingly for fields
+      const {
+        itemBodyDescription,
+        startUsage,
+        endusage,
+        frequency,
+        usageIn,
+        taskType,
+        unit,
+        recommendedValue,
+        quantity,
+        numberOfEvents,
+        templateDescription,
+        repairOption,
+      } = props.passItemEditRowData.itemBodyModel;
+      setAddportFolioItem({
+        ...addPortFolioItem,
+        id: props.passItemEditRowData.itemId,
+        description: itemBodyDescription,
+        usageIn: { label: usageIn, value: usageIn },
+        taskType: { label: taskType, value: taskType },
+        frequency: { label: frequency, value: frequency },
+        unit: { label: unit, value: unit },
+        recomondedValue: { label: recommendedValue, value: recommendedValue },
+        quantity,
+        strategyEvents: numberOfEvents,
+        templateDescription: {
+          label: itemBodyDescription,
+          value: itemBodyDescription,
+        },
+        repairOption: { label: repairOption, value: repairOption },
+      });
+    }
+  }, []);
 
+  const handleAddPortfolioSave = () => {
+    if (props.compoFlag === "itemEdit" || props.compoFlag === "bundleEdit" ) {
+      props.handleItemEditSave(addPortFolioItem,props.compoFlag);
+    } else if (props.compoFlag === "ITEM") {
+      props.setTabs("2");
+      props.getAddportfolioItemDataFun(addPortFolioItem);
+      props.handleBundleItemSaveAndContinue();
+    } else {
+      props.setBundleTabs("3");
+      props.saveAddNewServiceOrBundle();
+    }
   };
 
   return (
@@ -405,9 +445,11 @@ const AddPortfolioItem = (props) => {
           <Link
             to="#"
             className="btn border mr-4"
-            onClick={props.compoFlag==="ITEM"?handleSaveAndNextItem:handleSaveAndNextbundle}
+            onClick={handleAddPortfolioSave}
           >
-            Save & Continue
+            {props.compoFlag === "itemEdit"
+              ? "Save Changes"
+              : "Save & Continue"}
           </Link>
         </div>
       </div>
