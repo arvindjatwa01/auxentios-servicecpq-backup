@@ -5,6 +5,9 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import $ from "jquery"
+import { GuidedSolution } from 'pages/SolutionModules/GuidedSolution';
+
+
 export const RadioGroupComponent = props => {
     const history = useHistory();
     const [formControlLabel, setFormControlLabel] = useState([])
@@ -14,54 +17,61 @@ export const RadioGroupComponent = props => {
     const [selectValue, setSelectValue] = useState("");
 
     const handleTypeChange = (e) => {
-        console.log($(e.target).closest("label")[0].id)
+        console.log("checked is : ", $(e.target).closest("label")[0].id)
         setSelectValue(e.target.value)
         var dict = {
             key: e.target.value,
             value: $(e.target).closest("label")[0].id
         }
-        props.parentCallback(dict)
+        props.parentCallback(dict);
+        // console.log("ssss", e.target.value);
+        // 
+        // <GuidedSolution selectValueInit={selectValue} />
     };
 
+
+
     useEffect(() => {
-        console.log(props)
-        if (props.formControlLabels.length > 0) {
+      
+        if (props?.formControlLabels?.length > 0) {
             var tempFormControlLbl = [];
             if (props.withDescription) {
                 props.formControlLabels.map((child) => {
-                    tempFormControlLbl.push(<div className="col-md-3 customFormControlLabel">
-                        <div className="w-100 m-0 mb-3  p-2 card py-4 align-itemsstart h-100">
-                            <FormControlLabel
-                                className="m-0"
-                                value={child}
-                                control={<Radio />}
-                                label=""
-                                labelPlacement="bottom"
-                            />
-                            <label className="selectlable">{child.header}</label>
-                            <p className="mb-0"> {child.description}</p>
-                        </div>
-                    </div>)
+                    tempFormControlLbl.push(
+                        <div className="col-md-3 customFormControlLabel">
+                            <div className="w-100 m-0 mb-3  p-2 card py-4 align-itemsstart h-100">
+                                <FormControlLabel
+                                    className="m-0"
+                                    value={child}
+                                    // control={<Radio />}
+                                    label=""
+                                    labelPlacement="bottom"
+                                />
+                                <label className="selectlable">{child.header}</label>
+                                <p className="mb-0"> {child.description}</p>
+                            </div>
+                        </div>)
                 })
             } else {
                 props.formControlLabels.map((child) => {
-                    tempFormControlLbl.push(<div className="col-md-3 customFormControlLabel">
-                        <FormControlLabel
-                            className="w-100 m-0 mb-3  p-2 card py-4 align-itemsstart "
-                            value={child.value}
-                            id={child.key}
-                            control={<Radio />}
-                            label={child.key}
-                            labelPlacement="bottom"
-                        />
-                    </div>)
+                    tempFormControlLbl.push(
+                        <div className="col-md-3 customFormControlLabel">
+                            <FormControlLabel
+                                className="w-100 m-0 mb-3  p-2 card py-4 align-itemsstart "
+                                value={child.value}
+                                id={child.key}
+                                control={<Radio />}
+                                label={child.key}
+                                labelPlacement="bottom"
+                            />
+                        </div>)
                 })
             }
             setFormControlLabel(tempFormControlLbl)
         }
         setSelectValue(props.dValue)
     }, [props.dValue]);
-
+    console.log("my props ", props)
     return (
         <RadioGroup className='my-3'
             row
