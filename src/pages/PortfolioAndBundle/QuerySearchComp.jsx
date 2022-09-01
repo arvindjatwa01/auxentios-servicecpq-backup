@@ -23,6 +23,12 @@ const QuerySearchComp = (props) => {
     },
   ]);
 
+  const options=[
+  { label: "Make", value: "make" },
+  { label: "Model", value: "model" },
+  { label: "Prefix", value: "prefix" },
+  { label: "Family", value: "family" }]
+
   const handleItemFlag = (e, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
@@ -128,7 +134,7 @@ const QuerySearchComp = (props) => {
   };
   const handleQuerySearchClick = async () => {
     try {
-      props.compoFlag === "coverage" && props?.setFlagIs(false);
+     
       $(".scrollbar").css("display", "none");
       console.log("handleQuerySearchClick", querySearchSelector);
       if (
@@ -180,8 +186,8 @@ const QuerySearchComp = (props) => {
       }
       // searchStr is ready call API 
       if (props.compoFlag === "coverage") {
+        props?.setFlagIs(false);
         const res1 = await getSearchQueryCoverage(searchStr)
-        console.log("search Query Result for coverage :", res1);
         props?.setMasterData(res1);
       } else if (props.compoFlag === "itemSearch") {
         props.setBundleItems([]);
@@ -198,6 +204,9 @@ const QuerySearchComp = (props) => {
         temArray[0].associatedServiceOrBundle = res2
         props.setBundleItems(temArray)
         props.setLoadingItem(false)
+      }else{
+        // for other cases or default case
+        const res = await getSearchQueryCoverage(searchStr)
       }
 
     } catch (error) {
@@ -246,9 +255,10 @@ const QuerySearchComp = (props) => {
                       onChange={(e) => handleItemFlag(e, i)}
                     />}
                     <div>
-                      {(props.compoFlag === "itemSearch" && querySearchSelector[i].itemFlag?.value === "portfolioItem") || (props.compoFlag !== "itemSearch") ? (<Select
+                      {(props.compoFlag === "itemSearch" && querySearchSelector[i].itemFlag?.value === "portfolioItem") || (props.compoFlag !== "itemSearch") ? (
+                      <Select
                         isClearable={true}
-                        options={props.options}
+                        options={props.options?props.options:options}
                         onChange={(e) => handleFamily(e, i)}
                         value={obj.selectFamily}
                       />) : ('')}
