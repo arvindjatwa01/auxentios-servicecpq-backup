@@ -2,65 +2,40 @@ import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Select from "react-select";
-import MultiSelect from "@mui/material/Select";
-import { Modal, SplitButton, Dropdown, ButtonGroup } from "react-bootstrap";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { Modal } from "react-bootstrap";
 import Checkbox from "@mui/material/Checkbox";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import editIcon from "../../assets/icons/svg/edit.svg";
 import { MuiMenuComponent } from "pages/Operational";
 import { DataGrid } from "@mui/x-data-grid";
-import searchstatusIcon from "../../assets/icons/svg/search-status.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import shareIcon from "../../assets/icons/svg/share.svg";
 import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
 import uploadIcon from "../../assets/icons/svg/upload.svg";
-import cpqIcon from "../../assets/icons/svg/CPQ.svg";
 import deleteIcon from "../../assets/icons/svg/delete.svg";
 import copyIcon from "../../assets/icons/svg/Copy.svg";
 import { Link, useHistory } from "react-router-dom";
-
-import { CommanComponents } from "components";
-import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
-import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
-import CreateNewFolderOutlinedIcon from "@mui/icons-material/CreateNewFolderOutlined";
-import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
-import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
-import ThumbDownOffAltOutlinedIcon from "@mui/icons-material/ThumbDownOffAltOutlined";
-import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
-import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import { faFileAlt, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
 import FormGroup from "@mui/material/FormGroup";
 import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import DateRangeOutlinedIcon from "@mui/icons-material/DateRangeOutlined";
-import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
-import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 import DataTable from "react-data-table-component";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FileUploader } from "react-drag-drop-files";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import { ToastContainer, toast } from "react-toastify";
+// import { ToastContainer, toast } from "react-toastify";
 import boxicon from "../../assets/icons/png/box.png";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import FormControl from "@mui/material/FormControl";
-import { getPortfolioSchema } from "../../services/index";
-import { color } from "@mui/system";
 import $ from "jquery";
 import SelectFilter from "react-select";
 import SearchIcon from "@mui/icons-material/Search";
@@ -71,16 +46,21 @@ import {
   customerSearch,
   machineSearch,
   updateBuilderCustomer,
+  updateBuilderEstimation,
+  updateBuilderGeneralDet,
   updateBuilderMachine,
 } from "services/repairBuilderServices";
 import SearchBox from "./components/SearchBox";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import Moment from "react-moment";
 
 function PartList() {
   const history = useHistory();
   const [searchCustResults, setSearchCustResults] = useState([]);
   const [custViewOnly, setCustViewOnly] = useState(false);
   const [machineViewOnly, setMachineViewOnly] = useState(false);
+  const [generalViewOnly, setGeneralViewOnly] = useState(false);
+  const [estViewOnly, setEstViewOnly] = useState(false);
   const [searchModelResults, setSearchModelResults] = useState([]);
   const [searchSerialResults, setSearchSerialResults] = useState([]);
   const [builderId, setBuilderId] = useState("");
@@ -107,17 +87,31 @@ function PartList() {
     estimationNo: "PL2000000",
     description: "",
     reference: "",
-    validity: "",
+    validity: null,
     version: "",
   });
   const [estimationData, setEstimationData] = useState({
-    preparedBy: "",
-    approvedBy: "",
-    preparedOn: "",
-    revisedBy: "",
-    revisedOn: "",
-    salesOffice: "",
+    preparedBy: "user1",
+    approvedBy: "user1",
+    preparedOn: new Date(),
+    revisedBy: "user1",
+    revisedOn: new Date(),
+    salesOffice: null,
   });
+  const validityOptions = [
+    { value: "15", label: "15 days" },
+    { value: "30", label: "1 month" },
+    { value: "45", label: "45 days" },
+    { value: "60", label: "2 months" },
+  ];
+
+  const salesOfficeOptions = [
+    { value: "Location1", label: "Location1" },
+    { value: "Location2", label: "Location2" },
+    { value: "Location3", label: "Location3" },
+    { value: "Location4", label: "Location4" },
+  ];
+
   const [selectedOption, setSelectedOption] = useState(null);
   const [value, setValue] = React.useState("1");
 
@@ -242,12 +236,22 @@ function PartList() {
     }
   };
 
-  //Individual customer field value change
+  //Individual machine field value change
   const handleMachineDataChange = (e) => {
     var value = e.target.value;
     var name = e.target.name;
     setMachineData({
       ...machineData,
+      [name]: value,
+    });
+  };
+
+  //Individual estimation details field value change
+  const handleEstimationDataChange = (e) => {
+    var value = e.target.value;
+    var name = e.target.name;
+    setEstimationData({
+      ...estimationData,
       [name]: value,
     });
   };
@@ -289,6 +293,46 @@ function PartList() {
       .then((result) => {
         setMachineViewOnly(true);
         setValue("3");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const updateGeneralData = () => {
+    let data = {
+      builderId,
+      estimationDate: generalData.estimationDate,
+      description: generalData.description,
+      reference: generalData.reference,
+      validityDays: generalData.validity?.value,
+      estimationNo: generalData.estimationNo,
+      version: generalData.version,
+    };
+    updateBuilderGeneralDet(bId, data)
+      .then((result) => {
+        setGeneralViewOnly(true);
+        setValue("5");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const updateEstData = () => {
+    let data = {
+      builderId,
+      preparedBy: estimationData.preparedBy,
+      preparedOn: estimationData.preparedOn,
+      revisedBy: estimationData.revisedBy,
+      revisedOn: estimationData.revisedOn,
+      approver: estimationData.approvedBy,
+      salesOffice: estimationData.salesOffice?.value,
+    };
+    updateBuilderEstimation(bId, data)
+      .then((result) => {
+        setEstViewOnly(true);
+        setValue("4");
       })
       .catch((err) => {
         console.log(err);
@@ -594,10 +638,10 @@ function PartList() {
     setValue3(e);
   };
   const handleOption4 = (e) => {
-    setValue4(e)
-  }
+    setValue4(e);
+  };
   const [value3, setValue3] = useState({ value: "1", label: "1" });
-  const [value4, setValue4] = useState({ value: 'Gold', label: 'Gold' });
+  const [value4, setValue4] = useState({ value: "Gold", label: "Gold" });
   const [value2, setValue2] = useState({
     value: "Archived",
     label: "Archived",
@@ -882,7 +926,9 @@ function PartList() {
                     aria-hidden="true"
                     onClick={() => {
                       if (value === "1") setCustViewOnly(false);
-                      if (value === "2") setMachineViewOnly(false);
+                      else if (value === "2") setMachineViewOnly(false);
+                      else if (value === "3") setEstViewOnly(false);
+                      else if (value === "4") setGeneralViewOnly(false);
                     }}
                   ></i>
                 </a>{" "}
@@ -901,7 +947,7 @@ function PartList() {
                   <TabList onChange={handleChange}>
                     <Tab label="Customer" value="1" />
                     <Tab label="Machine " value="2" />
-                    <Tab label="Estimation Team" value="3" />
+                    <Tab label="Estimation Details" value="3" />
                     <Tab label="General Details" value="4" />
                     <Tab label="Price" value="5" />
                   </TabList>
@@ -1306,341 +1352,420 @@ function PartList() {
                   </div>
                 </TabPanel>
                 <TabPanel value="3">
-                  <div className="row">
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          PREPARED BY
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
-                        />
+                  {!estViewOnly ? (
+                    <div className="row">
+                      <div className="col-md-6 col-sm-6">
+                        <div class="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            PREPARED BY
+                          </label>
+                          <input
+                            type="text"
+                            class="form-control border-radius-10"
+                            placeholder="Required"
+                            value={estimationData.preparedBy}
+                            name="preparedBy"
+                            onChange={handleEstimationDataChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div class="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            APPROVED BY
+                          </label>
+                          <input
+                            type="text"
+                            class="form-control border-radius-10"
+                            value={estimationData.approvedBy}
+                            name="approvedBy"
+                            onChange={handleEstimationDataChange}
+                            placeholder="Placeholder (Optional)"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="align-items-center date-box">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            PREPARED ON
+                          </label>
+
+                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <DatePicker
+                              variant="inline"
+                              format="dd/MM/yyyy"
+                              className="form-controldate border-radius-10"
+                              label=""
+                              value={estimationData.preparedOn}
+                              onChange={(e) =>
+                                setEstimationData({
+                                  ...estimationData,
+                                  preparedOn: e,
+                                })
+                              }
+                            />
+                          </MuiPickersUtilsProvider>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div class="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            REVISED BY
+                          </label>
+                          <input
+                            type="text"
+                            class="form-control border-radius-10"
+                            value={estimationData.revisedBy}
+                            name="revisedBy"
+                            onChange={handleEstimationDataChange}
+                            placeholder="Placeholder (Optional)"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="align-items-center date-box">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            REVISED ON
+                          </label>
+                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <DatePicker
+                              variant="inline"
+                              format="dd/MM/yyyy"
+                              className="form-controldate border-radius-10"
+                              label=""
+                              value={estimationData.revisedOn}
+                              onChange={(e) =>
+                                setEstimationData({
+                                  ...estimationData,
+                                  revisedOn: e,
+                                })
+                              }
+                            />
+                          </MuiPickersUtilsProvider>
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            SALES OFFICE / BRANCH
+                          </label>
+                          <Select
+                            onChange={(e) =>
+                              setEstimationData({ ...estimationData, salesOffice: e })}
+                            options={salesOfficeOptions}
+                            placeholder="Optional"
+                            value={estimationData.salesOffice}
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          APPROVED BY
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
-                        />
+                  ) : (
+                    <div className="row mt-3">
+                      <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            PREPARED BY
+                          </p>
+                          <h6 class="font-weight-500">
+                            {estimationData.preparedBy}
+                          </h6>
+                        </div>
+                      </div>
+                      <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            APPROVED BY
+                          </p>
+                          <h6 class="font-weight-500">
+                            {estimationData.approvedBy}
+                          </h6>
+                        </div>
+                      </div>
+                      <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            PREPARED ON
+                          </p>
+                          <h6 class="font-weight-500">
+                          <Moment format="DD/MM/YYYY">
+                          {estimationData.preparedOn}
+                            </Moment>
+                            
+                          </h6>
+                        </div>
+                      </div>
+                      <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            REVISED BY{" "}
+                          </p>
+                          <h6 class="font-weight-500">
+                            {estimationData.revisedBy}
+                          </h6>
+                        </div>
+                      </div>
+                      <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            REVISED ON
+                          </p>
+                          <h6 class="font-weight-500">
+                          <Moment format="DD/MM/YYYY">
+                          {estimationData.revisedOn}
+                            </Moment>
+                          </h6>
+                        </div>
+                      </div>
+                      <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            SALES OFFICE / BRANCH
+                          </p>
+                          <h6 class="font-weight-500">
+                            {estimationData.salesOffice?.value}
+                          </h6>
+                        </div>
                       </div>
                     </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          PREPARED ON
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          REVISED BY
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          REVISED ON
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          SALES OFFICE / BRANCH
-                        </label>
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row mt-3">
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          PREPARED BY
-                        </p>
-                        <h6 class="font-weight-500">Dan Ham</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          APPROVED BY
-                        </p>
-                        <h6 class="font-weight-500">01.09.2021</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          PREPARED ON
-                        </p>
-                        <h6 class="font-weight-500">Steve Eckersley</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          REVISED BY{" "}
-                        </p>
-                        <h6 class="font-weight-500">Dan Ham</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          REVISED ON
-                        </p>
-                        <h6 class="font-weight-500">10.09.2021</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          SALES OFFICE / BRANCH
-                        </p>
-                        <h6 class="font-weight-500">Sales Office</h6>
-                      </div>
-                    </div>
-                  </div>
+                  )}
                   <div className="row" style={{ justifyContent: "right" }}>
                     <button
                       type="button"
                       className="btn btn-light bg-primary text-white"
+                      onClick={updateEstData}
+                      disabled={
+                        !estimationData.preparedBy ||
+                        !estimationData.preparedOn ||
+                        !estimationData.salesOffice
+                      }
                     >
                       Save & Next
                     </button>
                   </div>
                 </TabPanel>
                 <TabPanel value="4">
-                  <div className="row">
-                    <div className="col-md-6 col-sm-6">
-                    <div className="align-items-center date-box">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          <span className=" mr-2">ESTIMATION DATE</span>
-                        </label>
-                        {/* <div className="form-group w-100"> */}
+                  {!generalViewOnly ? (
+                    <div className="row">
+                      <div className="col-md-6 col-sm-6">
+                        <div className="align-items-center date-box">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            <span className=" mr-2">ESTIMATION DATE</span>
+                          </label>
+                          {/* <div className="form-group w-100"> */}
 
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                          <DatePicker
-                            variant="inline"
-                            format="dd/MM/yyyy"
-                            className="form-controldate border-radius-10"
-                            label=""
-                            value={generalData.estimationDate}
+                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <DatePicker
+                              variant="inline"
+                              format="dd/MM/yyyy"
+                              className="form-controldate border-radius-10"
+                              label=""
+                              value={generalData.estimationDate}
+                              onChange={(e) =>
+                                setGeneralData({
+                                  ...generalData,
+                                  estimationDate: e,
+                                })
+                              }
+                            />
+                          </MuiPickersUtilsProvider>
+                          {/* </div> */}
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div class="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            ESTIMATION #
+                          </label>
+                          <input
+                            type="text"
+                            disabled
+                            class="form-control border-radius-10"
+                            id="estNoId"
+                            value={generalData.estimationNo}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div class="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            DESCRIPTION
+                          </label>
+                          <input
+                            type="text"
+                            class="form-control border-radius-10"
+                            id="desc-id"
+                            placeholder="Required"
+                            maxLength={140}
+                            value={generalData.description}
                             onChange={(e) =>
                               setGeneralData({
                                 ...generalData,
-                                estimationDate: e,
+                                description: e.target.value,
                               })
                             }
                           />
-                        </MuiPickersUtilsProvider>
-                        {/* </div> */}
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div class="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            REFERENCE
+                          </label>
+                          <input
+                            type="text"
+                            class="form-control border-radius-10"
+                            id="desc-id"
+                            placeholder="Required"
+                            maxLength={140}
+                            value={generalData.reference}
+                            onChange={(e) =>
+                              setGeneralData({
+                                ...generalData,
+                                reference: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            VALIDITY
+                          </label>
+                          <Select
+                            // defaultValue={selectedOption}
+                            onChange={(e) =>
+                              setGeneralData({ ...generalData, validity: e })
+                            }
+                            options={validityOptions}
+                            placeholder="placeholder (Required)"
+                            value={generalData.validity}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-6">
+                        <div class="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            for="exampleInputEmail1"
+                          >
+                            VERSION
+                          </label>
+                          <input
+                            type="text"
+                            class="form-control border-radius-10"
+                            placeholder="Placeholder (Optional)"
+                            disabled
+                            value={parseFloat(value3.value).toFixed(1)}
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          ESTIMATION #
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          class="form-control border-radius-10"
-                          id="estNoId"
-                          value={generalData.estimationNo}
-                        />
+                  ) : (
+                    <div className="row mt-3">
+                      <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            ESTIMATION DATE{" "}
+                          </p>
+                          <h6 class="font-weight-500">
+                            <Moment format="DD/MM/YYYY">
+                              {generalData.estimationDate}
+                            </Moment>
+                          </h6>
+                        </div>
+                      </div>
+                      <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            ESTIMATION #
+                          </p>
+                          <h6 class="font-weight-500">
+                            {generalData.estimationNo}{" "}
+                          </h6>
+                        </div>
+                      </div>
+                      <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            DESCRIPTION
+                          </p>
+                          <h6 class="font-weight-500">
+                            {generalData.description}
+                          </h6>
+                        </div>
+                      </div>
+                      <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            REFERENCE{" "}
+                          </p>
+                          <h6 class="font-weight-500">
+                            {generalData.reference}
+                          </h6>
+                        </div>
+                      </div>
+                      <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            VALIDTITY (DAYs)
+                          </p>
+                          <h6 class="font-weight-500">
+                            {generalData.validity?.value}{" "}
+                          </h6>
+                        </div>
+                      </div>
+                      <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">
+                            VERSION
+                          </p>
+                          <h6 class="font-weight-500">
+                            {parseFloat(value3.value).toFixed(1)}
+                          </h6>
+                        </div>
                       </div>
                     </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          DESCRIPTION
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="desc-id"
-                          placeholder="Required"
-                          maxLength={140}
-                          value={generalData.description}
-                          onChange={(e) => setGeneralData({...generalData, description: e.target.value})}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          REFERENCE
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="desc-id"
-                          placeholder="Required"
-                          maxLength={140}
-                          value={generalData.reference}
-                          onChange={(e) => setGeneralData({...generalData, reference: e.target.value})}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          VALIDITY
-                        </label>
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          VERSION
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row mt-3">
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          ESTIMATION DATE{" "}
-                        </p>
-                        <h6 class="font-weight-500">3/10/2021</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          ESTIMATION #
-                        </p>
-                        <h6 class="font-weight-500">1005583 </h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          DESCRIPTION
-                        </p>
-                        <h6 class="font-weight-500">
-                          Koolan 992k WL006(revised)
-                        </h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          REFERENCE{" "}
-                        </p>
-                        <h6 class="font-weight-500">KM1305RE</h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
-                          VALIDTITY
-                        </p>
-                        <h6 class="font-weight-500">30 days </h6>
-                      </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">VERSION</p>
-                        <h6 class="font-weight-500">2</h6>
-                      </div>
-                    </div>
-                  </div>
+                  )}
                   <div className="row" style={{ justifyContent: "right" }}>
                     <button
                       type="button"
                       className="btn btn-light bg-primary text-white"
+                      onClick={updateGeneralData}
+                      disabled={
+                        !generalData.estimationDate ||
+                        !generalData.description ||
+                        !generalData.estimationNo ||
+                        !generalData.reference ||
+                        !generalData.validity
+                      }
                     >
                       Save & Next
                     </button>
@@ -1826,7 +1951,10 @@ function PartList() {
                     </h5>
                     <Select
                       className="customselectbtn1 col-auto"
-                      onChange={(e) => handleOption4(e)} options={options4} value={value4} />
+                      onChange={(e) => handleOption4(e)}
+                      options={options4}
+                      value={value4}
+                    />
                     <p className=" mb-0">
                       <a href="#" className="ml-3">
                         <FontAwesomeIcon icon={faPen} />
@@ -1948,8 +2076,15 @@ function PartList() {
                 </div>
               </div>
               <div className="col-1 ">
-          <div className="text-center py-3">
-          <a className="btn bg-primary text-white " data-toggle="modal" data-target="#Datatable"><SearchIcon /><span className="ml-1">Search</span></a>
+                <div className="text-center py-3">
+                  <a
+                    className="btn bg-primary text-white "
+                    data-toggle="modal"
+                    data-target="#Datatable"
+                  >
+                    <SearchIcon />
+                    <span className="ml-1">Search</span>
+                  </a>
                 </div>
               </div>
               {/* <div className="col-1">

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
-import { CREATE_REPAIR_BUILDER, SEARCH_CUSTOMER, SEARCH_MACHINE, UPDATE_REPAIR_CUSTOMER, UPDATE_REPAIR_MACHINE, UPDATE_REPAIR_PRICE } from "./CONSTANTS";
+import { CREATE_REPAIR_BUILDER, SEARCH_CUSTOMER, SEARCH_MACHINE, UPDATE_REPAIR_CUSTOMER, UPDATE_REPAIR_ESTIMATION_TEAM, UPDATE_REPAIR_GENERAL_DETAILS, UPDATE_REPAIR_MACHINE, UPDATE_REPAIR_PRICE } from "./CONSTANTS";
 const config = {
   headers: {
     "Content-Type": "application/json",
@@ -139,7 +139,7 @@ export const machineSearch = (searchStr) => {
     return new Promise((resolve, reject) => {
       try {
         axios
-          .put(UPDATE_REPAIR_MACHINE(builderId), data, config)
+          .put(UPDATE_REPAIR_ESTIMATION_TEAM(builderId), data, config)
           .then((res) => {
             console.log("updateBuilderEstimation > axios res=", res);
             if(res.status === 200){
@@ -167,7 +167,7 @@ export const machineSearch = (searchStr) => {
     return new Promise((resolve, reject) => {
       try {
         axios
-          .put(UPDATE_REPAIR_CUSTOMER(builderId), data, config)
+          .put(UPDATE_REPAIR_GENERAL_DETAILS(builderId), data, config)
           .then((res) => {
             console.log("updateBuilderGeneralDet > axios res=", res);
             resolve(res);
