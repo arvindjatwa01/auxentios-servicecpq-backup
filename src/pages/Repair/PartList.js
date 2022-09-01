@@ -831,7 +831,7 @@ function PartList() {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                     >
-                      <span>
+                      <span  className="convert mx-2">
                         Convert to
                         <span>
                           <KeyboardArrowDownIcon />
