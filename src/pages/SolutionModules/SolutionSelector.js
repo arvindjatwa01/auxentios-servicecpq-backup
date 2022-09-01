@@ -22,6 +22,8 @@ import searchstatusIcon from '../../assets/icons/svg/search-status.svg'
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { getAllPortfolios } from '../../services/index'
+
+
 const colourOptions = [
     {
         "value": 1,
@@ -53,6 +55,8 @@ export function SolutionSelector(props) {
     const [age2, setAge2] = React.useState('5');
 
     const [activeStep, setActiveStep] = useState(1)
+
+    const [rowData, setRowData] = useState([])
 
     const handleStep = (step) => {
         setActiveStep(step);
@@ -138,9 +142,17 @@ export function SolutionSelector(props) {
             setSearchByVisible(true)
             //API CALL
             const portfoliosData = getAllPortfolios()
+
+            // portfoliosData.then(function (result) {
+            //     console.log("result is : ", result) // "Some User token"
+            //     setRowData(result)
+            // })
+
         }
         setSearchOptions(e)
     }
+
+    // console.log("Row data is : ", rowData)
 
     const handleTypeOfSolution = (e) => {
         setSelectTypeOfSolution(e.target.value)

@@ -49,10 +49,12 @@ import { bindActionCreators } from "redux";
 import { actionCreator } from "../../redux/index";
 import { getGuidedSolution } from "../../services/index";
 
-export const GuidedSolution = () => {
+export const GuidedSolution = (props) => {
+  console.log("props data : ", props);
+
   const [guidedSolutions, setGuidedSolutions] = useState([]);
   const state = useSelector((state) => state);
-  console.log("State in Guide Solution",state)
+  console.log("State in Guide Solution", state)
   const dispatch = useDispatch();
   const {
     resetQuestion,
@@ -84,7 +86,7 @@ export const GuidedSolution = () => {
   const [q4Dropdown, setQ4Dropdown] = useState(false);
   const [formControlLbls, setFormControlLbls] = useState([]);
   const [fillHeader, setFillHeader] = useState(false);
-  const [loading,setLoading]=useState(true)
+  const [loading, setLoading] = useState(true)
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -210,10 +212,39 @@ export const GuidedSolution = () => {
   //   }
 
   // }
+
+  // console.log(object)
   const handleContinuePress = (currentCounter) => {
+    // console.log("current counter : ",guidedSolutionNames);
+    // alert(currentCounter)
     //Counter Not Increase Yet
+    console.log("localstorage value is : => ", localStorage.getItem('checkedVal'))
+    console.log("guide solutions data is : ", guidedSolutions)
+
+
+
+    // Question 1
+    // if (currentCounter == 0) {
+    //   var guidedSolutionsName = []
+    //   guidedSolutions.map(
+    //     (solutionNameRes, index) => {
+    //       var dict = {
+    //         key: solutionNameRes.solutionName,
+    //         value: index,
+    //       };
+    //       guidedSolutionsName.push(dict);
+    //     }
+    //   );
+    //   addFieldName("solutionName");
+    //   addFormControlLabel(guidedSolutionsName);
+
+    //   console.log("addFormControlLabel is : => ",addFormControlLabel)
+    // }
+
+
     //Question 1
     if (currentCounter == 0) {
+
       var guidedSolutionNames = [];
       if (
         state.guidedSolution?.guidedSolutionResponse != null &&
@@ -234,6 +265,7 @@ export const GuidedSolution = () => {
         alert("Error");
       }
     }
+
     //Question 2
     if (currentCounter == 1) {
       //Check Which parent flow it is;
@@ -345,6 +377,7 @@ export const GuidedSolution = () => {
         alert("Error");
       }
     }
+
     //Question 3
     if (currentCounter == 2) {
       //Check Which parent flow it is;
@@ -468,6 +501,7 @@ export const GuidedSolution = () => {
         alert("Error");
       }
     }
+
     //Question 4
     if (currentCounter == 3) {
       //Check Which parent flow it is;
@@ -627,6 +661,7 @@ export const GuidedSolution = () => {
         alert("Error");
       }
     }
+
     //Question 5
     if (currentCounter == 4) {
       //Check Which parent flow it is;
@@ -789,6 +824,7 @@ export const GuidedSolution = () => {
         alert("Error");
       }
     }
+
     //Counter Increase below
     setQuestionNoCounter(questionNoCounter + 1);
   };
@@ -804,7 +840,7 @@ export const GuidedSolution = () => {
   useEffect(() => {
     getGuidedSolution()
       .then((res) => {
-        console.log("guidedSolution in useEffect",res)
+        console.log("guidedSolution in useEffect", res)
         setGuidedSolutions(res);
         addGuidedSolutionResponse(res);
       })
@@ -911,7 +947,7 @@ export const GuidedSolution = () => {
                   <></>
                 )}
                 {state.guidedSolution?.isResultFound &&
-                questionNoCounter == 6 ? (
+                  questionNoCounter == 6 ? (
                   <div className="d-flex align-items-center justify-content-between mt-5">
                     <div>
                       {/* <a className="btn cursor" onClick={handlePreviousPress}><FontAwesomeIcon icon="fa-solid fa-arrow-left" /><KeyboardBackspaceIcon className=" font-size-16" /> Previous</a> */}
@@ -928,7 +964,7 @@ export const GuidedSolution = () => {
                 ) : (
                   <>
                     {state.guidedSolution?.isResultFound &&
-                    questionNoCounter != 6 ? (
+                      questionNoCounter != 6 ? (
                       <div className="d-flex align-items-center justify-content-between mt-5">
                         <div>
                           {/* <a className="btn cursor" onClick={handlePreviousPress}><FontAwesomeIcon icon="fa-solid fa-arrow-left" /><KeyboardBackspaceIcon className=" font-size-16" /> Previous</a> */}

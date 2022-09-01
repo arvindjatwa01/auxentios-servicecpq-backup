@@ -15,6 +15,8 @@ export const getAllPortfolios = () => {
         .get(GET_ALL_SOLUTION_PORTFOLIOS())
         .then((res) => {
           console.log("getAllPortfolios > axios res=", res);
+          // console.log("getAllPortfolios > axios res data=", res.data);
+          
           resolve(res.data);
         })
         .catch((err) => {
