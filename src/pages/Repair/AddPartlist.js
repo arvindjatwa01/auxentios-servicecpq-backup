@@ -476,7 +476,7 @@ const history=useHistory()
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-           <span>Convert to<span><KeyboardArrowDownIcon/></span></span>
+           <span  className="convert mx-2">Convert to<span><KeyboardArrowDownIcon/></span></span>
           </IconButton>
 
       </Box>
