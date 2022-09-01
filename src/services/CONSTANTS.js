@@ -23,6 +23,8 @@ const PRICING_URI = PRICING_BASE_URL + "pricing-svc/v1/";
 const SOLUTION_BUILDER_URI = SOLUTION_BASE_URL + "solution-builder-svc/v1/";
 const USER_SERVICE_URI = USER_SERVICE_BASE_URL + "user-svc/v1/user/";
 const SEARCH_COVERAGE = DATA_SERVICE_BASE_URL + "data-svc/api/v1/coverage/"
+const DATA_SERVICE_URI = DATA_SERVICE_BASE_URL + "data-svc/api/v1/";
+const REPAIR_BUILDER_URI = "http://35.200.157.237/repair-builder-svc/v1/";
 
 // search for coverage
 
@@ -68,7 +70,19 @@ export const PORTFOLIO_ITEM_PRICE_RKID = () => CREATE_PORTFOLIO_ITEM() + "/get-R
 export const PORTFOLIO_ITEM_PRICE_SJID = () => CREATE_PORTFOLIO_ITEM() + "/get-RB-price-update-item-sjid";
 export const PORTFOLIO_ITEM_SEARCH = () => CREATE_PORTFOLIO_ITEM()+ "/search?search=";
 
-
 //Schema Config
 export const SCHEMA_CONFIG = () => SOLUTION_BUILDER_URI + "schema";
 export const GUIDED_SOLUTIONS = () => SOLUTION_BUILDER_URI + "/guided-solution";
+
+// Repair Builder Services
+export const CREATE_REPAIR_BUILDER = () => REPAIR_BUILDER_URI + "builder";
+// export const ADD_REPAIR_SEGMENT = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/segment`;
+// export const ADD_REPAIR_OPERATION= (segmentId) => REPAIR_BUILDER_URI + `segment/${segmentId}/operation`;
+export const ADD_REPAIR_PART = () => REPAIR_BUILDER_URI + "builder";
+export const UPDATE_REPAIR_CUSTOMER = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/customer`;
+export const UPDATE_REPAIR_MACHINE = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/machine`;
+export const UPDATE_REPAIR_ESTIMATION_TEAM = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/estimation-team`;
+export const UPDATE_REPAIR_GENERAL_DETAILS = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/estimate`;
+export const UPDATE_REPAIR_PRICE = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/price`;
+export const SEARCH_CUSTOMER = (query) => DATA_SERVICE_URI + `customer/search?search=${query}`;
+export const SEARCH_MACHINE = (query) => DATA_SERVICE_URI + `equipment/search?search=${query}`;
