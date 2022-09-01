@@ -11,28 +11,34 @@ import { GuidedSolution } from 'pages/SolutionModules/GuidedSolution';
 export const RadioGroupComponent = props => {
     const history = useHistory();
     const [formControlLabel, setFormControlLabel] = useState([])
+    const [checkedData, setCheckedData] = useState({})
     // const goTo = (path) => {
     //     history.push(path || ROOT);
     // }
     const [selectValue, setSelectValue] = useState("");
 
     const handleTypeChange = (e) => {
-        console.log("checked is : ", $(e.target).closest("label")[0].id)
+        console.log($(e.target).closest("label")[0].id)
         setSelectValue(e.target.value)
         var dict = {
             key: e.target.value,
             value: $(e.target).closest("label")[0].id
         }
         props.parentCallback(dict);
+        setCheckedData(dict)
         // console.log("ssss", e.target.value);
         // 
         // <GuidedSolution selectValueInit={selectValue} />
     };
 
+    // useEffect(() => {
+    //     <GuidedSolution checkedData={checkedData} />
+    // }, [formControlLabel])
+
 
 
     useEffect(() => {
-      
+
         if (props?.formControlLabels?.length > 0) {
             var tempFormControlLbl = [];
             if (props.withDescription) {
@@ -71,18 +77,26 @@ export const RadioGroupComponent = props => {
         }
         setSelectValue(props.dValue)
     }, [props.dValue]);
-    console.log("my props ", props)
+
+    console.log("checked data is : ", checkedData)
     return (
-        <RadioGroup className='my-3'
-            row
-            aria-labelledby="demo-form-control-label-placement"
-            name="position"
-            defaultValue="top"
-            value={selectValue}
-            onChange={handleTypeChange}
-        >
-            {formControlLabel}
-        </RadioGroup>
+        <>
+
+            <RadioGroup className='my-3'
+                row
+                aria-labelledby="demo-form-control-label-placement"
+                name="position"
+                defaultValue="top"
+                value={selectValue}
+                onChange={handleTypeChange}
+            >
+                {formControlLabel}
+            </RadioGroup>
+
+
+            {/* <GuidedSolution checkedData={checkedData} /> */}
+        </>
+
     )
 }
 
