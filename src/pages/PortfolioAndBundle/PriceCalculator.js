@@ -35,21 +35,6 @@ const PriceCalculator = (props) => {
   useEffect(() => {
     setPriceCalculator(props.priceCalculator);
   }, [props]);
-
-  const {
-    setOpenAddBundleItem,
-    setOpenSearchSolution,
-    generalComponentData,
-    setGeneralComponentData,
-    addPortFolioItem,
-    bundleItems,
-    setBundleItems,
-    createServiceOrBundle,
-    setTempBundleItems,
-    tempBundleItems,
-    serviceOrBundlePrefix
-  } = props;
-
   const frequencyOptions = [
     { label: "Cyclic", value: "Cyclic" },
     { label: "once", value: "once" },
@@ -62,17 +47,28 @@ const PriceCalculator = (props) => {
     { value: "vanilla", label: "Construction-Medium" },
     { value: "Construction", label: "Construction" },
   ];
-const handleItemPriceSave=()=>{
-  props.setTabs("3")
-  props.getPriceCalculatorDataFun(priceCalculator)
-  props.handleSavePrices()
-}
-const handleBundlePriceSave=()=>{
-  props.setBundleServiceShow(false)
-  props.getPriceCalculatorDataFun(priceCalculator)
-  props.handleSavePrices()
-}
- 
+
+  const handlePriceSelectChange = (e) => {
+    setPriceCalculator({
+      priceCalculator,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const handlePriceInputChange = (e) => {
+    console.log("handlePriceInputChange");
+  };
+
+  const handleItemPriceSave = () => {
+    props.setTabs("3");
+    props.getPriceCalculatorDataFun(priceCalculator);
+    props.handleSavePrices();
+  };
+  const handleBundlePriceSave = () => {
+    props.setBundleServiceShow(false);
+    props.getPriceCalculatorDataFun(priceCalculator);
+    props.handleSavePrices();
+  };
+
   return (
     <>
       <div className="ligt-greey-bg p-3">
@@ -117,6 +113,7 @@ const handleBundlePriceSave=()=>{
                   options={options}
                   defaultValue={props?.priceCalculator?.priceMethod}
                   value={priceCalculator.priceMethod}
+                  name="priceMethod"
                   onChange={(e) =>
                     setPriceCalculator({ ...priceCalculator, priceMethod: e })
                   }
@@ -139,6 +136,7 @@ const handleBundlePriceSave=()=>{
                   placeholder="$100"
                   defaultValue={props?.priceCalculator?.listPrice}
                   value={priceCalculator.listPrice}
+                  name="listPrice"
                   onChange={(e) =>
                     setPriceCalculator({
                       ...priceCalculator,
@@ -161,6 +159,7 @@ const handleBundlePriceSave=()=>{
                     <Select
                       isClearable={true}
                       value={priceCalculator.priceAdditionalSelect}
+                      name="priceAdditionalSelect"
                       onChange={(e) =>
                         setPriceCalculator({
                           ...priceCalculator,
@@ -177,6 +176,7 @@ const handleBundlePriceSave=()=>{
                     placeholder="10%"
                     defaultValue={props?.priceCalculator?.priceAdditionalInput}
                     value={priceCalculator.priceAdditionalInput}
+                    name="priceAdditionalInput"
                     onChange={(e) =>
                       setPriceCalculator({
                         ...priceCalculator,
@@ -199,6 +199,7 @@ const handleBundlePriceSave=()=>{
                   <Select
                     className="select-input"
                     value={priceCalculator.priceEscalationSelect}
+                    name="priceEscalationSelect"
                     onChange={(e) =>
                       setPriceCalculator({
                         ...priceCalculator,
@@ -214,6 +215,7 @@ const handleBundlePriceSave=()=>{
                     placeholder="20%"
                     defaultValue={props?.priceCalculator?.priceEscalationInput}
                     value={priceCalculator.priceEscalationInput}
+                    name="priceEscalationInput"
                     onChange={(e) =>
                       setPriceCalculator({
                         ...priceCalculator,
@@ -237,6 +239,7 @@ const handleBundlePriceSave=()=>{
                   className="form-control border-radius-10"
                   defaultValue={props?.priceCalculator?.calculatedPrice}
                   value={priceCalculator.calculatedPrice}
+                  name="calculatedPrice"
                   onChange={(e) =>
                     setPriceCalculator({
                       ...priceCalculator,
@@ -259,6 +262,7 @@ const handleBundlePriceSave=()=>{
                   type="text"
                   className="form-control border-radius-10"
                   value={priceCalculator.flatPrice}
+                  name="flatPrice"
                   onChange={(e) =>
                     setPriceCalculator({
                       ...priceCalculator,
@@ -283,6 +287,7 @@ const handleBundlePriceSave=()=>{
                   <div className="">
                     <Select
                       value={priceCalculator.discountTypeSelect}
+                      name="discountTypeSelect"
                       onChange={(e) =>
                         setPriceCalculator({
                           ...priceCalculator,
@@ -298,6 +303,7 @@ const handleBundlePriceSave=()=>{
                     type="text"
                     className="form-control rounded-top-left-0 rounded-bottom-left-0"
                     value={priceCalculator.discountTypeInput}
+                    name="discountTypeInput"
                     onChange={(e) =>
                       setPriceCalculator({
                         ...priceCalculator,
@@ -322,6 +328,7 @@ const handleBundlePriceSave=()=>{
                 <Select
                   defaultValue={props?.priceCalculator?.priceYear}
                   value={priceCalculator.priceYear}
+                  name="priceYear"
                   onChange={(e) =>
                     setPriceCalculator({ ...priceCalculator, priceYear: e })
                   }
@@ -354,6 +361,7 @@ const handleBundlePriceSave=()=>{
                     placeholder="per hour"
                     defaultValue={props?.priceCalculator?.startUsage}
                     value={priceCalculator.startUsage}
+                    name="startUsage"
                     onChange={(e) =>
                       setPriceCalculator({
                         ...priceCalculator,
@@ -383,6 +391,7 @@ const handleBundlePriceSave=()=>{
                     placeholder="10%"
                     defaultValue={props?.priceCalculator?.endUsage}
                     value={priceCalculator.endUsage}
+                    name="endUsage"
                     onChange={(e) =>
                       setPriceCalculator({
                         ...priceCalculator,
@@ -406,6 +415,7 @@ const handleBundlePriceSave=()=>{
                   options={options}
                   defaultValue={props?.priceCalculator?.usageType}
                   value={priceCalculator.usageType}
+                  name="usageType"
                   onChange={(e) =>
                     setPriceCalculator({ ...priceCalculator, usageType: e })
                   }
@@ -428,9 +438,10 @@ const handleBundlePriceSave=()=>{
                   FREQUENCY
                 </label>
                 <Select
-                      defaultValue={props?.priceCalculator?.frequency}
+                  defaultValue={props?.priceCalculator?.frequency}
                   options={frequencyOptions}
                   value={priceCalculator.frequency}
+                  name="frequency"
                   onChange={(e) =>
                     setPriceCalculator({ ...priceCalculator, frequency: e })
                   }
@@ -455,6 +466,7 @@ const handleBundlePriceSave=()=>{
                     className="form-control rounded-top-left-0 rounded-bottom-left-0"
                     placeholder="250"
                     value={priceCalculator.cycle}
+                    name="cycle"
                     onChange={(e) =>
                       setPriceCalculator({
                         ...priceCalculator,
@@ -487,7 +499,11 @@ const handleBundlePriceSave=()=>{
           <a
             href="#"
             className="btn text-white bg-primary"
-            onClick={props.serviceOrBundlePrefix === ""?handleItemPriceSave : handleBundlePriceSave}
+            onClick={
+              props.serviceOrBundlePrefix === ""
+                ? handleItemPriceSave
+                : handleBundlePriceSave
+            }
           >
             Save
           </a>

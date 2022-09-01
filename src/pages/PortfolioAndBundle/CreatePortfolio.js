@@ -100,7 +100,7 @@ import {
   itemCreation,
   createCoverage,
   getItemPrice,
-  saveItemPrice
+  updateItemData,
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -299,7 +299,7 @@ export function CreatePortfolio() {
   const [portfolioId, setPortfolioId] = useState();
   const [currentItemId, setCurrentItemId] = useState();
   const [alignment, setAlignment] = useState("Portfolio");
-  const [prefilgabelGeneral, setPrefilgabelGeneral] = useState("PORTFOLIO");
+  const [prefilgabelGeneral, setPrefilgabelGeneral] = useState("");
   const [priceAgreementOption, setPriceAgreementOption] = useState(false);
   const [open2, setOpen2] = useState(false);
 
@@ -392,6 +392,9 @@ export function CreatePortfolio() {
   const [tempBundleItemCheckList, setTempBundleItemCheckList] = useState({});
   const [bundleTabs, setBundleTabs] = useState("1");
   const [bundleServiceShow, setBundleServiceShow] = useState(false);
+  const [editItemShow, setEditItemShow] = useState(false);
+  const [passItemEditRowData, setPassItemEditRowData] = useState();
+  const [passBundleEditRowData, setPassBundleEditRowData] = useState();
 
   const frequencyOptions = [
     { label: "Cyclic", value: "Cyclic" },
@@ -635,13 +638,26 @@ export function CreatePortfolio() {
         alert("something went wrong");
         return;
       }
-      setCurrentItemId(itemRes.data.itemId)
+      setCurrentItemId(itemRes.data.itemId);
       const itemPriceRes = await getItemPrice({
         standardJobId: itemRes.data.itemBodyModel.standardJobId,
         repairKitId: itemRes.data.itemBodyModel.repairKitId,
         itemId: itemRes.data.itemId,
       });
-      const {priceMethod,listPrice,priceEscalation,additional,calculatedPrice,flatPrice,discountType,year,totalPrice,usage,avgUsage,frequency} = itemPriceRes.itemBodyModel;
+      const {
+        priceMethod,
+        listPrice,
+        priceEscalation,
+        additional,
+        calculatedPrice,
+        flatPrice,
+        discountType,
+        year,
+        totalPrice,
+        usage,
+        avgUsage,
+        frequency,
+      } = itemPriceRes.itemBodyModel;
 
       setPriceCalculator({
         ...priceCalculator,
@@ -654,11 +670,10 @@ export function CreatePortfolio() {
         discountTypeInput: discountType,
         priceYear: { label: year, value: year },
         totalPrice,
-        frequency:{label:frequency,value:frequency},
-        usageType:{label:usage,value:usage},
-        startUsage:avgUsage,
-        endUsage:avgUsage
-
+        frequency: { label: frequency, value: frequency },
+        usageType: { label: usage, value: usage },
+        startUsage: avgUsage,
+        endUsage: avgUsage,
       });
 
       const _generalComponentData = { ...generalComponentData };
@@ -828,7 +843,7 @@ export function CreatePortfolio() {
 
       const res = await itemCreation(reqObj);
       console.log("service or bundle res:", res);
-      setCurrentItemId(res.data.itemId)
+      setCurrentItemId(res.data.itemId);
       if (res.status == 200) {
         toast(`👏 ${serviceOrBundlePrefix} created`, {
           position: "top-right",
@@ -845,25 +860,37 @@ export function CreatePortfolio() {
           repairKitId: res.data.itemBodyModel.repairKitId,
           itemId: res.data.itemId,
         });
-        const {priceMethod,listPrice,priceEscalation,additional,calculatedPrice,flatPrice,discountType,year,totalPrice,usage,avgUsage,frequency} = itemPriceRes.itemBodyModel;
+        const {
+          priceMethod,
+          listPrice,
+          priceEscalation,
+          additional,
+          calculatedPrice,
+          flatPrice,
+          discountType,
+          year,
+          totalPrice,
+          usage,
+          avgUsage,
+          frequency,
+        } = itemPriceRes.itemBodyModel;
 
-      setPriceCalculator({
-        ...priceCalculator,
-        priceMethod: { label: priceMethod, value: priceMethod },
-        listPrice,
-        priceEscalationInput: priceEscalation,
-        priceAdditionalInput: additional,
-        calculatedPrice,
-        flatPrice,
-        discountTypeInput: discountType,
-        priceYear: { label: year, value: year },
-        totalPrice,
-        frequency:{label:frequency,value:frequency},
-        usageType:{label:usage,value:usage},
-        startUsage:avgUsage,
-        endUsage:avgUsage
-
-      });
+        setPriceCalculator({
+          ...priceCalculator,
+          priceMethod: { label: priceMethod, value: priceMethod },
+          listPrice,
+          priceEscalationInput: priceEscalation,
+          priceAdditionalInput: additional,
+          calculatedPrice,
+          flatPrice,
+          discountTypeInput: discountType,
+          priceYear: { label: year, value: year },
+          totalPrice,
+          frequency: { label: frequency, value: frequency },
+          usageType: { label: usage, value: usage },
+          startUsage: avgUsage,
+          endUsage: avgUsage,
+        });
         // call update API for portfolio to update item with service or bundle
         const _bundleItems = [...bundleItems];
         if (_bundleItems[0].associatedServiceOrBundle) {
@@ -975,85 +1002,203 @@ export function CreatePortfolio() {
     }
   };
 
-const handleSavePrices= async()=>{
-  try{
-    let reqObj = {
-      itemId: 0,
-      itemName: "",
-      itemHeaderModel: {
-        itemHeaderId: 0,
-        // itemHeaderId: parseInt(generalComponentData.portfolioId),
-        itemHeaderDescription: createServiceOrBundle.description,
-        bundleFlag: serviceOrBundlePrefix===""?"PORTFOLIO":serviceOrBundlePrefix==="SERVICE"?"SERVICE":"BUNDLE_ITEM",
-        reference: createServiceOrBundle.reference,
-        itemHeaderMake: createServiceOrBundle.make,
-        itemHeaderFamily: "",
-        model: createServiceOrBundle.models,
-        prefix: createServiceOrBundle.prefix,
-        type: "MACHINE",
-        additional: createServiceOrBundle.additional.value,
-        currency: "",
-        netPrice: 0,
-        itemProductHierarchy: generalComponentData.productHierarchy,
-        itemHeaderGeographic: generalComponentData.geographic,
-        responseTime: generalComponentData.responseTime,
-        usage: "",
-        validFrom: generalComponentData.validFrom,
-        validTo: generalComponentData.validTo,
-        estimatedTime: "",
-        servicePrice: 0,
-        status: "NEW",
-      },
-      itemBodyModel: {
-        itemBodyId: parseInt(addPortFolioItem.id),
-        itemBodyDescription: addPortFolioItem.description,
-        quantity: parseInt(addPortFolioItem.quantity),
-        startUsage: priceCalculator.startUsage,
-        endUsage: priceCalculator.endUsage,
-        standardJobId: "",
-        frequency: addPortFolioItem.frequency.value,
-        additional: "",
-        spareParts: ["WITH_SPARE_PARTS"],
-        labours: ["WITH_LABOUR"],
-        miscellaneous: ["LUBRICANTS"],
-        taskType: [addPortFolioItem.taskType.value],
-        solutionCode: "",
-        usageIn: addPortFolioItem.usageIn.value,
-        recommendedValue: 0,
-        usage: "",
-        repairKitId: "",
-        templateDescription: addPortFolioItem.description.value,
-        partListId: "",
-        serviceEstimateId: "",
-        numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
-        repairOption: addPortFolioItem.repairOption.value,
-        priceMethod: "LIST_PRICE",
-        listPrice: parseInt(priceCalculator.listPrice),
-        priceEscalation: "",
-        calculatedPrice: parseInt(priceCalculator.calculatedPrice),
-        flatPrice: parseInt(priceCalculator.flatPrice),
-        discountType: "",
-        year: priceCalculator.priceYear.value,
-        avgUsage: 0,
-        unit: addPortFolioItem.unit.value,
-        sparePartsPrice: 0,
-        sparePartsPriceBreakDownPercentage: 0,
-        servicePrice: 0,
-        servicePriceBreakDownPercentage: 0,
-        miscPrice: 0,
-        miscPriceBreakDownPercentage: 0,
-        totalPrice: 0,
-      },
-    };
-    const res=await saveItemPrice(currentItemId,reqObj)
-    console.log("handleSavePrices res",res)
-  
-  }catch(error){
-    console.log("error in handleSavePrices",error)
-  }
-}
+  const handleSavePrices = async () => {
+    try {
+      let reqObj = {
+        itemId: parseInt(addPortFolioItem.id),
+        itemName: "",
+        itemHeaderModel: {
+          itemHeaderId: 0,
+          // itemHeaderId: parseInt(generalComponentData.portfolioId),
+          itemHeaderDescription: createServiceOrBundle.description,
+          bundleFlag:
+            serviceOrBundlePrefix === ""
+              ? "PORTFOLIO"
+              : serviceOrBundlePrefix === "SERVICE"
+              ? "SERVICE"
+              : "BUNDLE_ITEM",
+          reference: createServiceOrBundle.reference,
+          itemHeaderMake: createServiceOrBundle.make,
+          itemHeaderFamily: "",
+          model: createServiceOrBundle.models,
+          prefix: createServiceOrBundle.prefix,
+          type: "MACHINE",
+          additional: createServiceOrBundle.additional.value,
+          currency: "",
+          netPrice: 0,
+          itemProductHierarchy: generalComponentData.productHierarchy,
+          itemHeaderGeographic: generalComponentData.geographic,
+          responseTime: generalComponentData.responseTime,
+          usage: "",
+          validFrom: generalComponentData.validFrom,
+          validTo: generalComponentData.validTo,
+          estimatedTime: "",
+          servicePrice: 0,
+          status: "NEW",
+        },
+        itemBodyModel: {
+          itemBodyId: parseInt(addPortFolioItem.id),
+          itemBodyDescription: addPortFolioItem.description,
+          quantity: parseInt(addPortFolioItem.quantity),
+          startUsage: priceCalculator.startUsage,
+          endUsage: priceCalculator.endUsage,
+          standardJobId: "",
+          frequency: addPortFolioItem.frequency.value,
+          additional: "",
+          spareParts: ["WITH_SPARE_PARTS"],
+          labours: ["WITH_LABOUR"],
+          miscellaneous: ["LUBRICANTS"],
+          taskType: [addPortFolioItem.taskType.value],
+          solutionCode: "",
+          usageIn: addPortFolioItem.usageIn.value,
+          recommendedValue: 0,
+          usage: "",
+          repairKitId: "",
+          templateDescription: addPortFolioItem.description.value,
+          partListId: "",
+          serviceEstimateId: "",
+          numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+          repairOption: addPortFolioItem.repairOption.value,
+          priceMethod: "LIST_PRICE",
+          listPrice: parseInt(priceCalculator.listPrice),
+          priceEscalation: "",
+          calculatedPrice: parseInt(priceCalculator.calculatedPrice),
+          flatPrice: parseInt(priceCalculator.flatPrice),
+          discountType: "",
+          year: priceCalculator.priceYear.value,
+          avgUsage: 0,
+          unit: addPortFolioItem.unit.value,
+          sparePartsPrice: 0,
+          sparePartsPriceBreakDownPercentage: 0,
+          servicePrice: 0,
+          servicePriceBreakDownPercentage: 0,
+          miscPrice: 0,
+          miscPriceBreakDownPercentage: 0,
+          totalPrice: 0,
+        },
+      };
+      const res = await updateItemData(currentItemId, reqObj);
+      console.log("handleSavePrices res", res);
+    } catch (error) {
+      console.log("error in handleSavePrices", error);
+    }
+  };
 
+  const handleItemEditSave = async (addPortFolioItem, compoFlag) => {
+    try {
+      setEditItemShow(false); //hide screen
+      let reqObj = {
+        itemId: parseInt(addPortFolioItem.id),
+        itemName: "",
+        itemHeaderModel: {
+          itemHeaderId: 0,
+          itemHeaderDescription: createServiceOrBundle.description,
+          bundleFlag: "PORTFOLIO",
+          reference: createServiceOrBundle.reference,
+          itemHeaderMake: createServiceOrBundle.make,
+          itemHeaderFamily: "",
+          model: createServiceOrBundle.models,
+          prefix: createServiceOrBundle.prefix,
+          type: "MACHINE",
+          additional: createServiceOrBundle.additional.value,
+          currency: "",
+          netPrice: 0,
+          itemProductHierarchy: generalComponentData.productHierarchy,
+          itemHeaderGeographic: generalComponentData.geographic,
+          responseTime: generalComponentData.responseTime,
+          usage: "",
+          validFrom: generalComponentData.validFrom,
+          validTo: generalComponentData.validTo,
+          estimatedTime: "",
+          servicePrice: 0,
+          status: "NEW",
+        },
+        itemBodyModel: {
+          itemBodyId: parseInt(addPortFolioItem.id),
+          itemBodyDescription: addPortFolioItem.description,
+          quantity: parseInt(addPortFolioItem.quantity),
+          startUsage: priceCalculator.startUsage,
+          endUsage: priceCalculator.endUsage,
+          standardJobId: "",
+          frequency: addPortFolioItem.frequency.value,
+          additional: "",
+          spareParts: ["WITH_SPARE_PARTS"],
+          labours: ["WITH_LABOUR"],
+          miscellaneous: ["LUBRICANTS"],
+          taskType: [...addPortFolioItem.taskType.value],
+          solutionCode: "",
+          usageIn: addPortFolioItem.usageIn.value,
+          recommendedValue: 0,
+          usage: "",
+          repairKitId: "",
+          templateDescription: addPortFolioItem.description.value,
+          partListId: "",
+          serviceEstimateId: "",
+          numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+          repairOption: addPortFolioItem.repairOption.value,
+          priceMethod: "LIST_PRICE",
+          listPrice: parseInt(priceCalculator.listPrice),
+          priceEscalation: "",
+          calculatedPrice: parseInt(priceCalculator.calculatedPrice),
+          flatPrice: parseInt(priceCalculator.flatPrice),
+          discountType: "",
+          year: priceCalculator.priceYear.value,
+          avgUsage: 0,
+          unit: addPortFolioItem.unit.value,
+          sparePartsPrice: 0,
+          sparePartsPriceBreakDownPercentage: 0,
+          servicePrice: 0,
+          servicePriceBreakDownPercentage: 0,
+          miscPrice: 0,
+          miscPriceBreakDownPercentage: 0,
+          totalPrice: 0,
+        },
+      };
+      const res = await updateItemData(addPortFolioItem.id, reqObj);
+      console.log("handleItemEditSave res", res);
 
+      // setPassItemEditRowData({...rowData,_itemId:itemId,_bundleId:rowData.itemId});
+      const _bundleItems = [...bundleItems];
+      if (compoFlag === "itemEdit") {
+        // do something
+        for (let i = 0; i < _bundleItems.length; i++) {
+          if (_bundleItems[i].itemId == passItemEditRowData._itemId) {
+            let obj = {
+              ...res,
+              associatedServiceOrBundle:
+                _bundleItems[i].associatedServiceOrBundle,
+            };
+            _bundleItems[i] = obj;
+            break;
+          }
+        }
+        setBundleItems(_bundleItems);
+      } else {
+        // do something
+        for (let i = 0; i < _bundleItems.length; i++) {
+          if (_bundleItems[i].itemId == passItemEditRowData._itemId) {
+            for (
+              let j = 0;
+              j < _bundleItems[i].associatedServiceOrBundle.length;
+              j++
+            ) {
+              if (
+                _bundleItems[i].associatedServiceOrBundle[j].itemId ==
+                passItemEditRowData._bundleId
+              ) {
+                _bundleItems[i].associatedServiceOrBundle[j] = res;
+                break;
+              }
+            }
+            break;
+          }
+        }
+        setBundleItems(_bundleItems);
+      }
+    } catch (error) {
+      console.log("err in handleItemEditSave", error);
+    }
+  };
 
   const handleAddNewBundle = () => {
     // alert("Save And Continue")
@@ -1101,8 +1246,9 @@ const handleSavePrices= async()=>{
   };
 
   const handleServiceItemEdit = (e, row) => {
-    setOpenAddBundleItem(true);
-    console.log("handleServiceItemEdit", row);
+    setEditItemShow(true);
+    setPassItemEditRowData({ ...row, _itemId: row.itemId });
+    // setOpenAddBundleItem(true);
   };
   const handleServiceItemDelete = (e, row) => {
     const _bundleItems = [...bundleItems];
@@ -1243,6 +1389,21 @@ const handleSavePrices= async()=>{
   const handleNextClick = async (e) => {
     try {
       if (e.target.id == "general") {
+        console.log(
+          "hello",
+          generalComponentData.name,
+          generalComponentData.externalReference,
+          prefilgabelGeneral
+        );
+        if (
+          generalComponentData.name === "" ||
+          generalComponentData.name == null ||
+          generalComponentData.externalReference === "" ||
+          generalComponentData.externalReference === null ||
+          prefilgabelGeneral === ""
+        ) {
+          throw "Please fill required field properly";
+        }
         let reqData = {
           type: prefilgabelGeneral,
           name: generalComponentData.name,
@@ -1287,24 +1448,32 @@ const handleSavePrices= async()=>{
           throw `${portfolioRes.status}:error in portfolio creation`;
         }
       } else if (e.target.id == "validity") {
-        value < 6 && setValue(value + 1);
         let reqData;
-        if (validityData.fromDate && validityData.toDate) {
-          reqData = {
-            validFrom: validityData.fromDate.toISOString().substring(0, 10),
-            validTo: validityData.toDate.toISOString().substring(0, 10),
-          };
-        } else if (validityData.fromInput && validityData.toInput) {
+        if (validityData.fromInput && validityData.toInput) {
           reqData = {
             validFrom: validityData.fromInput + validityData.from,
             validTo: validityData.toInput + validityData.from,
           };
+        } else if (validityData.fromDate && validityData.toDate) {
+          reqData = {
+            validFrom: validityData.fromDate.toISOString().substring(0, 10),
+            validTo: validityData.toDate.toISOString().substring(0, 10),
+          };
+        } else {
+          throw "Please fill date fields";
         }
+        value < 6 && setValue(value + 1);
         setGeneralComponentData({
           ...generalComponentData,
           ...reqData,
         });
       } else if (e.target.id == "strategy") {
+        if (
+          categoryUsageKeyValue1.value == "" ||
+          stratgyTaskUsageKeyValue.value == ""
+        ) {
+          throw "Please fill manditory fields properly";
+        }
         setGeneralComponentData({
           ...generalComponentData,
           usageCategory: categoryUsageKeyValue1.value,
@@ -1404,8 +1573,13 @@ const handleSavePrices= async()=>{
         }
       } else if (e.target.id == "coverage") {
         let cvgIds = [];
-        value < 6 && setValue(value + 1);
         for (let i = 0; i < selectedMasterData.length; i++) {
+          if (
+            selectedMasterData[i].model === "" ||
+            selectedMasterData[i].family === ""
+          ) {
+            throw "Family or Model values are missing";
+          }
           let reqObj = {
             coverageId: 0,
             serviceId: 0,
@@ -1424,9 +1598,9 @@ const handleSavePrices= async()=>{
             actions: "",
             createdAt: "",
           };
-          const res = await createCoverage(reqObj);
-          console.log("createCoverage res:", res);
-          cvgIds.push({ coverageId: res.coverageId });
+          const cvgRes = await createCoverage(reqObj);
+          console.log("createCoverage res:", cvgRes);
+          cvgIds.push({ coverageId: cvgRes.coverageId });
         }
         setGeneralComponentData({
           ...generalComponentData,
@@ -1515,15 +1689,17 @@ const handleSavePrices= async()=>{
             });
             value < 6 && setValue(value + 1);
           } else {
-            throw `${updatePortfolioRes.status}:unable to update`;
+            throw `${updatePortfolioRes.status}:allready exist or something else`;
           }
+        } else {
+          throw "Please Create portfolio first";
         }
       }
     } catch (error) {
       console.log("somehing went wrong:", error);
       toast("😐" + error, {
         position: "top-right",
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -3034,10 +3210,8 @@ const handleSavePrices= async()=>{
     }
     if (serviceOrBundlePrefix === "SERVICE") {
       setBundleTabs("3");
-      saveAddNewServiceOrBundle()
-
+      saveAddNewServiceOrBundle();
     }
-   
   };
   const columns2 = [
     { field: "GroupNumber", headerName: "ID#", flex: 1, width: 70 },
@@ -3131,8 +3305,13 @@ const handleSavePrices= async()=>{
     setBundleItems(_bundleItems);
   };
 
-  const handleExpandedRowEdit = (e, id) => {
-    alert("Edit row");
+  const handleExpandedRowEdit = (e, itemId, rowData) => {
+    setPassItemEditRowData({
+      ...rowData,
+      _itemId: itemId,
+      _bundleId: rowData.itemId,
+    });
+    setEditItemShow(true);
   };
 
   const getAddportfolioItemDataFun = (data) => {
@@ -3140,10 +3319,8 @@ const handleSavePrices= async()=>{
   };
   const getPriceCalculatorDataFun = (data) => {
     setPriceCalculator(data);
-    
   };
 
-  // const ExpandedComponent = ({ data }) => <pre>{JSON.stringify(data, null, 2)}</pre>;
   const ExpandedComponent = ({ data }) => (
     <div className="scrollbar" id="style">
       {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
@@ -3272,7 +3449,13 @@ const handleSavePrices= async()=>{
           >
             <div
               className="cursor"
-              onClick={(e) => handleExpandedRowEdit(e, i)}
+              onClick={(e) =>
+                handleExpandedRowEdit(
+                  e,
+                  data.itemId,
+                  data.associatedServiceOrBundle[i]
+                )
+              }
             >
               <Tooltip title="Edit">
                 <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
@@ -3432,11 +3615,9 @@ const handleSavePrices= async()=>{
                         </label>
                         <Select
                           placeholder="Select"
-                          required
                           options={headerTypeKeyValue}
                           value={headerType}
                           onChange={handleHeaderTypeChange}
-                          isClearable={true}
                           isLoading={
                             headerTypeKeyValue.length > 0 ? false : true
                           }
@@ -3898,7 +4079,7 @@ const handleSavePrices= async()=>{
                           RESPONSE TIME
                         </label>
                         <Select
-                         placeholder="Optional"
+                          placeholder="Optional"
                           options={rTimeList}
                           value={stratgyResponseTimeKeyValue}
                           onChange={(e) => setStratgyResponseTimeKeyValue(e)}
@@ -3915,7 +4096,7 @@ const handleSavePrices= async()=>{
                           PRODUCT HIERARCHY
                         </label>
                         <Select
-                         placeholder="Optional"
+                          placeholder="Optional"
                           options={productList}
                           value={stratgyHierarchyKeyValue}
                           onChange={(e) => setStratgyHierarchyKeyValue(e)}
@@ -3932,7 +4113,7 @@ const handleSavePrices= async()=>{
                           GEOGRAPHIC
                         </label>
                         <Select
-                         placeholder="Optional"
+                          placeholder="Optional"
                           options={geographicList}
                           value={stratgyGeographicKeyValue}
                           onChange={(e) => setStratgyGeographicKeyValue(e)}
@@ -4707,7 +4888,6 @@ const handleSavePrices= async()=>{
                   color={"#FFFFFF"}
                   size={35}
                 />
-                
               </div>
             ) : (
               <div className="p-4  row">
@@ -7538,11 +7718,11 @@ const handleSavePrices= async()=>{
 
               <TabPanel value="2">
                 <PriceCalculator
-                setTabs={setTabs}
-                priceCalculator={priceCalculator}
-                serviceOrBundlePrefix={serviceOrBundlePrefix}
-                getPriceCalculatorDataFun={getPriceCalculatorDataFun}
-                handleSavePrices={handleSavePrices}
+                  setTabs={setTabs}
+                  priceCalculator={priceCalculator}
+                  serviceOrBundlePrefix={serviceOrBundlePrefix}
+                  getPriceCalculatorDataFun={getPriceCalculatorDataFun}
+                  handleSavePrices={handleSavePrices}
                 />
               </TabPanel>
 
@@ -7884,6 +8064,28 @@ const handleSavePrices= async()=>{
               </TabPanel>
             </TabContext>
           </Box>
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        size="lg"
+        show={editItemShow}
+        onHide={() => setEditItemShow(false)}
+      >
+        <Modal.Body>
+          {editItemShow && passItemEditRowData._bundleId ? (
+            <AddPortfolioItem
+              passItemEditRowData={passItemEditRowData}
+              handleItemEditSave={handleItemEditSave}
+              compoFlag="bundleEdit"
+            />
+          ) : (
+            <AddPortfolioItem
+              passItemEditRowData={passItemEditRowData}
+              handleItemEditSave={handleItemEditSave}
+              compoFlag="itemEdit"
+            />
+          )}
         </Modal.Body>
       </Modal>
     </PortfolioContext.Provider>
