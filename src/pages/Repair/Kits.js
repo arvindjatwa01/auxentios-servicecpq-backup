@@ -106,7 +106,10 @@ function Kits() {
   const handleOption3 = (e) => {
     setValue3(e)
   }
-
+  const handleOption4 = (e) => {
+    setValue4(e)
+  }
+  const [value4, setValue4] = useState({ value: 'Gold', label: 'Gold' });
   const [value2, setValue2] = useState({ value: 'Archived', label: 'Archived' });
   const [value3, setValue3] = useState({ value: 'Gold', label: 'Gold' });
 
@@ -117,6 +120,12 @@ function Kits() {
     { value: "Construction", label: "Revised" },
   ];
   const options3 = [
+    { value: "chocolate", label: "Gold" },
+    { value: "strawberry", label: "1" },
+    { value: "vanilla", label: "2" },
+    { value: "Construction", label: "3" },
+  ];
+  const options4 = [
     { value: "chocolate", label: "Gold" },
     { value: "strawberry", label: "1" },
     { value: "vanilla", label: "2" },
@@ -327,7 +336,7 @@ function Kits() {
       style: {
         paddingLeft: "8px", // override the cell padding for head cells
         paddingRight: "8px",
-        backgroundColor: "#7571f9",
+        backgroundColor: "#872ff7",
         color: "#fff"
       },
     },
@@ -778,7 +787,7 @@ function Kits() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-           <span>Convert to<span><KeyboardArrowDownIcon/></span></span>
+           <span  className="convert mx-2">Convert to<span><KeyboardArrowDownIcon/></span></span>
           </IconButton>
 
       </Box>
@@ -1477,12 +1486,12 @@ function Kits() {
           <div className="card border mt-4 px-4">
           <div className="row align-items-center">
           
-          <div className="col-9 mx-1">
+          <div className="col-8">
          
           <div className="d-flex align-items-center w-100">
           <div className="d-flex mr-3 col-auto pl-0" style={{whiteSpace:'pre'}}>
           <h5 className="mr-2 mb-0 text-black"><span>Parts Table</span></h5>
-          <Select className="customselectbtn1 col-auto" onChange={(e) => handleOption3(e)} options={options3} value={value3} />
+          <Select className="customselectbtn1 col-auto" onChange={(e) => handleOption4(e)} options={options4} value={value4} />
           <p className=" mb-0">
           <a href="#" className="ml-3"><FontAwesomeIcon icon={faPen} /></a>
           </p>
@@ -1572,27 +1581,12 @@ function Kits() {
                         </div>
          
           </div>
-          <div className="col-1 mr-4">
-          <div className="text-center pl-3 py-3">
-          <a className="btn bg-primary text-white ml-3" data-toggle="modal" data-target="#Datatable"><SearchIcon /><span className="ml-1">Search</span></a>
-                  
+          <div className="col-4">
+          <div className="text-right pl-3 py-3">
+          <a className="btn bg-primary text-white" data-toggle="modal" data-target="#Datatable"><SearchIcon /><span className="ml-1">Search</span></a>
+          <a onClick={() => setOpen3(true)} style={{ cursor: 'pointer' }} className="btn bg-primary text-white mx-2">Upload</a>
+          <a onClick={() => setOpen2(true)} href="#" className="btn bg-primary text-white ">+ Add Part</a>      
           </div>
-          
-          </div>
-          {/* <div className="col-1">
-            <div className="d-flex align-items-center justify-content-center">
-            <a onClick={() => setOpen3(true)} style={{ cursor: 'pointer' }} className="btn bg-primary text-white ml-3">Upload</a>
-                  
-             
-            </div>
-          </div> */}
-          <div className="col-auto">
-            <div className="d-flex align-items-center justify-content-center">
-            <a onClick={() => setOpen3(true)} style={{ cursor: 'pointer' }} className="btn bg-primary text-white">Upload</a>
-            <a onClick={() => setOpen2(true)} href="#" className="btn bg-primary text-white ml-3">+ Add Part</a>
-                  
-             
-            </div>
           </div>
           </div>
 
@@ -2520,7 +2514,7 @@ function Kits() {
         <DataGrid
         sx={{
           '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: '#7380E4', color:'#fff'
+            backgroundColor: '#872ff7', color:'#fff'
           }
         }}
           rows={rows}

@@ -834,7 +834,7 @@ export function SideBarComponent(props) {
             </div>
             <div className="row justify-content-center">
               <div className=" col-md-3">
-                <a href="#" className="btn border d-block" style={{ borderColor: '#7380e4 !important' }}>Build</a>
+                <a href="#" className="btn border d-block" style={{ borderColor: '#872ff7 !important' }}>Build</a>
               </div>
               <div className=" col-md-3">
                 <a href="/permission" className="btn d-block text-white bg-primary">Review or Update</a>

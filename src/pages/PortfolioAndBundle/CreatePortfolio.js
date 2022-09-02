@@ -32,7 +32,8 @@ import Checkbox from "@mui/material/Checkbox";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
-
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
 import { FileUploader } from "react-drag-drop-files";
 import { MuiMenuComponent } from "../Operational/index";
 import MenuItem from "@mui/material/MenuItem";
@@ -121,7 +122,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useAppSelector } from "../../app/hooks";
 import { portfolioItemActions } from "./createItem/portfolioSlice";
 import { createItemPayload } from "./createItem/createItemPayload";
-import { Link } from "react-router-dom";
 import $ from "jquery";
 import { display } from "@mui/system";
 import { CreateService } from "pages/Service";
@@ -131,6 +131,8 @@ import { FormControlLabel, Switch } from "@material-ui/core";
 import AddPortfolioItem from "./AddPortfolioItem";
 import PriceCalculator from "./PriceCalculator";
 import { PortfolioContext } from "./ProtfolioContext";
+import { Link, useHistory } from "react-router-dom";
+
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 const customStyles = {
@@ -143,7 +145,7 @@ const customStyles = {
     style: {
       paddingLeft: "8px", // override the cell padding for head cells
       paddingRight: "8px",
-      backgroundColor: "#7571f9",
+      backgroundColor: "#872ff7",
       color: "#fff",
     },
   },
@@ -3600,63 +3602,148 @@ export function CreatePortfolio() {
       ))}
     </div>
   );
-
+  const handleClick = (event) => {
+    console.log("event", event);
+    setAnchorEl(event.currentTarget);
+    setOpen(true);
+  };
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [open3, setOpen3] = React.useState(false);
+  const handleCreate = () => {
+    history.push("/quoteTemplate");
+  };
+  const history = useHistory();
   return (
     <PortfolioContext.Provider value={generalComponentData}>
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid ">
-          <div className="d-flex align-items-center justify-content-between mt-2">
-            {/* <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5> */}
-            <div className="d-flex">
-              <div className="ml-3">
-                {portfolioId ? generalComponentData.name : ""}
-              </div>
-              <div className="ml-3">
-                <Select
-                  className="customselectbtn1"
-                  onChange={(e) => handleOption3(e)}
-                  options={options3}
-                  value={value3}
-                />
-              </div>
-              <div className="ml-3">
-                <Select
-                  className="customselectbtn"
-                  onChange={(e) => handleOption2(e)}
-                  options={options2}
-                  value={value2}
-                />
-              </div>
-              <div className="rating-star">
-                <span className="fa fa-star checked"></span>
-                <span className="fa fa-star checked"></span>
-                <span className="fa fa-star checked"></span>
-                <span className="fa fa-star"></span>
-                <span className="fa fa-star"></span>
+        <div className="d-flex align-items-center justify-content-between mt-2">
+            <div className="d-flex justify-content-center align-items-center">
+              <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5>
+              <div className="d-flex justify-content-center align-items-center">
+                <div className="ml-3">
+                  <Select
+                    className="customselectbtn1"
+                    onChange={(e) => handleOption3(e)}
+                    options={options3}
+                    value={value3}
+                  />
+                </div>
+
+                <div className="ml-3">
+                  <Select
+                    className="customselectbtn"
+                    onChange={(e) => handleOption2(e)}
+                    options={options2}
+                    value={value2}
+                  />
+                </div>
+                <div className="rating-star">
+                  <span class="fa fa-star checked"></span>
+                  <span class="fa fa-star checked"></span>
+                  <span class="fa fa-star checked"></span>
+                  <span class="fa fa-star"></span>
+                  <span class="fa fa-star"></span>
+                </div>
               </div>
             </div>
-            <div className="d-flex justify-content-center align-items-center">
-              <a href="#" className="ml-3 font-size-14">
-                <img src={shareIcon}></img>
-              </a>
-              <a href="#" className="ml-3 font-size-14">
-                <img src={folderaddIcon}></img>
-              </a>
-              <a href="#" className="ml-3 font-size-14">
-                <img src={uploadIcon}></img>
-              </a>
-              <a href="#" className="ml-3 font-size-14">
-                <img src={cpqIcon}></img>
-              </a>
-              <a href="#" className="ml-3 font-size-14">
-                <img src={deleteIcon}></img>
-              </a>
-              <a href="#" className="ml-3 font-size-14">
-                <img src={copyIcon}></img>
-              </a>
-              <a href="#" className="ml-2">
-                <MuiMenuComponent options={activityOptions} />
-              </a>
+            <div className="d-flex">
+              <div>
+                <React.Fragment>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      textAlign: "center",
+                    }}
+                  >
+                    <IconButton
+                      className="btn bg-primary text-white font-size-14 pr-0 ml-2"
+                      style={{ borderRadius: "5px" }}
+                      onClick={handleClick}
+                      size="small"
+                      aria-controls={open ? "account-menu" : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open ? "true" : undefined}
+                    >
+                      <span  className="convert mx-2">
+                        Convert to
+                        <span>
+                          <KeyboardArrowDownIcon />
+                        </span>
+                      </span>
+                    </IconButton>
+                  </Box>
+                  <Menu
+                    anchorEl={anchorEl}
+                    id="account-menu"
+                    open={open}
+                    onClose={handleClose}
+                    onClick={handleClose}
+                    PaperProps={{
+                      elevation: 0,
+                      sx: {
+                        overflow: "visible",
+                        filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                        mt: 1.5,
+                        "& .MuiAvatar-root": {
+                          width: 32,
+                          height: 32,
+                          ml: -0.5,
+                          mr: 1,
+                        },
+                        "&:before": {
+                          content: '""',
+                          display: "block",
+                          position: "absolute",
+                          top: 0,
+                          right: 14,
+                          width: 10,
+                          height: 10,
+                          bgcolor: "background.paper",
+                          transform: "translateY(-50%) rotate(45deg)",
+                          zIndex: 0,
+                        },
+                      },
+                    }}
+                    transformOrigin={{ horizontal: "right", vertical: "top" }}
+                    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                  >
+                    <MenuItem>Templates</MenuItem>
+                    <MenuItem>Standard Job</MenuItem>
+                    <MenuItem>Kit</MenuItem>
+                    <MenuItem data-toggle="modal" data-target="#quotecreat">
+                      Quote
+                    </MenuItem>
+                    <Divider />
+                  </Menu>
+                </React.Fragment>
+              </div>
+              <div className="d-flex justify-content-center align-items-center">
+                <a href="#" className="ml-3 font-size-14" title="Share">
+                  <img src={shareIcon}></img>
+                </a>
+                <a
+                  href="#"
+                  className="ml-3 font-size-14"
+                  title="Items to Review"
+                >
+                  <img src={folderaddIcon}></img>
+                </a>
+                <a href="#" className="ml-3 font-size-14" title="Upload">
+                  <img src={uploadIcon}></img>
+                </a>
+                {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
+                <a href="#" className="ml-3 font-size-14" title="Delete">
+                  <img src={deleteIcon}></img>
+                </a>
+                <a href="#" className="ml-3 font-size-14" title="Copy">
+                  <img src={copyIcon}></img>
+                </a>
+                <a href="#" className="ml-2">
+                  <MuiMenuComponent options={activityOptions} />
+                </a>
+              </div>
             </div>
           </div>
           <div className="card p-4 mt-5">
@@ -4930,42 +5017,17 @@ export function CreatePortfolio() {
 
           {/* hide portfolio item querySearch */}
           <div className="card mt-4 px-4">
-            {/* <div className="row align-items-center mt-3">
+            <div className="row align-items-center mt-3">
               <div className="col-11 mx-1">
                 <div className="d-flex align-items-center w-100">
                   <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
                     <h5 className="mb-0 text-black">
                       <span>Portfolio Items</span>
                     </h5>
-                    <p className="ml-2 mb-0">
-                      <a href="#" className="ml-3">
-                        <FontAwesomeIcon icon={faPen} />
-                      </a>
-                    </p>
                   </div>
-                  <QuerySearchComp
-                    compoFlag="itemSearch"
-                    options={[
-                      { label: "Make", value: "make" },
-                      { label: "Model", value: "model" },
-                      { label: "Prefix", value: "prefix" },
-                      { label: "Family", value: "family" },
-                    ]}
-                    setBundleItems={setBundleItems}
-                    setLoadingItem={setLoadingItem}
-                    setOpenedModelBoxData={setOpenedModelBoxData}
-                  />
                 </div>
               </div>
-              <div className="">
-                <h6
-                  className="font-weight-600 text-light mb-0 cursor"
-                  onClick={handleAddSolutionPress}
-                >
-                  <span className="mr-2">+</span>Add Solution
-                </h6>
-              </div>
-            </div> */}
+            </div>
             {bundleItems.length > 0 ? (
               <div>
                 <div
@@ -4987,7 +5049,7 @@ export function CreatePortfolio() {
               <div className="d-flex align-items-center justify-content-center">
                 <Loader
                   type="spinner-default"
-                  bgColor={"#7571f9"}
+                  bgColor={"#872ff7"}
                   title={"spinner-default"}
                   color={"#FFFFFF"}
                   size={35}
@@ -5017,7 +5079,7 @@ export function CreatePortfolio() {
                         Drag and drop files to upload <br /> or
                       </h6>
                       <a
-                        onClick={() => setOpen(true)}
+                        onClick={() => setOpen3(true)}
                         style={{ cursor: "pointer" }}
                         className="btn text-light border-light font-weight-500 border-radius-10 mt-3"
                       >
@@ -5175,8 +5237,8 @@ export function CreatePortfolio() {
         </Modal.Body>
       </Modal>
       <Modal
-        show={open}
-        onHide={handleClose}
+        show={open3}
+        onHide={() => setOpen3(false)}
         size="md"
         aria-labelledby="contained-modal-title-vcenter"
         centered
@@ -5255,7 +5317,7 @@ export function CreatePortfolio() {
         </Modal.Body>
         <div className="row m-0 p-3">
           <div className="col-md-6 col-sm-6">
-            <button className="btn border w-100 bg-white" onClick={handleClose}>
+            <button className="btn border w-100 bg-white" onClick={() => setOpen3(false)}>
               Cancel
             </button>
           </div>
@@ -5386,7 +5448,7 @@ export function CreatePortfolio() {
               <DataGrid
                 sx={{
                   "& .MuiDataGrid-columnHeaders": {
-                    backgroundColor: "#7380E4",
+                    backgroundColor: "#872ff7",
                     color: "#fff",
                   },
                 }}
@@ -7835,7 +7897,7 @@ export function CreatePortfolio() {
                   <div className="d-flex align-items-center justify-content-center">
                     <Loader
                       type="spinner-default"
-                      bgColor={"#7571f9"}
+                      bgColor={"#872ff7"}
                       title={"spinner-default"}
                       color={"#FFFFFF"}
                       size={35}
@@ -8185,6 +8247,161 @@ export function CreatePortfolio() {
           />
         </Modal.Body>
       </Modal>
+      <div
+          class="modal fade"
+          id="quotecreat"
+          tabindex="-1"
+          role="dialog"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog" role="document">
+            <div class="modal-content bg-white border-none">
+              <div class="modal-header border-none">
+                <h5 class="modal-title" id="exampleModalLabel">
+                  Quote Create
+                </h5>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <p className="d-block px-3">
+                It is a long established fact that a reader will be distracted
+                by the readable content of a page when looking at its layout.
+              </p>
+              <hr className="my-1" />
+              <div class="modal-body">
+                <div className="row">
+                  <div className="col-md-12 col-sm-12">
+                    <div className="form-group">
+                      <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        Quote Type
+                      </label>
+                      <Select
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options}
+                        placeholder="Cyclical"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-12 col-sm-12">
+                    <div class="form-group">
+                      <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        Quote ID
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Enter email"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-12 col-sm-12">
+                    <div class="form-group">
+                      <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        Description
+                      </label>
+                      <textarea
+                        class="form-control"
+                        id="exampleFormControlTextarea1"
+                        rows="3"
+                      ></textarea>
+                    </div>
+                  </div>
+                  <div className="col-md-12 col-sm-12">
+                    <div class="form-group">
+                      <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        Reference
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Enter email"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="row">
+                  <div class="col-md-12 col-sm-12">
+                    <div class="form-group mt-3">
+                      <p class="font-size-12 font-weight-500 mb-2">
+                        QUOTE TYPE{" "}
+                      </p>
+                      <h6 class="font-weight-500">
+                        Repair Quote with Spare Parts
+                      </h6>
+                    </div>
+                  </div>
+                  <div class="col-md-12 col-sm-12">
+                    <div class="form-group mt-3">
+                      <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
+                      <h6 class="font-weight-500">SB12345</h6>
+                    </div>
+                  </div>
+                  <div class="col-md-12 col-sm-12">
+                    <div class="form-group mt-3">
+                      <p class="font-size-12 font-weight-500 mb-2">
+                        QUOTE DESCRIPTION
+                      </p>
+                      <h6 class="font-weight-500">Holder text</h6>
+                    </div>
+                  </div>
+                  <div class="col-md-12 col-sm-12">
+                    <div class="form-group mt-3">
+                      <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
+                      <h6 class="font-weight-500">Holder text</h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer" style={{ display: "unset" }}>
+                <div className="mb-2">
+                  <a
+                    href="#"
+                    onClick={() => handleCreate()}
+                    data-dismiss="modal"
+                    className="btn bg-primary d-block text-white"
+                  >
+                    Done
+                  </a>
+                </div>
+                <div>
+                  <button class="btn  btn-primary">Create</button>
+                  <button
+                    type="button"
+                    class="btn pull-right border"
+                    data-dismiss="modal"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
     </PortfolioContext.Provider>
   );
 }

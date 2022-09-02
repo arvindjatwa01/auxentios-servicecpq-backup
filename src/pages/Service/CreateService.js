@@ -2086,7 +2086,7 @@ export function CreateService() {
                             <DataGrid
                                 sx={{
                                     '& .MuiDataGrid-columnHeaders': {
-                                        backgroundColor: '#7380E4', color: '#fff'
+                                        backgroundColor: '#872ff7', color: '#fff'
                                     }
                                 }}
                                 rows={rows}

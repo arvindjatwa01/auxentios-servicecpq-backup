@@ -423,10 +423,16 @@ export const PortfolioSummary = () => {
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid">
                     <div className="d-flex align-items-center justify-content-between mt-2">
-                        <h5 className="font-weight-600 mb-0">Portfolio</h5>
+                        <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5>
                         <div>
-                            <Link to="/portfolioBuilder/new" style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
-                                <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create New<span className="ml-2"></span>
+                        <Link to="/portfolioBuilder/new" style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
+                                <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create Portfolio<span className="ml-2"></span>
+                            </Link>
+                            <Link style={{ cursor: 'pointer' }} className="btn bg-primary text-white mx-2">
+                                <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create Service<span className="ml-2"></span>
+                            </Link>
+                            <Link style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
+                                <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create Bundle<span className="ml-2"></span>
                             </Link>
                         </div>
                     </div>
@@ -828,7 +834,7 @@ export const PortfolioSummary = () => {
                        </div>
         
          </div>
-         <div className="col-auto">
+         <div className="">
          <div className="text-center border-left pl-3 py-3">
              <Link to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable">
                 <SearchIcon /><span className="ml-1">Search</span>
@@ -853,7 +859,7 @@ export const PortfolioSummary = () => {
             <DataGrid
             sx={{
               '& .MuiDataGrid-columnHeaders': {
-                backgroundColor: '#7380E4', color:'#fff'
+                backgroundColor: '#872ff7', color:'#fff'
               }
             }}
               rows={rows}
@@ -888,7 +894,7 @@ export const PortfolioSummary = () => {
         <DataGrid
         sx={{
           '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: '#7380E4', color:'#fff'
+            backgroundColor: '#872ff7', color:'#fff'
           }
         }}
           rows={rows}

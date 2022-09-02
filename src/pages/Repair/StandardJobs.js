@@ -120,7 +120,7 @@ function StandardJobs(){
     style: {
       paddingLeft: "8px", // override the cell padding for head cells
       paddingRight: "8px",
-      backgroundColor: "#7571f9",
+      backgroundColor: "#872ff7",
       color: "#fff"
     },
   },
@@ -807,7 +807,7 @@ const history=useHistory()
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-           <span>Convert to<span><KeyboardArrowDownIcon/></span></span>
+           <span  className="convert mx-2">Convert to<span><KeyboardArrowDownIcon/></span></span>
           </IconButton>
 
       </Box>
@@ -1238,7 +1238,7 @@ const history=useHistory()
             </div>
             <div class="col-md-4 col-sm-4">
             <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">VALIDTITY</p>
+              <p class="font-size-12 font-weight-500 mb-2">VALIDITY</p>
               <h6 class="font-weight-500">30 days </h6>
               </div>
             </div>

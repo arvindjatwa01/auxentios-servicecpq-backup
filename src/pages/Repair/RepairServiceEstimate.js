@@ -313,7 +313,7 @@ function RepairServiceEstimate() {
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-           <span>Convert to<span><KeyboardArrowDownIcon/></span></span>
+           <span  className="convert mx-2">Convert to<span><KeyboardArrowDownIcon/></span></span>
           </IconButton>
 
       </Box>
@@ -738,7 +738,7 @@ function RepairServiceEstimate() {
                       <DataGrid
                         sx={{
                           '& .MuiDataGrid-columnHeaders': {
-                            backgroundColor: '#7380E4', color: '#fff'
+                            backgroundColor: '#872ff7', color: '#fff'
                           }
                         }}
                         rows={rows}
@@ -912,7 +912,7 @@ function RepairServiceEstimate() {
                       <DataGrid
                         sx={{
                           '& .MuiDataGrid-columnHeaders': {
-                            backgroundColor: '#7380E4', color: '#fff'
+                            backgroundColor: '#872ff7', color: '#fff'
                           }
                         }}
                         rows={rowsConsumables}
@@ -1086,7 +1086,7 @@ function RepairServiceEstimate() {
                       <DataGrid
                         sx={{
                           '& .MuiDataGrid-columnHeaders': {
-                            backgroundColor: '#7380E4', color: '#fff'
+                            backgroundColor: '#872ff7', color: '#fff'
                           }
                         }}
                         rows={rowsExternal}

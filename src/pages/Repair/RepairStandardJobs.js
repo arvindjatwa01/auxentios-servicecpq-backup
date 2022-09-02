@@ -753,7 +753,7 @@ export const RepairStandardJobs = () => {
                        </div>
         
          </div>
-         <div className="col-auto">
+         <div className="">
          <div className="text-center border-left pl-3 py-3">
              <Link to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable">
                 <SearchIcon /><span className="ml-1">Search</span>
@@ -778,7 +778,7 @@ export const RepairStandardJobs = () => {
             <DataGrid
             sx={{
               '& .MuiDataGrid-columnHeaders': {
-                backgroundColor: '#7380E4', color:'#fff'
+                backgroundColor: '#872ff7', color:'#fff'
               }
             }}
               rows={rows}
@@ -813,7 +813,7 @@ export const RepairStandardJobs = () => {
         <DataGrid
         sx={{
           '& .MuiDataGrid-columnHeaders': {
-            backgroundColor: '#7380E4', color:'#fff'
+            backgroundColor: '#872ff7', color:'#fff'
           }
         }}
           rows={rows}
