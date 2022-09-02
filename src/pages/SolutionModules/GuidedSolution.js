@@ -50,11 +50,10 @@ import { actionCreator } from "../../redux/index";
 import { getGuidedSolution } from "../../services/index";
 
 export const GuidedSolution = (props) => {
-  console.log("props data : ", props);
 
   const [guidedSolutions, setGuidedSolutions] = useState([]);
   const state = useSelector((state) => state);
-  console.log("State in Guide Solution", state)
+
   const dispatch = useDispatch();
   const {
     resetQuestion,
@@ -217,8 +216,9 @@ export const GuidedSolution = (props) => {
   const handleContinuePress = (currentCounter) => {
 
     //Counter Not Increase Yet
-    console.log("localstorage value is : => ", localStorage.getItem('checkedVal'))
-    console.log("guide solutions data is : ", guidedSolutions)
+    console.log("State is => ", state)
+    console.log("guide solutions data is => ", guidedSolutions)
+    console.log("State guided solutions => ", state.guidedSolution)
 
 
     //Question 1
@@ -829,6 +829,7 @@ export const GuidedSolution = (props) => {
   }, []);
 
   return (
+
     <>
       {/* <CommanComponents /> */}
       <div className="content-body" style={{ minHeight: "884px" }}>
@@ -986,7 +987,7 @@ export const GuidedSolution = (props) => {
                     )}
                   </>
                 )}
-                
+
 
                 {/* <div className=" mt-3 p-3">
                   <div className="">

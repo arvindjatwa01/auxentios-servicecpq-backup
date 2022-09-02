@@ -19,13 +19,19 @@ var prefixKeyValue = []
 
 
 
-const InitQuestion = (props) => {
+const InitQuestion = () => {
+
+
+
+    
 
     const [defaultValue, setDefaultValue] = useState("")
 
     const [checkedValue, setCheckedValue] = useState({})
 
     const state = useSelector((state) => state);
+
+
 
     const dispatch = useDispatch()
 
@@ -45,10 +51,13 @@ const InitQuestion = (props) => {
         // console.log("dict value is : ",dict)
 
         addQuestion(dict)
+        setCheckedValue(dict)
         // props.parentCallback(dict)
     }
 
     useEffect(() => {
+
+
         if (state.guidedSolution?.guidedQuestions.length > 0) {
             setDefaultValue(state.guidedSolution?.guidedQuestions[0].value)
         } else {
@@ -95,6 +104,7 @@ const Question1 = (props) => {
     const [defaultValue, setDefaultValue] = useState("")
 
     const state = useSelector((state) => state);
+
 
     const dispatch = useDispatch()
 

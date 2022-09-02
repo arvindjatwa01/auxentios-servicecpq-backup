@@ -27,14 +27,13 @@ export const RadioGroupComponent = props => {
         props.parentCallback(dict);
         setCheckedData(dict)
         // console.log("ssss", e.target.value);
-        // 
-        // <GuidedSolution selectValueInit={selectValue} />
     };
 
     // useEffect(() => {
-    //     <GuidedSolution checkedData={checkedData} />
     // }, [formControlLabel])
 
+
+    console.log("RadioGroupComponent PRops : ", props)
 
 
     useEffect(() => {
@@ -92,9 +91,6 @@ export const RadioGroupComponent = props => {
             >
                 {formControlLabel}
             </RadioGroup>
-
-
-            {/* <GuidedSolution checkedData={checkedData} /> */}
         </>
 
     )
