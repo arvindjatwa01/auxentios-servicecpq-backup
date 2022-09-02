@@ -282,6 +282,8 @@ export function CreatePortfolio() {
     to: null,
     fromInput: "",
     toInput: "",
+    dateFlag:false,
+    inputFlag:false
   });
   const [generalComponentData, setGeneralComponentData] = useState({
     name: "",
@@ -1324,7 +1326,9 @@ export function CreatePortfolio() {
     }
   };
 
-  const handleServiceItemSave = (e, row) => {
+  const handleServiceItemSave = async(e, row) => {
+    // const res=await updateItemData(itemId,payLoad)
+    // console.log("handleServiceItemSave",res)
     alert("save");
   };
 
@@ -1507,12 +1511,12 @@ export function CreatePortfolio() {
         }
       } else if (e.target.id == "validity") {
         let reqData;
-        if (validityData.fromInput && validityData.toInput) {
+        if (validityData.fromInput && validityData.toInput && validityData.inputFlag) {
           reqData = {
             validFrom: validityData.fromInput + validityData.from,
             validTo: validityData.toInput + validityData.from,
           };
-        } else if (validityData.fromDate && validityData.toDate) {
+        } else if (validityData.fromDate && validityData.toDate && validityData.dateFlag) {
           reqData = {
             validFrom: validityData.fromDate.toISOString().substring(0, 10),
             validTo: validityData.toDate.toISOString().substring(0, 10),
@@ -3168,12 +3172,6 @@ export function CreatePortfolio() {
               className="form-controldate border-radius-10"
               label=""
               // value={row.startDate}
-              // onChange={(e) =>
-              //   setValidityData({
-              //     ...validityData,
-              //     startDate: e,
-              //   })
-              // }
             />
           </MuiPickersUtilsProvider>
         </div>
@@ -3198,12 +3196,6 @@ export function CreatePortfolio() {
               className="form-controldate border-radius-10"
               label=""
               // value={validityData.fromDate}
-              // onChange={(e) =>
-              //   setValidityData({
-              //     ...validityData,
-              //     fromDate: e,
-              //   })
-              // }
             />
           </MuiPickersUtilsProvider>
         </div>
@@ -3898,7 +3890,6 @@ export function CreatePortfolio() {
                           value={generalComponentData.customerSegment}
                           options={customerSegmentKeyValue}
                           placeholder="Optionals"
-                          // options={strategyList}
                         />
                       </div>
                     </div>
@@ -3988,6 +3979,7 @@ export function CreatePortfolio() {
                                     setValidityData({
                                       ...validityData,
                                       fromDate: e,
+                                      inputFlag:false
                                     })
                                   }
                                 />
@@ -4012,6 +4004,8 @@ export function CreatePortfolio() {
                                     setValidityData({
                                       ...validityData,
                                       toDate: e,
+                                      dateFlag:true,
+                                      inputFlag:false
                                     })
                                   }
                                 />
@@ -4066,6 +4060,7 @@ export function CreatePortfolio() {
                                         setValidityData({
                                           ...validityData,
                                           fromInput: e.target.value,
+                                          dateFlag:false,
                                         })
                                       }
                                     />
@@ -4108,6 +4103,8 @@ export function CreatePortfolio() {
                                         setValidityData({
                                           ...validityData,
                                           toInput: e.target.value,
+                                          dateFlag:false,
+                                          inputFlag:true
                                         })
                                       }
                                     />
