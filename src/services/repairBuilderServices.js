@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
-import { CREATE_REPAIR_BUILDER, SEARCH_CUSTOMER, SEARCH_MACHINE, UPDATE_REPAIR_CUSTOMER, UPDATE_REPAIR_ESTIMATION_TEAM, UPDATE_REPAIR_GENERAL_DETAILS, UPDATE_REPAIR_MACHINE, UPDATE_REPAIR_PRICE } from "./CONSTANTS";
+import { ADD_REPAIR_BUILDER_PARTLIST, CREATE_REPAIR_BUILDER, SEARCH_CUSTOMER, SEARCH_MACHINE, UPDATE_REPAIR_CUSTOMER, UPDATE_REPAIR_ESTIMATION_TEAM, UPDATE_REPAIR_GENERAL_DETAILS, UPDATE_REPAIR_MACHINE, UPDATE_REPAIR_PRICE } from "./CONSTANTS";
 const config = {
   headers: {
     "Content-Type": "application/json",
@@ -19,7 +19,11 @@ export const createBuilder = (data) => {
           .post(CREATE_REPAIR_BUILDER(), data, config)
           .then((res) => {
             console.log("repairbuilder -> CreateBuilder response: ", res);
-            resolve(res);
+            if(res.status === 200){
+              resolve(res.data);
+            } else {
+              reject (res.error);
+            }
           })
           .catch((err) => {
             console.log("CreateBuilder > axios err=", err);
@@ -31,6 +35,34 @@ export const createBuilder = (data) => {
       }
     });
   };
+
+  
+//Create Partlist for the builder
+export const addPartlist = (builderId, data) => {
+  console.log("service repairbuilder > add partlist called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(ADD_REPAIR_BUILDER_PARTLIST(builderId), data, config)
+        .then((res) => {
+          console.log("repairbuilder -> add part list response: ", res);
+          if(res.status === 200){
+            resolve(res.data);
+          } else {
+            reject (res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("addPrtList > axios err=", err);
+          reject("Error in CreateBuilder axios!");
+        });
+    } catch (error) {
+      console.error("addPartList general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
   
 //Search Customer based on the search criteria to fill the header
 export const customerSearch = (searchStr) => {

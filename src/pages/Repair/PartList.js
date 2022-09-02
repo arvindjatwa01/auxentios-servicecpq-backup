@@ -42,6 +42,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import DateFnsUtils from "@date-io/date-fns";
 import { getSearchCoverageForFamily } from "../../services/index";
 import {
+  addPartlist,
   createBuilder,
   customerSearch,
   machineSearch,
@@ -53,6 +54,7 @@ import {
 import SearchBox from "./components/SearchBox";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Moment from "react-moment";
+import Validator from "utils/validator";
 
 function PartList() {
   const history = useHistory();
@@ -65,6 +67,8 @@ function PartList() {
   const [searchSerialResults, setSearchSerialResults] = useState([]);
   const [builderId, setBuilderId] = useState("");
   const [bId, setBId] = useState("");
+  const [partListNo, setPartListNo] = useState("");
+  const [partListId, setPartListId] = useState("");
   const [customerData, setCustomerData] = useState({
     source: "User Generated",
     customerID: "",
@@ -122,21 +126,36 @@ function PartList() {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
   useEffect(() => {
-    //Uncomment this once the CORS is implemented in API
-
-    //  createBuilder({
-    //     "builderType": "PARTLIST",
-    //     "activeVersion":true,
-    //     "versionNumber":1
-    // }).then(result => {
+    // Uncomment this once the final version is active
+    // createBuilder({
+    //   builderType: "PARTLIST",
+    //   activeVersion: true,
+    //   versionNumber: 1,
+    //   status: "DRAFT",
+    // })
+    //   .then((result) => {
     //     setBuilderId(result.builderId);
     //     setBId(result.id);
-    // }).catch(err => {
-    //   console.log("Error Occurred", err)
-    //   throw("Error occurred!");
-    // })
-    setBuilderId("RB000007");
-    setBId(7);
+    //     addPartlist(result.id, {
+    //       activeVersion: true,
+    //       versionNumber: 1,
+    //     })
+    //       .then((result) => {
+    //         setPartListNo(result.id);
+    //         setPartListId(result.partlistId);
+    //         console.log(result.id, result.partlistId);
+    //       })
+    //       .catch((err) => {
+    //         console.log("Error Occurred", err);
+    //         throw "Error occurred!";
+    //       });
+    //   })
+    //   .catch((err) => {
+    //     console.log("Error Occurred", err);
+    //     throw "Error occurred!";
+    //   });
+    setBuilderId("RB000014");
+    setBId(14);
   }, []);
 
   const handleCustSearch = async (searchCustfieldName, searchText) => {
@@ -265,15 +284,21 @@ function PartList() {
       contactName: customerData.contactName,
       contactEmail: customerData.contactEmail,
       customerGroup: customerData.customerGroup,
+      contactPhone: customerData.contactPhone,
     };
-    updateBuilderCustomer(bId, data)
-      .then((result) => {
-        setCustViewOnly(true);
-        setValue("2");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const validator = new Validator();
+    if (!validator.emailValidation(customerData.contactEmail)) {
+      alert("Please enter the email address in correct format");
+    } else {
+      updateBuilderCustomer(bId, data)
+        .then((result) => {
+          setCustViewOnly(true);
+          setValue("2");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -286,7 +311,7 @@ function PartList() {
       fleetNo: machineData.fleetNo,
       smu: machineData.smu,
       registrationNo: machineData.registrationNo,
-      chsisNo: machineData.chasisNo,
+      chasisNo: machineData.chasisNo,
       serialNo: machineData.serialNo,
     };
     updateBuilderMachine(bId, data)
@@ -307,7 +332,7 @@ function PartList() {
       reference: generalData.reference,
       validityDays: generalData.validity?.value,
       estimationNo: generalData.estimationNo,
-      version: generalData.version,
+      // version: generalData.version,
     };
     updateBuilderGeneralDet(bId, data)
       .then((result) => {
@@ -343,7 +368,6 @@ function PartList() {
   const [open1, setOpen1] = React.useState(false);
   const handleClose = () => setOpen(false);
   const handleClose2 = () => setOpen2(false);
-  const handleClose1 = () => setOpen1(false);
   const activityOptions = ["Create Versions", "Show Errors", "Review"];
 
   const data = [
@@ -831,7 +855,7 @@ function PartList() {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                     >
-                      <span  className="convert mx-2">
+                      <span className="convert mx-2">
                         Convert to
                         <span>
                           <KeyboardArrowDownIcon />
@@ -954,139 +978,157 @@ function PartList() {
                 </Box>
                 <TabPanel value="1">
                   {!custViewOnly ? (
-                    <div className="row">
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            SOURCE
-                          </label>
-                          <input
-                            type="text"
-                            disabled
-                            class="form-control border-radius-10"
-                            id="customer-src"
-                            placeholder="Placeholder (Required)"
-                            value={customerData.source}
-                          />
+                    <>
+                      <div className="row">
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              SOURCE
+                            </label>
+                            <input
+                              type="text"
+                              disabled
+                              class="form-control border-radius-10"
+                              id="customer-src"
+                              placeholder="Placeholder (Required)"
+                              value={customerData.source}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              CUSTOMER ID
+                            </label>
+                            <SearchBox
+                              value={customerData.customerID}
+                              onChange={(e) =>
+                                handleCustSearch("customerId", e.target.value)
+                              }
+                              type="customerId"
+                              result={searchCustResults}
+                              onSelect={handleCustSelect}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="customerName"
+                            >
+                              CUSTOMER NAME
+                            </label>
+                            <input
+                              type="text"
+                              value={customerData.customerName}
+                              name="customerName"
+                              onChange={handleCustomerDataChange}
+                              class="form-control border-radius-10"
+                              id="customerNameid"
+                              placeholder="Placeholder (Optional)"
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group w-100">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="contactName"
+                            >
+                              CONTACT NAME
+                            </label>
+                            <input
+                              type="text"
+                              value={customerData.contactName}
+                              name="contactName"
+                              onChange={handleCustomerDataChange}
+                              class="form-control border-radius-10"
+                              id="contactNameid"
+                              placeholder="Placeholder (Required)"
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="contatEmail"
+                            >
+                              CONTACT EMAIL
+                            </label>
+                            <input
+                              type="email"
+                              value={customerData.contactEmail}
+                              name="contactEmail"
+                              onChange={handleCustomerDataChange}
+                              class="form-control border-radius-10"
+                              id="contatEmail"
+                              aria-describedby="emailHelp"
+                              placeholder="Placeholder (Required)"
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="contactphone"
+                            >
+                              CONTACT PHONE
+                            </label>
+                            <input
+                              type="tel"
+                              class="form-control border-radius-10"
+                              onChange={handleCustomerDataChange}
+                              value={customerData.contactPhone}
+                              name="contactPhone"
+                              placeholder="Phone (Optional)"
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="customergroup"
+                            >
+                              CUSTOMER GROUP
+                            </label>
+                            <input
+                              type="text"
+                              value={customerData.customerGroup}
+                              name="customerGroup"
+                              onChange={handleCustomerDataChange}
+                              class="form-control border-radius-10"
+                              id="custGroup"
+                              placeholder="Placeholder (Required)"
+                            />
+                          </div>
                         </div>
                       </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            CUSTOMER ID
-                          </label>
-                          <SearchBox
-                            value={customerData.customerID}
-                            onChange={(e) =>
-                              handleCustSearch("customerId", e.target.value)
-                            }
-                            type="customerId"
-                            result={searchCustResults}
-                            onSelect={handleCustSelect}
-                          />
-                        </div>
+                      <div className="row" style={{ justifyContent: "right" }}>
+                        <button
+                          type="button"
+                          className="btn btn-light bg-primary text-white"
+                          disabled={
+                            !customerData.source ||
+                            !customerData.contactEmail ||
+                            !customerData.customerGroup ||
+                            !customerData.contactName
+                          }
+                          onClick={updateCustomerData}
+                        >
+                          Save & Next
+                        </button>
                       </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="customerName"
-                          >
-                            CUSTOMER NAME
-                          </label>
-                          <input
-                            type="text"
-                            value={customerData.customerName}
-                            name="customerName"
-                            onChange={handleCustomerDataChange}
-                            class="form-control border-radius-10"
-                            id="customerNameid"
-                            placeholder="Placeholder (Optional)"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group w-100">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="contactName"
-                          >
-                            CONTACT NAME
-                          </label>
-                          <input
-                            type="text"
-                            value={customerData.contactName}
-                            name="contactName"
-                            onChange={handleCustomerDataChange}
-                            class="form-control border-radius-10"
-                            id="contactNameid"
-                            placeholder="Placeholder (Required)"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="contatEmail"
-                          >
-                            CONTACT EMAIL
-                          </label>
-                          <input
-                            type="email"
-                            value={customerData.contactEmail}
-                            name="contactEmail"
-                            onChange={handleCustomerDataChange}
-                            class="form-control border-radius-10"
-                            id="contatEmail"
-                            aria-describedby="emailHelp"
-                            placeholder="Placeholder (Required)"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="contactphone"
-                          >
-                            CONTACT PHONE
-                          </label>
-                          <input
-                            type="tel"
-                            class="form-control border-radius-10"
-                            onChange={handleCustomerDataChange}
-                            id="phone-id"
-                            placeholder="Phone (Optional)"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="customergroup"
-                          >
-                            CUSTOMER GROUP
-                          </label>
-                          <input
-                            type="text"
-                            value={customerData.customerGroup}
-                            name="customerGroup"
-                            onChange={handleCustomerDataChange}
-                            class="form-control border-radius-10"
-                            id="custGroup"
-                            placeholder="Placeholder (Required)"
-                          />
-                        </div>
-                      </div>
-                    </div>
+                    </>
                   ) : (
                     <div className="row mt-3">
                       <div class="col-md-4 col-sm-4">
@@ -1149,142 +1191,137 @@ function PartList() {
                       </div>
                     </div>
                   )}
-                  <div>
-                    <div className="row" style={{ justifyContent: "right" }}>
-                      <button
-                        type="button"
-                        className="btn btn-light bg-primary text-white"
-                        disabled={
-                          !customerData.source ||
-                          !customerData.contactEmail ||
-                          !customerData.customerGroup ||
-                          !customerData.contactName
-                        }
-                        onClick={updateCustomerData}
-                      >
-                        Save & Next
-                      </button>
-                    </div>
-                  </div>
                 </TabPanel>
                 <TabPanel value="2">
                   {!machineViewOnly ? (
-                    <div className="row">
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="model"
-                          >
-                            MODEL
-                          </label>
-                          <SearchBox
-                            value={machineData.model}
-                            onChange={(e) =>
-                              handleModelSearch("model", e.target.value)
-                            }
-                            type="model"
-                            result={searchModelResults}
-                            onSelect={handleModelSelect}
-                          />
+                    <>
+                      <div className="row">
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="model"
+                            >
+                              MODEL
+                            </label>
+                            <SearchBox
+                              value={machineData.model}
+                              onChange={(e) =>
+                                handleModelSearch("model", e.target.value)
+                              }
+                              type="model"
+                              result={searchModelResults}
+                              onSelect={handleModelSelect}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              SERIAL #
+                            </label>
+                            <SearchBox
+                              value={machineData.serialNo}
+                              onChange={(e) =>
+                                handleModelSearch("serialNo", e.target.value)
+                              }
+                              type="serialNo"
+                              result={searchSerialResults}
+                              onSelect={handleModelSelect}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="smu"
+                            >
+                              SMU
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control border-radius-10"
+                              id="smu-id"
+                              name="smu"
+                              value={machineData.smu}
+                              onChange={handleMachineDataChange}
+                              placeholder="Placeholder (Optional)"
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="fleet"
+                            >
+                              UNIT NO / FLEET NO
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control border-radius-10"
+                              onChange={handleMachineDataChange}
+                              value={machineData.fleetNo}
+                              name="fleetNo"
+                              id="fleet-id"
+                              placeholder="Placeholder (Optional)"
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="registrationNo"
+                            >
+                              REGISTRATION NO
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control border-radius-10"
+                              onChange={handleMachineDataChange}
+                              value={machineData.registrationNo}
+                              name="registrationNo"
+                              id="registration-id"
+                              placeholder="Placeholder (Optional)"
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="chasis"
+                            >
+                              CHASIS NO
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control border-radius-10"
+                              id="chasis-id"
+                              onChange={handleMachineDataChange}
+                              value={machineData.chasisNo}
+                              name="chasisNo"
+                              placeholder="Placeholder (Optional)"
+                            />
+                          </div>
                         </div>
                       </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            SERIAL #
-                          </label>
-                          <SearchBox
-                            value={machineData.serialNo}
-                            onChange={(e) =>
-                              handleModelSearch("serialNo", e.target.value)
-                            }
-                            type="serialNo"
-                            result={searchSerialResults}
-                            onSelect={handleModelSelect}
-                          />
-                        </div>
+                      <div className="row" style={{ justifyContent: "right" }}>
+                        <button
+                          type="button"
+                          className="btn btn-light bg-primary text-white"
+                          disabled={!machineData.model || !machineData.serialNo}
+                          onClick={updateMachineData}
+                        >
+                          Save & Next
+                        </button>
                       </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="smu"
-                          >
-                            SMU
-                          </label>
-                          <input
-                            type="text"
-                            class="form-control border-radius-10"
-                            id="smu-id"
-                            name="smu"
-                            value={machineData.smu}
-                            onChange={handleMachineDataChange}
-                            placeholder="Placeholder (Optional)"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="fleet"
-                          >
-                            UNIT NO / FLEET NO
-                          </label>
-                          <input
-                            type="text"
-                            class="form-control border-radius-10"
-                            onChange={handleMachineDataChange}
-                            value={machineData.fleetNo}
-                            name="fleetNo"
-                            id="fleet-id"
-                            placeholder="Placeholder (Optional)"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="registrationNo"
-                          >
-                            REGISTRATION NO
-                          </label>
-                          <input
-                            type="text"
-                            class="form-control border-radius-10"
-                            onChange={handleMachineDataChange}
-                            value={machineData.registrationNo}
-                            name="registrationNo"
-                            id="registration-id"
-                            placeholder="Placeholder (Optional)"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="chasis"
-                          >
-                            CHASIS NO
-                          </label>
-                          <input
-                            type="text"
-                            class="form-control border-radius-10"
-                            id="chasis-id"
-                            onChange={handleMachineDataChange}
-                            value={machineData.chasisNo}
-                            name="chasisNo"
-                            placeholder="Placeholder (Optional)"
-                          />
-                        </div>
-                      </div>
-                    </div>
+                    </>
                   ) : (
                     <div className="row mt-3">
                       <div class="col-md-4 col-sm-4">
@@ -1340,140 +1377,150 @@ function PartList() {
                       </div>
                     </div>
                   )}
-                  <div className="row" style={{ justifyContent: "right" }}>
-                    <button
-                      type="button"
-                      className="btn btn-light bg-primary text-white"
-                      disabled={!machineData.model || !machineData.serialNo}
-                      onClick={updateMachineData}
-                    >
-                      Save & Next
-                    </button>
-                  </div>
                 </TabPanel>
                 <TabPanel value="3">
                   {!estViewOnly ? (
-                    <div className="row">
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            PREPARED BY
-                          </label>
-                          <input
-                            type="text"
-                            class="form-control border-radius-10"
-                            placeholder="Required"
-                            value={estimationData.preparedBy}
-                            name="preparedBy"
-                            onChange={handleEstimationDataChange}
-                          />
+                    <>
+                      <div className="row">
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              PREPARED BY
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control border-radius-10"
+                              placeholder="Required"
+                              value={estimationData.preparedBy}
+                              name="preparedBy"
+                              onChange={handleEstimationDataChange}
+                            />
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            APPROVED BY
-                          </label>
-                          <input
-                            type="text"
-                            class="form-control border-radius-10"
-                            value={estimationData.approvedBy}
-                            name="approvedBy"
-                            onChange={handleEstimationDataChange}
-                            placeholder="Placeholder (Optional)"
-                          />
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              APPROVED BY
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control border-radius-10"
+                              value={estimationData.approvedBy}
+                              name="approvedBy"
+                              onChange={handleEstimationDataChange}
+                              placeholder="Placeholder (Optional)"
+                            />
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="align-items-center date-box">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            PREPARED ON
-                          </label>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="align-items-center date-box">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              PREPARED ON
+                            </label>
 
-                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <DatePicker
-                              variant="inline"
-                              format="dd/MM/yyyy"
-                              className="form-controldate border-radius-10"
-                              label=""
-                              value={estimationData.preparedOn}
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                              <DatePicker
+                                variant="inline"
+                                format="dd/MM/yyyy"
+                                className="form-controldate border-radius-10"
+                                label=""
+                                value={estimationData.preparedOn}
+                                onChange={(e) =>
+                                  setEstimationData({
+                                    ...estimationData,
+                                    preparedOn: e,
+                                  })
+                                }
+                              />
+                            </MuiPickersUtilsProvider>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              REVISED BY
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control border-radius-10"
+                              value={estimationData.revisedBy}
+                              name="revisedBy"
+                              onChange={handleEstimationDataChange}
+                              placeholder="Placeholder (Optional)"
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="align-items-center date-box">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              REVISED ON
+                            </label>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                              <DatePicker
+                                variant="inline"
+                                format="dd/MM/yyyy"
+                                className="form-controldate border-radius-10"
+                                label=""
+                                value={estimationData.revisedOn}
+                                onChange={(e) =>
+                                  setEstimationData({
+                                    ...estimationData,
+                                    revisedOn: e,
+                                  })
+                                }
+                              />
+                            </MuiPickersUtilsProvider>
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              SALES OFFICE / BRANCH
+                            </label>
+                            <Select
                               onChange={(e) =>
                                 setEstimationData({
                                   ...estimationData,
-                                  preparedOn: e,
+                                  salesOffice: e,
                                 })
                               }
+                              options={salesOfficeOptions}
+                              placeholder="Required"
+                              value={estimationData.salesOffice}
                             />
-                          </MuiPickersUtilsProvider>
+                          </div>
                         </div>
                       </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            REVISED BY
-                          </label>
-                          <input
-                            type="text"
-                            class="form-control border-radius-10"
-                            value={estimationData.revisedBy}
-                            name="revisedBy"
-                            onChange={handleEstimationDataChange}
-                            placeholder="Placeholder (Optional)"
-                          />
-                        </div>
+                      <div className="row" style={{ justifyContent: "right" }}>
+                        <button
+                          type="button"
+                          className="btn btn-light bg-primary text-white"
+                          onClick={updateEstData}
+                          disabled={
+                            !estimationData.preparedBy ||
+                            !estimationData.preparedOn ||
+                            !estimationData.salesOffice
+                          }
+                        >
+                          Save & Next
+                        </button>
                       </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="align-items-center date-box">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            REVISED ON
-                          </label>
-                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <DatePicker
-                              variant="inline"
-                              format="dd/MM/yyyy"
-                              className="form-controldate border-radius-10"
-                              label=""
-                              value={estimationData.revisedOn}
-                              onChange={(e) =>
-                                setEstimationData({
-                                  ...estimationData,
-                                  revisedOn: e,
-                                })
-                              }
-                            />
-                          </MuiPickersUtilsProvider>
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            SALES OFFICE / BRANCH
-                          </label>
-                          <Select
-                            onChange={(e) =>
-                              setEstimationData({ ...estimationData, salesOffice: e })}
-                            options={salesOfficeOptions}
-                            placeholder="Optional"
-                            value={estimationData.salesOffice}
-                          />
-                        </div>
-                      </div>
-                    </div>
+                    </>
                   ) : (
                     <div className="row mt-3">
                       <div class="col-md-4 col-sm-4">
@@ -1502,10 +1549,9 @@ function PartList() {
                             PREPARED ON
                           </p>
                           <h6 class="font-weight-500">
-                          <Moment format="DD/MM/YYYY">
-                          {estimationData.preparedOn}
+                            <Moment format="DD/MM/YYYY">
+                              {estimationData.preparedOn}
                             </Moment>
-                            
                           </h6>
                         </div>
                       </div>
@@ -1525,8 +1571,8 @@ function PartList() {
                             REVISED ON
                           </p>
                           <h6 class="font-weight-500">
-                          <Moment format="DD/MM/YYYY">
-                          {estimationData.revisedOn}
+                            <Moment format="DD/MM/YYYY">
+                              {estimationData.revisedOn}
                             </Moment>
                           </h6>
                         </div>
@@ -1543,151 +1589,155 @@ function PartList() {
                       </div>
                     </div>
                   )}
-                  <div className="row" style={{ justifyContent: "right" }}>
-                    <button
-                      type="button"
-                      className="btn btn-light bg-primary text-white"
-                      onClick={updateEstData}
-                      disabled={
-                        !estimationData.preparedBy ||
-                        !estimationData.preparedOn ||
-                        !estimationData.salesOffice
-                      }
-                    >
-                      Save & Next
-                    </button>
-                  </div>
                 </TabPanel>
                 <TabPanel value="4">
                   {!generalViewOnly ? (
-                    <div className="row">
-                      <div className="col-md-6 col-sm-6">
-                        <div className="align-items-center date-box">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            <span className=" mr-2">ESTIMATION DATE</span>
-                          </label>
-                          {/* <div className="form-group w-100"> */}
+                    <>
+                      <div className="row">
+                        <div className="col-md-6 col-sm-6">
+                          <div className="align-items-center date-box">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              <span className=" mr-2">ESTIMATION DATE</span>
+                            </label>
+                            {/* <div className="form-group w-100"> */}
 
-                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <DatePicker
-                              variant="inline"
-                              format="dd/MM/yyyy"
-                              className="form-controldate border-radius-10"
-                              label=""
-                              value={generalData.estimationDate}
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                              <DatePicker
+                                variant="inline"
+                                format="dd/MM/yyyy"
+                                className="form-controldate border-radius-10"
+                                label=""
+                                value={generalData.estimationDate}
+                                onChange={(e) =>
+                                  setGeneralData({
+                                    ...generalData,
+                                    estimationDate: e,
+                                  })
+                                }
+                              />
+                            </MuiPickersUtilsProvider>
+                            {/* </div> */}
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              ESTIMATION #
+                            </label>
+                            <input
+                              type="text"
+                              disabled
+                              class="form-control border-radius-10"
+                              id="estNoId"
+                              value={generalData.estimationNo}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              DESCRIPTION
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control border-radius-10"
+                              id="desc-id"
+                              placeholder="Required"
+                              maxLength={140}
+                              value={generalData.description}
                               onChange={(e) =>
                                 setGeneralData({
                                   ...generalData,
-                                  estimationDate: e,
+                                  description: e.target.value,
                                 })
                               }
                             />
-                          </MuiPickersUtilsProvider>
-                          {/* </div> */}
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              REFERENCE
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control border-radius-10"
+                              id="desc-id"
+                              placeholder="Required"
+                              maxLength={140}
+                              value={generalData.reference}
+                              onChange={(e) =>
+                                setGeneralData({
+                                  ...generalData,
+                                  reference: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              VALIDITY
+                            </label>
+                            <Select
+                              // defaultValue={selectedOption}
+                              onChange={(e) =>
+                                setGeneralData({ ...generalData, validity: e })
+                              }
+                              options={validityOptions}
+                              placeholder="Required"
+                              value={generalData.validity}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-6 col-sm-6">
+                          <div class="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              for="exampleInputEmail1"
+                            >
+                              VERSION
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control border-radius-10"
+                              placeholder="Placeholder (Optional)"
+                              disabled
+                              value={parseFloat(value3.value).toFixed(1)}
+                            />
+                          </div>
                         </div>
                       </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            ESTIMATION #
-                          </label>
-                          <input
-                            type="text"
-                            disabled
-                            class="form-control border-radius-10"
-                            id="estNoId"
-                            value={generalData.estimationNo}
-                          />
-                        </div>
+                      <div className="row" style={{ justifyContent: "right" }}>
+                        <button
+                          type="button"
+                          className="btn btn-light bg-primary text-white"
+                          onClick={updateGeneralData}
+                          disabled={
+                            !generalData.estimationDate ||
+                            !generalData.description ||
+                            !generalData.estimationNo ||
+                            !generalData.reference ||
+                            !generalData.validity
+                          }
+                        >
+                          Save & Next
+                        </button>
                       </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            DESCRIPTION
-                          </label>
-                          <input
-                            type="text"
-                            class="form-control border-radius-10"
-                            id="desc-id"
-                            placeholder="Required"
-                            maxLength={140}
-                            value={generalData.description}
-                            onChange={(e) =>
-                              setGeneralData({
-                                ...generalData,
-                                description: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            REFERENCE
-                          </label>
-                          <input
-                            type="text"
-                            class="form-control border-radius-10"
-                            id="desc-id"
-                            placeholder="Required"
-                            maxLength={140}
-                            value={generalData.reference}
-                            onChange={(e) =>
-                              setGeneralData({
-                                ...generalData,
-                                reference: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            VALIDITY
-                          </label>
-                          <Select
-                            // defaultValue={selectedOption}
-                            onChange={(e) =>
-                              setGeneralData({ ...generalData, validity: e })
-                            }
-                            options={validityOptions}
-                            placeholder="placeholder (Required)"
-                            value={generalData.validity}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div class="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            VERSION
-                          </label>
-                          <input
-                            type="text"
-                            class="form-control border-radius-10"
-                            placeholder="Placeholder (Optional)"
-                            disabled
-                            value={parseFloat(value3.value).toFixed(1)}
-                          />
-                        </div>
-                      </div>
-                    </div>
+                    </>
                   ) : (
                     <div className="row mt-3">
                       <div class="col-md-4 col-sm-4">
@@ -1754,22 +1804,6 @@ function PartList() {
                       </div>
                     </div>
                   )}
-                  <div className="row" style={{ justifyContent: "right" }}>
-                    <button
-                      type="button"
-                      className="btn btn-light bg-primary text-white"
-                      onClick={updateGeneralData}
-                      disabled={
-                        !generalData.estimationDate ||
-                        !generalData.description ||
-                        !generalData.estimationNo ||
-                        !generalData.reference ||
-                        !generalData.validity
-                      }
-                    >
-                      Save & Next
-                    </button>
-                  </div>
                 </TabPanel>
                 <TabPanel value="5">
                   <div className="row">
@@ -1940,7 +1974,7 @@ function PartList() {
           </div>
           <div className="card border mt-4 px-4">
             <div className="row align-items-center">
-              <div className="col-9 mx-1 mr-3">
+              <div className="col-8">
                 <div className="d-flex align-items-center w-100">
                   <div
                     className="d-flex mr-3 col-auto pl-0"
@@ -2075,38 +2109,27 @@ function PartList() {
                   </div>
                 </div>
               </div>
-              <div className="col-1 ">
-                <div className="text-center py-3">
+              <div className="col-4">
+                <div className="text-right pl-3 py-3">
                   <a
-                    className="btn bg-primary text-white "
+                    className="btn bg-primary text-white"
                     data-toggle="modal"
                     data-target="#Datatable"
                   >
                     <SearchIcon />
                     <span className="ml-1">Search</span>
                   </a>
-                </div>
-              </div>
-              {/* <div className="col-1">
-            <div className="d-flex align-items-center justify-content-center">
-            <a onClick={() => setOpen3(true)} style={{ cursor: 'pointer' }} className="btn bg-primary text-white ml-3">Upload</a>
-                  
-             
-            </div>
-          </div> */}
-              <div className="col-auto">
-                <div className="d-flex align-items-center justify-content-center">
                   <a
                     onClick={() => setOpen3(true)}
                     style={{ cursor: "pointer" }}
-                    className="btn bg-primary text-white"
+                    className="btn bg-primary text-white mx-2"
                   >
                     Upload
                   </a>
                   <a
                     onClick={() => setOpen2(true)}
                     href="#"
-                    className="btn bg-primary text-white ml-3"
+                    className="btn bg-primary text-white "
                   >
                     + Add Part
                   </a>
