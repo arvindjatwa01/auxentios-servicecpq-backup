@@ -76,6 +76,7 @@ const InitQuestion = (props) => {
                 dValue={defaultValue}
                 parentCallback={handleParentCallback}
                 testingData="01"
+                addQuestion={addQuestion}
                 checkedValue={checkedValue}
                 formControlLabels={[{
                     "key": "New equipment",
@@ -132,12 +133,13 @@ const Question1 = (props) => {
                     <h4>I am looking solution for</h4>
                 </div>
             </div>
-            <RadioGroupComponent 
-            testingData="02" 
-            withDescription={false} 
-            dValue={defaultValue} 
-            parentCallback={handleParentCallback} 
-            formControlLabels={state.guidedSolution?.formLabels} />
+            <RadioGroupComponent
+                testingData="02"
+                addQuestion={addQuestion}
+                withDescription={false}
+                dValue={defaultValue}
+                parentCallback={handleParentCallback}
+                formControlLabels={state.guidedSolution?.formLabels} />
             {/* {console.log("state.guidedSolution : ", state.guidedSolution)} */}
         </div>
     </>

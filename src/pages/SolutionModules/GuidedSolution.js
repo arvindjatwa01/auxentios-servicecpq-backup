@@ -215,31 +215,10 @@ export const GuidedSolution = (props) => {
 
   // console.log(object)
   const handleContinuePress = (currentCounter) => {
-    // console.log("current counter : ",guidedSolutionNames);
-    // alert(currentCounter)
+
     //Counter Not Increase Yet
     console.log("localstorage value is : => ", localStorage.getItem('checkedVal'))
     console.log("guide solutions data is : ", guidedSolutions)
-
-
-
-    // Question 1
-    // if (currentCounter == 0) {
-    //   var guidedSolutionsName = []
-    //   guidedSolutions.map(
-    //     (solutionNameRes, index) => {
-    //       var dict = {
-    //         key: solutionNameRes.solutionName,
-    //         value: index,
-    //       };
-    //       guidedSolutionsName.push(dict);
-    //     }
-    //   );
-    //   addFieldName("solutionName");
-    //   addFormControlLabel(guidedSolutionsName);
-
-    //   console.log("addFormControlLabel is : => ",addFormControlLabel)
-    // }
 
 
     //Question 1
@@ -280,7 +259,7 @@ export const GuidedSolution = (props) => {
         var childArray = [];
         if (
           state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
-            currentCounter
+          currentCounter
           ] != null
         ) {
           addQuestionHeader(
@@ -393,7 +372,7 @@ export const GuidedSolution = (props) => {
         var childArray = [];
         if (
           state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
-            currentCounter
+          currentCounter
           ] != null
         ) {
           if (
@@ -460,7 +439,7 @@ export const GuidedSolution = (props) => {
             ] != null
               ? currentCounter - 1
               : state.guidedSolution?.guidedSolutionResponse[flowIndex].questions
-                  .length - 1;
+                .length - 1;
           if (
             state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               questionIndex
@@ -517,7 +496,7 @@ export const GuidedSolution = (props) => {
         var childArray = [];
         if (
           state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
-            currentCounter
+          currentCounter
           ] != null
         ) {
           if (
@@ -580,7 +559,7 @@ export const GuidedSolution = (props) => {
             ] != null
               ? currentCounter - 1
               : state.guidedSolution?.guidedSolutionResponse[flowIndex].questions
-                  .length - 1;
+                .length - 1;
           //Check whether is last or more
           if (
             state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
@@ -677,7 +656,7 @@ export const GuidedSolution = (props) => {
         var childArray = [];
         if (
           state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
-            currentCounter
+          currentCounter
           ] != null
         ) {
           if (
@@ -740,7 +719,7 @@ export const GuidedSolution = (props) => {
             ] != null
               ? currentCounter - 1
               : state.guidedSolution?.guidedSolutionResponse[flowIndex].questions
-                  .length - 1;
+                .length - 1;
           //Check whether is last or more
           if (
             state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
@@ -1007,6 +986,7 @@ export const GuidedSolution = (props) => {
                     )}
                   </>
                 )}
+                
 
                 {/* <div className=" mt-3 p-3">
                   <div className="">

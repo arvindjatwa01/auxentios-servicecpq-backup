@@ -205,7 +205,7 @@ export function ServicePortfolio(props) {
 
     const [priceAgreementRows, setPriceAgreementRows] = useState([]);
     const [tempBundleItemCheckList, setTempBundleItemCheckList] = useState({});
-    const [valueOfUseCase, setValueOfUseCase] = useState(3);
+    const [valueOfUseCase, setValueOfUseCase] = useState(4);
     const [open2, setOpen2] = useState(false);
 
     const [showRelatedModel, setShowRelatedModel] = useState(false);

@@ -953,7 +953,7 @@ export const Analytics = () => {
                      </div>
                      <div className="col-auto">
                         <div className="text-center border-left pl-3 py-3">
-                           <Link to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable" onClick={handleQuerySearchClick} >
+                           <Link to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable"  >
                               <SearchIcon /><span className="ml-1">Search</span>
                            </Link>
 
@@ -1201,7 +1201,7 @@ export const Analytics = () => {
                         <div className="card w-100 p-2">
 
                            <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
-                              {/* <DataGrid
+                              <DataGrid
                                  sx={{
                                     '& .MuiDataGrid-columnHeaders': {
                                        backgroundColor: '#7380E4', color: '#fff'
@@ -1215,12 +1215,8 @@ export const Analytics = () => {
                                  onCellClick={(e) => handleRowClick(e)}
 
 
-                              /> */}
-
-                              <DataTable
-                                 data={masterData}
-                                 columns={columns1}
                               />
+
                            </div>
 
 

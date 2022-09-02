@@ -56,7 +56,10 @@ export function SolutionSelector(props) {
 
     const [activeStep, setActiveStep] = useState(1)
 
+
     const [rowData, setRowData] = useState([])
+
+    const [solutionValue, setSolutionValue] = useState(0)
 
     const handleStep = (step) => {
         setActiveStep(step);
@@ -156,20 +159,47 @@ export function SolutionSelector(props) {
 
     const handleTypeOfSolution = (e) => {
         setSelectTypeOfSolution(e.target.value)
+        console.log("valll ", e.target.value)
+        console.log("typeee ", typeof e.target.value)
+        if (e.target.value === "1") {
+            setSolutionValue(1)
+        } else {
+            setSolutionValue(0)
+        }
+
     }
+
+    const HandleNextStepClick = () => {
+        if(solutionValue == 1){
+            setActiveStep(2)
+        }else{
+            alert("Portfolio ?")
+        }
+    }
+
+
 
 
     useEffect(() => {
         setSelectTypeOfSolution(props.defaultValue)
+        if (props.defaultValue == 0) {
+            setSolutionValue(0)
+        } else {
+            setSolutionValue(1)
+        }
     }, [props.defaultValue]);
 
+
+    console.log("active step : ", activeStep)
+    console.log("solution value : ", solutionValue)
+    console.log("default value : ", props.defaultValue)
 
     return (
         <>
             <Box sx={{ width: '100%' }}>
                 <Stepper activeStep={activeStep} alternativeLabel>
                     {steps.map((label, index) => (
-                        <Step key={label} onClick={() => handleStep(index)}>
+                        <Step key={label}  /* onClick={() => handleStep(index)} */ >
                             <StepLabel>{label}</StepLabel>
                         </Step>
                     ))}
@@ -205,7 +235,8 @@ export function SolutionSelector(props) {
                             />
                         </RadioGroup>
                         <div>
-                            <button onClick={() => setActiveStep(2)} className="btn btn-primary w-100">Next  <img className='ml-2' src={Buttonarrow}></img></button>
+                            {/* <button onClick={() => setActiveStep(2)} className="btn btn-primary w-100">Next  <img className='ml-2' src={Buttonarrow}></img></button> */}
+                            <button onClick={() => HandleNextStepClick()} className="btn btn-primary w-100">Next  <img className='ml-2' src={Buttonarrow}></img></button>
                         </div>
                     </div>
                     :
