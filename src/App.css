@@ -2514,6 +2514,9 @@ cursor: pointer;
   fill: #706e6e;}
   .row-svg-div img{
     width: 14px;}
+
+.custom-align{ display: flex !important; justify-content: space-between !important; align-items: center !important;}    
+
 	.btn-primary {
     color: #fff;
     background-color: #872ff7;
@@ -2540,3 +2543,4 @@ cursor: pointer;
   font-size: 13px;
   color: #fff;
 }
+

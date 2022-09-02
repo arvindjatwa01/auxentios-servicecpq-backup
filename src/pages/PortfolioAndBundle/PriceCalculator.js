@@ -59,6 +59,7 @@ const PriceCalculator = (props) => {
   };
 
   const handleItemPriceSave = () => {
+    
     props.setTabs("3");
     props.getPriceCalculatorDataFun(priceCalculator);
     props.handleSavePrices();
@@ -97,9 +98,6 @@ const PriceCalculator = (props) => {
       </div>
       <div>
         <div className="p-3">
-          {/* <h6 className="text-light-dark font-size-12 font-weight-500">
-            PRICES
-          </h6> */}
           <div className="row">
             <div className="col-md-6 col-sm-6">
               <div className="form-group">

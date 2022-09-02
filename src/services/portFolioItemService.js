@@ -115,7 +115,7 @@ export const getItemPrice = (payLoad) => {
           .put(`${CREATE_PORTFOLIO_ITEM()}/${id}`,payLoad)
           .then((res) => {
             console.log("updateItemData > axios res=", res);
-            resolve(res.data);
+            resolve(res);
           })
           .catch((err) => {
             console.log("updateItemData > axios err=", err);
@@ -123,6 +123,26 @@ export const getItemPrice = (payLoad) => {
           });
       } catch (error) {
         console.error("in portfolioItemService > updateItemData, Err===", error);
+        reject(SYSTEM_ERROR);
+      }
+    });
+  };
+  export const deleteItem = (id) => {
+    console.log("portfolioItemService > deleteItem called...");
+    return new Promise((resolve, reject) => {
+      try {
+        axios
+          .delete(`${CREATE_PORTFOLIO_ITEM()}/${id}`)
+          .then((res) => {
+            console.log("deleteItem > axios res=", res);
+            resolve(res);
+          })
+          .catch((err) => {
+            console.log("deleteItem > axios err=", err);
+            reject("Error in deleteItem axios!");
+          });
+      } catch (error) {
+        console.error("in portfolioItemService > deleteItem, Err===", error);
         reject(SYSTEM_ERROR);
       }
     });

@@ -102,6 +102,7 @@ import {
   createCoverage,
   getItemPrice,
   updateItemData,
+  deleteItem,
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -564,8 +565,8 @@ export function CreatePortfolio() {
   };
 
   const handleBundleItemSaveAndContinue = async () => {
-    setLoadingItem(true);
     try {
+      setLoadingItem(true);
       let reqObj = {
         itemId: 0,
         itemName: "",
@@ -768,6 +769,16 @@ export function CreatePortfolio() {
       setLoadingItem(false);
     } catch (error) {
       console.log("error in item creation err:", error);
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
     }
   };
 
@@ -844,12 +855,11 @@ export function CreatePortfolio() {
       };
 
       const res = await itemCreation(reqObj);
-      console.log("service or bundle res:", res);
       setCurrentItemId(res.data.itemId);
       if (res.status == 200) {
         toast(`👏 ${serviceOrBundlePrefix} created`, {
           position: "top-right",
-          autoClose: 5000,
+          autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -903,7 +913,7 @@ export function CreatePortfolio() {
             associatedServiceOrBundle: [res.data],
           };
         }
-        setBundleItems([..._bundleItems]);
+        setBundleItems(_bundleItems);
         // API call to update portfolio for service or bundle
         const { portfolioId, ...rest } = generalComponentData;
         let obj = {
@@ -993,7 +1003,7 @@ export function CreatePortfolio() {
       console.log("itemCreation err:", error);
       toast("😐" + error, {
         position: "top-right",
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -1079,10 +1089,20 @@ export function CreatePortfolio() {
           totalPrice: 0,
         },
       };
-      const res = await updateItemData(currentItemId, reqObj);
-      console.log("handleSavePrices res", res);
+      const{data,status}= await updateItemData(currentItemId, reqObj);
+      
     } catch (error) {
       console.log("error in handleSavePrices", error);
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
     }
   };
 
@@ -1156,17 +1176,25 @@ export function CreatePortfolio() {
           totalPrice: 0,
         },
       };
-      const res = await updateItemData(addPortFolioItem.id, reqObj);
-      console.log("handleItemEditSave res", res);
-
-      // setPassItemEditRowData({...rowData,_itemId:itemId,_bundleId:rowData.itemId});
+      const {data,status} = await updateItemData(addPortFolioItem.id, reqObj);
+      if(status==200){
+        toast("😎 Updated Successfully", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
       const _bundleItems = [...bundleItems];
-      if (compoFlag === "itemEdit") {
-        // do something
+      // to check if itemEdit or bundle/service edit
+      if (!(editItemShow && passItemEditRowData._bundleId)) {
         for (let i = 0; i < _bundleItems.length; i++) {
           if (_bundleItems[i].itemId == passItemEditRowData._itemId) {
             let obj = {
-              ...res,
+              ...data,
               associatedServiceOrBundle:
                 _bundleItems[i].associatedServiceOrBundle,
             };
@@ -1176,7 +1204,6 @@ export function CreatePortfolio() {
         }
         setBundleItems(_bundleItems);
       } else {
-        // do something
         for (let i = 0; i < _bundleItems.length; i++) {
           if (_bundleItems[i].itemId == passItemEditRowData._itemId) {
             for (
@@ -1188,7 +1215,7 @@ export function CreatePortfolio() {
                 _bundleItems[i].associatedServiceOrBundle[j].itemId ==
                 passItemEditRowData._bundleId
               ) {
-                _bundleItems[i].associatedServiceOrBundle[j] = res;
+                _bundleItems[i].associatedServiceOrBundle[j] = data;
                 break;
               }
             }
@@ -1199,6 +1226,16 @@ export function CreatePortfolio() {
       }
     } catch (error) {
       console.log("err in handleItemEditSave", error);
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
     }
   };
 
@@ -1226,21 +1263,19 @@ export function CreatePortfolio() {
     setCreateNewBundle(true);
     toast("👏 Bundle Added", {
       position: "top-right",
-      autoClose: 5000,
+      autoClose: 3000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
       progress: undefined,
     });
-    // alert()
     setCreateNewBundle(false);
   };
 
   const handleNewBundleItem = () => {
     setTabs("1");
     setItemModelShow(true);
-    // setOpenAddBundleItem(true);
 
     setOpenSearchSolution(false);
     setCreateNewBundle(false);
@@ -1250,16 +1285,43 @@ export function CreatePortfolio() {
   const handleServiceItemEdit = (e, row) => {
     setEditItemShow(true);
     setPassItemEditRowData({ ...row, _itemId: row.itemId });
-    // setOpenAddBundleItem(true);
   };
-  const handleServiceItemDelete = (e, row) => {
-    const _bundleItems = [...bundleItems];
-    const updated = _bundleItems.filter((currentItem) => {
-      if (currentItem.id !== row.id) {
-        return currentItem;
+  const handleServiceItemDelete = async (e, row) => {
+    try {
+      const delRes = await deleteItem(row.itemId);
+      if(delRes.status==200){
+        toast("😎 Item Deletion Successfull", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+
+        const _bundleItems = [...bundleItems];
+        const updated = _bundleItems.filter((currentItem) => {
+          if (currentItem.id !== row.id) {
+            return currentItem;
+          }
+        });
+        setBundleItems(updated);
+        setServiceOrBundlePrefix("");  
       }
-    });
-    setBundleItems(updated);
+    } catch (error) {
+      console.log("error", error);
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
   };
 
   const handleServiceItemSave = (e, row) => {
@@ -1391,12 +1453,6 @@ export function CreatePortfolio() {
   const handleNextClick = async (e) => {
     try {
       if (e.target.id == "general") {
-        console.log(
-          "hello",
-          generalComponentData.name,
-          generalComponentData.externalReference,
-          prefilgabelGeneral
-        );
         if (
           generalComponentData.name === "" ||
           generalComponentData.name == null ||
@@ -1433,7 +1489,7 @@ export function CreatePortfolio() {
         if (portfolioRes.status === 200) {
           toast("👏 Portfolio Created", {
             position: "top-right",
-            autoClose: 5000,
+            autoClose: 3000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -1561,7 +1617,7 @@ export function CreatePortfolio() {
         if (strategyRes.status === 200) {
           toast("👏 Portfolio updated", {
             position: "top-right",
-            autoClose: 5000,
+            autoClose: 3000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -1682,7 +1738,7 @@ export function CreatePortfolio() {
           if (updatePortfolioRes.status === 200) {
             toast("👏 Portfolio updated", {
               position: "top-right",
-              autoClose: 5000,
+              autoClose: 3000,
               hideProgressBar: false,
               closeOnClick: true,
               pauseOnHover: true,
@@ -3301,10 +3357,52 @@ export function CreatePortfolio() {
     }
   };
 
-  const handleExpandedRowDelete = (e, id) => {
-    const _bundleItems = [...bundleItems];
-    _bundleItems[0].associatedServiceOrBundle.splice(id, 1);
-    setBundleItems(_bundleItems);
+  const handleExpandedRowDelete = async (e, itemId, bundleId) => {
+    try {
+      const delRes = await deleteItem(bundleId);
+      if(delRes.status==200){
+        toast("😎 Deletion Successfull", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        const _bundleItems = [...bundleItems];
+        for (let i = 0; i < _bundleItems.length; i++) {
+          if (_bundleItems[i].itemId == itemId) {
+            for (
+              let j = 0;
+              j < _bundleItems[i].associatedServiceOrBundle.length;
+              j++
+            ) {
+              if (
+                _bundleItems[i].associatedServiceOrBundle[j].itemId == bundleId
+              ) {
+                _bundleItems[i].associatedServiceOrBundle.splice(j, 1);
+                break;
+              }
+            }
+            break;
+          }
+        }
+        setBundleItems(_bundleItems);
+      }
+    } catch (error) {
+      console.log("error", error);
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
   };
 
   const handleExpandedRowEdit = (e, itemId, rowData) => {
@@ -3465,7 +3563,13 @@ export function CreatePortfolio() {
             </div>
             <div
               className="cursor"
-              onClick={(e) => handleExpandedRowDelete(e, i)}
+              onClick={(e) =>
+                handleExpandedRowDelete(
+                  e,
+                  data.itemId,
+                  data.associatedServiceOrBundle[i].itemId
+                )
+              }
             >
               <Tooltip title="Delete">
                 <Link to="#" className="mx-1">
@@ -8061,13 +8165,13 @@ export function CreatePortfolio() {
                           </label>
                           <Select
                             isClearable={true}
+                            value={createServiceOrBundle.machineComponent}
                             onChange={(e) =>
                               setCreateServiceOrBundle({
                                 ...createServiceOrBundle,
                                 machineComponent: e,
                               })
                             }
-                            value={newBundle.machineComponent}
                             isLoading={typeKeyValue.length > 0 ? false : true}
                             options={typeKeyValue}
                           />
@@ -8135,19 +8239,12 @@ export function CreatePortfolio() {
         onHide={() => setEditItemShow(false)}
       >
         <Modal.Body>
-          {editItemShow && passItemEditRowData._bundleId ? (
-            <AddPortfolioItem
-              passItemEditRowData={passItemEditRowData}
-              handleItemEditSave={handleItemEditSave}
-              compoFlag="bundleEdit"
-            />
-          ) : (
-            <AddPortfolioItem
-              passItemEditRowData={passItemEditRowData}
-              handleItemEditSave={handleItemEditSave}
-              compoFlag="itemEdit"
-            />
-          )}
+          {/* itemEdit flag will work for item bundle/service */}
+          <AddPortfolioItem
+            passItemEditRowData={passItemEditRowData}
+            handleItemEditSave={handleItemEditSave}
+            compoFlag="itemEdit"
+          />
         </Modal.Body>
       </Modal>
       <div
