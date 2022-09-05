@@ -43,9 +43,10 @@ import DateFnsUtils from "@date-io/date-fns";
 import { getSearchCoverageForFamily } from "../../services/index";
 import {
   addPartlist,
-  createBuilder,
+  addPartToPartList,
   customerSearch,
   machineSearch,
+  sparePartSearch,
   updateBuilderCustomer,
   updateBuilderEstimation,
   updateBuilderGeneralDet,
@@ -55,6 +56,7 @@ import SearchBox from "./components/SearchBox";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Moment from "react-moment";
 import Validator from "utils/validator";
+import { toast } from "react-toastify";
 
 function PartList() {
   const history = useHistory();
@@ -65,6 +67,8 @@ function PartList() {
   const [estViewOnly, setEstViewOnly] = useState(false);
   const [searchModelResults, setSearchModelResults] = useState([]);
   const [searchSerialResults, setSearchSerialResults] = useState([]);
+  const [searchGroupNoResults, setSearchGroupNoResults] = useState([]);
+  const [searchPartNoResults, setSearchPartNoResults] = useState([]);
   const [builderId, setBuilderId] = useState("");
   const [bId, setBId] = useState("");
   const [partListNo, setPartListNo] = useState("");
@@ -102,6 +106,21 @@ function PartList() {
     revisedOn: new Date(),
     salesOffice: null,
   });
+
+  const [sparePart, setSparePart] = useState({
+    groupNumber: "",
+    type: "",
+    partNumber: "",
+    quantity: "",
+    unitPrice: 0.00,
+    extendedPrice: 0.00,
+    currency: "USD",
+    usage: 0,
+    totalPrice: 0.00,
+    comment: "",
+    description: "",
+  });
+
   const validityOptions = [
     { value: "15", label: "15 days" },
     { value: "30", label: "1 month" },
@@ -121,7 +140,7 @@ function PartList() {
 
   const [openCoverage, setOpenCoveragetable] = React.useState(false);
   const [open, setOpen] = React.useState(false);
-  const [open2, setOpen2] = React.useState(false);
+  const [addPartOpen, setAddPartOpen] = React.useState(false);
   const [open3, setOpen3] = React.useState(false);
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -156,6 +175,7 @@ function PartList() {
     //   });
     setBuilderId("RB000014");
     setBId(14);
+    setPartListNo(12);
   }, []);
 
   const handleCustSearch = async (searchCustfieldName, searchText) => {
@@ -171,6 +191,48 @@ function PartList() {
           throw "Error occurred while searching the customer!";
         });
     }
+  };
+
+  const handleSparePartSearch = async (searchSparePartField, searchText) => {
+    console.log("cleared the result", searchText);
+    let searchQuerySparePart = "";
+    setSearchGroupNoResults([]);
+    setSearchPartNoResults([]);
+
+    if (searchSparePartField === "groupNumber") {
+      setSparePart({ ...sparePart, groupNumber: searchText });
+      searchQuerySparePart = searchText
+        ? searchSparePartField + "~" + searchText
+        : "";
+    } else if (searchSparePartField === "partNumber") {
+      setSparePart({ ...sparePart, partNumber: searchText });
+      searchQuerySparePart = searchText
+        ? sparePart.groupNumber
+          ? `groupNumber:${sparePart.groupNumber} AND partNumber~` + searchText
+          : "partNumber~" + searchText
+        : "";
+    }
+    console.log("search query", searchQuerySparePart);
+    if (searchQuerySparePart) {
+      await sparePartSearch(searchQuerySparePart)
+        .then((result) => {
+          if (result) {
+            if (searchSparePartField === "groupNumber") {
+              setSearchGroupNoResults(result);
+            } else if (searchSparePartField === "partNumber") {
+              setSearchPartNoResults(result);
+            }
+          }
+        })
+        .catch((e) => {
+          throw "Error occurred while searching the sparepart!";
+        });
+    }
+    // else {
+    //   searchSparePartField === "groupNumber"
+    //     ? setSearchModelResults([])
+    //     : setSearchSerialResults([]);
+    // }
   };
 
   const handleCustSelect = (type, currentItem) => {
@@ -252,6 +314,30 @@ function PartList() {
         smu: currentItem.sensorId,
       });
       setSearchSerialResults([]);
+    }
+  };
+
+  const handleSparePartSelect = (type, currentItem) => {
+    if (type === "groupNumber") {
+      setSparePart({
+        ...sparePart,
+        groupNumber: currentItem.groupNumber,
+      });
+      setSearchGroupNoResults([]);
+    } else if (type === "partNumber") {      
+      let quantity = sparePart.quantity;
+      let extendedPrice = currentItem.listPrice * quantity;
+      let totalPrice = calculateTotalPrice(extendedPrice, sparePart.usage);
+      setSparePart({
+        ...sparePart,
+        groupNumber: currentItem.groupNumber,
+        unitPrice: currentItem.listPrice,
+        partNumber: currentItem.partNumber,
+        type: currentItem.partType,
+        extendedPrice,
+        totalPrice
+      });
+      setSearchPartNoResults([]);
     }
   };
 
@@ -364,10 +450,43 @@ function PartList() {
       });
   };
 
+  const calculateTotalPrice = (extendedPrice, usage) => {
+     return usage > 0 ? (usage/100) * extendedPrice : extendedPrice    
+  }
+  const handleIndPartAdd = () => {
+    let data = {
+      groupNumber: sparePart.groupNumber,
+      partNumber: sparePart.partNumber,
+      partType: sparePart.type,
+      quantity: sparePart.quantity,
+      unitPrice: sparePart.unitPrice,
+      extendedPrice: sparePart.extendedPrice,
+      currency: sparePart.currency,
+      usagePercentage: sparePart.usage,
+      totalPrice: sparePart.totalPrice,
+      comment: sparePart.comment,
+      // description: sparePart.description,
+    };
+    addPartToPartList(partListNo, data)
+      .then((result) => {
+        toast(`👏 Spare Part has been added`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        })
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   const fileTypes = ["JPG", "PNG", "GIF"];
   const [open1, setOpen1] = React.useState(false);
   const handleClose = () => setOpen(false);
-  const handleClose2 = () => setOpen2(false);
+  const handleAddPartClose = () => setAddPartOpen(false);
   const activityOptions = ["Create Versions", "Show Errors", "Review"];
 
   const data = [
@@ -577,7 +696,7 @@ function PartList() {
       // cell: (row) => <button onClick={() => alert()}>1</button>,
       // cell: (row) => <Checkbox className="text-black" {...label} />,
       cell: (row) => (
-        <a onClick={() => setOpen2(true)} href="#">
+        <a onClick={() => setAddPartOpen(true)} href="#">
           <FontAwesomeIcon icon={faPen} />
         </a>
       ),
@@ -667,10 +786,9 @@ function PartList() {
     { value: "3", label: "3" },
   ];
   const options4 = [
-    { value: "chocolate", label: "Gold" },
-    { value: "strawberry", label: "1" },
-    { value: "vanilla", label: "2" },
-    { value: "Construction", label: "3" },
+    { value: "1", label: "1" },
+    { value: "2", label: "2" },
+    { value: "3", label: "3" },
   ];
   const handleOption3 = (e) => {
     setValue3(e);
@@ -679,7 +797,7 @@ function PartList() {
     setValue4(e);
   };
   const [value3, setValue3] = useState({ value: "1", label: "1" });
-  const [value4, setValue4] = useState({ value: "Gold", label: "Gold" });
+  const [value4, setValue4] = useState({ value: "1", label: "1" });
   const [value2, setValue2] = useState({
     value: "Archived",
     label: "Archived",
@@ -826,7 +944,7 @@ function PartList() {
               <div className="d-flex justify-content-center align-items-center">
                 <div className="ml-3">
                   <Select
-                    className="customselectbtn1"
+                    className="customselectbtn"
                     onChange={(e) => handleOption3(e)}
                     options={options3}
                     value={value3}
@@ -1998,7 +2116,7 @@ function PartList() {
                       <span>Parts Table</span>
                     </h5>
                     <Select
-                      className="customselectbtn1 col-auto"
+                      className="customselectbtn col-auto"
                       onChange={(e) => handleOption4(e)}
                       options={options4}
                       value={value4}
@@ -2141,7 +2259,7 @@ function PartList() {
                     Upload
                   </a>
                   <a
-                    onClick={() => setOpen2(true)}
+                    onClick={() => setAddPartOpen(true)}
                     href="#"
                     className="btn bg-primary text-white "
                   >
@@ -2166,8 +2284,8 @@ function PartList() {
             </div>
           </div>
           <Modal
-            show={open2}
-            onHide={handleClose2}
+            show={addPartOpen}
+            onHide={handleAddPartClose}
             size="lg"
             aria-labelledby="contained-modal-title-vcenter"
             centered
@@ -2221,29 +2339,31 @@ function PartList() {
                         >
                           GROUP NUMBER
                         </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="1000 ENGINE"
+                        <SearchBox
+                          value={sparePart.groupNumber}
+                          onChange={(e) =>
+                            handleSparePartSearch("groupNumber", e.target.value)
+                          }
+                          type="groupNumber"
+                          result={searchGroupNoResults}
+                          onSelect={handleSparePartSelect}
                         />
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           TYPE
                         </label>
                         <input
-                          type="email"
+                          type="text"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="0123 REPLACE"
+                          value={sparePart.type}
+                          onChange={(e) =>
+                            setSparePart({ ...sparePart, type: e.target.value })
+                          }
+                          disabled
+                          placeholder="Required"
                         />
                       </div>
                     </div>
@@ -2255,29 +2375,36 @@ function PartList() {
                         >
                           PART NUMBER
                         </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Replace left side of the Engine"
+                        <SearchBox
+                          value={sparePart.partNumber}
+                          onChange={(e) =>
+                            handleSparePartSearch("partNumber", e.target.value)
+                          }
+                          type="partNumber"
+                          result={searchPartNoResults}
+                          onSelect={handleSparePartSelect}
                         />
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           QTY
                         </label>
                         <input
-                          type="email"
+                          type="Number"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="List Price"
+                          onChange={(e) =>
+                            setSparePart({
+                              ...sparePart,
+                              quantity: e.target.value,
+                              extendedPrice:
+                                sparePart.unitPrice * e.target.value,
+                              totalPrice:  sparePart.usage > 0 ? ((sparePart.usage/100) * sparePart.unitPrice * e.target.value) : (sparePart.unitPrice * e.target.value)
+                            })
+                          }
+                          value={sparePart.quantity}
+                          placeholder="Required"
                         />
                       </div>
                     </div>
@@ -2290,10 +2417,8 @@ function PartList() {
                           UNIT OF MEASURES
                         </label>
                         <input
-                          type="email"
+                          type="text"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
                           placeholder="$35000"
                         />
                       </div>
@@ -2307,62 +2432,67 @@ function PartList() {
                           UNIT PRICE
                         </label>
                         <input
-                          type="email"
+                          type="Number"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="$35000"
+                          value={sparePart.unitPrice}
+                          disabled
+                          placeholder="Required"
                         />
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           EXTENDED PRICE
                         </label>
                         <input
-                          type="email"
+                          type="Number"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="$10000"
+                          disabled
+                          // onChange={(e) => setSparePart({...sparePart, extendedPrice: e.target.value})}
+                          value={sparePart.extendedPrice}
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           CURRENCY
                         </label>
                         <input
-                          type="email"
+                          type="text"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="$5000"
+                          onChange={(e) =>
+                            setSparePart({
+                              ...sparePart,
+                              currency: e.target.value,
+                            })
+                          }
+                          value={sparePart.currency}
+                          placeholder="Required"
+                          disabled
                         />
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           % USAGE
                         </label>
                         <input
-                          type="email"
+                          type="Number"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="EA"
+                          onChange={(e) =>
+                            setSparePart({
+                              ...sparePart,
+                              usage: e.target.value,
+                              totalPrice: calculateTotalPrice(sparePart.extendedPrice, e.target.value)
+                            })
+                            
+                          }
+                          value={sparePart.usage}
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
@@ -2375,11 +2505,11 @@ function PartList() {
                           TOTAL PRICE
                         </label>
                         <input
-                          type="email"
+                          type="Number"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="$480000"
+                          value={sparePart.totalPrice}
+                          disabled
+                          placeholder="Required"
                         />
                       </div>
                     </div>
@@ -2389,14 +2519,19 @@ function PartList() {
                           className="text-light-dark font-size-12 font-weight-500"
                           for="exampleInputEmail1"
                         >
-                          COMMENTS
+                          COMMENT
                         </label>
                         <input
-                          type="email"
+                          type="text"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="PAYER TYPE"
+                          value={sparePart.comment}
+                          onChange={(e) =>
+                            setSparePart({
+                              ...sparePart,
+                              comment: e.target.value,
+                            })
+                          }
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
@@ -2409,11 +2544,16 @@ function PartList() {
                           DESCRIPTION
                         </label>
                         <input
-                          type="email"
+                          type="text"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="PAYER TYPE"
+                          value={sparePart.description}
+                          onChange={(e) =>
+                            setSparePart({
+                              ...sparePart,
+                              description: e.target.value,
+                            })
+                          }
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
@@ -2422,15 +2562,33 @@ function PartList() {
                 <div className="m-3 text-right">
                   <a
                     href="#"
-                    onClick={handleClose2}
+                    onClick={handleAddPartClose}
                     className="btn border mr-3 "
                   >
                     {" "}
                     Cancel
                   </a>
-                  <a href="#" className="btn text-white bg-primary">
+                  <button
+                    type="button"
+                    className="btn btn-light bg-primary text-white"
+                    onClick={handleIndPartAdd}
+                    disabled={
+                      !sparePart.type ||
+                      !sparePart.partNumber ||
+                      !sparePart.quantity ||
+                      !sparePart.unitPrice ||
+                      !sparePart.extendedPrice ||
+                      !sparePart.currency ||
+                      !sparePart.totalPrice
+                    }
+                  >
                     Save
-                  </a>
+                  </button>
+                  {/* <a href="#" className="btn text-white bg-primary"
+                  onClick={}
+                  disabled>
+                    Save
+                  </a> */}
                 </div>
               </div>
             </Modal.Body>
