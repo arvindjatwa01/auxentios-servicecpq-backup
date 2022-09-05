@@ -8,12 +8,24 @@ import signUpReducer from "../features/auth/signUpSlice";
 import taskReducer from "../pages/PortfolioAndBundle/customerSegment/strategySlice";
 import portfolioItemReducer from "../pages/PortfolioAndBundle/createItem/portfolioSlice";
 
+import { appReducer } from "../redux/reducers/appReducer";
+import { userReducer } from "../redux/reducers/userReducer";
+import { guidedSoltionReducer } from "../redux/reducers/guidedSolutionReducer"
+
+
+
+
+
 const rootReducer = combineReducers({
     router: connectRouter(history),
     auth: authReducer,
     signUp: signUpReducer,
     task:taskReducer,
     portfolioItem:portfolioItemReducer,
+    
+    app: appReducer,
+    user: userReducer,
+    guidedSolution: guidedSoltionReducer
 })
 
 const sagaMiddleware = createSagaMiddleware()

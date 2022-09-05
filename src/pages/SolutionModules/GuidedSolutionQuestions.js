@@ -37,8 +37,8 @@ const InitQuestion = () => {
 
     const { addQuestion } = bindActionCreators(actionCreator, dispatch)
 
+    
     console.log("addQuestion is : ", addQuestion)
-
     const handleParentCallback = (value) => {
         var dict = {
             "key": 0,

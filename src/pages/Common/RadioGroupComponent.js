@@ -77,7 +77,6 @@ export const RadioGroupComponent = props => {
         setSelectValue(props.dValue)
     }, [props.dValue]);
 
-    console.log("checked data is : ", checkedData)
     return (
         <>
 

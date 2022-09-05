@@ -53,7 +53,7 @@ export const GuidedSolution = (props) => {
 
   const [guidedSolutions, setGuidedSolutions] = useState([]);
   const state = useSelector((state) => state);
-
+  console.log("state in guidedSolution",state.guidedSolution.guidedQuestions)
   const dispatch = useDispatch();
   const {
     resetQuestion,
@@ -216,10 +216,8 @@ export const GuidedSolution = (props) => {
   const handleContinuePress = (currentCounter) => {
 
     //Counter Not Increase Yet
-    console.log("State is => ", state)
-    console.log("guide solutions data is => ", guidedSolutions)
-    console.log("State guided solutions => ", state.guidedSolution)
-
+    // console.log("localstorage value is : => ", localStorage.getItem('checkedVal'))
+    // console.log("guide solutions data is : ", state.guidedSolution)
 
     //Question 1
     if (currentCounter == 0) {
