@@ -133,7 +133,6 @@ import PriceCalculator from "./PriceCalculator";
 import { PortfolioContext } from "./ProtfolioContext";
 import { Link, useHistory } from "react-router-dom";
 
-
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 const customStyles = {
   rows: {
@@ -282,8 +281,8 @@ export function CreatePortfolio() {
     to: null,
     fromInput: "",
     toInput: "",
-    dateFlag:false,
-    inputFlag:false
+    dateFlag: false,
+    inputFlag: false,
   });
   const [generalComponentData, setGeneralComponentData] = useState({
     name: "",
@@ -1091,8 +1090,7 @@ export function CreatePortfolio() {
           totalPrice: 0,
         },
       };
-      const{data,status}= await updateItemData(currentItemId, reqObj);
-      
+      const { data, status } = await updateItemData(currentItemId, reqObj);
     } catch (error) {
       console.log("error in handleSavePrices", error);
       toast("😐" + error, {
@@ -1178,8 +1176,11 @@ export function CreatePortfolio() {
           totalPrice: 0,
         },
       };
-      const {data,status} = await updateItemData(addPortFolioItem.id, reqObj);
-      if(status==200){
+      const { data, status } = await updateItemData(
+        addPortFolioItem.id,
+        reqObj
+      );
+      if (status == 200) {
         toast("😎 Updated Successfully", {
           position: "top-right",
           autoClose: 3000,
@@ -1291,7 +1292,7 @@ export function CreatePortfolio() {
   const handleServiceItemDelete = async (e, row) => {
     try {
       const delRes = await deleteItem(row.itemId);
-      if(delRes.status==200){
+      if (delRes.status == 200) {
         toast("😎 Item Deletion Successfull", {
           position: "top-right",
           autoClose: 3000,
@@ -1309,7 +1310,7 @@ export function CreatePortfolio() {
           }
         });
         setBundleItems(updated);
-        setServiceOrBundlePrefix("");  
+        setServiceOrBundlePrefix("");
       }
     } catch (error) {
       console.log("error", error);
@@ -1326,7 +1327,7 @@ export function CreatePortfolio() {
     }
   };
 
-  const handleServiceItemSave = async(e, row) => {
+  const handleServiceItemSave = async (e, row) => {
     // const res=await updateItemData(itemId,payLoad)
     // console.log("handleServiceItemSave",res)
     alert("save");
@@ -1500,7 +1501,7 @@ export function CreatePortfolio() {
             draggable: true,
             progress: undefined,
           });
-          value < 6 && setValue(value + 1);
+          setValue("validity");
           setGeneralComponentData({
             ...generalComponentData,
             portfolioId: portfolioRes.data.portfolioId,
@@ -1511,12 +1512,20 @@ export function CreatePortfolio() {
         }
       } else if (e.target.id == "validity") {
         let reqData;
-        if (validityData.fromInput && validityData.toInput && validityData.inputFlag) {
+        if (
+          validityData.fromInput &&
+          validityData.toInput &&
+          validityData.inputFlag
+        ) {
           reqData = {
             validFrom: validityData.fromInput + validityData.from,
             validTo: validityData.toInput + validityData.from,
           };
-        } else if (validityData.fromDate && validityData.toDate && validityData.dateFlag) {
+        } else if (
+          validityData.fromDate &&
+          validityData.toDate &&
+          validityData.dateFlag
+        ) {
           reqData = {
             validFrom: validityData.fromDate.toISOString().substring(0, 10),
             validTo: validityData.toDate.toISOString().substring(0, 10),
@@ -1524,15 +1533,21 @@ export function CreatePortfolio() {
         } else {
           throw "Please fill date fields";
         }
-        value < 6 && setValue(value + 1);
+        setValue("strategy");
         setGeneralComponentData({
           ...generalComponentData,
           ...reqData,
         });
       } else if (e.target.id == "strategy") {
+        console.log(
+          categoryUsageKeyValue1.value,
+          stratgyTaskUsageKeyValue.value
+        );
         if (
           categoryUsageKeyValue1.value == "" ||
-          stratgyTaskUsageKeyValue.value == ""
+          stratgyTaskUsageKeyValue.value == "" ||
+          categoryUsageKeyValue1.value == undefined ||
+          stratgyTaskUsageKeyValue.value == undefined
         ) {
           throw "Please fill manditory fields properly";
         }
@@ -1628,11 +1643,19 @@ export function CreatePortfolio() {
             draggable: true,
             progress: undefined,
           });
-          value < 6 && setValue(value + 1);
+          setValue("administrative");
           console.log("strategy updating", strategyRes.data);
         } else {
           throw `${strategyRes.status}:error in update portfolio`;
         }
+      } else if (e.target.id == "administrative") {
+        setValue("price");
+      } else if (e.target.id == "price") {
+        priceAgreementOption
+          ? setValue("priceAgreement")
+          : setValue("coverage");
+      } else if (e.target.id == "priceAgreement") {
+        setValue("coverage");
       } else if (e.target.id == "coverage") {
         let cvgIds = [];
         for (let i = 0; i < selectedMasterData.length; i++) {
@@ -1749,7 +1772,6 @@ export function CreatePortfolio() {
               draggable: true,
               progress: undefined,
             });
-            value < 6 && setValue(value + 1);
           } else {
             throw `${updatePortfolioRes.status}:allready exist or something else`;
           }
@@ -3352,7 +3374,7 @@ export function CreatePortfolio() {
   const handleExpandedRowDelete = async (e, itemId, bundleId) => {
     try {
       const delRes = await deleteItem(bundleId);
-      if(delRes.status==200){
+      if (delRes.status == 200) {
         toast("😎 Deletion Successfull", {
           position: "top-right",
           autoClose: 3000,
@@ -3609,7 +3631,7 @@ export function CreatePortfolio() {
     <PortfolioContext.Provider value={generalComponentData}>
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid ">
-        <div className="d-flex align-items-center justify-content-between mt-2">
+          <div className="d-flex align-items-center justify-content-between mt-2">
             <div className="d-flex justify-content-center align-items-center">
               <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5>
               <div className="d-flex justify-content-center align-items-center">
@@ -3658,7 +3680,7 @@ export function CreatePortfolio() {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                     >
-                      <span  className="convert mx-2">
+                      <span className="convert mx-2">
                         Convert to
                         <span>
                           <KeyboardArrowDownIcon />
@@ -3777,19 +3799,20 @@ export function CreatePortfolio() {
                     onChange={handleChange}
                     aria-label="lab API tabs example"
                   >
-                    <Tab label="General" value={1} />
-                    <Tab label="Validity " value={2} />
-                    <Tab label="Strategy" value={3} />
-                    <Tab label="Price" value={4} />
+                    <Tab label="General" value={"general"} />
+                    <Tab label="Validity " value={"validity"} />
+                    <Tab label="Strategy" value={"strategy"} />
+                    <Tab label="Administrative" value={"administrative"} />
+                    <Tab label="Price" value={"price"} />
                     <Tab
                       label="Price Agreement"
                       disabled={!priceAgreementOption}
-                      value={5}
+                      value={"priceAgreement"}
                     />
-                    <Tab label="Coverage" value={6} />
+                    <Tab label="Coverage" value={"coverage"} />
                   </TabList>
                 </Box>
-                <TabPanel value={1}>
+                <TabPanel value={"general"}>
                   <div className="row mt-4">
                     <div className="col-md-3 col-sm-3">
                       <div className="form-group">
@@ -3955,7 +3978,7 @@ export function CreatePortfolio() {
                     <></>
                   )}
                 </TabPanel>
-                <TabPanel value={2}>
+                <TabPanel value={"validity"}>
                   <div className="row mt-4">
                     <div className="col-md-12">
                       <div className="row">
@@ -3979,7 +4002,7 @@ export function CreatePortfolio() {
                                     setValidityData({
                                       ...validityData,
                                       fromDate: e,
-                                      inputFlag:false
+                                      inputFlag: false,
                                     })
                                   }
                                 />
@@ -4004,8 +4027,8 @@ export function CreatePortfolio() {
                                     setValidityData({
                                       ...validityData,
                                       toDate: e,
-                                      dateFlag:true,
-                                      inputFlag:false
+                                      dateFlag: true,
+                                      inputFlag: false,
                                     })
                                   }
                                 />
@@ -4060,7 +4083,7 @@ export function CreatePortfolio() {
                                         setValidityData({
                                           ...validityData,
                                           fromInput: e.target.value,
-                                          dateFlag:false,
+                                          dateFlag: false,
                                         })
                                       }
                                     />
@@ -4103,8 +4126,8 @@ export function CreatePortfolio() {
                                         setValidityData({
                                           ...validityData,
                                           toInput: e.target.value,
-                                          dateFlag:false,
-                                          inputFlag:true
+                                          dateFlag: false,
+                                          inputFlag: true,
                                         })
                                       }
                                     />
@@ -4178,7 +4201,7 @@ export function CreatePortfolio() {
                     </button>
                   </div>
                 </TabPanel>
-                <TabPanel value={3}>
+                <TabPanel value={"strategy"}>
                   <div className="row">
                     <div className="col-md-4 col-sm-4">
                       <div className="form-group">
@@ -4379,7 +4402,119 @@ export function CreatePortfolio() {
                     </button>
                   </div>
                 </TabPanel>
-                <TabPanel value={4}>
+                <TabPanel value={"administrative"}>
+                  <div className="row">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          PREPARED BY
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          APPROVED BY
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="Optional"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                         PREPARED ON
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="Optional"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                         REVISED BY
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="Optional"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                         REVISED ON
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="Optional"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                         SALSE OFFICE/BRANCH
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                  <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                         OFFER VALIDITY
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="Optional"
+                        />
+                      </div>
+                    </div>
+
+                  </div>
+                </TabPanel>
+                <TabPanel value={"price"}>
                   <div className="row">
                     <div className="col-md-4 col-sm-4">
                       <div className="form-group">
@@ -4409,7 +4544,7 @@ export function CreatePortfolio() {
                           defaultValue={selectedOption}
                           onChange={setSelectedOption}
                           options={priceMethodKeyValue}
-                          //   options={options}
+                          placeholder="required"
                         />
                       </div>
                     </div>
@@ -4543,8 +4678,7 @@ export function CreatePortfolio() {
                           type="text"
                           className="form-control border-radius-10"
                           id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="optional"
+                          placeholder="required"
                         />
                       </div>
                     </div>
@@ -4604,8 +4738,9 @@ export function CreatePortfolio() {
                   <div className="row" style={{ justifyContent: "right" }}>
                     <button
                       type="button"
-                      onClick={() => setValue(value + 1)}
+                      onClick={handleNextClick}
                       className="btn btn-light"
+                      id="price"
                     >
                       {" "}
                       Save & Next
@@ -4613,7 +4748,7 @@ export function CreatePortfolio() {
                   </div>
                 </TabPanel>
 
-                <TabPanel value={5} className="customTabPanel">
+                <TabPanel value={"priceAgreement"} className="customTabPanel">
                   <div className="card border">
                     <div className="d-flex align-items-center justify-content-between px-3">
                       <div className="">
@@ -4662,7 +4797,7 @@ export function CreatePortfolio() {
                   <div className="row" style={{ justifyContent: "right" }}>
                     <button
                       type="button"
-                      onClick={() => setValue(value + 1)}
+                      onClick={() => setValue("coverage")}
                       className="btn btn-light"
                     >
                       Save & Next
@@ -4670,7 +4805,7 @@ export function CreatePortfolio() {
                   </div>
                 </TabPanel>
 
-                <TabPanel value={6}>
+                <TabPanel value="coverage">
                   <div
                     className="custom-table card p-3 "
                     style={{ width: "100%", backgroundColor: "#fff" }}
@@ -5314,7 +5449,10 @@ export function CreatePortfolio() {
         </Modal.Body>
         <div className="row m-0 p-3">
           <div className="col-md-6 col-sm-6">
-            <button className="btn border w-100 bg-white" onClick={() => setOpen3(false)}>
+            <button
+              className="btn border w-100 bg-white"
+              onClick={() => setOpen3(false)}
+            >
               Cancel
             </button>
           </div>
@@ -8245,160 +8383,158 @@ export function CreatePortfolio() {
         </Modal.Body>
       </Modal>
       <div
-          class="modal fade"
-          id="quotecreat"
-          tabindex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog" role="document">
-            <div class="modal-content bg-white border-none">
-              <div class="modal-header border-none">
-                <h5 class="modal-title" id="exampleModalLabel">
-                  Quote Create
-                </h5>
+        class="modal fade"
+        id="quotecreat"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content bg-white border-none">
+            <div class="modal-header border-none">
+              <h5 class="modal-title" id="exampleModalLabel">
+                Quote Create
+              </h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <p className="d-block px-3">
+              It is a long established fact that a reader will be distracted by
+              the readable content of a page when looking at its layout.
+            </p>
+            <hr className="my-1" />
+            <div class="modal-body">
+              <div className="row">
+                <div className="col-md-12 col-sm-12">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      Quote Type
+                    </label>
+                    <Select
+                      defaultValue={selectedOption}
+                      onChange={setSelectedOption}
+                      options={options}
+                      placeholder="Cyclical"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-12 col-sm-12">
+                  <div class="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      Quote ID
+                    </label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp"
+                      placeholder="Enter email"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-12 col-sm-12">
+                  <div class="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      Description
+                    </label>
+                    <textarea
+                      class="form-control"
+                      id="exampleFormControlTextarea1"
+                      rows="3"
+                    ></textarea>
+                  </div>
+                </div>
+                <div className="col-md-12 col-sm-12">
+                  <div class="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      for="exampleInputEmail1"
+                    >
+                      Reference
+                    </label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp"
+                      placeholder="Enter email"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="row">
+                <div class="col-md-12 col-sm-12">
+                  <div class="form-group mt-3">
+                    <p class="font-size-12 font-weight-500 mb-2">QUOTE TYPE </p>
+                    <h6 class="font-weight-500">
+                      Repair Quote with Spare Parts
+                    </h6>
+                  </div>
+                </div>
+                <div class="col-md-12 col-sm-12">
+                  <div class="form-group mt-3">
+                    <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
+                    <h6 class="font-weight-500">SB12345</h6>
+                  </div>
+                </div>
+                <div class="col-md-12 col-sm-12">
+                  <div class="form-group mt-3">
+                    <p class="font-size-12 font-weight-500 mb-2">
+                      QUOTE DESCRIPTION
+                    </p>
+                    <h6 class="font-weight-500">Holder text</h6>
+                  </div>
+                </div>
+                <div class="col-md-12 col-sm-12">
+                  <div class="form-group mt-3">
+                    <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
+                    <h6 class="font-weight-500">Holder text</h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer" style={{ display: "unset" }}>
+              <div className="mb-2">
+                <a
+                  href="#"
+                  onClick={() => handleCreate()}
+                  data-dismiss="modal"
+                  className="btn bg-primary d-block text-white"
+                >
+                  Done
+                </a>
+              </div>
+              <div>
+                <button class="btn  btn-primary">Create</button>
                 <button
                   type="button"
-                  class="close"
+                  class="btn pull-right border"
                   data-dismiss="modal"
-                  aria-label="Close"
                 >
-                  <span aria-hidden="true">&times;</span>
+                  Cancel
                 </button>
-              </div>
-              <p className="d-block px-3">
-                It is a long established fact that a reader will be distracted
-                by the readable content of a page when looking at its layout.
-              </p>
-              <hr className="my-1" />
-              <div class="modal-body">
-                <div className="row">
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
-                        Quote Type
-                      </label>
-                      <Select
-                        defaultValue={selectedOption}
-                        onChange={setSelectedOption}
-                        options={options}
-                        placeholder="Cyclical"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div class="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
-                        Quote ID
-                      </label>
-                      <input
-                        type="email"
-                        class="form-control"
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
-                        placeholder="Enter email"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div class="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
-                        Description
-                      </label>
-                      <textarea
-                        class="form-control"
-                        id="exampleFormControlTextarea1"
-                        rows="3"
-                      ></textarea>
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div class="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
-                        Reference
-                      </label>
-                      <input
-                        type="email"
-                        class="form-control"
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
-                        placeholder="Enter email"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div class="col-md-12 col-sm-12">
-                    <div class="form-group mt-3">
-                      <p class="font-size-12 font-weight-500 mb-2">
-                        QUOTE TYPE{" "}
-                      </p>
-                      <h6 class="font-weight-500">
-                        Repair Quote with Spare Parts
-                      </h6>
-                    </div>
-                  </div>
-                  <div class="col-md-12 col-sm-12">
-                    <div class="form-group mt-3">
-                      <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
-                      <h6 class="font-weight-500">SB12345</h6>
-                    </div>
-                  </div>
-                  <div class="col-md-12 col-sm-12">
-                    <div class="form-group mt-3">
-                      <p class="font-size-12 font-weight-500 mb-2">
-                        QUOTE DESCRIPTION
-                      </p>
-                      <h6 class="font-weight-500">Holder text</h6>
-                    </div>
-                  </div>
-                  <div class="col-md-12 col-sm-12">
-                    <div class="form-group mt-3">
-                      <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
-                      <h6 class="font-weight-500">Holder text</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="modal-footer" style={{ display: "unset" }}>
-                <div className="mb-2">
-                  <a
-                    href="#"
-                    onClick={() => handleCreate()}
-                    data-dismiss="modal"
-                    className="btn bg-primary d-block text-white"
-                  >
-                    Done
-                  </a>
-                </div>
-                <div>
-                  <button class="btn  btn-primary">Create</button>
-                  <button
-                    type="button"
-                    class="btn pull-right border"
-                    data-dismiss="modal"
-                  >
-                    Cancel
-                  </button>
-                </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
     </PortfolioContext.Provider>
   );
 }
