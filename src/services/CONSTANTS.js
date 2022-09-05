@@ -76,6 +76,8 @@ export const GUIDED_SOLUTIONS = () => SOLUTION_BUILDER_URI + "/guided-solution";
 
 // Repair Builder Services
 export const CREATE_REPAIR_BUILDER = () => REPAIR_BUILDER_URI + "builder";
+export const ADD_REPAIR_BUILDER_PARTLIST = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/partlist`;
+
 // export const ADD_REPAIR_SEGMENT = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/segment`;
 // export const ADD_REPAIR_OPERATION= (segmentId) => REPAIR_BUILDER_URI + `segment/${segmentId}/operation`;
 export const ADD_REPAIR_PART = () => REPAIR_BUILDER_URI + "builder";
