@@ -84,6 +84,7 @@ export const PortfolioSummary = () => {
     const [columnSearchText, setColumnSearchText] = useState('');
     const [typeOfSolutionBuild, setTypeOfSolutionBuild] = useState(-1)
     const [buildSolutionValue, setBuildSolutionValue] = useState(-1)
+    const [portfolioResponse, setPortfolioResponse] = useState({})
 
 
     const [age, setAge] = React.useState('5');
@@ -417,6 +418,44 @@ export const PortfolioSummary = () => {
         
       ];
 
+      const handleCreatePortfolio= async()=>{
+        let reqData = {
+            name: "",
+            description: "",
+            machineType: "EMPTY",
+            searchTerm: "",
+            lubricant: true,
+            customerId: 0,
+            customerGroup: "",
+            customerSegment: "",
+            externalReference: "",
+            status: "",
+            validFrom: "",
+            validTo: "",
+            strategyTask: "PREVENTIVE_MAINTENANCE",
+            taskType: "PM1",
+            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+            productHierarchy: "END_PRODUCT",
+            geographic: "ONSITE",
+            availability: "AVAILABILITY_GREATER_95",
+            responseTime: "PROACTIVE",
+            type: "MACHINE",
+            application: "HILL",
+            contractOrSupport: "LEVEL_I",
+            lifeStageOfMachine: "NEW_BREAKIN",
+            supportLevel: "PREMIUM",
+            items: [{itemId: 0}],
+            coverages: [{coverageId: 0}],
+            portfolioPrice: {portfolioPriceId: 0},
+            additionalPrice: {additionalPriceId: 0},
+            escalationPrice: {escalationPriceId: 0},
+            visibleInCommerce: true
+          }
+        // const portfolioRes = await createPortfolio(reqData);
+        // console.log("portfolioResponse",portfolioResponse)
+        // setPortfolioResponse(portfolioRes)
+      }
+
     return (
         <>
             {/* <CommanComponents /> */}
@@ -425,7 +464,7 @@ export const PortfolioSummary = () => {
                     <div className="d-flex align-items-center justify-content-between mt-2">
                         <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5>
                         <div>
-                        <Link to="/portfolioBuilder/new" style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
+                        <Link to={{pathname: "/portfolioBuilder/new",state: { portfolioResponse}}}  onClick={handleCreatePortfolio} style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
                                 <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create Portfolio<span className="ml-2"></span>
                             </Link>
                             <Link style={{ cursor: 'pointer' }} className="btn bg-primary text-white mx-2">

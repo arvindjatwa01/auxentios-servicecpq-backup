@@ -803,7 +803,7 @@ export function HeaderComponent(props) {
       <div
         className="modal right fade"
         id="messegespopup"
-        tabindex="-1"
+        tabIndex="-1"
         role="dialog"
         aria-labelledby="myModalLabel2"
       >

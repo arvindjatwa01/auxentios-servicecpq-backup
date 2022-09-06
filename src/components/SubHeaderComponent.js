@@ -101,7 +101,7 @@ export function SubHeaderComponent(props) {
         </ListItem>
       ))}
     </List> */}
-          <div class="modal-header d-block"><button type="button" class="close" onClick={toggleDrawer(anchor, false, true)}><span aria-hidden="true">×</span></button><h4 class="modal-title" id="myModalLabel2">Share</h4></div>
+          <div className="modal-header d-block"><button type="button" className="close" onClick={toggleDrawer(anchor, false, true)}><span aria-hidden="true">×</span></button><h4 className="modal-title" id="myModalLabel2">Share</h4></div>
           <Divider />
           <div className="p-3">
             <div>
@@ -112,13 +112,13 @@ export function SubHeaderComponent(props) {
             <p>Amet minim mollit non deserunt ullamco est sit Viewer</p>
 
             <div className=" d-flex">
-              <div class="input-group icons approvesearch mr-3">
-                <div class="input-group-prepend">
-                  <span class="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
+              <div className="input-group icons approvesearch mr-3">
+                <div className="input-group-prepend">
+                  <span className="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
                     <img src={searchIcon} />
                   </span>
                 </div>
-                <input type="search" class="form-control" placeholder="" aria-label="Search Dashboard" />
+                <input type="search" className="form-control" placeholder="" aria-label="Search Dashboard" />
                 <div className="customselect d-flex align-items-center" style={{ position: 'absolute', right: '10px', top: '10px' }}>
                   <Select
                     // onChange={handleChangeSelect}
@@ -200,9 +200,9 @@ export function SubHeaderComponent(props) {
           </div>
         </Box>
         :
-        <div class="modal-content">
-          <div class="modal-header ">
-            <h4 class="modal-title" id="myModalLabel2">Version history</h4>
+        <div className="modal-content">
+          <div className="modal-header ">
+            <h4 className="modal-title" id="myModalLabel2">Version history</h4>
             <div className="d-flex">
               {/* <div className="headerdropdown">
                 <Box>
@@ -220,17 +220,17 @@ export function SubHeaderComponent(props) {
                     </NativeSelect>
                   </FormControl>
                 </Box></div> */}
-              <button type="button" class="close" onClick={toggleDrawer(anchor, false, false)}><span aria-hidden="true">&times;</span></button>
+              <button type="button" className="close" onClick={toggleDrawer(anchor, false, false)}><span aria-hidden="true">&times;</span></button>
             </div>
           </div>
-          <div class="modal-body" style={{ background: 'white' }}>
+          <div className="modal-body" style={{ background: 'white' }}>
             <div className="card border p-3 bg-primary ">
               <h5 className="d-flex align-items-center justify-content-between mb-0">
                 <div className="text-white" style={{ display: 'contents' }}><span className="mr-3">Service Estimate 01</span>
                 <div>
-                <a href="#" className="btn-sm text-white"><i class="fa fa-pencil" aria-hidden="true"></i></a> 
-                <a href="#" className="btn-sm text-white"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a> 
-                <a href="#" className="btn-sm text-white"><i class="fa fa-folder-o" aria-hidden="true"></i></a></div>
+                <a href="#" className="btn-sm text-white"><i className="fa fa-pencil" aria-hidden="true"></i></a> 
+                <a href="#" className="btn-sm text-white"><i className="fa fa-bookmark-o" aria-hidden="true"></i></a> 
+                <a href="#" className="btn-sm text-white"><i className="fa fa-folder-o" aria-hidden="true"></i></a></div>
                 </div>
               </h5>
               </div>
@@ -260,8 +260,8 @@ export function SubHeaderComponent(props) {
               </div>
               <p className="text-black mb-2" style={{ textDecoration: 'line-through' }}>SFI234</p>
               <p className="text-black mb-2">SFI234</p>
-              <div class="card border">
-                <table class="table table-bordered mb-0">
+              <div className="card border">
+                <table className="table table-bordered mb-0">
                   <tbody>
                     <tr>
                       <td>365-1234</td>
@@ -286,9 +286,9 @@ export function SubHeaderComponent(props) {
               <h5 className="d-flex align-items-center justify-content-between mb-0">
                 <div className="text-white" style={{ display: 'contents' }}><span className="mr-3">Service Estimate 02</span>
                 <div>
-                <a href="#" className="btn-sm text-white"><i class="fa fa-pencil" aria-hidden="true"></i></a> 
-                <a href="#" className="btn-sm text-white"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a> 
-                <a href="#" className="btn-sm text-white"><i class="fa fa-folder-o" aria-hidden="true"></i></a></div>
+                <a href="#" className="btn-sm text-white"><i className="fa fa-pencil" aria-hidden="true"></i></a> 
+                <a href="#" className="btn-sm text-white"><i className="fa fa-bookmark-o" aria-hidden="true"></i></a> 
+                <a href="#" className="btn-sm text-white"><i className="fa fa-folder-o" aria-hidden="true"></i></a></div>
                 </div>
               </h5>
               </div>
@@ -318,8 +318,8 @@ export function SubHeaderComponent(props) {
               </div>
               <p className="text-black mb-2" style={{ textDecoration: 'line-through' }}>SFI234</p>
               <p className="text-black mb-2">SFI234</p>
-              <div class="card border">
-                <table class="table table-bordered mb-0">
+              <div className="card border">
+                <table className="table table-bordered mb-0">
                   <tbody>
                     <tr>
                       <td>365-1234</td>
@@ -354,8 +354,8 @@ export function SubHeaderComponent(props) {
               </div>
             </div>
             <div className="Add-new-segment-div  serviscard p-3 border-radius-10 mt-3">
-              <div class="card border">
-                <table class="table table-bordered mb-0">
+              <div className="card border">
+                <table className="table table-bordered mb-0">
                   <tbody>
                     <tr>
                       <td>365-1234</td>
@@ -375,8 +375,8 @@ export function SubHeaderComponent(props) {
                   </tbody>
                 </table>
               </div>
-              <div class="card border ">
-                <table class="table table-bordered mb-0">
+              <div className="card border ">
+                <table className="table table-bordered mb-0">
                   <tbody>
                     <tr>
                       <td>365-1234</td>
@@ -480,19 +480,19 @@ export function SubHeaderComponent(props) {
         ))}
       </div>
 
-      <div class="modal fade" id="Assingmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style={{ zIndex: '1201' }}>
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalCenterTitle">Assing to</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <div className="modal fade" id="Assingmodal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" style={{ zIndex: '1201' }}>
+        <div className="modal-dialog modal-dialog-centered" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="exampleModalCenterTitle">Assing to</h5>
+              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <div class="modal-body bg-white">
-              <p>Are you sure that you want to invite<email /> to edit the soluytion</p>
+            <div className="modal-body bg-white">
+              <p>Are you sure that you want to invite{/*<email />*/} to edit the soluytion</p>
             </div>
-            <div class="modal-footer d-block">
+            <div className="modal-footer d-block">
               <div className="row">
                 <div className="col-6">
                   <a href="#" className="btn border d-block">No</a>
@@ -505,11 +505,11 @@ export function SubHeaderComponent(props) {
           </div>
         </div>
       </div>
-      <div class="modal right fade" id="Versionhistory" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header ">
-              <h4 class="modal-title" id="myModalLabel2">Version history</h4>
+      <div className="modal right fade" id="Versionhistory" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel2">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header ">
+              <h4 className="modal-title" id="myModalLabel2">Version history</h4>
               <div className="d-flex">
                 <div className="headerdropdown">
                   <Box>
@@ -527,13 +527,13 @@ export function SubHeaderComponent(props) {
                       </NativeSelect>
                     </FormControl>
                   </Box></div>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
               </div>
             </div>
-            <div class="modal-body" style={{ background: 'white' }}>
+            <div className="modal-body" style={{ background: 'white' }}>
               <div className="card border p-3">
                 <h5 className="d-flex align-items-center mb-0">
-                  <div className="" style={{ display: 'contents' }}><span className="mr-3">Service Estimate 01</span><a href="#" className="btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i></a> <a href="#" className="btn-sm"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a> <a href="#" className="btn-sm"><i class="fa fa-folder-o" aria-hidden="true"></i></a></div>
+                  <div className="" style={{ display: 'contents' }}><span className="mr-3">Service Estimate 01</span><a href="#" className="btn-sm"><i className="fa fa-pencil" aria-hidden="true"></i></a> <a href="#" className="btn-sm"><i className="fa fa-bookmark-o" aria-hidden="true"></i></a> <a href="#" className="btn-sm"><i className="fa fa-folder-o" aria-hidden="true"></i></a></div>
                 </h5>
                 <div className="mt-3">
                   <small>MAKE</small>
@@ -565,8 +565,8 @@ export function SubHeaderComponent(props) {
                 </div>
               </div>
               <div className="Add-new-segment-div  serviscard p-3 border-radius-10 mt-3">
-                <div class="card border">
-                  <table class="table table-bordered mb-0">
+                <div className="card border">
+                  <table className="table table-bordered mb-0">
                     <tbody>
                       <tr>
                         <td>365-1234</td>
@@ -586,8 +586,8 @@ export function SubHeaderComponent(props) {
                     </tbody>
                   </table>
                 </div>
-                <div class="card border ">
-                  <table class="table table-bordered mb-0">
+                <div className="card border ">
+                  <table className="table table-bordered mb-0">
                     <tbody>
                       <tr>
                         <td>365-1234</td>
@@ -615,13 +615,13 @@ export function SubHeaderComponent(props) {
       </div>
 
 
-      <div class="modal fade" id="notemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title" id="myModalLabel2">Add Notes</h4>
+      <div className="modal fade" id="notemodal" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel2" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h4 className="modal-title" id="myModalLabel2">Add Notes</h4>
               <div className="d-flex">
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                </div>
               
             </div>
@@ -631,11 +631,11 @@ export function SubHeaderComponent(props) {
             </div>
             
               
-            <div class="modal-body" style={{background:'white'}}>
+            <div className="modal-body" style={{background:'white'}}>
             <div className="row">
             <div className="col-md-6 col-sm-6">
             <div className="form-group">
-            <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">NOTE FOR</label>
+            <label className="text-light-dark font-size-12 font-weight-600" htmlFor="exampleInputEmail1">NOTE FOR</label>
               <Select
                   defaultValue={selectedOption}
                   onChange={setSelectedOption}
@@ -646,7 +646,7 @@ export function SubHeaderComponent(props) {
             </div>
             <div className="col-md-6 col-sm-6">
             <div className="form-group">
-            <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">NOTE TYPE</label>
+            <label className="text-light-dark font-size-12 font-weight-600" htmlFor="exampleInputEmail1">NOTE TYPE</label>
               <Select
                   defaultValue={selectedOption}
                   onChange={setSelectedOption}
@@ -659,7 +659,7 @@ export function SubHeaderComponent(props) {
             <div className="d-block align-items-center date-box">
                             <label
                               className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
-                              for="exampleInputEmail1"
+                              htmlFor="exampleInputEmail1"
                             >
                               <span className=" mr-2">DATE</span>
                             </label>
@@ -689,11 +689,11 @@ export function SubHeaderComponent(props) {
             <h6 className="mt-3">NOTE</h6>
                        </div>
                        <div className="d-flex float-left mr-2 pb-2 pt-2">
-                       <div><button type="button" class="btn-sm btn-warning  mr-3 border-none" style={{    borderRadius: '15px'}}>External</button></div>
-                       <div><button type="button" class="btn-sm btn-success" style={{    borderRadius: '15px'}}>Recommendations</button></div>
+                       <div><button type="button" className="btn-sm btn-warning  mr-3 border-none" style={{    borderRadius: '15px'}}>External</button></div>
+                       <div><button type="button" className="btn-sm btn-success" style={{    borderRadius: '15px'}}>Recommendations</button></div>
 
                         </div>
-                        <div class="form-group">
+                        <div className="form-group">
                         <textarea name="comments" className="w-100 p-2 border rounded-5"  rows="5" id="comments"placeholder="Reply">
                         </textarea>
                         <div className="bg-primary p-3 cardradi">
@@ -703,20 +703,20 @@ export function SubHeaderComponent(props) {
                             <a href="#" className="mr-2"><ShareOutlinedIcon className="text-white font-size-18" /></a>
                         </div>
                         </div>
-                        <div class="modal-footer mr-auto">
-              <button type="button" class="btn border bg-white" data-dismiss="modal">Cancel</button>
-              <button type="button" class="btn btn-primary">Save</button>
+                        <div className="modal-footer mr-auto">
+              <button type="button" className="btn border bg-white" data-dismiss="modal">Cancel</button>
+              <button type="button" className="btn btn-primary">Save</button>
             </div>
             {/* <h6 className="  font-size-14">NOTE</h6> */}
                     {/* <div style={{borderBottom: '1px solid #cfcece'}}> */}
-                    {/* <ul class="nav internalexternaltabs intexttab">
-                      <li class="active"><a data-toggle="tab" href="#internal1" className="btn active show">Internal</a></li>
+                    {/* <ul className="nav internalexternaltabs intexttab">
+                      <li className="active"><a data-toggle="tab" href="#internal1" className="btn active show">Internal</a></li>
                       <li><a data-toggle="tab" href="#external1" className="btn">External</a></li>
                     </ul> */}
                     {/* </div> */}
 
-                    {/* <div class="tab-content">
-                      <div id="internal1" class="tab-pane fade in active show">
+                    {/* <div className="tab-content">
+                      <div id="internal1" className="tab-pane fade in active show">
 
                       
                        <div className="mt-4">
@@ -743,10 +743,10 @@ export function SubHeaderComponent(props) {
                       <div className="border p-3 rounded mt-3">
                        <p className="mb-0">Amit minim mollit non deserunt ullamco est sit aliqua dolor do amet sont. Velit officia consequat duis enim velit mollit.Exercitation veniam consequat sunt nostrud amet</p>
                       </div>
-                      <p class="text-grey  mb-0 font-size-12 mt-2 float-right"><b>2:38pm, 19 Aug 21</b></p>
+                      <p className="text-grey  mb-0 font-size-12 mt-2 float-right"><b>2:38pm, 19 Aug 21</b></p>
                       </div>
 
-                      <div id="external1" class="tab-pane fade">
+                      <div id="external1" className="tab-pane fade">
                       <div className="mt-4">
                          <a href="#" className=" d-block text-left font-size-15 text-violet"><span  className="font-size-20 mr-2">+</span>Comment</a>
                        </div>
@@ -771,7 +771,7 @@ export function SubHeaderComponent(props) {
                       <div className="border p-3 rounded mt-3">
                        <p className="mb-0">Amit minim mollit non deserunt ullamco est sit aliqua dolor do amet sont. Velit officia consequat duis enim velit mollit.Exercitation veniam consequat sunt nostrud amet</p>
                       </div>
-                      <p class="text-grey  mb-0 font-size-12 mt-2 float-right"><b>2:38pm, 19 Aug 21</b></p>
+                      <p className="text-grey  mb-0 font-size-12 mt-2 float-right"><b>2:38pm, 19 Aug 21</b></p>
                       <div className="mt-4">
                          <a href="#" className="btn bg-light-blue d-block text-left font-size-18 text-violet"><span  className="font-size-24 mr-2">+</span>Comment</a>
                        </div>
@@ -796,13 +796,13 @@ export function SubHeaderComponent(props) {
                       <div className="border p-3 rounded mt-3">
                        <p className="mb-0">Amit minim mollit non deserunt ullamco est sit aliqua dolor do amet sont. Velit officia consequat duis enim velit mollit.Exercitation veniam consequat sunt nostrud amet</p>
                       </div>
-                      <p class="text-grey  mb-0 font-size-12 mt-2"><b>2:38pm, 19 Aug 21</b></p>
+                      <p className="text-grey  mb-0 font-size-12 mt-2"><b>2:38pm, 19 Aug 21</b></p>
                       </div>
                     </div> */}
                     </div>
-            {/* <div class="modal-footer">
-              <button type="button" class="btn border w-100 bg-white" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary w-100">Save changes</button>
+            {/* <div className="modal-footer">
+              <button type="button" className="btn border w-100 bg-white" data-dismiss="modal">Close</button>
+              <button type="button" className="btn btn-primary w-100">Save changes</button>
             </div> */}
           </div>
         </div>
