@@ -131,7 +131,7 @@ import { FormControlLabel, Switch } from "@material-ui/core";
 import AddPortfolioItem from "./AddPortfolioItem";
 import PriceCalculator from "./PriceCalculator";
 import { PortfolioContext } from "./ProtfolioContext";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 const customStyles = {
@@ -182,7 +182,7 @@ export function CreatePortfolio() {
   const [categoryUsageKeyValue, setCategoryUsageKeyValue] = useState([]);
 
   const [selectedOption, setSelectedOption] = useState(null);
-  const [value, setValue] = useState(1);
+  const [value, setValue] = useState("general");
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [openCoverage, setOpenCoveragetable] = useState(false);
@@ -264,6 +264,15 @@ export function CreatePortfolio() {
     responseTime: null,
     productHierarchy: null,
     geographic: null,
+  });
+  const [administrative, setAdministrative] = useState({
+    preparedBy: null,
+    approvedBy: null,
+    preparedOn: null,
+    revisedBy: null,
+    revisedOn: null,
+    branch: null,
+    offerValidity: null,
   });
   const handleOption = (e) => {
     setValue1(e);
@@ -399,6 +408,8 @@ export function CreatePortfolio() {
   const [editItemShow, setEditItemShow] = useState(false);
   const [passItemEditRowData, setPassItemEditRowData] = useState();
   const [passBundleEditRowData, setPassBundleEditRowData] = useState();
+
+const location=useLocation()
 
   const frequencyOptions = [
     { label: "Cyclic", value: "Cyclic" },
@@ -1649,6 +1660,7 @@ export function CreatePortfolio() {
           throw `${strategyRes.status}:error in update portfolio`;
         }
       } else if (e.target.id == "administrative") {
+        console.log("administrative",administrative)
         setValue("price");
       } else if (e.target.id == "price") {
         priceAgreementOption
@@ -1800,6 +1812,12 @@ export function CreatePortfolio() {
       ...generalComponentData,
       [name]: value,
     });
+  };
+  const handleAdministrativreChange = (e) => {
+    console.log("handleAdministrativreChange",administrative)
+    var value = e.target.value;
+    var name = e.target.name;
+    setAdministrative({...administrative,[name]: value});
   };
   const handleAddBundleInputChange = (e) => {
     var value = e.target.value;
@@ -2057,6 +2075,7 @@ export function CreatePortfolio() {
   // console.log("useSelector((state)=>state.categoryList)",usageIn)
 
   useEffect(() => {
+    // const portfolioId1=location.state
     const portfolioId = 362;
     getPortfolioDetails(portfolioId);
     initFetch();
@@ -3628,7 +3647,7 @@ export function CreatePortfolio() {
   };
   const history = useHistory();
   return (
-    <PortfolioContext.Provider value={generalComponentData}>
+    <PortfolioContext.Provider value={{generalComponentData,categoryUsageKeyValue1,stratgyTaskTypeKeyValue}}>
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
@@ -4011,7 +4030,7 @@ export function CreatePortfolio() {
                             </div>
                             <label
                               className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
-                              for="exampleInputEmail1"
+                              htmlFor="exampleInputEmail1"
                             >
                               TO
                             </label>
@@ -4033,7 +4052,6 @@ export function CreatePortfolio() {
                                   }
                                 />
                               </MuiPickersUtilsProvider>
-                              {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
                             </div>
                           </div>
                         </div>
@@ -4053,7 +4071,7 @@ export function CreatePortfolio() {
                             <div className="d-flex align-items-center date-box w-100">
                               <label
                                 className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
-                                for="exampleInputEmail1"
+                                htmlFor="exampleInputEmail1"
                               >
                                 <span className="mr-2">FROM</span>
                               </label>
@@ -4094,7 +4112,7 @@ export function CreatePortfolio() {
                             <div className="d-flex align-items-center date-box w-100">
                               <label
                                 className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
-                                for="exampleInputEmail1"
+                                htmlFor="exampleInputEmail1"
                               >
                                 <span className="">TO</span>
                               </label>
@@ -4142,11 +4160,11 @@ export function CreatePortfolio() {
 
                     {/* <div className="col-md-6 col-sm-6">
                                             <div className="d-flex align-items-center">
-                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" for="exampleInputEmail1">FROM</label>
+                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" htmlFor="exampleInputEmail1">FROM</label>
                                                 <div className="form-group w-100">
                                                     <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                 </div>
-                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" for="exampleInputEmail1">HR</label>
+                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" htmlFor="exampleInputEmail1">HR</label>
                                                 <div className="form-group w-100">
                                                     <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                 </div>
@@ -4164,11 +4182,11 @@ export function CreatePortfolio() {
                                         <div className="col-md-6 col-sm-6">
 
                                             <div className="d-flex align-items-center">
-                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" for="exampleInputEmail1">DATE</label>
+                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" htmlFor="exampleInputEmail1">DATE</label>
                                                 <div className="form-group w-100 text-center">
                                                     <h6 className="font-weight-600 mb-0"><small className="mr-2">FROM</small>31st October 2021</h6>
                                                 </div>
-                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" for="exampleInputEmail1">TO</label>
+                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" htmlFor="exampleInputEmail1">TO</label>
                                                 <div className="form-group w-100">
                                                     <h6 className="font-weight-600 mb-0">30st October 2022</h6>
                                                 </div>
@@ -4179,11 +4197,11 @@ export function CreatePortfolio() {
                                         </div>
                                         <div className="col-md-6 col-sm-6">
                                             <div className="d-flex align-items-center">
-                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" for="exampleInputEmail1">FROM</label>
+                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" htmlFor="exampleInputEmail1">FROM</label>
                                                 <div className="form-group w-100 text-center">
                                                     <h6 className="font-weight-600 mb-0"><small className="mr-2">HOURS</small>10,000 hours</h6>
                                                 </div>
-                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" for="exampleInputEmail1">HR</label>
+                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" htmlFor="exampleInputEmail1">HR</label>
                                                 <div className="form-group w-100">
                                                     <h6 className="font-weight-600 mb-0">15,000 hours</h6>
                                                 </div>
@@ -4207,7 +4225,7 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           CATEGORY USAGE
                         </label>
@@ -4223,7 +4241,7 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           STRATEGY TASK
                         </label>
@@ -4238,7 +4256,7 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           TASK TYPE
                         </label>
@@ -4246,28 +4264,16 @@ export function CreatePortfolio() {
                           options={updatedTaskList}
                           value={stratgyTaskTypeKeyValue}
                           placeholder="Optional"
-                          // onChange={(e) => setStratgyTaskTypeKeyValue(e)}
-                          onChange={(e) =>
-                            setStratgyTaskTypeKeyValue(e)(
-                              (addPortFolioItem.taskType = "")
-                            )
-                          }
+                          onChange={(e) =>{setStratgyTaskTypeKeyValue(e)
+                            addPortFolioItem.taskType = ""}}
                         />
-                        {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                       </div>
                     </div>
-                    {/* <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CATEGORY USAGE</label>
-                                                <Select options={categoryList} />
-                                                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" />
-                                            </div>
-                                        </div> */}
                     <div className="col-md-4 col-sm-4">
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           OPTIONALS
                         </label>
@@ -4278,14 +4284,13 @@ export function CreatePortfolio() {
                           onChange={(e) => setStratgyOptionalsKeyValue(e)}
                           // options={rTimeList}
                         />
-                        {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Optionais" /> */}
                       </div>
                     </div>
                     <div className="col-md-4 col-sm-4">
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           RESPONSE TIME
                         </label>
@@ -4295,14 +4300,13 @@ export function CreatePortfolio() {
                           value={stratgyResponseTimeKeyValue}
                           onChange={(e) => setStratgyResponseTimeKeyValue(e)}
                         />
-                        {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Response Time" /> */}
                       </div>
                     </div>
                     <div className="col-md-4 col-sm-4">
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           PRODUCT HIERARCHY
                         </label>
@@ -4312,14 +4316,13 @@ export function CreatePortfolio() {
                           value={stratgyHierarchyKeyValue}
                           onChange={(e) => setStratgyHierarchyKeyValue(e)}
                         />
-                        {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                       </div>
                     </div>
                     <div className="col-md-4 col-sm-4">
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           GEOGRAPHIC
                         </label>
@@ -4329,7 +4332,6 @@ export function CreatePortfolio() {
                           value={stratgyGeographicKeyValue}
                           onChange={(e) => setStratgyGeographicKeyValue(e)}
                         />
-                        {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                       </div>
                     </div>
                   </div>
@@ -4408,13 +4410,16 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           PREPARED BY
                         </label>
                         <input
                           type="text"
                           className="form-control border-radius-10"
+                          name="preparedBy"
+                          value={administrative.preparedBy}
+                          onChange={handleAdministrativreChange}
                         />
                       </div>
                     </div>
@@ -4422,7 +4427,7 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           APPROVED BY
                         </label>
@@ -4430,6 +4435,9 @@ export function CreatePortfolio() {
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
+                          name="approvedBy"
+                          value={administrative.approvedBy}
+                          onChange={handleAdministrativreChange}
                         />
                       </div>
                     </div>
@@ -4437,7 +4445,7 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                          PREPARED ON
                         </label>
@@ -4445,6 +4453,9 @@ export function CreatePortfolio() {
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
+                          name="preparedOn"
+                          value={administrative.preparedOn}
+                          onChange={handleAdministrativreChange}
                         />
                       </div>
                     </div>
@@ -4454,7 +4465,7 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                          REVISED BY
                         </label>
@@ -4462,6 +4473,9 @@ export function CreatePortfolio() {
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
+                          name="revisedBy"
+                          value={administrative.revisedBy}
+                          onChange={handleAdministrativreChange}
                         />
                       </div>
                     </div>
@@ -4469,7 +4483,7 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                          REVISED ON
                         </label>
@@ -4477,6 +4491,9 @@ export function CreatePortfolio() {
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
+                          name="revisedOn"
+                          value={administrative.revisedOn}
+                          onChange={handleAdministrativreChange}
                         />
                       </div>
                     </div>
@@ -4484,13 +4501,16 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                          SALSE OFFICE/BRANCH
                         </label>
                         <input
                           type="text"
                           className="form-control border-radius-10"
+                          name="branch"
+                          value={administrative.branch}
+                          onChange={handleAdministrativreChange}
                         />
                       </div>
                     </div>
@@ -4500,7 +4520,7 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                          OFFER VALIDITY
                         </label>
@@ -4508,6 +4528,9 @@ export function CreatePortfolio() {
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
+                          name="offerValidity"
+                          value={administrative.offerValidity}
+                          onChange={handleAdministrativreChange}
                         />
                       </div>
                     </div>
@@ -4520,7 +4543,7 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           PRICE LIST
                         </label>
@@ -4536,7 +4559,7 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           PRICE METHOD
                         </label>
@@ -4552,7 +4575,7 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           PRICE DATE
                         </label>
@@ -4572,7 +4595,7 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           PRICE TYPE
                         </label>
@@ -4588,7 +4611,7 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-14 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           PRICE{" "}
                         </label>
@@ -4607,7 +4630,7 @@ export function CreatePortfolio() {
                       <div className="form-group date-box">
                         <label
                           className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           ADDITIONAL
                         </label>
@@ -4641,7 +4664,7 @@ export function CreatePortfolio() {
                       <div className="form-group date-box">
                         <label
                           className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           PRICE ESCALATON
                         </label>
@@ -4670,7 +4693,7 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           CALCULATED PRICE
                         </label>
@@ -4686,7 +4709,7 @@ export function CreatePortfolio() {
                       <div className="form-group date-box">
                         <label
                           className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           PRICE BREAK DOWN
                         </label>
@@ -4712,7 +4735,7 @@ export function CreatePortfolio() {
                       <div className="form-group date-box">
                         <label
                           className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           PRICE BREAK DOWN
                         </label>
@@ -5013,7 +5036,7 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           MACHINE/COMPOMENT
                         </label>
@@ -5032,7 +5055,7 @@ export function CreatePortfolio() {
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           MACHINE TYPE
                         </label>
@@ -5051,7 +5074,7 @@ export function CreatePortfolio() {
                     </div>
                     {/* <div className="col-md-4 col-sm-4"> */}
                     {/* <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">COVERAGE DATA</label>
+                                                <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">COVERAGE DATA</label>
                                             </div> */}
                     <div className="col-md-4 col-sm-4">
                       <div className="form-group">
@@ -5844,7 +5867,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       REFERENCE
                     </label>
@@ -5927,7 +5950,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       MACHINE/COMPONENT
                     </label>
@@ -5946,7 +5969,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       ADDITIONALS
                     </label>
@@ -6107,7 +6130,7 @@ export function CreatePortfolio() {
                   <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       ID
                     </label>
@@ -6125,7 +6148,7 @@ export function CreatePortfolio() {
                   <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       DESCRIPTION
                     </label>
@@ -6147,7 +6170,7 @@ export function CreatePortfolio() {
                   <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       USAGE IN
                     </label>
@@ -6175,7 +6198,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       TASK TYPE
                     </label>
@@ -6209,7 +6232,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       FREQUENCY
                     </label>
@@ -6237,7 +6260,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       UNIT
                     </label>
@@ -6263,7 +6286,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       RECOMMENDED VALUE
                     </label>
@@ -6285,7 +6308,7 @@ export function CreatePortfolio() {
                   <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       QUANTITY
                     </label>
@@ -6309,7 +6332,7 @@ export function CreatePortfolio() {
                   <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       NO. OF EVENTS
                     </label>
@@ -6336,7 +6359,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       TEMPLATE ID
                     </label>
@@ -6366,7 +6389,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       TEMPLATE DESCRIPTION
                     </label>
@@ -6412,7 +6435,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       REPAIR OPTION
                     </label>
@@ -6520,7 +6543,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       PRICE TYPE
                     </label>
@@ -6541,7 +6564,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       LIST PRICE{" "}
                     </label>
@@ -6564,7 +6587,7 @@ export function CreatePortfolio() {
                   <div className="form-group date-box">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       ADDITIONAL
                     </label>
@@ -6602,7 +6625,7 @@ export function CreatePortfolio() {
                   <div className="form-group date-box">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       PRICE ESCALATON
                     </label>
@@ -6639,7 +6662,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       CALCULATED PRICE
                     </label>
@@ -6661,7 +6684,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       FLAT PRICE / ADJUSTED PRICE
                     </label>
@@ -6685,7 +6708,7 @@ export function CreatePortfolio() {
                   <div className="form-group date-box">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       DISCOUNT TYPE
                     </label>
@@ -6726,7 +6749,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       YEAR
                     </label>
@@ -6751,7 +6774,7 @@ export function CreatePortfolio() {
                   <div className="form-group date-box">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       START USAGE
                     </label>
@@ -6779,7 +6802,7 @@ export function CreatePortfolio() {
                   <div className="form-group date-box">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       END USAGE
                     </label>
@@ -6807,7 +6830,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       USAGE TYPE
                     </label>
@@ -6832,7 +6855,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       FREQUENCY
                     </label>
@@ -6852,7 +6875,7 @@ export function CreatePortfolio() {
                   <div className="form-group date-box">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       CYCLE
                     </label>
@@ -6896,67 +6919,67 @@ export function CreatePortfolio() {
               {/* <div className="row mt-4">
               <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">GROUP NUMBER</label>
+                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">GROUP NUMBER</label>
                   <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="1000 ENGINE"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TYPE</label>
+                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">TYPE</label>
                   <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="0123 REPLACE"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PART NUMBER</label>
+                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">PART NUMBER</label>
                   <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace left side of the Engine"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QTY</label>
+                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">QTY</label>
                   <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="List Price"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT PRICE</label>
+                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">UNIT PRICE</label>
                   <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$35000"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">EXTENDED PRICE</label>
+                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">EXTENDED PRICE</label>
                   <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$10000"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
+                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">CURRENCY</label>
                   <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$5000"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">% USAGE</label>
+                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">% USAGE</label>
                   <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EA"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TOTAL PRICE</label>
+                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">TOTAL PRICE</label>
                   <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COMMENTS</label>
+                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">COMMENTS</label>
                   <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DESCRIPTION</label>
+                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">DESCRIPTION</label>
                   <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE"/>
                 </div>
                 </div>
@@ -7119,7 +7142,7 @@ export function CreatePortfolio() {
                   <div className="form-group w-100">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       Coverage ID
                     </label>
@@ -7135,7 +7158,7 @@ export function CreatePortfolio() {
                 </div>
                 {/* <div className="col-md-4 col-sm-4">
                   <div className="form-group">
-                    <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Service ID</label>
+                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">Service ID</label>
                     <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
                   </div>
                 </div> */}
@@ -7143,7 +7166,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       Make
                     </label>
@@ -7163,7 +7186,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       Family
                     </label>
@@ -7183,7 +7206,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       Model No
                     </label>
@@ -7203,7 +7226,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       Serial No Prefix
                     </label>
@@ -7226,7 +7249,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       Start Serial No
                     </label>
@@ -7249,7 +7272,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       End Serial No
                     </label>
@@ -7273,7 +7296,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       Fleet
                     </label>
@@ -7296,7 +7319,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       Fleet Size
                     </label>
@@ -7316,7 +7339,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       Location
                     </label>
@@ -7331,19 +7354,19 @@ export function CreatePortfolio() {
 
                 <div className="col-md-4 col-sm-4">
                   <div className="form-group">
-                    <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Start Date </label>
+                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">Start Date </label>
                     <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                   <div className="form-group">
-                    <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">End Date </label>
+                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">End Date </label>
                     <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                   <div className="form-group">
-                    <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">Actions </label>
+                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">Actions </label>
                     <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
                   </div>
                 </div> */}
@@ -7421,7 +7444,7 @@ export function CreatePortfolio() {
                 <div className="form-group w-100">
                   <label
                     className="text-light-dark font-size-12 font-weight-500"
-                    for="exampleInputEmail1"
+                    htmlFor="exampleInputEmail1"
                   >
                     ID
                   </label>
@@ -7440,7 +7463,7 @@ export function CreatePortfolio() {
                 <div className="form-group w-100">
                   <label
                     className="text-light-dark font-size-12 font-weight-500"
-                    for="exampleInputEmail1"
+                    htmlFor="exampleInputEmail1"
                   >
                     DESCRIPTION
                   </label>
@@ -7462,7 +7485,7 @@ export function CreatePortfolio() {
                 <div className="form-group w-100">
                   <label
                     className="text-light-dark font-size-12 font-weight-500"
-                    for="exampleInputEmail1"
+                    htmlFor="exampleInputEmail1"
                   >
                     USAGE IN
                   </label>
@@ -7489,7 +7512,7 @@ export function CreatePortfolio() {
                 <div className="form-group">
                   <label
                     className="text-light-dark font-size-14 font-weight-500"
-                    for="exampleInputEmail1"
+                    htmlFor="exampleInputEmail1"
                   >
                     TASK TYPE
                   </label>
@@ -7667,7 +7690,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       REFERENCE
                     </label>
@@ -7749,7 +7772,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       MACHINE/COMPONENT
                     </label>
@@ -7771,7 +7794,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       ADDITIONALS
                     </label>
@@ -8213,7 +8236,7 @@ export function CreatePortfolio() {
                         <div className="form-group">
                           <label
                             className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
+                            htmlFor="exampleInputEmail1"
                           >
                             REFERENCE
                           </label>
@@ -8294,7 +8317,7 @@ export function CreatePortfolio() {
                         <div className="form-group">
                           <label
                             className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
+                            htmlFor="exampleInputEmail1"
                           >
                             MACHINE/COMPONENT
                           </label>
@@ -8316,7 +8339,7 @@ export function CreatePortfolio() {
                         <div className="form-group">
                           <label
                             className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
+                            htmlFor="exampleInputEmail1"
                           >
                             ADDITIONALS
                           </label>
@@ -8374,7 +8397,7 @@ export function CreatePortfolio() {
         onHide={() => setEditItemShow(false)}
       >
         <Modal.Body>
-          {/* itemEdit flag will work for item bundle/service */}
+          {/* itemEdit flag will work for item,bundle/service */}
           <AddPortfolioItem
             passItemEditRowData={passItemEditRowData}
             handleItemEditSave={handleItemEditSave}
@@ -8416,7 +8439,7 @@ export function CreatePortfolio() {
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       Quote Type
                     </label>
@@ -8432,7 +8455,7 @@ export function CreatePortfolio() {
                   <div class="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       Quote ID
                     </label>
@@ -8449,7 +8472,7 @@ export function CreatePortfolio() {
                   <div class="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       Description
                     </label>
@@ -8464,7 +8487,7 @@ export function CreatePortfolio() {
                   <div class="form-group">
                     <label
                       className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
+                      htmlFor="exampleInputEmail1"
                     >
                       Reference
                     </label>

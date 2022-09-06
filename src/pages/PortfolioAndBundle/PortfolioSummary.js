@@ -71,100 +71,87 @@ import {
 
 
 export const PortfolioSummary = () => {
-  const [value, setValue] = React.useState('1');
-  const [openSolutionSelector, setOpenSolutionSelector] = useState(false)
-  const [solutionBuilderShow, setSolutionBuilderShow] = useState(false)
-  const [showExplore, setShowExplore] = useState(false);
-  const [modalComponent, setModalComponent] = useState(null)
-  const [openAddBundleItem, setOpenAddBundleItem] = useState(false)
-  const [createNewBundle, setCreateNewBundle] = useState(false)
-  const [openAddBundleItemHeader, setOpenAddBundleItemHeader] = useState("")
+    const [value, setValue] = React.useState('1');
+    const [openSolutionSelector, setOpenSolutionSelector] = useState(false)
+    const [solutionBuilderShow, setSolutionBuilderShow] = useState(false)
+    const [showExplore, setShowExplore] = useState(false);
+    const [modalComponent, setModalComponent] = useState(null)
+    const [openAddBundleItem, setOpenAddBundleItem] = useState(false)
+    const [createNewBundle, setCreateNewBundle] = useState(false)
+    const [openAddBundleItemHeader, setOpenAddBundleItemHeader] = useState("")
 
-  const [openSearchSolution, setOpenSearchSolution] = useState(false)
-  const [typeOfSearch, setTypeOfSearch] = useState(null)
-  const [typeOfSolutionSelector, setTypeOfSolutionSelector] = useState(-1)
-  const [typeOfSearchColumn, setTypeOfSearchColumn] = useState(null)
-  const [columnSearchKeyValue, setColumnSearchKeyValue] = useState([{ label: "Bundle", value: 'bundle' }, { label: "Service", value: 'service' }, { label: "Portfolio Item", value: 'portfolioItem' }])
-  const [typeOfSearchColumnKeyValue, setTypeOfSearchColumnKeyValue] = useState([{ label: "Make", value: 'make' }, { label: "Model", value: 'model' }, { label: "Prefix", value: 'prefix' }])
-  const [columnSearchText, setColumnSearchText] = useState('');
-  const [typeOfSolutionBuild, setTypeOfSolutionBuild] = useState(-1)
-  const [buildSolutionValue, setBuildSolutionValue] = useState(-1)
-
-
-  const [age, setAge] = React.useState('5');
-  const [age1, setAge1] = React.useState('5');
-  const [age2, setAge2] = React.useState('5');
-  const [show, setShow] = React.useState(false);
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open4 = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose4 = () => {
-    setAnchorEl(null);
-  };
-
-  const handleChangedrop = (event) => {
-    setAge(event.target.value);
-  };
-  const handleChangedrop1 = (event) => {
-    setAge1(event.target.value);
-  };
-  const handleChangedrop2 = (event) => {
-    setAge2(event.target.value);
-  };
+    const [openSearchSolution, setOpenSearchSolution] = useState(false)
+    const [typeOfSearch, setTypeOfSearch] = useState(null)
+    const [typeOfSolutionSelector, setTypeOfSolutionSelector] = useState(-1)
+    const [typeOfSearchColumn, setTypeOfSearchColumn] = useState(null)
+    const [columnSearchKeyValue, setColumnSearchKeyValue] = useState([{ label: "Bundle", value: 'bundle' }, { label: "Service", value: 'service' }, { label: "Portfolio Item", value: 'portfolioItem' }])
+    const [typeOfSearchColumnKeyValue, setTypeOfSearchColumnKeyValue] = useState([{ label: "Make", value: 'make' }, { label: "Model", value: 'model' }, { label: "Prefix", value: 'prefix' }])
+    const [columnSearchText, setColumnSearchText] = useState('');
+    const [typeOfSolutionBuild, setTypeOfSolutionBuild] = useState(-1)
+    const [buildSolutionValue, setBuildSolutionValue] = useState(-1)
+    const [portfolioResponse, setPortfolioResponse] = useState({})
 
 
-  const handleRowClick = (e) => {
-    setShow(true)
-  }
-
-  const rows = [
-    { id: 1, GroupNumber: 'Snow', Type: 'Jon', Partnumber: 35, PriceExtended: 'pending', Pricecurrency: 'Open', Usage: 'Inconsistent', TotalPrice: 'Inconsistent', Comments: 'Inconsistent', Created: 'Created On', Total: '25', Status: 'Status', Actions: 'Action', },
-    { id: 2, GroupNumber: 'Lannister', Type: 'Cersei', Partnumber: 42, PriceExtended: 'pending', Pricecurrency: 'Open', Usage: 'Consistent', TotalPrice: 'Inconsistent', Comments: 'Inconsistent', Created: 'Created On', Total: '25', Status: 'Status', Actions: 'Action', },
-    { id: 3, GroupNumber: 'Lannister', Type: 'Jaime', Partnumber: 45, PriceExtended: 'pending', Pricecurrency: 'Open', Usage: 'Consistent', TotalPrice: 'Inconsistent', Comments: 'Inconsistent', Created: 'Created On', Total: '25', Status: 'Status', Actions: 'Action', },
-    // { id: 4, DocumentType: 'Stark', PrimaruQuote: 'Arya', Groupid: 16, progress: 'pending',},
-    // { id: 5, DocumentType: 'Targaryen', PrimaruQuote: 'Daenerys', Groupid: null, progress: 35, },
-    // { id: 6, DocumentType: 'Melisandre', PrimaruQuote: null, Groupid: 150, progress: 35, },
-    // { id: 7, DocumentType: 'Clifford', PrimaruQuote: 'Ferrara', Groupid: 44, progress: 35, },
-    // { id: 8, DocumentType: 'Frances', PrimaruQuote: 'Rossini', Groupid: 36, progress: 35, },
-    // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
-  ];
-
-  const columns = [
-    { field: 'GroupNumber', headerName: 'ID#', flex: 1, width: 70 },
-    { field: 'Type', headerName: 'Description', flex: 1, width: 130 },
-    { field: 'Partnumber', headerName: 'Customer#', flex: 1, width: 130 },
-    { field: 'PriceExtended', headerName: 'Make', flex: 1, width: 130 },
-    { field: 'Pricecurrency', headerName: 'Model', flex: 1, width: 130 },
-    { field: 'Usage', headerName: 'Family', flex: 1, width: 130 },
-    { field: 'TotalPrice', headerName: 'Serial#', flex: 1, width: 130 },
-    { field: 'Comments', headerName: 'Created by', flex: 1, width: 130 },
-    { field: 'Created', headerName: 'Created On', flex: 1, width: 130 },
-    { field: 'Total', headerName: 'Total $', flex: 1, width: 130 },
-    { field: 'Status', headerName: 'Status', flex: 1, width: 130 },
-    { field: 'Actions', headerName: 'Actions', flex: 1, width: 130 },
-    // { field: 'Actions', headerName: 'Total $',  flex:1, width: 130 },
-    // { field: 'Actions', headerName: 'Status',  flex:1, width: 130 },
-    // {field: 'age',headerName: 'Age',type: 'number', width: 90,},
-    // {field: 'fullName',headerName: 'Full name',description: 'This column has a value getter and is not sortable.',sortable: false,width: 160,valueGetter: (params) =>
-    //   `${params.getValue(params.id, 'firstName') || ''} ${
-    //       params.getValue(params.id, 'DocumentType') || ''
-    //     }`,
-
-  ];
+    const [age, setAge] = React.useState('5');
+    const [age1, setAge1] = React.useState('5');
+    const [age2, setAge2] = React.useState('5');
+    const [show, setShow] = React.useState(false);
 
 
+    const handleChangedrop = (event) => {
+        setAge(event.target.value);
+      };
+      const handleChangedrop1 = (event) => {
+        setAge1(event.target.value);
+      };
+      const handleChangedrop2 = (event) => {
+        setAge2(event.target.value);
+      };
 
-  const handleBuildSolution = (e) => {
-    setBuildSolutionValue(e.target.value)
-  }
 
-  const handleCallbackClose = (data) => {
-    if (solutionBuilderShow) {
-      setSolutionBuilderShow(false);
-    } else {
-      setSolutionBuilderShow(true);
+      const handleRowClick=(e)=>{
+        setShow(true)
+      }
+
+      const rows = [
+        { id: 1, GroupNumber: 'Snow', Type: 'Jon', Partnumber: 35, PriceExtended:'pending', Pricecurrency:'Open',  Usage:'Inconsistent', TotalPrice:'Inconsistent', Comments:'Inconsistent', Created:'Created On', Total:'25', Status:'Status', Actions:'Action',  },
+        { id: 2, GroupNumber: 'Lannister',Type: 'Cersei', Partnumber: 42, PriceExtended: 'pending', Pricecurrency:'Open',  Usage:'Consistent', TotalPrice:'Inconsistent', Comments:'Inconsistent',  Created:'Created On', Total:'25', Status:'Status', Actions:'Action', },
+        { id: 3, GroupNumber: 'Lannister', Type: 'Jaime', Partnumber: 45, PriceExtended: 'pending', Pricecurrency:'Open',  Usage:'Consistent', TotalPrice:'Inconsistent', Comments:'Inconsistent', Created:'Created On', Total:'25', Status:'Status', Actions:'Action', },
+        // { id: 4, DocumentType: 'Stark', PrimaruQuote: 'Arya', Groupid: 16, progress: 'pending',},
+        // { id: 5, DocumentType: 'Targaryen', PrimaruQuote: 'Daenerys', Groupid: null, progress: 35, },
+        // { id: 6, DocumentType: 'Melisandre', PrimaruQuote: null, Groupid: 150, progress: 35, },
+        // { id: 7, DocumentType: 'Clifford', PrimaruQuote: 'Ferrara', Groupid: 44, progress: 35, },
+        // { id: 8, DocumentType: 'Frances', PrimaruQuote: 'Rossini', Groupid: 36, progress: 35, },
+        // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
+      ];
+    
+      const columns = [
+        { field: 'GroupNumber', headerName: 'ID#', flex:1, width: 70 },
+        { field: 'Type', headerName: 'Description',  flex:1, width: 130 },
+        { field: 'Partnumber', headerName: 'Customer#',  flex:1, width: 130 },
+        { field: 'PriceExtended', headerName: 'Make',  flex:1, width: 130 },
+        { field: 'Pricecurrency', headerName: 'Model',  flex:1, width: 130 },
+        { field: 'Usage', headerName: 'Family',  flex:1, width: 130 },
+        { field: 'TotalPrice', headerName: 'Serial#',  flex:1, width: 130 },
+        { field: 'Comments', headerName: 'Created by',  flex:1, width: 130 },
+        { field: 'Created', headerName: 'Created On',  flex:1, width: 130 },
+        { field: 'Total', headerName: 'Total $',  flex:1, width: 130 },
+        { field: 'Status', headerName: 'Status',  flex:1, width: 130 },
+        { field: 'Actions', headerName: 'Actions',  flex:1, width: 130 },
+        // { field: 'Actions', headerName: 'Total $',  flex:1, width: 130 },
+        // { field: 'Actions', headerName: 'Status',  flex:1, width: 130 },
+        // {field: 'age',headerName: 'Age',type: 'number', width: 90,},
+        // {field: 'fullName',headerName: 'Full name',description: 'This column has a value getter and is not sortable.',sortable: false,width: 160,valueGetter: (params) =>
+        //   `${params.getValue(params.id, 'firstName') || ''} ${
+        //       params.getValue(params.id, 'DocumentType') || ''
+        //     }`,
+        
+      ];
+
+      
+
+    const handleBuildSolution = (e) => {
+        setBuildSolutionValue(e.target.value)
     }
   }
 
@@ -393,78 +380,191 @@ export const PortfolioSummary = () => {
       setFilterMasterData(updated)
     }
 
-  }
-  const [filterMasterData, setFilterMasterData] = useState([])
-  const [selectedMasterData, setSelectedMasterData] = useState([])
-  const [masterData, setMasterData] = useState([])
-  const [count, setCount] = useState(1)
-  const handleDeleteIncludeSerialNo = (e, row) => {
-    const updated = selectedMasterData.filter((obj) => {
-      if (obj.id !== row.id)
-        return obj
-    })
-    setSelectedMasterData(updated)
-  }
+    const handleOperator = (e, id) => {
+        let tempArray = [...querySearchSelector]
+        let obj = tempArray[id]
+        obj.selectOperator = e
+        tempArray[id] = obj
+        setQuerySearchSelector([...tempArray])
+      }
+      const handleInputSearch = (e, id) => {
+        let tempArray = [...querySearchSelector]
+        let obj = tempArray[id]
+        getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value).then((res) => {
+          obj.selectOptions = res
+          tempArray[id] = obj
+          setQuerySearchSelector([...tempArray]);
+          $(`.scrollbar-${id}`).css("display", "block")
+        }).catch((err) => {
+          console.log("err in api call", err)
+        })
+        obj.inputSearch = e.target.value
+      
+      }
+      const handleQuerySearchClick = () => {
+        $(".scrollbar").css("display", "none")
+        console.log("handleQuerySearchClick", querySearchSelector)
+        var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
+    
+        for (let i = 1; i < querySearchSelector.length; i++) {
+          searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + "~" + querySearchSelector[i].inputSearch
+        }
+    
+        console.log("searchStr", searchStr)
+        getSearchQueryCoverage(searchStr).then((res) => {
+          console.log("search Query Result :", res)
+          setMasterData(res)
+    
+        }).catch((err) => {
+          console.log("error in getSearchQueryCoverage", err)
+        })
+    
+      }
+      const addSearchQuerryHtml = () => {
+        setQuerySearchSelector([...querySearchSelector, {
+          id: count,
+          selectOperator: "",
+          selectFamily: "",
+          inputSearch: "",
+          selectOptions: [],
+          selectedOption: ""
+        }])
+        setCount(count + 1)
+      }
+      const handleFamily = (e, id) => {
+        let tempArray = [...querySearchSelector]
+        console.log("handleFamily e:", e)
+        let obj = tempArray[id]
+        obj.selectFamily = e
+        tempArray[id] = obj
+        setQuerySearchSelector([...tempArray])
+      }
+      const [querySearchSelector, setQuerySearchSelector] = useState([{
+        id: 0,
+        selectFamily: "",
+        selectOperator: "",
+        inputSearch: "",
+        selectOptions: [],
+        selectedOption: ""
+      }])
+      const handleDeletQuerySearch = () => {
+        setQuerySearchSelector([])
+        setCount(0)
+        setMasterData([])
+        setFilterMasterData([])
+        setSelectedMasterData([])
+      }
+      const handleSearchListClick = (e, currentItem, obj1, id) => {
+        let tempArray = [...querySearchSelector]
+        let obj = tempArray[id]
+        obj.inputSearch = currentItem
+        obj.selectedOption = currentItem
+        tempArray[id] = obj
+        setQuerySearchSelector([...tempArray])
+        $(`.scrollbar-${id}`).css("display", "none")
+      }
+      const handleMasterCheck = (e, row) => {
+        if (e.target.checked) {
+          var _masterData = [...masterData]
+          const updated = _masterData.map((currentItem, i) => {
+            if (row.id == currentItem.id) {
+              return { ...currentItem, ["check1"]: e.target.checked }
+            } else return currentItem
+          })
+          setMasterData([...updated])
+          setFilterMasterData([...filterMasterData, { ...row }])
+        } else {
+          var _filterMasterData = [...filterMasterData]
+          const updated = _filterMasterData.filter((currentItem, i) => {
+            if (row.id !== currentItem.id)
+              return currentItem
+          })
+          setFilterMasterData(updated)
+        }
+      
+      }
+      const [filterMasterData, setFilterMasterData] = useState([])
+      const [selectedMasterData, setSelectedMasterData] = useState([])
+      const [masterData, setMasterData] = useState([])
+        const [count, setCount] = useState(1)
+      const handleDeleteIncludeSerialNo = (e, row) => {
+        const updated = selectedMasterData.filter((obj) => {
+          if (obj.id !== row.id)
+            return obj
+        })
+        setSelectedMasterData(updated)
+      }
 
-  const columns2 = [
-    { field: 'GroupNumber', headerName: 'ID#', flex: 1, width: 70 },
-    { field: 'Type', headerName: 'Description', flex: 1, width: 130 },
-    { field: 'Partnumber', headerName: 'Customer#', flex: 1, width: 130 },
-    { field: 'PriceExtended', headerName: 'Make', flex: 1, width: 130 },
-    { field: 'Pricecurrency', headerName: 'Model', flex: 1, width: 130 },
-    { field: 'Usage', headerName: 'Family', flex: 1, width: 130 },
-    { field: 'TotalPrice', headerName: 'Serial#', flex: 1, width: 130 },
-    { field: 'Comments', headerName: 'Created by', flex: 1, width: 130 },
-    { field: 'Created', headerName: 'Created On', flex: 1, width: 130 },
-    { field: 'Total', headerName: 'Total $', flex: 1, width: 130 },
-    { field: 'Status', headerName: 'Status', flex: 1, width: 130 },
-    // { field: 'Actions', headerName: 'Actions',  flex:1, width: 130 },
-    // { field: 'Actions', headerName: 'Total $',  flex:1, width: 130 },
-    // { field: 'Actions', headerName: 'Status',  flex:1, width: 130 },
-    // {field: 'age',headerName: 'Age',type: 'number', width: 90,},
-    // {field: 'fullName',headerName: 'Full name',description: 'This column has a value getter and is not sortable.',sortable: false,width: 160,valueGetter: (params) =>
-    //   `${params.getValue(params.id, 'firstName') || ''} ${
-    //       params.getValue(params.id, 'DocumentType') || ''
-    //     }`,
+      const columns2 = [
+        { field: 'GroupNumber', headerName: 'ID#', flex:1, width: 70 },
+        { field: 'Type', headerName: 'Description',  flex:1, width: 130 },
+        { field: 'Partnumber', headerName: 'Customer#',  flex:1, width: 130 },
+        { field: 'PriceExtended', headerName: 'Make',  flex:1, width: 130 },
+        { field: 'Pricecurrency', headerName: 'Model',  flex:1, width: 130 },
+        { field: 'Usage', headerName: 'Family',  flex:1, width: 130 },
+        { field: 'TotalPrice', headerName: 'Serial#',  flex:1, width: 130 },
+        { field: 'Comments', headerName: 'Created by',  flex:1, width: 130 },
+        { field: 'Created', headerName: 'Created On',  flex:1, width: 130 },
+        { field: 'Total', headerName: 'Total $',  flex:1, width: 130 },
+        { field: 'Status', headerName: 'Status',  flex:1, width: 130 },
+        // { field: 'Actions', headerName: 'Actions',  flex:1, width: 130 },
+        // { field: 'Actions', headerName: 'Total $',  flex:1, width: 130 },
+        // { field: 'Actions', headerName: 'Status',  flex:1, width: 130 },
+        // {field: 'age',headerName: 'Age',type: 'number', width: 90,},
+        // {field: 'fullName',headerName: 'Full name',description: 'This column has a value getter and is not sortable.',sortable: false,width: 160,valueGetter: (params) =>
+        //   `${params.getValue(params.id, 'firstName') || ''} ${
+        //       params.getValue(params.id, 'DocumentType') || ''
+        //     }`,
+        
+      ];
 
-  ];
+      const handleCreatePortfolio= async()=>{
+        let reqData = {
+            name: "",
+            description: "",
+            machineType: "EMPTY",
+            searchTerm: "",
+            lubricant: true,
+            customerId: 0,
+            customerGroup: "",
+            customerSegment: "",
+            externalReference: "",
+            status: "",
+            validFrom: "",
+            validTo: "",
+            strategyTask: "PREVENTIVE_MAINTENANCE",
+            taskType: "PM1",
+            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+            productHierarchy: "END_PRODUCT",
+            geographic: "ONSITE",
+            availability: "AVAILABILITY_GREATER_95",
+            responseTime: "PROACTIVE",
+            type: "MACHINE",
+            application: "HILL",
+            contractOrSupport: "LEVEL_I",
+            lifeStageOfMachine: "NEW_BREAKIN",
+            supportLevel: "PREMIUM",
+            items: [{itemId: 0}],
+            coverages: [{coverageId: 0}],
+            portfolioPrice: {portfolioPriceId: 0},
+            additionalPrice: {additionalPriceId: 0},
+            escalationPrice: {escalationPriceId: 0},
+            visibleInCommerce: true
+          }
+        // const portfolioRes = await createPortfolio(reqData);
+        // console.log("portfolioResponse",portfolioResponse)
+        // setPortfolioResponse(portfolioRes)
+      }
 
-  return (
-    <>
-      {/* <CommanComponents /> */}
-      <div className="content-body" style={{ minHeight: '884px' }}>
-        <div class="container-fluid">
-          <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5>
-            <div>
-              <Button className="btn bg-primary text-white"
-                id="fade-button"
-                aria-controls={open4 ? 'fade-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open4 ? 'true' : undefined}
-                onClick={handleClick}
-              >
-                <span className="mr-3"><FontAwesomeIcon icon={faPlus} className="font-size-12" /></span>Create<span><KeyboardArrowDownIcon className="ml-2 font-size-24" /></span>
-              </Button>
-              <Menu
-                id="fade-menu"
-                MenuListProps={{
-                  'aria-labelledby': 'fade-button',
-                }}
-                anchorEl={anchorEl}
-                open={open4}
-                onClose={handleClose4}
-                TransitionComponent={Fade}
-              >
-                <MenuItem style={{ cursor: 'pointer' }} onClick={handleClose4}>
-                  <Link to="/portfolioBuilder/new">Portfolio</Link>
-                </MenuItem>
-                <MenuItem onClick={handleClose4}>Service</MenuItem>
-                <MenuItem onClick={handleClose4}>Bundle</MenuItem>
-              </Menu>
-            </div>
-            {/* <div>
-                        <Link to="/portfolioBuilder/new" style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
+    return (
+        <>
+            {/* <CommanComponents /> */}
+            <div className="content-body" style={{ minHeight: '884px' }}>
+                <div class="container-fluid">
+                    <div className="d-flex align-items-center justify-content-between mt-2">
+                        <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5>
+                        <div>
+                        <Link to={{pathname: "/portfolioBuilder/new",state: { portfolioResponse}}}  onClick={handleCreatePortfolio} style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
                                 <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create Portfolio<span className="ml-2"></span>
                             </Link>
                             <Link style={{ cursor: 'pointer' }} className="btn bg-primary text-white mx-2">
