@@ -29,6 +29,7 @@ import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FileUploader } from "react-drag-drop-files";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import * as xlsx from 'xlsx';
 // import { ToastContainer, toast } from "react-toastify";
 import boxicon from "../../assets/icons/png/box.png";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -61,10 +62,15 @@ import { toast } from "react-toastify";
 function PartList() {
   const history = useHistory();
   const [searchCustResults, setSearchCustResults] = useState([]);
-  const [custViewOnly, setCustViewOnly] = useState(false);
-  const [machineViewOnly, setMachineViewOnly] = useState(false);
-  const [generalViewOnly, setGeneralViewOnly] = useState(false);
-  const [estViewOnly, setEstViewOnly] = useState(false);
+  const [allParts, setAllParts] = useState([]);
+  const [partsToUpload, setPartsToUpload] = useState([]);
+
+  const [viewOnlyTab, setViewOnlyTab] = useState({
+    custViewOnly: false,
+    machineViewOnly: false,
+    generalViewOnly: false,
+    estViewOnly: false,
+  });
   const [searchModelResults, setSearchModelResults] = useState([]);
   const [searchSerialResults, setSearchSerialResults] = useState([]);
   const [searchGroupNoResults, setSearchGroupNoResults] = useState([]);
@@ -109,14 +115,15 @@ function PartList() {
 
   const [sparePart, setSparePart] = useState({
     groupNumber: "",
-    type: "",
+    partType: "",
     partNumber: "",
     quantity: "",
-    unitPrice: 0.00,
-    extendedPrice: 0.00,
+    unitPrice: 0.0,
+    extendedPrice: 0.0,
+    salesUnit: '',
     currency: "USD",
-    usage: 0,
-    totalPrice: 0.00,
+    usagePercentage: 0,
+    totalPrice: 0.0,
     comment: "",
     description: "",
   });
@@ -136,12 +143,10 @@ function PartList() {
   ];
 
   const [selectedOption, setSelectedOption] = useState(null);
-  const [value, setValue] = React.useState("1");
-
-  const [openCoverage, setOpenCoveragetable] = React.useState(false);
-  const [open, setOpen] = React.useState(false);
-  const [addPartOpen, setAddPartOpen] = React.useState(false);
-  const [open3, setOpen3] = React.useState(false);
+  const [value, setValue] = useState("customer");
+  const [open, setOpen] = useState(false);
+  const [addPartOpen, setAddPartOpen] = useState(false);
+  const [fileUploadOpen, setFileUploadOpen] = useState(false);
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
   useEffect(() => {
@@ -324,18 +329,19 @@ function PartList() {
         groupNumber: currentItem.groupNumber,
       });
       setSearchGroupNoResults([]);
-    } else if (type === "partNumber") {      
+    } else if (type === "partNumber") {
       let quantity = sparePart.quantity;
       let extendedPrice = currentItem.listPrice * quantity;
-      let totalPrice = calculateTotalPrice(extendedPrice, sparePart.usage);
+      let totalPrice = calculateTotalPrice(extendedPrice, sparePart.usagePercentage);
       setSparePart({
         ...sparePart,
         groupNumber: currentItem.groupNumber,
         unitPrice: currentItem.listPrice,
         partNumber: currentItem.partNumber,
-        type: currentItem.partType,
+        partType: currentItem.partType,
         extendedPrice,
-        totalPrice
+        totalPrice,
+        salesUnit: currentItem.salesUnit
       });
       setSearchPartNoResults([]);
     }
@@ -378,8 +384,8 @@ function PartList() {
     } else {
       updateBuilderCustomer(bId, data)
         .then((result) => {
-          setCustViewOnly(true);
-          setValue("2");
+          setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
+          setValue("machine");
         })
         .catch((err) => {
           console.log(err);
@@ -402,8 +408,8 @@ function PartList() {
     };
     updateBuilderMachine(bId, data)
       .then((result) => {
-        setMachineViewOnly(true);
-        setValue("3");
+        setViewOnlyTab({ ...viewOnlyTab, machineViewOnly: true });
+        setValue("estimation");
       })
       .catch((err) => {
         console.log(err);
@@ -422,8 +428,8 @@ function PartList() {
     };
     updateBuilderGeneralDet(bId, data)
       .then((result) => {
-        setGeneralViewOnly(true);
-        setValue("5");
+        setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
+        setValue("price");
       })
       .catch((err) => {
         console.log(err);
@@ -442,8 +448,8 @@ function PartList() {
     };
     updateBuilderEstimation(bId, data)
       .then((result) => {
-        setEstViewOnly(true);
-        setValue("4");
+        setViewOnlyTab({ ...viewOnlyTab, estViewOnly: true });
+        setValue("general");
       })
       .catch((err) => {
         console.log(err);
@@ -451,24 +457,26 @@ function PartList() {
   };
 
   const calculateTotalPrice = (extendedPrice, usage) => {
-     return usage > 0 ? (usage/100) * extendedPrice : extendedPrice    
-  }
+    return usage > 0 ? (usage / 100) * extendedPrice : extendedPrice;
+  };
   const handleIndPartAdd = () => {
     let data = {
       groupNumber: sparePart.groupNumber,
       partNumber: sparePart.partNumber,
-      partType: sparePart.type,
+      partType: sparePart.partType,
       quantity: sparePart.quantity,
       unitPrice: sparePart.unitPrice,
       extendedPrice: sparePart.extendedPrice,
       currency: sparePart.currency,
-      usagePercentage: sparePart.usage,
+      usagePercentage: sparePart.usagePercentage,
       totalPrice: sparePart.totalPrice,
       comment: sparePart.comment,
       // description: sparePart.description,
+      // salesUnit: sparePart.salesUnit
     };
     addPartToPartList(partListNo, data)
       .then((result) => {
+        handleAddPartClose();
         toast(`👏 Spare Part has been added`, {
           position: "top-right",
           autoClose: 3000,
@@ -477,13 +485,46 @@ function PartList() {
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-        })
+        });       
       })
       .catch((err) => {
         console.log(err);
+        toast("😐" + err, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        
       });
   };
-  const fileTypes = ["JPG", "PNG", "GIF"];
+  const fileTypes = ["xls", "xlsx"];
+
+  const handleReadFile = (file) => {
+    // e.preventDefault();
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const data = e.target.result;
+            const workbook = xlsx.read(data, { type: "array" });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const json = xlsx.utils.sheet_to_json(worksheet, {range: 1, header: ['partlistId','groupNumber', "partType", 'partNumber', 'quantity', 'unitOfMeasure', 'unitPrice', 'extendedPrice', 'currency', 'usagePercentage', 'totalPrice', 'comment']});
+            console.log(json);
+            setPartsToUpload([...json]);
+            console.log(partsToUpload);
+        };
+        reader.readAsArrayBuffer(file);
+    }
+  }
+
+  const handleUploadFile = () => {
+    setFileUploadOpen(false);
+  }
+
   const [open1, setOpen1] = React.useState(false);
   const handleClose = () => setOpen(false);
   const handleAddPartClose = () => setAddPartOpen(false);
@@ -1081,10 +1122,20 @@ function PartList() {
                     class="fa fa-pencil"
                     aria-hidden="true"
                     onClick={() => {
-                      if (value === "1") setCustViewOnly(false);
-                      else if (value === "2") setMachineViewOnly(false);
-                      else if (value === "3") setEstViewOnly(false);
-                      else if (value === "4") setGeneralViewOnly(false);
+                      if (value === "customer")
+                        setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
+                      else if (value === "machine")
+                        setViewOnlyTab({
+                          ...viewOnlyTab,
+                          machineViewOnly: false,
+                        });
+                      else if (value === "estimation")
+                        setViewOnlyTab({ ...viewOnlyTab, estViewOnly: false });
+                      else if (value === "general")
+                        setViewOnlyTab({
+                          ...viewOnlyTab,
+                          generalViewOnly: false,
+                        });
                     }}
                   ></i>
                 </a>{" "}
@@ -1101,15 +1152,15 @@ function PartList() {
               <TabContext value={value}>
                 <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                   <TabList onChange={handleChange}>
-                    <Tab label="Customer" value="1" />
-                    <Tab label="Machine " value="2" />
-                    <Tab label="Estimation Details" value="3" />
-                    <Tab label="General Details" value="4" />
-                    <Tab label="Price" value="5" />
+                    <Tab label="Customer" value="customer" />
+                    <Tab label="Machine " value="machine" />
+                    <Tab label="Estimation Details" value="estimation" />
+                    <Tab label="General Details" value="general" />
+                    <Tab label="Price" value="price" />
                   </TabList>
                 </Box>
-                <TabPanel value="1">
-                  {!custViewOnly ? (
+                <TabPanel value="customer">
+                  {!viewOnlyTab.custViewOnly ? (
                     <>
                       <div className="row">
                         <div className="col-md-6 col-sm-6">
@@ -1324,8 +1375,8 @@ function PartList() {
                     </div>
                   )}
                 </TabPanel>
-                <TabPanel value="2">
-                  {!machineViewOnly ? (
+                <TabPanel value="machine">
+                  {!viewOnlyTab.machineViewOnly ? (
                     <>
                       <div className="row">
                         <div className="col-md-6 col-sm-6">
@@ -1510,8 +1561,8 @@ function PartList() {
                     </div>
                   )}
                 </TabPanel>
-                <TabPanel value="3">
-                  {!estViewOnly ? (
+                <TabPanel value="estimation">
+                  {!viewOnlyTab.estViewOnly ? (
                     <>
                       <div className="row">
                         <div className="col-md-6 col-sm-6">
@@ -1722,8 +1773,8 @@ function PartList() {
                     </div>
                   )}
                 </TabPanel>
-                <TabPanel value="4">
-                  {!generalViewOnly ? (
+                <TabPanel value="general">
+                  {!viewOnlyTab.generalViewOnly ? (
                     <>
                       <div className="row">
                         <div className="col-md-6 col-sm-6">
@@ -1937,7 +1988,7 @@ function PartList() {
                     </div>
                   )}
                 </TabPanel>
-                <TabPanel value="5">
+                <TabPanel value="price">
                   <div className="row">
                     <div className="col-md-4 col-sm-4">
                       <div class="form-group">
@@ -2252,7 +2303,7 @@ function PartList() {
                     <span className="ml-1">Search</span>
                   </a>
                   <a
-                    onClick={() => setOpen3(true)}
+                    onClick={() => setFileUploadOpen(true)}
                     style={{ cursor: "pointer" }}
                     className="btn bg-primary text-white mx-2"
                   >
@@ -2358,9 +2409,9 @@ function PartList() {
                         <input
                           type="text"
                           class="form-control border-radius-10"
-                          value={sparePart.type}
+                          value={sparePart.partType}
                           onChange={(e) =>
-                            setSparePart({ ...sparePart, type: e.target.value })
+                            setSparePart({ ...sparePart, partType: e.target.value })
                           }
                           disabled
                           placeholder="Required"
@@ -2399,8 +2450,13 @@ function PartList() {
                               ...sparePart,
                               quantity: e.target.value,
                               extendedPrice:
-                                sparePart.unitPrice * e.target.value,
-                              totalPrice:  sparePart.usage > 0 ? ((sparePart.usage/100) * sparePart.unitPrice * e.target.value) : (sparePart.unitPrice * e.target.value)
+                                parseFloat(sparePart.unitPrice * e.target.value).toFixed(2),
+                              totalPrice:
+                                sparePart.usagePercentage > 0
+                                  ? parseFloat((sparePart.usagePercentage / 100) *
+                                    sparePart.unitPrice *
+                                    e.target.value).toFixed(2)
+                                  : parseFloat(sparePart.unitPrice * e.target.value).toFixed(2),
                             })
                           }
                           value={sparePart.quantity}
@@ -2419,7 +2475,9 @@ function PartList() {
                         <input
                           type="text"
                           class="form-control border-radius-10"
-                          placeholder="$35000"
+                          value={sparePart.salesUnit}
+                          onChange={(e) => setSparePart({...sparePart, salesUnit: e.target.value})}
+                          placeholder="Required"
                         />
                       </div>
                     </div>
@@ -2434,7 +2492,7 @@ function PartList() {
                         <input
                           type="Number"
                           class="form-control border-radius-10"
-                          value={sparePart.unitPrice}
+                          value={parseFloat(sparePart.unitPrice).toFixed(2)}
                           disabled
                           placeholder="Required"
                         />
@@ -2450,7 +2508,7 @@ function PartList() {
                           class="form-control border-radius-10"
                           disabled
                           // onChange={(e) => setSparePart({...sparePart, extendedPrice: e.target.value})}
-                          value={sparePart.extendedPrice}
+                          value={parseFloat(sparePart.extendedPrice).toFixed(2)}
                           placeholder="Optional"
                         />
                       </div>
@@ -2486,12 +2544,14 @@ function PartList() {
                           onChange={(e) =>
                             setSparePart({
                               ...sparePart,
-                              usage: e.target.value,
-                              totalPrice: calculateTotalPrice(sparePart.extendedPrice, e.target.value)
+                              usagePercentage: e.target.value,
+                              totalPrice: parseFloat(calculateTotalPrice(
+                                sparePart.extendedPrice,
+                                e.target.value
+                              )).toFixed(2),
                             })
-                            
                           }
-                          value={sparePart.usage}
+                          value={sparePart.usagePercentage}
                           placeholder="Optional"
                         />
                       </div>
@@ -2507,7 +2567,7 @@ function PartList() {
                         <input
                           type="Number"
                           class="form-control border-radius-10"
-                          value={sparePart.totalPrice}
+                          value={parseFloat(sparePart.totalPrice).toFixed(2)}
                           disabled
                           placeholder="Required"
                         />
@@ -2573,7 +2633,7 @@ function PartList() {
                     className="btn btn-light bg-primary text-white"
                     onClick={handleIndPartAdd}
                     disabled={
-                      !sparePart.type ||
+                      !sparePart.partType ||
                       !sparePart.partNumber ||
                       !sparePart.quantity ||
                       !sparePart.unitPrice ||
@@ -2595,8 +2655,8 @@ function PartList() {
           </Modal>
 
           <Modal
-            show={open3}
-            onHide={() => setOpen3(false)}
+            show={fileUploadOpen}
+            onHide={() => setFileUploadOpen(false)}
             size="md"
             aria-labelledby="contained-modal-title-vcenter"
             centered
@@ -2616,9 +2676,12 @@ function PartList() {
                       Drag and drop files to upload <br /> or
                     </h6>
                     <FileUploader
-                      handleChange={handleChange}
+                      handleChange={handleReadFile}
                       name="file"
                       types={fileTypes}
+                      onClick={(event)=> { 
+                        event.currentTarget.value = null
+                   }}
                     />
                   </div>
                 </div>
@@ -2710,7 +2773,7 @@ function PartList() {
               <div className="col-md-6 col-sm-6">
                 <button
                   className="btn border w-100 bg-white"
-                  onClick={() => setOpen3(false)}
+                  onClick={() => setFileUploadOpen(false)}
                 >
                   Cancel
                 </button>
@@ -2718,7 +2781,7 @@ function PartList() {
               <div className="col-md-6 col-sm-6">
                 <button
                   className="btn btn-primary w-100"
-                  onClick={() => setOpenCoveragetable(true)}
+                  onClick={handleUploadFile}
                   style={{ cursor: "pointer" }}
                 >
                   <FontAwesomeIcon className="mr-2" icon={faCloudUploadAlt} />
