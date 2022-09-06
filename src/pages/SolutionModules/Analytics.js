@@ -5,6 +5,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { ToastContainer, toast } from 'react-toastify';
 import Select from '@mui/material/Select';
+import Select2 from 'react-select';
 import { FileUploader } from "react-drag-drop-files";
 import { MuiMenuComponent } from '../Operational/index'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -571,13 +572,11 @@ export const Analytics = () => {
 
    useEffect(() => {
       if (masterData.some((masterDataitem) => masterDataitem.check1 === true)) {
-        setFlagIs(true);
+         setFlagIs(true);
       } else {
-        setFlagIs(false);
+         setFlagIs(false);
       }
-    }, [masterData]);
-
-   console.log("filterMAstyerdata is :  =>  ", filterMasterData)
+   }, [masterData]);
 
    const handleDeleteIncludeSerialNo = (e, row) => {
       const updated = selectedMasterData.filter((obj) => {
@@ -1060,11 +1059,11 @@ export const Analytics = () => {
                                  {/* <span>
                                         <a href="#" className="btn-sm">+</a>
                                     </span> */}
-                                 <Select
+                                 <Select2
                                     onChange={handleTypeOfSearchChange}
                                     isClearable={true}
                                     value={typeOfSearch}
-                                    options={columnSearchKeyValue}
+                                    options={[{ label: "Bundle", value: 'bundle' }, { label: "Service", value: 'service' }, { label: "Portfolio Item", value: 'portfolioItem' }]}
                                     placeholder="Add by"
                                  />
                               </div>
@@ -1074,7 +1073,7 @@ export const Analytics = () => {
                                     <span>
                                        <a href="#" className="btn-sm">+</a>
                                     </span>
-                                    <Select
+                                    <Select2
                                        onChange={handleTypeOfSearchColumnChange}
                                        isClearable={true}
                                        value={typeOfSearchColumn}
@@ -1103,7 +1102,7 @@ export const Analytics = () => {
                            ?
                            <div className="tableheader">
                               <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
-                                 <li><a className="cursor result">RESULTS</a></li>
+                                 <li><a className="cursor result" >RESULTS</a></li>
                                  <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM125</a></li>
                                  <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM2</a></li>
                                  <li><a className="cursor lastOption text-violet" onClick={handleCreateNewServiceBundle}><span className="mr-2">+</span>Create New {typeOfSearch != null ? typeOfSearch.value == 'bundle' ? "Bundle" : typeOfSearch.value == 'service' ? "Service" : typeOfSearch.value == 'portfolioItem' ? "Portfolio Item" : "" : ""}</a></li>
@@ -1141,7 +1140,8 @@ export const Analytics = () => {
                                        <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
                                        <li className='mt-3' style={{ listStyle: 'disc' }}>Periodic maintenace triggered every 3 months</li>
                                     </ul>
-                                    <a href="#" class="btn bg-primary text-white Choose-btn">Choose</a>
+                                    <Link to="/service/new" className="btn bg-primary text-white Choose-btn">Choose</Link>
+                                    {/* <a href="#" class="btn bg-primary text-white Choose-btn">Choose</a> */}
                                  </div>
                                  <div class='item'>
                                     <a href='#' className='bg-primary  text-white btn'>Repair Service</a>
@@ -1222,7 +1222,7 @@ export const Analytics = () => {
 
                         </div>
                         <div className="m-2 text-right">
-                           <input className="btn text-white bg-primary" value="+ Add Selected" disabled={!flagIs}/>
+                           <input className="btn text-white bg-primary" value="+ Add Selected" disabled={!flagIs} />
                            {/* <a href="#" className="btn text-white bg-primary">+ Add Selected</a> */}
 
                         </div>
@@ -1231,7 +1231,6 @@ export const Analytics = () => {
                </div>
             </div>
          </div>
-         {console.log("master data is : ", masterData)}
       </>
    )
 };

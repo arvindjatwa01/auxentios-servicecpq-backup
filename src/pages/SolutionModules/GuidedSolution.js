@@ -50,7 +50,6 @@ import { actionCreator } from "../../redux/index";
 import { getGuidedSolution } from "../../services/index";
 
 export const GuidedSolution = (props) => {
-  console.log("props data : ", props);
 
   const [guidedSolutions, setGuidedSolutions] = useState([]);
   const state = useSelector((state) => state);
@@ -828,6 +827,7 @@ export const GuidedSolution = (props) => {
   }, []);
 
   return (
+
     <>
       {/* <CommanComponents /> */}
       <div className="content-body" style={{ minHeight: "884px" }}>
@@ -985,7 +985,7 @@ export const GuidedSolution = (props) => {
                     )}
                   </>
                 )}
-                
+
 
                 {/* <div className=" mt-3 p-3">
                   <div className="">
