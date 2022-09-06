@@ -12,7 +12,6 @@ const SearchBox = (props) => {
       {props.result.length > 0 && (
         <ul
           className={`list-group customselectsearch-list scrollbar`}
-          id="style"
         >
           {props.result.map((currentItem, index) => (
             <li
@@ -20,9 +19,7 @@ const SearchBox = (props) => {
               className="list-group-item"
               onClick={(e) => props.onSelect(props.type, currentItem)}
             >
-              {props.type === "customerId" && currentItem.customerId}
-              {props.type === "model" && currentItem.model}
-              {props.type === "serialNo" && currentItem.equipmentNumber}
+              {currentItem[props.type]}
             </li>
           ))}
         </ul>

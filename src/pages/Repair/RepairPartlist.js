@@ -755,14 +755,10 @@ export const RepairPartlist = () => {
                        </div>
         
          </div>
-         <div className="col-auto">
          <div className="text-center border-left pl-3 py-3">
              <Link to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable">
                 <SearchIcon /><span className="ml-1">Search</span>
-             </Link>
-            
-         </div>
-        
+             </Link>            
          </div>
          {/* <div className="col-auto">
            <div className="d-flex align-items-center justify-content-center">

@@ -527,7 +527,8 @@ function Kits() {
       selector: (row) => row.standardJobId,
       wrap: true,
       sortable: true,
-      maxWidth: "300px",
+      maxWidth: "50px",
+      minWidth: "50px",
       cell: (row) => <Checkbox className="text-black" {...label} />,
     },
     {
@@ -542,6 +543,8 @@ function Kits() {
       selector: (row) => row.bundleDescription,
       wrap: true,
       sortable: true,
+      maxWidth: "150px",
+      minWidth: "150px",
       format: (row) => row.bundleDescription,
     },
     {
@@ -584,6 +587,17 @@ function Kits() {
       sortable: true,
       format: (row) => row.strategy,
       
+    },
+    {
+      name: (
+        <>
+          <div>Unit of Measures</div>
+        </>
+      ),
+      selector: (row) => row.strategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.strategy,
     },
     {
       name: (
@@ -1666,6 +1680,12 @@ function Kits() {
                       <div class="form-group w-100">
                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QTY</label>
                         <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="List Price" />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div class="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT OF MEASURES</label>
+                        <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$35000" />
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
