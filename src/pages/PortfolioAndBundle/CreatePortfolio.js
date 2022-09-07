@@ -132,6 +132,7 @@ import AddPortfolioItem from "./AddPortfolioItem";
 import PriceCalculator from "./PriceCalculator";
 import { PortfolioContext } from "./ProtfolioContext";
 import { Link, useHistory, useLocation } from "react-router-dom";
+import Solution from "./Solution";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 const customStyles = {
@@ -3646,6 +3647,9 @@ const location=useLocation()
     history.push("/quoteTemplate");
   };
   const history = useHistory();
+
+
+
   return (
     <PortfolioContext.Provider value={{generalComponentData,categoryUsageKeyValue1,stratgyTaskTypeKeyValue}}>
       <div className="content-body" style={{ minHeight: "884px" }}>
@@ -8022,6 +8026,7 @@ const location=useLocation()
                   aria-label="lab API tabs example"
                 >
                   <Tab label="Portfolio Item" value="1" />
+                  <Tab label="Solution" value="4" />
                   <Tab label="Price Calculator" value="2" />
                   <Tab label="Component Data" value="3" />
                 </TabList>
@@ -8038,6 +8043,9 @@ const location=useLocation()
                     handleBundleItemSaveAndContinue
                   }
                 />
+              </TabPanel>
+              <TabPanel value="4">
+                <Solution/>
               </TabPanel>
 
               <TabPanel value="2">

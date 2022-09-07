@@ -10,6 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { itemCreation, updatePortfolio } from "../../services/index";
 
 const PriceCalculator = (props) => {
+  const [disable, setDisable] = useState(true);
   const [priceCalculator, setPriceCalculator] = useState({
     priceMethod: "",
     listPrice: "",
@@ -30,6 +31,12 @@ const PriceCalculator = (props) => {
     suppresion: "",
     netPrice: 1200,
     totalPrice: 1200,
+
+    netParts:"",
+    netService:"",
+    priceType:"",
+    netPrice:"",
+    netAdditionals:""
   });
 
   useEffect(() => {
@@ -59,7 +66,6 @@ const PriceCalculator = (props) => {
   };
 
   const handleItemPriceSave = () => {
-    
     props.setTabs("3");
     props.getPriceCalculatorDataFun(priceCalculator);
     props.handleSavePrices();
@@ -70,11 +76,19 @@ const PriceCalculator = (props) => {
     props.handleSavePrices();
   };
 
+  const handlePriceChange=(e)=>{
+    setPriceCalculator({
+      ...priceCalculator,
+      [e.target.name]:e.target.value
+    })
+  }
+
+
   return (
     <>
       <div className="ligt-greey-bg p-3">
         <div>
-          <span className="mr-3">
+          <span className="mr-3 cursor" onClick={() => setDisable(!disable)}>
             <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
             <span className="ml-2">Edit</span>
           </span>
@@ -96,7 +110,116 @@ const PriceCalculator = (props) => {
           </span>
         </div>
       </div>
-      <div>
+
+      <div className='mt-3'>
+          <div className="row">
+            <div className="col-md-6 col-sm-6">
+              <div className="form-group">
+                <label
+                  className="text-light-dark font-size-14 font-weight-500"
+                  for="exampleInputEmail1"
+                >
+                  Net Parts $
+                </label>
+                <input
+                  type="text"
+                   className="form-control border-radius-10"
+                  options={options}
+                  name="netParts"
+                  disabled={disable}
+                  value={priceCalculator.netParts}
+                  onChange={handlePriceChange}
+                />
+              </div>
+            </div>
+            <div className="col-md-6 col-sm-6">
+              <div className="form-group">
+                <label
+                  className="text-light-dark font-size-14 font-weight-500"
+                  for="exampleInputEmail1"
+                >
+                  Net Service $
+                </label>
+                <input
+                  type="text"
+                   className="form-control border-radius-10"
+                  name="netService"
+                  disabled={disable}
+                  value={priceCalculator.netService}
+                />
+              </div>
+            </div>
+            <div className="col-md-6 col-sm-6">
+              <div className="form-group">
+                <label
+                  className="text-light-dark font-size-14 font-weight-500"
+                  for="exampleInputEmail1"
+                >
+                  Price type
+                </label>
+                <input
+                  type="text"
+                   className="form-control border-radius-10"
+                  placeholder="Optional"
+                  name="priceType"
+                  disabled={disable}
+                  value={priceCalculator.priceType}
+                />
+              </div>
+            </div>
+            <div className="col-md-6 col-sm-6">
+              <div className="form-group">
+                <label
+                  className="text-light-dark font-size-14 font-weight-500"
+                  for="exampleInputEmail1"
+                >
+                  Net Price
+                </label>
+                <input
+                  type="text"
+                   className="form-control border-radius-10"  
+                  name="netPrice"
+                  disabled={disable}
+                  value={priceCalculator.netPrice}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-md-6 col-sm-6">
+              <div className="form-group">
+                <label
+                  className="text-light-dark font-size-14 font-weight-500"
+                  for="exampleInputEmail1"
+                >
+                  Net Additionals $
+                </label>
+                <input
+                  type="text"
+                   className="form-control border-radius-10"
+                  name="netAdditionals"
+                  disabled={disable}
+                  value={priceCalculator.netAdditionals}
+                />
+              </div>
+            </div>
+          </div>
+        <div className="m-3 text-right">
+          <a
+            href="#"
+            className="btn text-white bg-primary"
+            onClick={
+              props.serviceOrBundlePrefix === ""
+                ? handleItemPriceSave
+                : handleBundlePriceSave
+            }
+          >
+            Save
+          </a>
+        </div>
+      </div>
+
+      <div className="">
         <div className="p-3">
           <div className="row">
             <div className="col-md-6 col-sm-6">
