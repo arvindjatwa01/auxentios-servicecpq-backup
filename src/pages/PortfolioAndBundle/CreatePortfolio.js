@@ -380,7 +380,7 @@ export function CreatePortfolio() {
     frequency: "",
     cycle: "",
     suppresion: "",
-    netPrice: 1200,
+    netPrice: "",
     totalPrice: 1200,
   });
   const [openMiniBundleItem, setOpenMiniBundleItem] = useState(false);
@@ -410,7 +410,7 @@ export function CreatePortfolio() {
   const [passItemEditRowData, setPassItemEditRowData] = useState();
   const [passBundleEditRowData, setPassBundleEditRowData] = useState();
 
-const location=useLocation()
+  const location = useLocation();
 
   const frequencyOptions = [
     { label: "Cyclic", value: "Cyclic" },
@@ -1661,7 +1661,7 @@ const location=useLocation()
           throw `${strategyRes.status}:error in update portfolio`;
         }
       } else if (e.target.id == "administrative") {
-        console.log("administrative",administrative)
+        console.log("administrative", administrative);
         setValue("price");
       } else if (e.target.id == "price") {
         priceAgreementOption
@@ -1815,10 +1815,10 @@ const location=useLocation()
     });
   };
   const handleAdministrativreChange = (e) => {
-    console.log("handleAdministrativreChange",administrative)
+    console.log("handleAdministrativreChange", administrative);
     var value = e.target.value;
     var name = e.target.name;
-    setAdministrative({...administrative,[name]: value});
+    setAdministrative({ ...administrative, [name]: value });
   };
   const handleAddBundleInputChange = (e) => {
     var value = e.target.value;
@@ -3648,10 +3648,14 @@ const location=useLocation()
   };
   const history = useHistory();
 
-
-
   return (
-    <PortfolioContext.Provider value={{generalComponentData,categoryUsageKeyValue1,stratgyTaskTypeKeyValue}}>
+    <PortfolioContext.Provider
+      value={{
+        generalComponentData,
+        categoryUsageKeyValue1,
+        stratgyTaskTypeKeyValue,
+      }}
+    >
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
@@ -4268,8 +4272,10 @@ const location=useLocation()
                           options={updatedTaskList}
                           value={stratgyTaskTypeKeyValue}
                           placeholder="Optional"
-                          onChange={(e) =>{setStratgyTaskTypeKeyValue(e)
-                            addPortFolioItem.taskType = ""}}
+                          onChange={(e) => {
+                            setStratgyTaskTypeKeyValue(e);
+                            addPortFolioItem.taskType = "";
+                          }}
                         />
                       </div>
                     </div>
@@ -4451,7 +4457,7 @@ const location=useLocation()
                           className="text-light-dark font-size-14 font-weight-500"
                           htmlFor="exampleInputEmail1"
                         >
-                         PREPARED ON
+                          PREPARED ON
                         </label>
                         <input
                           type="text"
@@ -4471,7 +4477,7 @@ const location=useLocation()
                           className="text-light-dark font-size-14 font-weight-500"
                           htmlFor="exampleInputEmail1"
                         >
-                         REVISED BY
+                          REVISED BY
                         </label>
                         <input
                           type="text"
@@ -4489,7 +4495,7 @@ const location=useLocation()
                           className="text-light-dark font-size-14 font-weight-500"
                           htmlFor="exampleInputEmail1"
                         >
-                         REVISED ON
+                          REVISED ON
                         </label>
                         <input
                           type="text"
@@ -4507,7 +4513,7 @@ const location=useLocation()
                           className="text-light-dark font-size-14 font-weight-500"
                           htmlFor="exampleInputEmail1"
                         >
-                         SALSE OFFICE/BRANCH
+                          SALSE OFFICE/BRANCH
                         </label>
                         <input
                           type="text"
@@ -4520,13 +4526,13 @@ const location=useLocation()
                     </div>
                   </div>
                   <div className="row">
-                  <div className="col-md-4 col-sm-4">
+                    <div className="col-md-4 col-sm-4">
                       <div className="form-group">
                         <label
                           className="text-light-dark font-size-14 font-weight-500"
                           htmlFor="exampleInputEmail1"
                         >
-                         OFFER VALIDITY
+                          OFFER VALIDITY
                         </label>
                         <input
                           type="text"
@@ -4538,7 +4544,6 @@ const location=useLocation()
                         />
                       </div>
                     </div>
-
                   </div>
                 </TabPanel>
                 <TabPanel value={"price"}>
@@ -8026,9 +8031,12 @@ const location=useLocation()
                   aria-label="lab API tabs example"
                 >
                   <Tab label="Portfolio Item" value="1" />
-                  <Tab label="Solution" value="4" />
-                  <Tab label="Price Calculator" value="2" />
-                  <Tab label="Component Data" value="3" />
+                  <Tab label="Service/Bundle" value="6" />
+                  {/* <Tab label="Solution" value="2" /> */}
+                  {/*use it in useCase-4 */}
+                  <Tab label="Price Calculator" value="3" />
+                  <Tab label="Component Data" value="4" />
+                  <Tab label="Review" value="5" />
                 </TabList>
               </Box>
               <TabPanel value="1">
@@ -8044,11 +8052,11 @@ const location=useLocation()
                   }
                 />
               </TabPanel>
-              <TabPanel value="4">
-                <Solution/>
+              <TabPanel value="2">
+                <Solution setTabs={setTabs} />
               </TabPanel>
 
-              <TabPanel value="2">
+              <TabPanel value="3">
                 <PriceCalculator
                   setTabs={setTabs}
                   priceCalculator={priceCalculator}
@@ -8057,8 +8065,95 @@ const location=useLocation()
                   handleSavePrices={handleSavePrices}
                 />
               </TabPanel>
+              <TabPanel value="4">
+                <>
+                  <div className="ligt-greey-bg p-3 mb-5">
+                    <div>
+                      <span className="mr-3">
+                        <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                        <span className="ml-2">Related part list(s)</span>
+                      </span>
+                      <span className="mr-3">
+                        <AccessAlarmOutlinedIcon className=" font-size-16" />
+                        <span className="ml-2">Related template(s)</span>
+                      </span>
+                      <span>
+                        <SellOutlinedIcon className=" font-size-16" />
+                        <span className="ml-2">Related repair option</span>
+                      </span>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-14 font-weight-500">
+                          Component Code
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          name="code"
+                          placeholder="Optional"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-14 font-weight-500">
+                          Component Description
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          name="description"
+                          placeholder="Optional"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-14 font-weight-500">
+                          Model
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          name="model"
+                          placeholder="Optional"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-14 font-weight-500">
+                          Make
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          name="make"
+                          placeholder="Optional"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-14 font-weight-500">
+                          Serial No.
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          name="serialNo"
+                          placeholder="Optional"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </>
+              </TabPanel>
 
-              <TabPanel value="3">
+              <TabPanel value="5">
                 {loadingItem ? (
                   <div className="d-flex align-items-center justify-content-center">
                     <Loader
@@ -8084,11 +8179,15 @@ const location=useLocation()
                   </div>
                 )}
               </TabPanel>
+
+              <TabPanel value="6">
+                Bundle or Service
+              </TabPanel>
             </TabContext>
           </Box>
         </Modal.Body>
         <Modal.Footer>
-          {tabs === "3" && (
+          {tabs === "5" && (
             <Button variant="primary" onClick={addTempItemIntobundleItem}>
               Add Selected
             </Button>
