@@ -458,6 +458,16 @@ export const PortfolioSummary = () => {
         // console.log("portfolioResponse",portfolioResponse)
         // setPortfolioResponse(portfolioRes)
       }
+      const [anchorEl, setAnchorEl] = React.useState(null);
+  const open1 = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose1 = () => {
+    setAnchorEl(null);
+  };
+  
+      
 
     return (
         <>
@@ -467,6 +477,33 @@ export const PortfolioSummary = () => {
                     <div className="d-flex align-items-center justify-content-between mt-2">
                         <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5>
                         <div>
+      <Button
+        id="basic-button"
+        className="bg-primary text-white px-4 py-2"
+        aria-controls={open1 ? 'basic-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open1 ? 'true' : undefined}
+        onClick={handleClick}
+      >
+        <span className="mr-2 font-size-12"><FontAwesomeIcon icon={faPlus} /></span>Create<span className="ml-2"><KeyboardArrowDownIcon style={{fontSize:'28px'}}/></span>
+      </Button>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open1}
+        onClose={handleClose1}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
+        <MenuItem onClick={handleClose1}>
+        <Link to={{pathname: "/portfolioBuilder/new",state: { portfolioResponse}}}  onClick={handleCreatePortfolio}>Portfolio</Link>
+        </MenuItem>
+        <MenuItem onClick={handleClose1}>Service</MenuItem>
+        <MenuItem onClick={handleClose1}>Bundles</MenuItem>
+      </Menu>
+    </div>
+                        {/* <div>
                         <Link to={{pathname: "/portfolioBuilder/new",state: { portfolioResponse}}}  onClick={handleCreatePortfolio} style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
                                 <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create Portfolio<span className="ml-2"></span>
                             </Link>
@@ -476,7 +513,7 @@ export const PortfolioSummary = () => {
                             <Link style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
                                 <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create Bundle<span className="ml-2"></span>
                             </Link>
-                        </div> 
+                        </div>  */}
           </div>
 
           <div className="card p-4 mt-5">
