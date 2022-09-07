@@ -86,7 +86,7 @@ const AddPortfolioItem = (props) => {
     if (props.compoFlag === "itemEdit") {
       props.handleItemEditSave(addPortFolioItem);
     } else if (props.compoFlag === "ITEM") {
-      props.setTabs("2");
+      props.setTabs("3");
       props.getAddportfolioItemDataFun(addPortFolioItem);
       props.handleBundleItemSaveAndContinue();
     } else {
@@ -120,7 +120,7 @@ const AddPortfolioItem = (props) => {
           </span>
         </div>
       </div>
-      <div className="px-3">
+      <div>
         <p className="mt-4">SUMMARY</p>
         <div className="row mt-4">
           <div className="col-md-6 col-sm-6">
