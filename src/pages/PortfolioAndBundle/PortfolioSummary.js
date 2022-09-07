@@ -153,7 +153,7 @@ export const PortfolioSummary = () => {
     const handleBuildSolution = (e) => {
         setBuildSolutionValue(e.target.value)
     }
-  }
+
 
   const handleContinueCallback = (data) => {
     if (data) {
@@ -215,7 +215,13 @@ export const PortfolioSummary = () => {
   const handleCloseExplore = () => {
     setShowExplore(false);
   }
-
+  const handleCallbackClose = (data) => {
+    if (solutionBuilderShow) {
+        setSolutionBuilderShow(false);
+    } else {
+        setSolutionBuilderShow(true);
+    }
+}
   const handleShow = () => {
     if (solutionBuilderShow) {
       setModalComponent(<SolutionBuilderModal showSearchParentCallback={handleShowSearchParentCallback} continueParentCallback={handleContinueCallback} parentCallback={handleCallbackClose} open={false} />)
@@ -379,110 +385,7 @@ export const PortfolioSummary = () => {
       })
       setFilterMasterData(updated)
     }
-
-    const handleOperator = (e, id) => {
-        let tempArray = [...querySearchSelector]
-        let obj = tempArray[id]
-        obj.selectOperator = e
-        tempArray[id] = obj
-        setQuerySearchSelector([...tempArray])
-      }
-      const handleInputSearch = (e, id) => {
-        let tempArray = [...querySearchSelector]
-        let obj = tempArray[id]
-        getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value).then((res) => {
-          obj.selectOptions = res
-          tempArray[id] = obj
-          setQuerySearchSelector([...tempArray]);
-          $(`.scrollbar-${id}`).css("display", "block")
-        }).catch((err) => {
-          console.log("err in api call", err)
-        })
-        obj.inputSearch = e.target.value
-      
-      }
-      const handleQuerySearchClick = () => {
-        $(".scrollbar").css("display", "none")
-        console.log("handleQuerySearchClick", querySearchSelector)
-        var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
-    
-        for (let i = 1; i < querySearchSelector.length; i++) {
-          searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + "~" + querySearchSelector[i].inputSearch
-        }
-    
-        console.log("searchStr", searchStr)
-        getSearchQueryCoverage(searchStr).then((res) => {
-          console.log("search Query Result :", res)
-          setMasterData(res)
-    
-        }).catch((err) => {
-          console.log("error in getSearchQueryCoverage", err)
-        })
-    
-      }
-      const addSearchQuerryHtml = () => {
-        setQuerySearchSelector([...querySearchSelector, {
-          id: count,
-          selectOperator: "",
-          selectFamily: "",
-          inputSearch: "",
-          selectOptions: [],
-          selectedOption: ""
-        }])
-        setCount(count + 1)
-      }
-      const handleFamily = (e, id) => {
-        let tempArray = [...querySearchSelector]
-        console.log("handleFamily e:", e)
-        let obj = tempArray[id]
-        obj.selectFamily = e
-        tempArray[id] = obj
-        setQuerySearchSelector([...tempArray])
-      }
-      const [querySearchSelector, setQuerySearchSelector] = useState([{
-        id: 0,
-        selectFamily: "",
-        selectOperator: "",
-        inputSearch: "",
-        selectOptions: [],
-        selectedOption: ""
-      }])
-      const handleDeletQuerySearch = () => {
-        setQuerySearchSelector([])
-        setCount(0)
-        setMasterData([])
-        setFilterMasterData([])
-        setSelectedMasterData([])
-      }
-      const handleSearchListClick = (e, currentItem, obj1, id) => {
-        let tempArray = [...querySearchSelector]
-        let obj = tempArray[id]
-        obj.inputSearch = currentItem
-        obj.selectedOption = currentItem
-        tempArray[id] = obj
-        setQuerySearchSelector([...tempArray])
-        $(`.scrollbar-${id}`).css("display", "none")
-      }
-      const handleMasterCheck = (e, row) => {
-        if (e.target.checked) {
-          var _masterData = [...masterData]
-          const updated = _masterData.map((currentItem, i) => {
-            if (row.id == currentItem.id) {
-              return { ...currentItem, ["check1"]: e.target.checked }
-            } else return currentItem
-          })
-          setMasterData([...updated])
-          setFilterMasterData([...filterMasterData, { ...row }])
-        } else {
-          var _filterMasterData = [...filterMasterData]
-          const updated = _filterMasterData.filter((currentItem, i) => {
-            if (row.id !== currentItem.id)
-              return currentItem
-          })
-          setFilterMasterData(updated)
-        }
-      
-      }
+  }
       const [filterMasterData, setFilterMasterData] = useState([])
       const [selectedMasterData, setSelectedMasterData] = useState([])
       const [masterData, setMasterData] = useState([])
@@ -573,7 +476,7 @@ export const PortfolioSummary = () => {
                             <Link style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
                                 <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create Bundle<span className="ml-2"></span>
                             </Link>
-                        </div> */}
+                        </div> 
           </div>
 
           <div className="card p-4 mt-5">

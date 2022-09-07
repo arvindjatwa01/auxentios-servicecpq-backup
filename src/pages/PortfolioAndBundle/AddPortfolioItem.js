@@ -24,7 +24,7 @@ const AddPortfolioItem = (props) => {
     frequency: "",
     unit: "",
     recomondedValue: "",
-    quantity: "",
+    quantity: 1,
     strategyEvents: "",
     templateId: "",
     templateDescription: "",
