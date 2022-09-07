@@ -29,6 +29,7 @@ import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FileUploader } from "react-drag-drop-files";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import * as xlsx from 'xlsx';
 // import { ToastContainer, toast } from "react-toastify";
 import boxicon from "../../assets/icons/png/box.png";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -43,9 +44,10 @@ import DateFnsUtils from "@date-io/date-fns";
 import { getSearchCoverageForFamily } from "../../services/index";
 import {
   addPartlist,
-  createBuilder,
+  addPartToPartList,
   customerSearch,
   machineSearch,
+  sparePartSearch,
   updateBuilderCustomer,
   updateBuilderEstimation,
   updateBuilderGeneralDet,
@@ -55,16 +57,24 @@ import SearchBox from "./components/SearchBox";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Moment from "react-moment";
 import Validator from "utils/validator";
+import { toast } from "react-toastify";
 
 function PartList() {
   const history = useHistory();
   const [searchCustResults, setSearchCustResults] = useState([]);
-  const [custViewOnly, setCustViewOnly] = useState(false);
-  const [machineViewOnly, setMachineViewOnly] = useState(false);
-  const [generalViewOnly, setGeneralViewOnly] = useState(false);
-  const [estViewOnly, setEstViewOnly] = useState(false);
+  const [allParts, setAllParts] = useState([]);
+  const [partsToUpload, setPartsToUpload] = useState([]);
+
+  const [viewOnlyTab, setViewOnlyTab] = useState({
+    custViewOnly: false,
+    machineViewOnly: false,
+    generalViewOnly: false,
+    estViewOnly: false,
+  });
   const [searchModelResults, setSearchModelResults] = useState([]);
   const [searchSerialResults, setSearchSerialResults] = useState([]);
+  const [searchGroupNoResults, setSearchGroupNoResults] = useState([]);
+  const [searchPartNoResults, setSearchPartNoResults] = useState([]);
   const [builderId, setBuilderId] = useState("");
   const [bId, setBId] = useState("");
   const [partListNo, setPartListNo] = useState("");
@@ -102,6 +112,22 @@ function PartList() {
     revisedOn: new Date(),
     salesOffice: null,
   });
+
+  const [sparePart, setSparePart] = useState({
+    groupNumber: "",
+    partType: "",
+    partNumber: "",
+    quantity: "",
+    unitPrice: 0.0,
+    extendedPrice: 0.0,
+    salesUnit: '',
+    currency: "USD",
+    usagePercentage: 0,
+    totalPrice: 0.0,
+    comment: "",
+    description: "",
+  });
+
   const validityOptions = [
     { value: "15", label: "15 days" },
     { value: "30", label: "1 month" },
@@ -117,12 +143,10 @@ function PartList() {
   ];
 
   const [selectedOption, setSelectedOption] = useState(null);
-  const [value, setValue] = React.useState("1");
-
-  const [openCoverage, setOpenCoveragetable] = React.useState(false);
-  const [open, setOpen] = React.useState(false);
-  const [open2, setOpen2] = React.useState(false);
-  const [open3, setOpen3] = React.useState(false);
+  const [value, setValue] = useState("customer");
+  const [open, setOpen] = useState(false);
+  const [addPartOpen, setAddPartOpen] = useState(false);
+  const [fileUploadOpen, setFileUploadOpen] = useState(false);
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
   useEffect(() => {
@@ -156,6 +180,7 @@ function PartList() {
     //   });
     setBuilderId("RB000014");
     setBId(14);
+    setPartListNo(12);
   }, []);
 
   const handleCustSearch = async (searchCustfieldName, searchText) => {
@@ -171,6 +196,48 @@ function PartList() {
           throw "Error occurred while searching the customer!";
         });
     }
+  };
+
+  const handleSparePartSearch = async (searchSparePartField, searchText) => {
+    console.log("cleared the result", searchText);
+    let searchQuerySparePart = "";
+    setSearchGroupNoResults([]);
+    setSearchPartNoResults([]);
+
+    if (searchSparePartField === "groupNumber") {
+      setSparePart({ ...sparePart, groupNumber: searchText });
+      searchQuerySparePart = searchText
+        ? searchSparePartField + "~" + searchText
+        : "";
+    } else if (searchSparePartField === "partNumber") {
+      setSparePart({ ...sparePart, partNumber: searchText });
+      searchQuerySparePart = searchText
+        ? sparePart.groupNumber
+          ? `groupNumber:${sparePart.groupNumber} AND partNumber~` + searchText
+          : "partNumber~" + searchText
+        : "";
+    }
+    console.log("search query", searchQuerySparePart);
+    if (searchQuerySparePart) {
+      await sparePartSearch(searchQuerySparePart)
+        .then((result) => {
+          if (result) {
+            if (searchSparePartField === "groupNumber") {
+              setSearchGroupNoResults(result);
+            } else if (searchSparePartField === "partNumber") {
+              setSearchPartNoResults(result);
+            }
+          }
+        })
+        .catch((e) => {
+          throw "Error occurred while searching the sparepart!";
+        });
+    }
+    // else {
+    //   searchSparePartField === "groupNumber"
+    //     ? setSearchModelResults([])
+    //     : setSearchSerialResults([]);
+    // }
   };
 
   const handleCustSelect = (type, currentItem) => {
@@ -255,6 +322,31 @@ function PartList() {
     }
   };
 
+  const handleSparePartSelect = (type, currentItem) => {
+    if (type === "groupNumber") {
+      setSparePart({
+        ...sparePart,
+        groupNumber: currentItem.groupNumber,
+      });
+      setSearchGroupNoResults([]);
+    } else if (type === "partNumber") {
+      let quantity = sparePart.quantity;
+      let extendedPrice = currentItem.listPrice * quantity;
+      let totalPrice = calculateTotalPrice(extendedPrice, sparePart.usagePercentage);
+      setSparePart({
+        ...sparePart,
+        groupNumber: currentItem.groupNumber,
+        unitPrice: currentItem.listPrice,
+        partNumber: currentItem.partNumber,
+        partType: currentItem.partType,
+        extendedPrice,
+        totalPrice,
+        salesUnit: currentItem.salesUnit
+      });
+      setSearchPartNoResults([]);
+    }
+  };
+
   //Individual machine field value change
   const handleMachineDataChange = (e) => {
     var value = e.target.value;
@@ -292,8 +384,8 @@ function PartList() {
     } else {
       updateBuilderCustomer(bId, data)
         .then((result) => {
-          setCustViewOnly(true);
-          setValue("2");
+          setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
+          setValue("machine");
         })
         .catch((err) => {
           console.log(err);
@@ -316,8 +408,8 @@ function PartList() {
     };
     updateBuilderMachine(bId, data)
       .then((result) => {
-        setMachineViewOnly(true);
-        setValue("3");
+        setViewOnlyTab({ ...viewOnlyTab, machineViewOnly: true });
+        setValue("estimation");
       })
       .catch((err) => {
         console.log(err);
@@ -336,8 +428,8 @@ function PartList() {
     };
     updateBuilderGeneralDet(bId, data)
       .then((result) => {
-        setGeneralViewOnly(true);
-        setValue("5");
+        setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
+        setValue("price");
       })
       .catch((err) => {
         console.log(err);
@@ -356,18 +448,86 @@ function PartList() {
     };
     updateBuilderEstimation(bId, data)
       .then((result) => {
-        setEstViewOnly(true);
-        setValue("4");
+        setViewOnlyTab({ ...viewOnlyTab, estViewOnly: true });
+        setValue("general");
       })
       .catch((err) => {
         console.log(err);
       });
   };
 
-  const fileTypes = ["JPG", "PNG", "GIF"];
+  const calculateTotalPrice = (extendedPrice, usage) => {
+    return usage > 0 ? (usage / 100) * extendedPrice : extendedPrice;
+  };
+  const handleIndPartAdd = () => {
+    let data = {
+      groupNumber: sparePart.groupNumber,
+      partNumber: sparePart.partNumber,
+      partType: sparePart.partType,
+      quantity: sparePart.quantity,
+      unitPrice: sparePart.unitPrice,
+      extendedPrice: sparePart.extendedPrice,
+      currency: sparePart.currency,
+      usagePercentage: sparePart.usagePercentage,
+      totalPrice: sparePart.totalPrice,
+      comment: sparePart.comment,
+      // description: sparePart.description,
+      // salesUnit: sparePart.salesUnit
+    };
+    addPartToPartList(partListNo, data)
+      .then((result) => {
+        handleAddPartClose();
+        toast(`👏 Spare Part has been added`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });       
+      })
+      .catch((err) => {
+        console.log(err);
+        toast("😐" + err, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        
+      });
+  };
+  const fileTypes = ["xls", "xlsx"];
+
+  const handleReadFile = (file) => {
+    // e.preventDefault();
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const data = e.target.result;
+            const workbook = xlsx.read(data, { type: "array" });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const json = xlsx.utils.sheet_to_json(worksheet, {range: 1, header: ['partlistId','groupNumber', "partType", 'partNumber', 'quantity', 'unitOfMeasure', 'unitPrice', 'extendedPrice', 'currency', 'usagePercentage', 'totalPrice', 'comment']});
+            console.log(json);
+            setPartsToUpload([...json]);
+            console.log(partsToUpload);
+        };
+        reader.readAsArrayBuffer(file);
+    }
+  }
+
+  const handleUploadFile = () => {
+    setFileUploadOpen(false);
+  }
+
   const [open1, setOpen1] = React.useState(false);
   const handleClose = () => setOpen(false);
-  const handleClose2 = () => setOpen2(false);
+  const handleAddPartClose = () => setAddPartOpen(false);
   const activityOptions = ["Create Versions", "Show Errors", "Review"];
 
   const data = [
@@ -421,7 +581,8 @@ function PartList() {
       selector: (row) => row.standardJobId,
       wrap: true,
       sortable: true,
-      maxWidth: "300px",
+      maxWidth: "50px",
+      minWidth: "50px",
       cell: (row) => <Checkbox className="text-black" {...label} />,
     },
     {
@@ -435,6 +596,8 @@ function PartList() {
       selector: (row) => row.bundleDescription,
       wrap: true,
       sortable: true,
+      maxWidth: "150px",
+      minWidth: "150px",
       format: (row) => row.bundleDescription,
     },
     {
@@ -472,6 +635,17 @@ function PartList() {
       name: (
         <>
           <div>Qty</div>
+        </>
+      ),
+      selector: (row) => row.strategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.strategy,
+    },
+    {
+      name: (
+        <>
+          <div>Unit of Measures</div>
         </>
       ),
       selector: (row) => row.strategy,
@@ -563,7 +737,7 @@ function PartList() {
       // cell: (row) => <button onClick={() => alert()}>1</button>,
       // cell: (row) => <Checkbox className="text-black" {...label} />,
       cell: (row) => (
-        <a onClick={() => setOpen2(true)} href="#">
+        <a onClick={() => setAddPartOpen(true)} href="#">
           <FontAwesomeIcon icon={faPen} />
         </a>
       ),
@@ -653,10 +827,9 @@ function PartList() {
     { value: "3", label: "3" },
   ];
   const options4 = [
-    { value: "chocolate", label: "Gold" },
-    { value: "strawberry", label: "1" },
-    { value: "vanilla", label: "2" },
-    { value: "Construction", label: "3" },
+    { value: "1", label: "1" },
+    { value: "2", label: "2" },
+    { value: "3", label: "3" },
   ];
   const handleOption3 = (e) => {
     setValue3(e);
@@ -665,7 +838,7 @@ function PartList() {
     setValue4(e);
   };
   const [value3, setValue3] = useState({ value: "1", label: "1" });
-  const [value4, setValue4] = useState({ value: "Gold", label: "Gold" });
+  const [value4, setValue4] = useState({ value: "1", label: "1" });
   const [value2, setValue2] = useState({
     value: "Archived",
     label: "Archived",
@@ -812,7 +985,7 @@ function PartList() {
               <div className="d-flex justify-content-center align-items-center">
                 <div className="ml-3">
                   <Select
-                    className="customselectbtn1"
+                    className="customselectbtn"
                     onChange={(e) => handleOption3(e)}
                     options={options3}
                     value={value3}
@@ -949,10 +1122,20 @@ function PartList() {
                     class="fa fa-pencil"
                     aria-hidden="true"
                     onClick={() => {
-                      if (value === "1") setCustViewOnly(false);
-                      else if (value === "2") setMachineViewOnly(false);
-                      else if (value === "3") setEstViewOnly(false);
-                      else if (value === "4") setGeneralViewOnly(false);
+                      if (value === "customer")
+                        setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
+                      else if (value === "machine")
+                        setViewOnlyTab({
+                          ...viewOnlyTab,
+                          machineViewOnly: false,
+                        });
+                      else if (value === "estimation")
+                        setViewOnlyTab({ ...viewOnlyTab, estViewOnly: false });
+                      else if (value === "general")
+                        setViewOnlyTab({
+                          ...viewOnlyTab,
+                          generalViewOnly: false,
+                        });
                     }}
                   ></i>
                 </a>{" "}
@@ -969,15 +1152,15 @@ function PartList() {
               <TabContext value={value}>
                 <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                   <TabList onChange={handleChange}>
-                    <Tab label="Customer" value="1" />
-                    <Tab label="Machine " value="2" />
-                    <Tab label="Estimation Details" value="3" />
-                    <Tab label="General Details" value="4" />
-                    <Tab label="Price" value="5" />
+                    <Tab label="Customer" value="customer" />
+                    <Tab label="Machine " value="machine" />
+                    <Tab label="Estimation Details" value="estimation" />
+                    <Tab label="General Details" value="general" />
+                    <Tab label="Price" value="price" />
                   </TabList>
                 </Box>
-                <TabPanel value="1">
-                  {!custViewOnly ? (
+                <TabPanel value="customer">
+                  {!viewOnlyTab.custViewOnly ? (
                     <>
                       <div className="row">
                         <div className="col-md-6 col-sm-6">
@@ -1192,8 +1375,8 @@ function PartList() {
                     </div>
                   )}
                 </TabPanel>
-                <TabPanel value="2">
-                  {!machineViewOnly ? (
+                <TabPanel value="machine">
+                  {!viewOnlyTab.machineViewOnly ? (
                     <>
                       <div className="row">
                         <div className="col-md-6 col-sm-6">
@@ -1378,8 +1561,8 @@ function PartList() {
                     </div>
                   )}
                 </TabPanel>
-                <TabPanel value="3">
-                  {!estViewOnly ? (
+                <TabPanel value="estimation">
+                  {!viewOnlyTab.estViewOnly ? (
                     <>
                       <div className="row">
                         <div className="col-md-6 col-sm-6">
@@ -1590,8 +1773,8 @@ function PartList() {
                     </div>
                   )}
                 </TabPanel>
-                <TabPanel value="4">
-                  {!generalViewOnly ? (
+                <TabPanel value="general">
+                  {!viewOnlyTab.generalViewOnly ? (
                     <>
                       <div className="row">
                         <div className="col-md-6 col-sm-6">
@@ -1805,7 +1988,7 @@ function PartList() {
                     </div>
                   )}
                 </TabPanel>
-                <TabPanel value="5">
+                <TabPanel value="price">
                   <div className="row">
                     <div className="col-md-4 col-sm-4">
                       <div class="form-group">
@@ -1984,7 +2167,7 @@ function PartList() {
                       <span>Parts Table</span>
                     </h5>
                     <Select
-                      className="customselectbtn1 col-auto"
+                      className="customselectbtn col-auto"
                       onChange={(e) => handleOption4(e)}
                       options={options4}
                       value={value4}
@@ -2120,14 +2303,14 @@ function PartList() {
                     <span className="ml-1">Search</span>
                   </a>
                   <a
-                    onClick={() => setOpen3(true)}
+                    onClick={() => setFileUploadOpen(true)}
                     style={{ cursor: "pointer" }}
                     className="btn bg-primary text-white mx-2"
                   >
                     Upload
                   </a>
                   <a
-                    onClick={() => setOpen2(true)}
+                    onClick={() => setAddPartOpen(true)}
                     href="#"
                     className="btn bg-primary text-white "
                   >
@@ -2152,8 +2335,8 @@ function PartList() {
             </div>
           </div>
           <Modal
-            show={open2}
-            onHide={handleClose2}
+            show={addPartOpen}
+            onHide={handleAddPartClose}
             size="lg"
             aria-labelledby="contained-modal-title-vcenter"
             centered
@@ -2207,29 +2390,31 @@ function PartList() {
                         >
                           GROUP NUMBER
                         </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="1000 ENGINE"
+                        <SearchBox
+                          value={sparePart.groupNumber}
+                          onChange={(e) =>
+                            handleSparePartSearch("groupNumber", e.target.value)
+                          }
+                          type="groupNumber"
+                          result={searchGroupNoResults}
+                          onSelect={handleSparePartSelect}
                         />
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           TYPE
                         </label>
                         <input
-                          type="email"
+                          type="text"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="0123 REPLACE"
+                          value={sparePart.partType}
+                          onChange={(e) =>
+                            setSparePart({ ...sparePart, partType: e.target.value })
+                          }
+                          disabled
+                          placeholder="Required"
                         />
                       </div>
                     </div>
@@ -2241,12 +2426,41 @@ function PartList() {
                         >
                           PART NUMBER
                         </label>
+                        <SearchBox
+                          value={sparePart.partNumber}
+                          onChange={(e) =>
+                            handleSparePartSearch("partNumber", e.target.value)
+                          }
+                          type="partNumber"
+                          result={searchPartNoResults}
+                          onSelect={handleSparePartSelect}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div class="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          QTY
+                        </label>
                         <input
-                          type="email"
+                          type="Number"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Replace left side of the Engine"
+                          onChange={(e) =>
+                            setSparePart({
+                              ...sparePart,
+                              quantity: e.target.value,
+                              extendedPrice:
+                                parseFloat(sparePart.unitPrice * e.target.value).toFixed(2),
+                              totalPrice:
+                                sparePart.usagePercentage > 0
+                                  ? parseFloat((sparePart.usagePercentage / 100) *
+                                    sparePart.unitPrice *
+                                    e.target.value).toFixed(2)
+                                  : parseFloat(sparePart.unitPrice * e.target.value).toFixed(2),
+                            })
+                          }
+                          value={sparePart.quantity}
+                          placeholder="Required"
                         />
                       </div>
                     </div>
@@ -2256,14 +2470,14 @@ function PartList() {
                           className="text-light-dark font-size-12 font-weight-500"
                           for="exampleInputEmail1"
                         >
-                          QTY
+                          UNIT OF MEASURES
                         </label>
                         <input
-                          type="email"
+                          type="text"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="List Price"
+                          value={sparePart.salesUnit}
+                          onChange={(e) => setSparePart({...sparePart, salesUnit: e.target.value})}
+                          placeholder="Required"
                         />
                       </div>
                     </div>
@@ -2276,62 +2490,69 @@ function PartList() {
                           UNIT PRICE
                         </label>
                         <input
-                          type="email"
+                          type="Number"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="$35000"
+                          value={parseFloat(sparePart.unitPrice).toFixed(2)}
+                          disabled
+                          placeholder="Required"
                         />
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           EXTENDED PRICE
                         </label>
                         <input
-                          type="email"
+                          type="Number"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="$10000"
+                          disabled
+                          // onChange={(e) => setSparePart({...sparePart, extendedPrice: e.target.value})}
+                          value={parseFloat(sparePart.extendedPrice).toFixed(2)}
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           CURRENCY
                         </label>
                         <input
-                          type="email"
+                          type="text"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="$5000"
+                          onChange={(e) =>
+                            setSparePart({
+                              ...sparePart,
+                              currency: e.target.value,
+                            })
+                          }
+                          value={sparePart.currency}
+                          placeholder="Required"
+                          disabled
                         />
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           % USAGE
                         </label>
                         <input
-                          type="email"
+                          type="Number"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="EA"
+                          onChange={(e) =>
+                            setSparePart({
+                              ...sparePart,
+                              usagePercentage: e.target.value,
+                              totalPrice: parseFloat(calculateTotalPrice(
+                                sparePart.extendedPrice,
+                                e.target.value
+                              )).toFixed(2),
+                            })
+                          }
+                          value={sparePart.usagePercentage}
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
@@ -2344,11 +2565,11 @@ function PartList() {
                           TOTAL PRICE
                         </label>
                         <input
-                          type="email"
+                          type="Number"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="$480000"
+                          value={parseFloat(sparePart.totalPrice).toFixed(2)}
+                          disabled
+                          placeholder="Required"
                         />
                       </div>
                     </div>
@@ -2358,14 +2579,19 @@ function PartList() {
                           className="text-light-dark font-size-12 font-weight-500"
                           for="exampleInputEmail1"
                         >
-                          COMMENTS
+                          COMMENT
                         </label>
                         <input
-                          type="email"
+                          type="text"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="PAYER TYPE"
+                          value={sparePart.comment}
+                          onChange={(e) =>
+                            setSparePart({
+                              ...sparePart,
+                              comment: e.target.value,
+                            })
+                          }
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
@@ -2378,11 +2604,16 @@ function PartList() {
                           DESCRIPTION
                         </label>
                         <input
-                          type="email"
+                          type="text"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="PAYER TYPE"
+                          value={sparePart.description}
+                          onChange={(e) =>
+                            setSparePart({
+                              ...sparePart,
+                              description: e.target.value,
+                            })
+                          }
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
@@ -2391,23 +2622,41 @@ function PartList() {
                 <div className="m-3 text-right">
                   <a
                     href="#"
-                    onClick={handleClose2}
+                    onClick={handleAddPartClose}
                     className="btn border mr-3 "
                   >
                     {" "}
                     Cancel
                   </a>
-                  <a href="#" className="btn text-white bg-primary">
+                  <button
+                    type="button"
+                    className="btn btn-light bg-primary text-white"
+                    onClick={handleIndPartAdd}
+                    disabled={
+                      !sparePart.partType ||
+                      !sparePart.partNumber ||
+                      !sparePart.quantity ||
+                      !sparePart.unitPrice ||
+                      !sparePart.extendedPrice ||
+                      !sparePart.currency ||
+                      !sparePart.totalPrice
+                    }
+                  >
                     Save
-                  </a>
+                  </button>
+                  {/* <a href="#" className="btn text-white bg-primary"
+                  onClick={}
+                  disabled>
+                    Save
+                  </a> */}
                 </div>
               </div>
             </Modal.Body>
           </Modal>
 
           <Modal
-            show={open3}
-            onHide={() => setOpen3(false)}
+            show={fileUploadOpen}
+            onHide={() => setFileUploadOpen(false)}
             size="md"
             aria-labelledby="contained-modal-title-vcenter"
             centered
@@ -2427,9 +2676,12 @@ function PartList() {
                       Drag and drop files to upload <br /> or
                     </h6>
                     <FileUploader
-                      handleChange={handleChange}
+                      handleChange={handleReadFile}
                       name="file"
                       types={fileTypes}
+                      onClick={(event)=> { 
+                        event.currentTarget.value = null
+                   }}
                     />
                   </div>
                 </div>
@@ -2521,7 +2773,7 @@ function PartList() {
               <div className="col-md-6 col-sm-6">
                 <button
                   className="btn border w-100 bg-white"
-                  onClick={() => setOpen3(false)}
+                  onClick={() => setFileUploadOpen(false)}
                 >
                   Cancel
                 </button>
@@ -2529,7 +2781,7 @@ function PartList() {
               <div className="col-md-6 col-sm-6">
                 <button
                   className="btn btn-primary w-100"
-                  onClick={() => setOpenCoveragetable(true)}
+                  onClick={handleUploadFile}
                   style={{ cursor: "pointer" }}
                 >
                   <FontAwesomeIcon className="mr-2" icon={faCloudUploadAlt} />
