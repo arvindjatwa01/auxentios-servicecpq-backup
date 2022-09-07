@@ -23,7 +23,7 @@ const InitQuestion = () => {
 
 
 
-    
+
 
     const [defaultValue, setDefaultValue] = useState("")
 
@@ -37,8 +37,6 @@ const InitQuestion = () => {
 
     const { addQuestion } = bindActionCreators(actionCreator, dispatch)
 
-    
-    console.log("addQuestion is : ", addQuestion)
     const handleParentCallback = (value) => {
         var dict = {
             "key": 0,
@@ -46,10 +44,6 @@ const InitQuestion = () => {
             "fieldValue": value.value,
             "value": value.key
         }
-        localStorage.setItem('checkedVal', value.value);
-        // setCheckedValue(dict)
-        // console.log("dict value is : ",dict)
-
         addQuestion(dict)
         setCheckedValue(dict)
         // props.parentCallback(dict)
@@ -100,6 +94,7 @@ const InitQuestion = () => {
 }
 
 const Question1 = (props) => {
+    // console.log("Question 1 Props : ", props)
 
     const [defaultValue, setDefaultValue] = useState("")
 
@@ -122,6 +117,7 @@ const Question1 = (props) => {
     }
 
     useEffect(() => {
+
         if (state.guidedSolution?.guidedQuestions.length > 1) {
             setDefaultValue(state.guidedSolution?.guidedQuestions[1].value)
         } else {
@@ -140,7 +136,7 @@ const Question1 = (props) => {
             <div className="d-flex">
                 <div className="col-12">
                     <p>QUESTION 01/10</p>
-                    <h4>I am looking solution for</h4>
+                    <h4>{state.guidedSolution?.questionHeader}</h4>
                 </div>
             </div>
             <RadioGroupComponent
@@ -150,10 +146,10 @@ const Question1 = (props) => {
                 dValue={defaultValue}
                 parentCallback={handleParentCallback}
                 formControlLabels={state.guidedSolution?.formLabels} />
-            {/* {console.log("state.guidedSolution : ", state.guidedSolution)} */}
         </div>
     </>
 }
+
 // const Question2 = (props) => {
 //   const [defaultValue, setDefaultValue] = useState("")
 
@@ -196,6 +192,7 @@ const Question1 = (props) => {
 //     </div>
 //   </>;
 // }
+
 const Question2 = (props) => {
     const [defaultValue, setDefaultValue] = useState("")
     const [formLbls, setFormLbls] = useState([])
@@ -240,7 +237,12 @@ const Question2 = (props) => {
                     <h4> {state.guidedSolution?.questionHeader}</h4>
                 </div>
             </div>
-            <RadioGroupComponent testingData="03" withDescription={false} dValue={defaultValue} parentCallback={handleParentCallback} formControlLabels={state.guidedSolution?.formLabels} />
+            <RadioGroupComponent
+                testingData="03"
+                withDescription={false}
+                dValue={defaultValue}
+                parentCallback={handleParentCallback}
+                formControlLabels={state.guidedSolution?.formLabels} />
         </div>
     </>;
 }

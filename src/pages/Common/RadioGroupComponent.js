@@ -18,7 +18,7 @@ export const RadioGroupComponent = props => {
     const [selectValue, setSelectValue] = useState("");
 
     const handleTypeChange = (e) => {
-        console.log($(e.target).closest("label")[0].id)
+        console.log("checked value => ",$(e.target).closest("label")[0].id)
         setSelectValue(e.target.value)
         var dict = {
             key: e.target.value,
@@ -31,9 +31,6 @@ export const RadioGroupComponent = props => {
 
     // useEffect(() => {
     // }, [formControlLabel])
-
-
-    console.log("RadioGroupComponent PRops : ", props)
 
 
     useEffect(() => {
