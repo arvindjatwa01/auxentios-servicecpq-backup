@@ -32,11 +32,11 @@ const PriceCalculator = (props) => {
     netPrice: 1200,
     totalPrice: 1200,
 
-    netParts:"",
-    netService:"",
-    priceType:"",
-    netPrice:"",
-    netAdditionals:""
+    netParts: "",
+    netService: "",
+    priceType: "",
+    netPrice: "",
+    netAdditionals: "",
   });
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const PriceCalculator = (props) => {
   };
 
   const handleItemPriceSave = () => {
-    props.setTabs("3");
+    props.setTabs("4");
     props.getPriceCalculatorDataFun(priceCalculator);
     props.handleSavePrices();
   };
@@ -76,13 +76,12 @@ const PriceCalculator = (props) => {
     props.handleSavePrices();
   };
 
-  const handlePriceChange=(e)=>{
+  const handlePriceChange = (e) => {
     setPriceCalculator({
       ...priceCalculator,
-      [e.target.name]:e.target.value
-    })
-  }
-
+      [e.target.name]: e.target.value,
+    });
+  };
 
   return (
     <>
@@ -111,99 +110,102 @@ const PriceCalculator = (props) => {
         </div>
       </div>
 
-      <div className='mt-3'>
-          <div className="row">
-            <div className="col-md-6 col-sm-6">
-              <div className="form-group">
-                <label
-                  className="text-light-dark font-size-14 font-weight-500"
-                  for="exampleInputEmail1"
-                >
-                  Net Parts $
-                </label>
-                <input
-                  type="text"
-                   className="form-control border-radius-10"
-                  options={options}
-                  name="netParts"
-                  disabled={disable}
-                  value={priceCalculator.netParts}
-                  onChange={handlePriceChange}
-                />
-              </div>
-            </div>
-            <div className="col-md-6 col-sm-6">
-              <div className="form-group">
-                <label
-                  className="text-light-dark font-size-14 font-weight-500"
-                  for="exampleInputEmail1"
-                >
-                  Net Service $
-                </label>
-                <input
-                  type="text"
-                   className="form-control border-radius-10"
-                  name="netService"
-                  disabled={disable}
-                  value={priceCalculator.netService}
-                />
-              </div>
-            </div>
-            <div className="col-md-6 col-sm-6">
-              <div className="form-group">
-                <label
-                  className="text-light-dark font-size-14 font-weight-500"
-                  for="exampleInputEmail1"
-                >
-                  Price type
-                </label>
-                <input
-                  type="text"
-                   className="form-control border-radius-10"
-                  placeholder="Optional"
-                  name="priceType"
-                  disabled={disable}
-                  value={priceCalculator.priceType}
-                />
-              </div>
-            </div>
-            <div className="col-md-6 col-sm-6">
-              <div className="form-group">
-                <label
-                  className="text-light-dark font-size-14 font-weight-500"
-                  for="exampleInputEmail1"
-                >
-                  Net Price
-                </label>
-                <input
-                  type="text"
-                   className="form-control border-radius-10"  
-                  name="netPrice"
-                  disabled={disable}
-                  value={priceCalculator.netPrice}
-                />
-              </div>
+      <div className="mt-3">
+        <div className="row">
+          <div className="col-md-6 col-sm-6">
+            <div className="form-group">
+              <label
+                className="text-light-dark font-size-14 font-weight-500"
+                for="exampleInputEmail1"
+              >
+                Net Parts $
+              </label>
+              <input
+                type="text"
+                className="form-control border-radius-10"
+                name="netParts"
+                disabled={disable}
+                value={priceCalculator.netParts}
+                onChange={handlePriceChange}
+              />
             </div>
           </div>
-          <div className="row">
-            <div className="col-md-6 col-sm-6">
-              <div className="form-group">
-                <label
-                  className="text-light-dark font-size-14 font-weight-500"
-                  for="exampleInputEmail1"
-                >
-                  Net Additionals $
-                </label>
-                <input
-                  type="text"
-                   className="form-control border-radius-10"
-                  name="netAdditionals"
-                  disabled={disable}
-                  value={priceCalculator.netAdditionals}
-                />
-              </div>
+          <div className="col-md-6 col-sm-6">
+            <div className="form-group">
+              <label
+                className="text-light-dark font-size-14 font-weight-500"
+                for="exampleInputEmail1"
+              >
+                Net Service $
+              </label>
+              <input
+                type="text"
+                className="form-control border-radius-10"
+                name="netService"
+                disabled={disable}
+                value={priceCalculator.netService}
+                onChange={handlePriceChange}
+              />
             </div>
           </div>
+          <div className="col-md-6 col-sm-6">
+            <div className="form-group">
+              <label
+                className="text-light-dark font-size-14 font-weight-500"
+                for="exampleInputEmail1"
+              >
+                Price type
+              </label>
+              <input
+                type="text"
+                className="form-control border-radius-10"
+                placeholder="Optional"
+                name="priceType"
+                disabled={disable}
+                value={priceCalculator.priceType}
+                onChange={handlePriceChange}
+              />
+            </div>
+          </div>
+          <div className="col-md-6 col-sm-6">
+            <div className="form-group">
+              <label
+                className="text-light-dark font-size-14 font-weight-500"
+                for="exampleInputEmail1"
+              >
+                Net Price
+              </label>
+              <input
+                type="text"
+                className="form-control border-radius-10"
+                name="netPrice"
+                disabled={disable}
+                value={priceCalculator.netPrice}
+                onChange={handlePriceChange}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-md-6 col-sm-6">
+            <div className="form-group">
+              <label
+                className="text-light-dark font-size-14 font-weight-500"
+                for="exampleInputEmail1"
+              >
+                Net Additionals $
+              </label>
+              <input
+                type="text"
+                className="form-control border-radius-10"
+                name="netAdditionals"
+                disabled={disable}
+                value={priceCalculator.netAdditionals}
+                onChange={handlePriceChange}
+              />
+            </div>
+          </div>
+        </div>
         <div className="m-3 text-right">
           <a
             href="#"
@@ -219,7 +221,7 @@ const PriceCalculator = (props) => {
         </div>
       </div>
 
-      <div className="">
+      <div className="d-none">
         <div className="p-3">
           <div className="row">
             <div className="col-md-6 col-sm-6">
@@ -242,7 +244,7 @@ const PriceCalculator = (props) => {
                 />
               </div>
             </div>
-            <div className="col-md-6 col-sm-6">
+            {/* <div className="col-md-6 col-sm-6">
               <div className="form-group">
                 <label
                   className="text-light-dark font-size-12 font-weight-500"
@@ -266,7 +268,7 @@ const PriceCalculator = (props) => {
                   }
                 />
               </div>
-            </div>
+            </div> */}
             <div className="col-md-6 col-sm-6">
               <div className="form-group date-box">
                 <label

@@ -5,7 +5,7 @@ import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
 import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 
 
-const Solution = () => {
+const Solution = (props) => {
 
     const [solution, setSolution] = useState({
         id: "",
@@ -31,10 +31,6 @@ const Solution = () => {
         <>
             <div className="ligt-greey-bg p-3">
                 <div>
-                    {/* <span className="mr-3 cursor" onClick={() => setDisable(!disable)}>
-          <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
-          <span className="ml-2">Edit</span>
-        </span> */}
                     <span className="mr-3">
                         <MonetizationOnOutlinedIcon className=" font-size-16" />
                         <span className="ml-2"> Adjust price</span>
@@ -59,7 +55,6 @@ const Solution = () => {
                         <div className="form-group">
                             <label
                                 className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
                             >
                                 ID
                             </label>
@@ -91,7 +86,6 @@ const Solution = () => {
                         <div className="form-group">
                             <label
                                 className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
                             >
                                 Usage In
                             </label>
@@ -124,7 +118,6 @@ const Solution = () => {
                         <div className="form-group">
                             <label
                                 className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
                             >
                                 Quantity
                             </label>
@@ -141,7 +134,6 @@ const Solution = () => {
                         <div className="form-group">
                             <label
                                 className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
                             >
                                 Year
                             </label>
@@ -151,6 +143,7 @@ const Solution = () => {
                                 name="year"
                                 value={solution.year}
                                 onChange={handleSolutionChange}
+                                placeholder="Optional"
                             />
                         </div>
                     </div>
@@ -158,7 +151,6 @@ const Solution = () => {
                         <div className="form-group">
                             <label
                                 className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
                             >
                                 No. of Year
                             </label>
@@ -168,6 +160,7 @@ const Solution = () => {
                                 name="numberYear"
                                 value={solution.numberYear}
                                 onChange={handleSolutionChange}
+                                placeholder="Optional"
                             />
                         </div>
                     </div>
@@ -175,7 +168,6 @@ const Solution = () => {
                         <div className="form-group">
                             <label
                                 className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
                             >
                                 Total Price
                             </label>
@@ -192,7 +184,6 @@ const Solution = () => {
                         <div className="form-group">
                             <label
                                 className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
                             >
                                 Adjusted Price $
                             </label>
@@ -202,6 +193,7 @@ const Solution = () => {
                                 name="adjustedPrice"
                                 value={solution.adjustedPrice}
                                 onChange={handleSolutionChange}
+                                placeholder="Optional"
                             />
                         </div>
                     </div>
@@ -209,7 +201,6 @@ const Solution = () => {
                         <div className="form-group">
                             <label
                                 className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
                             >
                                 Machine Type
                             </label>
@@ -219,6 +210,7 @@ const Solution = () => {
                                 name="machineType"
                                 value={solution.machineType}
                                 onChange={handleSolutionChange}
+                                placeholder="Optional"
                             />
                         </div>
                     </div>
@@ -226,7 +218,6 @@ const Solution = () => {
                         <div className="form-group">
                             <label
                                 className="text-light-dark font-size-14 font-weight-500"
-                                for="exampleInputEmail1"
                             >
                                 Life Stage
                             </label>
@@ -236,20 +227,14 @@ const Solution = () => {
                                 name="lifeStage"
                                 value={solution.lifeStage}
                                 onChange={handleSolutionChange}
+                                placeholder="Optional"
                             />
                         </div>
                     </div>
-
-
                 </div>
                 <div className="m-3 text-right">
-          <a
-            href="#"
-            className="btn text-white bg-primary"
-          >
-            Save
-          </a>
-        </div>
+                    <a href="#" onClick={()=>props.setTabs("3")} className="btn text-white bg-primary">Save</a>
+                </div>
             </div>
 
         </>
