@@ -985,9 +985,8 @@ function PartList() {
   };
 
   const addSelectedPartsToPartList = () => {
-    console.log(selectedMasterData);
-    setSearchResultOpen(false);
-    
+    //console.log(selectedMasterData);
+   
     addMultiPartsToPartList(partListNo, selectedMasterData)
       .then((result) => {
         handleSearchResClose();        
