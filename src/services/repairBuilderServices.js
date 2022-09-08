@@ -75,7 +75,7 @@ export const addPartlist = (builderId, data) => {
 };
 
 //Search Customer based on the search criteria to fill the header
-export const customerSearch = (searchStr) => {
+export const customerSearch =  (searchStr) => {
   console.log("RepairBuilder > customerSearch called...");
   return new Promise((resolve, reject) => {
     try {
@@ -83,7 +83,10 @@ export const customerSearch = (searchStr) => {
         .get(SEARCH_CUSTOMER(searchStr))
         .then((res) => {
           console.log("customerSearch > axios res=", res);
-          resolve(res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject('Error occurred while fetching customer data');
         })
         .catch((err) => {
           console.log("customerSearch > axios err=", err);

@@ -29,7 +29,7 @@ import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FileUploader } from "react-drag-drop-files";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import * as xlsx from 'xlsx';
+import * as xlsx from "xlsx";
 // import { ToastContainer, toast } from "react-toastify";
 import boxicon from "../../assets/icons/png/box.png";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -41,10 +41,10 @@ import $ from "jquery";
 import SelectFilter from "react-select";
 import SearchIcon from "@mui/icons-material/Search";
 import DateFnsUtils from "@date-io/date-fns";
-import { getSearchCoverageForFamily } from "../../services/index";
 import {
   addPartlist,
   addPartToPartList,
+  createBuilder,
   customerSearch,
   machineSearch,
   sparePartSearch,
@@ -120,7 +120,7 @@ function PartList() {
     quantity: "",
     unitPrice: 0.0,
     extendedPrice: 0.0,
-    salesUnit: '',
+    salesUnit: "",
     currency: "USD",
     usagePercentage: 0,
     totalPrice: 0.0,
@@ -146,6 +146,8 @@ function PartList() {
   const [value, setValue] = useState("customer");
   const [open, setOpen] = useState(false);
   const [addPartOpen, setAddPartOpen] = useState(false);
+  const [searchResultOpen, setSearchResultOpen] = useState(false);
+
   const [fileUploadOpen, setFileUploadOpen] = useState(false);
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -164,10 +166,11 @@ function PartList() {
     //       activeVersion: true,
     //       versionNumber: 1,
     //     })
-    //       .then((result) => {
-    //         setPartListNo(result.id);
-    //         setPartListId(result.partlistId);
-    //         console.log(result.id, result.partlistId);
+    //       .then((partlistResult) => {
+    //         setPartListNo(partlistResult.id);
+    //         setPartListId(partlistResult.partlistId);
+    //         setGeneralData({...generalData, estimationNo: partlistResult.partlistId})
+    //         console.log(partlistResult.id, partlistResult.partlistId);
     //       })
     //       .catch((err) => {
     //         console.log("Error Occurred", err);
@@ -178,11 +181,14 @@ function PartList() {
     //     console.log("Error Occurred", err);
     //     throw "Error occurred!";
     //   });
-    setBuilderId("RB000014");
-    setBId(14);
-    setPartListNo(12);
+    // Test Data
+    setBuilderId("RB00006");
+    setBId(6);
+    setPartListNo(3);
+    setGeneralData({ ...generalData, estimationNo: "PL000003" });
   }, []);
 
+  // Search Customer with customer ID
   const handleCustSearch = async (searchCustfieldName, searchText) => {
     console.log("clear data", searchText);
     setSearchCustResults([]);
@@ -190,7 +196,7 @@ function PartList() {
     if (searchText) {
       await customerSearch(searchCustfieldName + "~" + searchText)
         .then((result) => {
-          setSearchCustResults(result.data);
+          setSearchCustResults(result);
         })
         .catch((e) => {
           throw "Error occurred while searching the customer!";
@@ -198,6 +204,7 @@ function PartList() {
     }
   };
 
+  // Search Spare part with group number and part number
   const handleSparePartSearch = async (searchSparePartField, searchText) => {
     console.log("cleared the result", searchText);
     let searchQuerySparePart = "";
@@ -240,6 +247,7 @@ function PartList() {
     // }
   };
 
+  // Select the customer from search result
   const handleCustSelect = (type, currentItem) => {
     setCustomerData({
       ...customerData,
@@ -262,6 +270,7 @@ function PartList() {
     });
   };
 
+  // Machine search based on model and serial number
   const handleModelSearch = async (searchMachinefieldName, searchText) => {
     console.log("cleared the result", searchText);
     let searchQueryMachine = "";
@@ -303,6 +312,7 @@ function PartList() {
     }
   };
 
+  // Select machine from the search result
   const handleModelSelect = (type, currentItem) => {
     if (type === "model") {
       setMachineData({
@@ -310,7 +320,7 @@ function PartList() {
         model: currentItem.model,
       });
       setSearchModelResults([]);
-    } else if (type === "serialNo") {
+    } else if (type === "equipmentNumber") {
       setMachineData({
         ...machineData,
         model: currentItem.model,
@@ -322,6 +332,7 @@ function PartList() {
     }
   };
 
+  // Select spare part from the search results
   const handleSparePartSelect = (type, currentItem) => {
     if (type === "groupNumber") {
       setSparePart({
@@ -332,16 +343,20 @@ function PartList() {
     } else if (type === "partNumber") {
       let quantity = sparePart.quantity;
       let extendedPrice = currentItem.listPrice * quantity;
-      let totalPrice = calculateTotalPrice(extendedPrice, sparePart.usagePercentage);
+      let totalPrice = calculateTotalPrice(
+        extendedPrice,
+        sparePart.usagePercentage
+      );
       setSparePart({
         ...sparePart,
         groupNumber: currentItem.groupNumber,
         unitPrice: currentItem.listPrice,
         partNumber: currentItem.partNumber,
         partType: currentItem.partType,
+        description: currentItem.partDescription,
         extendedPrice,
         totalPrice,
-        salesUnit: currentItem.salesUnit
+        salesUnit: currentItem.salesUnit,
       });
       setSearchPartNoResults([]);
     }
@@ -423,8 +438,7 @@ function PartList() {
       description: generalData.description,
       reference: generalData.reference,
       validityDays: generalData.validity?.value,
-      estimationNo: generalData.estimationNo,
-      // version: generalData.version,
+      estimationNumber: generalData.estimationNo,
     };
     updateBuilderGeneralDet(bId, data)
       .then((result) => {
@@ -435,6 +449,17 @@ function PartList() {
         console.log(err);
       });
   };
+
+  const showToast = (element) =>
+    toast(element, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
 
   const updateEstData = () => {
     let data = {
@@ -477,28 +502,11 @@ function PartList() {
     addPartToPartList(partListNo, data)
       .then((result) => {
         handleAddPartClose();
-        toast(`👏 Spare Part has been added`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });       
+        showToast(`👏 Spare Part has been added`);
       })
       .catch((err) => {
         console.log(err);
-        toast("😐" + err, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        
+        showToast("😐" + err);
       });
   };
   const fileTypes = ["xls", "xlsx"];
@@ -506,28 +514,46 @@ function PartList() {
   const handleReadFile = (file) => {
     // e.preventDefault();
     if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const data = e.target.result;
-            const workbook = xlsx.read(data, { type: "array" });
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-            const json = xlsx.utils.sheet_to_json(worksheet, {range: 1, header: ['partlistId','groupNumber', "partType", 'partNumber', 'quantity', 'unitOfMeasure', 'unitPrice', 'extendedPrice', 'currency', 'usagePercentage', 'totalPrice', 'comment']});
-            console.log(json);
-            setPartsToUpload([...json]);
-            console.log(partsToUpload);
-        };
-        reader.readAsArrayBuffer(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = e.target.result;
+        const workbook = xlsx.read(data, { type: "array" });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const json = xlsx.utils.sheet_to_json(worksheet, {
+          range: 1,
+          header: [
+            "partlistId",
+            "groupNumber",
+            "partType",
+            "partNumber",
+            "quantity",
+            "unitOfMeasure",
+            "unitPrice",
+            "extendedPrice",
+            "currency",
+            "usagePercentage",
+            "totalPrice",
+            "comment",
+          ],
+        });
+        console.log(json);
+        setPartsToUpload([...json]);
+        console.log(partsToUpload);
+      };
+      reader.readAsArrayBuffer(file);
     }
-  }
+  };
 
   const handleUploadFile = () => {
     setFileUploadOpen(false);
-  }
+  };
 
   const [open1, setOpen1] = React.useState(false);
   const handleClose = () => setOpen(false);
   const handleAddPartClose = () => setAddPartOpen(false);
+  const handleSearchResClose = () => setSearchResultOpen(false);
+
   const activityOptions = ["Create Versions", "Show Errors", "Review"];
 
   const data = [
@@ -745,65 +771,19 @@ function PartList() {
     },
   ];
   const columns2 = [
-    { field: "GroupNumber", headerName: "ID#", flex: 1, width: 70 },
-    { field: "Type", headerName: "Description", flex: 1, width: 130 },
-    { field: "Partnumber", headerName: "Customer#", flex: 1, width: 130 },
-    { field: "PriceExtended", headerName: "Make", flex: 1, width: 130 },
-    { field: "Pricecurrency", headerName: "Model", flex: 1, width: 130 },
-    { field: "Usage", headerName: "Family", flex: 1, width: 130 },
-    { field: "TotalPrice", headerName: "Serial#", flex: 1, width: 130 },
-    { field: "Comments", headerName: "Created by", flex: 1, width: 130 },
-    { field: "Created", headerName: "Created On", flex: 1, width: 130 },
-    { field: "Total", headerName: "Total $", flex: 1, width: 130 },
-    { field: "Status", headerName: "Status", flex: 1, width: 130 },
-  ];
-  const rows = [
+    { headerName: "GroupNumber", field: "groupNumber", flex: 1, width: 70 },
+    { headerName: "Type", field: "partType", flex: 1, width: 130 },
+    { headerName: "PartNumber", field: "partNumber", flex: 1, width: 130 },
     {
-      id: 1,
-      GroupNumber: "Snow",
-      Type: "Jon",
-      Partnumber: 35,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Inconsistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Created: "Created On",
-      Total: "25",
-      Status: "Status",
-      Actions: "Action",
+      headerName: "Description",
+      field: "partDescription",
+      flex: 1,
+      width: 130,
     },
-    {
-      id: 2,
-      GroupNumber: "Lannister",
-      Type: "Cersei",
-      Partnumber: 42,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Consistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Created: "Created On",
-      Total: "25",
-      Status: "Status",
-      Actions: "Action",
-    },
-    {
-      id: 3,
-      GroupNumber: "Lannister",
-      Type: "Jaime",
-      Partnumber: 45,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Consistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Created: "Created On",
-      Total: "25",
-      Status: "Status",
-      Actions: "Action",
-    },
-  ];
+    { headerName: "Currency", field: "currency", flex: 1, width: 130 },
+    { headerName: "Unit Price", field: "listPrice", flex: 1, width: 130 },
+    { headerName: "Status", field: "status", flex: 1, width: 130 },
+  ];  
 
   const options = [
     { value: "chocolate", label: "Construction-Heavy" },
@@ -863,7 +843,7 @@ function PartList() {
   const handleInputSearch = (e, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
-    getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
+    sparePartSearch(tempArray[id].selectCategory.value + "~" + e.target.value)
       .then((res) => {
         obj.selectOptions = res;
         tempArray[id] = obj;
@@ -875,51 +855,85 @@ function PartList() {
       });
     obj.inputSearch = e.target.value;
   };
-  // const handleQuerySearchClick = () => {
-  //   $(".scrollbar").css("display", "none")
-  //   console.log("handleQuerySearchClick", querySearchSelector)
-  //   var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
+  const handleQuerySearchClick = async () => {
+    $(".scrollbar").css("display", "none");
+    console.log("handleQuerySearchClick", querySearchSelector);
+    var searchStr = "";
+    SetLoadingMasterData(true);
+    querySearchSelector.map(function (item, i) {
+      if (i === 0 && item.selectCategory.value && item.inputSearch) {
+        searchStr = item.selectCategory.value + ":" + item.inputSearch;
+      } else if (
+        item.selectCategory.value &&
+        item.inputSearch &&
+        item.selectOperator.value
+      ) {
+        searchStr =
+          searchStr +
+          " " +
+          item.selectOperator.value +
+          " " +
+          item.selectCategory.value +
+          ":" +
+          item.inputSearch;
+      }
+      return searchStr;
+    });
 
-  //   for (let i = 1; i < querySearchSelector.length; i++) {
-  //     searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + "~" + querySearchSelector[i].inputSearch
-  //   }
-
-  //   console.log("searchStr", searchStr)
-  //   getSearchQueryCoverage(searchStr).then((res) => {
-  //     console.log("search Query Result :", res)
-  //     setMasterData(res)
-
-  //   }).catch((err) => {
-  //     console.log("error in getSearchQueryCoverage", err)
-  //   })
-
-  // }
-  const addSearchQuerryHtml = () => {
-    setQuerySearchSelector([
-      ...querySearchSelector,
-      {
-        id: count,
-        selectOperator: "",
-        selectFamily: "",
-        inputSearch: "",
-        selectOptions: [],
-        selectedOption: "",
-      },
-    ]);
-    setCount(count + 1);
+    console.log("searchStr", searchStr);
+    try {
+      const res = await sparePartSearch(searchStr);
+      console.log("search Query Result :", res);
+      setMasterData(res);
+      SetLoadingMasterData(false);
+      setSearchResultOpen(true);
+      console.log("search Query Result end");
+    } catch (err) {
+      SetLoadingMasterData(false);
+      console.log("error in getSearchQueryCoverage", err);
+    }
   };
-  const handleFamily = (e, id) => {
+  const [loadingMasterData, SetLoadingMasterData] = useState(false);
+  const addSearchQuerryHtml = () => {
+    console.log(querySearchSelector[0]);
+    if (
+      count === 0 ||
+      (count === 1 &&
+        querySearchSelector[0].inputSearch &&
+        querySearchSelector[0].selectCategory) ||
+      (querySearchSelector[count - 1].inputSearch &&
+        querySearchSelector[count - 1].selectCategory &&
+        querySearchSelector[count - 1].selectOperator)
+    ) {
+      setQuerySearchSelector([
+        ...querySearchSelector,
+        {
+          id: count,
+          selectOperator: "",
+          selectCategory: "",
+          inputSearch: "",
+          selectOptions: [],
+          selectedOption: "",
+        },
+      ]);
+      setCount(count + 1);
+    } else {
+      showToast(`Please fill the search data`);
+    }
+  };
+  const handleSearchCategory = (e, id) => {
     let tempArray = [...querySearchSelector];
-    console.log("handleFamily e:", e);
+    console.log("handleSearchCategory e:", e);
     let obj = tempArray[id];
-    obj.selectFamily = e;
+    obj.selectCategory = e;
     tempArray[id] = obj;
+    console.log(obj.selectCategory);
     setQuerySearchSelector([...tempArray]);
   };
   const [querySearchSelector, setQuerySearchSelector] = useState([
     {
       id: 0,
-      selectFamily: "",
+      selectCategory: "",
       selectOperator: "",
       inputSearch: "",
       selectOptions: [],
@@ -936,7 +950,7 @@ function PartList() {
   const handleSearchListClick = (e, currentItem, obj1, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
-    obj.inputSearch = currentItem;
+    obj.inputSearch = currentItem[obj.selectCategory.value];
     obj.selectedOption = currentItem;
     tempArray[id] = obj;
     setQuerySearchSelector([...tempArray]);
@@ -1411,7 +1425,7 @@ function PartList() {
                               onChange={(e) =>
                                 handleModelSearch("serialNo", e.target.value)
                               }
-                              type="serialNo"
+                              type="equipmentNumber"
                               result={searchSerialResults}
                               onSelect={handleModelSelect}
                             />
@@ -2186,7 +2200,7 @@ function PartList() {
                             <div className="customselect d-flex align-items-center mr-3 my-2">
                               {i > 0 ? (
                                 <SelectFilter
-                                  isClearable={true}
+                                  // isClearable={true}
                                   defaultValue={{ label: "And", value: "AND" }}
                                   options={[
                                     { label: "And", value: "AND", id: i },
@@ -2205,13 +2219,31 @@ function PartList() {
                                 <SelectFilter
                                   // isClearable={true}
                                   options={[
-                                    { label: "Make", value: "make", id: i },
-                                    { label: "Family", value: "family", id: i },
+                                    {
+                                      label: "Part No",
+                                      value: "partNumber",
+                                      id: i,
+                                    },
+                                    {
+                                      label: "Description",
+                                      value: "partDescription",
+                                      id: i,
+                                    },
                                     { label: "Model", value: "model", id: i },
-                                    { label: "Prefix", value: "prefix", id: i },
+                                    {
+                                      label: "Group No",
+                                      value: "groupNumber",
+                                      id: i,
+                                    },
+                                    {
+                                      label: "Bec Code",
+                                      value: "becCode",
+                                      id: i,
+                                    },
+                                    { label: "Type", value: "partType", id: i },
                                   ]}
-                                  onChange={(e) => handleFamily(e, i)}
-                                  value={obj.selectFamily}
+                                  onChange={(e) => handleSearchCategory(e, i)}
+                                  value={obj.selectCategory}
                                 />
                               </div>
                               <div className="customselectsearch">
@@ -2225,29 +2257,36 @@ function PartList() {
                                   autoComplete="off"
                                 />
 
-                                {
-                                  <ul
-                                    className={`list-group customselectsearch-list scrollbar scrollbar-${i}`}
-                                    id="style"
-                                  >
-                                    {obj.selectOptions.map((currentItem, j) => (
-                                      <li
-                                        className="list-group-item"
-                                        key={j}
-                                        onClick={(e) =>
-                                          handleSearchListClick(
-                                            e,
-                                            currentItem,
-                                            obj,
-                                            i
-                                          )
-                                        }
-                                      >
-                                        {currentItem}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                }
+                                {obj.selectOptions &&
+                                  obj.selectOptions.length > 0 && (
+                                    <ul
+                                      className={`list-group customselectsearch-list scrollbar scrollbar-${i}`}
+                                      id="style"
+                                    >
+                                      {obj.selectOptions.map(
+                                        (currentItem, j) => (
+                                          <li
+                                            className="list-group-item"
+                                            key={j}
+                                            onClick={(e) =>
+                                              handleSearchListClick(
+                                                e,
+                                                currentItem,
+                                                obj,
+                                                i
+                                              )
+                                            }
+                                          >
+                                            {
+                                              currentItem[
+                                                obj.selectCategory.value
+                                              ]
+                                            }
+                                          </li>
+                                        )
+                                      )}
+                                    </ul>
+                                  )}
                               </div>
                             </div>
                           </>
@@ -2294,14 +2333,14 @@ function PartList() {
               </div>
               <div className="col-4">
                 <div className="text-right pl-3 py-3">
-                  <a
-                    className="btn bg-primary text-white"
-                    data-toggle="modal"
-                    data-target="#Datatable"
+                  <button
+                    type="button"
+                    class="btn bg-primary text-white"
+                    onClick={handleQuerySearchClick}
                   >
                     <SearchIcon />
                     <span className="ml-1">Search</span>
-                  </a>
+                  </button>
                   <a
                     onClick={() => setFileUploadOpen(true)}
                     style={{ cursor: "pointer" }}
@@ -2411,7 +2450,10 @@ function PartList() {
                           class="form-control border-radius-10"
                           value={sparePart.partType}
                           onChange={(e) =>
-                            setSparePart({ ...sparePart, partType: e.target.value })
+                            setSparePart({
+                              ...sparePart,
+                              partType: e.target.value,
+                            })
                           }
                           disabled
                           placeholder="Required"
@@ -2449,14 +2491,19 @@ function PartList() {
                             setSparePart({
                               ...sparePart,
                               quantity: e.target.value,
-                              extendedPrice:
-                                parseFloat(sparePart.unitPrice * e.target.value).toFixed(2),
+                              extendedPrice: parseFloat(
+                                sparePart.unitPrice * e.target.value
+                              ).toFixed(2),
                               totalPrice:
                                 sparePart.usagePercentage > 0
-                                  ? parseFloat((sparePart.usagePercentage / 100) *
-                                    sparePart.unitPrice *
-                                    e.target.value).toFixed(2)
-                                  : parseFloat(sparePart.unitPrice * e.target.value).toFixed(2),
+                                  ? parseFloat(
+                                      (sparePart.usagePercentage / 100) *
+                                        sparePart.unitPrice *
+                                        e.target.value
+                                    ).toFixed(2)
+                                  : parseFloat(
+                                      sparePart.unitPrice * e.target.value
+                                    ).toFixed(2),
                             })
                           }
                           value={sparePart.quantity}
@@ -2476,7 +2523,12 @@ function PartList() {
                           type="text"
                           class="form-control border-radius-10"
                           value={sparePart.salesUnit}
-                          onChange={(e) => setSparePart({...sparePart, salesUnit: e.target.value})}
+                          onChange={(e) =>
+                            setSparePart({
+                              ...sparePart,
+                              salesUnit: e.target.value,
+                            })
+                          }
                           placeholder="Required"
                         />
                       </div>
@@ -2545,10 +2597,12 @@ function PartList() {
                             setSparePart({
                               ...sparePart,
                               usagePercentage: e.target.value,
-                              totalPrice: parseFloat(calculateTotalPrice(
-                                sparePart.extendedPrice,
-                                e.target.value
-                              )).toFixed(2),
+                              totalPrice: parseFloat(
+                                calculateTotalPrice(
+                                  sparePart.extendedPrice,
+                                  e.target.value
+                                )
+                              ).toFixed(2),
                             })
                           }
                           value={sparePart.usagePercentage}
@@ -2679,9 +2733,9 @@ function PartList() {
                       handleChange={handleReadFile}
                       name="file"
                       types={fileTypes}
-                      onClick={(event)=> { 
-                        event.currentTarget.value = null
-                   }}
+                      onClick={(event) => {
+                        event.currentTarget.value = null;
+                      }}
                     />
                   </div>
                 </div>
@@ -3209,60 +3263,50 @@ function PartList() {
             </div>
           </div>
         </div>
-        <div
-          class="modal fade"
-          id="Datatable"
-          tabindex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-          style={{ zIndex: "1200" }}
+        <Modal
+          show={searchResultOpen}
+          onHide={handleSearchResClose}
+          size="xl"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
         >
-          <div
-            class="modal-dialog modal-dialog-centered modal-xl"
-            role="document"
-          >
-            <div class="modal-content">
-              <div class="modal-header p-3">
-                <div className="d-flex">
-                  <h5>Search Result</h5>
-                </div>
-              </div>
-              <div>
-                <div className="card w-100 p-2">
-                  <div
-                    className=""
-                    style={{
-                      height: 400,
-                      width: "100%",
-                      backgroundColor: "#fff",
-                    }}
-                  >
-                    <DataGrid
-                      sx={{
-                        "& .MuiDataGrid-columnHeaders": {
-                          backgroundColor: "#872ff7",
-                          color: "#fff",
-                        },
-                      }}
-                      rows={rows}
-                      columns={columns2}
-                      pageSize={5}
-                      rowsPerPageOptions={[5]}
-                      checkboxSelection
-                      onCellClick={(e) => handleRowClick(e)}
-                    />
-                  </div>
-                </div>
-                <div className="m-2 text-right">
-                  <a href="#" className="btn text-white bg-primary">
-                    + Add Selected
-                  </a>
-                </div>
+          <Modal.Header>
+            <Modal.Title>Search Results</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="p-0 bg-white">
+            <div className="card w-100 p-2">
+              <div
+                className=""
+                style={{
+                  height: 400,
+                  width: "100%",
+                  backgroundColor: "#fff",
+                }}
+              >
+                <DataGrid
+                  sx={{
+                    "& .MuiDataGrid-columnHeaders": {
+                      backgroundColor: "#872ff7",
+                      color: "#fff",
+                    },
+                  }}
+                  loading={loadingMasterData}
+                  rows={masterData}
+                  columns={columns2}
+                  pageSize={5}
+                  rowsPerPageOptions={[5]}
+                  checkboxSelection
+                  onCellClick={(e) => handleRowClick(e)}
+                />
               </div>
             </div>
-          </div>
-        </div>
+            <div className="m-2 text-right">
+              <a href="#" className="btn text-white bg-primary">
+                + Add Selected
+              </a>
+            </div>
+          </Modal.Body>
+        </Modal>
       </div>
     </>
   );
