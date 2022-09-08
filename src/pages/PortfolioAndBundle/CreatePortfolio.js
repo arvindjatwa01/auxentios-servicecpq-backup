@@ -158,6 +158,8 @@ const customStyles = {
 };
 
 export function CreatePortfolio() {
+
+  const [disable, setDisable] = useState(true);
   const [makeKeyValue, setMakeKeyValue] = useState([]);
   const [modelKeyValue, setModelKeyValue] = useState([]);
   const [prefixKeyValue, setPrefixKeyValue] = useState([]);
@@ -397,6 +399,7 @@ export function CreatePortfolio() {
     prefix: "",
     machine: "",
     additional: "",
+    bundleFlag: ""
   });
   const [tabs, setTabs] = useState("1");
   const [itemModelShow, setItemModelShow] = useState(false);
@@ -409,6 +412,8 @@ export function CreatePortfolio() {
   const [editItemShow, setEditItemShow] = useState(false);
   const [passItemEditRowData, setPassItemEditRowData] = useState();
   const [passBundleEditRowData, setPassBundleEditRowData] = useState();
+  const [isPriceShow, setIsPriceShow] = useState(false);
+  const [tempBundleService, setTempBundleService] = useState([]);
 
   const location = useLocation();
 
@@ -452,7 +457,7 @@ export function CreatePortfolio() {
           label: d,
         }));
       })
-      .catch((err) => {});
+      .catch((err) => { });
   };
 
   const handleClosePortfolioMenu = () => {
@@ -1040,8 +1045,8 @@ export function CreatePortfolio() {
             serviceOrBundlePrefix === ""
               ? "PORTFOLIO"
               : serviceOrBundlePrefix === "SERVICE"
-              ? "SERVICE"
-              : "BUNDLE_ITEM",
+                ? "SERVICE"
+                : "BUNDLE_ITEM",
           reference: createServiceOrBundle.reference,
           itemHeaderMake: createServiceOrBundle.make,
           itemHeaderFamily: "",
@@ -3213,7 +3218,7 @@ export function CreatePortfolio() {
               format="dd/MM/yyyy"
               className="form-controldate border-radius-10"
               label=""
-              // value={row.startDate}
+            // value={row.startDate}
             />
           </MuiPickersUtilsProvider>
         </div>
@@ -3237,7 +3242,7 @@ export function CreatePortfolio() {
               format="dd/MM/yyyy"
               className="form-controldate border-radius-10"
               label=""
-              // value={validityData.fromDate}
+            // value={validityData.fromDate}
             />
           </MuiPickersUtilsProvider>
         </div>
@@ -3304,6 +3309,8 @@ export function CreatePortfolio() {
       setBundleTabs("3");
       saveAddNewServiceOrBundle();
     }
+    setTabs("4") //moving to component Data tab in create Item model
+
   };
   const columns2 = [
     { field: "GroupNumber", headerName: "ID#", flex: 1, width: 70 },
@@ -4292,7 +4299,7 @@ export function CreatePortfolio() {
                           options={strategyOptionals}
                           value={stratgyOptionalsKeyValue}
                           onChange={(e) => setStratgyOptionalsKeyValue(e)}
-                          // options={rTimeList}
+                        // options={rTimeList}
                         />
                       </div>
                     </div>
@@ -5742,10 +5749,10 @@ export function CreatePortfolio() {
                         ? typeOfSearch.value == "bundle"
                           ? "Bundle"
                           : typeOfSearch.value == "service"
-                          ? "Service"
-                          : typeOfSearch.value == "portfolioItem"
-                          ? "Portfolio Item"
-                          : ""
+                            ? "Service"
+                            : typeOfSearch.value == "portfolioItem"
+                              ? "Portfolio Item"
+                              : ""
                         : ""}
                     </a>
                   </li>
@@ -7207,7 +7214,7 @@ export function CreatePortfolio() {
                       onChange={(e) =>
                         setEditSerialNo({ ...editSerialNo, family: e.value })
                       }
-                      // onChange={(e) => HandleCatUsage(e)}
+                    // onChange={(e) => HandleCatUsage(e)}
                     />
                   </div>
                 </div>
@@ -7227,7 +7234,7 @@ export function CreatePortfolio() {
                       onChange={(e) =>
                         setEditSerialNo({ ...editSerialNo, modelNo: e.value })
                       }
-                      // onChange={(e) => HandleCatUsage(e)}
+                    // onChange={(e) => HandleCatUsage(e)}
                     />
                   </div>
                 </div>
@@ -7250,7 +7257,7 @@ export function CreatePortfolio() {
                           serialNoPrefix: e.value,
                         })
                       }
-                      // onChange={(e) => HandleCatUsage(e)}
+                    // onChange={(e) => HandleCatUsage(e)}
                     />
                   </div>
                 </div>
@@ -7340,7 +7347,7 @@ export function CreatePortfolio() {
                         setEditSerialNo({ ...editSerialNo, fleetSize: e.value })
                       }
                       options={categoryList}
-                      // onChange={(e) => HandleCatUsage(e)}
+                    // onChange={(e) => HandleCatUsage(e)}
                     />
                   </div>
                 </div>
@@ -7427,7 +7434,7 @@ export function CreatePortfolio() {
             columns={columns4}
             data={modelIncludedData}
             customStyles={customStyles}
-            // pagination
+          // pagination
           />
         </Modal.Body>
         <Modal.Footer>
@@ -8031,12 +8038,12 @@ export function CreatePortfolio() {
                   aria-label="lab API tabs example"
                 >
                   <Tab label="Portfolio Item" value="1" />
-                  <Tab label="Service/Bundle" value="6" />
-                  {/* <Tab label="Solution" value="2" /> */}
+                  <Tab label="Service/Bundle" value="2" />
+                  {/* <Tab label="Solution" value="3" /> */}
                   {/*use it in useCase-4 */}
-                  <Tab label="Price Calculator" value="3" />
                   <Tab label="Component Data" value="4" />
-                  <Tab label="Review" value="5" />
+                  <Tab label="Price Calculator" value="5" />
+                  <Tab label="Review" value="6" />
                 </TabList>
               </Box>
               <TabPanel value="1">
@@ -8053,17 +8060,27 @@ export function CreatePortfolio() {
                 />
               </TabPanel>
               <TabPanel value="2">
-                <Solution setTabs={setTabs} />
-              </TabPanel>
-
-              <TabPanel value="3">
-                <PriceCalculator
-                  setTabs={setTabs}
-                  priceCalculator={priceCalculator}
-                  serviceOrBundlePrefix={serviceOrBundlePrefix}
-                  getPriceCalculatorDataFun={getPriceCalculatorDataFun}
-                  handleSavePrices={handleSavePrices}
+                <QuerySearchComp
+                  compoFlag="bundleSearch"
+                  options={[
+                    { label: "Make", value: "itemHeaderMake" },
+                    { label: "Family", value: "itemHeaderFamily" },
+                    { label: "Model", value: "model" },
+                    { label: "Prefix", value: "prefix" },
+                  ]}
+                  setTempBundleService={setTempBundleService}
                 />
+                <DataTable
+                  title=""
+                  columns={tempBundleItemColumns}
+                  data={tempBundleService}
+                  customStyles={customStyles}
+                  pagination
+                />
+
+              </TabPanel>
+              <TabPanel value="3">
+                <Solution setTabs={setTabs} />
               </TabPanel>
               <TabPanel value="4">
                 <>
@@ -8097,6 +8114,11 @@ export function CreatePortfolio() {
                         />
                       </div>
                     </div>
+                    <ul className="d-none">
+                      <li>1</li>
+                      <li>1</li>
+                      <li>1</li>
+                    </ul>
                     <div className="col-md-6 col-sm-6">
                       <div className="form-group">
                         <label className="text-light-dark font-size-14 font-weight-500">
@@ -8150,10 +8172,215 @@ export function CreatePortfolio() {
                       </div>
                     </div>
                   </div>
+                  <div className="row mt-3">
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          PRICE METHOD
+                        </label>
+                        <Select
+                          options={priceMethodKeyValue}
+                          value={priceCalculator.priceMethod}
+                          name="priceMethod"
+                          onChange={(e) =>
+                            setPriceCalculator({ ...priceCalculator, priceMethod: e })
+                          }
+                          placeholder="placeholder (Optional)"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          ADDITIONAL
+                        </label>
+                        <div className=" d-flex form-control-date">
+                          <div className="">
+                            <Select
+                              isClearable={true}
+                              value={priceCalculator.priceAdditionalSelect}
+                              name="priceAdditionalSelect"
+                              onChange={(e) =>
+                                setPriceCalculator({
+                                  ...priceCalculator,
+                                  priceAdditionalSelect: e,
+                                })
+                              }
+                              options={options}
+                              placeholder="Select"
+                            />
+                          </div>
+                          <input
+                            type="text"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            placeholder="10%"
+                            // defaultValue={props?.priceCalculator?.priceAdditionalInput}
+                            value={priceCalculator.priceAdditionalInput}
+                            name="priceAdditionalInput"
+                            onChange={(e) =>
+                              setPriceCalculator({
+                                ...priceCalculator,
+                                priceAdditionalInput: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          PRICE ESCALATON
+                        </label>
+                        <div className=" d-flex align-items-center form-control-date">
+                          <Select
+                            className="select-input"
+                            value={priceCalculator.priceEscalationSelect}
+                            name="priceEscalationSelect"
+                            onChange={(e) =>
+                              setPriceCalculator({
+                                ...priceCalculator,
+                                priceEscalationSelect: e,
+                              })
+                            }
+                            options={options}
+                            placeholder="placeholder "
+                          />
+                          <input
+                            type="text"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            placeholder="20%"
+                            // defaultValue={props?.priceCalculator?.priceEscalationInput}
+                            value={priceCalculator.priceEscalationInput}
+                            name="priceEscalationInput"
+                            onChange={(e) =>
+                              setPriceCalculator({
+                                ...priceCalculator,
+                                priceEscalationInput: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          CALCULATED PRICE
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          // defaultValue={props?.priceCalculator?.calculatedPrice}
+                          value={priceCalculator.calculatedPrice}
+                          name="calculatedPrice"
+                          onChange={(e) =>
+                            setPriceCalculator({
+                              ...priceCalculator,
+                              calculatedPrice: e.target.value,
+                            })
+                          }
+                          placeholder="$100"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          FLAT PRICE / ADJUSTED PRICE
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          value={priceCalculator.flatPrice}
+                          name="flatPrice"
+                          onChange={(e) =>
+                            setPriceCalculator({
+                              ...priceCalculator,
+                              flatPrice: e.target.value,
+                            })
+                          }
+                          placeholder="$100"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          DISCOUNT TYPE
+                        </label>
+                        <div className=" d-flex form-control-date">
+                          <div className="">
+                            <Select
+                              value={priceCalculator.discountTypeSelect}
+                              name="discountTypeSelect"
+                              onChange={(e) =>
+                                setPriceCalculator({
+                                  ...priceCalculator,
+                                  discountTypeSelect: e,
+                                })
+                              }
+                              isClearable={true}
+                              options={options}
+                              placeholder="Select"
+                            />
+                          </div>
+                          <input
+                            type="text"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            value={priceCalculator.discountTypeInput}
+                            name="discountTypeInput"
+                            onChange={(e) =>
+                              setPriceCalculator({
+                                ...priceCalculator,
+                                discountTypeInput: e.target.value,
+                              })
+                            }
+                            placeholder="10%"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row mt-5" style={{ justifyContent: "right" }}>
+                    <button
+                      type="button"
+                      onClick={() => setTabs("5")}
+                      className="btn btn-light"
+                    >
+                      Save and Continue
+                    </button>
+                  </div>
                 </>
               </TabPanel>
-
               <TabPanel value="5">
+                <PriceCalculator
+                  setTabs={setTabs}
+                  priceCalculator={priceCalculator}
+                  serviceOrBundlePrefix={serviceOrBundlePrefix}
+                  getPriceCalculatorDataFun={getPriceCalculatorDataFun}
+                  handleSavePrices={handleSavePrices}
+                />
+              </TabPanel>
+              <TabPanel value="6">
                 {loadingItem ? (
                   <div className="d-flex align-items-center justify-content-center">
                     <Loader
@@ -8179,15 +8406,11 @@ export function CreatePortfolio() {
                   </div>
                 )}
               </TabPanel>
-
-              <TabPanel value="6">
-                Bundle or Service
-              </TabPanel>
             </TabContext>
           </Box>
         </Modal.Body>
         <Modal.Footer>
-          {tabs === "5" && (
+          {tabs === "6" && (
             <Button variant="primary" onClick={addTempItemIntobundleItem}>
               Add Selected
             </Button>
