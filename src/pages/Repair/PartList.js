@@ -29,7 +29,6 @@ import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FileUploader } from "react-drag-drop-files";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import * as xlsx from "xlsx";
 // import { ToastContainer, toast } from "react-toastify";
 import boxicon from "../../assets/icons/png/box.png";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -42,6 +41,7 @@ import SelectFilter from "react-select";
 import SearchIcon from "@mui/icons-material/Search";
 import DateFnsUtils from "@date-io/date-fns";
 import {
+  addMultiPartsToPartList,
   addPartlist,
   addPartToPartList,
   createBuilder,
@@ -147,7 +147,7 @@ function PartList() {
   const [open, setOpen] = useState(false);
   const [addPartOpen, setAddPartOpen] = useState(false);
   const [searchResultOpen, setSearchResultOpen] = useState(false);
-
+  const [file, setFile] = useState(null);
   const [fileUploadOpen, setFileUploadOpen] = useState(false);
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -502,7 +502,7 @@ function PartList() {
     addPartToPartList(partListNo, data)
       .then((result) => {
         handleAddPartClose();
-        showToast(`👏 Spare Part has been added`);
+        showToast(`👏 New Spare Part has been added`);
       })
       .catch((err) => {
         console.log(err);
@@ -514,45 +514,23 @@ function PartList() {
   const handleReadFile = (file) => {
     // e.preventDefault();
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const data = e.target.result;
-        const workbook = xlsx.read(data, { type: "array" });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const json = xlsx.utils.sheet_to_json(worksheet, {
-          range: 1,
-          header: [
-            "partlistId",
-            "groupNumber",
-            "partType",
-            "partNumber",
-            "quantity",
-            "unitOfMeasure",
-            "unitPrice",
-            "extendedPrice",
-            "currency",
-            "usagePercentage",
-            "totalPrice",
-            "comment",
-          ],
-        });
-        console.log(json);
-        setPartsToUpload([...json]);
-        console.log(partsToUpload);
-      };
-      reader.readAsArrayBuffer(file);
+      console.log(file.name);
+      setFile(file)
     }
   };
 
   const handleUploadFile = () => {
+    // console.log("Upload");
     setFileUploadOpen(false);
   };
 
   const [open1, setOpen1] = React.useState(false);
   const handleClose = () => setOpen(false);
   const handleAddPartClose = () => setAddPartOpen(false);
-  const handleSearchResClose = () => setSearchResultOpen(false);
+  const handleSearchResClose = () => {
+    setSearchResultOpen(false);
+    setSelectedMasterData([]);
+  }
 
   const activityOptions = ["Create Versions", "Show Errors", "Review"];
 
@@ -859,7 +837,6 @@ function PartList() {
     $(".scrollbar").css("display", "none");
     console.log("handleQuerySearchClick", querySearchSelector);
     var searchStr = "";
-    SetLoadingMasterData(true);
     querySearchSelector.map(function (item, i) {
       if (i === 0 && item.selectCategory.value && item.inputSearch) {
         searchStr = item.selectCategory.value + ":" + item.inputSearch;
@@ -885,15 +862,12 @@ function PartList() {
       const res = await sparePartSearch(searchStr);
       console.log("search Query Result :", res);
       setMasterData(res);
-      SetLoadingMasterData(false);
       setSearchResultOpen(true);
       console.log("search Query Result end");
     } catch (err) {
-      SetLoadingMasterData(false);
       console.log("error in getSearchQueryCoverage", err);
     }
   };
-  const [loadingMasterData, SetLoadingMasterData] = useState(false);
   const addSearchQuerryHtml = () => {
     console.log(querySearchSelector[0]);
     if (
@@ -978,15 +952,53 @@ function PartList() {
   const [selectedMasterData, setSelectedMasterData] = useState([]);
   const [masterData, setMasterData] = useState([]);
   const [count, setCount] = useState(1);
-  const handleDeleteIncludeSerialNo = (e, row) => {
-    const updated = selectedMasterData.filter((obj) => {
-      if (obj.id !== row.id) return obj;
-    });
-    setSelectedMasterData(updated);
-  };
+  // const handleDeleteIncludeSerialNo = (e, row) => {
+  //   const updated = selectedMasterData.filter((obj) => {
+  //     if (obj.id !== row.id) return obj;
+  //   });
+  //   setSelectedMasterData(updated);
+  // };
   const handleRowClick = (e) => {
     setShow(true);
   };
+
+  const onRowsSelectionHandler = (ids) => {
+    const selectedRowsData = ids.map((id) => masterData.find((row) => row.id === id));
+    selectedRowsData.map(item => {
+      let data = {
+        partlistId:partListNo,
+        groupNumber: item.groupNumber,
+        partNumber: item.partNumber,
+        partType: item.partType,
+        quantity: 1,
+        unitPrice: item.listPrice,
+        extendedPrice: 0,
+        currency: item.currency,
+        totalPrice: 0,
+        comment: item.comment,
+        // description: sparePart.description,
+        // salesUnit: sparePart.salesUnit
+      };
+      setSelectedMasterData([...selectedMasterData, data]);
+    })
+    // setSelectedMasterData(selectedRowsData);
+  };
+
+  const addSelectedPartsToPartList = () => {
+    console.log(selectedMasterData);
+    setSearchResultOpen(false);
+    
+    addMultiPartsToPartList(partListNo, selectedMasterData)
+      .then((result) => {
+        handleSearchResClose();        
+        showToast(`👏 New parts have been added with default quantity as 1!`);        
+      })
+      .catch((err) => {
+        console.log(err);
+        showToast("😐" + err);
+      });
+  };
+
   const [show, setShow] = React.useState(false);
   return (
     <>
@@ -2848,7 +2860,7 @@ function PartList() {
         <div
           class="modal fade"
           id="Substitute"
-          tabindex="-1"
+          tabIndex="-1"
           role="dialog"
           aria-labelledby="exampleModalLabel"
           aria-hidden="true"
@@ -2986,7 +2998,7 @@ function PartList() {
         <div
           class="modal fade"
           id="Recommended"
-          tabindex="-1"
+          tabIndex="-1"
           role="dialog"
           aria-labelledby="exampleModalLabel"
           aria-hidden="true"
@@ -3111,7 +3123,7 @@ function PartList() {
         <div
           class="modal fade"
           id="quotecreat"
-          tabindex="-1"
+          tabIndex="-1"
           role="dialog"
           aria-labelledby="exampleModalLabel"
           aria-hidden="true"
@@ -3290,20 +3302,20 @@ function PartList() {
                       color: "#fff",
                     },
                   }}
-                  loading={loadingMasterData}
                   rows={masterData}
                   columns={columns2}
                   pageSize={5}
                   rowsPerPageOptions={[5]}
                   checkboxSelection
+                  onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
                   onCellClick={(e) => handleRowClick(e)}
                 />
               </div>
             </div>
             <div className="m-2 text-right">
-              <a href="#" className="btn text-white bg-primary">
+              <button className="btn text-white bg-primary" onClick={addSelectedPartsToPartList}>
                 + Add Selected
-              </a>
+              </button>
             </div>
           </Modal.Body>
         </Modal>
