@@ -2,7 +2,7 @@ import React from "react";
 import { Switch, Route } from "react-router-dom";
 import Dashboard from "pages/Dashboard";
 import { NotFound } from "navigation/NotFound";
-import { ROOT, RESET, VERIFY_EMAIL, WORK_LIST_NEW, SOLUTION_BUILDER_NEW, PERMISSION, PERMISSION_SETTING, SERVICE_NEW, WITHOUT_REPAIR_OPTION01, LOGIN, PORTFOLIO_SUMMARY, ANALYTICS, WORK_LIST, REPORTS, PROFILE, DASHBOARD, PAGE1, AUTH_PAGE1, TEST_REACT_TABLE_NESTED, GUIDED_SOLUTION_BUILDER, PORTFOLIO_AND_BUILDER_NEW, SOLUTION_BUILDER_ANALYTICS, SOLUTION_BUILDER_SERVICE_PORTFOLIO, ACCOUNT, BULID_REPAIR_OPTION, RIPAIR_SEGMENT01_TRANSMISSION, RIPAIR_SEGMENT01_DISASSEMBLE, RIPAIR_OPTION01, RIPAIR_SERVICE_ESTIMATE, WITHOUTSPARE_REPAIR_OPTION, PART_LIST, REPAIR_PARTLIST, REPAIR_WITH_SPARE_PARTS, REPAIR_WITHOUT_SPARE_PARTS, WITH_SPARE_PARTS, REPAIR_STANDARD_JOBS, REPAIR_KITS, ADD_PARTLIST, STANDARD_JOBS, WITHOUT_SPARE_PARTS_HEADER, KITS, } from "navigation/CONSTANTS";
+import { ROOT, RESET, VERIFY_EMAIL, WORK_LIST_NEW, SOLUTION_BUILDER_NEW, PERMISSION, PERMISSION_SETTING, SERVICE_NEW, WITHOUT_REPAIR_OPTION01, LOGIN, PORTFOLIO_SUMMARY, ANALYTICS, WORK_LIST, REPORTS, PROFILE, DASHBOARD, PAGE1, AUTH_PAGE1, TEST_REACT_TABLE_NESTED, GUIDED_SOLUTION_BUILDER, SOLUTION_TEMPLATES, PORTFOLIO_AND_BUILDER_NEW, SOLUTION_BUILDER_ANALYTICS, SOLUTION_BUILDER_SERVICE_PORTFOLIO, ACCOUNT, BULID_REPAIR_OPTION, RIPAIR_SEGMENT01_TRANSMISSION, RIPAIR_SEGMENT01_DISASSEMBLE, RIPAIR_OPTION01, RIPAIR_SERVICE_ESTIMATE, WITHOUTSPARE_REPAIR_OPTION, PART_LIST, REPAIR_PARTLIST, REPAIR_WITH_SPARE_PARTS, REPAIR_WITHOUT_SPARE_PARTS, WITH_SPARE_PARTS, REPAIR_STANDARD_JOBS, REPAIR_KITS, ADD_PARTLIST, STANDARD_JOBS, WITHOUT_SPARE_PARTS_HEADER, KITS, } from "navigation/CONSTANTS";
 import { Analytics, ServicePortfolio, SolutionBuilderCreate } from "../pages/SolutionModules/index"
 import { Profile } from '../pages/User/index'
 import { CreatePortfolio, WorkList, CreateWorkList, PortfolioSummary } from "../pages/PortfolioAndBundle/index"
@@ -34,6 +34,7 @@ import AddPartlist from "pages/Repair/AddPartlist";
 import WithSpareParts from "pages/Repair/WithSpareParts";
 import WithoutSparePartsHeader from "pages/Repair/WithoutSparePartsHeader";
 import WithoutRepairOption01 from "pages/Repair/WithoutRepairOption01";
+import SolutionTemplates from "pages/SolutionModules/SolutionTemplates";
 
 
 export const RouterConfig = () => {
@@ -57,6 +58,7 @@ export const RouterConfig = () => {
         <Route exact path={SOLUTION_BUILDER_NEW} component={SolutionBuilderCreate} />
         <Route exact path={PORTFOLIO_SUMMARY} component={PortfolioSummary} />
         <Route exact path={GUIDED_SOLUTION_BUILDER} component={GuidedSolution} />
+        <Route exact path={SOLUTION_TEMPLATES} component={SolutionTemplates} />
         <Route exact path={PORTFOLIO_AND_BUILDER_NEW} component={CreatePortfolio} />
         <Route exact path={SERVICE_NEW} component={CreateService} />
         <Route exact path={TEST_REACT_TABLE_NESTED} component={ReactTableNested} />
@@ -81,6 +83,7 @@ export const RouterConfig = () => {
         <Route exact path={STANDARD_JOBS} component={StandardJobs} />
         <Route exact path={KITS} component={Kits} />
         <Route exact path="/indexing" component={CommanComponents} />
+        
         {/* <Route exact path={PAGE1} component={Page1} /> */}
         <Route path="/gettingStart">
           <Startup />
