@@ -21,10 +21,6 @@ var prefixKeyValue = []
 
 const InitQuestion = () => {
 
-
-
-
-
     const [defaultValue, setDefaultValue] = useState("")
 
     const [checkedValue, setCheckedValue] = useState({})
@@ -369,7 +365,7 @@ const Question3 = (props) => {
                     //                 <Select
                     //                     onChange={handleSelectChange}
                     //                     value={makeData}
-                    //                     options={makeKeyValuePair}
+                    //                     options={makeKeyValue}
                     //                     placeholder="--Select Make--"
                     //                 />
                     //             </div>
@@ -381,7 +377,7 @@ const Question3 = (props) => {
                     //                 <Select
                     //                     onChange={handleSelectChange}
                     //                     value={modelData}
-                    //                     options={modelKeyValuePair}
+                    //                     options={modelKeyValue}
                     //                     placeholder="--Select Model--"
                     //                 />
                     //             </div>
@@ -393,7 +389,7 @@ const Question3 = (props) => {
                     //                 <Select
                     //                     onChange={handleSelectChange}
                     //                     value={prefixData}
-                    //                     options={prefixKeyValuePair}
+                    //                     options={prefixKeyValue}
                     //                     placeholder="--Select Prefix--"
                     //                 />
                     //             </div>
@@ -557,8 +553,8 @@ const Question4 = (props) => {
         getMakeKeyValue().then((res) => {
             console.log(res)
             const options = res.map((d) => ({
-                value: d,
-                label: d,
+                value: d.key,
+                label: d.value,
                 fieldName: 'make'
             }));
             makeKeyValue = options;
@@ -566,8 +562,8 @@ const Question4 = (props) => {
             getModelKeyValue().then((res1) => {
                 console.log(res1)
                 const options1 = res1.map((d) => ({
-                    value: d,
-                    label: d,
+                    value: d.key,
+                    label: d.value,
                     fieldName: 'model'
                 }));
                 modelKeyValue = options1
@@ -575,14 +571,14 @@ const Question4 = (props) => {
                 getPrefixKeyValue().then((res2) => {
                     console.log(res2)
                     const options2 = res2.map((d) => ({
-                        value: d,
-                        label: d,
+                        value: d.key,
+                        label: d.value,
                         fieldName: 'prefix'
                     }));
                     prefixKeyValue = options2
                     // setPrefixKeyValuePair(options2)
+                    console.log("state.guidedSolution : ", state.guidedSolution)
                     state.guidedSolution?.dropdownFormLbls.map((opt) => {
-                        console.log("opttttt : ", opt)
                         if (opt.secondValue == 'System') {
                             tempDropdownList.push(<div className="col-md-4">
                                 <div className="form-group">
@@ -670,40 +666,40 @@ const Question4 = (props) => {
                             <h6>Choose one option from the following</h6>
                         </div>
                         <div className="row mt-4">
-                            {dropdownList}
-                            {/* <div className="col-md-4">
-              <div className="form-group">
-                <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">MAKE</label>
-                <Select
-                  defaultValue={selectedOption}
-                  onChange={setSelectedOption}
-                  options={options}
-                  placeholder="1000-ENGINE"
-                />
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="form-group">
-                <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">MODEL</label>
-                <Select
-                  defaultValue={selectedOption}
-                  onChange={setSelectedOption}
-                  options={options}
-                  placeholder="ELECTRICAL"
-                />
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="form-group">
-                <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">PREFIX</label>
-                <Select
-                  defaultValue={selectedOption}
-                  onChange={setSelectedOption}
-                  options={options}
-                  placeholder="ALTERNATOR"
-                />
-              </div>
-            </div> */}
+                            {/* {dropdownList} */}
+                            <div className="col-md-4">
+                                <div className="form-group">
+                                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">SYSTEM</label>
+                                    <Select
+                                        defaultValue={makeData}
+                                        onChange={handleSelectChange}
+                                        options={makeKeyValue}
+                                        placeholder="1000-ENGINE"
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-md-4">
+                                <div className="form-group">
+                                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">SUB-SYSTEM</label>
+                                    <Select
+                                        defaultValue={modelData}
+                                        onChange={handleSelectChange}
+                                        options={modelKeyValue}
+                                        placeholder="ELECTRICAL"
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-md-4">
+                                <div className="form-group">
+                                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">COMPONENT</label>
+                                    <Select
+                                        defaultValue={prefixData}
+                                        onChange={handleSelectChange}
+                                        options={prefixKeyValue}
+                                        placeholder="ALTERNATOR"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
                     :
