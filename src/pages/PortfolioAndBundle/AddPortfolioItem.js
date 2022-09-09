@@ -86,7 +86,7 @@ const AddPortfolioItem = (props) => {
     if (props.compoFlag === "itemEdit") {
       props.handleItemEditSave(addPortFolioItem);
     } else if (props.compoFlag === "ITEM") {
-      props.setTabs("3");
+      props.setTabs("2");
       props.getAddportfolioItemDataFun(addPortFolioItem);
       props.handleBundleItemSaveAndContinue();
     } else {
