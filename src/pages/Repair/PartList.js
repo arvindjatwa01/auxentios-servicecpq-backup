@@ -7,8 +7,10 @@ import Checkbox from "@mui/material/Checkbox";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import { MuiMenuComponent } from "pages/Operational";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import shareIcon from "../../assets/icons/svg/share.svg";
 import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
@@ -29,7 +31,6 @@ import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FileUploader } from "react-drag-drop-files";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import FormControlLabel from "@mui/material/FormControlLabel";
-// import { ToastContainer, toast } from "react-toastify";
 import boxicon from "../../assets/icons/png/box.png";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Menu from "@mui/material/Menu";
@@ -57,7 +58,7 @@ import SearchBox from "./components/SearchBox";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Moment from "react-moment";
 import Validator from "utils/validator";
-import { toast } from "react-toastify";
+import CustomSnackbar from "../Common/CustomSnackBar";
 
 function PartList() {
   const history = useHistory();
@@ -188,6 +189,16 @@ function PartList() {
     setGeneralData({ ...generalData, estimationNo: "PL000003" });
   }, []);
 
+  const [severity, setSeverity] = useState("");
+  const [openSnack, setOpenSnack] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
+  const handleSnackBarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnack(false);
+  };
+
   // Search Customer with customer ID
   const handleCustSearch = async (searchCustfieldName, searchText) => {
     console.log("clear data", searchText);
@@ -199,7 +210,9 @@ function PartList() {
           setSearchCustResults(result);
         })
         .catch((e) => {
-          throw "Error occurred while searching the customer!";
+          setSnackMessage("Error occurred while searching the customer!");
+          setSeverity("error");
+          setOpenSnack(true);
         });
     }
   };
@@ -237,7 +250,9 @@ function PartList() {
           }
         })
         .catch((e) => {
-          throw "Error occurred while searching the sparepart!";
+          setSnackMessage("Error occurred while searching the sparepart!");
+          setSeverity("error");
+          setOpenSnack(true);
         });
     }
     // else {
@@ -303,7 +318,9 @@ function PartList() {
           }
         })
         .catch((e) => {
-          throw "Error occurred while searching the models!";
+          setSnackMessage("Error occurred while searching the machine!");
+          setSeverity("error");
+          setOpenSnack(true);
         });
     } else {
       searchMachinefieldName === "model"
@@ -401,9 +418,14 @@ function PartList() {
         .then((result) => {
           setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
           setValue("machine");
+          setSnackMessage("Customer details updated!");
+          setSeverity("success");
+          setOpenSnack(true);
         })
         .catch((err) => {
-          console.log(err);
+          setSnackMessage("Error occurred while updating the customer data!");
+          setSeverity("error");
+          setOpenSnack(true);
         });
     }
   };
@@ -423,11 +445,16 @@ function PartList() {
     };
     updateBuilderMachine(bId, data)
       .then((result) => {
-        setViewOnlyTab({ ...viewOnlyTab, machineViewOnly: true });
         setValue("estimation");
+        setViewOnlyTab({ ...viewOnlyTab, machineViewOnly: true });
+        setSnackMessage("Machine details updated!");
+        setSeverity("success");
+        setOpenSnack(true);
       })
       .catch((err) => {
-        console.log(err);
+        setSnackMessage("Error occurred while updating the machine data!");
+        setSeverity("error");
+        setOpenSnack(true);
       });
   };
 
@@ -442,24 +469,18 @@ function PartList() {
     };
     updateBuilderGeneralDet(bId, data)
       .then((result) => {
-        setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
         setValue("price");
+        setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
+        setSnackMessage("General details updated!");
+        setSeverity("success");
+        setOpenSnack(true);
       })
       .catch((err) => {
-        console.log(err);
+        setSnackMessage("Error occurred while updating the general details!");
+        setSeverity("error");
+        setOpenSnack(true);
       });
   };
-
-  const showToast = (element) =>
-    toast(element, {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
 
   const updateEstData = () => {
     let data = {
@@ -473,11 +494,18 @@ function PartList() {
     };
     updateBuilderEstimation(bId, data)
       .then((result) => {
-        setViewOnlyTab({ ...viewOnlyTab, estViewOnly: true });
         setValue("general");
+        setViewOnlyTab({ ...viewOnlyTab, estViewOnly: true });
+        setSnackMessage("Estimation details updated!");
+        setSeverity("success");
+        setOpenSnack(true);
       })
       .catch((err) => {
-        console.log(err);
+        setSnackMessage(
+          "Error occurred while updating the estimation details!"
+        );
+        setSeverity("error");
+        setOpenSnack(true);
       });
   };
 
@@ -502,11 +530,15 @@ function PartList() {
     addPartToPartList(partListNo, data)
       .then((result) => {
         handleAddPartClose();
-        showToast(`👏 New Spare Part has been added`);
+        setSnackMessage(`👏 New Spare Part has been added`);
+        setSeverity("success");
+        setOpenSnack(true);
       })
       .catch((err) => {
-        console.log(err);
-        showToast("😐" + err);
+        // console.log(err);
+        setSnackMessage(`😐 Error occurred while adding spare part`);
+        setSeverity("error");
+        setOpenSnack(true);
       });
   };
   const fileTypes = ["xls", "xlsx"];
@@ -515,7 +547,7 @@ function PartList() {
     // e.preventDefault();
     if (file) {
       console.log(file.name);
-      setFile(file)
+      setFile(file);
     }
   };
 
@@ -524,31 +556,31 @@ function PartList() {
     setFileUploadOpen(false);
   };
 
-  const [open1, setOpen1] = React.useState(false);
   const handleClose = () => setOpen(false);
   const handleAddPartClose = () => setAddPartOpen(false);
   const handleSearchResClose = () => {
     setSearchResultOpen(false);
     setSelectedMasterData([]);
-  }
+  };
 
   const activityOptions = ["Create Versions", "Show Errors", "Review"];
 
-  const data = [
+  const allPartListData = [
     {
       id: 1,
-      caseId: 13322,
-      BundleId: "Pc",
-      Bundledescription: "Ex2487518",
-      S1: "CAT DEO",
+      groupNumber: 13322,
+      partType: "Type",
+      salesUnit: "PC",
+      listPrice: 20.22,
+      partNumber: "1757896",
+      comment: "CAT DEO",
       strategy: "3",
       Standardjob: "$43.09",
-      repairoption: "$100",
-      frequency: "USD",
-      quantity: "80%",
-      part$: "$80",
-      srevic$: "80% usage observed on previous work.",
-      Total$: "80% usage observed on previous work.",
+      currency: "USD",
+      quantity: 5,
+      percentageUsage: 80,
+      extendedPrice: 80.22,
+      totalPrice: 100.0,
     },
   ];
 
@@ -748,7 +780,7 @@ function PartList() {
       format: (row) => row.bundleId,
     },
   ];
-  const columns2 = [
+  const columnsPartListSearch = [
     { headerName: "GroupNumber", field: "groupNumber", flex: 1, width: 70 },
     { headerName: "Type", field: "partType", flex: 1, width: 130 },
     { headerName: "PartNumber", field: "partNumber", flex: 1, width: 130 },
@@ -761,7 +793,45 @@ function PartList() {
     { headerName: "Currency", field: "currency", flex: 1, width: 130 },
     { headerName: "Unit Price", field: "listPrice", flex: 1, width: 130 },
     { headerName: "Status", field: "status", flex: 1, width: 130 },
-  ];  
+  ];
+
+  const columnsPartList = [
+    { headerName: "GroupNumber", field: "groupNumber", flex: 1 },
+    { headerName: "Type", field: "partType", flex: 1 },
+    { headerName: "PartNumber", field: "partNumber", flex: 1 },
+    { headerName: "Qty", field: "quantity", flex: 1 },
+    { headerName: "Unit Of Measures", field: "salesUnit", flex: 1 },
+    { headerName: "Unit Price", field: "listPrice", flex: 1 },
+    { headerName: "Extended Price", field: "extendedPrice", flex: 1 },
+    { headerName: "Currency", field: "currency", flex: 1 },
+    { headerName: "% Usage", field: "percentageUsage", flex: 1 },
+    { headerName: "Total Price", field: "totalPrice", flex: 1 },
+    { headerName: "Comment", field: "comment", flex: 1 },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 100,
+      cellClassName: "actions",
+      getActions: ({ id }) => {
+        return [
+          <GridActionsCellItem
+            icon={<EditIcon />}
+            label="Edit"
+            className="textPrimary"
+            onClick={() => setAddPartOpen(true)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={<DeleteIcon />}
+            label="Delete"
+            // onClick={handleDeleteClick(id)}
+            color="inherit"
+          />,
+        ];
+      },
+    },
+  ];
 
   const options = [
     { value: "chocolate", label: "Construction-Heavy" },
@@ -773,13 +843,13 @@ function PartList() {
   const handleOption2 = (e) => {
     setValue2(e);
   };
-  const options2 = [
+  const builderStatusOptions = [
     { value: "archived", label: "Archived" },
     { value: "draft", label: "Draft" },
     { value: "active", label: "Active" },
     { value: "revised", label: "Revised" },
   ];
-  const options3 = [
+  const builderVersionOptions = [
     { value: "1", label: "1" },
     { value: "2", label: "2" },
     { value: "3", label: "3" },
@@ -798,8 +868,8 @@ function PartList() {
   const [value3, setValue3] = useState({ value: "1", label: "1" });
   const [value4, setValue4] = useState({ value: "1", label: "1" });
   const [value2, setValue2] = useState({
-    value: "Archived",
-    label: "Archived",
+    value: "DRAFT",
+    label: "Draft",
   });
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handleClick = (event) => {
@@ -829,7 +899,9 @@ function PartList() {
         $(`.scrollbar-${id}`).css("display", "block");
       })
       .catch((err) => {
-        console.log("err in api call", err);
+        setSnackMessage("Error occurred while searching spare parts!");
+        setSeverity("error");
+        setOpenSnack(true);
       });
     obj.inputSearch = e.target.value;
   };
@@ -857,15 +929,22 @@ function PartList() {
       return searchStr;
     });
 
-    console.log("searchStr", searchStr);
+    //console.log("searchStr", searchStr);
     try {
-      const res = await sparePartSearch(searchStr);
-      console.log("search Query Result :", res);
-      setMasterData(res);
-      setSearchResultOpen(true);
-      console.log("search Query Result end");
+      if (searchStr) {
+        const res = await sparePartSearch(searchStr);
+        // console.log("search Query Result :", res);
+        setMasterData(res);
+        setSearchResultOpen(true);
+      } else {
+        setSnackMessage("Please fill the search criteria!");
+        setSeverity("info");
+        setOpenSnack(true);
+      }
     } catch (err) {
-      console.log("error in getSearchQueryCoverage", err);
+      setSnackMessage("Error occurred while fetching spare parts!");
+      setSeverity("error");
+      setOpenSnack(true);
     }
   };
   const addSearchQuerryHtml = () => {
@@ -892,7 +971,9 @@ function PartList() {
       ]);
       setCount(count + 1);
     } else {
-      showToast(`Please fill the search data`);
+      setSnackMessage("Please fill current search criteria");
+      setSeverity("info");
+      setOpenSnack(true);
     }
   };
   const handleSearchCategory = (e, id) => {
@@ -963,10 +1044,12 @@ function PartList() {
   };
 
   const onRowsSelectionHandler = (ids) => {
-    const selectedRowsData = ids.map((id) => masterData.find((row) => row.id === id));
-    selectedRowsData.map(item => {
+    const selectedRowsData = ids.map((id) =>
+      masterData.find((row) => row.id === id)
+    );
+    selectedRowsData.map((item) => {
       let data = {
-        partlistId:partListNo,
+        partlistId: partListNo,
         groupNumber: item.groupNumber,
         partNumber: item.partNumber,
         partType: item.partType,
@@ -980,21 +1063,27 @@ function PartList() {
         // salesUnit: sparePart.salesUnit
       };
       setSelectedMasterData([...selectedMasterData, data]);
-    })
+    });
     // setSelectedMasterData(selectedRowsData);
   };
 
   const addSelectedPartsToPartList = () => {
     //console.log(selectedMasterData);
-   
+
     addMultiPartsToPartList(partListNo, selectedMasterData)
       .then((result) => {
-        handleSearchResClose();        
-        showToast(`👏 New parts have been added with default quantity as 1!`);        
+        handleSearchResClose();
+        setSnackMessage(
+          `👏 New parts have been added with default quantity as 1!`
+        );
+        setSeverity("info");
+        setOpenSnack(true);
       })
       .catch((err) => {
         console.log(err);
-        showToast("😐" + err);
+        setSnackMessage(`😐 Error occurred while adding the parts!`);
+        setSeverity("error");
+        setOpenSnack(true);
       });
   };
 
@@ -1002,8 +1091,14 @@ function PartList() {
   return (
     <>
       {/* <CommanComponents /> */}
+      <CustomSnackbar
+        handleClose={handleSnackBarClose}
+        open={openSnack}
+        severity={severity}
+        message={snackMessage}
+      />
       <div className="content-body" style={{ minHeight: "884px" }}>
-        <div class="container-fluid ">
+        <div className="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
             <div className="d-flex justify-content-center align-items-center">
               <h5 className="font-weight-600 mb-0">Part List</h5>
@@ -1012,7 +1107,7 @@ function PartList() {
                   <Select
                     className="customselectbtn"
                     onChange={(e) => handleOption3(e)}
-                    options={options3}
+                    options={builderVersionOptions}
                     value={value3}
                   />
                 </div>
@@ -1021,16 +1116,16 @@ function PartList() {
                   <Select
                     className="customselectbtn"
                     onChange={(e) => handleOption2(e)}
-                    options={options2}
+                    options={builderStatusOptions}
                     value={value2}
                   />
                 </div>
                 <div className="rating-star">
-                  <span class="fa fa-star checked"></span>
-                  <span class="fa fa-star checked"></span>
-                  <span class="fa fa-star checked"></span>
-                  <span class="fa fa-star"></span>
-                  <span class="fa fa-star"></span>
+                  <span className="fa fa-star checked"></span>
+                  <span className="fa fa-star checked"></span>
+                  <span className="fa fa-star checked"></span>
+                  <span className="fa fa-star"></span>
+                  <span className="fa fa-star"></span>
                 </div>
               </div>
             </div>
@@ -1124,7 +1219,7 @@ function PartList() {
                 <a href="#" className="ml-3 font-size-14" title="Delete">
                   <img src={deleteIcon}></img>
                 </a>
-                <a href="#" className="ml-3 font-size-14" title="Copy">
+                <a href="#" className="ml-3 font-size-14" title="Duplicate">
                   <img src={copyIcon}></img>
                 </a>
                 <a href="#" className="ml-2">
@@ -1144,7 +1239,7 @@ function PartList() {
                   style={{ cursor: "pointer" }}
                 >
                   <i
-                    class="fa fa-pencil"
+                    className="fa fa-pencil"
                     aria-hidden="true"
                     onClick={() => {
                       if (value === "customer")
@@ -1165,10 +1260,10 @@ function PartList() {
                   ></i>
                 </a>{" "}
                 <a href={undefined} className="btn-sm">
-                  <i class="fa fa-bookmark-o" aria-hidden="true"></i>
+                  <i className="fa fa-bookmark-o" aria-hidden="true"></i>
                 </a>{" "}
                 <a href="#" className="btn-sm">
-                  <i class="fa fa-folder-o" aria-hidden="true"></i>
+                  <i className="fa fa-folder-o" aria-hidden="true"></i>
                 </a>
               </div>
               <div className="hr"></div>
@@ -1189,17 +1284,14 @@ function PartList() {
                     <>
                       <div className="row">
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               SOURCE
                             </label>
                             <input
                               type="text"
                               disabled
-                              class="form-control border-radius-10"
+                              className="form-control border-radius-10"
                               id="customer-src"
                               placeholder="Placeholder (Required)"
                               value={customerData.source}
@@ -1207,11 +1299,8 @@ function PartList() {
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               CUSTOMER ID
                             </label>
                             <SearchBox
@@ -1226,11 +1315,8 @@ function PartList() {
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="customerName"
-                            >
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               CUSTOMER NAME
                             </label>
                             <input
@@ -1238,18 +1324,15 @@ function PartList() {
                               value={customerData.customerName}
                               name="customerName"
                               onChange={handleCustomerDataChange}
-                              class="form-control border-radius-10"
+                              className="form-control border-radius-10"
                               id="customerNameid"
                               placeholder="Placeholder (Optional)"
                             />
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group w-100">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="contactName"
-                            >
+                          <div className="form-group w-100">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               CONTACT NAME
                             </label>
                             <input
@@ -1257,18 +1340,15 @@ function PartList() {
                               value={customerData.contactName}
                               name="contactName"
                               onChange={handleCustomerDataChange}
-                              class="form-control border-radius-10"
+                              className="form-control border-radius-10"
                               id="contactNameid"
                               placeholder="Placeholder (Required)"
                             />
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="contatEmail"
-                            >
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               CONTACT EMAIL
                             </label>
                             <input
@@ -1276,7 +1356,7 @@ function PartList() {
                               value={customerData.contactEmail}
                               name="contactEmail"
                               onChange={handleCustomerDataChange}
-                              class="form-control border-radius-10"
+                              className="form-control border-radius-10"
                               id="contatEmail"
                               aria-describedby="emailHelp"
                               placeholder="Placeholder (Required)"
@@ -1284,16 +1364,13 @@ function PartList() {
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="contactphone"
-                            >
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               CONTACT PHONE
                             </label>
                             <input
                               type="tel"
-                              class="form-control border-radius-10"
+                              className="form-control border-radius-10"
                               onChange={handleCustomerDataChange}
                               value={customerData.contactPhone}
                               name="contactPhone"
@@ -1303,10 +1380,7 @@ function PartList() {
                         </div>
                         <div className="col-md-6 col-sm-6">
                           <div className="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="customergroup"
-                            >
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               CUSTOMER GROUP
                             </label>
                             <input
@@ -1314,7 +1388,7 @@ function PartList() {
                               value={customerData.customerGroup}
                               name="customerGroup"
                               onChange={handleCustomerDataChange}
-                              class="form-control border-radius-10"
+                              className="form-control border-radius-10"
                               id="custGroup"
                               placeholder="Placeholder (Required)"
                             />
@@ -1339,60 +1413,62 @@ function PartList() {
                     </>
                   ) : (
                     <div className="row mt-3">
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             SOURCE
                           </p>
-                          <h6 class="font-weight-500">{customerData.source}</h6>
+                          <h6 className="font-weight-500">
+                            {customerData.source}
+                          </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             CUSTOMER ID
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             {customerData.customerID}
                           </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             CUSTOMER NAME
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             {customerData.customerName}
                           </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             CUSTOMER EMAIL
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             {customerData.contactEmail}
                           </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             CONTACT PHONE
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             {customerData.contactPhone}
                           </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             CUSTOMER GROUP
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             {customerData.customerGroup}
                           </h6>
                         </div>
@@ -1405,11 +1481,8 @@ function PartList() {
                     <>
                       <div className="row">
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="model"
-                            >
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               MODEL
                             </label>
                             <SearchBox
@@ -1424,11 +1497,8 @@ function PartList() {
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               SERIAL #
                             </label>
                             <SearchBox
@@ -1443,16 +1513,13 @@ function PartList() {
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="smu"
-                            >
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               SMU
                             </label>
                             <input
                               type="text"
-                              class="form-control border-radius-10"
+                              className="form-control border-radius-10"
                               id="smu-id"
                               name="smu"
                               value={machineData.smu}
@@ -1462,16 +1529,13 @@ function PartList() {
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="fleet"
-                            >
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               UNIT NO / FLEET NO
                             </label>
                             <input
                               type="text"
-                              class="form-control border-radius-10"
+                              className="form-control border-radius-10"
                               onChange={handleMachineDataChange}
                               value={machineData.fleetNo}
                               name="fleetNo"
@@ -1481,16 +1545,13 @@ function PartList() {
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="registrationNo"
-                            >
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               REGISTRATION NO
                             </label>
                             <input
                               type="text"
-                              class="form-control border-radius-10"
+                              className="form-control border-radius-10"
                               onChange={handleMachineDataChange}
                               value={machineData.registrationNo}
                               name="registrationNo"
@@ -1500,16 +1561,13 @@ function PartList() {
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="chasis"
-                            >
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               CHASIS NO
                             </label>
                             <input
                               type="text"
-                              class="form-control border-radius-10"
+                              className="form-control border-radius-10"
                               id="chasis-id"
                               onChange={handleMachineDataChange}
                               value={machineData.chasisNo}
@@ -1532,53 +1590,61 @@ function PartList() {
                     </>
                   ) : (
                     <div className="row mt-3">
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">MODEL</p>
-                          <h6 class="font-weight-500">{machineData.model}</h6>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            MODEL
+                          </p>
+                          <h6 className="font-weight-500">
+                            {machineData.model}
+                          </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             SERIAL NO
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             {machineData.serialNo}{" "}
                           </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">SMU</p>
-                          <h6 class="font-weight-500">{machineData.smu}</h6>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            SMU
+                          </p>
+                          <h6 className="font-weight-500">{machineData.smu}</h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             {" "}
                             UNIT NO / FLEET NO
                           </p>
-                          <h6 class="font-weight-500">{machineData.fleetNo}</h6>
+                          <h6 className="font-weight-500">
+                            {machineData.fleetNo}
+                          </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             REGISTRATION NO
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             {machineData.registrationNo}
                           </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             CHASSIS NO
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             {machineData.chasisNo}
                           </h6>
                         </div>
@@ -1591,13 +1657,13 @@ function PartList() {
                     <>
                       <div className="row">
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
+                          <div className="form-group">
                             <label className="text-light-dark font-size-12 font-weight-500">
                               PREPARED BY
                             </label>
                             <input
                               type="text"
-                              class="form-control border-radius-10"
+                              className="form-control border-radius-10"
                               placeholder="Required"
                               value={estimationData.preparedBy}
                               name="preparedBy"
@@ -1606,16 +1672,13 @@ function PartList() {
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               APPROVED BY
                             </label>
                             <input
                               type="text"
-                              class="form-control border-radius-10"
+                              className="form-control border-radius-10"
                               value={estimationData.approvedBy}
                               name="approvedBy"
                               onChange={handleEstimationDataChange}
@@ -1625,10 +1688,7 @@ function PartList() {
                         </div>
                         <div className="col-md-6 col-sm-6">
                           <div className="align-items-center date-box">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               PREPARED ON
                             </label>
 
@@ -1650,16 +1710,13 @@ function PartList() {
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               REVISED BY
                             </label>
                             <input
                               type="text"
-                              class="form-control border-radius-10"
+                              className="form-control border-radius-10"
                               value={estimationData.revisedBy}
                               name="revisedBy"
                               onChange={handleEstimationDataChange}
@@ -1669,10 +1726,7 @@ function PartList() {
                         </div>
                         <div className="col-md-6 col-sm-6">
                           <div className="align-items-center date-box">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               REVISED ON
                             </label>
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -1694,10 +1748,7 @@ function PartList() {
                         </div>
                         <div className="col-md-6 col-sm-6">
                           <div className="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               SALES OFFICE / BRANCH
                             </label>
                             <Select
@@ -1731,66 +1782,66 @@ function PartList() {
                     </>
                   ) : (
                     <div className="row mt-3">
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             PREPARED BY
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             {estimationData.preparedBy}
                           </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             APPROVED BY
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             {estimationData.approvedBy}
                           </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             PREPARED ON
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             <Moment format="DD/MM/YYYY">
                               {estimationData.preparedOn}
                             </Moment>
                           </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             REVISED BY{" "}
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             {estimationData.revisedBy}
                           </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             REVISED ON
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             <Moment format="DD/MM/YYYY">
                               {estimationData.revisedOn}
                             </Moment>
                           </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             SALES OFFICE / BRANCH
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             {estimationData.salesOffice?.value}
                           </h6>
                         </div>
@@ -1828,33 +1879,27 @@ function PartList() {
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               ESTIMATION #
                             </label>
                             <input
                               type="text"
                               disabled
-                              class="form-control border-radius-10"
+                              className="form-control border-radius-10"
                               id="estNoId"
                               value={generalData.estimationNo}
                             />
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               DESCRIPTION
                             </label>
                             <input
                               type="text"
-                              class="form-control border-radius-10"
+                              className="form-control border-radius-10"
                               id="desc-id"
                               placeholder="Required"
                               maxLength={140}
@@ -1869,16 +1914,13 @@ function PartList() {
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               REFERENCE
                             </label>
                             <input
                               type="text"
-                              class="form-control border-radius-10"
+                              className="form-control border-radius-10"
                               id="desc-id"
                               placeholder="Required"
                               maxLength={140}
@@ -1894,10 +1936,7 @@ function PartList() {
                         </div>
                         <div className="col-md-6 col-sm-6">
                           <div className="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               VALIDITY
                             </label>
                             <Select
@@ -1912,16 +1951,13 @@ function PartList() {
                           </div>
                         </div>
                         <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
                               VERSION
                             </label>
                             <input
                               type="text"
-                              class="form-control border-radius-10"
+                              className="form-control border-radius-10"
                               placeholder="Placeholder (Optional)"
                               disabled
                               value={parseFloat(value3.value).toFixed(1)}
@@ -1948,64 +1984,64 @@ function PartList() {
                     </>
                   ) : (
                     <div className="row mt-3">
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             ESTIMATION DATE{" "}
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             <Moment format="DD/MM/YYYY">
                               {generalData.estimationDate}
                             </Moment>
                           </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             ESTIMATION #
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             {generalData.estimationNo}{" "}
                           </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             DESCRIPTION
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             {generalData.description}
                           </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             REFERENCE{" "}
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             {generalData.reference}
                           </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             VALIDTITY (DAYs)
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             {generalData.validity?.value}{" "}
                           </h6>
                         </div>
                       </div>
-                      <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
                             VERSION
                           </p>
-                          <h6 class="font-weight-500">
+                          <h6 className="font-weight-500">
                             {parseFloat(value3.value).toFixed(1)}
                           </h6>
                         </div>
@@ -2016,50 +2052,13 @@ function PartList() {
                 <TabPanel value="price">
                   <div className="row">
                     <div className="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           NET PRICE
                         </label>
                         <input
                           type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          PRICE DATE
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
-                          COST PRICE
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
+                          className="form-control border-radius-10"
                           id="exampleInputEmail1"
                           aria-describedby="emailHelp"
                           placeholder="Placeholder (Optional)"
@@ -2068,10 +2067,35 @@ function PartList() {
                     </div>
                     <div className="col-md-4 col-sm-4">
                       <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          PRICE DATE
+                        </label>
+                        <input
+                          type="email"
+                          className="form-control border-radius-10"
+                          id="exampleInputEmail1"
+                          aria-describedby="emailHelp"
+                          placeholder="Placeholder (Optional)"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          COST PRICE
+                        </label>
+                        <input
+                          type="email"
+                          className="form-control border-radius-10"
+                          id="exampleInputEmail1"
+                          aria-describedby="emailHelp"
+                          placeholder="Placeholder (Optional)"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           PRICE METHOD
                         </label>
                         <Select
@@ -2083,16 +2107,13 @@ function PartList() {
                       </div>
                     </div>
                     <div className="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           ADJUSTED PRICE
                         </label>
                         <input
                           type="email"
-                          class="form-control border-radius-10"
+                          className="form-control border-radius-10"
                           id="exampleInputEmail1"
                           aria-describedby="emailHelp"
                           placeholder="Placeholder (Optional)"
@@ -2102,10 +2123,7 @@ function PartList() {
 
                     <div className="col-md-4 col-sm-4">
                       <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           CURRENCY
                         </label>
                         <Select
@@ -2118,53 +2136,53 @@ function PartList() {
                     </div>
                   </div>
                   <div className="row mt-3">
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2">
                           NET PRICE
                         </p>
-                        <h6 class="font-weight-500">Mining</h6>
+                        <h6 className="font-weight-500">Mining</h6>
                       </div>
                     </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2">
                           PRICE DATE
                         </p>
-                        <h6 class="font-weight-500">01.09.2021</h6>
+                        <h6 className="font-weight-500">01.09.2021</h6>
                       </div>
                     </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2">
                           COST PRICE
                         </p>
-                        <h6 class="font-weight-500">01.09.2021</h6>
+                        <h6 className="font-weight-500">01.09.2021</h6>
                       </div>
                     </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2">
                           PRICE METHOD
                         </p>
-                        <h6 class="font-weight-500">List Price </h6>
+                        <h6 className="font-weight-500">List Price </h6>
                       </div>
                     </div>
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2">
                           ADJUSTED PRICE{" "}
                         </p>
-                        <h6 class="font-weight-500">Mining</h6>
+                        <h6 className="font-weight-500">Mining</h6>
                       </div>
                     </div>
 
-                    <div class="col-md-4 col-sm-4">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2">
                           CURRENCY{" "}
                         </p>
-                        <h6 class="font-weight-500">AUD</h6>
+                        <h6 className="font-weight-500">AUD</h6>
                       </div>
                     </div>
                   </div>
@@ -2327,11 +2345,11 @@ function PartList() {
                               d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
                             />
                             <path
-                              class="cls-1"
+                              className="cls-1"
                               d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
                             />
                             <path
-                              class="cls-1"
+                              className="cls-1"
                               d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
                             />
                           </svg>
@@ -2346,7 +2364,7 @@ function PartList() {
                 <div className="text-right pl-3 py-3">
                   <button
                     type="button"
-                    class="btn bg-primary text-white"
+                    className="btn bg-primary text-white"
                     onClick={handleQuerySearchClick}
                   >
                     <SearchIcon />
@@ -2370,18 +2388,39 @@ function PartList() {
               </div>
             </div>
 
-            <DataTable
+            <DataGrid
+              sx={{
+                "& .MuiDataGrid-columnHeaders": {
+                  backgroundColor: "#872ff7",
+                  color: "#fff",
+                  fontSize: 12,
+                },
+                "& .MuiDataGrid-cellContent": {
+                  fontSize: 12,
+                },
+                minHeight: 200,
+                "& .MuiDataGrid-columnHeader .MuiDataGrid-columnSeparator": {
+                  display: "none",
+                },
+              }}
+              rows={allPartListData}
+              columns={columnsPartList}
+              pageSize={5}
+              rowsPerPageOptions={[5]}
+              checkboxSelection
+              // onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
+              // onCellClick={(e) => handleRowClick(e)}
+            />
+            {/* <DataTable
               className="mr-2"
               title=""
               columns={columns}
               data={data}
               customStyles={customStyles}
               pagination
-            />
+            /> */}
             <div className=" my-3 text-right">
-              <a href="#" className="btn text-white bg-primary">
-                Save
-              </a>
+              <button className="btn text-white bg-primary">Save</button>
             </div>
           </div>
           <Modal
@@ -2392,15 +2431,16 @@ function PartList() {
             centered
           >
             <Modal.Header>
-              <Modal.Title>
-                1000-Engine|23-Replace Engine|Replace Engine
-              </Modal.Title>
+              <Modal.Title>Add Part</Modal.Title>
             </Modal.Header>
             <Modal.Body className="p-0 bg-white">
               <div className="ligt-greey-bg p-3">
                 <div>
                   <span className="mr-3">
-                    <i class="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                    <i
+                      className="fa fa-pencil font-size-12"
+                      aria-hidden="true"
+                    ></i>
                     <span className="ml-2">Edit</span>
                   </span>
                   <span className="mr-3">
@@ -2433,11 +2473,8 @@ function PartList() {
                 <div className="p-3">
                   <div className="row mt-4">
                     <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                      <div className="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           GROUP NUMBER
                         </label>
                         <SearchBox
@@ -2452,13 +2489,13 @@ function PartList() {
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
+                      <div className="form-group w-100">
                         <label className="text-light-dark font-size-12 font-weight-500">
                           TYPE
                         </label>
                         <input
                           type="text"
-                          class="form-control border-radius-10"
+                          className="form-control border-radius-10"
                           value={sparePart.partType}
                           onChange={(e) =>
                             setSparePart({
@@ -2472,11 +2509,8 @@ function PartList() {
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                      <div className="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           PART NUMBER
                         </label>
                         <SearchBox
@@ -2491,13 +2525,13 @@ function PartList() {
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
+                      <div className="form-group w-100">
                         <label className="text-light-dark font-size-12 font-weight-500">
                           QTY
                         </label>
                         <input
                           type="Number"
-                          class="form-control border-radius-10"
+                          className="form-control border-radius-10"
                           onChange={(e) =>
                             setSparePart({
                               ...sparePart,
@@ -2523,16 +2557,13 @@ function PartList() {
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                      <div className="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           UNIT OF MEASURES
                         </label>
                         <input
                           type="text"
-                          class="form-control border-radius-10"
+                          className="form-control border-radius-10"
                           value={sparePart.salesUnit}
                           onChange={(e) =>
                             setSparePart({
@@ -2545,16 +2576,13 @@ function PartList() {
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                      <div className="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           UNIT PRICE
                         </label>
                         <input
                           type="Number"
-                          class="form-control border-radius-10"
+                          className="form-control border-radius-10"
                           value={parseFloat(sparePart.unitPrice).toFixed(2)}
                           disabled
                           placeholder="Required"
@@ -2562,13 +2590,13 @@ function PartList() {
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
+                      <div className="form-group w-100">
                         <label className="text-light-dark font-size-12 font-weight-500">
                           EXTENDED PRICE
                         </label>
                         <input
                           type="Number"
-                          class="form-control border-radius-10"
+                          className="form-control border-radius-10"
                           disabled
                           // onChange={(e) => setSparePart({...sparePart, extendedPrice: e.target.value})}
                           value={parseFloat(sparePart.extendedPrice).toFixed(2)}
@@ -2577,13 +2605,13 @@ function PartList() {
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
+                      <div className="form-group w-100">
                         <label className="text-light-dark font-size-12 font-weight-500">
                           CURRENCY
                         </label>
                         <input
                           type="text"
-                          class="form-control border-radius-10"
+                          className="form-control border-radius-10"
                           onChange={(e) =>
                             setSparePart({
                               ...sparePart,
@@ -2597,13 +2625,13 @@ function PartList() {
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
+                      <div className="form-group w-100">
                         <label className="text-light-dark font-size-12 font-weight-500">
                           % USAGE
                         </label>
                         <input
                           type="Number"
-                          class="form-control border-radius-10"
+                          className="form-control border-radius-10"
                           onChange={(e) =>
                             setSparePart({
                               ...sparePart,
@@ -2622,16 +2650,13 @@ function PartList() {
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                      <div className="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           TOTAL PRICE
                         </label>
                         <input
                           type="Number"
-                          class="form-control border-radius-10"
+                          className="form-control border-radius-10"
                           value={parseFloat(sparePart.totalPrice).toFixed(2)}
                           disabled
                           placeholder="Required"
@@ -2639,16 +2664,13 @@ function PartList() {
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                      <div className="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           COMMENT
                         </label>
                         <input
                           type="text"
-                          class="form-control border-radius-10"
+                          className="form-control border-radius-10"
                           value={sparePart.comment}
                           onChange={(e) =>
                             setSparePart({
@@ -2661,16 +2683,13 @@ function PartList() {
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                      <div className="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           DESCRIPTION
                         </label>
                         <input
                           type="text"
-                          class="form-control border-radius-10"
+                          className="form-control border-radius-10"
                           value={sparePart.description}
                           onChange={(e) =>
                             setSparePart({
@@ -2857,7 +2876,7 @@ function PartList() {
           </Modal>
         </div>
         <div
-          class="modal fade"
+          className="modal fade"
           id="Substitute"
           tabIndex="-1"
           role="dialog"
@@ -2865,9 +2884,9 @@ function PartList() {
           aria-hidden="true"
           style={{ zIndex: "1200" }}
         >
-          <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-              <div class="modal-header p-0 ">
+          <div className="modal-dialog modal-dialog-centered" role="document">
+            <div className="modal-content">
+              <div className="modal-header p-0 ">
                 <div
                   className="card w-100 p-2 m-0"
                   style={{ backgroundColor: "#F3F4FE" }}
@@ -2889,29 +2908,29 @@ function PartList() {
                   </div>
                 </div>
               </div>
-              <div class="modal-body m-2">
+              <div className="modal-body m-2">
                 <div className="card w-100 border mb-0">
                   <div className="row mt-3 px-2">
-                    <div class="col-md-5 col-sm-5  pl-5">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2 ">
+                    <div className="col-md-5 col-sm-5  pl-5">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2 ">
                           PART TYPE
                         </p>
-                        <h6 class="font-weight-500">New</h6>
+                        <h6 className="font-weight-500">New</h6>
                       </div>
                     </div>
-                    <div class="col-md-5 col-sm-5">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
+                    <div className="col-md-5 col-sm-5">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2">
                           ALLOWED DISCOUNT
                         </p>
-                        <h6 class="font-weight-500">20%</h6>
+                        <h6 className="font-weight-500">20%</h6>
                       </div>
                     </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-check">
+                    <div className="col-md-2 col-sm-2">
+                      <div className="form-check">
                         <input
-                          class="form-check-input"
+                          className="form-check-input"
                           type="radio"
                           name="flexRadioDefault"
                           id="flexRadioDefault1"
@@ -2921,26 +2940,26 @@ function PartList() {
                   </div>
                   <div className="hr w-100"></div>
                   <div className="row mt-3 px-2">
-                    <div class="col-md-5 col-sm-5 pl-5">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
+                    <div className="col-md-5 col-sm-5 pl-5">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2">
                           PART TYPE
                         </p>
-                        <h6 class="font-weight-500">Refurb</h6>
+                        <h6 className="font-weight-500">Refurb</h6>
                       </div>
                     </div>
-                    <div class="col-md-5 col-sm-5">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
+                    <div className="col-md-5 col-sm-5">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2">
                           ALLOWED DISCOUNT
                         </p>
-                        <h6 class="font-weight-500">30%</h6>
+                        <h6 className="font-weight-500">30%</h6>
                       </div>
                     </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-check">
+                    <div className="col-md-2 col-sm-2">
+                      <div className="form-check">
                         <input
-                          class="form-check-input"
+                          className="form-check-input"
                           type="radio"
                           name="flexRadioDefault"
                           id="flexRadioDefault1"
@@ -2950,26 +2969,26 @@ function PartList() {
                   </div>
                   <div className="hr w-100"></div>
                   <div className="row mt-3 px-2">
-                    <div class="col-md-5 col-sm-5 pl-5">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
+                    <div className="col-md-5 col-sm-5 pl-5">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2">
                           PART TYPE
                         </p>
-                        <h6 class="font-weight-500">Reman</h6>
+                        <h6 className="font-weight-500">Reman</h6>
                       </div>
                     </div>
-                    <div class="col-md-5 col-sm-5">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
+                    <div className="col-md-5 col-sm-5">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2">
                           ALLOWED DISCOUNT
                         </p>
-                        <h6 class="font-weight-500">40%</h6>
+                        <h6 className="font-weight-500">40%</h6>
                       </div>
                     </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-check">
+                    <div className="col-md-2 col-sm-2">
+                      <div className="form-check">
                         <input
-                          class="form-check-input"
+                          className="form-check-input"
                           type="radio"
                           name="flexRadioDefault"
                           id="flexRadioDefault1"
@@ -2995,7 +3014,7 @@ function PartList() {
           </div>
         </div>
         <div
-          class="modal fade"
+          className="modal fade"
           id="Recommended"
           tabIndex="-1"
           role="dialog"
@@ -3003,102 +3022,102 @@ function PartList() {
           aria-hidden="true"
           style={{ zIndex: "1200" }}
         >
-          <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-              <div class="modal-header p-4">
+          <div className="modal-dialog modal-dialog-centered" role="document">
+            <div className="modal-content">
+              <div className="modal-header p-4">
                 <div className="card w-100 border mb-0">
                   <div className="row mt-3 px-2">
-                    <div class="col-md-5 col-sm-5 pl-5">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
+                    <div className="col-md-5 col-sm-5 pl-5">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2">
                           PART TYPE
                         </p>
-                        <h6 class="font-weight-500">New</h6>
+                        <h6 className="font-weight-500">New</h6>
                       </div>
                     </div>
-                    <div class="col-md-5 col-sm-5">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
+                    <div className="col-md-5 col-sm-5">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2">
                           ALLOWED DISCOUNT
                         </p>
-                        <h6 class="font-weight-500">20%</h6>
+                        <h6 className="font-weight-500">20%</h6>
                       </div>
                     </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-check">
+                    <div className="col-md-2 col-sm-2">
+                      <div className="form-check">
                         <input
-                          class="form-check-input"
+                          className="form-check-input"
                           type="radio"
                           name="flexRadioDefault"
                           id="flexRadioDefault1"
                         ></input>
                       </div>
                       {/* <div className="listcheckbox">
-            <input class="form-check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="..." />
+            <input className="form-check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="..." />
             </div> */}
                     </div>
                   </div>
                   <div className="hr w-100"></div>
                   <div className="row mt-3 px-2">
-                    <div class="col-md-5 col-sm-5 pl-5">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
+                    <div className="col-md-5 col-sm-5 pl-5">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2">
                           PART TYPE
                         </p>
-                        <h6 class="font-weight-500">Refurb</h6>
+                        <h6 className="font-weight-500">Refurb</h6>
                       </div>
                     </div>
-                    <div class="col-md-5 col-sm-5">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
+                    <div className="col-md-5 col-sm-5">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2">
                           ALLOWED DISCOUNT
                         </p>
-                        <h6 class="font-weight-500">30%</h6>
+                        <h6 className="font-weight-500">30%</h6>
                       </div>
                     </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-check">
+                    <div className="col-md-2 col-sm-2">
+                      <div className="form-check">
                         <input
-                          class="form-check-input"
+                          className="form-check-input"
                           type="radio"
                           name="flexRadioDefault"
                           id="flexRadioDefault1"
                         ></input>
                       </div>
                       {/* <div className="listcheckbox">
-            <input class="form-check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="..." />
+            <input className="form-check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="..." />
             </div> */}
                     </div>
                   </div>
                   <div className="hr w-100"></div>
                   <div className="row mt-3 px-2">
-                    <div class="col-md-5 col-sm-5 pl-5">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
+                    <div className="col-md-5 col-sm-5 pl-5">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2">
                           PART TYPE
                         </p>
-                        <h6 class="font-weight-500">Reman</h6>
+                        <h6 className="font-weight-500">Reman</h6>
                       </div>
                     </div>
-                    <div class="col-md-5 col-sm-5">
-                      <div class="form-group">
-                        <p class="font-size-12 font-weight-500 mb-2">
+                    <div className="col-md-5 col-sm-5">
+                      <div className="form-group">
+                        <p className="font-size-12 font-weight-500 mb-2">
                           ALLOWED DISCOUNT
                         </p>
-                        <h6 class="font-weight-500">40%</h6>
+                        <h6 className="font-weight-500">40%</h6>
                       </div>
                     </div>
-                    <div class="col-md-2 col-sm-2">
-                      <div class="form-check">
+                    <div className="col-md-2 col-sm-2">
+                      <div className="form-check">
                         <input
-                          class="form-check-input"
+                          className="form-check-input"
                           type="radio"
                           name="flexRadioDefault"
                           id="flexRadioDefault1"
                         ></input>
                       </div>
                       {/* <div className="listcheckbox">
-            <input class="form-check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="..." />
+            <input className="form-check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="..." />
             </div> */}
                     </div>
                   </div>
@@ -3120,22 +3139,22 @@ function PartList() {
           </div>
         </div>
         <div
-          class="modal fade"
+          className="modal fade"
           id="quotecreat"
           tabIndex="-1"
           role="dialog"
           aria-labelledby="exampleModalLabel"
           aria-hidden="true"
         >
-          <div class="modal-dialog" role="document">
-            <div class="modal-content bg-white border-none">
-              <div class="modal-header border-none">
-                <h5 class="modal-title" id="exampleModalLabel">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content bg-white border-none">
+              <div className="modal-header border-none">
+                <h5 className="modal-title" id="exampleModalLabel">
                   Quote Create
                 </h5>
                 <button
                   type="button"
-                  class="close"
+                  className="close"
                   data-dismiss="modal"
                   aria-label="Close"
                 >
@@ -3147,14 +3166,11 @@ function PartList() {
                 by the readable content of a page when looking at its layout.
               </p>
               <hr className="my-1" />
-              <div class="modal-body">
+              <div className="modal-body">
                 <div className="row">
                   <div className="col-md-12 col-sm-12">
                     <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
+                      <label className="text-light-dark font-size-12 font-weight-500">
                         Quote Type
                       </label>
                       <Select
@@ -3166,16 +3182,13 @@ function PartList() {
                     </div>
                   </div>
                   <div className="col-md-12 col-sm-12">
-                    <div class="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
+                    <div className="form-group">
+                      <label className="text-light-dark font-size-12 font-weight-500">
                         Quote ID
                       </label>
                       <input
                         type="email"
-                        class="form-control"
+                        className="form-control"
                         id="exampleInputEmail1"
                         aria-describedby="emailHelp"
                         placeholder="Enter email"
@@ -3183,31 +3196,25 @@ function PartList() {
                     </div>
                   </div>
                   <div className="col-md-12 col-sm-12">
-                    <div class="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
+                    <div className="form-group">
+                      <label className="text-light-dark font-size-12 font-weight-500">
                         Description
                       </label>
                       <textarea
-                        class="form-control"
+                        className="form-control"
                         id="exampleFormControlTextarea1"
                         rows="3"
                       ></textarea>
                     </div>
                   </div>
                   <div className="col-md-12 col-sm-12">
-                    <div class="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
+                    <div className="form-group">
+                      <label className="text-light-dark font-size-12 font-weight-500">
                         Reference
                       </label>
                       <input
                         type="email"
-                        class="form-control"
+                        className="form-control"
                         id="exampleInputEmail1"
                         aria-describedby="emailHelp"
                         placeholder="Enter email"
@@ -3217,39 +3224,43 @@ function PartList() {
                 </div>
 
                 <div className="row">
-                  <div class="col-md-12 col-sm-12">
-                    <div class="form-group mt-3">
-                      <p class="font-size-12 font-weight-500 mb-2">
+                  <div className="col-md-12 col-sm-12">
+                    <div className="form-group mt-3">
+                      <p className="font-size-12 font-weight-500 mb-2">
                         QUOTE TYPE{" "}
                       </p>
-                      <h6 class="font-weight-500">
+                      <h6 className="font-weight-500">
                         Repair Quote with Spare Parts
                       </h6>
                     </div>
                   </div>
-                  <div class="col-md-12 col-sm-12">
-                    <div class="form-group mt-3">
-                      <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
-                      <h6 class="font-weight-500">SB12345</h6>
+                  <div className="col-md-12 col-sm-12">
+                    <div className="form-group mt-3">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        Quote ID{" "}
+                      </p>
+                      <h6 className="font-weight-500">SB12345</h6>
                     </div>
                   </div>
-                  <div class="col-md-12 col-sm-12">
-                    <div class="form-group mt-3">
-                      <p class="font-size-12 font-weight-500 mb-2">
+                  <div className="col-md-12 col-sm-12">
+                    <div className="form-group mt-3">
+                      <p className="font-size-12 font-weight-500 mb-2">
                         QUOTE DESCRIPTION
                       </p>
-                      <h6 class="font-weight-500">Holder text</h6>
+                      <h6 className="font-weight-500">Holder text</h6>
                     </div>
                   </div>
-                  <div class="col-md-12 col-sm-12">
-                    <div class="form-group mt-3">
-                      <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
-                      <h6 class="font-weight-500">Holder text</h6>
+                  <div className="col-md-12 col-sm-12">
+                    <div className="form-group mt-3">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        REFERENCE
+                      </p>
+                      <h6 className="font-weight-500">Holder text</h6>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="modal-footer" style={{ display: "unset" }}>
+              <div className="modal-footer" style={{ display: "unset" }}>
                 <div className="mb-2">
                   <a
                     href="#"
@@ -3261,10 +3272,10 @@ function PartList() {
                   </a>
                 </div>
                 <div>
-                  <button class="btn  btn-primary">Create</button>
+                  <button className="btn  btn-primary">Create</button>
                   <button
                     type="button"
-                    class="btn pull-right border"
+                    className="btn pull-right border"
                     data-dismiss="modal"
                   >
                     Cancel
@@ -3302,7 +3313,7 @@ function PartList() {
                     },
                   }}
                   rows={masterData}
-                  columns={columns2}
+                  columns={columnsPartListSearch}
                   pageSize={5}
                   rowsPerPageOptions={[5]}
                   checkboxSelection
@@ -3312,7 +3323,10 @@ function PartList() {
               </div>
             </div>
             <div className="m-2 text-right">
-              <button className="btn text-white bg-primary" onClick={addSelectedPartsToPartList}>
+              <button
+                className="btn text-white bg-primary"
+                onClick={addSelectedPartsToPartList}
+              >
                 + Add Selected
               </button>
             </div>

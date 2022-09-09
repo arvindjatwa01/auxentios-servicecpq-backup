@@ -3,7 +3,7 @@ const SearchBox = (props) => {
     <div className="customselectsearch">
       <input
         type="search"
-        class="form-control border-radius-10"
+        className="form-control border-radius-10"
         placeholder="Search (Required)"
         value={props.value}
         autoComplete="off"
