@@ -3,15 +3,16 @@ const SearchBox = (props) => {
     <div className="customselectsearch">
       <input
         type="search"
-        class="form-control border-radius-10"
+        className="form-control border-radius-10"
         placeholder="Search (Required)"
         value={props.value}
         autoComplete="off"
         onChange={props.onChange}
       />
-      {props.result.length > 0 && (
+      {props.result && props.result.length > 0 && (
         <ul
           className={`list-group customselectsearch-list scrollbar`}
+          id="style"
         >
           {props.result.map((currentItem, index) => (
             <li

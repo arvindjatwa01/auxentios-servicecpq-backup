@@ -81,6 +81,7 @@ export const ADD_REPAIR_BUILDER_PARTLIST = (builderId) => REPAIR_BUILDER_URI + `
 // export const ADD_REPAIR_SEGMENT = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/segment`;
 // export const ADD_REPAIR_OPERATION= (segmentId) => REPAIR_BUILDER_URI + `segment/${segmentId}/operation`;
 export const ADD_REPAIR_PART_TO_PARTLIST = (partListId) => REPAIR_BUILDER_URI + `partlist/${partListId}/sparepart`;
+export const ADD_REPAIR_MULTI_PARTS_TO_PARTLIST = (partListId) => REPAIR_BUILDER_URI + `partlist/${partListId}/spareparts`;
 export const UPDATE_REPAIR_CUSTOMER = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/customer`;
 export const UPDATE_REPAIR_MACHINE = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/machine`;
 export const UPDATE_REPAIR_ESTIMATION_TEAM = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/estimation-team`;

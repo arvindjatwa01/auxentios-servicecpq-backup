@@ -66,11 +66,13 @@ const PriceCalculator = (props) => {
   };
 
   const handleItemPriceSave = () => {
-    props.setTabs("4");
+    props.setTabs("6")
+    // props.setTabs("4"); // previous flow
     props.getPriceCalculatorDataFun(priceCalculator);
     props.handleSavePrices();
   };
   const handleBundlePriceSave = () => {
+    props.setTabs("6")//just for check new flow
     props.setBundleServiceShow(false);
     props.getPriceCalculatorDataFun(priceCalculator);
     props.handleSavePrices();
@@ -244,7 +246,7 @@ const PriceCalculator = (props) => {
                 />
               </div>
             </div>
-            {/* <div className="col-md-6 col-sm-6">
+            <div className="col-md-6 col-sm-6">
               <div className="form-group">
                 <label
                   className="text-light-dark font-size-12 font-weight-500"
@@ -268,7 +270,7 @@ const PriceCalculator = (props) => {
                   }
                 />
               </div>
-            </div> */}
+            </div>
             <div className="col-md-6 col-sm-6">
               <div className="form-group date-box">
                 <label
