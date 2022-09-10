@@ -21,10 +21,6 @@ var prefixKeyValue = []
 
 const InitQuestion = () => {
 
-
-
-
-
     const [defaultValue, setDefaultValue] = useState("")
 
     const [checkedValue, setCheckedValue] = useState({})
@@ -255,6 +251,11 @@ const Question3 = (props) => {
     const [withDropDown, setWithDropDown] = useState(false)
 
 
+    const [makeData, setMakeData] = useState('');
+    const [modelData, setModelData] = useState('');
+    const [prefixData, setPrefixData] = useState('');
+
+
     const dispatch = useDispatch()
 
     const { addQuestion, addWithDescription, addQuestionHeader, addWithDropdown } = bindActionCreators(actionCreator, dispatch)
@@ -267,7 +268,7 @@ const Question3 = (props) => {
     ];
     const [selectedOption, setSelectedOption] = useState(null);
     const [dropdownList, setDropdownList] = useState([]);
-
+    const [demo, setDemo] = useState(0);
     const [makeKeyValuePair, setMakeKeyValuePair] = useState([])
     const [modelKeyValuePair, setModelKeyValuePair] = useState([])
     const [prefixKeyValuePair, setPrefixKeyValuePair] = useState([])
@@ -284,6 +285,16 @@ const Question3 = (props) => {
 
     const handleSelectChange = (e) => {
         if (e != null) {
+            if (e.fieldName == "make") {
+                console.log("makeee is call")
+                setMakeData(e)
+            } else if (e.fieldName == "model") {
+                console.log("model is call")
+                setModelData(e)
+            } else {
+                console.log("prefix is call")
+                setPrefixData(e)
+            }
             var dict = {
                 "key": -1,
                 "fieldName": e.fieldName,
@@ -318,72 +329,74 @@ const Question3 = (props) => {
         }
         var tempDropdownList = []
         getMakeKeyValue().then((res) => {
-            console.log(res)
+            console.log("make response : ", res)
             const options = res.map((d) => ({
-                value: d,
-                label: d,
+                value: d.key,
+                label: d.value,
                 fieldName: 'make'
             }));
             makeKeyValue = options;
-            // setMakeKeyValuePair(options)
+            console.log("make options are : ", options)
+            setMakeKeyValuePair(options)
+            setDemo(1)
             getModelKeyValue().then((res1) => {
-                console.log(res1)
+                console.log("Model Response", res1)
                 const options1 = res1.map((d) => ({
-                    value: d,
-                    label: d,
+                    value: d.key,
+                    label: d.value,
                     fieldName: 'model'
                 }));
                 modelKeyValue = options1
-                // setModelKeyValuePair(options1)
+                setModelKeyValuePair(options1)
                 getPrefixKeyValue().then((res2) => {
                     console.log(res2)
                     const options2 = res2.map((d) => ({
-                        value: d,
-                        label: d,
+                        value: d.key,
+                        label: d.value,
                         fieldName: 'prefix'
                     }));
                     prefixKeyValue = options2
-                    // setPrefixKeyValuePair(options2)
-                    state.guidedSolution?.dropdownFormLbls.map((opt) => {
-                        if (opt.secondValue == 'Make') {
-                            tempDropdownList.push(<div className="col-md-4">
-                                <div className="form-group">
-                                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">{opt.secondValue}</label>
-                                    <Select
-                                        onChange={handleSelectChange}
-                                        // value={makeData}
-                                        options={makeKeyValue}
-                                        placeholder="--Select Make--"
-                                    />
-                                </div>
-                            </div>)
-                        } else if (opt.secondValue == "Model") {
-                            tempDropdownList.push(<div className="col-md-4">
-                                <div className="form-group">
-                                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">{opt.secondValue}</label>
-                                    <Select
-                                        onChange={handleSelectChange}
-                                        // value={modelData}
-                                        options={modelKeyValue}
-                                        placeholder="--Select Model--"
-                                    />
-                                </div>
-                            </div>)
-                        } else if (opt.secondValue == "Prefix") {
-                            tempDropdownList.push(<div className="col-md-4">
-                                <div className="form-group">
-                                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">{opt.secondValue}</label>
-                                    <Select
-                                        onChange={handleSelectChange}
-                                        // value={prefixData}
-                                        options={prefixKeyValue}
-                                        placeholder="--Select Prefix--"
-                                    />
-                                </div>
-                            </div>)
-                        }
-                    })
-                    setDropdownList(tempDropdownList)
+                    setPrefixKeyValuePair(options2)
+                    // state.guidedSolution?.dropdownFormLbls.map((opt) => {
+                    //     if (opt.secondValue == 'Make') {
+                    //         tempDropdownList.push(<div className="col-md-4">
+                    //             <div className="form-group">
+                    //                 <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">{opt.secondValue}</label>
+                    //                 <Select
+                    //                     onChange={handleSelectChange}
+                    //                     value={makeData}
+                    //                     options={makeKeyValue}
+                    //                     placeholder="--Select Make--"
+                    //                 />
+                    //             </div>
+                    //         </div>)
+                    //     } else if (opt.secondValue == "Model") {
+                    //         tempDropdownList.push(<div className="col-md-4">
+                    //             <div className="form-group">
+                    //                 <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">{opt.secondValue}</label>
+                    //                 <Select
+                    //                     onChange={handleSelectChange}
+                    //                     value={modelData}
+                    //                     options={modelKeyValue}
+                    //                     placeholder="--Select Model--"
+                    //                 />
+                    //             </div>
+                    //         </div>)
+                    //     } else if (opt.secondValue == "Prefix") {
+                    //         tempDropdownList.push(<div className="col-md-4">
+                    //             <div className="form-group">
+                    //                 <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">{opt.secondValue}</label>
+                    //                 <Select
+                    //                     onChange={handleSelectChange}
+                    //                     value={prefixData}
+                    //                     options={prefixKeyValue}
+                    //                     placeholder="--Select Prefix--"
+                    //                 />
+                    //             </div>
+                    //         </div>)
+                    //     }
+                    // })
+                    // setDropdownList(tempDropdownList)
                 }).catch((err) => {
                     alert(err)
                 })
@@ -394,9 +407,13 @@ const Question3 = (props) => {
             alert(err)
         })
 
-
+        // console.log("dropdown : ", state.guidedSolution?.withDropDown)
         // setWithDropDown(state.guidedSolution?.withDropDown)
-    }, []);
+    }, [demo]);
+
+
+    console.log("make Key Value Pair is  : ", makeKeyValuePair)
+    console.log("make data is : ", makeData)
 
     return <>
         <div className=" mt-3 p-3">
@@ -413,40 +430,43 @@ const Question3 = (props) => {
                         <h6>Choose one option from the following</h6>
                     </div>
                     <div className="row mt-4">
-                        {dropdownList}
-                        {/* <div className="col-md-4">
-              <div className="form-group">
-                <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">MAKE</label>
-                <Select
-                  defaultValue={selectedOption}
-                  onChange={setSelectedOption}
-                  options={options}
-                  placeholder="1000-ENGINE"
-                />
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="form-group">
-                <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">MODEL</label>
-                <Select
-                  defaultValue={selectedOption}
-                  onChange={setSelectedOption}
-                  options={options}
-                  placeholder="ELECTRICAL"
-                />
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="form-group">
-                <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">PREFIX</label>
-                <Select
-                  defaultValue={selectedOption}
-                  onChange={setSelectedOption}
-                  options={options}
-                  placeholder="ALTERNATOR"
-                />
-              </div>
-            </div> */}
+                        {/* {dropdownList} */}
+                        <div className="col-md-4">
+                            <div className="form-group">
+                                <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">MAKE</label>
+                                <Select
+                                    // defaultValue={selectedOption}
+                                    value={makeData}
+                                    onChange={handleSelectChange}
+                                    options={makeKeyValue}
+                                    placeholder="--Select Make--"
+                                />
+                            </div>
+                        </div>
+                        <div className="col-md-4">
+                            <div className="form-group">
+                                <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">MODEL</label>
+                                <Select
+                                    // defaultValue={selectedOption}
+                                    value={modelData}
+                                    onChange={handleSelectChange}
+                                    options={modelKeyValue}
+                                    placeholder="--Select Model--"
+                                />
+                            </div>
+                        </div>
+                        <div className="col-md-4">
+                            <div className="form-group">
+                                <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">PREFIX</label>
+                                <Select
+                                    // defaultValue={selectedOption}
+                                    value={prefixData}
+                                    onChange={handleSelectChange}
+                                    options={prefixKeyValuePair}
+                                    placeholder="--Select Prefix--"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
                 :
@@ -456,6 +476,7 @@ const Question3 = (props) => {
         </div>
     </>;
 }
+
 const Question4 = (props) => {
 
     const [defaultValue, setDefaultValue] = useState("")
@@ -532,8 +553,8 @@ const Question4 = (props) => {
         getMakeKeyValue().then((res) => {
             console.log(res)
             const options = res.map((d) => ({
-                value: d,
-                label: d,
+                value: d.key,
+                label: d.value,
                 fieldName: 'make'
             }));
             makeKeyValue = options;
@@ -541,8 +562,8 @@ const Question4 = (props) => {
             getModelKeyValue().then((res1) => {
                 console.log(res1)
                 const options1 = res1.map((d) => ({
-                    value: d,
-                    label: d,
+                    value: d.key,
+                    label: d.value,
                     fieldName: 'model'
                 }));
                 modelKeyValue = options1
@@ -550,14 +571,15 @@ const Question4 = (props) => {
                 getPrefixKeyValue().then((res2) => {
                     console.log(res2)
                     const options2 = res2.map((d) => ({
-                        value: d,
-                        label: d,
+                        value: d.key,
+                        label: d.value,
                         fieldName: 'prefix'
                     }));
                     prefixKeyValue = options2
                     // setPrefixKeyValuePair(options2)
+                    console.log("state.guidedSolution : ", state.guidedSolution)
                     state.guidedSolution?.dropdownFormLbls.map((opt) => {
-                        if (opt.secondValue == 'Make') {
+                        if (opt.secondValue == 'System') {
                             tempDropdownList.push(<div className="col-md-4">
                                 <div className="form-group">
                                     <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">{opt.secondValue}</label>
@@ -569,7 +591,7 @@ const Question4 = (props) => {
                                     />
                                 </div>
                             </div>)
-                        } else if (opt.secondValue == "Model") {
+                        } else if (opt.secondValue == "Sub-System") {
                             tempDropdownList.push(<div className="col-md-4">
                                 <div className="form-group">
                                     <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">{opt.secondValue}</label>
@@ -581,7 +603,7 @@ const Question4 = (props) => {
                                     />
                                 </div>
                             </div>)
-                        } else if (opt.secondValue == "Prefix") {
+                        } else if (opt.secondValue == "Component") {
                             tempDropdownList.push(<div className="col-md-4">
                                 <div className="form-group">
                                     <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">{opt.secondValue}</label>
@@ -644,40 +666,40 @@ const Question4 = (props) => {
                             <h6>Choose one option from the following</h6>
                         </div>
                         <div className="row mt-4">
-                            {dropdownList}
-                            {/* <div className="col-md-4">
-              <div className="form-group">
-                <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">MAKE</label>
-                <Select
-                  defaultValue={selectedOption}
-                  onChange={setSelectedOption}
-                  options={options}
-                  placeholder="1000-ENGINE"
-                />
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="form-group">
-                <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">MODEL</label>
-                <Select
-                  defaultValue={selectedOption}
-                  onChange={setSelectedOption}
-                  options={options}
-                  placeholder="ELECTRICAL"
-                />
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="form-group">
-                <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">PREFIX</label>
-                <Select
-                  defaultValue={selectedOption}
-                  onChange={setSelectedOption}
-                  options={options}
-                  placeholder="ALTERNATOR"
-                />
-              </div>
-            </div> */}
+                            {/* {dropdownList} */}
+                            <div className="col-md-4">
+                                <div className="form-group">
+                                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">SYSTEM</label>
+                                    <Select
+                                        defaultValue={makeData}
+                                        onChange={handleSelectChange}
+                                        options={makeKeyValue}
+                                        placeholder="1000-ENGINE"
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-md-4">
+                                <div className="form-group">
+                                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">SUB-SYSTEM</label>
+                                    <Select
+                                        defaultValue={modelData}
+                                        onChange={handleSelectChange}
+                                        options={modelKeyValue}
+                                        placeholder="ELECTRICAL"
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-md-4">
+                                <div className="form-group">
+                                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">COMPONENT</label>
+                                    <Select
+                                        defaultValue={prefixData}
+                                        onChange={handleSelectChange}
+                                        options={prefixKeyValue}
+                                        placeholder="ALTERNATOR"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
                     :

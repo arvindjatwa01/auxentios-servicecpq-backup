@@ -586,6 +586,12 @@ export const Analytics = () => {
       setSelectedMasterData(updated)
    }
 
+   const CantFindgoback = () => {
+      // alert("hello")
+      handleCloseExplore()
+      handleShow()
+   }
+
    const columns2 = [
       { field: 'GroupNumber', headerName: 'ID#', flex: 1, width: 70 },
       { field: 'Type', headerName: 'Description', flex: 1, width: 130 },
@@ -608,6 +614,8 @@ export const Analytics = () => {
       //     }`,
 
    ];
+
+
 
 
    return (
@@ -1150,7 +1158,8 @@ export const Analytics = () => {
                                        <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
                                        <li className='mt-3' style={{ listStyle: 'disc' }}>Periodic maintenace triggered every 3 months</li>
                                     </ul>
-                                    <a href="#" class="btn bg-primary text-white Choose-btn">Choose</a>
+                                    <Link to="/service/new" className="btn bg-primary text-white Choose-btn">Choose</Link>
+                                    {/* <a href="#" class="btn bg-primary text-white Choose-btn">Choose</a> */}
                                  </div>
                                  <div class='item'>
                                     <a href='#' className='bg-green-light text-white btn'>Maintenence service</a>
@@ -1159,7 +1168,8 @@ export const Analytics = () => {
                                        <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
                                        <li className='mt-3' style={{ listStyle: 'disc' }}>Periodic maintenace triggered every 3 months</li>
                                     </ul>
-                                    <a href="#" class="btn bg-primary text-white Choose-btn">Choose</a>
+                                    <Link to="/service/new" className="btn bg-primary text-white Choose-btn">Choose</Link>
+                                    {/* <a href="#" class="btn bg-primary text-white Choose-btn">Choose</a> */}
                                  </div>
                                  <div class='item'>
                                     <h4 className='text-light'><b>Repair Service</b></h4>
@@ -1168,14 +1178,15 @@ export const Analytics = () => {
                                        <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
                                        <li className='mt-3' style={{ listStyle: 'disc' }}>Periodic maintenace triggered every 3 months</li>
                                     </ul>
-                                    <a href="#" class="btn bg-primary text-white Choose-btn">Choose</a>
+                                    <Link to="/service/new" className="btn bg-primary text-white Choose-btn">Choose</Link>
+                                    {/* <a href="#" class="btn bg-primary text-white Choose-btn">Choose</a> */}
                                  </div>
 
                               </OwlCarousel>
 
                            </div>
                            <div>
-                              <a href='#' className='btn'>I can't find what i need</a>
+                              <a href='#' onClick={CantFindgoback} className='btn'>I can't find what i need</a>
                            </div>
                         </div>
                      </div>

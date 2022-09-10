@@ -9,21 +9,24 @@ import {
 import { DataGrid } from '@mui/x-data-grid';
 import { CommanComponents } from "../../components/index"
 import FormGroup from '@mui/material/FormGroup';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Select from 'react-select';
+import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import shearchIcon from "../../assets/icons/svg/search.svg";
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
+import * as ENUM from "../PortfolioAndBundle/CONSTS.js";
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { Link } from 'react-router-dom'
-import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import Checkbox from '@mui/material/Checkbox';
+import { Link } from 'react-router-dom'
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { FileUploader } from "react-drag-drop-files";
 // import MuiMenuComponent from "../Operational/MuiMenuComponent";
-
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import Tooltip from "@mui/material/Tooltip";
 import BusinessCenterOutlinedIcon from "@mui/icons-material/BusinessCenterOutlined";
 
@@ -51,13 +54,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useAppSelector } from "../../app/hooks";
 
 import AddPortfolioItem from "../PortfolioAndBundle/AddPortfolioItem";
-import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
 
-import * as ENUM from "../PortfolioAndBundle/CONSTS.js";
 
 import { MuiMenuComponent } from "../Operational/index";
-import shearchIcon from "../../assets/icons/svg/search.svg";
 
 
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
@@ -136,63 +135,55 @@ const customStyles = {
 };
 
 export function ServicePortfolio(props) {
-    const [age, setAge] = React.useState('5');
-    const [age1, setAge1] = React.useState('5');
-    const [age2, setAge2] = React.useState('5');
+    const [makeKeyValue, setMakeKeyValue] = useState([]);
+    const [modelKeyValue, setModelKeyValue] = useState([]);
+    const [prefixKeyValue, setPrefixKeyValue] = useState([]);
+    const [validityKeyValue, setValidityKeyValue] = useState([]);
+    const [headerType, setHeaderType] = useState(null);
+    const [headerTypeKeyValue, setHeaderTypeKeyValue] = useState([]);
+    const [responseTimeTaskKeyValue, setResponseTimeTaskKeyValue] = useState([]);
+    const [taskTypeKeyValue, setTaskTypeKeyValue] = useState([]);
 
-    const [coverageItems, setCoverageItems] = useState([]);
     const [bundleItemTaskTypeKeyValue, setBundleItemTaskTypeKeyValue] = useState(
         []
     );
-    const [taskTypeKeyValue, setTaskTypeKeyValue] = useState([]);
-
-    const [prefixKeyValue, setPrefixKeyValue] = useState([]);
-    const [modelKeyValue, setModelKeyValue] = useState([]);
-    const [makeKeyValue, setMakeKeyValue] = useState([]);
-    const [validityKeyValue, setValidityKeyValue] = useState([]);
-    const [showAvailableCoverage, setShowAvailableCoverage] = useState(false);
-    const [responseTimeTaskKeyValue, setResponseTimeTaskKeyValue] = useState([]);
-
     const [categoryUsageKeyValue, setCategoryUsageKeyValue] = useState([]);
+
+    const [selectedOption, setSelectedOption] = useState(null);
+    const [value, setValue] = React.useState('1');
+    const [open, setOpen] = React.useState(false);
+    const [open1, setOpen1] = React.useState(false);
+    const [openCoverage, setOpenCoveragetable] = React.useState(false);
+
     const [productHierarchyKeyValue, setProductHierarchyKeyValue] = useState([]);
     const [geographicKeyValue, setGeographicKeyValue] = useState([]);
     const [typeKeyValue, setTypeKeyValue] = useState([]);
     const [machineTypeKeyValue, setMachineTypeKeyValue] = useState([]);
-    const [strategyOptionals, setStrategyOptionals] = useState([]);
-    const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
-
-    const [portfolioId, setPortfolioId] = useState();
-    const [prefilgabelGeneral, setPrefilgabelGeneral] = useState("PORTFOLIO");
-    const [priceAgreementOption, setPriceAgreementOption] = useState(false);
-
-    const [headerType, setHeaderType] = useState(null);
-    const [headerTypeKeyValue, setHeaderTypeKeyValue] = useState([]);
-    const [customerSegmentKeyValue, setCustomerSegmentKeyValue] = useState([]);
     const [isView, setIsView] = useState(false);
+    const [createNewBundle, setCreateNewBundle] = useState(false);
+    const [openSearchSolution, setOpenSearchSolution] = useState(false);
 
+    const [openAddBundleItem, setOpenAddBundleItem] = useState(false);
+    const [bundleItems, setBundleItems] = useState([]);
+    const [coverageItems, setCoverageItems] = useState([]);
+    const [showAvailableCoverage, setShowAvailableCoverage] = useState(false);
+    const [openAddBundleItemHeader, setOpenAddBundleItemHeader] = useState("");
+    const [priceAgreementRows, setPriceAgreementRows] = useState([]);
+
+    const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
+    const [customerSegmentKeyValue, setCustomerSegmentKeyValue] = useState([]);
+    const [strategyOptionals, setStrategyOptionals] = useState([]);
 
     const [categoryUsageKeyValue1, setCategoryUsageKeyValue1] = useState([]);
-    const [stratgyTaskUsageKeyValue, setStratgyTaskUsageKeyValue] = useState([]);
     const [stratgyTaskTypeKeyValue, setStratgyTaskTypeKeyValue] = useState([]);
-    const [stratgyOptionalsKeyValue, setStratgyOptionalsKeyValue] = useState([]);
+    const [stratgyTaskUsageKeyValue, setStratgyTaskUsageKeyValue] = useState([]);
     const [stratgyResponseTimeKeyValue, setStratgyResponseTimeKeyValue] =
         useState([]);
     const [stratgyHierarchyKeyValue, setStratgyHierarchyKeyValue] = useState([]);
     const [stratgyGeographicKeyValue, setStratgyGeographicKeyValue] = useState(
         []
     );
-
-    const [openAddBundleItem, setOpenAddBundleItem] = useState(false);
-    const [bundleItems, setBundleItems] = useState([]);
-
-    const [loadingItem, setLoadingItem] = useState(false);
-    const [tabs, setTabs] = useState("1");
-    const [itemModelShow, setItemModelShow] = useState(false);
-    const [openSearchSolution, setOpenSearchSolution] = useState(false);
-    const [createNewBundle, setCreateNewBundle] = useState(false);
-    const [openAddBundleItemHeader, setOpenAddBundleItemHeader] = useState("");
-
-    const [tempBundleItems, setTempBundleItems] = useState([]);
+    const [stratgyOptionalsKeyValue, setStratgyOptionalsKeyValue] = useState([]);
 
     const [masterData, setMasterData] = useState([]);
     const [filterMasterData, setFilterMasterData] = useState([]);
@@ -203,24 +194,68 @@ export function ServicePortfolio(props) {
     const [openedModelBoxData, setOpenedModelBoxData] = useState([]);
     const [modelIncludedData, setModelIncludedData] = useState([]);
 
-    const [priceAgreementRows, setPriceAgreementRows] = useState([]);
-    const [tempBundleItemCheckList, setTempBundleItemCheckList] = useState({});
-    const [valueOfUseCase, setValueOfUseCase] = useState(4);
-    const [open2, setOpen2] = useState(false);
-
-    const [showRelatedModel, setShowRelatedModel] = useState(false);
-    const [editSerialNo, setEditSerialNo] = useState({
-        coverageId: "",
+    const [coverageData, setCoverageData] = useState({
         make: "",
-        family: "",
-        modelNo: "",
-        serialNoPrefix: "",
-        startSerialNo: "",
-        endSerialNo: "",
-        fleet: "",
-        fleetSize: "",
+        modal: "",
+        prefix: "",
+        makeSelect: null,
+        modelSelect: null,
+        prefixSelect: null,
+        machineComponent: null,
+        machineType: null,
+        marchineDate: new Date(),
     });
 
+    const [strategyData, setStrategyData] = useState({
+        make: "",
+        model: "",
+        prefix: "",
+        machineComponent: "",
+        machineType: "",
+        machineDate: "",
+    })
+
+    const [administrative, setAdministrative] = useState({
+        preparedBy: null,
+        approvedBy: null,
+        preparedOn: null,
+        revisedBy: null,
+        revisedOn: null,
+        branch: null,
+        offerValidity: null,
+    });
+
+    const [validityData, setValidityData] = useState({
+        fromDate: new Date(),
+        toDate: new Date(),
+        from: null,
+        to: null,
+        fromInput: "",
+        toInput: "",
+    });
+
+    const [generalComponentData, setGeneralComponentData] = useState({
+        name: "",
+        description: "",
+        serviceDescription: "",
+        externalReference: "",
+        customerSegment: null,
+        items: [],
+        coverages: [],
+    });
+
+    const [newBundle, setNewBundle] = useState({
+        serviceDescription: "",
+        bundleFlag: "",
+        reference: "",
+        customerSegment: null,
+        machineComponent: null,
+    });
+
+    const [portfolioId, setPortfolioId] = useState();
+    const [prefilgabelGeneral, setPrefilgabelGeneral] = useState("PORTFOLIO");
+    const [priceAgreementOption, setPriceAgreementOption] = useState(false);
+    const [open2, setOpen2] = useState(false);
 
     const [addPortFolioItem, setAddportFolioItem] = useState({
         id: 0,
@@ -237,46 +272,17 @@ export function ServicePortfolio(props) {
         repairOption: "",
     });
 
-    const [generalComponentData, setGeneralComponentData] = useState({
-        name: "",
-        description: "",
-        serviceDescription: "",
-        externalReference: "",
-        customerSegment: null,
-        items: [],
-        coverages: [],
-    });
-
-
-    const [validityData, setValidityData] = useState({
-        fromDate: new Date(),
-        toDate: new Date(),
-        from: null,
-        to: null,
-        fromInput: "",
-        toInput: "",
-    });
-
-    const [strategyData, setStrategyData] = useState({
+    const [showRelatedModel, setShowRelatedModel] = useState(false);
+    const [editSerialNo, setEditSerialNo] = useState({
+        coverageId: "",
         make: "",
-        model: "",
-        prefix: "",
-        machineComponent: "",
-        machineType: "",
-        machineDate: "",
-    })
-
-
-    const [coverageData, setCoverageData] = useState({
-        make: "",
-        modal: "",
-        prefix: "",
-        makeSelect: null,
-        modelSelect: null,
-        prefixSelect: null,
-        machineComponent: null,
-        machineType: null,
-        marchineDate: new Date(),
+        family: "",
+        modelNo: "",
+        serialNoPrefix: "",
+        startSerialNo: "",
+        endSerialNo: "",
+        fleet: "",
+        fleetSize: "",
     });
 
     const [priceCalculator, setPriceCalculator] = useState({
@@ -301,6 +307,8 @@ export function ServicePortfolio(props) {
         totalPrice: 1200,
     });
 
+    const [serviceOrBundlePrefix, setServiceOrBundlePrefix] = useState("");
+
     const [createServiceOrBundle, setCreateServiceOrBundle] = useState({
         id: "",
         description: "",
@@ -314,54 +322,24 @@ export function ServicePortfolio(props) {
         additional: "",
     });
 
-
-    const [bundleServiceShow, setBundleServiceShow] = useState(false);
+    const [tabs, setTabs] = useState("1");
+    const [itemModelShow, setItemModelShow] = useState(false);
+    const [loadingItem, setLoadingItem] = useState(false);
+    const [tempBundleItems, setTempBundleItems] = useState([]);
+    const [valueOfUseCase, setValueOfUseCase] = useState(4);
+    const [tempBundleItemCheckList, setTempBundleItemCheckList] = useState({});
     const [bundleTabs, setBundleTabs] = useState("1");
-
-    const handleChangedrop = (event) => {
-        setAge(event.target.value);
-    };
-    const handleChangedrop1 = (event) => {
-        setAge1(event.target.value);
-    };
-    const handleChangedrop2 = (event) => {
-        setAge2(event.target.value);
-    };
-    const options = [
-        { value: 'chocolate', label: 'Construction-Heavy' },
-        { value: 'strawberry', label: 'Construction-Low' },
-        { value: 'vanilla', label: 'Construction-Medium' },
-        { value: 'Construction', label: 'Construction' },
-    ];
-    const [selectedOption, setSelectedOption] = useState(null);
-
-    const [value, setValue] = React.useState('1');
-
-    const [open, setOpen] = React.useState(false);
-    const [open1, setOpen1] = React.useState(false);
-    const [openCoverage, setOpenCoveragetable] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-    const handleClose1 = () => setOpen1(false);
-    const handleCoveragetable = () => setOpenCoveragetable(false);
+    const [bundleServiceShow, setBundleServiceShow] = useState(false);
 
 
-
-    const [serviceOrBundlePrefix, setServiceOrBundlePrefix] = useState("");
-
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
+    const handleCustomerSegmentChange = (e) => {
+        setGeneralComponentData({
+            ...generalComponentData,
+            customerSegment: e,
+        });
     };
 
-    const handleHeaderTypeChange = (e) => {
-        setPrefilgabelGeneral(e.value);
-        if (e.value == "PROGRAM") {
-            setPriceAgreementOption(true);
-        } else {
-            setPriceAgreementOption(false);
-        }
-        setHeaderType(e);
-    };
+
 
     const handleRemove = (index) => {
         var temp = priceAgreementRows.slice();
@@ -424,105 +402,211 @@ export function ServicePortfolio(props) {
         setPriceAgreementRows(temp);
     };
 
-    const handleGeneralInputChange = (e) => {
-        var value = e.target.value;
-        var name = e.target.name;
-        setGeneralComponentData({
-            ...generalComponentData,
-            [name]: value,
-        });
-    };
-
-    const handleNewBundleItem = () => {
-        setTabs("1");
-        setItemModelShow(true);
-        // setOpenAddBundleItem(true);
-
-        setOpenSearchSolution(false);
-        setCreateNewBundle(false);
-        setOpenAddBundleItemHeader("Add New Portfolio Item");
-    };
-
-    const handleExpandedRowEdit = (e, id) => {
-        alert("Edit row");
-    };
-
-    const handleExpandedRowDelete = (e, id) => {
-        const _bundleItems = [...bundleItems];
-        _bundleItems[0].associatedServiceOrBundle.splice(id, 1);
-        setBundleItems(_bundleItems);
-    };
-
-
-    const getPortfolioDetails = (portfolioId) => {
-        // getAllUsers()
-        //     .then((res) => {
-        //         console.log("Dashboard > getAllUsers > res=", res);
-        //         setUsers(res);
-        //         setIsLoading(false);
-        //     })
-        //     .catch((err) => {
-        //         console.log("axios err=", err);
-        //         setUsers([]);
-        //         setIsLoading(false);
-        //     });
-
-        if (portfolioId != null) {
-            getPortfolio(portfolioId)
-                .then((res) => {
-                    const portfolioDetails = res;
-                    console.log("portfolioDetails", portfolioDetails);
-                    if (portfolioDetails.portfolioId != null) {
-                        setGeneralComponentData({
-                            ...generalComponentData,
-                            name: portfolioDetails.name,
-                            description: portfolioDetails.description,
-                            externalReference: portfolioDetails.externalReference,
-                            customerSegment: portfolioDetails.customerSegment,
-                            // serviceProgramDescription: "",
-                        });
-                    }
-                })
-                .catch((err) => {
-                    console.log("error:", err);
-                });
-        }
-    };
-
-    const handleTempbundleItemSelection = (e, row) => {
-        if (e.target.name === "selectedId") {
-            setTempBundleItemCheckList({
-                [e.target.name]: e.target.value,
-            });
-            return;
-        }
-        let _tempBundleItemCheckList = { ...tempBundleItemCheckList };
-        if (e.target.checked) {
-            _tempBundleItemCheckList[row.itemId] =
-                !_tempBundleItemCheckList[row.itemId];
+    const handleHeaderTypeChange = (e) => {
+        setPrefilgabelGeneral(e.value);
+        if (e.value == "PROGRAM") {
+            setPriceAgreementOption(true);
         } else {
-            _tempBundleItemCheckList[row.itemId] =
-                !_tempBundleItemCheckList[row.itemId];
+            setPriceAgreementOption(false);
         }
-        setTempBundleItemCheckList(_tempBundleItemCheckList);
+        setHeaderType(e);
     };
 
-    const handleAddServiceBundleChange = (e) => {
-        setCreateServiceOrBundle({
-            ...createServiceOrBundle,
-            [e.target.name]: e.target.value,
-        });
-    };
+    const handleBundleItemSaveAndContinue = async () => {
+        setTabs(`${parseInt(tabs) + 1}`);
+        setLoadingItem(true);
+        try {
+            let reqObj = {
+                itemId: 0,
+                itemName: "",
+                itemHeaderModel: {
+                    itemHeaderId: 0,
+                    // itemHeaderId: parseInt(generalComponentData.portfolioId),
+                    itemHeaderDescription: generalComponentData.description,
+                    bundleFlag: "PORTFOLIO",
+                    reference: generalComponentData.externalReference,
+                    itemHeaderMake: "",
+                    itemHeaderFamily: "",
+                    model: "",
+                    prefix: "",
+                    type: "MACHINE",
+                    additional: "",
+                    currency: "",
+                    netPrice: 0,
+                    itemProductHierarchy: generalComponentData.productHierarchy,
+                    itemHeaderGeographic: generalComponentData.geographic,
+                    responseTime: generalComponentData.responseTime,
+                    usage: "",
+                    validFrom: generalComponentData.validFrom,
+                    validTo: generalComponentData.validTo,
+                    estimatedTime: "",
+                    servicePrice: 0,
+                    status: "NEW",
+                },
+                itemBodyModel: {
+                    itemBodyId: parseInt(addPortFolioItem.id),
+                    itemBodyDescription: addPortFolioItem.description,
+                    quantity: parseInt(addPortFolioItem.quantity),
+                    startUsage: priceCalculator.startUsage,
+                    endUsage: priceCalculator.endUsage,
+                    standardJobId: "",
+                    frequency: addPortFolioItem.frequency.value,
+                    additional: "",
+                    spareParts: ["WITH_SPARE_PARTS"],
+                    labours: ["WITH_LABOUR"],
+                    miscellaneous: ["LUBRICANTS"],
+                    taskType: [addPortFolioItem.taskType.value],
+                    solutionCode: "",
+                    usageIn: addPortFolioItem.usageIn.value,
+                    recommendedValue: 0,
+                    usage: "",
+                    repairKitId: "",
+                    templateDescription: addPortFolioItem.description.value,
+                    partListId: "",
+                    serviceEstimateId: "",
+                    numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+                    repairOption: addPortFolioItem.repairOption.value,
+                    priceMethod: "LIST_PRICE",
+                    listPrice: parseInt(priceCalculator.listPrice),
+                    priceEscalation: "",
+                    calculatedPrice: parseInt(priceCalculator.calculatedPrice),
+                    flatPrice: parseInt(priceCalculator.flatPrice),
+                    discountType: "",
+                    year: priceCalculator.priceYear.value,
+                    avgUsage: 0,
+                    unit: addPortFolioItem.unit.value,
+                    sparePartsPrice: 0,
+                    sparePartsPriceBreakDownPercentage: 0,
+                    servicePrice: 0,
+                    servicePriceBreakDownPercentage: 0,
+                    miscPrice: 0,
+                    miscPriceBreakDownPercentage: 0,
+                    totalPrice: 0,
+                },
+            };
+            const itemRes = await itemCreation(reqObj);
+            console.log("itemCreation res:", itemRes);
+            if (itemRes.status !== 200) {
+                alert("something went wrong");
+                return;
+            }
+            const itemPriceRes = await getItemPrice({
+                standardJobId: itemRes.data.itemBodyModel.standardJobId,
+                repairKitId: itemRes.data.itemBodyModel.repairKitId,
+                itemId: itemRes.data.itemId
+            })
+            const { priceMethod, listPrice,
+                priceEscalation, additional,
+                calculatedPrice, flatPrice,
+                discountType, year,
+                totalPrice,
+            } = itemRes.data.itemBodyModel
 
+            setPriceCalculator({
+                ...priceCalculator,
+                priceMethod, listPrice,
+                priceEscalationInput: priceEscalation,
+                priceAdditionalInput: additional,
+                calculatedPrice, flatPrice,
+                discountTypeInput: discountType,
+                year,
+                totalPrice,
 
-    const handleAddNewServiceOrBundle = () => {
-        // setServiceOrBundleShow(false);
-        if (serviceOrBundlePrefix === "SERVICE") {
-            setBundleTabs("3")
-        }
-        if (serviceOrBundlePrefix === "BUNDLE") {
-            // setOpenAddBundleItem(true);
-            setBundleTabs("2")
+            })
+
+            console.log("itemPriceRes", itemPriceRes)
+
+            const _generalComponentData = { ...generalComponentData };
+            _generalComponentData.items?.push({ itemId: itemRes.data.itemId });
+            setGeneralComponentData(_generalComponentData);
+            // put API for porfolio update Item id
+            // call here
+            const { portfolioId, ...res } = generalComponentData;
+            let obj = {
+                ...res,
+                visibleInCommerce: true,
+                customerId: 0,
+                lubricant: true,
+                customerSegment: generalComponentData.customerSegment
+                    ? generalComponentData.customerSegment.value
+                    : "EMPTY",
+                machineType: generalComponentData.machineType
+                    ? generalComponentData.machineType
+                    : "EMPTY",
+                status: generalComponentData.status
+                    ? generalComponentData.status
+                    : "EMPTY",
+                strategyTask: generalComponentData.strategyTask
+                    ? generalComponentData.strategyTask
+                    : "EMPTY",
+                taskType: generalComponentData.taskType
+                    ? generalComponentData.taskType
+                    : "EMPTY",
+                usageCategory: generalComponentData.usageCategory
+                    ? generalComponentData.usageCategory
+                    : "EMPTY",
+                productHierarchy: generalComponentData.productHierarchy
+                    ? generalComponentData.productHierarchy
+                    : "EMPTY",
+                geographic: generalComponentData.geographic
+                    ? generalComponentData.geographic
+                    : "EMPTY",
+                availability: generalComponentData.availability
+                    ? generalComponentData.availability
+                    : "EMPTY",
+                responseTime: generalComponentData.responseTime
+                    ? generalComponentData.responseTime
+                    : "EMPTY",
+                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                application: generalComponentData.application
+                    ? generalComponentData.application
+                    : "EMPTY",
+                contractOrSupport: generalComponentData.contractOrSupport
+                    ? generalComponentData.contractOrSupport
+                    : "EMPTY",
+                lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                    ? generalComponentData.lifeStageOfMachine
+                    : "EMPTY",
+                supportLevel: generalComponentData.supportLevel
+                    ? generalComponentData.supportLevel
+                    : "EMPTY",
+                customerGroup: generalComponentData.customerGroup
+                    ? generalComponentData.customerGroup
+                    : "EMPTY",
+                searchTerm: "EMPTY",
+                supportLevel: "EMPTY",
+                portfolioPrice: {},
+                additionalPrice: {},
+                escalationPrice: {},
+                coverages: generalComponentData.coverages
+                    ? generalComponentData.coverages
+                    : [],
+                items: _generalComponentData.items,
+                usageCategory: categoryUsageKeyValue1.value,
+                taskType: stratgyTaskTypeKeyValue.value,
+                strategyTask: stratgyTaskUsageKeyValue.value,
+                responseTime: stratgyResponseTimeKeyValue.value,
+                productHierarchy: stratgyHierarchyKeyValue.value,
+                geographic: stratgyGeographicKeyValue.value,
+            };
+            if (generalComponentData.portfolioId) {
+                const updatePortfolioRes = await updatePortfolio(
+                    generalComponentData.portfolioId,
+                    obj
+                );
+                if (updatePortfolioRes.status != 200) {
+                    throw `${updatePortfolioRes.status}:Something went wrong`;
+                }
+            }
+
+            setGeneralComponentData(_generalComponentData);
+            setTempBundleItems([...tempBundleItems, itemRes.data]);
+
+            setOpenAddBundleItem(false);
+            setOpenSearchSolution(false);
+            setLoadingItem(false);
+        } catch (error) {
+            console.log("error in item creation err:", error);
         }
     };
 
@@ -723,16 +807,492 @@ export function ServicePortfolio(props) {
         }
     };
 
-    const [newBundle, setNewBundle] = useState({
-        serviceDescription: "",
-        bundleFlag: "",
-        reference: "",
-        customerSegment: null,
-        machineComponent: null,
-    });
+    const handleNewBundleItem = () => {
+        setTabs("1");
+        setItemModelShow(true);
+        // setOpenAddBundleItem(true);
+
+        setOpenSearchSolution(false);
+        setCreateNewBundle(false);
+        setOpenAddBundleItemHeader("Add New Portfolio Item");
+    };
+
+    const handleServiceItemEdit = (e, row) => {
+        setOpenAddBundleItem(true);
+        console.log("handleServiceItemEdit", row);
+    };
+
+    const handleServiceItemDelete = (e, row) => {
+        const _bundleItems = [...bundleItems];
+        const updated = _bundleItems.filter((currentItem) => {
+            if (currentItem.id !== row.id) {
+                return currentItem;
+            }
+        });
+        setBundleItems(updated);
+    };
+
+    const handleServiceItemSave = (e, row) => {
+        alert("save");
+    };
+
+    const handleDropdownChange = (type, e) => {
+        if (type == ENUM.STRATEGY_TASK) {
+            setStrategyData({
+                ...strategyData,
+                strategyTask: e,
+            });
+            if (e == null) {
+                setTaskTypeKeyValue([]);
+                setStrategyData({
+                    ...strategyData,
+                    taskType: null,
+                    strategyTask: null,
+                });
+            } else {
+                const options = e.second.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setTaskTypeKeyValue(options);
+            }
+        } else if (type == ENUM.TASK_TYPE) {
+            setStrategyData({
+                ...strategyData,
+                taskType: e,
+            });
+        } else if (type == ENUM.CATEGORY_USAGE) {
+            setStrategyData({
+                ...strategyData,
+                categoryUsage: e,
+            });
+        } else if (type == ENUM.RESPONSE_TIME) {
+            setStrategyData({
+                ...strategyData,
+                responseTime: e,
+            });
+        } else if (type == ENUM.PRODUCT_HIERARCHY) {
+            setStrategyData({
+                ...strategyData,
+                productHierarchy: e,
+            });
+        } else if (type == ENUM.GEOGRAPHIC) {
+            setStrategyData({
+                ...strategyData,
+                geographic: e,
+            });
+        } else if (type == ENUM.MACHINE_COMPONENT) {
+            setCoverageData({
+                ...coverageData,
+                machineComponent: e,
+            });
+        } else if (type == ENUM.MACHINE_TYPE) {
+            setCoverageData({
+                ...coverageData,
+                machineType: e,
+            });
+        } else if (type == ENUM.MAKE) {
+            setCoverageData({
+                ...coverageData,
+                makeSelect: e,
+            });
+        } else if (type == ENUM.MODEL) {
+            setCoverageData({
+                ...coverageData,
+                modelSelect: e,
+            });
+        } else if (type == ENUM.PREFIX) {
+            setCoverageData({
+                ...coverageData,
+                prefixSelect: e,
+            });
+        }
+    };
+
+    const handleNextClick = async (e) => {
+
+        if (e.target.id == "general") {
+
+            let reqData = {
+                type: prefilgabelGeneral,
+                name: generalComponentData.name,
+                description: generalComponentData.description,
+                externalReference: generalComponentData.externalReference,
+                customerSegment: generalComponentData.customerSegment
+                    ? generalComponentData.customerSegment.value
+                    : "",
+
+                strategyTask: "PREVENTIVE_MAINTENANCE",
+                taskType: "PM1",
+                usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+                productHierarchy: "END_PRODUCT",
+                geographic: "ONSITE",
+                availability: "AVAILABILITY_GREATER_95",
+                responseTime: "PROACTIVE",
+                type: "MACHINE",
+                application: "HILL",
+                contractOrSupport: "LEVEL_I",
+                lifeStageOfMachine: "NEW_BREAKIN",
+                supportLevel: "PREMIUM",
+                serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
+            };
+
+            const portfolioRes = await createPortfolio(reqData);
+            if (portfolioRes.status === 200) {
+                toast("👏 Portfolio Created", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                setValue("2");
+                setGeneralComponentData({
+                    ...generalComponentData,
+                    portfolioId: portfolioRes.data.portfolioId,
+                });
+                setPortfolioId(portfolioRes.data.portfolioId);
+            } else {
+                throw `${portfolioRes.status}:error in portfolio creation`;
+            }
+            // console.log("req data : ", reqData)
+
+            // setValue("2");
+            // console.log("general Data => ", generalData)
+        } else if (e.target.id == "validity") {
+            setValue("3");
+            let reqData;
+            if (validityData.fromDate && validityData.toDate) {
+                reqData = {
+                    validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                    validTo: validityData.toDate.toISOString().substring(0, 10),
+                };
+            } else if (validityData.fromInput && validityData.toInput) {
+                reqData = {
+                    validFrom: validityData.fromInput + validityData.from,
+                    validTo: validityData.toInput + validityData.from,
+                };
+            }
+            setGeneralComponentData({
+                ...generalComponentData,
+                ...reqData,
+            });
+            // console.log("validityData Data => ", validityData)
+        } else if (e.target.id == "strategy") {
+            setGeneralComponentData({
+                ...generalComponentData,
+                usageCategory: categoryUsageKeyValue1.value,
+                taskType: stratgyTaskTypeKeyValue.value,
+                strategyTask: stratgyTaskUsageKeyValue.value,
+                optionals: stratgyOptionalsKeyValue.value,
+                responseTime: stratgyResponseTimeKeyValue.value,
+                productHierarchy: stratgyHierarchyKeyValue.value,
+                geographic: stratgyGeographicKeyValue.value,
+            });
+
+            const { portfolioId, ...res } = generalComponentData;
+            let obj = {
+                ...res,
+                visibleInCommerce: true,
+                customerId: 0,
+                lubricant: true,
+                customerSegment: generalComponentData.customerSegment.value
+                    ? generalComponentData.customerSegment.value
+                    : "EMPTY",
+                machineType: generalComponentData.machineType
+                    ? generalComponentData.machineType
+                    : "EMPTY",
+                status: generalComponentData.status
+                    ? generalComponentData.status
+                    : "EMPTY",
+                strategyTask: generalComponentData.strategyTask
+                    ? generalComponentData.strategyTask
+                    : "EMPTY",
+                taskType: generalComponentData.taskType
+                    ? generalComponentData.taskType
+                    : "EMPTY",
+                usageCategory: generalComponentData.usageCategory
+                    ? generalComponentData.usageCategory
+                    : "EMPTY",
+                productHierarchy: generalComponentData.productHierarchy
+                    ? generalComponentData.productHierarchy
+                    : "EMPTY",
+                geographic: generalComponentData.geographic
+                    ? generalComponentData.geographic
+                    : "EMPTY",
+                availability: generalComponentData.availability
+                    ? generalComponentData.availability
+                    : "EMPTY",
+                responseTime: generalComponentData.responseTime
+                    ? generalComponentData.responseTime
+                    : "EMPTY",
+                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                application: generalComponentData.application
+                    ? generalComponentData.application
+                    : "EMPTY",
+                contractOrSupport: generalComponentData.contractOrSupport
+                    ? generalComponentData.contractOrSupport
+                    : "EMPTY",
+                lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                    ? generalComponentData.lifeStageOfMachine
+                    : "EMPTY",
+                supportLevel: generalComponentData.supportLevel
+                    ? generalComponentData.supportLevel
+                    : "EMPTY",
+                items: [],
+                coverages: [],
+                customerGroup: generalComponentData.customerGroup
+                    ? generalComponentData.customerGroup
+                    : "EMPTY",
+                searchTerm: "EMPTY",
+                supportLevel: "EMPTY",
+                portfolioPrice: {},
+                additionalPrice: {},
+                escalationPrice: {},
+
+                usageCategory: categoryUsageKeyValue1.value,
+                taskType: stratgyTaskTypeKeyValue.value,
+                strategyTask: stratgyTaskUsageKeyValue.value,
+                responseTime: stratgyResponseTimeKeyValue.value,
+                productHierarchy: stratgyHierarchyKeyValue.value,
+                geographic: stratgyGeographicKeyValue.value,
+            };
 
 
+            const strategyRes = await updatePortfolio(
+                generalComponentData.portfolioId,
+                obj
+            );
+            if (strategyRes.status === 200) {
+                toast("👏 Portfolio updated", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                setValue("administrative");
+                // setValue("4");
+                console.log("strategy updating", strategyRes.data);
+            } else {
+                throw `${strategyRes.status}:error in update portfolio`;
+            };
+        } else if (e.target.id == "administrative") {
+            setValue("4");
 
+        } else if (e.target.id == "coverage") {
+
+
+            let cvgIds = [];
+            setValue("6");
+            for (let i = 0; i < selectedMasterData.length; i++) {
+                let reqObj = {
+                    coverageId: 0,
+                    serviceId: 0,
+                    modelNo: selectedMasterData[i].model,
+                    serialNumber: "",
+                    startSerialNumber: "",
+                    endSerialNumber: "",
+                    serialNumberPrefix: "",
+                    family: selectedMasterData[i].family,
+                    make: selectedMasterData[i].make,
+                    fleet: "",
+                    fleetSize: "SMALL",
+                    location: "",
+                    startDate: "",
+                    endDate: "",
+                    actions: "",
+                    createdAt: "",
+                };
+                const res = await createCoverage(reqObj);
+                console.log("createCoverage res:", res);
+                cvgIds.push({ coverageId: res.coverageId });
+            }
+            setGeneralComponentData({
+                ...generalComponentData,
+                coverages: cvgIds,
+            });
+            const { portfolioId, ...res } = generalComponentData;
+            let obj = {
+                ...res,
+                visibleInCommerce: true,
+                customerId: 0,
+                lubricant: true,
+                customerSegment: generalComponentData.customerSegment
+                    ? generalComponentData.customerSegment.value
+                    : "EMPTY",
+                machineType: generalComponentData.machineType
+                    ? generalComponentData.machineType
+                    : "EMPTY",
+                status: generalComponentData.status
+                    ? generalComponentData.status
+                    : "EMPTY",
+                strategyTask: generalComponentData.strategyTask
+                    ? generalComponentData.strategyTask
+                    : "EMPTY",
+                taskType: generalComponentData.taskType
+                    ? generalComponentData.taskType
+                    : "EMPTY",
+                usageCategory: generalComponentData.usageCategory
+                    ? generalComponentData.usageCategory
+                    : "EMPTY",
+                productHierarchy: generalComponentData.productHierarchy
+                    ? generalComponentData.productHierarchy
+                    : "EMPTY",
+                geographic: generalComponentData.geographic
+                    ? generalComponentData.geographic
+                    : "EMPTY",
+                availability: generalComponentData.availability
+                    ? generalComponentData.availability
+                    : "EMPTY",
+                responseTime: generalComponentData.responseTime
+                    ? generalComponentData.responseTime
+                    : "EMPTY",
+                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                application: generalComponentData.application
+                    ? generalComponentData.application
+                    : "EMPTY",
+                contractOrSupport: generalComponentData.contractOrSupport
+                    ? generalComponentData.contractOrSupport
+                    : "EMPTY",
+                lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                    ? generalComponentData.lifeStageOfMachine
+                    : "EMPTY",
+                supportLevel: generalComponentData.supportLevel
+                    ? generalComponentData.supportLevel
+                    : "EMPTY",
+                customerGroup: generalComponentData.customerGroup
+                    ? generalComponentData.customerGroup
+                    : "EMPTY",
+                searchTerm: "EMPTY",
+                supportLevel: "EMPTY",
+                portfolioPrice: {},
+                additionalPrice: {},
+                escalationPrice: {},
+                items: [],
+                coverages: cvgIds,
+                usageCategory: categoryUsageKeyValue1.value,
+                taskType: stratgyTaskTypeKeyValue.value,
+                strategyTask: stratgyTaskUsageKeyValue.value,
+                responseTime: stratgyResponseTimeKeyValue.value,
+                productHierarchy: stratgyHierarchyKeyValue.value,
+                geographic: stratgyGeographicKeyValue.value,
+            };
+            if (generalComponentData.portfolioId) {
+                const updatePortfolioRes = await updatePortfolio(
+                    generalComponentData.portfolioId,
+                    obj
+                );
+                if (updatePortfolioRes.status === 200) {
+                    toast("👏 Portfolio updated", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    setValue("6");
+                } else {
+                    throw `${updatePortfolioRes.status}:unable to update`;
+                }
+            }
+        }
+        // else if (e.target.id == "coverage") {
+        //     let cvgIds = [];
+
+        //     for (let i = 0; i < selectedMasterData.length; i++) {
+        //         let reqObj = {
+        //           coverageId: 0,
+        //           serviceId: 0,
+        //           modelNo: "992k",
+        //           serialNumber: "",
+        //           startSerialNumber: "",
+        //           endSerialNumber: "",
+        //           serialNumberPrefix: "",
+        //           family: "10",
+        //           make: "RM5",
+        //           fleet: "",
+        //           fleetSize: "SMALL",
+        //           location: "",
+        //           startDate: "",
+        //           endDate: "",
+        //           actions: "",
+        //           createdAt: "",
+        //         };
+        //         const res = await createCoverage(reqObj);
+        //         console.log("createCoverage res:", res);
+        //         cvgIds.push({ coverageId: res.coverageId });
+        //       }
+
+        // }
+
+    }
+
+    const handleGeneralInputChange = (e) => {
+        var value = e.target.value;
+        var name = e.target.name;
+        setGeneralComponentData({
+            ...generalComponentData,
+            [name]: value,
+        });
+    };
+
+    const handleAdministrativreChange = (e) => {
+        console.log("handleAdministrativreChange", administrative);
+        var value = e.target.value;
+        var name = e.target.name;
+        setAdministrative({ ...administrative, [name]: value });
+    };
+
+    const handleCoverageInputChange = (e) => {
+        var value = e.target.value;
+        var name = e.target.name;
+        setCoverageData({
+            ...coverageData,
+            [name]: value,
+        });
+    };
+
+    const getPortfolioDetails = (portfolioId) => {
+        // getAllUsers()
+        //     .then((res) => {
+        //         console.log("Dashboard > getAllUsers > res=", res);
+        //         setUsers(res);
+        //         setIsLoading(false);
+        //     })
+        //     .catch((err) => {
+        //         console.log("axios err=", err);
+        //         setUsers([]);
+        //         setIsLoading(false);
+        //     });
+
+        if (portfolioId != null) {
+            getPortfolio(portfolioId)
+                .then((res) => {
+                    const portfolioDetails = res;
+                    console.log("portfolioDetails", portfolioDetails);
+                    if (portfolioDetails.portfolioId != null) {
+                        setGeneralComponentData({
+                            ...generalComponentData,
+                            name: portfolioDetails.name,
+                            description: portfolioDetails.description,
+                            externalReference: portfolioDetails.externalReference,
+                            customerSegment: portfolioDetails.customerSegment,
+                            // serviceProgramDescription: "",
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.log("error:", err);
+                });
+        }
+    };
 
     const initFetch = () => {
         setHeaderTypeKeyValue([
@@ -933,12 +1493,38 @@ export function ServicePortfolio(props) {
             });
     };
 
-    const handleCustomerSegmentChange = (e) => {
-        setGeneralComponentData({
-            ...generalComponentData,
-            customerSegment: e,
-        });
-    };
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        const portfolioId = 362;
+        getPortfolioDetails(portfolioId);
+        initFetch();
+        dispatch(taskActions.fetchTaskList());
+    }, [dispatch]);
+
+    const categoryList = useAppSelector(
+        selectStrategyTaskOption(selectCategoryList)
+    );
+
+    const rTimeList = useAppSelector(
+        selectStrategyTaskOption(selectResponseTimeList)
+    );
+
+    const productList = useAppSelector(
+        selectStrategyTaskOption(selectProductList)
+    );
+
+    const geographicList = useAppSelector(
+        selectStrategyTaskOption(selectGeographicalList)
+    );
+
+    const updatedList = useAppSelector(
+        selectStrategyTaskOption(selectUpdateList)
+    );
+
+    const updatedTaskList = useAppSelector(
+        selectStrategyTaskOption(selectUpdateTaskList)
+    );
 
     const HandleCatUsage = (e) => {
         setStratgyTaskUsageKeyValue([]);
@@ -955,396 +1541,213 @@ export function ServicePortfolio(props) {
         dispatch(taskActions.updateTask(e.value));
     };
 
-    const dispatch = useDispatch();
+    const handleChangedrop = (event) => {
+        setAge(event.target.value);
+    };
+
+    const [age, setAge] = React.useState('5');
+    const [age1, setAge1] = React.useState('5');
+    const [age2, setAge2] = React.useState('5');
+
+    const handleChangedrop1 = (event) => {
+        setAge1(event.target.value);
+    };
+    const handleChangedrop2 = (event) => {
+        setAge2(event.target.value);
+    };
+
+    const options = [
+        { value: 'chocolate', label: 'Construction-Heavy' },
+        { value: 'strawberry', label: 'Construction-Low' },
+        { value: 'vanilla', label: 'Construction-Medium' },
+        { value: 'Construction', label: 'Construction' },
+    ];
+
+
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    const handleClose1 = () => setOpen1(false);
+    const handleCoveragetable = () => setOpenCoveragetable(false);
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+
+    const fileTypes = ["JPG", "PNG", "GIF"];
+
+    const activityOptions = [
+        'None',
+        'Atria',
+        'Callisto'
+    ];
+
+    const rows = [
+        { id: 1, GroupNumber: 'Snow', Type: 'Jon', Partnumber: 35, PriceExtended: 'pending', Pricecurrency: 'Open', Usage: 'Inconsistent', TotalPrice: 'Inconsistent', Comments: 'Inconsistent', Actions: 'Inconsistent', },
+        { id: 2, GroupNumber: 'Lannister', Type: 'Cersei', Partnumber: 42, PriceExtended: 'pending', Pricecurrency: 'Open', Usage: 'Consistent', TotalPrice: 'Inconsistent', Comments: 'Inconsistent', Actions: 'Inconsistent', },
+        { id: 3, GroupNumber: 'Lannister', Type: 'Jaime', Partnumber: 45, PriceExtended: 'pending', Pricecurrency: 'Open', Usage: 'Consistent', TotalPrice: 'Inconsistent', Comments: 'Inconsistent', Actions: 'Inconsistent', },
+        // { id: 4, DocumentType: 'Stark', PrimaruQuote: 'Arya', Groupid: 16, progress: 'pending',},
+        // { id: 5, DocumentType: 'Targaryen', PrimaruQuote: 'Daenerys', Groupid: null, progress: 35, },
+        // { id: 6, DocumentType: 'Melisandre', PrimaruQuote: null, Groupid: 150, progress: 35, },
+        // { id: 7, DocumentType: 'Clifford', PrimaruQuote: 'Ferrara', Groupid: 44, progress: 35, },
+        // { id: 8, DocumentType: 'Frances', PrimaruQuote: 'Rossini', Groupid: 36, progress: 35, },
+        // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
+    ];
+
+    const handleCheckboxData = (e, row) => {
+        if (e.target.checked) {
+            var _searchedData = [...masterData];
+
+            const updated = _searchedData.map((currentItem, i) => {
+                if (row.id == currentItem.id) {
+                    return { ...currentItem, ["check1"]: e.target.checked };
+                } else return currentItem;
+            });
+
+            setMasterData([...updated]);
+
+            const isFound = filterMasterData.some((element) => {
+                if (element.id === row.id) {
+                    return true;
+                }
+
+                return false;
+            });
+
+            if (!isFound) {
+                const _filterMasterData = [...filterMasterData, { ...row }];
+                const updatedItems = _filterMasterData.map((currentItem, i) => {
+                    return {
+                        ...currentItem,
+                        items: [
+                            {
+                                family: currentItem.family,
+                                model: currentItem.model,
+                                noSeriese: "0JAPA000470",
+                                location: "LIMA",
+                                startDate: "08/04/20017",
+                                endDate: "08/04/20017",
+                            },
+                        ],
+                    };
+                });
+                setFilterMasterData(updatedItems);
+                // setFilterMasterData([...filterMasterData, { ...row }])
+            }
+        } else {
+            var _masterData = [...masterData];
+            const updated1 = _masterData.map((currentItem, i) => {
+                if (row.id == currentItem.id) {
+                    return { ...currentItem, ["check1"]: e.target.checked };
+                } else return currentItem;
+            });
+            setMasterData([...updated1]);
+            var _filterMasterData = [...filterMasterData];
+            const updated = _filterMasterData.filter((currentItem, i) => {
+                if (row.id !== currentItem.id) return currentItem;
+            });
+            setFilterMasterData(updated);
+        }
+    };
 
     useEffect(() => {
-        const portfolioId = 362;
-        getPortfolioDetails(portfolioId);
-        initFetch();
-        dispatch(taskActions.fetchTaskList());
-    }, [dispatch]);
+        if (masterData.some((masterDataitem) => masterDataitem.check1 === true)) {
+            setFlagIs(true);
+        } else {
+            setFlagIs(false);
+        }
+    }, [masterData]);
 
+    const handleDeleteIncludeSerialNo = (e, row) => {
+        const updated = selectedMasterData.filter((obj) => {
+            if (obj.id !== row.id) return obj;
+        });
 
+        const _IncludedDataList = [...openedModelBoxData];
 
-    const categoryList = useAppSelector(
-        selectStrategyTaskOption(selectCategoryList)
-    );
-
-    const updatedList = useAppSelector(
-        selectStrategyTaskOption(selectUpdateList)
-    );
-
-    const updatedTaskList = useAppSelector(
-        selectStrategyTaskOption(selectUpdateTaskList)
-    );
-
-    const rTimeList = useAppSelector(
-        selectStrategyTaskOption(selectResponseTimeList)
-    );
-
-
-    const geographicList = useAppSelector(
-        selectStrategyTaskOption(selectGeographicalList)
-    );
-
-    const productList = useAppSelector(
-        selectStrategyTaskOption(selectProductList)
-    );
-
-    const handleServiceItemEdit = (e, row) => {
-        setOpenAddBundleItem(true);
-        console.log("handleServiceItemEdit", row);
-    };
-
-    const handleServiceItemDelete = (e, row) => {
-        const _bundleItems = [...bundleItems];
-        const updated = _bundleItems.filter((currentItem) => {
-            if (currentItem.id !== row.id) {
-                return currentItem;
+        const NewAddedData = _IncludedDataList.map((currentItem, i) => {
+            for (var j in currentItem) {
+                if (j == row.id) {
+                    openedModelBoxData.splice(i, 1);
+                }
             }
         });
-        setBundleItems(updated);
+
+        setSelectedMasterData(updated);
+        setFilterMasterData(updated);
     };
 
-    const handleNextClick = async (e) => {
+    const handleEditIncludeSerialNo = (e, row) => {
+        console.log("handleEditIncludeSerialNo row:", row);
+        let obj = {
+            coverageId: row.id,
+            make: row.make,
+            family: row.family,
+            modelNo: row.model,
+            serialNoPrefix: row.prefix,
+            startSerialNo: row.startSerialNo,
+            endSerialNo: row.endSerialNo,
+            fleet: row.fleet,
+            fleetSize: row.fleetSize,
+        };
+        setEditSerialNo(obj);
+    };
 
-        if (e.target.id == "general") {
-
-            let reqData = {
-                type: prefilgabelGeneral,
-                name: generalComponentData.name,
-                description: generalComponentData.description,
-                externalReference: generalComponentData.externalReference,
-                customerSegment: generalComponentData.customerSegment
-                    ? generalComponentData.customerSegment.value
-                    : "",
-
-                strategyTask: "PREVENTIVE_MAINTENANCE",
-                taskType: "PM1",
-                usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-                productHierarchy: "END_PRODUCT",
-                geographic: "ONSITE",
-                availability: "AVAILABILITY_GREATER_95",
-                responseTime: "PROACTIVE",
-                type: "MACHINE",
-                application: "HILL",
-                contractOrSupport: "LEVEL_I",
-                lifeStageOfMachine: "NEW_BREAKIN",
-                supportLevel: "PREMIUM",
-                serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
-            };
-
-            const portfolioRes = await createPortfolio(reqData);
-            if (portfolioRes.status === 200) {
-                toast("👏 Portfolio Created", {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-                setValue("2");
-                setGeneralComponentData({
-                    ...generalComponentData,
-                    portfolioId: portfolioRes.data.portfolioId,
-                });
-                setPortfolioId(portfolioRes.data.portfolioId);
-            } else {
-                throw `${portfolioRes.status}:error in portfolio creation`;
-            }
-            // console.log("req data : ", reqData)
-
-            // setValue("2");
-            // console.log("general Data => ", generalData)
-        } else if (e.target.id == "validity") {
-            setValue("3");
-            let reqData;
-            if (validityData.fromDate && validityData.toDate) {
-                reqData = {
-                    validFrom: validityData.fromDate.toISOString().substring(0, 10),
-                    validTo: validityData.toDate.toISOString().substring(0, 10),
-                };
-            } else if (validityData.fromInput && validityData.toInput) {
-                reqData = {
-                    validFrom: validityData.fromInput + validityData.from,
-                    validTo: validityData.toInput + validityData.from,
-                };
-            }
-            setGeneralComponentData({
-                ...generalComponentData,
-                ...reqData,
+    const handleTempbundleItemSelection = (e, row) => {
+        if (e.target.name === "selectedId") {
+            setTempBundleItemCheckList({
+                [e.target.name]: e.target.value,
             });
-            // console.log("validityData Data => ", validityData)
-        } else if (e.target.id == "strategy") {
-            setGeneralComponentData({
-                ...generalComponentData,
-                usageCategory: categoryUsageKeyValue1.value,
-                taskType: stratgyTaskTypeKeyValue.value,
-                strategyTask: stratgyTaskUsageKeyValue.value,
-                optionals: stratgyOptionalsKeyValue.value,
-                responseTime: stratgyResponseTimeKeyValue.value,
-                productHierarchy: stratgyHierarchyKeyValue.value,
-                geographic: stratgyGeographicKeyValue.value,
-            });
+            return;
+        }
+        let _tempBundleItemCheckList = { ...tempBundleItemCheckList };
+        if (e.target.checked) {
+            _tempBundleItemCheckList[row.itemId] =
+                !_tempBundleItemCheckList[row.itemId];
+        } else {
+            _tempBundleItemCheckList[row.itemId] =
+                !_tempBundleItemCheckList[row.itemId];
+        }
+        setTempBundleItemCheckList(_tempBundleItemCheckList);
+    };
 
-            const { portfolioId, ...res } = generalComponentData;
-            let obj = {
-                ...res,
-                visibleInCommerce: true,
-                customerId: 0,
-                lubricant: true,
-                customerSegment: generalComponentData.customerSegment.value
-                    ? generalComponentData.customerSegment.value
-                    : "EMPTY",
-                machineType: generalComponentData.machineType
-                    ? generalComponentData.machineType
-                    : "EMPTY",
-                status: generalComponentData.status
-                    ? generalComponentData.status
-                    : "EMPTY",
-                strategyTask: generalComponentData.strategyTask
-                    ? generalComponentData.strategyTask
-                    : "EMPTY",
-                taskType: generalComponentData.taskType
-                    ? generalComponentData.taskType
-                    : "EMPTY",
-                usageCategory: generalComponentData.usageCategory
-                    ? generalComponentData.usageCategory
-                    : "EMPTY",
-                productHierarchy: generalComponentData.productHierarchy
-                    ? generalComponentData.productHierarchy
-                    : "EMPTY",
-                geographic: generalComponentData.geographic
-                    ? generalComponentData.geographic
-                    : "EMPTY",
-                availability: generalComponentData.availability
-                    ? generalComponentData.availability
-                    : "EMPTY",
-                responseTime: generalComponentData.responseTime
-                    ? generalComponentData.responseTime
-                    : "EMPTY",
-                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                application: generalComponentData.application
-                    ? generalComponentData.application
-                    : "EMPTY",
-                contractOrSupport: generalComponentData.contractOrSupport
-                    ? generalComponentData.contractOrSupport
-                    : "EMPTY",
-                lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                    ? generalComponentData.lifeStageOfMachine
-                    : "EMPTY",
-                supportLevel: generalComponentData.supportLevel
-                    ? generalComponentData.supportLevel
-                    : "EMPTY",
-                items: [],
-                coverages: [],
-                customerGroup: generalComponentData.customerGroup
-                    ? generalComponentData.customerGroup
-                    : "EMPTY",
-                searchTerm: "EMPTY",
-                supportLevel: "EMPTY",
-                portfolioPrice: {},
-                additionalPrice: {},
-                escalationPrice: {},
-
-                usageCategory: categoryUsageKeyValue1.value,
-                taskType: stratgyTaskTypeKeyValue.value,
-                strategyTask: stratgyTaskUsageKeyValue.value,
-                responseTime: stratgyResponseTimeKeyValue.value,
-                productHierarchy: stratgyHierarchyKeyValue.value,
-                geographic: stratgyGeographicKeyValue.value,
-            };
-
-
-            const strategyRes = await updatePortfolio(
-                generalComponentData.portfolioId,
-                obj
-            );
-            if (strategyRes.status === 200) {
-                toast("👏 Portfolio updated", {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-                setValue("4");
-                console.log("strategy updating", strategyRes.data);
-            } else {
-                throw `${strategyRes.status}:error in update portfolio`;
-            };
-        } else if (e.target.id == "coverage") {
-
-
-            let cvgIds = [];
-            setValue("6");
-            for (let i = 0; i < selectedMasterData.length; i++) {
-                let reqObj = {
-                    coverageId: 0,
-                    serviceId: 0,
-                    modelNo: selectedMasterData[i].model,
-                    serialNumber: "",
-                    startSerialNumber: "",
-                    endSerialNumber: "",
-                    serialNumberPrefix: "",
-                    family: selectedMasterData[i].family,
-                    make: selectedMasterData[i].make,
-                    fleet: "",
-                    fleetSize: "SMALL",
-                    location: "",
-                    startDate: "",
-                    endDate: "",
-                    actions: "",
-                    createdAt: "",
-                };
-                const res = await createCoverage(reqObj);
-                console.log("createCoverage res:", res);
-                cvgIds.push({ coverageId: res.coverageId });
-            }
-            setGeneralComponentData({
-                ...generalComponentData,
-                coverages: cvgIds,
-            });
-            const { portfolioId, ...res } = generalComponentData;
-            let obj = {
-                ...res,
-                visibleInCommerce: true,
-                customerId: 0,
-                lubricant: true,
-                customerSegment: generalComponentData.customerSegment
-                    ? generalComponentData.customerSegment.value
-                    : "EMPTY",
-                machineType: generalComponentData.machineType
-                    ? generalComponentData.machineType
-                    : "EMPTY",
-                status: generalComponentData.status
-                    ? generalComponentData.status
-                    : "EMPTY",
-                strategyTask: generalComponentData.strategyTask
-                    ? generalComponentData.strategyTask
-                    : "EMPTY",
-                taskType: generalComponentData.taskType
-                    ? generalComponentData.taskType
-                    : "EMPTY",
-                usageCategory: generalComponentData.usageCategory
-                    ? generalComponentData.usageCategory
-                    : "EMPTY",
-                productHierarchy: generalComponentData.productHierarchy
-                    ? generalComponentData.productHierarchy
-                    : "EMPTY",
-                geographic: generalComponentData.geographic
-                    ? generalComponentData.geographic
-                    : "EMPTY",
-                availability: generalComponentData.availability
-                    ? generalComponentData.availability
-                    : "EMPTY",
-                responseTime: generalComponentData.responseTime
-                    ? generalComponentData.responseTime
-                    : "EMPTY",
-                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                application: generalComponentData.application
-                    ? generalComponentData.application
-                    : "EMPTY",
-                contractOrSupport: generalComponentData.contractOrSupport
-                    ? generalComponentData.contractOrSupport
-                    : "EMPTY",
-                lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                    ? generalComponentData.lifeStageOfMachine
-                    : "EMPTY",
-                supportLevel: generalComponentData.supportLevel
-                    ? generalComponentData.supportLevel
-                    : "EMPTY",
-                customerGroup: generalComponentData.customerGroup
-                    ? generalComponentData.customerGroup
-                    : "EMPTY",
-                searchTerm: "EMPTY",
-                supportLevel: "EMPTY",
-                portfolioPrice: {},
-                additionalPrice: {},
-                escalationPrice: {},
-                items: [],
-                coverages: cvgIds,
-                usageCategory: categoryUsageKeyValue1.value,
-                taskType: stratgyTaskTypeKeyValue.value,
-                strategyTask: stratgyTaskUsageKeyValue.value,
-                responseTime: stratgyResponseTimeKeyValue.value,
-                productHierarchy: stratgyHierarchyKeyValue.value,
-                geographic: stratgyGeographicKeyValue.value,
-            };
-            if (generalComponentData.portfolioId) {
-                const updatePortfolioRes = await updatePortfolio(
-                    generalComponentData.portfolioId,
-                    obj
-                );
-                if (updatePortfolioRes.status === 200) {
-                    toast("👏 Portfolio updated", {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                    });
-                    setValue("6");
-                } else {
-                    throw `${updatePortfolioRes.status}:unable to update`;
+    const addTempItemIntobundleItem = () => {
+        setLoadingItem(true);
+        setItemModelShow(false);
+        let temp = [];
+        for (let key1 in tempBundleItemCheckList) {
+            for (let i = 0; i < tempBundleItems.length; i++) {
+                if (
+                    (tempBundleItems[i].itemId == key1 &&
+                        tempBundleItemCheckList[key1]) ||
+                    tempBundleItems[i].itemId == tempBundleItemCheckList.selectedId
+                ) {
+                    temp.push(tempBundleItems[i]);
+                    break;
                 }
             }
         }
-        // else if (e.target.id == "coverage") {
-        //     let cvgIds = [];
-
-        //     for (let i = 0; i < selectedMasterData.length; i++) {
-        //         let reqObj = {
-        //           coverageId: 0,
-        //           serviceId: 0,
-        //           modelNo: "992k",
-        //           serialNumber: "",
-        //           startSerialNumber: "",
-        //           endSerialNumber: "",
-        //           serialNumberPrefix: "",
-        //           family: "10",
-        //           make: "RM5",
-        //           fleet: "",
-        //           fleetSize: "SMALL",
-        //           location: "",
-        //           startDate: "",
-        //           endDate: "",
-        //           actions: "",
-        //           createdAt: "",
-        //         };
-        //         const res = await createCoverage(reqObj);
-        //         console.log("createCoverage res:", res);
-        //         cvgIds.push({ coverageId: res.coverageId });
-        //       }
-
-        // }
-
-    }
-
-    const handleBundleItemOpen = () => {
-        setServiceOrBundlePrefix("BUNDLE");
-        // setServiceOrBundleShow(true);
-        setBundleServiceShow(true);
-        setBundleTabs("1")
+        setBundleItems(temp);
+        setLoadingItem(false);
+        setTabs("1");
     };
 
-    const handleServiceItemOpen = () => {
-        setServiceOrBundlePrefix("SERVICE");
-        // setServiceOrBundleShow(true);
-        setBundleServiceShow(true);
-        setBundleTabs("1")
-    };
+    const columns = [
+        { field: 'GroupNumber', headerName: 'Group Number', flex: 1, width: 70 },
+        { field: 'Type', headerName: 'Type', flex: 1, width: 130 },
+        { field: 'Partnumber', headerName: 'Part number', flex: 1, width: 130 },
+        { field: 'PriceExtended', headerName: 'Price Extended', flex: 1, width: 130 },
+        { field: 'Pricecurrency', headerName: 'Price currency', flex: 1, width: 130 },
+        { field: 'Usage', headerName: 'Usage', flex: 1, width: 130 },
+        { field: 'TotalPrice', headerName: 'Total Price', flex: 1, width: 130 },
+        { field: 'Comments', headerName: 'Comments', flex: 1, width: 130 },
+        { field: 'Actions', headerName: 'Actions', flex: 1, width: 130 },
+        // {field: 'age',headerName: 'Age',type: 'number', width: 90,},
+        // {field: 'fullName',headerName: 'Full name',description: 'This column has a value getter and is not sortable.',sortable: false,width: 160,valueGetter: (params) =>
+        //   `${params.getValue(params.id, 'firstName') || ''} ${
+        //       params.getValue(params.id, 'DocumentType') || ''
+        //     }`,
 
-    const handleServiceItemSave = (e, row) => {
-        alert("save");
-    };
-
+    ];
 
     const masterColumns = [
         {
@@ -1834,493 +2237,6 @@ export function ServicePortfolio(props) {
         },
     ];
 
-    const handleCheckboxData = (e, row) => {
-        if (e.target.checked) {
-            var _searchedData = [...masterData];
-
-            const updated = _searchedData.map((currentItem, i) => {
-                if (row.id == currentItem.id) {
-                    return { ...currentItem, ["check1"]: e.target.checked };
-                } else return currentItem;
-            });
-
-            setMasterData([...updated]);
-
-            const isFound = filterMasterData.some((element) => {
-                if (element.id === row.id) {
-                    return true;
-                }
-
-                return false;
-            });
-
-            if (!isFound) {
-                const _filterMasterData = [...filterMasterData, { ...row }];
-                const updatedItems = _filterMasterData.map((currentItem, i) => {
-                    return {
-                        ...currentItem,
-                        items: [
-                            {
-                                family: currentItem.family,
-                                model: currentItem.model,
-                                noSeriese: "0JAPA000470",
-                                location: "LIMA",
-                                startDate: "08/04/20017",
-                                endDate: "08/04/20017",
-                            },
-                        ],
-                    };
-                });
-                setFilterMasterData(updatedItems);
-                // setFilterMasterData([...filterMasterData, { ...row }])
-            }
-        } else {
-            var _masterData = [...masterData];
-            const updated1 = _masterData.map((currentItem, i) => {
-                if (row.id == currentItem.id) {
-                    return { ...currentItem, ["check1"]: e.target.checked };
-                } else return currentItem;
-            });
-            setMasterData([...updated1]);
-            var _filterMasterData = [...filterMasterData];
-            const updated = _filterMasterData.filter((currentItem, i) => {
-                if (row.id !== currentItem.id) return currentItem;
-            });
-            setFilterMasterData(updated);
-        }
-    };
-
-    useEffect(() => {
-        if (masterData.some((masterDataitem) => masterDataitem.check1 === true)) {
-            setFlagIs(true);
-        } else {
-            setFlagIs(false);
-        }
-    }, [masterData]);
-
-
-
-    const handleDeleteIncludeSerialNo = (e, row) => {
-        const updated = selectedMasterData.filter((obj) => {
-            if (obj.id !== row.id) return obj;
-        });
-
-        const _IncludedDataList = [...openedModelBoxData];
-
-        const NewAddedData = _IncludedDataList.map((currentItem, i) => {
-            for (var j in currentItem) {
-                if (j == row.id) {
-                    openedModelBoxData.splice(i, 1);
-                }
-            }
-        });
-
-        setSelectedMasterData(updated);
-        setFilterMasterData(updated);
-    };
-
-    const handleEditIncludeSerialNo = (e, row) => {
-        console.log("handleEditIncludeSerialNo row:", row);
-        let obj = {
-            coverageId: row.id,
-            make: row.make,
-            family: row.family,
-            modelNo: row.model,
-            serialNoPrefix: row.prefix,
-            startSerialNo: row.startSerialNo,
-            endSerialNo: row.endSerialNo,
-            fleet: row.fleet,
-            fleetSize: row.fleetSize,
-        };
-        setEditSerialNo(obj);
-    };
-
-    const handleCoverageInputChange = (e) => {
-        var value = e.target.value;
-        var name = e.target.name;
-        setCoverageData({
-            ...coverageData,
-            [name]: value,
-        });
-    };
-
-
-    const ShowRelatedIncludeModelBox = (dataRow) => {
-        setModelIncludedData([]);
-
-        var ModelBoxKeys = [];
-        var KeyValues = [];
-
-        for (var key in openedModelBoxData) {
-            ModelBoxKeys.push(Object.keys(openedModelBoxData[key]));
-        }
-
-        const ValIs = ModelBoxKeys.map((i, data) => {
-            KeyValues.push(Number(i[0]));
-        });
-
-        if (!KeyValues.includes(dataRow.id)) {
-            openedModelBoxData.push({
-                [dataRow.id]: [
-                    {
-                        family: dataRow.family,
-                        model: dataRow.model,
-                        noSeriese: "0JAPA000470",
-                        location: "LIMA",
-                        startDate: "08/04/20017",
-                        endDate: "08/04/20017",
-                    },
-                ],
-            });
-        }
-
-        setOpenedModelBoxData([...openedModelBoxData]);
-
-        const NewAddedData = openedModelBoxData.map((currentItem, i) => {
-            if (currentItem.hasOwnProperty(dataRow.id)) {
-                var valueOf = Object.values(currentItem);
-                const Addval = valueOf.map((myVal, i) => {
-                    setModelIncludedData([...myVal]);
-                });
-            }
-        });
-
-        setShowRelatedModel(true);
-        setOpenModelBoxDataId(dataRow);
-    };
-
-    const AddNewRowData = (rowItem) => {
-        if (showRelatedModel === true) {
-            const _IncludedDataList = [...openedModelBoxData];
-
-            const NewAddedData = _IncludedDataList.map((currentItem, i) => {
-                for (var j in currentItem) {
-                    if (j == rowItem.id) {
-                        currentItem[j].push({
-                            family: rowItem.family,
-                            model: rowItem.model,
-                            noSeriese: "0JAPA000470",
-                            location: "LIMA",
-                            startDate: "08/04/20017",
-                            endDate: "08/04/20017",
-                        });
-                        setModelIncludedData([...currentItem[j]]);
-
-                        setOpenedModelBoxData([...openedModelBoxData]);
-                    }
-                }
-            });
-        }
-    };
-
-    const handleDropdownChange = (type, e) => {
-        if (type == ENUM.STRATEGY_TASK) {
-            setStrategyData({
-                ...strategyData,
-                strategyTask: e,
-            });
-            if (e == null) {
-                setTaskTypeKeyValue([]);
-                setStrategyData({
-                    ...strategyData,
-                    taskType: null,
-                    strategyTask: null,
-                });
-            } else {
-                const options = e.second.map((d) => ({
-                    value: d.key,
-                    label: d.value,
-                }));
-                setTaskTypeKeyValue(options);
-            }
-        } else if (type == ENUM.TASK_TYPE) {
-            setStrategyData({
-                ...strategyData,
-                taskType: e,
-            });
-        } else if (type == ENUM.CATEGORY_USAGE) {
-            setStrategyData({
-                ...strategyData,
-                categoryUsage: e,
-            });
-        } else if (type == ENUM.RESPONSE_TIME) {
-            setStrategyData({
-                ...strategyData,
-                responseTime: e,
-            });
-        } else if (type == ENUM.PRODUCT_HIERARCHY) {
-            setStrategyData({
-                ...strategyData,
-                productHierarchy: e,
-            });
-        } else if (type == ENUM.GEOGRAPHIC) {
-            setStrategyData({
-                ...strategyData,
-                geographic: e,
-            });
-        } else if (type == ENUM.MACHINE_COMPONENT) {
-            setCoverageData({
-                ...coverageData,
-                machineComponent: e,
-            });
-        } else if (type == ENUM.MACHINE_TYPE) {
-            setCoverageData({
-                ...coverageData,
-                machineType: e,
-            });
-        } else if (type == ENUM.MAKE) {
-            setCoverageData({
-                ...coverageData,
-                makeSelect: e,
-            });
-        } else if (type == ENUM.MODEL) {
-            setCoverageData({
-                ...coverageData,
-                modelSelect: e,
-            });
-        } else if (type == ENUM.PREFIX) {
-            setCoverageData({
-                ...coverageData,
-                prefixSelect: e,
-            });
-        }
-    };
-
-
-    const getAddportfolioItemDataFun = (data) => {
-        setAddportFolioItem(data)
-    }
-
-    const handleBundleItemSaveAndContinue = async () => {
-        setTabs(`${parseInt(tabs) + 1}`);
-        setLoadingItem(true);
-        try {
-            let reqObj = {
-                itemId: 0,
-                itemName: "",
-                itemHeaderModel: {
-                    itemHeaderId: 0,
-                    // itemHeaderId: parseInt(generalComponentData.portfolioId),
-                    itemHeaderDescription: generalComponentData.description,
-                    bundleFlag: "PORTFOLIO",
-                    reference: generalComponentData.externalReference,
-                    itemHeaderMake: "",
-                    itemHeaderFamily: "",
-                    model: "",
-                    prefix: "",
-                    type: "MACHINE",
-                    additional: "",
-                    currency: "",
-                    netPrice: 0,
-                    itemProductHierarchy: generalComponentData.productHierarchy,
-                    itemHeaderGeographic: generalComponentData.geographic,
-                    responseTime: generalComponentData.responseTime,
-                    usage: "",
-                    validFrom: generalComponentData.validFrom,
-                    validTo: generalComponentData.validTo,
-                    estimatedTime: "",
-                    servicePrice: 0,
-                    status: "NEW",
-                },
-                itemBodyModel: {
-                    itemBodyId: parseInt(addPortFolioItem.id),
-                    itemBodyDescription: addPortFolioItem.description,
-                    quantity: parseInt(addPortFolioItem.quantity),
-                    startUsage: priceCalculator.startUsage,
-                    endUsage: priceCalculator.endUsage,
-                    standardJobId: "",
-                    frequency: addPortFolioItem.frequency.value,
-                    additional: "",
-                    spareParts: ["WITH_SPARE_PARTS"],
-                    labours: ["WITH_LABOUR"],
-                    miscellaneous: ["LUBRICANTS"],
-                    taskType: [addPortFolioItem.taskType.value],
-                    solutionCode: "",
-                    usageIn: addPortFolioItem.usageIn.value,
-                    recommendedValue: 0,
-                    usage: "",
-                    repairKitId: "",
-                    templateDescription: addPortFolioItem.description.value,
-                    partListId: "",
-                    serviceEstimateId: "",
-                    numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
-                    repairOption: addPortFolioItem.repairOption.value,
-                    priceMethod: "LIST_PRICE",
-                    listPrice: parseInt(priceCalculator.listPrice),
-                    priceEscalation: "",
-                    calculatedPrice: parseInt(priceCalculator.calculatedPrice),
-                    flatPrice: parseInt(priceCalculator.flatPrice),
-                    discountType: "",
-                    year: priceCalculator.priceYear.value,
-                    avgUsage: 0,
-                    unit: addPortFolioItem.unit.value,
-                    sparePartsPrice: 0,
-                    sparePartsPriceBreakDownPercentage: 0,
-                    servicePrice: 0,
-                    servicePriceBreakDownPercentage: 0,
-                    miscPrice: 0,
-                    miscPriceBreakDownPercentage: 0,
-                    totalPrice: 0,
-                },
-            };
-            const itemRes = await itemCreation(reqObj);
-            console.log("itemCreation res:", itemRes);
-            if (itemRes.status !== 200) {
-                alert("something went wrong");
-                return;
-            }
-            const itemPriceRes = await getItemPrice({
-                standardJobId: itemRes.data.itemBodyModel.standardJobId,
-                repairKitId: itemRes.data.itemBodyModel.repairKitId,
-                itemId: itemRes.data.itemId
-            })
-            const { priceMethod, listPrice,
-                priceEscalation, additional,
-                calculatedPrice, flatPrice,
-                discountType, year,
-                totalPrice,
-            } = itemRes.data.itemBodyModel
-
-            setPriceCalculator({
-                ...priceCalculator,
-                priceMethod, listPrice,
-                priceEscalationInput: priceEscalation,
-                priceAdditionalInput: additional,
-                calculatedPrice, flatPrice,
-                discountTypeInput: discountType,
-                year,
-                totalPrice,
-
-            })
-
-            console.log("itemPriceRes", itemPriceRes)
-
-            const _generalComponentData = { ...generalComponentData };
-            _generalComponentData.items?.push({ itemId: itemRes.data.itemId });
-            setGeneralComponentData(_generalComponentData);
-            // put API for porfolio update Item id
-            // call here
-            const { portfolioId, ...res } = generalComponentData;
-            let obj = {
-                ...res,
-                visibleInCommerce: true,
-                customerId: 0,
-                lubricant: true,
-                customerSegment: generalComponentData.customerSegment
-                    ? generalComponentData.customerSegment.value
-                    : "EMPTY",
-                machineType: generalComponentData.machineType
-                    ? generalComponentData.machineType
-                    : "EMPTY",
-                status: generalComponentData.status
-                    ? generalComponentData.status
-                    : "EMPTY",
-                strategyTask: generalComponentData.strategyTask
-                    ? generalComponentData.strategyTask
-                    : "EMPTY",
-                taskType: generalComponentData.taskType
-                    ? generalComponentData.taskType
-                    : "EMPTY",
-                usageCategory: generalComponentData.usageCategory
-                    ? generalComponentData.usageCategory
-                    : "EMPTY",
-                productHierarchy: generalComponentData.productHierarchy
-                    ? generalComponentData.productHierarchy
-                    : "EMPTY",
-                geographic: generalComponentData.geographic
-                    ? generalComponentData.geographic
-                    : "EMPTY",
-                availability: generalComponentData.availability
-                    ? generalComponentData.availability
-                    : "EMPTY",
-                responseTime: generalComponentData.responseTime
-                    ? generalComponentData.responseTime
-                    : "EMPTY",
-                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                application: generalComponentData.application
-                    ? generalComponentData.application
-                    : "EMPTY",
-                contractOrSupport: generalComponentData.contractOrSupport
-                    ? generalComponentData.contractOrSupport
-                    : "EMPTY",
-                lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                    ? generalComponentData.lifeStageOfMachine
-                    : "EMPTY",
-                supportLevel: generalComponentData.supportLevel
-                    ? generalComponentData.supportLevel
-                    : "EMPTY",
-                customerGroup: generalComponentData.customerGroup
-                    ? generalComponentData.customerGroup
-                    : "EMPTY",
-                searchTerm: "EMPTY",
-                supportLevel: "EMPTY",
-                portfolioPrice: {},
-                additionalPrice: {},
-                escalationPrice: {},
-                coverages: generalComponentData.coverages
-                    ? generalComponentData.coverages
-                    : [],
-                items: _generalComponentData.items,
-                usageCategory: categoryUsageKeyValue1.value,
-                taskType: stratgyTaskTypeKeyValue.value,
-                strategyTask: stratgyTaskUsageKeyValue.value,
-                responseTime: stratgyResponseTimeKeyValue.value,
-                productHierarchy: stratgyHierarchyKeyValue.value,
-                geographic: stratgyGeographicKeyValue.value,
-            };
-            if (generalComponentData.portfolioId) {
-                const updatePortfolioRes = await updatePortfolio(
-                    generalComponentData.portfolioId,
-                    obj
-                );
-                if (updatePortfolioRes.status != 200) {
-                    throw `${updatePortfolioRes.status}:Something went wrong`;
-                }
-            }
-
-            setGeneralComponentData(_generalComponentData);
-            setTempBundleItems([...tempBundleItems, itemRes.data]);
-
-            setOpenAddBundleItem(false);
-            setOpenSearchSolution(false);
-            setLoadingItem(false);
-        } catch (error) {
-            console.log("error in item creation err:", error);
-        }
-    };
-
-
-
-    const fileTypes = ["JPG", "PNG", "GIF"];
-
-
-    const activityOptions = [
-        'None',
-        'Atria',
-        'Callisto'
-    ];
-
-    const addTempItemIntobundleItem = () => {
-        setLoadingItem(true);
-        setItemModelShow(false);
-        let temp = [];
-        for (let key1 in tempBundleItemCheckList) {
-            for (let i = 0; i < tempBundleItems.length; i++) {
-                if (
-                    (tempBundleItems[i].itemId == key1 &&
-                        tempBundleItemCheckList[key1]) ||
-                    tempBundleItems[i].itemId == tempBundleItemCheckList.selectedId
-                ) {
-                    temp.push(tempBundleItems[i]);
-                    break;
-                }
-            }
-        }
-        setBundleItems(temp);
-        setLoadingItem(false);
-        setTabs("1");
-    };
-
     const tempBundleItemColumns = [
         {
             name: (
@@ -2585,36 +2501,119 @@ export function ServicePortfolio(props) {
         },
     ];
 
-    const columns = [
-        { field: 'GroupNumber', headerName: 'Group Number', flex: 1, width: 70 },
-        { field: 'Type', headerName: 'Type', flex: 1, width: 130 },
-        { field: 'Partnumber', headerName: 'Part number', flex: 1, width: 130 },
-        { field: 'PriceExtended', headerName: 'Price Extended', flex: 1, width: 130 },
-        { field: 'Pricecurrency', headerName: 'Price currency', flex: 1, width: 130 },
-        { field: 'Usage', headerName: 'Usage', flex: 1, width: 130 },
-        { field: 'TotalPrice', headerName: 'Total Price', flex: 1, width: 130 },
-        { field: 'Comments', headerName: 'Comments', flex: 1, width: 130 },
-        { field: 'Actions', headerName: 'Actions', flex: 1, width: 130 },
-        // {field: 'age',headerName: 'Age',type: 'number', width: 90,},
-        // {field: 'fullName',headerName: 'Full name',description: 'This column has a value getter and is not sortable.',sortable: false,width: 160,valueGetter: (params) =>
-        //   `${params.getValue(params.id, 'firstName') || ''} ${
-        //       params.getValue(params.id, 'DocumentType') || ''
-        //     }`,
+    const handleServiceItemOpen = () => {
+        setServiceOrBundlePrefix("SERVICE");
+        // setServiceOrBundleShow(true);
+        setBundleServiceShow(true);
+        setBundleTabs("1")
+    };
 
-    ];
+    const handleBundleItemOpen = () => {
+        setServiceOrBundlePrefix("BUNDLE");
+        // setServiceOrBundleShow(true);
+        setBundleServiceShow(true);
+        setBundleTabs("1")
+    };
 
-    const rows = [
-        { id: 1, GroupNumber: 'Snow', Type: 'Jon', Partnumber: 35, PriceExtended: 'pending', Pricecurrency: 'Open', Usage: 'Inconsistent', TotalPrice: 'Inconsistent', Comments: 'Inconsistent', Actions: 'Inconsistent', },
-        { id: 2, GroupNumber: 'Lannister', Type: 'Cersei', Partnumber: 42, PriceExtended: 'pending', Pricecurrency: 'Open', Usage: 'Consistent', TotalPrice: 'Inconsistent', Comments: 'Inconsistent', Actions: 'Inconsistent', },
-        { id: 3, GroupNumber: 'Lannister', Type: 'Jaime', Partnumber: 45, PriceExtended: 'pending', Pricecurrency: 'Open', Usage: 'Consistent', TotalPrice: 'Inconsistent', Comments: 'Inconsistent', Actions: 'Inconsistent', },
-        // { id: 4, DocumentType: 'Stark', PrimaruQuote: 'Arya', Groupid: 16, progress: 'pending',},
-        // { id: 5, DocumentType: 'Targaryen', PrimaruQuote: 'Daenerys', Groupid: null, progress: 35, },
-        // { id: 6, DocumentType: 'Melisandre', PrimaruQuote: null, Groupid: 150, progress: 35, },
-        // { id: 7, DocumentType: 'Clifford', PrimaruQuote: 'Ferrara', Groupid: 44, progress: 35, },
-        // { id: 8, DocumentType: 'Frances', PrimaruQuote: 'Rossini', Groupid: 36, progress: 35, },
-        // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
-    ];
+    const handleAddServiceBundleChange = (e) => {
+        setCreateServiceOrBundle({
+            ...createServiceOrBundle,
+            [e.target.name]: e.target.value,
+        });
+    };
 
+    const handleAddNewServiceOrBundle = () => {
+        // setServiceOrBundleShow(false);
+        if (serviceOrBundlePrefix === "SERVICE") {
+            setBundleTabs("3")
+        }
+        if (serviceOrBundlePrefix === "BUNDLE") {
+            // setOpenAddBundleItem(true);
+            setBundleTabs("2")
+        }
+    };
+
+    const ShowRelatedIncludeModelBox = (dataRow) => {
+        setModelIncludedData([]);
+
+        var ModelBoxKeys = [];
+        var KeyValues = [];
+
+        for (var key in openedModelBoxData) {
+            ModelBoxKeys.push(Object.keys(openedModelBoxData[key]));
+        }
+
+        const ValIs = ModelBoxKeys.map((i, data) => {
+            KeyValues.push(Number(i[0]));
+        });
+
+        if (!KeyValues.includes(dataRow.id)) {
+            openedModelBoxData.push({
+                [dataRow.id]: [
+                    {
+                        family: dataRow.family,
+                        model: dataRow.model,
+                        noSeriese: "0JAPA000470",
+                        location: "LIMA",
+                        startDate: "08/04/20017",
+                        endDate: "08/04/20017",
+                    },
+                ],
+            });
+        }
+
+        setOpenedModelBoxData([...openedModelBoxData]);
+
+        const NewAddedData = openedModelBoxData.map((currentItem, i) => {
+            if (currentItem.hasOwnProperty(dataRow.id)) {
+                var valueOf = Object.values(currentItem);
+                const Addval = valueOf.map((myVal, i) => {
+                    setModelIncludedData([...myVal]);
+                });
+            }
+        });
+
+        setShowRelatedModel(true);
+        setOpenModelBoxDataId(dataRow);
+    };
+
+    const AddNewRowData = (rowItem) => {
+        if (showRelatedModel === true) {
+            const _IncludedDataList = [...openedModelBoxData];
+
+            const NewAddedData = _IncludedDataList.map((currentItem, i) => {
+                for (var j in currentItem) {
+                    if (j == rowItem.id) {
+                        currentItem[j].push({
+                            family: rowItem.family,
+                            model: rowItem.model,
+                            noSeriese: "0JAPA000470",
+                            location: "LIMA",
+                            startDate: "08/04/20017",
+                            endDate: "08/04/20017",
+                        });
+                        setModelIncludedData([...currentItem[j]]);
+
+                        setOpenedModelBoxData([...openedModelBoxData]);
+                    }
+                }
+            });
+        }
+    };
+
+    const handleExpandedRowDelete = (e, id) => {
+        const _bundleItems = [...bundleItems];
+        _bundleItems[0].associatedServiceOrBundle.splice(id, 1);
+        setBundleItems(_bundleItems);
+    };
+
+    const handleExpandedRowEdit = (e, id) => {
+        alert("Edit row");
+    };
+
+    const getAddportfolioItemDataFun = (data) => {
+        setAddportFolioItem(data)
+    }
 
     const ExpandedComponent = ({ data }) => (
         <div className="scrollbar" id="style">
@@ -2825,6 +2824,7 @@ export function ServicePortfolio(props) {
                                         <Tab label="General" value="1" />
                                         <Tab label="Validity " value="2" />
                                         <Tab label="Strategy" value="3" />
+                                        <Tab label="Administrative" value={"administrative"} />
                                         <Tab label="Price" value="4" />
                                         <Tab label="Price Agreement" disabled={!priceAgreementOption} value="5" />
                                         <Tab label="Coverage" value="6" />
@@ -3228,7 +3228,6 @@ export function ServicePortfolio(props) {
                                                 <Select
                                                     options={updatedTaskList}
                                                     value={stratgyTaskTypeKeyValue}
-                                                    // onChange={(e) => setStratgyTaskTypeKeyValue(e)}
                                                     onChange={(e) =>
                                                         setStratgyTaskTypeKeyValue(e)(
                                                             (addPortFolioItem.taskType = "")
@@ -3311,6 +3310,46 @@ export function ServicePortfolio(props) {
                                                 {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    Machine Type
+                                                </label>
+                                                <Select
+                                                    // options={geographicList}
+                                                    // value={stratgyGeographicKeyValue}
+                                                    // onChange={(e) => setStratgyGeographicKeyValue(e)}
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                    options={options}
+                                                    placeholder="Machine Type"
+                                                />
+                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    Life Stage
+                                                </label>
+                                                <Select
+                                                    // options={geographicList}
+                                                    // value={stratgyGeographicKeyValue}
+                                                    // onChange={(e) => setStratgyGeographicKeyValue(e)}
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                    options={options}
+                                                    placeholder="Life Stage"
+                                                />
+                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
+                                            </div>
+                                        </div>
                                     </div>
                                     {isView ? (
                                         <div className="row">
@@ -3375,6 +3414,148 @@ export function ServicePortfolio(props) {
                                             onClick={handleNextClick}
                                             className="btn btn-light"
                                             id="strategy"
+                                        >
+                                            Save & Next
+                                        </button>
+                                    </div>
+                                </TabPanel>
+                                <TabPanel value={"administrative"}>
+                                    <div className="row">
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    PREPARED BY
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    name="preparedBy"
+                                                    value={administrative.preparedBy}
+                                                    onChange={handleAdministrativreChange}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    APPROVED BY
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    placeholder="Optional"
+                                                    name="approvedBy"
+                                                    value={administrative.approvedBy}
+                                                    onChange={handleAdministrativreChange}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    PREPARED ON
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    placeholder="Optional"
+                                                    name="preparedOn"
+                                                    value={administrative.preparedOn}
+                                                    onChange={handleAdministrativreChange}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    REVISED BY
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    placeholder="Optional"
+                                                    name="revisedBy"
+                                                    value={administrative.revisedBy}
+                                                    onChange={handleAdministrativreChange}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    REVISED ON
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    placeholder="Optional"
+                                                    name="revisedOn"
+                                                    value={administrative.revisedOn}
+                                                    onChange={handleAdministrativreChange}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    SALSE OFFICE/BRANCH
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    name="branch"
+                                                    value={administrative.branch}
+                                                    onChange={handleAdministrativreChange}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    OFFER VALIDITY
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    placeholder="Optional"
+                                                    name="offerValidity"
+                                                    value={administrative.offerValidity}
+                                                    onChange={handleAdministrativreChange}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row" style={{ justifyContent: "right" }}>
+                                        <button
+                                            type="button"
+                                            onClick={handleNextClick}
+                                            className="btn btn-light"
+                                            id="administrative"
                                         >
                                             Save & Next
                                         </button>
@@ -4479,7 +4660,7 @@ export function ServicePortfolio(props) {
                                     <Tab label="Component Data" value="3" />
                                 </TabList>
                             </Box>
-                            <TabPanel value="1">
+                            {/* <TabPanel value="1">
                                 <AddPortfolioItem
                                     // openAddBundleItemHeader={openAddBundleItemHeader}
                                     categoryList={categoryList}
@@ -4489,7 +4670,7 @@ export function ServicePortfolio(props) {
                                     compoFlag="ITEM"
                                     handleBundleItemSaveAndContinue={handleBundleItemSaveAndContinue}
                                 />
-                            </TabPanel>
+                            </TabPanel> */}
 
                             <TabPanel value="2">
                                 <PriceCalculator
