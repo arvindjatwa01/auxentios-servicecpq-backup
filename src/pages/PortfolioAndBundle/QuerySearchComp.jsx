@@ -130,7 +130,7 @@ const QuerySearchComp = (props) => {
     props.compoFlag === "itemSearch" && props?.setBundleItems([]);
     props.compoFlag === "coverage" && props?.setOpenedModelBoxData([]);
 
-    props?.setTempBundleService([])
+    props.setTempBundleService1([])
 
   };
   const handleQuerySearchClick = async () => {
@@ -209,9 +209,10 @@ const QuerySearchComp = (props) => {
 
   const handleBundleSearch = async () => {
     try {
+      props.setLoadingItem("01")
       if (
-        querySearchSelector[0]?.itemType.value==""||
-        querySearchSelector[0]?.itemTypeOperator.value==""||
+        querySearchSelector[0]?.itemType.value == "" ||
+        querySearchSelector[0]?.itemTypeOperator.value == "" ||
         querySearchSelector[0]?.selectFamily?.value == "" ||
         querySearchSelector[0]?.inputSearch == ""
 
@@ -222,8 +223,8 @@ const QuerySearchComp = (props) => {
 
       for (let i = 1; i < querySearchSelector.length; i++) {
         if (
-          querySearchSelector[i]?.itemType.value==""||
-          querySearchSelector[i]?.itemTypeOperator.value==""||
+          querySearchSelector[i]?.itemType.value == "" ||
+          querySearchSelector[i]?.itemTypeOperator.value == "" ||
           querySearchSelector[i]?.selectFamily?.value == "" ||
           querySearchSelector[i]?.inputSearch == "" ||
           querySearchSelector[i]?.selectOperator?.value == ""
@@ -234,17 +235,20 @@ const QuerySearchComp = (props) => {
         searchStr =
           searchStr +
           " " +
-          querySearchSelector[i].selectOperator.value+` bundleFlag:${querySearchSelector[i]?.itemType.value} `+`${querySearchSelector[i]?.itemTypeOperator.value} `+
+          querySearchSelector[i].selectOperator.value + ` bundleFlag:${querySearchSelector[i]?.itemType.value} ` + `${querySearchSelector[i]?.itemTypeOperator.value} ` +
           querySearchSelector[i].selectFamily.value +
           "~" +
           querySearchSelector[i].inputSearch;
       }
       const res = await itemSearch(searchStr)
-      if(res.length>0){
-        props.setTempBundleService(res)
-        console.log("res for search", res)
-      }else{
+      if (!res.length > 0) {
+        props.setLoadingItem("11")
+        props.setTempBundleService1([])
         throw "No record found"
+      }else{
+        props.setTempBundleService1(res)
+        props.setLoadingItem("11")
+
       }
 
     } catch (error) {

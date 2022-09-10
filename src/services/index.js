@@ -16,4 +16,5 @@ export { getMakeKeyValue, getModelKeyValue, getPrefixKeyValue,createCoverage } f
 export { getUsageCategoryKeyValue, getStrategyTaskKeyValue, getTaskTypeKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getTypeKeyValue, getResponseTimeTaskKeyValue, getValidityKeyValue } from './commonSolutionBuilderServices'
 export {getSearchQueryCoverage,getSearchCoverageForFamily} from "./searchQueryService"
 export { itemCreation,itemSearchSuggestion,itemSearch,getItemPrice,updateItemData,deleteItem } from './portFolioItemService';
+export { getComponentCodeSuggetions } from './masterComponentCode';
 
