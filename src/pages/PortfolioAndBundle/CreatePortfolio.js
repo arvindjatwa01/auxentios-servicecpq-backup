@@ -103,6 +103,7 @@ import {
   getItemPrice,
   updateItemData,
   deleteItem,
+  getComponentCodeSuggetions
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -403,7 +404,7 @@ export function CreatePortfolio() {
   });
   const [tabs, setTabs] = useState("1");
   const [itemModelShow, setItemModelShow] = useState(false);
-  const [loadingItem, setLoadingItem] = useState(false);
+  const [loadingItem, setLoadingItem] = useState("");
   const [tempBundleItems, setTempBundleItems] = useState([]);
   const [valueOfUseCase, setValueOfUseCase] = useState(3);
   const [tempBundleItemCheckList, setTempBundleItemCheckList] = useState({});
@@ -413,7 +414,17 @@ export function CreatePortfolio() {
   const [passItemEditRowData, setPassItemEditRowData] = useState();
   const [passBundleEditRowData, setPassBundleEditRowData] = useState();
   const [isPriceShow, setIsPriceShow] = useState(false);
-  const [tempBundleService, setTempBundleService] = useState([]);
+  const [tempBundleService1, setTempBundleService1] = useState([]);
+  const [tempBundleService2, setTempBundleService2] = useState([]);
+  const [tempBundleService3, setTempBundleService3] = useState([]);
+  const [componentData, setComponentData] = useState({
+    code: "",
+    codeSuggestions: [],
+    description: "",
+    model: "",
+    make: "",
+    serialNo: ""
+  });
 
   const location = useLocation();
 
@@ -3144,6 +3155,121 @@ export function CreatePortfolio() {
       format: (row) => row.itemBodyModel.totalPrice,
     },
   ];
+  const tempBundleItemColumns1 = [
+    {
+      name: (
+        <>
+          <div>Id</div>
+        </>
+      ),
+      selector: (row) => row.itemId,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemId,
+    },
+    {
+      name: (
+        <>
+          <div>Description</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.itemBodyDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.itemBodyDescription,
+    },
+    {
+      name: (
+        <>
+          <div>Strategy</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel.strategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel.strategy,
+    },
+    {
+      name: (
+        <>
+          <div>Standard Job Id</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.standardJobId,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.standardJobId,
+    },
+    {
+      name: (
+        <>
+          <div>Repair Options</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.repairOption,
+      sortable: true,
+      maxWidth: "300px",
+      format: (row) => row.itemBodyModel.repairOption,
+    },
+    {
+      name: (
+        <>
+          <div>Frequency</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.frequency,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.frequency,
+    },
+    {
+      name: (
+        <>
+          <div>Quantity</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.quantity,
+    },
+    {
+      name: (
+        <>
+          <div>Parts $</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.sparePartsPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.sparePartsPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Service $</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.servicePrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.servicePrice,
+    },
+    {
+      name: (
+        <>
+          <div>Total $</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.totalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.totalPrice,
+    },
+  ];
+
+
+
   const columns4 = [
     {
       name: (
@@ -3643,6 +3769,310 @@ export function CreatePortfolio() {
       ))}
     </div>
   );
+  const ExpandedPriceCalculator = ({ data }) => (<>
+    <div className="row ml-5 mb-3 w-80">
+      <div className="col-md-6 col-sm-6">
+        <div className="form-group">
+          <label
+            className="text-light-dark font-size-12 font-weight-500"
+          >
+            ID
+          </label>
+          <input
+            className="form-control border-radius-10"
+            type="text"
+            defaultValue={data.itemId}
+            placeholder="Service/Bundle ID"
+            disabled
+          />
+        </div>
+      </div>
+      <div className="col-md-6 col-sm-6">
+        <div className="form-group">
+          <label
+            className="text-light-dark font-size-12 font-weight-500"
+          >
+            Description
+          </label>
+          <input
+            className="form-control border-radius-10"
+            type="text"
+            placeholder="Description"
+            defaultValue={data.itemBodyModel.itemBodyDescription}
+          />
+        </div>
+      </div>
+      <div className="col-md-6 col-sm-6">
+        <div className="form-group">
+          <label
+            className="text-light-dark font-size-12 font-weight-500"
+          >
+            Start Usage
+          </label>
+          <input
+            className="form-control border-radius-10"
+            type="text"
+            // placeholder="Description"
+            defaultValue={data.itemBodyModel.startUsage}
+          />
+        </div>
+      </div>
+      <div className="col-md-6 col-sm-6">
+        <div className="form-group">
+          <label
+            className="text-light-dark font-size-12 font-weight-500"
+          >
+            End Usage
+          </label>
+          <input
+            className="form-control border-radius-10"
+            type="text"
+            // placeholder="Description"
+            defaultValue={data.itemBodyModel.endUsage}
+          />
+        </div>
+      </div>
+      <div className="col-md-6 col-sm-6">
+        <div className="form-group">
+          <label
+            className="text-light-dark font-size-12 font-weight-500"
+          >
+            Frequency
+          </label>
+          <input
+            className="form-control border-radius-10"
+            type="text"
+            // placeholder="Description"
+            defaultValue={data.itemBodyModel.frequency}
+          />
+        </div>
+      </div>
+      <div className="col-md-6 col-sm-6">
+        <div className="form-group">
+          <label
+            className="text-light-dark font-size-12 font-weight-500"
+          >
+            Recommonded Value
+          </label>
+          <Select
+            options={options}
+            // placeholder="Description"
+            defaultValue={{ label: data.itemBodyModel.recommendedValue, value: data.itemBodyModel.recommendedValue }}
+          />
+        </div>
+      </div>
+      <div className="col-md-6 col-sm-6">
+        <div className="form-group">
+          <label
+            className="text-light-dark font-size-12 font-weight-500"
+          >
+            No. of Events
+          </label>
+          <input
+            className="form-control border-radius-10"
+            type="text"
+            // placeholder="Description"
+            defaultValue={data.itemBodyModel.numberOfEvents}
+          />
+        </div>
+      </div>
+      <div className="col-md-6 col-sm-6">
+        <div className="form-group">
+          <label
+            className="text-light-dark font-size-12 font-weight-500"
+          >
+            PRICE METHOD
+          </label>
+          <Select
+            options={priceMethodKeyValue}
+            defaultValue={{ label: data.itemBodyModel.priceMethod, value: data.itemBodyModel.priceMethod }}
+            value={priceCalculator.priceMethod}
+            name="priceMethod"
+            onChange={(e) =>
+              setPriceCalculator({ ...priceCalculator, priceMethod: e })
+            }
+          // placeholder="placeholder (Optional)"
+          />
+        </div>
+      </div>
+      <div className="col-md-6 col-sm-6">
+        <div className="form-group date-box">
+          <label
+            className="text-light-dark font-size-12 font-weight-500"
+            for="exampleInputEmail1"
+          >
+            ADDITIONAL
+          </label>
+          <div className=" d-flex form-control-date">
+            <div className="">
+              <Select
+                isClearable={true}
+                // defaultValue={{label:data.itemBodyModel.additional,value:data.itemBodyModel.additional}}
+                value={priceCalculator.priceAdditionalSelect}
+                name="priceAdditionalSelect"
+                onChange={(e) =>
+                  setPriceCalculator({
+                    ...priceCalculator,
+                    priceAdditionalSelect: e,
+                  })
+                }
+                options={options}
+                placeholder="Select"
+              />
+            </div>
+            <input
+              type="text"
+              className="form-control rounded-top-left-0 rounded-bottom-left-0"
+              placeholder="10%"
+              defaultValue={data.itemBodyModel.additional}
+              value={priceCalculator.priceAdditionalInput}
+              name="priceAdditionalInput"
+              onChange={(e) =>
+                setPriceCalculator({
+                  ...priceCalculator,
+                  priceAdditionalInput: e.target.value,
+                })
+              }
+            />
+          </div>
+        </div>
+      </div>
+      <div className="col-md-6 col-sm-6">
+        <div className="form-group date-box">
+          <label
+            className="text-light-dark font-size-12 font-weight-500"
+            for="exampleInputEmail1"
+          >
+            PRICE ESCALATON
+          </label>
+          <div className=" d-flex align-items-center form-control-date">
+            <Select
+              className="select-input"
+              defaultValue={data.itemBodyModel.startUsage}
+              value={priceCalculator.priceEscalationSelect}
+              name="priceEscalationSelect"
+              onChange={(e) =>
+                setPriceCalculator({
+                  ...priceCalculator,
+                  priceEscalationSelect: e,
+                })
+              }
+              options={options}
+              placeholder="placeholder "
+            />
+            <input
+              type="text"
+              className="form-control rounded-top-left-0 rounded-bottom-left-0"
+              placeholder="20%"
+              defaultValue={data.itemBodyModel.priceEscalation}
+              value={priceCalculator.priceEscalationInput}
+              name="priceEscalationInput"
+              onChange={(e) =>
+                setPriceCalculator({
+                  ...priceCalculator,
+                  priceEscalationInput: e.target.value,
+                })
+              }
+            />
+          </div>
+        </div>
+      </div>
+      <div className="col-md-6 col-sm-6">
+        <div className="form-group">
+          <label
+            className="text-light-dark font-size-12 font-weight-500"
+            for="exampleInputEmail1"
+          >
+            CALCULATED PRICE
+          </label>
+          <input
+            type="text"
+            className="form-control border-radius-10"
+            defaultValue={data.itemBodyModel.calculatedPrice}
+            value={priceCalculator.calculatedPrice}
+            name="calculatedPrice"
+            onChange={(e) =>
+              setPriceCalculator({
+                ...priceCalculator,
+                calculatedPrice: e.target.value,
+              })
+            }
+            placeholder="$100"
+          />
+        </div>
+      </div>
+      <div className="col-md-6 col-sm-6">
+        <div className="form-group">
+          <label
+            className="text-light-dark font-size-12 font-weight-500"
+            for="exampleInputEmail1"
+          >
+            FLAT PRICE / ADJUSTED PRICE
+          </label>
+          <input
+            type="text"
+            className="form-control border-radius-10"
+            defaultValue={data.itemBodyModel.flatPrice}
+            value={priceCalculator.flatPrice}
+            name="flatPrice"
+            onChange={(e) =>
+              setPriceCalculator({
+                ...priceCalculator,
+                flatPrice: e.target.value,
+              })
+            }
+            placeholder="$100"
+          />
+        </div>
+      </div>
+      <div className="col-md-6 col-sm-6">
+        <div className="form-group date-box">
+          <label
+            className="text-light-dark font-size-12 font-weight-500"
+            for="exampleInputEmail1"
+          >
+            DISCOUNT TYPE
+          </label>
+          <div className=" d-flex form-control-date">
+            <div className="">
+              <Select
+                defaultValue={data.itemBodyModel.startUsage}
+                value={priceCalculator.discountTypeSelect}
+                name="discountTypeSelect"
+                onChange={(e) =>
+                  setPriceCalculator({
+                    ...priceCalculator,
+                    discountTypeSelect: e,
+                  })
+                }
+                isClearable={true}
+                options={options}
+                placeholder="Select"
+              />
+            </div>
+            <input
+              type="text"
+              className="form-control rounded-top-left-0 rounded-bottom-left-0"
+              defaultValue={data.itemBodyModel.discountType}
+              value={priceCalculator.discountTypeInput}
+              name="discountTypeInput"
+              onChange={(e) =>
+                setPriceCalculator({
+                  ...priceCalculator,
+                  discountTypeInput: e.target.value,
+                })
+              }
+              placeholder="10%"
+            />
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div className="row" style={{ justifyContent: "right" }}>
+      <button type="button" className="btn btn-light">Save</button>
+    </div>
+  </>)
   const handleClick = (event) => {
     console.log("event", event);
     setAnchorEl(event.currentTarget);
@@ -3654,6 +4084,34 @@ export function CreatePortfolio() {
     history.push("/quoteTemplate");
   };
   const history = useHistory();
+
+
+  const handleComponentChange = async (e) => {
+    try {
+      setComponentData({
+        ...componentData,
+        [e.target.name]: e.target.value
+      })
+      if (e.target.name === 'code') {
+        const res = await getComponentCodeSuggetions(`componentCode~${e.target.value}`)
+        setComponentData({
+          ...componentData,
+          [e.target.name]: e.target.value,
+          codeSuggestions: res
+        })
+      }
+    } catch (error) {
+      console.log("err")
+    }
+    
+    setComponentData({
+      ...componentData,
+      [e.target.name]: e.target.value
+    })
+
+
+    
+  }
 
   return (
     <PortfolioContext.Provider
@@ -8068,15 +8526,46 @@ export function CreatePortfolio() {
                     { label: "Model", value: "model" },
                     { label: "Prefix", value: "prefix" },
                   ]}
-                  setTempBundleService={setTempBundleService}
+                  setTempBundleService1={setTempBundleService1}
+                  setLoadingItem={setLoadingItem}
                 />
-                <DataTable
+                {loadingItem === "01" ? ("loading") :
+                  <>
+                    {tempBundleService1.length > 0 && (<>
+                      <DataTable
+                        title=""
+                        columns={tempBundleItemColumns1}
+                        data={tempBundleService1}
+                        customStyles={customStyles}
+                        selectableRows
+                        onSelectedRowsChange={(state) => setTempBundleService2(state.selectedRows)}
+                        pagination
+                      />{tempBundleService1.length > 0 && (<div className="row mt-5" style={{ justifyContent: "right" }}>
+                        <button
+                          type="button"
+                          className="btn btn-light"
+                          onClick={() => {
+                            setTempBundleService3(tempBundleService2)
+                            setTempBundleService1([])
+
+                          }}
+                        >
+                          Add Selected
+                        </button>
+                      </div>)}
+                    </>)}
+                  </>
+
+                }
+                {tempBundleService3.length > 0 && <DataTable
                   title=""
-                  columns={tempBundleItemColumns}
-                  data={tempBundleService}
+                  columns={tempBundleItemColumns1}
+                  data={tempBundleService3}
                   customStyles={customStyles}
+                  expandableRows
+                  expandableRowsComponent={ExpandedPriceCalculator}
                   pagination
-                />
+                />}
 
               </TabPanel>
               <TabPanel value="3">
@@ -8110,14 +8599,14 @@ export function CreatePortfolio() {
                           type="text"
                           className="form-control border-radius-10"
                           name="code"
+                          value={componentData.code}
+                          onChange={handleComponentChange}
                           placeholder="Optional"
                         />
                       </div>
                     </div>
                     <ul className="d-none">
-                      <li>1</li>
-                      <li>1</li>
-                      <li>1</li>
+                      {componentData.codeSuggestions.map((currentItem, i) => <li key={i}>{currentItem.componentCode}</li>)}
                     </ul>
                     <div className="col-md-6 col-sm-6">
                       <div className="form-group">
@@ -8128,6 +8617,8 @@ export function CreatePortfolio() {
                           type="text"
                           className="form-control border-radius-10"
                           name="description"
+                          value={componentData.description}
+                          onChange={handleComponentChange}
                           placeholder="Optional"
                         />
                       </div>
@@ -8141,6 +8632,8 @@ export function CreatePortfolio() {
                           type="text"
                           className="form-control border-radius-10"
                           name="model"
+                          value={componentData.model}
+                          onChange={handleComponentChange}
                           placeholder="Optional"
                         />
                       </div>
@@ -8154,6 +8647,8 @@ export function CreatePortfolio() {
                           type="text"
                           className="form-control border-radius-10"
                           name="make"
+                          value={componentData.make}
+                          onChange={handleComponentChange}
                           placeholder="Optional"
                         />
                       </div>
@@ -8167,6 +8662,8 @@ export function CreatePortfolio() {
                           type="text"
                           className="form-control border-radius-10"
                           name="serialNo"
+                          value={componentData.serialNo}
+                          onChange={handleComponentChange}
                           placeholder="Optional"
                         />
                       </div>
@@ -8185,9 +8682,9 @@ export function CreatePortfolio() {
                           options={priceMethodKeyValue}
                           value={priceCalculator.priceMethod}
                           name="priceMethod"
-                          onChange={(e) =>
-                            setPriceCalculator({ ...priceCalculator, priceMethod: e })
-                          }
+                          // onChange={(e) =>
+                          //   setPriceCalculator({ ...priceCalculator, priceMethod: e })
+                          // }
                           placeholder="placeholder (Optional)"
                         />
                       </div>
@@ -8206,12 +8703,12 @@ export function CreatePortfolio() {
                               isClearable={true}
                               value={priceCalculator.priceAdditionalSelect}
                               name="priceAdditionalSelect"
-                              onChange={(e) =>
-                                setPriceCalculator({
-                                  ...priceCalculator,
-                                  priceAdditionalSelect: e,
-                                })
-                              }
+                              // onChange={(e) =>
+                              //   setPriceCalculator({
+                              //     ...priceCalculator,
+                              //     priceAdditionalSelect: e,
+                              //   })
+                              // }
                               options={options}
                               placeholder="Select"
                             />

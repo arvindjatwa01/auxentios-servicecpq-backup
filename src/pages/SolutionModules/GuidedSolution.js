@@ -1574,9 +1574,18 @@ export const GuidedSolution = (props) => {
                 </div> */}
               </TabPanel>
               <TabPanel className="p-0" value="2">
-                <div className="card  overflow-hidden mt-3 p-3">
-                  <span>data not found</span>
-                </div>
+                {/* <div className="card  overflow-hidden mt-3 p-3">
+                  <span></span>
+                </div> */}
+                <div className="text-right" style={{paddingTop: '18rem'}}>
+                          <a
+                            className="btn bg-primary text-white cursor"
+                            href="/SolutionTemplates"
+                          >
+                            Continue{" "}
+                            <ArrowForwardIcon className=" font-size-16" />
+                          </a>
+                        </div>
               </TabPanel>
               <TabPanel className="p-0" value="3">
                 <div className="card  mt-3 p-3">

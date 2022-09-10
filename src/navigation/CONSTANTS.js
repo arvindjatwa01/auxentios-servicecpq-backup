@@ -36,6 +36,7 @@ export const VERIFY_EMAIL = "/verify-email/:id";
 //Solution Builder Module
 export const SOLUTION_BUILDER = "/solutionBuilder";
 export const PORTFOLIO_AND_BUILDER = "/portfolioBuilder";
+export const SOLUTION_TEMPLATES= "/SolutionTemplates";
 
 export const PORTFOLIO_AND_BUILDER_NEW = "/portfolioBuilder/new";
 export const SERVICE_NEW = "/service/new";
