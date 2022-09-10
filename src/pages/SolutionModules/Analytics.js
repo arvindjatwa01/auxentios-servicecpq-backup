@@ -40,6 +40,7 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { SolutionBuilderModal } from "../../pages/SolutionModules/index"
 
 import SelectFilter from 'react-select';
+import QuerySearchComp from "../PortfolioAndBundle/QuerySearchComp";
 import SearchIcon from '@mui/icons-material/Search';
 import $ from "jquery"
 import {
@@ -90,6 +91,29 @@ export const Analytics = () => {
    const [age1, setAge1] = React.useState('5');
    const [age2, setAge2] = React.useState('5');
    const [show, setShow] = React.useState(false);
+
+   const [responseSearchItem, setResponseSearchItem] = useState([])
+
+   const ItemSearchResponseFun = (data) => {
+      console.log("itemSerach Response Data : ", data)
+
+      if (data.length > 0) {
+         setResponseSearchItem(data)
+         setShowExplore(true)
+         setOpenSearchSolution(false)
+      } else {
+         toast("😐" + "No Record Found ", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+      }
+
+   }
 
 
    const handleChangedrop = (event) => {
@@ -1067,12 +1091,24 @@ export const Analytics = () => {
                                  {/* <span>
                                         <a href="#" className="btn-sm">+</a>
                                     </span> */}
-                                 <Select2
+                                 {/* <Select2
                                     onChange={handleTypeOfSearchChange}
                                     isClearable={true}
                                     value={typeOfSearch}
                                     options={[{ label: "Bundle", value: 'bundle' }, { label: "Service", value: 'service' }, { label: "Portfolio Item", value: 'portfolioItem' }]}
                                     placeholder="Add by"
+                                 /> */}
+                                 <QuerySearchComp
+                                    compoFlag="itemSearch1"
+                                    options={[
+                                       { label: "Make", value: "itemHeaderMake" },
+                                       { label: "Family", value: "itemHeaderFamily" },
+                                       { label: "Model", value: "model" },
+                                       { label: "Prefix", value: "prefix" },
+                                    ]}
+                                    ItemSearchResponseFun={ItemSearchResponseFun}
+                                 // setTempBundleService1={setTempBundleService1}
+                                 // setLoadingItem={setLoadingItem}
                                  />
                               </div>
                               {typeOfSearch != null
@@ -1139,6 +1175,7 @@ export const Analytics = () => {
                         <h5>Available portfolios</h5>
                         <h6>Baed on your choosen search criteria following portfolios are available,and you may click on choose to add the portfolio to the solution</h6>
                         <div>
+
                            <div class="contain-slider mt-3">
                               <OwlCarousel items={3} className='owl-theme' loop margin={10} nav>
                                  <div class='item'>
@@ -1185,6 +1222,7 @@ export const Analytics = () => {
                               </OwlCarousel>
 
                            </div>
+
                            <div>
                               <a href='#' onClick={CantFindgoback} className='btn'>I can't find what i need</a>
                            </div>

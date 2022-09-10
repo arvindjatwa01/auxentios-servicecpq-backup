@@ -58,6 +58,7 @@ export function SolutionSelector(props) {
 
 
     const [rowData, setRowData] = useState([])
+    const [rows1, setRows1] = useState([])
 
     const [solutionValue, setSolutionValue] = useState(0)
 
@@ -90,6 +91,20 @@ export function SolutionSelector(props) {
         // { field: 'Actions', headerName: 'Actions',  flex:1, width: 130 },
 
     ];
+
+    const columns1 = [
+        { field: 'portfolioId', headerName: 'Id', flex: 1, width: 70 },
+        { field: 'description', headerName: 'Description', flex: 1, width: 130 },
+        { field: 'usageCategory', headerName: 'Category', flex: 1, width: 130 },
+        { field: 'strategyTask', headerName: 'Strategy ', flex: 1, width: 130 },
+        { field: 'taskType', headerName: 'Task Type', flex: 1, width: 130 },
+        { field: 'TotalPrice', headerName: 'More actions', flex: 1, width: 130 },
+    ]
+
+
+
+
+
 
     const rows = [
         {
@@ -145,17 +160,53 @@ export function SolutionSelector(props) {
             setSearchByVisible(true)
             //API CALL
             const portfoliosData = getAllPortfolios()
-
-            // portfoliosData.then(function (result) {
-            //     console.log("result is : ", result) // "Some User token"
-            //     setRowData(result)
-            // })
+            setTimeout(() => {
+                // console.log('This will run after 1 second!')
+                console.log("portfoliosData : ", portfoliosData)
+                portfoliosData.then(function (result) {
+                    setRowData(result);
+                    result.map((data, x) => {
+                        setRows1([...rows1, {
+                            id: x,
+                            portfolioId: data.portfolioId,
+                            Type: 'Jon',
+                            description: data.description,
+                            usageCategory: data.usageCategory,
+                            strategyTask: data.strategyTask,
+                            taskType: data.taskType,
+                            TotalPrice: 'Inconsistent',
+                            Comments: 'Inconsistent',
+                            Actions: 'Inconsistent',
+                        }])
+                    });
+                })
+            }, 500);
+            // rowData.map((data, x) => {
+            //     console.log("x is : ",x)
+            //     var rowwData = {
+            //         id: x,
+            //         portfolioId: data.portfolioId,
+            //         Type: 'Jon',
+            //         description: data.description,
+            //         usageCategory: data.usageCategory,
+            //         strategyTask: data.strategyTask,
+            //         taskType: data.taskType,
+            //         TotalPrice: 'Inconsistent',
+            //         Comments: 'Inconsistent',
+            //         Actions: 'Inconsistent',
+            //     };
+            //     setRows1([...rows1, rowwData])
+            // });
 
         }
+
+
+
+        console.log("my RowData : ", rowData)
         setSearchOptions(e)
     }
 
-    // console.log("Row data is : ", rowData)
+    console.log("Row data is : ", rowData)
 
     const handleTypeOfSolution = (e) => {
         setSelectTypeOfSolution(e.target.value)
@@ -170,9 +221,9 @@ export function SolutionSelector(props) {
     }
 
     const HandleNextStepClick = () => {
-        if(solutionValue == 1){
+        if (solutionValue == 1) {
             setActiveStep(2)
-        }else{
+        } else {
             alert("Portfolio ?")
         }
     }
@@ -189,6 +240,41 @@ export function SolutionSelector(props) {
         }
     }, [props.defaultValue]);
 
+    // useEffect(() => {
+    //     setTimeout(() => {
+
+    //         rowData.map((result, i) => {
+    //             rows1.push(result.portfolioId)
+    //             console.log("portfolioId : ", result.portfolioId)
+    //             // rows1.push({
+    //             //     id: i,
+    //             //     portfolioId: result.portfolioId,
+    //             //     Type: 'Jon',
+    //             //     description: result.description,
+    //             //     usageCategory: result.usageCategory,
+    //             //     strategyTask: result.strategyTask,
+    //             //     taskType: result.taskType,
+    //             //     TotalPrice: 'Inconsistent',
+    //             //     Comments: 'Inconsistent',
+    //             //     Actions: 'Inconsistent',
+    //             // })
+    //             // rows1.push({
+    //             //     id: 10,
+    //             //     portfolioId: result.portfolioId,
+    //             //     Type: 'Jon',
+    //             //     description: 35,
+    //             //     usageCategory: 'pending',
+    //             //     strategyTask: 'Open',
+    //             //     taskType: 'Inconsistent',
+    //             //     TotalPrice: 'Inconsistent',
+    //             //     Comments: 'Inconsistent',
+    //             //     Actions: 'Inconsistent',
+    //             // })
+    //         })
+    //     }, 500)
+    // }, [rowData])
+
+    console.log("row1 : ", rows1)
 
     console.log("active step : ", activeStep)
     console.log("solution value : ", solutionValue)
@@ -279,8 +365,8 @@ export function SolutionSelector(props) {
                                                 backgroundColor: '#872ff7', color: '#fff'
                                             }
                                         }}
-                                        rows={rows}
-                                        columns={columns}
+                                        rows={rows1}
+                                        columns={columns1}
                                         pageSize={5}
                                         rowsPerPageOptions={[5]}
                                         checkboxSelection
