@@ -67,6 +67,28 @@ import {
 } from "../../services/index";
 import DataTable from "react-data-table-component";
 
+const customStyles = {
+   rows: {
+      style: {
+         minHeight: "72px", // override the row height
+      },
+   },
+   headCells: {
+      style: {
+         paddingLeft: "8px", // override the cell padding for head cells
+         paddingRight: "8px",
+         backgroundColor: "#872ff7",
+         color: "#fff",
+      },
+   },
+   cells: {
+      style: {
+         paddingLeft: "8px", // override the cell padding for data cells
+         paddingRight: "8px",
+      },
+   },
+};
+
 export const Analytics = () => {
    const [value, setValue] = React.useState('1');
    const [openSolutionSelector, setOpenSolutionSelector] = useState(false)
@@ -87,20 +109,25 @@ export const Analytics = () => {
    const [typeOfSolutionBuild, setTypeOfSolutionBuild] = useState(-1)
    const [buildSolutionValue, setBuildSolutionValue] = useState(-1)
 
+   const [columnTextSearch, setColumnTextSearch] = useState([])
+
    const [age, setAge] = React.useState('5');
    const [age1, setAge1] = React.useState('5');
    const [age2, setAge2] = React.useState('5');
    const [show, setShow] = React.useState(false);
 
    const [responseSearchItem, setResponseSearchItem] = useState([])
+   const [querySearchSelectItem, setQuerySearchSelectItem] = useState([])
 
-   const ItemSearchResponseFun = (data) => {
+   const ItemSearchResponseFun = (data, searchData) => {
       console.log("itemSerach Response Data : ", data)
-
+      console.log("querySearchSelectItem :=> ", searchData)
+      // console.log("item type : ", querySearchSelectItem[0].itemType.label)
       if (data.length > 0) {
          setResponseSearchItem(data)
-         setShowExplore(true)
-         setOpenSearchSolution(false)
+         setQuerySearchSelectItem(searchData)
+         // setShowExplore(true)
+         // setOpenSearchSolution(false)
       } else {
          toast("😐" + "No Record Found ", {
             position: "top-right",
@@ -110,7 +137,7 @@ export const Analytics = () => {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-          });
+         });
       }
 
    }
@@ -594,6 +621,14 @@ export const Analytics = () => {
 
    }
 
+   const myFun = (e, row) => {
+      if (e.target.checked) {
+         setShowExplore(true)
+         setOpenSearchSolution(false)
+      }
+   }
+
+
    useEffect(() => {
       if (masterData.some((masterDataitem) => masterDataitem.check1 === true)) {
          setFlagIs(true);
@@ -638,6 +673,116 @@ export const Analytics = () => {
       //     }`,
 
    ];
+
+   const columns4 = [
+      {
+         name: (
+            <>
+               <div>Select</div>
+            </>
+         ),
+         selector: (row) => row.itemId,
+         wrap: true,
+         sortable: true,
+         // format: (row) => row.itemId,
+         cell: (row) => (
+            <Checkbox
+               className="text-black"
+            // checked={row.check1}
+            // onChange={(e) => myFun(e, row)}
+            />
+         ),
+      },
+      {
+         name: (
+            <>
+               <div>ID</div>
+            </>
+         ),
+         selector: (row) => row.itemId,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemId,
+      },
+      {
+         name: (
+            <>
+               <div>Description</div>
+            </>
+         ),
+         selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemHeaderModel.itemHeaderDescription,
+      },
+      {
+         name: (
+            <>
+               <div>Solution Code</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.solutionCode,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.solutionCode,
+      },
+      // {
+      //    name: (
+      //       <>
+      //          <div>Item Header Id</div>
+      //       </>
+      //    ),
+      //    selector: (row) => row.strategyTask,
+      //    wrap: true,
+      //    sortable: true,
+      //    format: (row) => row.strategyTask,
+      // },
+      {
+         name: (
+            <>
+               <div>Repair Option</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.repairOption,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.repairOption,
+      },
+      {
+         name: (
+            <>
+               <div>Frequency</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.frequency,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.frequency,
+      },
+      {
+         name: (
+            <>
+               <div>Quantity</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.quantity,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.quantity,
+      },
+      {
+         name: (
+            <>
+               <div>Total $</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.totalPrice,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.totalPrice,
+      },
+   ];
+
 
 
 
@@ -1085,32 +1230,34 @@ export const Analytics = () => {
                   <Modal.Body className="">
                      Search Solution
                      <div className="maintableheader bg-white mt-3 border-radius-10">
-                        <div className="d-flex justify-content-between align-items-center pl-2">
+                        <QuerySearchComp
+                           compoFlag="itemSearch1"
+                           options={[
+                              { label: "Make", value: "itemHeaderMake" },
+                              { label: "Family", value: "itemHeaderFamily" },
+                              { label: "Model", value: "model" },
+                              { label: "Prefix", value: "prefix" },
+                           ]}
+                           ItemSearchResponseFun={ItemSearchResponseFun}
+                           setResponseSearchItem={setResponseSearchItem}
+                        // setQuerySearchSelectItem={setQuerySearchSelectItem}
+                        // setTempBundleService1={setTempBundleService1}
+                        // setLoadingItem={setLoadingItem} 
+                        />
+                        {/* <div className="d-flex justify-content-between align-items-center pl-2">
                            <div className="d-flex align-items-center">
-                              <div className="customselect d-flex ml-3">
-                                 {/* <span>
+                              <div className="customselect d-flex ml-3"> */}
+                        {/* <span>
                                         <a href="#" className="btn-sm">+</a>
                                     </span> */}
-                                 {/* <Select2
+                        {/* <Select2
                                     onChange={handleTypeOfSearchChange}
                                     isClearable={true}
                                     value={typeOfSearch}
                                     options={[{ label: "Bundle", value: 'bundle' }, { label: "Service", value: 'service' }, { label: "Portfolio Item", value: 'portfolioItem' }]}
                                     placeholder="Add by"
                                  /> */}
-                                 <QuerySearchComp
-                                    compoFlag="itemSearch1"
-                                    options={[
-                                       { label: "Make", value: "itemHeaderMake" },
-                                       { label: "Family", value: "itemHeaderFamily" },
-                                       { label: "Model", value: "model" },
-                                       { label: "Prefix", value: "prefix" },
-                                    ]}
-                                    ItemSearchResponseFun={ItemSearchResponseFun}
-                                 // setTempBundleService1={setTempBundleService1}
-                                 // setLoadingItem={setLoadingItem}
-                                 />
-                              </div>
+                        {/* </div>
                               {typeOfSearch != null
                                  ?
                                  <div className="customselect d-flex ml-3">
@@ -1134,14 +1281,14 @@ export const Analytics = () => {
                                  : <></>
                               }
 
-                           </div>
-                           <div>
+                           </div> */}
+                        {/* <div>
                               <div className="">
                                  <a href="#" style={{ cursor: 'pointer' }} className="btn border-left"><span>+</span> Add</a>
                                  <a href="#" className="btn border-left">Cancel</a>
                               </div>
-                           </div>
-                        </div>
+                           </div> */}
+                        {/* </div> */}
                         {columnSearchText.trim() != "" && typeOfSearchColumn != null
                            ?
                            <div className="tableheader">
@@ -1154,8 +1301,33 @@ export const Analytics = () => {
                            </div>
                            :
                            <></>}
+                        {responseSearchItem.length > 0 ?
+                           <>
+                              <div className="tableheader">
+                                 <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
+                                    <li><a className="cursor result" >RESULTS</a></li>
+                                 </ul>
+                                 <DataTable
+                                    className=""
+                                    title=""
+                                    columns={columns4}
+                                    data={responseSearchItem}
+                                    customStyles={customStyles}
+                                 // pagination
+                                 />
+                              </div>
+                              {/* {console.log("querySearchSelectItem :=> ", querySearchSelectItem)} */}
+                           </> : <></>
+                        }
                      </div>
                   </Modal.Body>
+                  <Modal.Footer>
+                     {responseSearchItem.length > 0 ?
+                        <div>
+                           <button className="btn btn-primary w-100" onClick={handleBundleItemSaveAndContinue}>Save & Continue</button>
+                        </div>
+                        : <></>}
+                  </Modal.Footer>
                </Modal>
 
                <Modal show={showExplore} onHide={handleCloseExplore} size="xl"
@@ -1189,7 +1361,7 @@ export const Analytics = () => {
                                     {/* <a href="#" class="btn bg-primary text-white Choose-btn">Choose</a> */}
                                  </div>
                                  <div class='item'>
-                                    <a href='#' className='bg-primary  text-white btn'>Repair Service</a>
+                                    <a href='#' className='bg-primary  text-white btn'>Repair {querySearchSelectItem.length > 0 ? querySearchSelectItem[0].itemType.label : ""}</a>
                                     <h4 className='text-red mt-3'><b>$20,000</b></h4>
                                     <ul className='mt-3' style={{ paddingLeft: '20px' }}>
                                        <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
@@ -1199,7 +1371,7 @@ export const Analytics = () => {
                                     {/* <a href="#" class="btn bg-primary text-white Choose-btn">Choose</a> */}
                                  </div>
                                  <div class='item'>
-                                    <a href='#' className='bg-green-light text-white btn'>Maintenence service</a>
+                                    <a href='#' className='bg-green-light text-white btn'>Maintenence {querySearchSelectItem.length > 0 ? querySearchSelectItem[0].itemType.label : ""}</a>
                                     <h4 className='text-red mt-3'><b>$20,000</b></h4>
                                     <ul className='mt-3' style={{ paddingLeft: '20px' }}>
                                        <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
@@ -1209,7 +1381,7 @@ export const Analytics = () => {
                                     {/* <a href="#" class="btn bg-primary text-white Choose-btn">Choose</a> */}
                                  </div>
                                  <div class='item'>
-                                    <h4 className='text-light'><b>Repair Service</b></h4>
+                                    <h4 className='text-light'><b>Repair {querySearchSelectItem.length > 0 ? querySearchSelectItem[0].itemType.label : ""}</b></h4>
                                     <h4 className='text-red mt-3'><b>$20,000</b></h4>
                                     <ul className='mt-3' style={{ paddingLeft: '20px' }}>
                                        <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>

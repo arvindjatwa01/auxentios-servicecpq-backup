@@ -129,6 +129,7 @@ const QuerySearchComp = (props) => {
     props.compoFlag === "coverage" && props?.setSelectedMasterData([]);
     props.compoFlag === "itemSearch" && props?.setBundleItems([]);
     props.compoFlag === "coverage" && props?.setOpenedModelBoxData([]);
+    props.compoFlag === "itemSearch1" && props.setResponseSearchItem([])
 
     props.setTempBundleService1([])
 
@@ -138,6 +139,7 @@ const QuerySearchComp = (props) => {
 
       $(".scrollbar").css("display", "none");
       console.log("handleQuerySearchClick", querySearchSelector);
+      // props.setQuerySearchSelectItem({querySearchSelector});
       if (
         querySearchSelector[0]?.selectFamily?.value == "" ||
         querySearchSelector[0]?.inputSearch == "" ||
@@ -190,7 +192,8 @@ const QuerySearchComp = (props) => {
       } else if (props.compoFlag === "itemSearch1") {
         const res3 = await itemSearch(searchStr)
         console.log("res3 : ", res3)
-        props.ItemSearchResponseFun(res3)
+        props.ItemSearchResponseFun(res3, querySearchSelector)
+        // props.setQuerySearchSelectItem(querySearchSelector);
         let temArray = []
         // for (let i = 0; i <= res2.length; i++) {
         //   if (res2[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
