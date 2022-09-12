@@ -386,6 +386,24 @@ export function CreatePortfolio() {
     netPrice: "",
     totalPrice: 1200,
   });
+  const [expandedPriceCalculator, setExpandedPriceCalculator] = useState({
+   itemId:"",
+    description: "",
+    startUsage: "",
+    endUsage: "",
+    frequency: "",
+    recommondedvalue:"",
+    numberOfEvents:"",
+    priceMethod:"",
+    priceAdditionalSelect: "",
+    priceAdditionalInput: "",
+    priceEscalationSelect: "",
+    priceEscalationInput: "",
+    calculatedPrice: "",
+    flatPrice: "",
+    discountTypeSelect: "",
+    discountTypeInput: "",
+  });
   const [openMiniBundleItem, setOpenMiniBundleItem] = useState(false);
   const [serviceOrBundleShow, setServiceOrBundleShow] = useState(false);
   const [serviceOrBundlePrefix, setServiceOrBundlePrefix] = useState("");
@@ -418,12 +436,15 @@ export function CreatePortfolio() {
   const [tempBundleService2, setTempBundleService2] = useState([]);
   const [tempBundleService3, setTempBundleService3] = useState([]);
   const [componentData, setComponentData] = useState({
-    code: "",
+    componentCode: "",
     codeSuggestions: [],
     description: "",
     model: "",
+    modelSuggestions: [],
     make: "",
-    serialNo: ""
+    makeSuggestions: [],
+    serialNo: "",
+    serialNoSuggestions: []
   });
 
   const location = useLocation();
@@ -595,7 +616,7 @@ export function CreatePortfolio() {
 
   const handleBundleItemSaveAndContinue = async () => {
     try {
-      setLoadingItem(true);
+      // setLoadingItem("01");
       let reqObj = {
         itemId: 0,
         itemName: "",
@@ -671,42 +692,42 @@ export function CreatePortfolio() {
         return;
       }
       setCurrentItemId(itemRes.data.itemId);
-      const itemPriceRes = await getItemPrice({
-        standardJobId: itemRes.data.itemBodyModel.standardJobId,
-        repairKitId: itemRes.data.itemBodyModel.repairKitId,
-        itemId: itemRes.data.itemId,
-      });
-      const {
-        priceMethod,
-        listPrice,
-        priceEscalation,
-        additional,
-        calculatedPrice,
-        flatPrice,
-        discountType,
-        year,
-        totalPrice,
-        usage,
-        avgUsage,
-        frequency,
-      } = itemPriceRes.itemBodyModel;
+      // const itemPriceRes = await getItemPrice({
+      //   standardJobId: itemRes.data.itemBodyModel.standardJobId,
+      //   repairKitId: itemRes.data.itemBodyModel.repairKitId,
+      //   itemId: itemRes.data.itemId,
+      // });
+      // const {
+      //   priceMethod,
+      //   listPrice,
+      //   priceEscalation,
+      //   additional,
+      //   calculatedPrice,
+      //   flatPrice,
+      //   discountType,
+      //   year,
+      //   totalPrice,
+      //   usage,
+      //   avgUsage,
+      //   frequency,
+      // } = itemPriceRes.itemBodyModel;
 
-      setPriceCalculator({
-        ...priceCalculator,
-        priceMethod: { label: priceMethod, value: priceMethod },
-        listPrice,
-        priceEscalationInput: priceEscalation,
-        priceAdditionalInput: additional,
-        calculatedPrice,
-        flatPrice,
-        discountTypeInput: discountType,
-        priceYear: { label: year, value: year },
-        totalPrice,
-        frequency: { label: frequency, value: frequency },
-        usageType: { label: usage, value: usage },
-        startUsage: avgUsage,
-        endUsage: avgUsage,
-      });
+      // setPriceCalculator({
+      //   ...priceCalculator,
+      //   priceMethod: { label: priceMethod, value: priceMethod },
+      //   listPrice,
+      //   priceEscalationInput: priceEscalation,
+      //   priceAdditionalInput: additional,
+      //   calculatedPrice,
+      //   flatPrice,
+      //   discountTypeInput: discountType,
+      //   priceYear: { label: year, value: year },
+      //   totalPrice,
+      //   frequency: { label: frequency, value: frequency },
+      //   usageType: { label: usage, value: usage },
+      //   startUsage: avgUsage,
+      //   endUsage: avgUsage,
+      // });
 
       const _generalComponentData = { ...generalComponentData };
       _generalComponentData.items?.push({ itemId: itemRes.data.itemId });
@@ -795,7 +816,6 @@ export function CreatePortfolio() {
 
       setOpenAddBundleItem(false);
       setOpenSearchSolution(false);
-      setLoadingItem(false);
     } catch (error) {
       console.log("error in item creation err:", error);
       toast("😐" + error, {
@@ -3588,6 +3608,14 @@ export function CreatePortfolio() {
     setPriceCalculator(data);
   };
 
+  const handleExpandePriceChange=(e)=>{
+    setExpandedPriceCalculator({...expandedPriceCalculator,[e.target.name]:e.target.value})
+    console.log("handleExpandePriceChange",expandedPriceCalculator)
+  }
+const handleExpandedPriceSave=()=>{
+  alert('price save update API')
+}
+
   const ExpandedComponent = ({ data }) => (
     <div className="scrollbar" id="style">
       {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
@@ -3770,7 +3798,7 @@ export function CreatePortfolio() {
     </div>
   );
   const ExpandedPriceCalculator = ({ data }) => (<>
-    <div className="row ml-5 mb-3 w-80">
+    <div className="row ml-5 mb-3">
       <div className="col-md-6 col-sm-6">
         <div className="form-group">
           <label
@@ -3781,7 +3809,8 @@ export function CreatePortfolio() {
           <input
             className="form-control border-radius-10"
             type="text"
-            defaultValue={data.itemId}
+            // defaultValue={data.itemId}
+            value={data.itemId}
             placeholder="Service/Bundle ID"
             disabled
           />
@@ -3798,23 +3827,29 @@ export function CreatePortfolio() {
             className="form-control border-radius-10"
             type="text"
             placeholder="Description"
+            name="description"
             defaultValue={data.itemBodyModel.itemBodyDescription}
-          />
+            value={data.itemBodyModel.itemBodyDescription||expandedPriceCalculator.description}
+            onChange={handleExpandePriceChange}
+            />
         </div>
       </div>
       <div className="col-md-6 col-sm-6">
         <div className="form-group">
           <label
             className="text-light-dark font-size-12 font-weight-500"
-          >
+            >
             Start Usage
           </label>
           <input
             className="form-control border-radius-10"
             type="text"
             // placeholder="Description"
+            name="startUsage"
             defaultValue={data.itemBodyModel.startUsage}
-          />
+            value={expandedPriceCalculator.startUsage}
+            onChange={handleExpandePriceChange}
+            />
         </div>
       </div>
       <div className="col-md-6 col-sm-6">
@@ -3828,7 +3863,10 @@ export function CreatePortfolio() {
             className="form-control border-radius-10"
             type="text"
             // placeholder="Description"
+            name="endUsage"
             defaultValue={data.itemBodyModel.endUsage}
+            value={expandedPriceCalculator.endUsage}
+            onChange={handleExpandePriceChange}
           />
         </div>
       </div>
@@ -3842,8 +3880,10 @@ export function CreatePortfolio() {
           <input
             className="form-control border-radius-10"
             type="text"
-            // placeholder="Description"
+            name="frequency"
             defaultValue={data.itemBodyModel.frequency}
+            value={expandedPriceCalculator.frequency}
+            onChange={handleExpandePriceChange}
           />
         </div>
       </div>
@@ -3858,6 +3898,8 @@ export function CreatePortfolio() {
             options={options}
             // placeholder="Description"
             defaultValue={{ label: data.itemBodyModel.recommendedValue, value: data.itemBodyModel.recommendedValue }}
+            value={expandedPriceCalculator.recommondedvalue}
+            onChange={(e)=>setExpandedPriceCalculator({...expandedPriceCalculator,recommondedvalue:e})}
           />
         </div>
       </div>
@@ -3872,7 +3914,10 @@ export function CreatePortfolio() {
             className="form-control border-radius-10"
             type="text"
             // placeholder="Description"
+            name="numberOfEvents"
             defaultValue={data.itemBodyModel.numberOfEvents}
+            value={expandedPriceCalculator.numberOfEvents}
+            onChange={handleExpandePriceChange}
           />
         </div>
       </div>
@@ -3886,11 +3931,9 @@ export function CreatePortfolio() {
           <Select
             options={priceMethodKeyValue}
             defaultValue={{ label: data.itemBodyModel.priceMethod, value: data.itemBodyModel.priceMethod }}
-            value={priceCalculator.priceMethod}
+            value={expandedPriceCalculator.priceMethod}
             name="priceMethod"
-            onChange={(e) =>
-              setPriceCalculator({ ...priceCalculator, priceMethod: e })
-            }
+            onChange={(e)=>setExpandedPriceCalculator({...expandedPriceCalculator,priceMethod:e})}
           // placeholder="placeholder (Optional)"
           />
         </div>
@@ -3908,14 +3951,9 @@ export function CreatePortfolio() {
               <Select
                 isClearable={true}
                 // defaultValue={{label:data.itemBodyModel.additional,value:data.itemBodyModel.additional}}
-                value={priceCalculator.priceAdditionalSelect}
+                value={expandedPriceCalculator.priceAdditionalSelect}
                 name="priceAdditionalSelect"
-                onChange={(e) =>
-                  setPriceCalculator({
-                    ...priceCalculator,
-                    priceAdditionalSelect: e,
-                  })
-                }
+                onChange={(e)=>setExpandedPriceCalculator({...expandedPriceCalculator,priceAdditionalSelect:e})}
                 options={options}
                 placeholder="Select"
               />
@@ -3925,14 +3963,9 @@ export function CreatePortfolio() {
               className="form-control rounded-top-left-0 rounded-bottom-left-0"
               placeholder="10%"
               defaultValue={data.itemBodyModel.additional}
-              value={priceCalculator.priceAdditionalInput}
+              value={expandedPriceCalculator.priceAdditionalInput}
               name="priceAdditionalInput"
-              onChange={(e) =>
-                setPriceCalculator({
-                  ...priceCalculator,
-                  priceAdditionalInput: e.target.value,
-                })
-              }
+              onChange={handleExpandePriceChange}
             />
           </div>
         </div>
@@ -3949,14 +3982,9 @@ export function CreatePortfolio() {
             <Select
               className="select-input"
               defaultValue={data.itemBodyModel.startUsage}
-              value={priceCalculator.priceEscalationSelect}
+              value={expandedPriceCalculator.priceEscalationSelect}
               name="priceEscalationSelect"
-              onChange={(e) =>
-                setPriceCalculator({
-                  ...priceCalculator,
-                  priceEscalationSelect: e,
-                })
-              }
+              onChange={(e)=>setExpandedPriceCalculator({...expandedPriceCalculator,priceEscalationSelect:e})}
               options={options}
               placeholder="placeholder "
             />
@@ -3965,14 +3993,9 @@ export function CreatePortfolio() {
               className="form-control rounded-top-left-0 rounded-bottom-left-0"
               placeholder="20%"
               defaultValue={data.itemBodyModel.priceEscalation}
-              value={priceCalculator.priceEscalationInput}
+              value={expandedPriceCalculator.priceEscalationInput}
               name="priceEscalationInput"
-              onChange={(e) =>
-                setPriceCalculator({
-                  ...priceCalculator,
-                  priceEscalationInput: e.target.value,
-                })
-              }
+              onChange={handleExpandePriceChange}
             />
           </div>
         </div>
@@ -3989,14 +4012,9 @@ export function CreatePortfolio() {
             type="text"
             className="form-control border-radius-10"
             defaultValue={data.itemBodyModel.calculatedPrice}
-            value={priceCalculator.calculatedPrice}
+            value={expandedPriceCalculator.calculatedPrice}
             name="calculatedPrice"
-            onChange={(e) =>
-              setPriceCalculator({
-                ...priceCalculator,
-                calculatedPrice: e.target.value,
-              })
-            }
+            onChange={handleExpandePriceChange}
             placeholder="$100"
           />
         </div>
@@ -4013,14 +4031,9 @@ export function CreatePortfolio() {
             type="text"
             className="form-control border-radius-10"
             defaultValue={data.itemBodyModel.flatPrice}
-            value={priceCalculator.flatPrice}
+            value={expandedPriceCalculator.flatPrice}
             name="flatPrice"
-            onChange={(e) =>
-              setPriceCalculator({
-                ...priceCalculator,
-                flatPrice: e.target.value,
-              })
-            }
+            onChange={handleExpandePriceChange}
             placeholder="$100"
           />
         </div>
@@ -4037,14 +4050,9 @@ export function CreatePortfolio() {
             <div className="">
               <Select
                 defaultValue={data.itemBodyModel.startUsage}
-                value={priceCalculator.discountTypeSelect}
+                value={expandedPriceCalculator.discountTypeSelect}
                 name="discountTypeSelect"
-                onChange={(e) =>
-                  setPriceCalculator({
-                    ...priceCalculator,
-                    discountTypeSelect: e,
-                  })
-                }
+                onChange={(e)=>setExpandedPriceCalculator({...expandedPriceCalculator,discountTypeSelect:e})}
                 isClearable={true}
                 options={options}
                 placeholder="Select"
@@ -4054,14 +4062,9 @@ export function CreatePortfolio() {
               type="text"
               className="form-control rounded-top-left-0 rounded-bottom-left-0"
               defaultValue={data.itemBodyModel.discountType}
-              value={priceCalculator.discountTypeInput}
+              value={expandedPriceCalculator.discountTypeInput}
               name="discountTypeInput"
-              onChange={(e) =>
-                setPriceCalculator({
-                  ...priceCalculator,
-                  discountTypeInput: e.target.value,
-                })
-              }
+              onChange={handleExpandePriceChange}
               placeholder="10%"
             />
           </div>
@@ -4070,7 +4073,7 @@ export function CreatePortfolio() {
 
     </div>
     <div className="row" style={{ justifyContent: "right" }}>
-      <button type="button" className="btn btn-light">Save</button>
+      <button type="button" className="btn btn-light" onClick={handleExpandedPriceSave}>Save</button>
     </div>
   </>)
   const handleClick = (event) => {
@@ -4085,33 +4088,94 @@ export function CreatePortfolio() {
   };
   const history = useHistory();
 
-
   const handleComponentChange = async (e) => {
+
     try {
       setComponentData({
         ...componentData,
         [e.target.name]: e.target.value
       })
-      if (e.target.name === 'code') {
+      if (e.target.name === 'componentCode') {
         const res = await getComponentCodeSuggetions(`componentCode~${e.target.value}`)
+        $(`.scrollbar`).css("display", "block");
         setComponentData({
           ...componentData,
           [e.target.name]: e.target.value,
           codeSuggestions: res
         })
       }
+      if (e.target.name === 'make') {
+        const res = await getSearchQueryCoverage(`make~${e.target.value}`)
+        $(`#scrollbarMake`).css("display", "block");
+        setComponentData({ ...componentData, [e.target.name]: e.target.value, makeSuggestions: res })
+      }
+      if (e.target.name === 'model') {
+        if (componentData.make == "") {
+          throw "Please select make"
+        }
+        const res = await getSearchQueryCoverage(`make:\"${componentData.make}\" AND model~${e.target.value}`)
+        $(`#scrollbarModel`).css("display", "block");
+        setComponentData({ ...componentData, [e.target.name]: e.target.value, modelSuggestions: res })
+      }
+      if (e.target.name === 'serialNo') {
+        // if(componentData.make=="" || componentData.model==""){
+        //   throw "Please select make/model"
+        // }
+        const res = await getSearchQueryCoverage(`family~${e.target.value}`)
+        // const res = await getSearchQueryCoverage(`make:\"${componentData.make}\" AND model:\"${componentData.model}\" AND family~${e.target.value}`)
+        $(`#scrolbarSerialNo`).css("display", "block");
+        setComponentData({ ...componentData, [e.target.name]: e.target.value, serialNoSuggestions: res })
+      }
+
+
+
+
     } catch (error) {
       console.log("err")
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
-    
-    setComponentData({
-      ...componentData,
-      [e.target.name]: e.target.value
-    })
 
 
-    
   }
+  const handleComponentCodeSuggetionsClick = (e, j) => {
+    $(`.scrollbar`).css("display", "none");
+    let { description, componentCode } = componentData.codeSuggestions[j]
+    setComponentData({ ...componentData, description, componentCode })
+  }
+  const handleComponentMakeSuggetionsClick = (e, j) => {
+    $(`#scrollbarMake`).css("display", "none");
+    let { make } = componentData.makeSuggestions[j]
+    setComponentData({ ...componentData, make: make })
+  }
+  const handleComponentModelSuggetionsClick = (e, j) => {
+    $(`#scrollbarModel`).css("display", "none");
+    let { model } = componentData.modelSuggestions[j]
+    setComponentData({ ...componentData, model })
+  }
+  const handleComponentSerialNoSuggetionsClick = (e, j) => {
+    $(`#scrolbarSerialNo`).css("display", "none");
+    let obj = componentData.serialNoSuggestions[j]
+    if ((obj.make !== componentData.make && componentData.make !== "") || (componentData.model !== obj.model && componentData.model !== "")) {
+      if (window.confirm("Make/Model did not matched with selected serial number.\nDo you want to reset them?")) {
+        setComponentData({ ...componentData, serialNo: obj.family, model: obj.model, make: obj.make })
+      } else {
+        return
+      }
+    }else{ 
+      setComponentData({ ...componentData, serialNo: obj.family})
+      throw "Please fill make/model"
+    }
+
+  }
+
 
   return (
     <PortfolioContext.Provider
@@ -5432,7 +5496,7 @@ export function CreatePortfolio() {
                           />
                         ) : (
                           <input
-                            type="email"
+                            type="text"
                             className="form-control border-radius-10"
                             name="make"
                             placeholder=""
@@ -8595,19 +8659,30 @@ export function CreatePortfolio() {
                         <label className="text-light-dark font-size-14 font-weight-500">
                           Component Code
                         </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          name="code"
-                          value={componentData.code}
-                          onChange={handleComponentChange}
-                          placeholder="Optional"
-                        />
+
+                        <div className="customselectsearch">
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="componentCode"
+                            value={componentData.componentCode}
+                            onChange={handleComponentChange}
+                            autoComplete="off"
+                          />
+
+                          {<ul className={`list-group customselectsearch-list scrollbar scrolbarCode style`}>
+                            {componentData.codeSuggestions.map(
+                              (currentItem, j) => (
+                                <li className="list-group-item" key={j} onClick={(e) => handleComponentCodeSuggetionsClick(e, j)}
+                                >
+                                  {currentItem.componentCode}
+                                </li>
+                              )
+                            )}
+                          </ul>}
+                        </div>
                       </div>
                     </div>
-                    <ul className="d-none">
-                      {componentData.codeSuggestions.map((currentItem, i) => <li key={i}>{currentItem.componentCode}</li>)}
-                    </ul>
                     <div className="col-md-6 col-sm-6">
                       <div className="form-group">
                         <label className="text-light-dark font-size-14 font-weight-500">
@@ -8626,46 +8701,81 @@ export function CreatePortfolio() {
                     <div className="col-md-6 col-sm-6">
                       <div className="form-group">
                         <label className="text-light-dark font-size-14 font-weight-500">
-                          Model
+                          Make
                         </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          name="model"
-                          value={componentData.model}
-                          onChange={handleComponentChange}
-                          placeholder="Optional"
-                        />
+                        <div className="customselectsearch">
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="make"
+                            value={componentData.make}
+                            onChange={handleComponentChange}
+                            autoComplete="off"
+                          />
+                          {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrollbarMake">
+                            {componentData.makeSuggestions.map(
+                              (currentItem, j) => (
+                                <li className="list-group-item" key={j} onClick={(e) => handleComponentMakeSuggetionsClick(e, j)}>
+                                  {currentItem.make}
+                                </li>
+                              )
+                            )}
+                          </ul>}
+                        </div>
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div className="form-group">
                         <label className="text-light-dark font-size-14 font-weight-500">
-                          Make
+                          Model
                         </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          name="make"
-                          value={componentData.make}
-                          onChange={handleComponentChange}
-                          placeholder="Optional"
-                        />
+                        <div className="customselectsearch">
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="model"
+                            value={componentData.model}
+                            onChange={handleComponentChange}
+                            autoComplete="off"
+                          />
+                          {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrollbarModel">
+                            {componentData.modelSuggestions.map(
+                              (currentItem, j) => (
+                                <li className="list-group-item" key={j} onClick={(e) => handleComponentModelSuggetionsClick(e, j)}>
+                                  {currentItem.model}
+                                </li>
+                              )
+                            )}
+                          </ul>}
+                        </div>
                       </div>
                     </div>
+
                     <div className="col-md-6 col-sm-6">
                       <div className="form-group">
                         <label className="text-light-dark font-size-14 font-weight-500">
                           Serial No.
                         </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          name="serialNo"
-                          value={componentData.serialNo}
-                          onChange={handleComponentChange}
-                          placeholder="Optional"
-                        />
+                        <div className="customselectsearch">
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="serialNo"
+                            value={componentData.serialNo}
+                            onChange={handleComponentChange}
+                            autoComplete="off"
+                          />
+
+                          {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrolbarSerialNo">
+                            {componentData.serialNoSuggestions.map(
+                              (currentItem, j) => (
+                                <li className="list-group-item" key={j} onClick={(e) => handleComponentSerialNoSuggetionsClick(e, j)}>
+                                  {currentItem.family}
+                                </li>
+                              )
+                            )}
+                          </ul>}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -9008,7 +9118,7 @@ export function CreatePortfolio() {
                       <div className="col-md-4 col-sm-3">
                         <div className="form-group">
                           <label className="text-light-dark font-size-12 font-weight-500">
-                            {serviceOrBundlePrefix} ID
+                            {serviceOrBundlePrefix}
                           </label>
                           <input
                             type="text"
