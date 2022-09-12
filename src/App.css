@@ -2494,6 +2494,14 @@ cursor: pointer;
     overflow-y: scroll;
     width: 100%;
     margin: 0;
+    /* display: none; */
+    }
+    .style{
+      height: 150px;
+      overflow-y: scroll;
+      width: 100%;
+      margin: 0;
+      display: none;
     }
     .custom-input-sleact{background: #f8f9fd;
       border: none;
