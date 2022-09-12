@@ -123,11 +123,11 @@ export const machineSearch = (searchStr) => {
 };
 
 //Search Spare Part based on the search criteria
-export const sparePartSearch = (searchStr) => {
+export const sparePartSearch = async (searchStr) => {
   console.log("RepairBuilder > sparePartSearch called...");
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     try {
-      axios
+      await axios
         .get(SEARCH_SPAREPART(searchStr))
         .then((res) => {
           console.log("sparePartSearch > axios res=", res);

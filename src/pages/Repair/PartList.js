@@ -59,12 +59,35 @@ import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import Moment from "react-moment";
 import Validator from "utils/validator";
 import CustomSnackbar from "../Common/CustomSnackBar";
+import DynamicSearchComponent from "./components/DynamicSearchComponent";
+import AddNewSparepartModal from "./components/AddNewSparePart";
 
 function PartList() {
   const history = useHistory();
   const [searchCustResults, setSearchCustResults] = useState([]);
   const [allParts, setAllParts] = useState([]);
   const [partsToUpload, setPartsToUpload] = useState([]);
+  const [rowsToUpdate, setRowsToUpdate] = useState([]);
+
+  const processRowUpdate = React.useCallback(
+    (newRow, oldRow) =>
+      new Promise((resolve, reject) => {
+        if (newRow.quantity !== oldRow.quantity) {
+          console.log(newRow, newRow.quantity !== oldRow.quantity);
+          // Save the arguments to resolve or reject the promise later
+          rowsToUpdate.push(newRow);
+          resolve(newRow);
+        } else {
+          resolve(oldRow); // Nothing was changed
+        }
+      }),
+    []
+  );
+
+  const updateRowToUpdate = (newRow) => {
+    console.log(newRow);
+    setRowsToUpdate(...rowsToUpdate, newRow);
+  };
 
   const [viewOnlyTab, setViewOnlyTab] = useState({
     custViewOnly: false,
@@ -74,8 +97,6 @@ function PartList() {
   });
   const [searchModelResults, setSearchModelResults] = useState([]);
   const [searchSerialResults, setSearchSerialResults] = useState([]);
-  const [searchGroupNoResults, setSearchGroupNoResults] = useState([]);
-  const [searchPartNoResults, setSearchPartNoResults] = useState([]);
   const [builderId, setBuilderId] = useState("");
   const [bId, setBId] = useState("");
   const [partListNo, setPartListNo] = useState("");
@@ -113,8 +134,7 @@ function PartList() {
     revisedOn: new Date(),
     salesOffice: null,
   });
-
-  const [sparePart, setSparePart] = useState({
+  const initialSparePart = {
     groupNumber: "",
     partType: "",
     partNumber: "",
@@ -127,7 +147,8 @@ function PartList() {
     totalPrice: 0.0,
     comment: "",
     description: "",
-  });
+  };
+  const [sparePart, setSparePart] = useState(initialSparePart);
 
   const validityOptions = [
     { value: "15", label: "15 days" },
@@ -201,7 +222,7 @@ function PartList() {
 
   // Search Customer with customer ID
   const handleCustSearch = async (searchCustfieldName, searchText) => {
-    console.log("clear data", searchText);
+    // console.log("clear data", searchText);
     setSearchCustResults([]);
     customerData.customerID = searchText;
     if (searchText) {
@@ -217,51 +238,7 @@ function PartList() {
     }
   };
 
-  // Search Spare part with group number and part number
-  const handleSparePartSearch = async (searchSparePartField, searchText) => {
-    console.log("cleared the result", searchText);
-    let searchQuerySparePart = "";
-    setSearchGroupNoResults([]);
-    setSearchPartNoResults([]);
-
-    if (searchSparePartField === "groupNumber") {
-      setSparePart({ ...sparePart, groupNumber: searchText });
-      searchQuerySparePart = searchText
-        ? searchSparePartField + "~" + searchText
-        : "";
-    } else if (searchSparePartField === "partNumber") {
-      setSparePart({ ...sparePart, partNumber: searchText });
-      searchQuerySparePart = searchText
-        ? sparePart.groupNumber
-          ? `groupNumber:${sparePart.groupNumber} AND partNumber~` + searchText
-          : "partNumber~" + searchText
-        : "";
-    }
-    console.log("search query", searchQuerySparePart);
-    if (searchQuerySparePart) {
-      await sparePartSearch(searchQuerySparePart)
-        .then((result) => {
-          if (result) {
-            if (searchSparePartField === "groupNumber") {
-              setSearchGroupNoResults(result);
-            } else if (searchSparePartField === "partNumber") {
-              setSearchPartNoResults(result);
-            }
-          }
-        })
-        .catch((e) => {
-          setSnackMessage("Error occurred while searching the sparepart!");
-          setSeverity("error");
-          setOpenSnack(true);
-        });
-    }
-    // else {
-    //   searchSparePartField === "groupNumber"
-    //     ? setSearchModelResults([])
-    //     : setSearchSerialResults([]);
-    // }
-  };
-
+  
   // Select the customer from search result
   const handleCustSelect = (type, currentItem) => {
     setCustomerData({
@@ -286,8 +263,8 @@ function PartList() {
   };
 
   // Machine search based on model and serial number
-  const handleModelSearch = async (searchMachinefieldName, searchText) => {
-    console.log("cleared the result", searchText);
+  const handleMachineSearch = async (searchMachinefieldName, searchText) => {
+    // console.log("cleared the result", searchText);
     let searchQueryMachine = "";
     setSearchModelResults([]);
     setSearchSerialResults([]);
@@ -305,7 +282,7 @@ function PartList() {
           : "equipmentNumber~" + searchText
         : "";
     }
-    console.log("search query", searchQueryMachine);
+    // console.log("search query", searchQueryMachine);
     if (searchQueryMachine) {
       await machineSearch(searchQueryMachine)
         .then((result) => {
@@ -349,35 +326,7 @@ function PartList() {
     }
   };
 
-  // Select spare part from the search results
-  const handleSparePartSelect = (type, currentItem) => {
-    if (type === "groupNumber") {
-      setSparePart({
-        ...sparePart,
-        groupNumber: currentItem.groupNumber,
-      });
-      setSearchGroupNoResults([]);
-    } else if (type === "partNumber") {
-      let quantity = sparePart.quantity;
-      let extendedPrice = currentItem.listPrice * quantity;
-      let totalPrice = calculateTotalPrice(
-        extendedPrice,
-        sparePart.usagePercentage
-      );
-      setSparePart({
-        ...sparePart,
-        groupNumber: currentItem.groupNumber,
-        unitPrice: currentItem.listPrice,
-        partNumber: currentItem.partNumber,
-        partType: currentItem.partType,
-        description: currentItem.partDescription,
-        extendedPrice,
-        totalPrice,
-        salesUnit: currentItem.salesUnit,
-      });
-      setSearchPartNoResults([]);
-    }
-  };
+  
 
   //Individual machine field value change
   const handleMachineDataChange = (e) => {
@@ -512,6 +461,7 @@ function PartList() {
   const calculateTotalPrice = (extendedPrice, usage) => {
     return usage > 0 ? (usage / 100) * extendedPrice : extendedPrice;
   };
+
   const handleIndPartAdd = () => {
     let data = {
       groupNumber: sparePart.groupNumber,
@@ -551,13 +501,22 @@ function PartList() {
     }
   };
 
+  const editSparePartRow = (row) => {
+    // console.log(row);
+    setSparePart(row);
+    setAddPartOpen(true);
+  };
+
   const handleUploadFile = () => {
     // console.log("Upload");
     setFileUploadOpen(false);
   };
 
   const handleClose = () => setOpen(false);
-  const handleAddPartClose = () => setAddPartOpen(false);
+  const handleAddPartClose = () => {
+    setAddPartOpen(false);
+    setSparePart(initialSparePart);
+  };
   const handleSearchResClose = () => {
     setSearchResultOpen(false);
     setSelectedMasterData([]);
@@ -578,208 +537,12 @@ function PartList() {
       Standardjob: "$43.09",
       currency: "USD",
       quantity: 5,
-      percentageUsage: 80,
+      usagePercentage: 80,
       extendedPrice: 80.22,
       totalPrice: 100.0,
     },
   ];
 
-  const customStyles = {
-    rows: {
-      style: {
-        minHeight: "72px", // override the row height
-      },
-    },
-    headCells: {
-      style: {
-        paddingLeft: "8px", // override the cell padding for head cells
-        paddingRight: "8px",
-        backgroundColor: "#872ff7",
-        color: "#fff",
-      },
-    },
-    cells: {
-      style: {
-        paddingLeft: "8px", // override the cell padding for data cells
-        paddingRight: "8px",
-      },
-    },
-  };
-  const columns = [
-    {
-      name: (
-        <>
-          <div>
-            <Checkbox className="text-white" {...label} />
-          </div>
-        </>
-      ),
-      selector: (row) => row.standardJobId,
-      wrap: true,
-      sortable: true,
-      maxWidth: "50px",
-      minWidth: "50px",
-      cell: (row) => <Checkbox className="text-black" {...label} />,
-    },
-    {
-      name: (
-        <>
-          <div>
-            <img className="mr-2" src={boxicon}></img>Group Number
-          </div>
-        </>
-      ),
-      selector: (row) => row.bundleDescription,
-      wrap: true,
-      sortable: true,
-      maxWidth: "150px",
-      minWidth: "150px",
-      format: (row) => row.bundleDescription,
-    },
-    {
-      name: (
-        <>
-          <div>
-            <img className="mr-2" src={boxicon}></img>Type
-          </div>
-        </>
-      ),
-      selector: (row) => row.bundleDescription,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.bundleDescription,
-    },
-    {
-      name: (
-        <>
-          <div>
-            <img className="mr-2" src={boxicon}></img>Part Number
-          </div>
-        </>
-      ),
-      selector: (row) => row.strategy,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.strategy,
-      cell: (row) => (
-        <a href="#" data-toggle="modal" data-target="#Recommended">
-          3
-        </a>
-      ),
-    },
-    {
-      name: (
-        <>
-          <div>Qty</div>
-        </>
-      ),
-      selector: (row) => row.strategy,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.strategy,
-    },
-    {
-      name: (
-        <>
-          <div>Unit of Measures</div>
-        </>
-      ),
-      selector: (row) => row.strategy,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.strategy,
-    },
-    {
-      name: (
-        <>
-          <div>Unit Price</div>
-        </>
-      ),
-      selector: (row) => row.strategy,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.strategy,
-      cell: (row) => (
-        <a href="#" data-toggle="modal" data-target="#Substitute">
-          3
-        </a>
-      ),
-    },
-    {
-      name: (
-        <>
-          <div>Extended Price</div>
-        </>
-      ),
-      selector: (row) => row.frequency,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.frequency,
-    },
-    {
-      name: (
-        <>
-          <div>Currency</div>
-        </>
-      ),
-      selector: (row) => row.frequency,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.frequency,
-    },
-    {
-      name: (
-        <>
-          <div>% Usage</div>
-        </>
-      ),
-      selector: (row) => row.quantity,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.quantity,
-    },
-    {
-      name: (
-        <>
-          <div>Total Price</div>
-        </>
-      ),
-      selector: (row) => row.part,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.part,
-    },
-    {
-      name: (
-        <>
-          <div>Comments</div>
-        </>
-      ),
-      selector: (row) => row.bundleId,
-      sortable: true,
-      maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
-      format: (row) => row.bundleId,
-    },
-    {
-      name: (
-        <>
-          <div>Action</div>
-        </>
-      ),
-      selector: (row) => row.bundleId,
-      sortable: true,
-      maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
-      // cell: row => row.bundleId,
-      // cell: (row) => <button onClick={() => alert()}>1</button>,
-      // cell: (row) => <Checkbox className="text-black" {...label} />,
-      cell: (row) => (
-        <a onClick={() => setAddPartOpen(true)} href="#">
-          <FontAwesomeIcon icon={faPen} />
-        </a>
-      ),
-      format: (row) => row.bundleId,
-    },
-  ];
   const columnsPartListSearch = [
     { headerName: "GroupNumber", field: "groupNumber", flex: 1, width: 70 },
     { headerName: "Type", field: "partType", flex: 1, width: 130 },
@@ -799,27 +562,32 @@ function PartList() {
     { headerName: "GroupNumber", field: "groupNumber", flex: 1 },
     { headerName: "Type", field: "partType", flex: 1 },
     { headerName: "PartNumber", field: "partNumber", flex: 1 },
-    { headerName: "Qty", field: "quantity", flex: 1 },
+    { headerName: "Qty", field: "quantity", flex: 1, editable: true },
     { headerName: "Unit Of Measures", field: "salesUnit", flex: 1 },
     { headerName: "Unit Price", field: "listPrice", flex: 1 },
     { headerName: "Extended Price", field: "extendedPrice", flex: 1 },
     { headerName: "Currency", field: "currency", flex: 1 },
-    { headerName: "% Usage", field: "percentageUsage", flex: 1 },
+    {
+      headerName: "% Usage",
+      field: "usagePercentage",
+      flex: 1,
+      editable: true,
+    },
     { headerName: "Total Price", field: "totalPrice", flex: 1 },
-    { headerName: "Comment", field: "comment", flex: 1 },
+    { headerName: "Comment", field: "comment", flex: 1, editable: true },
     {
       field: "actions",
       type: "actions",
       headerName: "Actions",
       width: 100,
       cellClassName: "actions",
-      getActions: ({ id }) => {
+      getActions: (params) => {
         return [
           <GridActionsCellItem
             icon={<EditIcon />}
             label="Edit"
             className="textPrimary"
-            onClick={() => setAddPartOpen(true)}
+            onClick={() => editSparePartRow(params.row)}
             color="inherit"
           />,
           <GridActionsCellItem
@@ -840,8 +608,8 @@ function PartList() {
     { value: "Construction", label: "Construction" },
   ];
 
-  const handleOption2 = (e) => {
-    setValue2(e);
+  const handleBuilderStatus = (e) => {
+    setSelBuilderStatus(e);
   };
   const builderStatusOptions = [
     { value: "archived", label: "Archived" },
@@ -867,13 +635,13 @@ function PartList() {
   };
   const [value3, setValue3] = useState({ value: "1", label: "1" });
   const [value4, setValue4] = useState({ value: "1", label: "1" });
-  const [value2, setValue2] = useState({
+  const [selBuilderStatus, setSelBuilderStatus] = useState({
     value: "DRAFT",
     label: "Draft",
   });
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handleClick = (event) => {
-    console.log("event", event);
+    // console.log("event", event);
     setAnchorEl(event.currentTarget);
     setOpen(true);
   };
@@ -881,33 +649,9 @@ function PartList() {
     history.push("/quoteTemplate");
   };
 
-  const handleOperator = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.selectOperator = e;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-  };
-  const handleInputSearch = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    sparePartSearch(tempArray[id].selectCategory.value + "~" + e.target.value)
-      .then((res) => {
-        obj.selectOptions = res;
-        tempArray[id] = obj;
-        setQuerySearchSelector([...tempArray]);
-        $(`.scrollbar-${id}`).css("display", "block");
-      })
-      .catch((err) => {
-        setSnackMessage("Error occurred while searching spare parts!");
-        setSeverity("error");
-        setOpenSnack(true);
-      });
-    obj.inputSearch = e.target.value;
-  };
   const handleQuerySearchClick = async () => {
     $(".scrollbar").css("display", "none");
-    console.log("handleQuerySearchClick", querySearchSelector);
+    // console.log("handleQuerySearchClick", querySearchSelector);
     var searchStr = "";
     querySearchSelector.map(function (item, i) {
       if (i === 0 && item.selectCategory.value && item.inputSearch) {
@@ -947,43 +691,11 @@ function PartList() {
       setOpenSnack(true);
     }
   };
-  const addSearchQuerryHtml = () => {
-    console.log(querySearchSelector[0]);
-    if (
-      count === 0 ||
-      (count === 1 &&
-        querySearchSelector[0].inputSearch &&
-        querySearchSelector[0].selectCategory) ||
-      (querySearchSelector[count - 1].inputSearch &&
-        querySearchSelector[count - 1].selectCategory &&
-        querySearchSelector[count - 1].selectOperator)
-    ) {
-      setQuerySearchSelector([
-        ...querySearchSelector,
-        {
-          id: count,
-          selectOperator: "",
-          selectCategory: "",
-          inputSearch: "",
-          selectOptions: [],
-          selectedOption: "",
-        },
-      ]);
-      setCount(count + 1);
-    } else {
-      setSnackMessage("Please fill current search criteria");
-      setSeverity("info");
-      setOpenSnack(true);
-    }
-  };
-  const handleSearchCategory = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    console.log("handleSearchCategory e:", e);
-    let obj = tempArray[id];
-    obj.selectCategory = e;
-    tempArray[id] = obj;
-    console.log(obj.selectCategory);
-    setQuerySearchSelector([...tempArray]);
+
+  const handleSnack = (snackSeverity, snackStatus, snackMessage) => {
+    setSnackMessage(snackMessage);
+    setSeverity(snackSeverity);
+    setOpenSnack(snackStatus);
   };
   const [querySearchSelector, setQuerySearchSelector] = useState([
     {
@@ -995,22 +707,20 @@ function PartList() {
       selectedOption: "",
     },
   ]);
-  const handleDeletQuerySearch = () => {
-    setQuerySearchSelector([]);
-    setCount(0);
+  // const handleDeletQuerySearch = () => {
+  //   setQuerySearchSelector([]);
+  //   setCount(0);
+  //   setMasterData([]);
+  //   setFilterMasterData([]);
+  //   setSelectedMasterData([]);
+  // };
+
+  const clearFilteredData = () => {
     setMasterData([]);
     setFilterMasterData([]);
     setSelectedMasterData([]);
   };
-  const handleSearchListClick = (e, currentItem, obj1, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.inputSearch = currentItem[obj.selectCategory.value];
-    obj.selectedOption = currentItem;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-    $(`.scrollbar-${id}`).css("display", "none");
-  };
+
   // const handleMasterCheck = (e, row) => {
   //   if (e.target.checked) {
   //     var _masterData = [...masterData];
@@ -1064,7 +774,6 @@ function PartList() {
       };
       setSelectedMasterData([...selectedMasterData, data]);
     });
-    // setSelectedMasterData(selectedRowsData);
   };
 
   const addSelectedPartsToPartList = () => {
@@ -1115,9 +824,9 @@ function PartList() {
                 <div className="ml-3">
                   <Select
                     className="customselectbtn"
-                    onChange={(e) => handleOption2(e)}
+                    onChange={(e) => handleBuilderStatus(e)}
                     options={builderStatusOptions}
-                    value={value2}
+                    value={selBuilderStatus}
                   />
                 </div>
                 <div className="rating-star">
@@ -1237,6 +946,7 @@ function PartList() {
                   href={undefined}
                   className="btn-sm"
                   style={{ cursor: "pointer" }}
+                  
                 >
                   <i
                     className="fa fa-pencil"
@@ -1259,10 +969,10 @@ function PartList() {
                     }}
                   ></i>
                 </a>{" "}
-                <a href={undefined} className="btn-sm">
+                <a href={undefined} className="btn-sm" style={{ cursor: "pointer" }}>
                   <i className="fa fa-bookmark-o" aria-hidden="true"></i>
                 </a>{" "}
-                <a href="#" className="btn-sm">
+                <a href="#" className="btn-sm" style={{ cursor: "pointer" }}>
                   <i className="fa fa-folder-o" aria-hidden="true"></i>
                 </a>
               </div>
@@ -1488,7 +1198,7 @@ function PartList() {
                             <SearchBox
                               value={machineData.model}
                               onChange={(e) =>
-                                handleModelSearch("model", e.target.value)
+                                handleMachineSearch("model", e.target.value)
                               }
                               type="model"
                               result={searchModelResults}
@@ -1504,7 +1214,7 @@ function PartList() {
                             <SearchBox
                               value={machineData.serialNo}
                               onChange={(e) =>
-                                handleModelSearch("serialNo", e.target.value)
+                                handleMachineSearch("serialNo", e.target.value)
                               }
                               type="equipmentNumber"
                               result={searchSerialResults}
@@ -2221,143 +1931,13 @@ function PartList() {
                       </a>
                     </p>
                   </div>
-                  <div className="d-flex justify-content-between align-items-center w-100 ">
-                    <div className="row align-items-center m-0">
-                      {querySearchSelector.map((obj, i) => {
-                        return (
-                          <>
-                            <div className="customselect d-flex align-items-center mr-3 my-2">
-                              {i > 0 ? (
-                                <SelectFilter
-                                  // isClearable={true}
-                                  defaultValue={{ label: "And", value: "AND" }}
-                                  options={[
-                                    { label: "And", value: "AND", id: i },
-                                    { label: "Or", value: "OR", id: i },
-                                  ]}
-                                  placeholder="&amp;"
-                                  onChange={(e) => handleOperator(e, i)}
-                                  // value={querySearchOperator[i]}
-                                  value={obj.selectOperator}
-                                />
-                              ) : (
-                                <></>
-                              )}
-
-                              <div>
-                                <SelectFilter
-                                  // isClearable={true}
-                                  options={[
-                                    {
-                                      label: "Part No",
-                                      value: "partNumber",
-                                      id: i,
-                                    },
-                                    {
-                                      label: "Description",
-                                      value: "partDescription",
-                                      id: i,
-                                    },
-                                    { label: "Model", value: "model", id: i },
-                                    {
-                                      label: "Group No",
-                                      value: "groupNumber",
-                                      id: i,
-                                    },
-                                    {
-                                      label: "Bec Code",
-                                      value: "becCode",
-                                      id: i,
-                                    },
-                                    { label: "Type", value: "partType", id: i },
-                                  ]}
-                                  onChange={(e) => handleSearchCategory(e, i)}
-                                  value={obj.selectCategory}
-                                />
-                              </div>
-                              <div className="customselectsearch">
-                                <input
-                                  className="custom-input-sleact"
-                                  type="text"
-                                  placeholder="Search string"
-                                  value={obj.inputSearch}
-                                  onChange={(e) => handleInputSearch(e, i)}
-                                  id={"inputSearch-" + i}
-                                  autoComplete="off"
-                                />
-
-                                {obj.selectOptions &&
-                                  obj.selectOptions.length > 0 && (
-                                    <ul
-                                      className={`list-group customselectsearch-list scrollbar scrollbar-${i}`}
-                                      id="style"
-                                    >
-                                      {obj.selectOptions.map(
-                                        (currentItem, j) => (
-                                          <li
-                                            className="list-group-item"
-                                            key={j}
-                                            onClick={(e) =>
-                                              handleSearchListClick(
-                                                e,
-                                                currentItem,
-                                                obj,
-                                                i
-                                              )
-                                            }
-                                          >
-                                            {
-                                              currentItem[
-                                                obj.selectCategory.value
-                                              ]
-                                            }
-                                          </li>
-                                        )
-                                      )}
-                                    </ul>
-                                  )}
-                              </div>
-                            </div>
-                          </>
-                        );
-                      })}
-                      <div onClick={(e) => addSearchQuerryHtml(e)}>
-                        <Link
-                          to="#"
-                          className="btn-sm text-black border mr-2"
-                          style={{ border: "1px solid #872FF7" }}
-                        >
-                          +
-                        </Link>
-                      </div>
-                      <div onClick={handleDeletQuerySearch}>
-                        <Link to="#" className="btn-sm border">
-                          <svg
-                            data-name="Layer 41"
-                            id="Layer_41"
-                            fill="black"
-                            viewBox="0 0 50 50"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <title />
-                            <path
-                              className="cls-1"
-                              d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                            />
-                            <path
-                              className="cls-1"
-                              d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                            />
-                            <path
-                              className="cls-1"
-                              d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                            />
-                          </svg>
-                          {/* <DeleteIcon className="font-size-16" /> */}
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
+                  <DynamicSearchComponent
+                    querySearchSelector={querySearchSelector}
+                    setQuerySearchSelector={setQuerySearchSelector}
+                    clearFilteredData={clearFilteredData}
+                    handleSnack={handleSnack}
+                    searchAPI={sparePartSearch}
+                  />
                 </div>
               </div>
               <div className="col-4">
@@ -2370,20 +1950,19 @@ function PartList() {
                     <SearchIcon />
                     <span className="ml-1">Search</span>
                   </button>
-                  <a
+                  <button
                     onClick={() => setFileUploadOpen(true)}
                     style={{ cursor: "pointer" }}
                     className="btn bg-primary text-white mx-2"
                   >
                     Upload
-                  </a>
-                  <a
+                  </button>
+                  <button
                     onClick={() => setAddPartOpen(true)}
-                    href="#"
                     className="btn bg-primary text-white "
                   >
                     + Add Part
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
@@ -2405,9 +1984,15 @@ function PartList() {
               }}
               rows={allPartListData}
               columns={columnsPartList}
+              editMode="row"
               pageSize={5}
               rowsPerPageOptions={[5]}
-              checkboxSelection
+              experimentalFeatures={{ newEditingApi: true }}
+              processRowUpdate={(newRow, oldRow) =>
+                processRowUpdate(newRow, oldRow)
+              }
+              onProcessRowUpdateError={(error) => console.log(error)}
+              // checkboxSelection
               // onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
               // onCellClick={(e) => handleRowClick(e)}
             />
@@ -2423,320 +2008,14 @@ function PartList() {
               <button className="btn text-white bg-primary">Save</button>
             </div>
           </div>
-          <Modal
-            show={addPartOpen}
-            onHide={handleAddPartClose}
-            size="lg"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-          >
-            <Modal.Header>
-              <Modal.Title>Add Part</Modal.Title>
-            </Modal.Header>
-            <Modal.Body className="p-0 bg-white">
-              <div className="ligt-greey-bg p-3">
-                <div>
-                  <span className="mr-3">
-                    <i
-                      className="fa fa-pencil font-size-12"
-                      aria-hidden="true"
-                    ></i>
-                    <span className="ml-2">Edit</span>
-                  </span>
-                  <span className="mr-3">
-                    <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                    <span
-                      className="ml-2 cursor"
-                      data-toggle="modal"
-                      data-target="#Recommended"
-                    >
-                      Substitute parts
-                    </span>
-                  </span>
-                  <span className="mr-3">
-                    <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                    <span
-                      className="ml-2 cursor"
-                      data-toggle="modal"
-                      data-target="#Substitute"
-                    >
-                      Recommended price
-                    </span>
-                  </span>
-                  <span className="mr-3">
-                    <MonetizationOnOutlinedIcon className=" font-size-16" />
-                    <span className="ml-2"> Adjust price</span>
-                  </span>
-                </div>
-              </div>
-              <div>
-                <div className="p-3">
-                  <div className="row mt-4">
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          GROUP NUMBER
-                        </label>
-                        <SearchBox
-                          value={sparePart.groupNumber}
-                          onChange={(e) =>
-                            handleSparePartSearch("groupNumber", e.target.value)
-                          }
-                          type="groupNumber"
-                          result={searchGroupNoResults}
-                          onSelect={handleSparePartSelect}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          TYPE
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          value={sparePart.partType}
-                          onChange={(e) =>
-                            setSparePart({
-                              ...sparePart,
-                              partType: e.target.value,
-                            })
-                          }
-                          disabled
-                          placeholder="Required"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          PART NUMBER
-                        </label>
-                        <SearchBox
-                          value={sparePart.partNumber}
-                          onChange={(e) =>
-                            handleSparePartSearch("partNumber", e.target.value)
-                          }
-                          type="partNumber"
-                          result={searchPartNoResults}
-                          onSelect={handleSparePartSelect}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          QTY
-                        </label>
-                        <input
-                          type="Number"
-                          className="form-control border-radius-10"
-                          onChange={(e) =>
-                            setSparePart({
-                              ...sparePart,
-                              quantity: e.target.value,
-                              extendedPrice: parseFloat(
-                                sparePart.unitPrice * e.target.value
-                              ).toFixed(2),
-                              totalPrice:
-                                sparePart.usagePercentage > 0
-                                  ? parseFloat(
-                                      (sparePart.usagePercentage / 100) *
-                                        sparePart.unitPrice *
-                                        e.target.value
-                                    ).toFixed(2)
-                                  : parseFloat(
-                                      sparePart.unitPrice * e.target.value
-                                    ).toFixed(2),
-                            })
-                          }
-                          value={sparePart.quantity}
-                          placeholder="Required"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          UNIT OF MEASURES
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          value={sparePart.salesUnit}
-                          onChange={(e) =>
-                            setSparePart({
-                              ...sparePart,
-                              salesUnit: e.target.value,
-                            })
-                          }
-                          placeholder="Required"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          UNIT PRICE
-                        </label>
-                        <input
-                          type="Number"
-                          className="form-control border-radius-10"
-                          value={parseFloat(sparePart.unitPrice).toFixed(2)}
-                          disabled
-                          placeholder="Required"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          EXTENDED PRICE
-                        </label>
-                        <input
-                          type="Number"
-                          className="form-control border-radius-10"
-                          disabled
-                          // onChange={(e) => setSparePart({...sparePart, extendedPrice: e.target.value})}
-                          value={parseFloat(sparePart.extendedPrice).toFixed(2)}
-                          placeholder="Optional"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          CURRENCY
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          onChange={(e) =>
-                            setSparePart({
-                              ...sparePart,
-                              currency: e.target.value,
-                            })
-                          }
-                          value={sparePart.currency}
-                          placeholder="Required"
-                          disabled
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          % USAGE
-                        </label>
-                        <input
-                          type="Number"
-                          className="form-control border-radius-10"
-                          onChange={(e) =>
-                            setSparePart({
-                              ...sparePart,
-                              usagePercentage: e.target.value,
-                              totalPrice: parseFloat(
-                                calculateTotalPrice(
-                                  sparePart.extendedPrice,
-                                  e.target.value
-                                )
-                              ).toFixed(2),
-                            })
-                          }
-                          value={sparePart.usagePercentage}
-                          placeholder="Optional"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          TOTAL PRICE
-                        </label>
-                        <input
-                          type="Number"
-                          className="form-control border-radius-10"
-                          value={parseFloat(sparePart.totalPrice).toFixed(2)}
-                          disabled
-                          placeholder="Required"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          COMMENT
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          value={sparePart.comment}
-                          onChange={(e) =>
-                            setSparePart({
-                              ...sparePart,
-                              comment: e.target.value,
-                            })
-                          }
-                          placeholder="Optional"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          DESCRIPTION
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          value={sparePart.description}
-                          onChange={(e) =>
-                            setSparePart({
-                              ...sparePart,
-                              description: e.target.value,
-                            })
-                          }
-                          placeholder="Optional"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="m-3 text-right">
-                  <a
-                    href="#"
-                    onClick={handleAddPartClose}
-                    className="btn border mr-3 "
-                  >
-                    {" "}
-                    Cancel
-                  </a>
-                  <button
-                    type="button"
-                    className="btn btn-light bg-primary text-white"
-                    onClick={handleIndPartAdd}
-                    disabled={
-                      !sparePart.partType ||
-                      !sparePart.partNumber ||
-                      !sparePart.quantity ||
-                      !sparePart.unitPrice ||
-                      !sparePart.extendedPrice ||
-                      !sparePart.currency ||
-                      !sparePart.totalPrice
-                    }
-                  >
-                    Save
-                  </button>
-                  {/* <a href="#" className="btn text-white bg-primary"
-                  onClick={}
-                  disabled>
-                    Save
-                  </a> */}
-                </div>
-              </div>
-            </Modal.Body>
-          </Modal>
+          {/* Open Modal to add individual spare part to the part list */}
+          <AddNewSparepartModal
+            sparePart={sparePart}
+            setSparePart={setSparePart}
+            handleIndPartAdd={handleIndPartAdd}
+            addPartOpen={addPartOpen}
+            handleAddPartClose={handleAddPartClose}
+          />
 
           <Modal
             show={fileUploadOpen}
@@ -3052,9 +2331,6 @@ function PartList() {
                           id="flexRadioDefault1"
                         ></input>
                       </div>
-                      {/* <div className="listcheckbox">
-            <input className="form-check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="..." />
-            </div> */}
                     </div>
                   </div>
                   <div className="hr w-100"></div>
@@ -3084,9 +2360,6 @@ function PartList() {
                           id="flexRadioDefault1"
                         ></input>
                       </div>
-                      {/* <div className="listcheckbox">
-            <input className="form-check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="..." />
-            </div> */}
                     </div>
                   </div>
                   <div className="hr w-100"></div>
@@ -3262,14 +2535,13 @@ function PartList() {
               </div>
               <div className="modal-footer" style={{ display: "unset" }}>
                 <div className="mb-2">
-                  <a
-                    href="#"
+                  <button
                     onClick={() => handleCreate()}
                     data-dismiss="modal"
                     className="btn bg-primary d-block text-white"
                   >
                     Done
-                  </a>
+                  </button>
                 </div>
                 <div>
                   <button className="btn  btn-primary">Create</button>
