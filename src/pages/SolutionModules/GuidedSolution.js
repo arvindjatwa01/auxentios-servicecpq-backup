@@ -44,6 +44,7 @@ import {
   Header,
 } from "./index";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useSelector, useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 import { actionCreator } from "../../redux/index";
@@ -213,61 +214,59 @@ export const GuidedSolution = (props) => {
 
   // }
 
-  // console.log(object)
-
-  // console.log("state in guidedSolution", state.guidedSolution)
-  // console.log("state in guidedSolution Questions ", state.guidedSolution.guidedSolutionResponse)
-  // console.log("current question counter => ", questionNoCounter)
-
-
-
-  // console.log("guidedSolutions 11 : ", guidedSolutions)
 
   const handleContinuePress = (currentCounter) => {
 
     //Counter Not Increase Yet
-
     //Question 1
     if (currentCounter == 0) {
 
       var flowIndex = parseInt(state.guidedSolution.guidedQuestions[0].value)
-      setPreviousValue(flowIndex)
-
-      // console.log("messsss ", state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
-      //   currentCounter
-      // ].options[currentCounter].solution)
       var guidedSolutionNames = [];
+
       if (
         state.guidedSolution?.guidedSolutionResponse != null &&
         state.guidedSolution?.guidedSolutionResponse.length > 0
       ) {
-        state.guidedSolution?.guidedSolutionResponse.map(
-          (solutionNameRes, index) => {
-            var dict = {
-              key: solutionNameRes.solutionName,
-              value: index,
-            };
-            guidedSolutionNames.push(dict);
-          }
-        );
 
         addFieldName("solutionName");
         addQuestionHeader(
           state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[0].description);
         if (flowIndex == 0) {
-          addFormControlLabel(state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
+          state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
             currentCounter
-          ].options[currentCounter].strategyTask);
+          ].options[currentCounter].strategyTask.map(
+            (solutionNameRes, index) => {
+              var dict = {
+                key: solutionNameRes.value,
+                value: index,
+                secondValue: solutionNameRes.key,
+              };
+              guidedSolutionNames.push(dict);
+            }
+          );
         } else if (flowIndex == 1) {
-          addFormControlLabel(state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
+          state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
             currentCounter
-          ].options[currentCounter].solution);
+          ].options[currentCounter].solution.map(
+            (solutionNameRes, index) => {
+              var dict = {
+                key: solutionNameRes.value,
+                value: index,
+                secondValue: solutionNameRes.key,
+              };
+              guidedSolutionNames.push(dict);
+            }
+          );
         }
-
-
+        addFieldName("solutionName");
+        addFormControlLabel(guidedSolutionNames)
+        setQuestionNoCounter(questionNoCounter + 1);
       } else {
         alert("Error");
       }
+
+
     }
 
     //Question 2
@@ -276,159 +275,275 @@ export const GuidedSolution = (props) => {
       //Check Which parent flow it is;
       let checkedValQ1 = '';
       var flowIndex = parseInt(state.guidedSolution?.guidedQuestions[0].value);
-      var flowData = state.guidedSolution.guidedQuestions[1].value
-
-      if ((flowData == 'Standard Reapir or Replacement') || (flowData == 'Customisation')) {
-        checkedValQ1 = 0
-      } else if ((flowData == 'Routine Maintenance Tasks') || (flowData == 'Service (Under Warranty)')) {
-        checkedValQ1 = 1
-      } else {
-        checkedValQ1 = 2
-      }
+      var flowData = state.guidedSolution.guidedQuestions[1].fieldValue;
 
       var guidedSolutionNames = [];
-      if (
-        state.guidedSolution?.guidedSolutionResponse != null &&
-        state.guidedSolution?.guidedSolutionResponse.length > 0 &&
-        state.guidedSolution?.guidedSolutionResponse[flowIndex].questions
-          .length > 0
-      ) {
-        var childArray = [];
+      if (flowData != "" && flowData.length != 0) {
+
         if (
-          state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
-          currentCounter
-          ] != null
+          state.guidedSolution?.guidedSolutionResponse != null &&
+          state.guidedSolution?.guidedSolutionResponse.length > 0 &&
+          state.guidedSolution?.guidedSolutionResponse[flowIndex].questions
+            .length > 0
         ) {
+          var childArray = [];
+
 
           var questionsAre = state.guidedSolution?.guidedSolutionResponse[flowIndex].questions;
-          questionsAre.some(function (entry, i) {
-            if (entry.guidedSolutionModels[0].solutionName == flowData) {
-              addQuestionHeader(
-                entry.guidedSolutionModels[0].questions[0].description
-              );
-              console.log("options value is : ", entry.guidedSolutionModels[0]
-                .questions[0]
-                .options[0])
-              if (i == 0) {
-                addFormControlLabel(entry.guidedSolutionModels[0]
-                  .questions[0]
-                  .options[0].lifeStageOfMachine);
-              } else if (i == 1) {
-                addFormControlLabel(entry.guidedSolutionModels[0]
-                  .questions[0]
-                  .options[0].strategyTask);
-              } else {
-                addFormControlLabel(entry.guidedSolutionModels[0]
-                  .questions[0]
-                  .options[0].fleetSize);
-              }
-              return true;
-            }
-          });
 
-          // if (
+          if (flowIndex == 0) {
+            // console.log("length is : ", questionsAre.length)
+            questionsAre[0].guidedSolutionModels.some(function (data, i) {
+              if (data.solutionName == flowData) {
+                addQuestionHeader(
+                  data.questions[0].description
+                );
+                addFieldName("machineType");
+                data.questions[0].options[0].taskType.map(
+                  (option, index) => {
+                    var dict = {
+                      key: option.value,
+                      value: index,
+                      secondValue: option.key,
+                    };
+                    guidedSolutionNames.push(dict);
+                  }
+                );
+              }
+            });
+            addWithDropdown(false);
+            addResultFound(false);
+          } else if (flowIndex == 1) {
+            questionsAre.some(function (entry, i) {
+              if (entry.guidedSolutionModels[0].solutionName == flowData) {
+                addQuestionHeader(
+                  entry.guidedSolutionModels[0].questions[0].description
+                );
+                addFieldName(
+                  entry.guidedSolutionModels[0].questions[0].fieldName
+                );
+
+                if (i == 0) {
+                  entry.guidedSolutionModels[0]
+                    .questions[0]
+                    .options[0].lifeStageOfMachine.map(
+                      (option, index) => {
+                        var dict = {
+                          key: option.value,
+                          value: index,
+                          secondValue: option.key,
+                        };
+                        guidedSolutionNames.push(dict);
+                      }
+                    );
+                } else if (i == 1) {
+                  entry.guidedSolutionModels[0]
+                    .questions[0]
+                    .options[0].strategyTask.map(
+                      (option, index) => {
+                        var dict = {
+                          key: option.value,
+                          value: index,
+                          secondValue: option.key,
+                        };
+                        guidedSolutionNames.push(dict);
+                      }
+                    );
+                } else {
+                  entry.guidedSolutionModels[0]
+                    .questions[0]
+                    .options[0].fleetSize.map(
+                      (option, index) => {
+                        var dict = {
+                          key: option.value,
+                          value: index,
+                          secondValue: option.key,
+                        };
+                        guidedSolutionNames.push(dict);
+                      }
+                    );
+                }
+              }
+            });
+            addWithDropdown(false);
+            addResultFound(false);
+          }
+          // addQuestionHeader(
           //   state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
           //     currentCounter
-          //   ].options.length > 0
-          // ) {
+          //   ].description
+          // );
+          // if (flowIndex == 0) {
+          //   console.log("flow index is 0 so next step don`t be run")
+          // } else if (flowIndex == 1) {
+          //   if (
+          //     state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
+          //     currentCounter
+          //     ] != null
+          //   ) {
 
+          //     var questionsAre = state.guidedSolution?.guidedSolutionResponse[flowIndex].questions;
+          //     questionsAre.some(function (entry, i) {
+          //       if (entry.guidedSolutionModels[0].solutionName == flowData) {
+          //         addQuestionHeader(
+          //           entry.guidedSolutionModels[0].questions[0].description
+          //         );
 
-          //   if (flowIndex == 0) {
-          //     if (
-          //       state.guidedSolution?.guidedSolutionResponse[flowIndex]
-          //         .questions[currentCounter].options[0].machineType.length > 0
-          //     ) {
-          //       addFieldName("machineType");
-          //       addFieldName(
-          //         state.guidedSolution?.guidedSolutionResponse[flowIndex]
-          //           .questions[currentCounter].fieldName
-          //       );
-          //       state.guidedSolution?.guidedSolutionResponse[
-          //         flowIndex
-          //       ].questions[currentCounter].options[0].machineType.map(
-          //         (option, index) => {
-          //           var dict = {
-          //             key: option.key,
-          //             value: index,
-          //             secondValue: option.value,
-          //           };
-          //           guidedSolutionNames.push(dict);
+          //         if (i == 0) {
+          //           entry.guidedSolutionModels[0]
+          //             .questions[0]
+          //             .options[0].lifeStageOfMachine.map(
+          //               (option, index) => {
+          //                 var dict = {
+          //                   key: option.key,
+          //                   value: index,
+          //                   secondValue: option.value,
+          //                 };
+          //                 guidedSolutionNames.push(dict);
+          //               }
+          //             );
+          //         } else if (i == 1) {
+          //           entry.guidedSolutionModels[0]
+          //             .questions[0]
+          //             .options[0].strategyTask.map(
+          //               (option, index) => {
+          //                 var dict = {
+          //                   key: option.key,
+          //                   value: index,
+          //                   secondValue: option.value,
+          //                 };
+          //                 guidedSolutionNames.push(dict);
+          //               }
+          //             );
+          //         } else {
+          //           entry.guidedSolutionModels[0]
+          //             .questions[0]
+          //             .options[0].fleetSize.map(
+          //               (option, index) => {
+          //                 var dict = {
+          //                   key: option.key,
+          //                   value: index,
+          //                   secondValue: option.value,
+          //                 };
+          //                 guidedSolutionNames.push(dict);
+          //               }
+          //             );
           //         }
-          //       );
-          //       addWithDropdown(false);
-          //       addResultFound(false);
-          //     }
-          //     // machineType
-          //   } 
-          //   else if (flowIndex == 1) {
-          //     if (
-          //       state.guidedSolution?.guidedSolutionResponse[flowIndex]
-          //         .questions[currentCounter].options[0].taskType.length > 0
-          //     ) {
-          //       addFieldName(
-          //         state.guidedSolution?.guidedSolutionResponse[flowIndex]
-          //           .questions[currentCounter].fieldName
-          //       );
-          //       state.guidedSolution?.guidedSolutionResponse[
-          //         flowIndex
-          //       ].questions[currentCounter].options[0].taskType.map(
-          //         (option, index) => {
-          //           var dict = {
-          //             key: option.key,
-          //             value: index,
-          //             secondValue: option.value,
-          //           };
-          //           guidedSolutionNames.push(dict);
-          //         }
-          //       );
-          //       addWithDropdown(false);
-          //       addResultFound(false);
-          //       console.log("guidedSolutionNames", guidedSolutionNames)
-          //     }
-          //     // taskType
-          //   } 
-          //   else {
-          //     if (
-          //       state.guidedSolution?.guidedSolutionResponse[flowIndex]
-          //         .questions[currentCounter].options[0].fleet.length > 0
-          //     ) {
-          //       addFieldName(
-          //         state.guidedSolution?.guidedSolutionResponse[flowIndex]
-          //           .questions[currentCounter].fieldName
-          //       );
-          //       state.guidedSolution?.guidedSolutionResponse[
-          //         flowIndex
-          //       ].questions[currentCounter].options[0].fleet.map(
-          //         (option, index) => {
-          //           var dict = {
-          //             key: option.key,
-          //             value: index,
-          //             secondValue: option.value,
-          //           };
-          //           guidedSolutionNames.push(dict);
-          //         }
-          //       );
-          //       addWithDropdown(false);
-          //       addResultFound(false);
-          //     }
-          //     // fleet
+          //         addWithDropdown(false);
+          //         addResultFound(false);
+          //         return true;
+          //       }
+          //     });
           //   }
+
+
+          //   // if (
+          //   //   state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
+          //   //     currentCounter
+          //   //   ].options.length > 0
+          //   // ) {
+
+
+          //   //   if (flowIndex == 0) {
+          //   //     if (
+          //   //       state.guidedSolution?.guidedSolutionResponse[flowIndex]
+          //   //         .questions[currentCounter].options[0].machineType.length > 0
+          //   //     ) {
+          //   //       addFieldName("machineType");
+          //   //       addFieldName(
+          //   //         state.guidedSolution?.guidedSolutionResponse[flowIndex]
+          //   //           .questions[currentCounter].fieldName
+          //   //       );
+          //   //       state.guidedSolution?.guidedSolutionResponse[
+          //   //         flowIndex
+          //   //       ].questions[currentCounter].options[0].machineType.map(
+          //   //         (option, index) => {
+          //   //           var dict = {
+          //   //             key: option.key,
+          //   //             value: index,
+          //   //             secondValue: option.value,
+          //   //           };
+          //   //           guidedSolutionNames.push(dict);
+          //   //         }
+          //   //       );
+          //   //       addWithDropdown(false);
+          //   //       addResultFound(false);
+          //   //     }
+          //   //     // machineType
+          //   //   } 
+          //   //   else if (flowIndex == 1) {
+          //   //     if (
+          //   //       state.guidedSolution?.guidedSolutionResponse[flowIndex]
+          //   //         .questions[currentCounter].options[0].taskType.length > 0
+          //   //     ) {
+          //   //       addFieldName(
+          //   //         state.guidedSolution?.guidedSolutionResponse[flowIndex]
+          //   //           .questions[currentCounter].fieldName
+          //   //       );
+          //   //       state.guidedSolution?.guidedSolutionResponse[
+          //   //         flowIndex
+          //   //       ].questions[currentCounter].options[0].taskType.map(
+          //   //         (option, index) => {
+          //   //           var dict = {
+          //   //             key: option.key,
+          //   //             value: index,
+          //   //             secondValue: option.value,
+          //   //           };
+          //   //           guidedSolutionNames.push(dict);
+          //   //         }
+          //   //       );
+          //   //       addWithDropdown(false);
+          //   //       addResultFound(false);
+          //   //       console.log("guidedSolutionNames", guidedSolutionNames)
+          //   //     }
+          //   //     // taskType
+          //   //   } 
+          //   //   else {
+          //   //     if (
+          //   //       state.guidedSolution?.guidedSolutionResponse[flowIndex]
+          //   //         .questions[currentCounter].options[0].fleet.length > 0
+          //   //     ) {
+          //   //       addFieldName(
+          //   //         state.guidedSolution?.guidedSolutionResponse[flowIndex]
+          //   //           .questions[currentCounter].fieldName
+          //   //       );
+          //   //       state.guidedSolution?.guidedSolutionResponse[
+          //   //         flowIndex
+          //   //       ].questions[currentCounter].options[0].fleet.map(
+          //   //         (option, index) => {
+          //   //           var dict = {
+          //   //             key: option.key,
+          //   //             value: index,
+          //   //             secondValue: option.value,
+          //   //           };
+          //   //           guidedSolutionNames.push(dict);
+          //   //         }
+          //   //       );
+          //   //       addWithDropdown(false);
+          //   //       addResultFound(false);
+          //   //     }
+          //   //     // fleet
+          //   //   }
+          //   // }
           // }
+          addFormControlLabel(guidedSolutionNames);
+        } else {
+          alert("Error");
         }
-        // addFormControlLabel(guidedSolutionNames);
-      } else {
-        alert("Error");
+        setQuestionNoCounter(questionNoCounter + 1);
+
       }
-      console.log("guidedSolutionNames 01 : ", guidedSolutionNames)
+
+
+
     }
 
     //Question 3
     if (currentCounter == 2) {
       //Check Which parent flow it is;
-      // var flowIndex = parseInt(state.guidedSolution?.guidedQuestions[1].value);
 
       var flowIndex = parseInt(state.guidedSolution?.guidedQuestions[0].value);
-      var flowData = state.guidedSolution.guidedQuestions[1].value
+      var flowData = state.guidedSolution.guidedQuestions[1].fieldValue
 
       var guidedSolutionNames = [];
       var tempDropdownFormLables = [];
@@ -446,8 +561,10 @@ export const GuidedSolution = (props) => {
           ] != null
         ) {
 
-          // console.log("next question is optional ")
+
           var questionsAre = state.guidedSolution?.guidedSolutionResponse[flowIndex].questions;
+
+
 
           questionsAre.some(function (entry, i) {
             if (entry.guidedSolutionModels[0].solutionName == flowData) {
@@ -472,9 +589,21 @@ export const GuidedSolution = (props) => {
                 addQuestionHeader(
                   entry.guidedSolutionModels[0].questions[1].description
                 );
-                addFormControlLabel(
-                  entry.guidedSolutionModels[0].questions[1].options[0].contractOrSupport
-                );
+                entry.guidedSolutionModels[0]
+                  .questions[1].options[0]
+                  .contractOrSupport.map(
+                    (option, index) => {
+                      var dict = {
+                        key: option.value,
+                        value: index,
+                        secondValue: option.key,
+                      };
+                      guidedSolutionNames.push(dict);
+                    }
+                  );
+                // addFormControlLabel(
+                //   entry.guidedSolutionModels[0].questions[1].options[0].contractOrSupport
+                // );
 
                 addDropdownAPI("");
                 addWithDropdown(false);
@@ -550,47 +679,90 @@ export const GuidedSolution = (props) => {
               ? currentCounter - 1
               : state.guidedSolution?.guidedSolutionResponse[flowIndex].questions
                 .length - 1;
+
+
+          console.log("index : ", questionIndex)
+          console.log("current : ", flowData)
+          console.log("object : ",
+            state.guidedSolution?.guidedSolutionResponse[flowIndex]
+              .questions[questionIndex].guidedSolutionModels)
+          console.log("FlowData is : ", state.guidedSolution?.guidedSolutionResponse[flowIndex].questions)
+
           if (
             state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               questionIndex
-            ].guidedSolutionModel.questions.length > 0
+            ].guidedSolutionModels[questionIndex].questions.length > 0
+
           ) {
-            addQuestionHeader(
-              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
-                questionIndex
-              ].guidedSolutionModel.questions[0].description
-            );
 
-            addDropdownAPI(
-              state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
-                questionIndex
-              ].guidedSolutionModel.questions[0].apiUrl
-            );
+            var questionsArr = state.guidedSolution?.guidedSolutionResponse[flowIndex]
+              .questions[questionIndex].guidedSolutionModels;
 
-            state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
-              questionIndex
-            ].guidedSolutionModel.questions[0].options[0].coverage.map(
-              (option, index) => {
-                var dict = {
-                  key: option.key,
-                  value: index,
-                  secondValue: option.value,
-                };
-                tempDropdownFormLables.push(dict);
+            questionsArr.some(function (arrData, i) {
+              if (arrData.solutionName == flowData) {
+                if (arrData.questions[0].guidedSolutionModels !== null) {
+                  addQuestionHeader(
+                    arrData.questions[0].guidedSolutionModels[0].questions[0]
+                      .description
+                  );
+                  addDropdownAPI(
+                    arrData.questions[0].guidedSolutionModels[0].questions[0]
+                      .apiUrl
+                  );
+                  arrData.questions[0].guidedSolutionModels[0].questions[0].options[0].coverage.map(
+                    (option, index) => {
+                      var dict = {
+                        key: option.key,
+                        value: index,
+                        secondValue: option.value,
+                      };
+                      tempDropdownFormLables.push(dict);
+                    }
+                  );
+
+                }
               }
-            );
-            addFormControlLabel(state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
-              questionIndex
-            ].guidedSolutionModel.questions[0].options[0].coverage)
+            });
+
+            console.log("Question Arrr : ", questionsArr)
+
+
+            // addQuestionHeader(
+            //   state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
+            //     questionIndex
+            //   ].guidedSolutionModel.questions[0].description
+            // );
+
+            // addDropdownAPI(
+            //   state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
+            //     questionIndex
+            //   ].guidedSolutionModel.questions[0].apiUrl
+            // );
+
+            // state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
+            //   questionIndex
+            // ].guidedSolutionModel.questions[0].options[0].coverage.map(
+            //   (option, index) => {
+            //     var dict = {
+            //       key: option.key,
+            //       value: index,
+            //       secondValue: option.value,
+            //     };
+            //     tempDropdownFormLables.push(dict);
+            //   }
+            // );
+            // addFormControlLabel(state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
+            //   questionIndex
+            // ].guidedSolutionModel.questions[0].options[0].coverage)
           } else {
             //Need to check what to do
           }
           addWithDropdown(true);
           addResultFound(false);
         }
-        // console.log("3 tempDropDownFormLabels : ", tempDropdownFormLables)
         addDropdownFormLabel(tempDropdownFormLables);
-        // addFormControlLabel(guidedSolutionNames);
+        addFormControlLabel(guidedSolutionNames);
+        setQuestionNoCounter(questionNoCounter + 1);
       } else {
         alert("Error");
       }
@@ -600,10 +772,8 @@ export const GuidedSolution = (props) => {
     if (currentCounter == 3) {
       //Check Which parent flow it is;
 
-      // var flowIndex = parseInt(state.guidedSolution?.guidedQuestions[1].value);
-
       var flowIndex = parseInt(state.guidedSolution?.guidedQuestions[0].value);
-      var flowData = state.guidedSolution.guidedQuestions[1].value;
+      var flowData = state.guidedSolution.guidedQuestions[1].fieldValue;
 
       var guidedSolutionNames = [];
       var tempDropdownFormLables = [];
@@ -614,15 +784,11 @@ export const GuidedSolution = (props) => {
           .length > 0
       ) {
         var childArray = [];
-
-
         if (
           state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
           currentCounter
           ] != null
         ) {
-
-          console.log("okay  true")
 
           if (
             state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
@@ -687,6 +853,8 @@ export const GuidedSolution = (props) => {
               : state.guidedSolution?.guidedSolutionResponse[flowIndex].questions
                 .length - 1;
           //Check whether is last or more
+
+
           if (
             state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
               questionIndex
@@ -767,10 +935,11 @@ export const GuidedSolution = (props) => {
           addWithDropdown(true);
         }
         addDropdownFormLabel(tempDropdownFormLables);
+        setQuestionNoCounter(questionNoCounter + 1);
         // addFormControlLabel(guidedSolutionNames);
-        addFormControlLabel(state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
-          questionIndex
-        ].guidedSolutionModels[0].questions[2].options[0].component)
+        // addFormControlLabel(state.guidedSolution?.guidedSolutionResponse[flowIndex].questions[
+        //   questionIndex
+        // ].guidedSolutionModels[0].questions[2].options[0].component)
       } else {
         alert("Error");
       }
@@ -934,13 +1103,14 @@ export const GuidedSolution = (props) => {
         }
         addDropdownFormLabel(tempDropdownFormLables);
         addFormControlLabel(guidedSolutionNames);
+        setQuestionNoCounter(questionNoCounter + 1);
       } else {
         alert("Error");
       }
     }
 
     //Counter Increase below
-    setQuestionNoCounter(questionNoCounter + 1);
+    // setQuestionNoCounter(questionNoCounter + 1);
   };
   const handlePreviousPress = () => {
     if (questionNoCounter > 0) {
@@ -1404,9 +1574,18 @@ export const GuidedSolution = (props) => {
                 </div> */}
               </TabPanel>
               <TabPanel className="p-0" value="2">
-                <div className="card  overflow-hidden mt-3 p-3">
-                  <span>data not found</span>
-                </div>
+                {/* <div className="card  overflow-hidden mt-3 p-3">
+                  <span></span>
+                </div> */}
+                <div className="text-right" style={{paddingTop: '18rem'}}>
+                          <a
+                            className="btn bg-primary text-white cursor"
+                            href="/SolutionTemplates"
+                          >
+                            Continue{" "}
+                            <ArrowForwardIcon className=" font-size-16" />
+                          </a>
+                        </div>
               </TabPanel>
               <TabPanel className="p-0" value="3">
                 <div className="card  mt-3 p-3">

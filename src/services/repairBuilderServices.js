@@ -2,6 +2,7 @@ import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
 import {
   ADD_REPAIR_BUILDER_PARTLIST,
+  ADD_REPAIR_MULTI_PARTS_TO_PARTLIST,
   ADD_REPAIR_PART_TO_PARTLIST,
   CREATE_REPAIR_BUILDER,
   SEARCH_CUSTOMER,
@@ -75,7 +76,7 @@ export const addPartlist = (builderId, data) => {
 };
 
 //Search Customer based on the search criteria to fill the header
-export const customerSearch = (searchStr) => {
+export const customerSearch =  (searchStr) => {
   console.log("RepairBuilder > customerSearch called...");
   return new Promise((resolve, reject) => {
     try {
@@ -83,7 +84,10 @@ export const customerSearch = (searchStr) => {
         .get(SEARCH_CUSTOMER(searchStr))
         .then((res) => {
           console.log("customerSearch > axios res=", res);
-          resolve(res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject('Error occurred while fetching customer data');
         })
         .catch((err) => {
           console.log("customerSearch > axios err=", err);
@@ -280,7 +284,7 @@ export const updateBuilderPrice = (builderId, data) => {
   });
 };
 
-//Add single spareparts to the partlist builder
+//Add single sparepart to the partlist builder
 export const addPartToPartList = (partListId, data) => {
   console.log("service repairbuilder > addPartToPartList called...");
   return new Promise((resolve, reject) => {
@@ -302,6 +306,34 @@ export const addPartToPartList = (partListId, data) => {
         });
     } catch (error) {
       console.error("addPartToPartList general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//Add multiple spareparts to the partlist builder
+export const addMultiPartsToPartList = (partListId, data) => {
+  console.log("service repairbuilder > addPartToPartList called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(ADD_REPAIR_MULTI_PARTS_TO_PARTLIST(partListId), data, config)
+        .then((res) => {
+          console.log("repairbuilder -> addMultiPartsToPartList response: ", res);
+          if (res.status === 200) {
+            resolve(res);
+          } else {
+            console.log("Error Status:", res.status);
+            reject("Error in addMultiPartsToPartList axios!");
+          }          
+        })
+        .catch((err) => {
+          console.log("addPartToPartList > axios err=", err);
+          reject("Error in addMultiPartsToPartList axios!");
+        });
+    } catch (error) {
+      console.error("addMultiPartsToPartList general exception", error);
       reject(SYSTEM_ERROR);
     }
   });
