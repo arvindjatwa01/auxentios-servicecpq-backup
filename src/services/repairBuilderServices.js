@@ -13,6 +13,8 @@ import {
   UPDATE_REPAIR_GENERAL_DETAILS,
   UPDATE_REPAIR_MACHINE,
   UPDATE_REPAIR_PRICE,
+  UPDATE_REPAIR_STATUS,
+  UPLOAD_REPAIR_PARTS_TO_PARTLIST,
 } from "./CONSTANTS";
 const config = {
   headers: {
@@ -240,7 +242,7 @@ export const updateBuilderGeneralDet = (builderId, data) => {
         .then((res) => {
           console.log("updateBuilderGeneralDet > axios res=", res); 
           if (res.status === 200) {
-            resolve(res);
+            resolve(res.data);
           } else {
             console.log("Error Status:", res.status);
             reject("Error in updateBuilderGeneralDetails axios!");
@@ -267,7 +269,7 @@ export const updateBuilderPrice = (builderId, data) => {
         .then((res) => {
           console.log("updateBuilderPrice > axios res=", res);
           if (res.status === 200) {
-            resolve(res);
+            resolve(res.data);
           } else {
             console.log("Error Status:", res.status);
             reject("Error in updateBuilderPrice axios!");
@@ -294,7 +296,7 @@ export const addPartToPartList = (partListId, data) => {
         .then((res) => {
           console.log("repairbuilder -> addPartToPartList response: ", res);
           if (res.status === 200) {
-            resolve(res);
+            resolve(res.data);
           } else {
             console.log("Error Status:", res.status);
             reject("Error in addPartToPartList axios!");
@@ -322,7 +324,7 @@ export const addMultiPartsToPartList = (partListId, data) => {
         .then((res) => {
           console.log("repairbuilder -> addMultiPartsToPartList response: ", res);
           if (res.status === 200) {
-            resolve(res);
+            resolve(res.data);
           } else {
             console.log("Error Status:", res.status);
             reject("Error in addMultiPartsToPartList axios!");
@@ -334,6 +336,58 @@ export const addMultiPartsToPartList = (partListId, data) => {
         });
     } catch (error) {
       console.error("addMultiPartsToPartList general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//upload parts through the excel sheet
+export const uploadPartsToPartlist = (partListId, file) => {
+  console.log("service repairbuilder > uploadParts called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(UPLOAD_REPAIR_PARTS_TO_PARTLIST(partListId), file, config)
+        .then((res) => {
+          console.log("repairbuilder -> uploadParts response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            console.log("Error Status:", res.status);
+            reject("Error in uploadParts axios!");
+          }          
+        })
+        .catch((err) => {
+          console.log("addPartToPartList > axios err=", err);
+          reject("Error in uploadParts axios!");
+        });
+    } catch (error) {
+      console.error("uploadParts general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//update status of the builder (Active, Draft, Revised, Archived)
+export const updateBuilderStatus =  (builderId, status) => {
+  console.log("RepairBuilder > updateBuilderStatus called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(UPDATE_REPAIR_STATUS(builderId, status), {}, config)
+        .then((res) => {
+          console.log("updateBuilderStatus > axios res=", res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject('Error occurred while calling updateBuilderStatus');
+        })
+        .catch((err) => {
+          console.log("updateBuilderStatus > axios err=", err);
+          reject("Error in updateBuilderStatus axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > updateBuilderStatus, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

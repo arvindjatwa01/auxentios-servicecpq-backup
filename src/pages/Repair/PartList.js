@@ -53,6 +53,8 @@ import {
   updateBuilderEstimation,
   updateBuilderGeneralDet,
   updateBuilderMachine,
+  updateBuilderStatus,
+  uploadPartsToPartlist,
 } from "services/repairBuilderServices";
 import SearchBox from "./components/SearchBox";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
@@ -66,7 +68,6 @@ function PartList() {
   const history = useHistory();
   const [searchCustResults, setSearchCustResults] = useState([]);
   const [allParts, setAllParts] = useState([]);
-  const [partsToUpload, setPartsToUpload] = useState([]);
   const [rowsToUpdate, setRowsToUpdate] = useState([]);
 
   const processRowUpdate = React.useCallback(
@@ -141,7 +142,7 @@ function PartList() {
     quantity: "",
     unitPrice: 0.0,
     extendedPrice: 0.0,
-    salesUnit: "",
+    unitOfMeasure: "",
     currency: "USD",
     usagePercentage: 0,
     totalPrice: 0.0,
@@ -149,7 +150,8 @@ function PartList() {
     description: "",
   };
   const [sparePart, setSparePart] = useState(initialSparePart);
-
+  const [addPartModalTitle, setAddPartModalTitle] = useState("Add Part");
+  const [partFieldViewonly, setPartFieldViewonly] = useState(false);
   const validityOptions = [
     { value: "15", label: "15 days" },
     { value: "30", label: "1 month" },
@@ -238,7 +240,6 @@ function PartList() {
     }
   };
 
-  
   // Select the customer from search result
   const handleCustSelect = (type, currentItem) => {
     setCustomerData({
@@ -325,8 +326,6 @@ function PartList() {
       setSearchSerialResults([]);
     }
   };
-
-  
 
   //Individual machine field value change
   const handleMachineDataChange = (e) => {
@@ -464,6 +463,7 @@ function PartList() {
 
   const handleIndPartAdd = () => {
     let data = {
+      ...(sparePart.id && { id: sparePart.id }),
       groupNumber: sparePart.groupNumber,
       partNumber: sparePart.partNumber,
       partType: sparePart.partType,
@@ -475,20 +475,22 @@ function PartList() {
       totalPrice: sparePart.totalPrice,
       comment: sparePart.comment,
       // description: sparePart.description,
-      // salesUnit: sparePart.salesUnit
+      unitOfMeasure: sparePart.unitOfMeasure,
     };
     addPartToPartList(partListNo, data)
       .then((result) => {
         handleAddPartClose();
-        setSnackMessage(`👏 New Spare Part has been added`);
-        setSeverity("success");
-        setOpenSnack(true);
+        if (addPartModalTitle === "Add Part")
+          handleSnack("success", true, `👏 New Spare Part has been added!`);
+        else
+          handleSnack(
+            "success",
+            true,
+            `👏 Selected part detail has been updated!`
+          );
       })
       .catch((err) => {
-        // console.log(err);
-        setSnackMessage(`😐 Error occurred while adding spare part`);
-        setSeverity("error");
-        setOpenSnack(true);
+        handleSnack("error", true, `😐 Error occurred while adding spare part`);
       });
   };
   const fileTypes = ["xls", "xlsx"];
@@ -501,14 +503,29 @@ function PartList() {
     }
   };
 
-  const editSparePartRow = (row) => {
-    // console.log(row);
+  const openSparePartRow = (row) => {
+    console.log(row);
     setSparePart(row);
+    setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
+    setPartFieldViewonly(true);
     setAddPartOpen(true);
   };
 
-  const handleUploadFile = () => {
+  const handleUploadFile = async () => {
     // console.log("Upload");
+    const form = new FormData();
+    form.append("file", file);
+    await uploadPartsToPartlist(partListNo, form)
+      .then((result) => {
+        handleSnack(
+          "success",
+          "true",
+          `New parts have been uploaded to the partlist: ${partListId}`
+        );
+      })
+      .catch((err) => {
+        handleSnack("error", "true", `Failed to upload the parts!`);
+      });
     setFileUploadOpen(false);
   };
 
@@ -516,6 +533,8 @@ function PartList() {
   const handleAddPartClose = () => {
     setAddPartOpen(false);
     setSparePart(initialSparePart);
+    setPartFieldViewonly(false);
+    setAddPartModalTitle("Add Part");
   };
   const handleSearchResClose = () => {
     setSearchResultOpen(false);
@@ -526,20 +545,19 @@ function PartList() {
 
   const allPartListData = [
     {
-      id: 1,
-      groupNumber: 13322,
-      partType: "Type",
-      salesUnit: "PC",
-      listPrice: 20.22,
-      partNumber: "1757896",
-      comment: "CAT DEO",
-      strategy: "3",
-      Standardjob: "$43.09",
+      id: 19,
+      groupNumber: 3620656,
+      partType: "NEW",
+      unitOfMeasure: "PC",
+      unitPrice: 20.01,
+      partNumber: "1944411",
+      comment: "sample comment",
+      description: "sample description",
       currency: "USD",
       quantity: 5,
       usagePercentage: 80,
-      extendedPrice: 80.22,
-      totalPrice: 100.0,
+      extendedPrice: 100.05,
+      totalPrice: 80.04,
     },
   ];
 
@@ -563,8 +581,8 @@ function PartList() {
     { headerName: "Type", field: "partType", flex: 1 },
     { headerName: "PartNumber", field: "partNumber", flex: 1 },
     { headerName: "Qty", field: "quantity", flex: 1, editable: true },
-    { headerName: "Unit Of Measures", field: "salesUnit", flex: 1 },
-    { headerName: "Unit Price", field: "listPrice", flex: 1 },
+    { headerName: "Unit Of Measures", field: "unitOfMeasure", flex: 1 },
+    { headerName: "Unit Price", field: "unitPrice", flex: 1 },
     { headerName: "Extended Price", field: "extendedPrice", flex: 1 },
     { headerName: "Currency", field: "currency", flex: 1 },
     {
@@ -587,7 +605,7 @@ function PartList() {
             icon={<EditIcon />}
             label="Edit"
             className="textPrimary"
-            onClick={() => editSparePartRow(params.row)}
+            onClick={() => openSparePartRow(params.row)}
             color="inherit"
           />,
           <GridActionsCellItem
@@ -608,8 +626,25 @@ function PartList() {
     { value: "Construction", label: "Construction" },
   ];
 
-  const handleBuilderStatus = (e) => {
-    setSelBuilderStatus(e);
+  const handleBuilderStatus = async (e) => {    
+    // if((['draft','revised'].indexOf(selBuilderStatus.value) > -1 && e.value === 'active') || 
+    // (['archived','revised'].indexOf(e.value) > -1 && selBuilderStatus.value === 'active')) {
+    await updateBuilderStatus(partListNo, e.value)
+    .then((result) => {
+      setSelBuilderStatus(e);
+      handleSnack(
+        "success",
+        "true",
+        result
+      );
+    })
+    .catch((err) => {
+      handleSnack("error", "true", `Failed to update the status!`);
+    });
+  // } else {
+  //     handleSnack("info", "true", `${selBuilderStatus} cannot !`);
+  // }
+
   };
   const builderStatusOptions = [
     { value: "archived", label: "Archived" },
@@ -636,7 +671,7 @@ function PartList() {
   const [value3, setValue3] = useState({ value: "1", label: "1" });
   const [value4, setValue4] = useState({ value: "1", label: "1" });
   const [selBuilderStatus, setSelBuilderStatus] = useState({
-    value: "DRAFT",
+    value: "draft",
     label: "Draft",
   });
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -707,48 +742,31 @@ function PartList() {
       selectedOption: "",
     },
   ]);
-  // const handleDeletQuerySearch = () => {
-  //   setQuerySearchSelector([]);
-  //   setCount(0);
-  //   setMasterData([]);
-  //   setFilterMasterData([]);
-  //   setSelectedMasterData([]);
-  // };
 
   const clearFilteredData = () => {
     setMasterData([]);
-    setFilterMasterData([]);
     setSelectedMasterData([]);
   };
 
-  // const handleMasterCheck = (e, row) => {
-  //   if (e.target.checked) {
-  //     var _masterData = [...masterData];
-  //     const updated = _masterData.map((currentItem, i) => {
-  //       if (row.id == currentItem.id) {
-  //         return { ...currentItem, ["check1"]: e.target.checked };
-  //       } else return currentItem;
-  //     });
-  //     setMasterData([...updated]);
-  //     setFilterMasterData([...filterMasterData, { ...row }]);
-  //   } else {
-  //     var _filterMasterData = [...filterMasterData];
-  //     const updated = _filterMasterData.filter((currentItem, i) => {
-  //       if (row.id !== currentItem.id) return currentItem;
-  //     });
-  //     setFilterMasterData(updated);
-  //   }
-  // };
-  const [filterMasterData, setFilterMasterData] = useState([]);
+  const makeHeaderEditable = () => {
+    if (value === "customer" && viewOnlyTab.custViewOnly)
+      setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
+    else if (value === "machine" && viewOnlyTab.machineViewOnly)
+      setViewOnlyTab({
+        ...viewOnlyTab,
+        machineViewOnly: false,
+      });
+    else if (value === "estimation" && viewOnlyTab.estViewOnly)
+      setViewOnlyTab({ ...viewOnlyTab, estViewOnly: false });
+    else if (value === "general" && viewOnlyTab.generalViewOnly)
+      setViewOnlyTab({
+        ...viewOnlyTab,
+        generalViewOnly: false,
+      });
+  };
+
   const [selectedMasterData, setSelectedMasterData] = useState([]);
   const [masterData, setMasterData] = useState([]);
-  const [count, setCount] = useState(1);
-  // const handleDeleteIncludeSerialNo = (e, row) => {
-  //   const updated = selectedMasterData.filter((obj) => {
-  //     if (obj.id !== row.id) return obj;
-  //   });
-  //   setSelectedMasterData(updated);
-  // };
   const handleRowClick = (e) => {
     setShow(true);
   };
@@ -757,6 +775,7 @@ function PartList() {
     const selectedRowsData = ids.map((id) =>
       masterData.find((row) => row.id === id)
     );
+    console.log(selectedRowsData);
     selectedRowsData.map((item) => {
       let data = {
         partlistId: partListNo,
@@ -768,16 +787,16 @@ function PartList() {
         extendedPrice: 0,
         currency: item.currency,
         totalPrice: 0,
-        comment: item.comment,
+        comment: "",
         // description: sparePart.description,
-        // salesUnit: sparePart.salesUnit
+        unitOfMeasure: item.salesUnit,
       };
       setSelectedMasterData([...selectedMasterData, data]);
     });
   };
 
   const addSelectedPartsToPartList = () => {
-    //console.log(selectedMasterData);
+    console.log(selectedMasterData);
 
     addMultiPartsToPartList(partListNo, selectedMasterData)
       .then((result) => {
@@ -825,6 +844,8 @@ function PartList() {
                   <Select
                     className="customselectbtn"
                     onChange={(e) => handleBuilderStatus(e)}
+                    isOptionDisabled={e => !((['draft','revised'].indexOf(selBuilderStatus.value) > -1 && e.value === 'active') || 
+                    (['archived','revised'].indexOf(e.value) > -1 && selBuilderStatus.value === 'active'))}
                     options={builderStatusOptions}
                     value={selBuilderStatus}
                   />
@@ -946,30 +967,18 @@ function PartList() {
                   href={undefined}
                   className="btn-sm"
                   style={{ cursor: "pointer" }}
-                  
                 >
                   <i
                     className="fa fa-pencil"
                     aria-hidden="true"
-                    onClick={() => {
-                      if (value === "customer")
-                        setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
-                      else if (value === "machine")
-                        setViewOnlyTab({
-                          ...viewOnlyTab,
-                          machineViewOnly: false,
-                        });
-                      else if (value === "estimation")
-                        setViewOnlyTab({ ...viewOnlyTab, estViewOnly: false });
-                      else if (value === "general")
-                        setViewOnlyTab({
-                          ...viewOnlyTab,
-                          generalViewOnly: false,
-                        });
-                    }}
+                    onClick={makeHeaderEditable}
                   ></i>
                 </a>{" "}
-                <a href={undefined} className="btn-sm" style={{ cursor: "pointer" }}>
+                <a
+                  href={undefined}
+                  className="btn-sm"
+                  style={{ cursor: "pointer" }}
+                >
                   <i className="fa fa-bookmark-o" aria-hidden="true"></i>
                 </a>{" "}
                 <a href="#" className="btn-sm" style={{ cursor: "pointer" }}>
@@ -2013,8 +2022,13 @@ function PartList() {
             sparePart={sparePart}
             setSparePart={setSparePart}
             handleIndPartAdd={handleIndPartAdd}
+            searchAPI={sparePartSearch}
             addPartOpen={addPartOpen}
             handleAddPartClose={handleAddPartClose}
+            title={addPartModalTitle}
+            partFieldViewonly={partFieldViewonly}
+            setPartFieldViewonly={setPartFieldViewonly}
+            handleSnack={handleSnack}
           />
 
           <Modal

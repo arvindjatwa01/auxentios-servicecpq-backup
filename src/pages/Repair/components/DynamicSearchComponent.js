@@ -93,10 +93,10 @@ const DynamicSearchComponent = (props) => {
       <div className="row align-items-center m-0">
         {props.querySearchSelector.map((obj, i) => {
           return (
-            <>
               <div
                 className="customselect d-flex align-items-center mr-3 my-2"
                 style={{ position: "relative", zIndex: 20 - i }}
+                key={"query"+i}
               >
                 {i > 0 ? (
                   <SelectFilter
@@ -177,7 +177,6 @@ const DynamicSearchComponent = (props) => {
                   )}
                 </div>
               </div>
-            </>
           );
         })}
         <div onClick={(e) => addSearchQuerryHtml(e)}>
