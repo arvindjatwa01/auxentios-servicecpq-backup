@@ -121,7 +121,7 @@ export const Analytics = () => {
 
    const ItemSearchResponseFun = (data, searchData) => {
       console.log("itemSerach Response Data : ", data)
-      console.log("querySearchSelectItem :=> ", searchData)
+      console.log("querySearchSelectItem  => ", searchData)
       // console.log("item type : ", querySearchSelectItem[0].itemType.label)
       if (data.length > 0) {
          setResponseSearchItem(data)

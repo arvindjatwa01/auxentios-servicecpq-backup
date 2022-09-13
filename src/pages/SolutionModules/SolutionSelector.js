@@ -298,7 +298,7 @@ export function SolutionSelector(props) {
             const portfoliosData = getAllPortfolios()
             setTimeout(() => {
                 // console.log('This will run after 1 second!')
-                console.log("portfoliosData : ", portfoliosData)
+                console.log("portfoliosData is : ", portfoliosData)
                 portfoliosData.then(function (result) {
                     setRowData(result);
                     result.map((data, x) => {

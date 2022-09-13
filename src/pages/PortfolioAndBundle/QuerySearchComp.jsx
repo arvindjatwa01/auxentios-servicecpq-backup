@@ -191,7 +191,7 @@ const QuerySearchComp = (props) => {
         props.setLoadingItem(false)
       } else if (props.compoFlag === "itemSearch1") {
         const res3 = await itemSearch(searchStr)
-        console.log("res3 : ", res3)
+        console.log("res3 is  : ", res3)
         props.ItemSearchResponseFun(res3, querySearchSelector)
         // props.setQuerySearchSelectItem(querySearchSelector);
         let temArray = []
