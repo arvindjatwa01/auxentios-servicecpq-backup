@@ -64,8 +64,9 @@ import CustomSnackbar from "../Common/CustomSnackBar";
 import DynamicSearchComponent from "./components/DynamicSearchComponent";
 import AddNewSparepartModal from "./components/AddNewSparePart";
 
-function PartList() {
+function PartList(props) {
   const history = useHistory();
+  const {state} = props.location;
   const [searchCustResults, setSearchCustResults] = useState([]);
   const [searchModelResults, setSearchModelResults] = useState([]);
   const [searchSerialResults, setSearchSerialResults] = useState([]);
@@ -129,7 +130,7 @@ function PartList() {
   });
   const [generalData, setGeneralData] = useState({
     estimationDate: new Date(),
-    estimationNo: "PL2000000",
+    estimationNo: "",
     description: "",
     reference: "",
     validity: null,
@@ -177,40 +178,18 @@ function PartList() {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
   useEffect(() => {
-    // Uncomment this once the final version is active
-    // createBuilder({
-    //   builderType: "PARTLIST",
-    //   activeVersion: true,
-    //   versionNumber: 1,
-    //   status: "DRAFT",
-    // })
-    //   .then((result) => {
-    //     setBuilderId(result.builderId);
-    //     setBId(result.id);
-    //     addPartlist(result.id, {
-    //       activeVersion: true,
-    //       versionNumber: 1,
-    //     })
-    //       .then((partlistResult) => {
-    //         setPartListNo(partlistResult.id);
-    //         setPartListId(partlistResult.partlistId);
-    //         setGeneralData({...generalData, estimationNo: partlistResult.partlistId})
-    //         console.log(partlistResult.id, partlistResult.partlistId);
-    //       })
-    //       .catch((err) => {
-    //         console.log("Error Occurred", err);
-    //         handleSnack("error", true, "Error occurred while creating partlist!")
-    //       });
-    //   })
-    //   .catch((err) => {
-    //     console.log("Error Occurred", err);
-    //     handleSnack("error", true, "Error occurred while creating builder!")
-    //   });
-    // Test Data
-    setBuilderId("RB00008");
-    setBId(8);
-    setPartListNo(7);
-    setGeneralData({ ...generalData, estimationNo: "PL000007" });
+    setBuilderId(state.builderId);
+    setBId(state.bId);
+    setPartListNo(state.partListNo);
+    setPartListId(state.partListId);
+    setGeneralData({ ...generalData, estimationNo: state.partListId });
+    // setBuilderId("RB00008");
+    // setBId(8);
+    // setPartListNo(7);
+    // setGeneralData({ ...generalData, estimationNo: "PL000007" });
+    if(state.type === 'new'){
+      console.log("Created a new builder");
+    }
   }, []);
 
   const [severity, setSeverity] = useState("");
