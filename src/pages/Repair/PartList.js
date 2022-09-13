@@ -67,8 +67,21 @@ import AddNewSparepartModal from "./components/AddNewSparePart";
 function PartList() {
   const history = useHistory();
   const [searchCustResults, setSearchCustResults] = useState([]);
+  const [searchModelResults, setSearchModelResults] = useState([]);
+  const [searchSerialResults, setSearchSerialResults] = useState([]);
+  const [builderId, setBuilderId] = useState("");
+  const [bId, setBId] = useState("");
+  const [partListNo, setPartListNo] = useState("");
+  const [partListId, setPartListId] = useState("");
   const [allParts, setAllParts] = useState([]);
   const [rowsToUpdate, setRowsToUpdate] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [value, setValue] = useState("customer");
+  const [open, setOpen] = useState(false);
+  const [addPartOpen, setAddPartOpen] = useState(false);
+  const [searchResultOpen, setSearchResultOpen] = useState(false);
+  const [file, setFile] = useState(null);
+  const [fileUploadOpen, setFileUploadOpen] = useState(false);
 
   const processRowUpdate = React.useCallback(
     (newRow, oldRow) =>
@@ -96,12 +109,7 @@ function PartList() {
     generalViewOnly: false,
     estViewOnly: false,
   });
-  const [searchModelResults, setSearchModelResults] = useState([]);
-  const [searchSerialResults, setSearchSerialResults] = useState([]);
-  const [builderId, setBuilderId] = useState("");
-  const [bId, setBId] = useState("");
-  const [partListNo, setPartListNo] = useState("");
-  const [partListId, setPartListId] = useState("");
+
   const [customerData, setCustomerData] = useState({
     source: "User Generated",
     customerID: "",
@@ -166,13 +174,6 @@ function PartList() {
     { value: "Location4", label: "Location4" },
   ];
 
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [value, setValue] = useState("customer");
-  const [open, setOpen] = useState(false);
-  const [addPartOpen, setAddPartOpen] = useState(false);
-  const [searchResultOpen, setSearchResultOpen] = useState(false);
-  const [file, setFile] = useState(null);
-  const [fileUploadOpen, setFileUploadOpen] = useState(false);
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
   useEffect(() => {
@@ -198,18 +199,18 @@ function PartList() {
     //       })
     //       .catch((err) => {
     //         console.log("Error Occurred", err);
-    //         throw "Error occurred!";
+    //         handleSnack("error", true, "Error occurred while creating partlist!")
     //       });
     //   })
     //   .catch((err) => {
     //     console.log("Error Occurred", err);
-    //     throw "Error occurred!";
+    //     handleSnack("error", true, "Error occurred while creating builder!")
     //   });
     // Test Data
-    setBuilderId("RB00006");
-    setBId(6);
-    setPartListNo(3);
-    setGeneralData({ ...generalData, estimationNo: "PL000003" });
+    setBuilderId("RB00008");
+    setBId(8);
+    setPartListNo(7);
+    setGeneralData({ ...generalData, estimationNo: "PL000007" });
   }, []);
 
   const [severity, setSeverity] = useState("");
@@ -233,9 +234,11 @@ function PartList() {
           setSearchCustResults(result);
         })
         .catch((e) => {
-          setSnackMessage("Error occurred while searching the customer!");
-          setSeverity("error");
-          setOpenSnack(true);
+          handleSnack(
+            "error",
+            true,
+            "Error occurred while searching the customer!"
+          );
         });
     }
   };
@@ -296,9 +299,11 @@ function PartList() {
           }
         })
         .catch((e) => {
-          setSnackMessage("Error occurred while searching the machine!");
-          setSeverity("error");
-          setOpenSnack(true);
+          handleSnack(
+            "error",
+            true,
+            "Error occurred while searching the machine!"
+          );
         });
     } else {
       searchMachinefieldName === "model"
@@ -366,14 +371,14 @@ function PartList() {
         .then((result) => {
           setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
           setValue("machine");
-          setSnackMessage("Customer details updated!");
-          setSeverity("success");
-          setOpenSnack(true);
+          handleSnack("success", true, "Customer details updated!");
         })
         .catch((err) => {
-          setSnackMessage("Error occurred while updating the customer data!");
-          setSeverity("error");
-          setOpenSnack(true);
+          handleSnack(
+            "error",
+            true,
+            "Error occurred while updating the customer data!"
+          );
         });
     }
   };
@@ -395,14 +400,14 @@ function PartList() {
       .then((result) => {
         setValue("estimation");
         setViewOnlyTab({ ...viewOnlyTab, machineViewOnly: true });
-        setSnackMessage("Machine details updated!");
-        setSeverity("success");
-        setOpenSnack(true);
+        handleSnack("success", true, "Machine details updated!");
       })
       .catch((err) => {
-        setSnackMessage("Error occurred while updating the machine data!");
-        setSeverity("error");
-        setOpenSnack(true);
+        handleSnack(
+          "error",
+          true,
+          "Error occurred while updating the machine data!"
+        );
       });
   };
 
@@ -419,14 +424,14 @@ function PartList() {
       .then((result) => {
         setValue("price");
         setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
-        setSnackMessage("General details updated!");
-        setSeverity("success");
-        setOpenSnack(true);
+        handleSnack("success", true, "General details updated!");
       })
       .catch((err) => {
-        setSnackMessage("Error occurred while updating the general details!");
-        setSeverity("error");
-        setOpenSnack(true);
+        handleSnack(
+          "error",
+          true,
+          "Error occurred while updating the general details!"
+        );
       });
   };
 
@@ -444,16 +449,14 @@ function PartList() {
       .then((result) => {
         setValue("general");
         setViewOnlyTab({ ...viewOnlyTab, estViewOnly: true });
-        setSnackMessage("Estimation details updated!");
-        setSeverity("success");
-        setOpenSnack(true);
+        handleSnack("success", true, "Estimation details updated!");
       })
       .catch((err) => {
-        setSnackMessage(
+        handleSnack(
+          "error",
+          true,
           "Error occurred while updating the estimation details!"
         );
-        setSeverity("error");
-        setOpenSnack(true);
       });
   };
 
@@ -519,12 +522,12 @@ function PartList() {
       .then((result) => {
         handleSnack(
           "success",
-          "true",
+          true,
           `New parts have been uploaded to the partlist: ${partListId}`
         );
       })
       .catch((err) => {
-        handleSnack("error", "true", `Failed to upload the parts!`);
+        handleSnack("error", true, `Failed to upload the parts!`);
       });
     setFileUploadOpen(false);
   };
@@ -545,12 +548,27 @@ function PartList() {
 
   const allPartListData = [
     {
-      id: 19,
+      id: 4,
       groupNumber: 3620656,
       partType: "NEW",
       unitOfMeasure: "PC",
       unitPrice: 20.01,
       partNumber: "1944411",
+      comment: "sample comment",
+      description: "sample description",
+      currency: "USD",
+      quantity: 5,
+      usagePercentage: 80,
+      extendedPrice: 100.05,
+      totalPrice: 80.04,
+    },
+    {
+      id: 5,
+      groupNumber: 111111,
+      partType: "NEW",
+      unitOfMeasure: "PC",
+      unitPrice: 20.01,
+      partNumber: "2222222",
       comment: "sample comment",
       description: "sample description",
       currency: "USD",
@@ -626,31 +644,32 @@ function PartList() {
     { value: "Construction", label: "Construction" },
   ];
 
-  const handleBuilderStatus = async (e) => {    
-    // if((['draft','revised'].indexOf(selBuilderStatus.value) > -1 && e.value === 'active') || 
-    // (['archived','revised'].indexOf(e.value) > -1 && selBuilderStatus.value === 'active')) {
-    await updateBuilderStatus(partListNo, e.value)
-    .then((result) => {
-      setSelBuilderStatus(e);
-      handleSnack(
-        "success",
-        "true",
-        result
-      );
-    })
-    .catch((err) => {
-      handleSnack("error", "true", `Failed to update the status!`);
-    });
-  // } else {
-  //     handleSnack("info", "true", `${selBuilderStatus} cannot !`);
-  // }
+  const disableOptions = (option) => {
+    const selectedValue = selBuilderStatus.value;
+    const changeToValue = option.value;
+    return !(
+      (["draft", "revised"].indexOf(selectedValue) > -1 &&
+        changeToValue === "active") ||
+      (["archived", "revised"].indexOf(changeToValue) > -1 &&
+        selectedValue === "active")
+    );
+  };
 
+  const handleBuilderStatus = async (e) => {
+    await updateBuilderStatus(partListNo, e.value)
+      .then((result) => {
+        setSelBuilderStatus(e);
+        handleSnack("success", true, result);
+      })
+      .catch((err) => {
+        handleSnack("error", true, `Failed to update the status!`);
+      });
   };
   const builderStatusOptions = [
-    { value: "archived", label: "Archived" },
     { value: "draft", label: "Draft" },
     { value: "active", label: "Active" },
     { value: "revised", label: "Revised" },
+    { value: "archived", label: "Archived" },
   ];
   const builderVersionOptions = [
     { value: "1", label: "1" },
@@ -716,14 +735,10 @@ function PartList() {
         setMasterData(res);
         setSearchResultOpen(true);
       } else {
-        setSnackMessage("Please fill the search criteria!");
-        setSeverity("info");
-        setOpenSnack(true);
+        handleSnack("info", true, "Please fill the search criteria!");
       }
     } catch (err) {
-      setSnackMessage("Error occurred while fetching spare parts!");
-      setSeverity("error");
-      setOpenSnack(true);
+      handleSnack("error", true, "Error occurred while fetching spare parts!");
     }
   };
 
@@ -772,11 +787,19 @@ function PartList() {
   };
 
   const onRowsSelectionHandler = (ids) => {
+    setSelectedMasterData([]);
     const selectedRowsData = ids.map((id) =>
       masterData.find((row) => row.id === id)
     );
     console.log(selectedRowsData);
-    selectedRowsData.map((item) => {
+    setSelectedMasterData(selectedRowsData);
+    
+  };
+
+  const addSelectedPartsToPartList = () => {
+    console.log(selectedMasterData);
+    const parts= [];
+    selectedMasterData.map((item) => {
       let data = {
         partlistId: partListNo,
         groupNumber: item.groupNumber,
@@ -791,27 +814,21 @@ function PartList() {
         // description: sparePart.description,
         unitOfMeasure: item.salesUnit,
       };
-      setSelectedMasterData([...selectedMasterData, data]);
+      parts.push(data);
     });
-  };
 
-  const addSelectedPartsToPartList = () => {
-    console.log(selectedMasterData);
-
-    addMultiPartsToPartList(partListNo, selectedMasterData)
+    addMultiPartsToPartList(partListNo, parts)
       .then((result) => {
         handleSearchResClose();
-        setSnackMessage(
+        handleSnack(
+          "success",
+          true,
           `👏 New parts have been added with default quantity as 1!`
         );
-        setSeverity("info");
-        setOpenSnack(true);
       })
       .catch((err) => {
         console.log(err);
-        setSnackMessage(`😐 Error occurred while adding the parts!`);
-        setSeverity("error");
-        setOpenSnack(true);
+        handleSnack("error", true, `😐 Error occurred while adding the parts!`);
       });
   };
 
@@ -844,8 +861,7 @@ function PartList() {
                   <Select
                     className="customselectbtn"
                     onChange={(e) => handleBuilderStatus(e)}
-                    isOptionDisabled={e => !((['draft','revised'].indexOf(selBuilderStatus.value) > -1 && e.value === 'active') || 
-                    (['archived','revised'].indexOf(e.value) > -1 && selBuilderStatus.value === 'active'))}
+                    isOptionDisabled={(e) => disableOptions(e)}
                     options={builderStatusOptions}
                     value={selBuilderStatus}
                   />
@@ -1934,11 +1950,7 @@ function PartList() {
                       options={options4}
                       value={value4}
                     />
-                    <p className=" mb-0">
-                      <a href="#" className="ml-3">
-                        <FontAwesomeIcon icon={faPen} />
-                      </a>
-                    </p>
+                    
                   </div>
                   <DynamicSearchComponent
                     querySearchSelector={querySearchSelector}
@@ -1995,6 +2007,7 @@ function PartList() {
               columns={columnsPartList}
               editMode="row"
               pageSize={5}
+              autoHeight
               rowsPerPageOptions={[5]}
               experimentalFeatures={{ newEditingApi: true }}
               processRowUpdate={(newRow, oldRow) =>
@@ -2403,9 +2416,6 @@ function PartList() {
                           id="flexRadioDefault1"
                         ></input>
                       </div>
-                      {/* <div className="listcheckbox">
-            <input className="form-check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="..." />
-            </div> */}
                     </div>
                   </div>
                 </div>

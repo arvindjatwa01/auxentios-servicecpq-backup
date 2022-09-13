@@ -9,7 +9,7 @@ const SearchBox = (props) => {
         autoComplete="off"
         onChange={props.onChange}
       />
-      {props.result && props.result.length > 0 && (
+      { props.result && props.result.length > 0 && (
         <ul
           className={`list-group customselectsearch-list scrollbar`}
           id="style"

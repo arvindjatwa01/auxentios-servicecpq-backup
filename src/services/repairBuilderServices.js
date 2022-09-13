@@ -4,6 +4,7 @@ import {
   ADD_REPAIR_BUILDER_PARTLIST,
   ADD_REPAIR_MULTI_PARTS_TO_PARTLIST,
   ADD_REPAIR_PART_TO_PARTLIST,
+  CREATE_BUILDER_VERSION,
   CREATE_REPAIR_BUILDER,
   SEARCH_CUSTOMER,
   SEARCH_MACHINE,
@@ -388,6 +389,32 @@ export const updateBuilderStatus =  (builderId, status) => {
         });
     } catch (error) {
       console.error("in RepairBuilder > updateBuilderStatus, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//Create a new builder version
+export const createBuilderVersion =  (builderId) => {
+  console.log("RepairBuilder > createVersion called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(CREATE_BUILDER_VERSION(builderId), {}, config)
+        .then((res) => {
+          console.log("createVersion > axios res=", res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject('Error occurred while calling createVersion');
+        })
+        .catch((err) => {
+          console.log("createVersion > axios err=", err);
+          reject("Error in createVersion axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > createVersion, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });
