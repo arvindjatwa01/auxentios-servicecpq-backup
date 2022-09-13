@@ -387,14 +387,14 @@ export function CreatePortfolio() {
     totalPrice: 1200,
   });
   const [expandedPriceCalculator, setExpandedPriceCalculator] = useState({
-   itemId:"",
+    itemId: "",
     description: "",
     startUsage: "",
     endUsage: "",
     frequency: "",
-    recommondedvalue:"",
-    numberOfEvents:"",
-    priceMethod:"",
+    recommendedValue: "",
+    numberOfEvents: "",
+    priceMethod: "",
     priceAdditionalSelect: "",
     priceAdditionalInput: "",
     priceEscalationSelect: "",
@@ -444,7 +444,11 @@ export function CreatePortfolio() {
     make: "",
     makeSuggestions: [],
     serialNo: "",
-    serialNoSuggestions: []
+    serialNoSuggestions: [],
+    priceMethod:"",
+    priceAdditionalSelect:"",
+    priceEscalationSelect:"",
+    discountTypeSelect:""
   });
 
   const location = useLocation();
@@ -3607,14 +3611,70 @@ export function CreatePortfolio() {
   const getPriceCalculatorDataFun = (data) => {
     setPriceCalculator(data);
   };
+  const handleExpandRowForPriceCalculator = (bool, row) => {
+    setExpandedPriceCalculator({
+      ...expandedPriceCalculator,
+      itemId: row.itemId,
+      description: row.itemBodyModel.itemBodyDescription,
+      recommendedValue: row.itemBodyModel.recommendedValue,
+      frequency: row.itemBodyModel.frequency
+    })
 
-  const handleExpandePriceChange=(e)=>{
-    setExpandedPriceCalculator({...expandedPriceCalculator,[e.target.name]:e.target.value})
-    console.log("handleExpandePriceChange",expandedPriceCalculator)
   }
-const handleExpandedPriceSave=()=>{
-  alert('price save update API')
-}
+
+  const handleExpandePriceChange = (e) => {
+    console.log("up")
+    // setExpandedPriceCalculator({ ...expandedPriceCalculator, [e.target.name]: e.target.value })
+    console.log("down")
+  }
+  const handleExpandedPriceSave = async (e, rowData) => {
+    try {
+      const { itemId, itemName, itemHeaderModel, itemBodyModel } = rowData
+      let reqObj1 = {
+        itemId,
+        itemName,
+        itemHeaderModel,
+        itemBodyModel: {
+          ...itemBodyModel,
+          itemBodyDescription: expandedPriceCalculator.description,
+          startUsage: expandedPriceCalculator.startUsage,
+          endUsage: expandedPriceCalculator.endUsage,
+          frequency: expandedPriceCalculator.frequency,
+          recommendedValue: parseInt(expandedPriceCalculator.recommendedValue.value),
+          numberOfEvents: parseInt(expandedPriceCalculator.numberOfEvents),
+          priceMethod: expandedPriceCalculator.priceMethod.value,
+          additional: expandedPriceCalculator.priceAdditionalInput,
+          priceEscalation: expandedPriceCalculator.priceEscalationInput,
+          calculatedPrice: parseInt(expandedPriceCalculator.calculatedPrice),
+          flatPrice: parseInt(expandedPriceCalculator.flatPrice),
+          discountType: expandedPriceCalculator.discountTypeInput,
+        }
+      }
+      const res = await updateItemData(itemId, reqObj1)
+      if (res.status == 200) {
+        toast(`😎 ${rowData.itemHeaderModel.bundleFlag} updated`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+
+  }
 
   const ExpandedComponent = ({ data }) => (
     <div className="scrollbar" id="style">
@@ -3798,7 +3858,7 @@ const handleExpandedPriceSave=()=>{
     </div>
   );
   const ExpandedPriceCalculator = ({ data }) => (<>
-    <div className="row ml-5 mb-3">
+    <div className="row ml-5">
       <div className="col-md-6 col-sm-6">
         <div className="form-group">
           <label
@@ -3809,8 +3869,7 @@ const handleExpandedPriceSave=()=>{
           <input
             className="form-control border-radius-10"
             type="text"
-            // defaultValue={data.itemId}
-            value={data.itemId}
+            value={expandedPriceCalculator.itemId}
             placeholder="Service/Bundle ID"
             disabled
           />
@@ -3828,17 +3887,18 @@ const handleExpandedPriceSave=()=>{
             type="text"
             placeholder="Description"
             name="description"
-            defaultValue={data.itemBodyModel.itemBodyDescription}
-            value={data.itemBodyModel.itemBodyDescription||expandedPriceCalculator.description}
-            onChange={handleExpandePriceChange}
-            />
+            defaultValue={expandedPriceCalculator.description}
+            // value={expandedPriceCalculator.description}
+            // onChange={handleExpandePriceChange}
+            autoComplete="off"
+          />
         </div>
       </div>
       <div className="col-md-6 col-sm-6">
         <div className="form-group">
           <label
             className="text-light-dark font-size-12 font-weight-500"
-            >
+          >
             Start Usage
           </label>
           <input
@@ -3846,10 +3906,9 @@ const handleExpandedPriceSave=()=>{
             type="text"
             // placeholder="Description"
             name="startUsage"
-            defaultValue={data.itemBodyModel.startUsage}
             value={expandedPriceCalculator.startUsage}
             onChange={handleExpandePriceChange}
-            />
+          />
         </div>
       </div>
       <div className="col-md-6 col-sm-6">
@@ -3864,7 +3923,6 @@ const handleExpandedPriceSave=()=>{
             type="text"
             // placeholder="Description"
             name="endUsage"
-            defaultValue={data.itemBodyModel.endUsage}
             value={expandedPriceCalculator.endUsage}
             onChange={handleExpandePriceChange}
           />
@@ -3881,7 +3939,6 @@ const handleExpandedPriceSave=()=>{
             className="form-control border-radius-10"
             type="text"
             name="frequency"
-            defaultValue={data.itemBodyModel.frequency}
             value={expandedPriceCalculator.frequency}
             onChange={handleExpandePriceChange}
           />
@@ -3894,12 +3951,13 @@ const handleExpandedPriceSave=()=>{
           >
             Recommonded Value
           </label>
-          <Select
-            options={options}
+          <input
+            type="number"
+            className="form-control border-radius-10"
             // placeholder="Description"
-            defaultValue={{ label: data.itemBodyModel.recommendedValue, value: data.itemBodyModel.recommendedValue }}
-            value={expandedPriceCalculator.recommondedvalue}
-            onChange={(e)=>setExpandedPriceCalculator({...expandedPriceCalculator,recommondedvalue:e})}
+            name="recommendedValue"
+            value={expandedPriceCalculator.recommendedValue}
+            onChange={handleExpandePriceChange}
           />
         </div>
       </div>
@@ -3915,12 +3973,13 @@ const handleExpandedPriceSave=()=>{
             type="text"
             // placeholder="Description"
             name="numberOfEvents"
-            defaultValue={data.itemBodyModel.numberOfEvents}
             value={expandedPriceCalculator.numberOfEvents}
             onChange={handleExpandePriceChange}
           />
         </div>
       </div>
+    </div>
+    <div className="row ml-5 mb-3">
       <div className="col-md-6 col-sm-6">
         <div className="form-group">
           <label
@@ -3930,11 +3989,9 @@ const handleExpandedPriceSave=()=>{
           </label>
           <Select
             options={priceMethodKeyValue}
-            defaultValue={{ label: data.itemBodyModel.priceMethod, value: data.itemBodyModel.priceMethod }}
             value={expandedPriceCalculator.priceMethod}
             name="priceMethod"
-            onChange={(e)=>setExpandedPriceCalculator({...expandedPriceCalculator,priceMethod:e})}
-          // placeholder="placeholder (Optional)"
+            onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceMethod: e })}
           />
         </div>
       </div>
@@ -3950,10 +4007,9 @@ const handleExpandedPriceSave=()=>{
             <div className="">
               <Select
                 isClearable={true}
-                // defaultValue={{label:data.itemBodyModel.additional,value:data.itemBodyModel.additional}}
                 value={expandedPriceCalculator.priceAdditionalSelect}
                 name="priceAdditionalSelect"
-                onChange={(e)=>setExpandedPriceCalculator({...expandedPriceCalculator,priceAdditionalSelect:e})}
+                onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceAdditionalSelect: e })}
                 options={options}
                 placeholder="Select"
               />
@@ -3962,7 +4018,6 @@ const handleExpandedPriceSave=()=>{
               type="text"
               className="form-control rounded-top-left-0 rounded-bottom-left-0"
               placeholder="10%"
-              defaultValue={data.itemBodyModel.additional}
               value={expandedPriceCalculator.priceAdditionalInput}
               name="priceAdditionalInput"
               onChange={handleExpandePriceChange}
@@ -3981,10 +4036,9 @@ const handleExpandedPriceSave=()=>{
           <div className=" d-flex align-items-center form-control-date">
             <Select
               className="select-input"
-              defaultValue={data.itemBodyModel.startUsage}
               value={expandedPriceCalculator.priceEscalationSelect}
               name="priceEscalationSelect"
-              onChange={(e)=>setExpandedPriceCalculator({...expandedPriceCalculator,priceEscalationSelect:e})}
+              onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
               options={options}
               placeholder="placeholder "
             />
@@ -4011,7 +4065,6 @@ const handleExpandedPriceSave=()=>{
           <input
             type="text"
             className="form-control border-radius-10"
-            defaultValue={data.itemBodyModel.calculatedPrice}
             value={expandedPriceCalculator.calculatedPrice}
             name="calculatedPrice"
             onChange={handleExpandePriceChange}
@@ -4030,7 +4083,6 @@ const handleExpandedPriceSave=()=>{
           <input
             type="text"
             className="form-control border-radius-10"
-            defaultValue={data.itemBodyModel.flatPrice}
             value={expandedPriceCalculator.flatPrice}
             name="flatPrice"
             onChange={handleExpandePriceChange}
@@ -4052,7 +4104,7 @@ const handleExpandedPriceSave=()=>{
                 defaultValue={data.itemBodyModel.startUsage}
                 value={expandedPriceCalculator.discountTypeSelect}
                 name="discountTypeSelect"
-                onChange={(e)=>setExpandedPriceCalculator({...expandedPriceCalculator,discountTypeSelect:e})}
+                onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, discountTypeSelect: e })}
                 isClearable={true}
                 options={options}
                 placeholder="Select"
@@ -4073,7 +4125,7 @@ const handleExpandedPriceSave=()=>{
 
     </div>
     <div className="row" style={{ justifyContent: "right" }}>
-      <button type="button" className="btn btn-light" onClick={handleExpandedPriceSave}>Save</button>
+      <button type="button" className="btn btn-light" onClick={(e) => handleExpandedPriceSave(e, data)}>Save{data.itemId}</button>
     </div>
   </>)
   const handleClick = (event) => {
@@ -4145,6 +4197,36 @@ const handleExpandedPriceSave=()=>{
 
 
   }
+
+  const handleComponentDataSave = async() => {
+    try {
+      // call put API for portfolio item to gety price calculator data
+      // getItemPrice
+      // let reqObj = {
+      //   itemId: 0,
+      //   standardJobId: "",
+      //   repairKitId: ""
+      // }
+      // const res = await getItemPrice(reqObj)
+      setTabs("5")
+      alert("Component Data Save")
+
+
+
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+   
+  }
+
   const handleComponentCodeSuggetionsClick = (e, j) => {
     $(`.scrollbar`).css("display", "none");
     let { description, componentCode } = componentData.codeSuggestions[j]
@@ -4169,8 +4251,8 @@ const handleExpandedPriceSave=()=>{
       } else {
         return
       }
-    }else{ 
-      setComponentData({ ...componentData, serialNo: obj.family})
+    } else {
+      setComponentData({ ...componentData, serialNo: obj.family })
       throw "Please fill make/model"
     }
 
@@ -8563,7 +8645,7 @@ const handleExpandedPriceSave=()=>{
                   <Tab label="Service/Bundle" value="2" />
                   {/* <Tab label="Solution" value="3" /> */}
                   {/*use it in useCase-4 */}
-                  <Tab label="Component Data" value="4" />
+                  {categoryUsageKeyValue1.value==="REPAIR_OR_REPLACE"&&<Tab label="Component Data" value="4" />}
                   <Tab label="Price Calculator" value="5" />
                   <Tab label="Review" value="6" />
                 </TabList>
@@ -8604,7 +8686,7 @@ const handleExpandedPriceSave=()=>{
                         selectableRows
                         onSelectedRowsChange={(state) => setTempBundleService2(state.selectedRows)}
                         pagination
-                      />{tempBundleService1.length > 0 && (<div className="row mt-5" style={{ justifyContent: "right" }}>
+                      />{tempBundleService2.length > 0 && (<div className="row mt-5" style={{ justifyContent: "right" }}>
                         <button
                           type="button"
                           className="btn btn-light"
@@ -8628,6 +8710,7 @@ const handleExpandedPriceSave=()=>{
                   customStyles={customStyles}
                   expandableRows
                   expandableRowsComponent={ExpandedPriceCalculator}
+                  onRowExpandToggled={handleExpandRowForPriceCalculator}
                   pagination
                 />}
 
@@ -8790,11 +8873,9 @@ const handleExpandedPriceSave=()=>{
                         </label>
                         <Select
                           options={priceMethodKeyValue}
-                          value={priceCalculator.priceMethod}
+                          value={componentData.priceMethod}
                           name="priceMethod"
-                          // onChange={(e) =>
-                          //   setPriceCalculator({ ...priceCalculator, priceMethod: e })
-                          // }
+                          onChange={(e) => setComponentData({ ...componentData, priceMethod: e })}
                           placeholder="placeholder (Optional)"
                         />
                       </div>
@@ -8811,14 +8892,9 @@ const handleExpandedPriceSave=()=>{
                           <div className="">
                             <Select
                               isClearable={true}
-                              value={priceCalculator.priceAdditionalSelect}
+                              value={componentData.priceAdditionalSelect}
                               name="priceAdditionalSelect"
-                              // onChange={(e) =>
-                              //   setPriceCalculator({
-                              //     ...priceCalculator,
-                              //     priceAdditionalSelect: e,
-                              //   })
-                              // }
+                              onChange={(e) => setComponentData({ ...componentData, priceAdditionalSelect: e })}
                               options={options}
                               placeholder="Select"
                             />
@@ -8828,14 +8904,9 @@ const handleExpandedPriceSave=()=>{
                             className="form-control rounded-top-left-0 rounded-bottom-left-0"
                             placeholder="10%"
                             // defaultValue={props?.priceCalculator?.priceAdditionalInput}
-                            value={priceCalculator.priceAdditionalInput}
+                            value={componentData.priceAdditionalInput}
                             name="priceAdditionalInput"
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator,
-                                priceAdditionalInput: e.target.value,
-                              })
-                            }
+                            onChange={handleComponentChange}
                           />
                         </div>
                       </div>
@@ -8851,14 +8922,9 @@ const handleExpandedPriceSave=()=>{
                         <div className=" d-flex align-items-center form-control-date">
                           <Select
                             className="select-input"
-                            value={priceCalculator.priceEscalationSelect}
+                            value={componentData.priceEscalationSelect}
                             name="priceEscalationSelect"
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator,
-                                priceEscalationSelect: e,
-                              })
-                            }
+                            onChange={(e) => setComponentData({ ...componentData, priceEscalationSelect: e })}
                             options={options}
                             placeholder="placeholder "
                           />
@@ -8867,14 +8933,9 @@ const handleExpandedPriceSave=()=>{
                             className="form-control rounded-top-left-0 rounded-bottom-left-0"
                             placeholder="20%"
                             // defaultValue={props?.priceCalculator?.priceEscalationInput}
-                            value={priceCalculator.priceEscalationInput}
+                            value={componentData.priceEscalationInput}
                             name="priceEscalationInput"
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator,
-                                priceEscalationInput: e.target.value,
-                              })
-                            }
+                            onChange={handleComponentChange}
                           />
                         </div>
                       </div>
@@ -8891,14 +8952,9 @@ const handleExpandedPriceSave=()=>{
                           type="text"
                           className="form-control border-radius-10"
                           // defaultValue={props?.priceCalculator?.calculatedPrice}
-                          value={priceCalculator.calculatedPrice}
+                          value={componentData.calculatedPrice}
                           name="calculatedPrice"
-                          onChange={(e) =>
-                            setPriceCalculator({
-                              ...priceCalculator,
-                              calculatedPrice: e.target.value,
-                            })
-                          }
+                          onChange={handleComponentChange}
                           placeholder="$100"
                         />
                       </div>
@@ -8914,14 +8970,9 @@ const handleExpandedPriceSave=()=>{
                         <input
                           type="text"
                           className="form-control border-radius-10"
-                          value={priceCalculator.flatPrice}
+                          value={componentData.flatPrice}
                           name="flatPrice"
-                          onChange={(e) =>
-                            setPriceCalculator({
-                              ...priceCalculator,
-                              flatPrice: e.target.value,
-                            })
-                          }
+                          onChange={handleComponentChange}
                           placeholder="$100"
                         />
                       </div>
@@ -8937,14 +8988,9 @@ const handleExpandedPriceSave=()=>{
                         <div className=" d-flex form-control-date">
                           <div className="">
                             <Select
-                              value={priceCalculator.discountTypeSelect}
+                              value={componentData.discountTypeSelect}
                               name="discountTypeSelect"
-                              onChange={(e) =>
-                                setPriceCalculator({
-                                  ...priceCalculator,
-                                  discountTypeSelect: e,
-                                })
-                              }
+                              onChange={(e) => setComponentData({ ...componentData, discountTypeSelect: e })}
                               isClearable={true}
                               options={options}
                               placeholder="Select"
@@ -8953,14 +8999,9 @@ const handleExpandedPriceSave=()=>{
                           <input
                             type="text"
                             className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                            value={priceCalculator.discountTypeInput}
+                            value={componentData.discountTypeInput}
                             name="discountTypeInput"
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator,
-                                discountTypeInput: e.target.value,
-                              })
-                            }
+                            onChange={handleComponentChange}
                             placeholder="10%"
                           />
                         </div>
@@ -8970,7 +9011,7 @@ const handleExpandedPriceSave=()=>{
                   <div className="row mt-5" style={{ justifyContent: "right" }}>
                     <button
                       type="button"
-                      onClick={() => setTabs("5")}
+                      onClick={handleComponentDataSave}
                       className="btn btn-light"
                     >
                       Save and Continue
