@@ -11,6 +11,11 @@ import TabList from '@mui/lab/TabList';
 import { Link } from 'react-router-dom'
 import TabPanel from '@mui/lab/TabPanel';
 // import Select from '@mui/material/Select';
+
+
+import DataTable from "react-data-table-component";
+import Checkbox from '@mui/material/Checkbox';
+
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -35,6 +40,29 @@ const colourOptions = [
     }
 ]
 
+
+const customStyles = {
+    rows: {
+        style: {
+            minHeight: "72px", // override the row height
+        },
+    },
+    headCells: {
+        style: {
+            paddingLeft: "8px", // override the cell padding for head cells
+            paddingRight: "8px",
+            backgroundColor: "#872ff7",
+            color: "#fff",
+        },
+    },
+    cells: {
+        style: {
+            paddingLeft: "8px", // override the cell padding for data cells
+            paddingRight: "8px",
+        },
+    },
+};
+
 const animatedComponents = makeAnimated();
 
 export function SolutionSelector(props) {
@@ -49,6 +77,7 @@ export function SolutionSelector(props) {
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const [flagIs, setFlagIs] = useState(false);
 
     const [age, setAge] = React.useState('5');
     const [age1, setAge1] = React.useState('5');
@@ -58,6 +87,7 @@ export function SolutionSelector(props) {
 
 
     const [rowData, setRowData] = useState([])
+    const [rows1, setRows1] = useState([])
 
     const [solutionValue, setSolutionValue] = useState(0)
 
@@ -90,6 +120,96 @@ export function SolutionSelector(props) {
         // { field: 'Actions', headerName: 'Actions',  flex:1, width: 130 },
 
     ];
+
+    const columns1 = [
+        { field: 'portfolioId', headerName: 'Id', flex: 1, width: 70 },
+        { field: 'description', headerName: 'Description', flex: 1, width: 130 },
+        { field: 'usageCategory', headerName: 'Category', flex: 1, width: 130 },
+        { field: 'strategyTask', headerName: 'Strategy ', flex: 1, width: 130 },
+        { field: 'taskType', headerName: 'Task Type', flex: 1, width: 130 },
+        { field: 'TotalPrice', headerName: 'More actions', flex: 1, width: 130 },
+    ]
+
+    const columns4 = [
+        {
+            name: (
+                <>
+                    <div>Select</div>
+                </>
+            ),
+            selector: (row) => row.check1,
+            wrap: true,
+            sortable: true,
+            // format: (row) => row.portfolioId,
+            cell: (row) => (
+                <Checkbox
+                    className="text-black"
+                    checked={row.check1}
+                    onChange={(e) => handleCheckboxData(e, row)}
+                />
+            ),
+        },
+        {
+            name: (
+                <>
+                    <div>Description</div>
+                </>
+            ),
+            selector: (row) => row.description,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.description,
+        },
+        {
+            name: (
+                <>
+                    <div>Category</div>
+                </>
+            ),
+            selector: (row) => row.usageCategory,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.usageCategory,
+        },
+        {
+            name: (
+                <>
+                    <div>Strategy</div>
+                </>
+            ),
+            selector: (row) => row.strategyTask,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.strategyTask,
+        },
+        {
+            name: (
+                <>
+                    <div>Task Type</div>
+                </>
+            ),
+            selector: (row) => row.taskType,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.taskType,
+        },
+        {
+            name: (
+                <>
+                    <div>More actions</div>
+                </>
+            ),
+            selector: (row) => row.location,
+            wrap: true,
+            sortable: true,
+            format: (row) => "Inconsistent",
+        },
+    ];
+
+
+
+
+
 
     const rows = [
         {
@@ -136,6 +256,37 @@ export function SolutionSelector(props) {
         '',
     ];
 
+    const handleCheckboxData = (e, row) => {
+        if (e.target.checked) {
+            var _rowdData = [...rowData];
+
+            const updated = _rowdData.map((currentItem, i) => {
+                if (row.portfolioId == currentItem.portfolioId) {
+                    return { ...currentItem, ["check1"]: e.target.checked };
+                } else return currentItem;
+            });
+
+            setRowData([...updated]);
+        }else{
+            var _rowdData = [...rowData];
+            const updated1 = _rowdData.map((currentItem, i) => {
+                if (row.portfolioId == currentItem.portfolioId) {
+                    return { ...currentItem, ["check1"]: e.target.checked };
+                } else return currentItem;
+            });
+            setRowData([...updated1]);
+        }
+    };
+
+    useEffect(() => {
+        if (rowData.some((rowDataItem) => rowDataItem.check1 === true)) {
+            setFlagIs(true);
+        } else {
+            setFlagIs(false);
+        }
+    }, [rowData]);
+
+
     const handleSearch = (e) => {
         if (e.value == 2) {
             setBuildEnable(false)
@@ -145,17 +296,53 @@ export function SolutionSelector(props) {
             setSearchByVisible(true)
             //API CALL
             const portfoliosData = getAllPortfolios()
-
-            // portfoliosData.then(function (result) {
-            //     console.log("result is : ", result) // "Some User token"
-            //     setRowData(result)
-            // })
+            setTimeout(() => {
+                // console.log('This will run after 1 second!')
+                console.log("portfoliosData is : ", portfoliosData)
+                portfoliosData.then(function (result) {
+                    setRowData(result);
+                    result.map((data, x) => {
+                        setRows1([...rows1, {
+                            id: x,
+                            portfolioId: data.portfolioId,
+                            Type: 'Jon',
+                            description: data.description,
+                            usageCategory: data.usageCategory,
+                            strategyTask: data.strategyTask,
+                            taskType: data.taskType,
+                            TotalPrice: 'Inconsistent',
+                            Comments: 'Inconsistent',
+                            Actions: 'Inconsistent',
+                        }])
+                    });
+                })
+            }, 500);
+            // rowData.map((data, x) => {
+            //     console.log("x is : ",x)
+            //     var rowwData = {
+            //         id: x,
+            //         portfolioId: data.portfolioId,
+            //         Type: 'Jon',
+            //         description: data.description,
+            //         usageCategory: data.usageCategory,
+            //         strategyTask: data.strategyTask,
+            //         taskType: data.taskType,
+            //         TotalPrice: 'Inconsistent',
+            //         Comments: 'Inconsistent',
+            //         Actions: 'Inconsistent',
+            //     };
+            //     setRows1([...rows1, rowwData])
+            // });
 
         }
+
+
+
+        console.log("my RowData : ", rowData)
         setSearchOptions(e)
     }
 
-    // console.log("Row data is : ", rowData)
+    console.log("Row data is : ", rowData)
 
     const handleTypeOfSolution = (e) => {
         setSelectTypeOfSolution(e.target.value)
@@ -170,9 +357,9 @@ export function SolutionSelector(props) {
     }
 
     const HandleNextStepClick = () => {
-        if(solutionValue == 1){
+        if (solutionValue == 1) {
             setActiveStep(2)
-        }else{
+        } else {
             alert("Portfolio ?")
         }
     }
@@ -189,6 +376,41 @@ export function SolutionSelector(props) {
         }
     }, [props.defaultValue]);
 
+    // useEffect(() => {
+    //     setTimeout(() => {
+
+    //         rowData.map((result, i) => {
+    //             rows1.push(result.portfolioId)
+    //             console.log("portfolioId : ", result.portfolioId)
+    //             // rows1.push({
+    //             //     id: i,
+    //             //     portfolioId: result.portfolioId,
+    //             //     Type: 'Jon',
+    //             //     description: result.description,
+    //             //     usageCategory: result.usageCategory,
+    //             //     strategyTask: result.strategyTask,
+    //             //     taskType: result.taskType,
+    //             //     TotalPrice: 'Inconsistent',
+    //             //     Comments: 'Inconsistent',
+    //             //     Actions: 'Inconsistent',
+    //             // })
+    //             // rows1.push({
+    //             //     id: 10,
+    //             //     portfolioId: result.portfolioId,
+    //             //     Type: 'Jon',
+    //             //     description: 35,
+    //             //     usageCategory: 'pending',
+    //             //     strategyTask: 'Open',
+    //             //     taskType: 'Inconsistent',
+    //             //     TotalPrice: 'Inconsistent',
+    //             //     Comments: 'Inconsistent',
+    //             //     Actions: 'Inconsistent',
+    //             // })
+    //         })
+    //     }, 500)
+    // }, [rowData])
+
+    console.log("row1 : ", rows1)
 
     console.log("active step : ", activeStep)
     console.log("solution value : ", solutionValue)
@@ -273,19 +495,29 @@ export function SolutionSelector(props) {
                         {searchByVisible ?
                             <div className='card border mt-4 p-3'>
                                 <div className="mt-3" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
-                                    <DataGrid
+                                    {/* <DataGrid
                                         sx={{
                                             '& .MuiDataGrid-columnHeaders': {
                                                 backgroundColor: '#872ff7', color: '#fff'
                                             }
                                         }}
-                                        rows={rows}
-                                        columns={columns}
+                                        rows={rows1}
+                                        columns={columns1}
                                         pageSize={5}
                                         rowsPerPageOptions={[5]}
                                         checkboxSelection
 
 
+                                    /> */}
+                                    <DataTable
+                                        className=""
+                                        title=""
+                                        columns={columns4}
+                                        data={rowData}
+                                        customStyles={customStyles}
+                                        // defaultSortAsc={false}
+                                        defaultSortFieldId={1}
+                                    // pagination
                                     />
                                 </div>
                                 <div className='mt-3 row'>
@@ -293,7 +525,8 @@ export function SolutionSelector(props) {
                                 <button className="btn btn-primary w-100" onClick={() => setOpen(true)} style={{ cursor: 'pointer' }}>Error<img className='ml-2' src={Buttonarrow}></img></button>
                             </div> */}
                                     <div className="col-md-12">
-                                        <button onClick={() => window.location.href = SOLUTION_BUILDER_SERVICE_PORTFOLIO} className="btn btn-primary w-100" >Add<img className='ml-2' src={Buttonarrow}></img></button>
+                                        <button onClick={() => window.location.href = SOLUTION_BUILDER_SERVICE_PORTFOLIO} 
+                                                            disabled={!flagIs} className="btn btn-primary w-100" >Add<img className='ml-2' src={Buttonarrow}></img></button>
                                     </div>
                                 </div>
                             </div>

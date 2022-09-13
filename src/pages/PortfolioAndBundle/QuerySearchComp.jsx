@@ -76,7 +76,7 @@ const QuerySearchComp = (props) => {
           console.log("err in api call", err);
         });
       obj.inputSearch = e.target.value;
-    } else if (props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch") {
+    } else if (props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "itemSearch1") {
       // itemSearchSuggestion(tempArray[id].selectFamily.value, e.target.value)
       //   .then((res) => {
       //     // obj.selectOptions = [...res];
@@ -129,6 +129,7 @@ const QuerySearchComp = (props) => {
     props.compoFlag === "coverage" && props?.setSelectedMasterData([]);
     props.compoFlag === "itemSearch" && props?.setBundleItems([]);
     props.compoFlag === "coverage" && props?.setOpenedModelBoxData([]);
+    props.compoFlag === "itemSearch1" && props.setResponseSearchItem([])
 
     props.setTempBundleService1([])
 
@@ -138,6 +139,7 @@ const QuerySearchComp = (props) => {
 
       $(".scrollbar").css("display", "none");
       console.log("handleQuerySearchClick", querySearchSelector);
+      // props.setQuerySearchSelectItem({querySearchSelector});
       if (
         querySearchSelector[0]?.selectFamily?.value == "" ||
         querySearchSelector[0]?.inputSearch == "" ||
@@ -187,6 +189,20 @@ const QuerySearchComp = (props) => {
         temArray[0].associatedServiceOrBundle = res2
         props.setBundleItems(temArray)
         props.setLoadingItem(false)
+      } else if (props.compoFlag === "itemSearch1") {
+        const res3 = await itemSearch(searchStr)
+        console.log("res3 is  : ", res3)
+        props.ItemSearchResponseFun(res3, querySearchSelector)
+        // props.setQuerySearchSelectItem(querySearchSelector);
+        let temArray = []
+        // for (let i = 0; i <= res2.length; i++) {
+        //   if (res2[i].itemHeaderModel.bundleFlag === "PORTFOLIO") {
+        //     temArray[0] = res2[i]
+        //     res2.splice(i, 1)
+        //     break
+        //   }
+        // }
+        // temArray[0].associatedServiceOrBundle = res2
       } else {
         // for other cases or default case
         const res = await getSearchQueryCoverage(searchStr)
@@ -245,7 +261,7 @@ const QuerySearchComp = (props) => {
         props.setLoadingItem("11")
         props.setTempBundleService1([])
         throw "No record found"
-      }else{
+      } else {
         props.setTempBundleService1(res)
         props.setLoadingItem("11")
 
@@ -287,7 +303,7 @@ const QuerySearchComp = (props) => {
                     ) : (
                       <></>
                     )}
-                    {(props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch") &&
+                    {(props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "itemSearch1") &&
                       <>
                         <Select
                           placeholder="Bundle Flag"
