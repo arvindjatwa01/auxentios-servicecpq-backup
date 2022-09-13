@@ -70,6 +70,11 @@ export const PORTFOLIO_ITEM_PRICE_RKID = () => CREATE_PORTFOLIO_ITEM() + "/get-R
 export const PORTFOLIO_ITEM_PRICE_SJID = () => CREATE_PORTFOLIO_ITEM() + "/get-RB-price-update-item-sjid";
 export const PORTFOLIO_ITEM_SEARCH = () => CREATE_PORTFOLIO_ITEM()+ "/search?search=";
 
+// Custom Portfolio 
+
+export const CUSTOM_PORTFOLIO_URL = () => SOLUTION_BUILDER_URI + "portfolio/custom";
+
+
 //Schema Config
 export const SCHEMA_CONFIG = () => SOLUTION_BUILDER_URI + "schema";
 export const GUIDED_SOLUTIONS = () => SOLUTION_BUILDER_URI + "/guided-solution";

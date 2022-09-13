@@ -4,6 +4,7 @@ import { Modal } from 'react-bootstrap';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import { SOLUTION_BUILDER_SERVICE_PORTFOLIO } from '../../navigation/CONSTANTS'
+import { SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO } from '../../navigation/CONSTANTS'
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
@@ -27,6 +28,7 @@ import searchstatusIcon from '../../assets/icons/svg/search-status.svg'
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { getAllPortfolios } from '../../services/index'
+import { useHistory } from 'react-router-dom';
 
 
 const colourOptions = [
@@ -85,8 +87,10 @@ export function SolutionSelector(props) {
 
     const [activeStep, setActiveStep] = useState(1)
 
-
+    const [loadingItem, setLoadingItem] = useState("")
     const [rowData, setRowData] = useState([])
+    const [portfolioSolutionData, setPortfolioSolutionData] = useState([]);
+    const [portfolioSolutionFilteredData, setPortfolioSolutionFilteredData] = useState([])
     const [rows1, setRows1] = useState([])
 
     const [solutionValue, setSolutionValue] = useState(0)
@@ -255,52 +259,80 @@ export function SolutionSelector(props) {
         '',
         '',
     ];
+    let history = useHistory()
 
     const handleCheckboxData = (e, row) => {
         if (e.target.checked) {
-            var _rowdData = [...rowData];
+            var _portfolioSolutionData = [...portfolioSolutionData];
 
-            const updated = _rowdData.map((currentItem, i) => {
+            const updated = _portfolioSolutionData.map((currentItem, i) => {
                 if (row.portfolioId == currentItem.portfolioId) {
                     return { ...currentItem, ["check1"]: e.target.checked };
                 } else return currentItem;
             });
 
-            setRowData([...updated]);
-        }else{
-            var _rowdData = [...rowData];
-            const updated1 = _rowdData.map((currentItem, i) => {
+            setPortfolioSolutionData([...updated]);
+
+            const isFound = portfolioSolutionFilteredData.some((element) => {
+                if (element.portfolioId === row.portfolioId) {
+                    return true;
+                }
+
+                return false;
+            });
+
+            if (!isFound) {
+                const _portfolioSolutionFilteredData = [...portfolioSolutionFilteredData, { ...row }];
+                const updatedItems = _portfolioSolutionFilteredData.map((currentItem, i) => {
+                    return {
+                        ...currentItem
+                    };
+                });
+                setPortfolioSolutionFilteredData(updatedItems);
+                // setFilterMasterData([...filterMasterData, { ...row }])
+            }
+        } else {
+            var _portfolioSolutionData = [...portfolioSolutionData];
+            const updated1 = _portfolioSolutionData.map((currentItem, i) => {
                 if (row.portfolioId == currentItem.portfolioId) {
                     return { ...currentItem, ["check1"]: e.target.checked };
                 } else return currentItem;
             });
-            setRowData([...updated1]);
+            setPortfolioSolutionData([...updated1]);
+            var _portfolioSolutionFilteredData = [...portfolioSolutionFilteredData];
+            const updated = _portfolioSolutionFilteredData.filter((currentItem, i) => {
+                if (row.portfolioId !== currentItem.portfolioId) return currentItem;
+            });
+            setPortfolioSolutionFilteredData(updated);
         }
+
     };
 
     useEffect(() => {
-        if (rowData.some((rowDataItem) => rowDataItem.check1 === true)) {
+        if (portfolioSolutionData.some((portfolioSolutionDataItem) => portfolioSolutionDataItem.check1 === true)) {
             setFlagIs(true);
         } else {
             setFlagIs(false);
         }
-    }, [rowData]);
+    }, [portfolioSolutionData]);
 
 
     const handleSearch = (e) => {
         if (e.value == 2) {
             setBuildEnable(false)
             setSearchByVisible(false)
+            setLoadingItem("")
         } else {
             setBuildEnable(true)
             setSearchByVisible(true)
+            setLoadingItem("01")
             //API CALL
             const portfoliosData = getAllPortfolios()
             setTimeout(() => {
                 // console.log('This will run after 1 second!')
                 console.log("portfoliosData is : ", portfoliosData)
                 portfoliosData.then(function (result) {
-                    setRowData(result);
+                    setPortfolioSolutionData(result);
                     result.map((data, x) => {
                         setRows1([...rows1, {
                             id: x,
@@ -316,8 +348,9 @@ export function SolutionSelector(props) {
                         }])
                     });
                 })
+                setLoadingItem("")
             }, 500);
-            // rowData.map((data, x) => {
+            // portfolioSolutionData.map((data, x) => {
             //     console.log("x is : ",x)
             //     var rowwData = {
             //         id: x,
@@ -338,11 +371,11 @@ export function SolutionSelector(props) {
 
 
 
-        console.log("my RowData : ", rowData)
+        // console.log("my RowData : ", portfolioSolutionData)
         setSearchOptions(e)
     }
 
-    console.log("Row data is : ", rowData)
+    // console.log("Row data is : ", portfolioSolutionData)
 
     const handleTypeOfSolution = (e) => {
         setSelectTypeOfSolution(e.target.value)
@@ -356,11 +389,14 @@ export function SolutionSelector(props) {
 
     }
 
+
+
     const HandleNextStepClick = () => {
         if (solutionValue == 1) {
             setActiveStep(2)
         } else {
-            alert("Portfolio ?")
+            // alert("Portfolio ?")
+            history.push('/portfolioBuilder/new');
         }
     }
 
@@ -379,7 +415,7 @@ export function SolutionSelector(props) {
     // useEffect(() => {
     //     setTimeout(() => {
 
-    //         rowData.map((result, i) => {
+    //         portfolioSolutionData.map((result, i) => {
     //             rows1.push(result.portfolioId)
     //             console.log("portfolioId : ", result.portfolioId)
     //             // rows1.push({
@@ -408,9 +444,9 @@ export function SolutionSelector(props) {
     //             // })
     //         })
     //     }, 500)
-    // }, [rowData])
+    // }, [portfolioSolutionData])
 
-    console.log("row1 : ", rows1)
+    // console.log("row1 : ", rows1)
 
     console.log("active step : ", activeStep)
     console.log("solution value : ", solutionValue)
@@ -421,7 +457,7 @@ export function SolutionSelector(props) {
             <Box sx={{ width: '100%' }}>
                 <Stepper activeStep={activeStep} alternativeLabel>
                     {steps.map((label, index) => (
-                        <Step key={label}  /* onClick={() => handleStep(index)} */ >
+                        <Step key={index}  /* onClick={() => handleStep(index)} */ >
                             <StepLabel>{label}</StepLabel>
                         </Step>
                     ))}
@@ -492,10 +528,13 @@ export function SolutionSelector(props) {
                             </div>
                         }
 
-                        {searchByVisible ?
-                            <div className='card border mt-4 p-3'>
-                                <div className="mt-3" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
-                                    {/* <DataGrid
+                        {loadingItem === "01" ? ("loading") :
+                            <>
+                                {searchByVisible ?
+                                    <div className='card border mt-4 p-3'>
+                                        {/* <div className="mt-3" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}> */}
+                                        <div className="mt-3" style={{ width: '100%', backgroundColor: '#fff' }}>
+                                            {/* <DataGrid
                                         sx={{
                                             '& .MuiDataGrid-columnHeaders': {
                                                 backgroundColor: '#872ff7', color: '#fff'
@@ -509,29 +548,38 @@ export function SolutionSelector(props) {
 
 
                                     /> */}
-                                    <DataTable
-                                        className=""
-                                        title=""
-                                        columns={columns4}
-                                        data={rowData}
-                                        customStyles={customStyles}
-                                        // defaultSortAsc={false}
-                                        defaultSortFieldId={1}
-                                    // pagination
-                                    />
-                                </div>
-                                <div className='mt-3 row'>
-                                    {/* <div className="col-md-6">
+                                            <DataTable
+                                                className=""
+                                                title=""
+                                                columns={columns4}
+                                                data={portfolioSolutionData}
+                                                customStyles={customStyles}
+                                                // defaultSortAsc={false}
+                                                // defaultSortFieldId={1}
+                                                pagination
+                                            />
+                                            <div className="mt-2 text-right">
+                                                <button
+                                                    onClick={() => window.location.href = SOLUTION_BUILDER_SERVICE_PORTFOLIO}
+                                                    // onClick={() => window.location.href = SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO}
+                                                    disabled={!flagIs}
+                                                    className="btn text-white bg-primary" >Add<img className='ml-2' src={Buttonarrow}></img></button>
+                                            </div>
+                                        </div>
+                                        {/* <div className='mt-3 row'> */}
+                                        {/* <div className="col-md-6">
                                 <button className="btn btn-primary w-100" onClick={() => setOpen(true)} style={{ cursor: 'pointer' }}>Error<img className='ml-2' src={Buttonarrow}></img></button>
                             </div> */}
-                                    <div className="col-md-12">
-                                        <button onClick={() => window.location.href = SOLUTION_BUILDER_SERVICE_PORTFOLIO} 
-                                                            disabled={!flagIs} className="btn btn-primary w-100" >Add<img className='ml-2' src={Buttonarrow}></img></button>
+                                        {/* <div className="col-md-12">
+                                        <button onClick={() => window.location.href = SOLUTION_BUILDER_SERVICE_PORTFOLIO}
+                                            disabled={!flagIs} className="btn btn-primary w-100" >Add<img className='ml-2' src={Buttonarrow}></img></button>
+                                    </div> */}
+                                        {/* </div> */}
                                     </div>
-                                </div>
-                            </div>
-                            :
-                            <></>
+                                    :
+                                    <></>
+                                }
+                            </>
                         }
 
                     </div>

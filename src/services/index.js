@@ -11,6 +11,7 @@ export { getGuidedSolution } from './guidedSolutionServices';
 export { getUserDetails, signup, signIn } from './userServices';
 export { getAllPortfolios } from './solutionBuilderServices'
 export { createPortfolio, getPortfolio, updatePortfolio} from './servicePortfolioServices'
+export { createCustomPortfolio, updateCustomPortfolio, getCustomPortfolio} from './customPortfolioSolutions'
 export { getPortfolioCommonConfig } from './pricingCommonConfig'
 export { getMakeKeyValue, getModelKeyValue, getPrefixKeyValue,createCoverage } from './coverageService'
 export { getUsageCategoryKeyValue, getStrategyTaskKeyValue, getTaskTypeKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getTypeKeyValue, getResponseTimeTaskKeyValue, getValidityKeyValue } from './commonSolutionBuilderServices'
