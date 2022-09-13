@@ -129,7 +129,9 @@ const QuerySearchComp = (props) => {
     props.compoFlag === "coverage" && props?.setSelectedMasterData([]);
     props.compoFlag === "itemSearch" && props?.setBundleItems([]);
     props.compoFlag === "coverage" && props?.setOpenedModelBoxData([]);
-    props.compoFlag === "itemSearch1" && props.setResponseSearchItem([])
+    props.compoFlag === "itemSearch1" && props?.setExploreMasterData([]);
+    props.compoFlag === "itemSearch1" && props?.setSelectedExploreMasterData([]);
+
 
     props.setTempBundleService1([])
 

@@ -116,15 +116,19 @@ export const Analytics = () => {
    const [age2, setAge2] = React.useState('5');
    const [show, setShow] = React.useState(false);
 
-   const [responseSearchItem, setResponseSearchItem] = useState([])
    const [querySearchSelectItem, setQuerySearchSelectItem] = useState([])
+
+   const [exploreMasterData, setExploreMasterData] = useState([])
+   const [exploreFilterMasterData, setExploreFilterMasterData] = useState([])
+   const [selectedExploreMasterData, setSelectedExploreMasterData] = useState([])
+   const [exploreFlagIs, setExploreFlagIs] = useState(false)
 
    const ItemSearchResponseFun = (data, searchData) => {
       console.log("itemSerach Response Data : ", data)
       console.log("querySearchSelectItem  => ", searchData)
       // console.log("item type : ", querySearchSelectItem[0].itemType.label)
       if (data.length > 0) {
-         setResponseSearchItem(data)
+         setExploreMasterData(data)
          setQuerySearchSelectItem(searchData)
          // setShowExplore(true)
          // setOpenSearchSolution(false)
@@ -621,13 +625,52 @@ export const Analytics = () => {
 
    }
 
-   const myFun = (e, row) => {
-      if (e.target.checked) {
-         setShowExplore(true)
-         setOpenSearchSolution(false)
-      }
-   }
 
+   const handleCheckboxData = (e, row) => {
+      if (e.target.checked) {
+         var _searchedExploreData = [...exploreMasterData];
+
+         const updated = _searchedExploreData.map((currentItem, i) => {
+            if (row.itemId == currentItem.itemId) {
+               return { ...currentItem, ["check1"]: e.target.checked };
+            } else return currentItem;
+         });
+
+         setExploreMasterData([...updated]);
+
+         const isFound = exploreFilterMasterData.some((element) => {
+            if (element.itemId === row.itemId) {
+               return true;
+            }
+
+            return false;
+         });
+
+         if (!isFound) {
+            const _exploreFilterMasterData = [...exploreFilterMasterData, { ...row }];
+            const updatedItems = _exploreFilterMasterData.map((currentItem, i) => {
+               return {
+                  ...currentItem
+               };
+            });
+            setExploreFilterMasterData(updatedItems);
+            // setFilterMasterData([...filterMasterData, { ...row }])
+         }
+      } else {
+         var _exploreMasterData = [...exploreMasterData];
+         const updated1 = _exploreMasterData.map((currentItem, i) => {
+            if (row.itemId == currentItem.itemId) {
+               return { ...currentItem, ["check1"]: e.target.checked };
+            } else return currentItem;
+         });
+         setExploreMasterData([...updated1]);
+         var _exploreFilterMasterData = [...exploreFilterMasterData];
+         const updated = _exploreFilterMasterData.filter((currentItem, i) => {
+            if (row.itemId !== currentItem.itemId) return currentItem;
+         });
+         setExploreFilterMasterData(updated);
+      }
+   };
 
    useEffect(() => {
       if (masterData.some((masterDataitem) => masterDataitem.check1 === true)) {
@@ -636,6 +679,14 @@ export const Analytics = () => {
          setFlagIs(false);
       }
    }, [masterData]);
+
+   useEffect(() => {
+      if (exploreMasterData.some((exploremasterDataitem) => exploremasterDataitem.check1 === true)) {
+         setExploreFlagIs(true);
+      } else {
+         setExploreFlagIs(false);
+      }
+   }, [exploreMasterData]);
 
    const handleDeleteIncludeSerialNo = (e, row) => {
       const updated = selectedMasterData.filter((obj) => {
@@ -672,6 +723,195 @@ export const Analytics = () => {
       //       params.getValue(params.id, 'DocumentType') || ''
       //     }`,
 
+   ];
+
+   const exploreMasterColumn = [
+      {
+         name: (
+            <>
+               <div>Select</div>
+            </>
+         ),
+         selector: (row) => row.itemId,
+         wrap: true,
+         sortable: true,
+         // format: (row) => row.itemId,
+         cell: (row) => (
+            <Checkbox
+               className="text-black"
+               checked={row.check1}
+               onChange={(e) => handleCheckboxData(e, row)}
+            />
+         ),
+      },
+      {
+         name: (
+            <>
+               <div>ID</div>
+            </>
+         ),
+         selector: (row) => row.itemId,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemId,
+      },
+      {
+         name: (
+            <>
+               <div>Description</div>
+            </>
+         ),
+         selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemHeaderModel.itemHeaderDescription,
+      },
+      {
+         name: (
+            <>
+               <div>Solution Code</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.solutionCode,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.solutionCode,
+      },
+      // {
+      //    name: (
+      //       <>
+      //          <div>Item Header Id</div>
+      //       </>
+      //    ),
+      //    selector: (row) => row.strategyTask,
+      //    wrap: true,
+      //    sortable: true,
+      //    format: (row) => row.strategyTask,
+      // },
+      {
+         name: (
+            <>
+               <div>Repair Option</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.repairOption,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.repairOption,
+      },
+      {
+         name: (
+            <>
+               <div>Frequency</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.frequency,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.frequency,
+      },
+      {
+         name: (
+            <>
+               <div>Quantity</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.quantity,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.quantity,
+      },
+      {
+         name: (
+            <>
+               <div>Total $</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.totalPrice,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.totalPrice,
+      },
+   ];
+
+   const SelectedExploreMasterDataColumn = [
+      {
+         name: (
+            <>
+               <div>ID</div>
+            </>
+         ),
+         selector: (row) => row.itemId,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemId,
+      },
+      {
+         name: (
+            <>
+               <div>Description</div>
+            </>
+         ),
+         selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemHeaderModel.itemHeaderDescription,
+      },
+      {
+         name: (
+            <>
+               <div>Solution Code</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.solutionCode,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.solutionCode,
+      },
+      {
+         name: (
+            <>
+               <div>Repair Option</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.repairOption,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.repairOption,
+      },
+      {
+         name: (
+            <>
+               <div>Frequency</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.frequency,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.frequency,
+      },
+      {
+         name: (
+            <>
+               <div>Quantity</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.quantity,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.quantity,
+      },
+      {
+         name: (
+            <>
+               <div>Total $</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.totalPrice,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.totalPrice,
+      },
    ];
 
    const columns4 = [
@@ -1239,7 +1479,9 @@ export const Analytics = () => {
                               { label: "Prefix", value: "prefix" },
                            ]}
                            ItemSearchResponseFun={ItemSearchResponseFun}
-                           setResponseSearchItem={setResponseSearchItem}
+                           setExploreMasterData={setExploreMasterData}
+                           setSelectedExploreMasterData={setSelectedExploreMasterData}
+
                         // setQuerySearchSelectItem={setQuerySearchSelectItem}
                         // setTempBundleService1={setTempBundleService1}
                         // setLoadingItem={setLoadingItem} 
@@ -1301,7 +1543,7 @@ export const Analytics = () => {
                            </div>
                            :
                            <></>}
-                        {responseSearchItem.length > 0 ?
+                        {exploreMasterData.length > 0 ?
                            <>
                               <div className="tableheader">
                                  <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
@@ -1310,19 +1552,48 @@ export const Analytics = () => {
                                  <DataTable
                                     className=""
                                     title=""
-                                    columns={columns4}
-                                    data={responseSearchItem}
+                                    columns={exploreMasterColumn}
+                                    data={exploreMasterData}
                                     customStyles={customStyles}
-                                 // pagination
+                                    pagination
                                  />
+                                 <div className="m-2 text-right">
+                                    <input
+                                       onClick={() => {
+                                          setSelectedExploreMasterData(exploreFilterMasterData);
+                                          setExploreMasterData([]);
+                                       }}
+                                       className="btn text-white bg-primary"
+                                       value="+ Add Selected"
+                                       disabled={!exploreFlagIs}
+                                    />
+                                 </div>
                               </div>
-                              {/* {console.log("querySearchSelectItem :=> ", querySearchSelectItem)} */}
                            </> : <></>
                         }
+                        {selectedExploreMasterData.length > 0 ? (
+                           <>
+                              <div className="tableheader">
+                                 <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
+                                    <li><a className="cursor result" >Included Data</a></li>
+                                 </ul>
+                                 <DataTable
+                                    className="mt-3"
+                                    title=""
+                                    columns={SelectedExploreMasterDataColumn}
+                                    data={selectedExploreMasterData}
+                                    customStyles={customStyles}
+                                    pagination
+                                 />
+                              </div>
+                           </>
+                        ) : (
+                           <></>
+                        )}
                      </div>
                   </Modal.Body>
                   <Modal.Footer>
-                     {responseSearchItem.length > 0 ?
+                     {selectedExploreMasterData.length > 0 ?
                         <div>
                            <button className="btn btn-primary w-100" onClick={handleBundleItemSaveAndContinue}>Save & Continue</button>
                         </div>
