@@ -71,13 +71,13 @@ import Loader from "react-js-loader";
 
 
 import {
-    createPortfolio,
-    getPortfolio,
+    createCustomPortfolio,
+    getCustomPortfolio,
     getPortfolioSchema,
     getMakeKeyValue,
     getModelKeyValue,
     getPrefixKeyValue,
-    updatePortfolio,
+    updateCustomPortfolio,
     getUsageCategoryKeyValue,
     getTaskTypeKeyValue,
     getResponseTimeTaskKeyValue,
@@ -109,7 +109,7 @@ import {
     taskActions,
 } from "../PortfolioAndBundle/customerSegment/strategySlice";
 
-import QuerySearchComp from './../PortfolioAndBundle/QuerySearchComp';
+import QuerySearchComp from '../PortfolioAndBundle/QuerySearchComp';
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 const customStyles = {
@@ -590,7 +590,7 @@ export function CustomizedPortfolio(props) {
                 geographic: stratgyGeographicKeyValue.value,
             };
             if (generalComponentData.portfolioId) {
-                const updatePortfolioRes = await updatePortfolio(
+                const updatePortfolioRes = await updateCustomPortfolio(
                     generalComponentData.portfolioId,
                     obj
                 );
@@ -778,7 +778,7 @@ export function CustomizedPortfolio(props) {
                 };
                 console.log("request obj for update:", obj);
                 if (generalComponentData.portfolioId) {
-                    const updatePortfolioRes = await updatePortfolio(
+                    const updatePortfolioRes = await updateCustomPortfolio(
                         generalComponentData.portfolioId,
                         obj
                     );
@@ -937,7 +937,7 @@ export function CustomizedPortfolio(props) {
                 serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
             };
 
-            const portfolioRes = await createPortfolio(reqData);
+            const portfolioRes = await createCustomPortfolio(reqData);
             if (portfolioRes.status === 200) {
                 toast("👏 Portfolio Created", {
                     position: "top-right",
@@ -951,9 +951,9 @@ export function CustomizedPortfolio(props) {
                 setValue("2");
                 setGeneralComponentData({
                     ...generalComponentData,
-                    portfolioId: portfolioRes.data.portfolioId,
+                    portfolioId: portfolioRes.data.customPortfolioId,
                 });
-                setPortfolioId(portfolioRes.data.portfolioId);
+                setPortfolioId(portfolioRes.data.customPortfolioId);
             } else {
                 throw `${portfolioRes.status}:error in portfolio creation`;
             }
@@ -1061,7 +1061,7 @@ export function CustomizedPortfolio(props) {
             };
 
 
-            const strategyRes = await updatePortfolio(
+            const strategyRes = await updateCustomPortfolio(
                 generalComponentData.portfolioId,
                 obj
             );
@@ -1183,7 +1183,7 @@ export function CustomizedPortfolio(props) {
                 geographic: stratgyGeographicKeyValue.value,
             };
             if (generalComponentData.portfolioId) {
-                const updatePortfolioRes = await updatePortfolio(
+                const updatePortfolioRes = await updateCustomPortfolio(
                     generalComponentData.portfolioId,
                     obj
                 );
@@ -1273,7 +1273,7 @@ export function CustomizedPortfolio(props) {
         //     });
 
         if (portfolioId != null) {
-            getPortfolio(portfolioId)
+            getCustomPortfolio(portfolioId)
                 .then((res) => {
                     const portfolioDetails = res;
                     console.log("portfolioDetails", portfolioDetails);
@@ -2164,7 +2164,7 @@ export function CustomizedPortfolio(props) {
                 <div
                     className="d-flex justify-content-center align-items-center row-svg-div"
                     style={{ minWidth: "180px !important" }}
-                >import { CustomizedPortfolio } from './CustomizedPortfolio';
+                >
 
                     <div className=" cursor" onClick={handleBundleItemOpen}>
                         <Tooltip title="Create Bundle">
@@ -2999,6 +2999,7 @@ export function CustomizedPortfolio(props) {
                                     )}
                                 </TabPanel>
                                 <TabPanel value="2">
+
                                     <div className="row mt-4">
                                         <div className="col-md-12">
                                             <div className="row">
@@ -3320,13 +3321,22 @@ export function CustomizedPortfolio(props) {
                                                     Machine Type
                                                 </label>
                                                 <Select
-                                                    // options={geographicList}
-                                                    // value={stratgyGeographicKeyValue}
-                                                    // onChange={(e) => setStratgyGeographicKeyValue(e)}
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="Machine Type"
+                                                    // // options={geographicList}
+                                                    // // value={stratgyGeographicKeyValue}
+                                                    // // onChange={(e) => setStratgyGeographicKeyValue(e)}
+                                                    // defaultValue={selectedOption}
+                                                    // // onChange={setSelectedOption}
+                                                    // options={options}
+                                                    // placeholder="Machine Type"
+                                                    onChange={(e) =>
+                                                        handleDropdownChange(ENUM.MACHINE_TYPE, e)
+                                                    }
+                                                    isClearable={true}
+                                                    value={coverageData.machineType}
+                                                    isLoading={
+                                                        machineTypeKeyValue.length > 0 ? false : true
+                                                    }
+                                                    options={machineTypeKeyValue}
                                                 />
                                                 {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>

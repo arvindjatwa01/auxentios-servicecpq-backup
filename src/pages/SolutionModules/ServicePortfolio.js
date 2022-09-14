@@ -522,6 +522,7 @@ export function ServicePortfolio(props) {
             // put API for porfolio update Item id
             // call here
             const { portfolioId, ...res } = generalComponentData;
+            console.log("generalComponentData issssss : ", generalComponentData)
             let obj = {
                 ...res,
                 visibleInCommerce: true,

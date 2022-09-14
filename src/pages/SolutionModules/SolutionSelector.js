@@ -560,8 +560,8 @@ export function SolutionSelector(props) {
                                             />
                                             <div className="mt-2 text-right">
                                                 <button
-                                                    onClick={() => window.location.href = SOLUTION_BUILDER_SERVICE_PORTFOLIO}
-                                                    // onClick={() => window.location.href = SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO}
+                                                    // onClick={() => window.location.href = SOLUTION_BUILDER_SERVICE_PORTFOLIO}
+                                                    onClick={() => history.push(SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO)}
                                                     disabled={!flagIs}
                                                     className="btn text-white bg-primary" >Add<img className='ml-2' src={Buttonarrow}></img></button>
                                             </div>
