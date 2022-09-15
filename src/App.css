@@ -2150,7 +2150,7 @@ nav.main-menu li.active>a,
       border-bottom-left-radius: 4px;
     }
     .css-1okebmr-indicatorSeparator{ display: none;}
-    .css-tlfecz-indicatorContainer{ color: #6f6f6f !important}
+    .css-tlfecz-indicatorContainer{ color: #fff !important}
     .text-underline-offset{text-underline-offset: 5px;}
     .text-decoration-line{text-decoration-line: underline;}    
     .css-6hp17o-MuiList-root-MuiMenu-list hr{ display: none !important;}
@@ -2571,3 +2571,4 @@ cursor: pointer;
   color: #fff;
 }
 
+.css-14el2xx-placeholder{ color: #fff !important;}
