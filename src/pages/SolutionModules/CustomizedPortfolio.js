@@ -86,6 +86,7 @@ import {
     getProductHierarchyKeyValue,
     getGergraphicKeyValue,
     getMachineTypeKeyValue,
+    getLifeStageKeyValue,
     getTypeKeyValue,
     getPortfolioCommonConfig,
     getSearchQueryCoverage,
@@ -159,6 +160,7 @@ export function CustomizedPortfolio(props) {
     const [geographicKeyValue, setGeographicKeyValue] = useState([]);
     const [typeKeyValue, setTypeKeyValue] = useState([]);
     const [machineTypeKeyValue, setMachineTypeKeyValue] = useState([]);
+    const [lifeStageOfMachineKeyValue, setLifeStageOfMachineKeyValue] = useState([]);
     const [isView, setIsView] = useState(false);
     const [createNewBundle, setCreateNewBundle] = useState(false);
     const [openSearchSolution, setOpenSearchSolution] = useState(false);
@@ -891,6 +893,11 @@ export function CustomizedPortfolio(props) {
                 ...coverageData,
                 machineType: e,
             });
+        }else if (type == ENUM.LIFE_STAGE_OF_MACHINE) {
+            setCoverageData({
+                ...coverageData,
+                lifeStageOfMachine: e,
+            });
         } else if (type == ENUM.MAKE) {
             setCoverageData({
                 ...coverageData,
@@ -1453,6 +1460,18 @@ export function CustomizedPortfolio(props) {
                     label: d.value,
                 }));
                 setMachineTypeKeyValue(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
+
+        getLifeStageKeyValue()
+            .then((res) => {
+                const options = res.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setLifeStageOfMachineKeyValue(options);
             })
             .catch((err) => {
                 alert(err);
@@ -3318,7 +3337,7 @@ export function CustomizedPortfolio(props) {
                                                     className="text-light-dark font-size-12 font-weight-500"
                                                     for="exampleInputEmail1"
                                                 >
-                                                    Machine Type
+                                                    MACHINE TYPE
                                                 </label>
                                                 <Select
                                                     // // options={geographicList}
@@ -3347,16 +3366,25 @@ export function CustomizedPortfolio(props) {
                                                     className="text-light-dark font-size-12 font-weight-500"
                                                     for="exampleInputEmail1"
                                                 >
-                                                    Life Stage
+                                                    LIFE STAGE
                                                 </label>
                                                 <Select
                                                     // options={geographicList}
                                                     // value={stratgyGeographicKeyValue}
                                                     // onChange={(e) => setStratgyGeographicKeyValue(e)}
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="Life Stage"
+                                                    // defaultValue={selectedOption}
+                                                    // onChange={setSelectedOption}
+                                                    // options={options}
+                                                    // placeholder="Life Stage"
+                                                    onChange={(e) =>
+                                                        handleDropdownChange(ENUM.LIFE_STAGE_OF_MACHINE, e)
+                                                    }
+                                                    isClearable={true}
+                                                    value={coverageData.lifeStageOfMachine}
+                                                    isLoading={
+                                                        lifeStageOfMachineKeyValue.length > 0 ? false : true
+                                                    }
+                                                    options={lifeStageOfMachineKeyValue}
                                                 />
                                                 {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
@@ -4671,7 +4699,7 @@ export function CustomizedPortfolio(props) {
                                     <Tab label="Component Data" value="3" />
                                 </TabList>
                             </Box>
-                            {/* <TabPanel value="1">
+                            <TabPanel value="1">
                                 <AddPortfolioItem
                                     // openAddBundleItemHeader={openAddBundleItemHeader}
                                     categoryList={categoryList}
@@ -4681,7 +4709,7 @@ export function CustomizedPortfolio(props) {
                                     compoFlag="ITEM"
                                     handleBundleItemSaveAndContinue={handleBundleItemSaveAndContinue}
                                 />
-                            </TabPanel> */}
+                            </TabPanel>
 
                             <TabPanel value="2">
                                 <PriceCalculator

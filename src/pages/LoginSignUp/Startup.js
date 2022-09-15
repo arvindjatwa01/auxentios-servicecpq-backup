@@ -24,7 +24,7 @@ export const Startup = () => {
 
     const dispatch = useDispatch();
     const result = useSelector((state) => state.signUp);
-    // console.log("result of user ",result)
+    console.log("result of user ", result.activeStep)
     const { search } = useLocation();
     const queryString = new URLSearchParams(search);
 
@@ -68,12 +68,13 @@ export const Startup = () => {
     };
     useEffect(() => {
         const uuid = queryString.get('uuid')
-        console.log("result.isLoggedIn in useEffect",result.isLoggedIn)
+
+        // console.log("result.isLoggedIn in useEffect", result.isLoggedIn)
         // const uuid = result.isLoggedIn
         if (uuid) {
             dispatch(signUpActions.verifyEmail());
         }
-    })
+    },[]);
 
     return (
         <div className="content-body" style={{ minHeight: "884px" }}>
@@ -264,7 +265,7 @@ export const Startup = () => {
                           placeholder="Email Address"
                         /> */}
                                                 <p>Varification Successfull</p>
-                                                <div onClick={() => dispatch(signUpActions.getStarted())}>Let's Get Started</div>
+                                                <div onClick={() => dispatch(signUpActions.getStarted())} style={{cursor: "pointer"}}>Let's Get Started</div>
                                                 {/* <div onClick={}>GetS Started</div> */}
                                                 {/* <a href="#">please verify email address using email sent on registered email</a> */}
                                             </div>
