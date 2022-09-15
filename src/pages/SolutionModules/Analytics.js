@@ -43,6 +43,7 @@ import SelectFilter from 'react-select';
 import QuerySearchComp from "../PortfolioAndBundle/QuerySearchComp";
 import SearchIcon from '@mui/icons-material/Search';
 import $ from "jquery"
+import { useHistory } from 'react-router-dom';
 import {
    createPortfolio,
    getPortfolio,
@@ -122,6 +123,8 @@ export const Analytics = () => {
    const [exploreFilterMasterData, setExploreFilterMasterData] = useState([])
    const [selectedExploreMasterData, setSelectedExploreMasterData] = useState([])
    const [exploreFlagIs, setExploreFlagIs] = useState(false)
+
+   let history = useHistory()
 
    const ItemSearchResponseFun = (data, searchData) => {
       console.log("itemSerach Response Data : ", data)
@@ -384,7 +387,8 @@ export const Analytics = () => {
 
    const handleNextSolutionSelector = () => {
       if (buildSolutionValue == "0") {
-         window.location.href = "/solutionBuilder/guide"
+         history.push('/solutionBuilder/guide');
+         // window.location.href = "/solutionBuilder/guide"
       } else {
          setTypeOfSolutionBuild(0)
          setOpenSolutionSelector(false)
@@ -1392,7 +1396,8 @@ export const Analytics = () => {
                      <DataGrid
                         sx={{
                            '& .MuiDataGrid-columnHeaders': {
-                              backgroundColor: '#7380E4', color: '#fff'
+                              // backgroundColor: '#7380E4', color: '#fff'
+                              backgroundColor: '#872ff7', color: '#fff'
                            }
                         }}
                         rows={rows}
@@ -1696,7 +1701,8 @@ export const Analytics = () => {
                               <DataGrid
                                  sx={{
                                     '& .MuiDataGrid-columnHeaders': {
-                                       backgroundColor: '#7380E4', color: '#fff'
+                                       // backgroundColor: '#7380E4', color: '#fff'
+                                       backgroundColor: '#872ff7', color: '#fff'
                                     }
                                  }}
                                  rows={rows}
