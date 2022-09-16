@@ -336,7 +336,7 @@ export function CreatePortfolio() {
     unit: "",
     recomondedValue: "",
     quantity: "",
-    strategyEvents: "",
+    numberOfEvents: "",
     templateId: "",
     templateDescription: "",
     repairOption: "",
@@ -676,7 +676,7 @@ export function CreatePortfolio() {
           templateDescription: addPortFolioItem.description.value,
           partListId: "",
           serviceEstimateId: "",
-          numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+          numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
           repairOption: addPortFolioItem.repairOption.value,
           priceMethod: "LIST_PRICE",
           listPrice: parseInt(priceCalculator.listPrice),
@@ -893,7 +893,7 @@ export function CreatePortfolio() {
           templateDescription: addPortFolioItem.description.value,
           partListId: "",
           serviceEstimateId: "",
-          numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+          numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
           repairOption: addPortFolioItem.repairOption.value,
           priceMethod: "LIST_PRICE",
           listPrice: parseInt(priceCalculator.listPrice),
@@ -914,7 +914,7 @@ export function CreatePortfolio() {
         },
       };
 
-      const res = await itemCreation(reqObj);
+      0
       setCurrentItemId(res.data.itemId);
       if (res.status == 200) {
         toast(`👏 ${serviceOrBundlePrefix} created`, {
@@ -1129,7 +1129,7 @@ export function CreatePortfolio() {
           templateDescription: addPortFolioItem.description.value,
           partListId: "",
           serviceEstimateId: "",
-          numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+          numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
           repairOption: addPortFolioItem.repairOption.value,
           priceMethod: "LIST_PRICE",
           listPrice: parseInt(priceCalculator.listPrice),
@@ -1215,7 +1215,7 @@ export function CreatePortfolio() {
           templateDescription: addPortFolioItem.description.value,
           partListId: "",
           serviceEstimateId: "",
-          numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+          numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
           repairOption: addPortFolioItem.repairOption.value,
           priceMethod: "LIST_PRICE",
           listPrice: parseInt(priceCalculator.listPrice),
@@ -3617,6 +3617,7 @@ export function CreatePortfolio() {
   };
   const getPriceCalculatorDataFun = (data) => {
     setPriceCalculator(data);
+    handleSavePrices()
   };
   const handleExpandRowForPriceCalculator = (bool, row) => {
     setExpandedPriceCalculator({
@@ -4294,13 +4295,18 @@ export function CreatePortfolio() {
       if (currentItemId === _tempBundleItems[i].itemId) {
         if (_tempBundleItems[i].associatedServiceOrBundle) {
           for(let j=0;j<_tempBundleItems[i].associatedServiceOrBundle.length;j++){
+            let match=false;
+            let obj
             // for(let k=j;k<tempBundleService2.length;k++){
             //   if(_tempBundleItems[i].associatedServiceOrBundle[j].itemId==tempBundleService2[k].itemId){
+                     // match=true
+                    // break;
             //     console.log("matched",_tempBundleItems[i].associatedServiceOrBundle[j].itemId,":",tempBundleService2[k].itemId)
             //     break
-            //   }else{
-            //     _tempBundleItems[i].associatedServiceOrBundle.push(tempBundleService2[k])
             //   }
+            // if(!match){
+
+            // }
             // }
           }
           _tempBundleItems[i].associatedServiceOrBundle=[..._tempBundleItems[i].associatedServiceOrBundle,...tempBundleService2]
@@ -7019,10 +7025,10 @@ export function CreatePortfolio() {
                       onChange={(e) =>
                         setAddportFolioItem({
                           ...addPortFolioItem,
-                          strategyEvents: e.target.value,
+                          numberOfEvents: e.target.value,
                         })
                       }
-                      value={addPortFolioItem.strategyEvents}
+                      value={addPortFolioItem.numberOfEvents}
                     />
                   </div>
                 </div>
@@ -8707,6 +8713,7 @@ export function CreatePortfolio() {
                 <TabPanel value="1">
                   <AddPortfolioItem
                     // openAddBundleItemHeader={openAddBundleItemHeader}
+                    stratgyTaskTypeKeyValue={stratgyTaskTypeKeyValue}
                     categoryList={categoryList}
                     updatedTaskList={updatedTaskList}
                     setTabs={setTabs}
@@ -9094,7 +9101,7 @@ export function CreatePortfolio() {
                   priceCalculator={priceCalculator}
                   serviceOrBundlePrefix={serviceOrBundlePrefix}
                   getPriceCalculatorDataFun={getPriceCalculatorDataFun}
-                  handleSavePrices={handleSavePrices}
+                  // handleSavePrices={handleSavePrices}
                 /> */}
 
                   <div className="ligt-greey-bg p-3">
@@ -9566,7 +9573,7 @@ export function CreatePortfolio() {
                     setBundleServiceShow={setBundleServiceShow}
                     priceCalculator={priceCalculator}
                     getPriceCalculatorDataFun={getPriceCalculatorDataFun}
-                    handleSavePrices={handleSavePrices}
+                    // handleSavePrices={handleSavePrices}
                   />
                 </TabPanel>
               </TabContext>
