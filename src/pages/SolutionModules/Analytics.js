@@ -791,6 +791,7 @@ export const Analytics = () => {
    };
 
 
+
    const PopupModelBoxShow = () => {
       setShowPopup(true)
    }
@@ -817,7 +818,6 @@ export const Analytics = () => {
          setSolutionsPopup(false)
       }
    }
-
    useEffect(() => {
       if (masterData.some((masterDataitem) => masterDataitem.check1 === true)) {
          setFlagIs(true);
@@ -2260,6 +2260,7 @@ export const Analytics = () => {
                </div>
             </Modal.Body>
          </Modal>
+
          {/* New Flow Work On Create New Button */}
 
          <Modal show={showPopup} onHide={() => setShowPopup(false)} size="xl"
@@ -2511,6 +2512,7 @@ export const Analytics = () => {
                   : <></>}
             </Modal.Footer>
          </Modal>
+
       </>
    )
 };

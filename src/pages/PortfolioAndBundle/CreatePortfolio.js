@@ -336,7 +336,7 @@ export function CreatePortfolio() {
     unit: "",
     recomondedValue: "",
     quantity: "",
-    strategyEvents: "",
+    numberOfEvents: "",
     templateId: "",
     templateDescription: "",
     repairOption: "",
@@ -676,7 +676,7 @@ export function CreatePortfolio() {
           templateDescription: addPortFolioItem.description.value,
           partListId: "",
           serviceEstimateId: "",
-          numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+          numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
           repairOption: addPortFolioItem.repairOption.value,
           priceMethod: "LIST_PRICE",
           listPrice: parseInt(priceCalculator.listPrice),
@@ -893,7 +893,7 @@ export function CreatePortfolio() {
           templateDescription: addPortFolioItem.description.value,
           partListId: "",
           serviceEstimateId: "",
-          numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+          numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
           repairOption: addPortFolioItem.repairOption.value,
           priceMethod: "LIST_PRICE",
           listPrice: parseInt(priceCalculator.listPrice),
@@ -1129,7 +1129,7 @@ export function CreatePortfolio() {
           templateDescription: addPortFolioItem.description.value,
           partListId: "",
           serviceEstimateId: "",
-          numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+          numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
           repairOption: addPortFolioItem.repairOption.value,
           priceMethod: "LIST_PRICE",
           listPrice: parseInt(priceCalculator.listPrice),
@@ -1215,7 +1215,7 @@ export function CreatePortfolio() {
           templateDescription: addPortFolioItem.description.value,
           partListId: "",
           serviceEstimateId: "",
-          numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+          numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
           repairOption: addPortFolioItem.repairOption.value,
           priceMethod: "LIST_PRICE",
           listPrice: parseInt(priceCalculator.listPrice),
@@ -3614,9 +3614,11 @@ export function CreatePortfolio() {
 
   const getAddportfolioItemDataFun = (data) => {
     setAddportFolioItem(data);
+    handleBundleItemSaveAndContinue();
   };
   const getPriceCalculatorDataFun = (data) => {
     setPriceCalculator(data);
+    handleSavePrices()
   };
   const handleExpandRowForPriceCalculator = (bool, row) => {
     setExpandedPriceCalculator({
@@ -4289,23 +4291,22 @@ export function CreatePortfolio() {
   const handleItemPriceCalculatorSave = () => {
     setLoadingItem("02")
     setTabs("6")
-    const _tempBundleItems=[...tempBundleItems]
+    const _tempBundleItems = [...tempBundleItems]
     for (let i = 0; i < _tempBundleItems.length; i++) {
       if (currentItemId === _tempBundleItems[i].itemId) {
         if (_tempBundleItems[i].associatedServiceOrBundle) {
-          for(let j=0;j<_tempBundleItems[i].associatedServiceOrBundle.length;j++){
-            // for(let k=j;k<tempBundleService2.length;k++){
-            //   if(_tempBundleItems[i].associatedServiceOrBundle[j].itemId==tempBundleService2[k].itemId){
-            //     console.log("matched",_tempBundleItems[i].associatedServiceOrBundle[j].itemId,":",tempBundleService2[k].itemId)
-            //     break
-            //   }else{
-            //     _tempBundleItems[i].associatedServiceOrBundle.push(tempBundleService2[k])
-            //   }
-            // }
+          for (let j = 0; j < _tempBundleItems[i].associatedServiceOrBundle.length; j++) {
+            console.log("tempBundleService2",tempBundleService2)
+            for (let k = 0; k < tempBundleService2.length; k++) {
+              if (_tempBundleItems[i].associatedServiceOrBundle[j].itemId == tempBundleService2[k].itemId) {
+                tempBundleService2.splice(k,1)//remove object if already exist
+                break;
+              }
+            }
           }
-          _tempBundleItems[i].associatedServiceOrBundle=[..._tempBundleItems[i].associatedServiceOrBundle,...tempBundleService2]
+          _tempBundleItems[i].associatedServiceOrBundle = [..._tempBundleItems[i].associatedServiceOrBundle, ...tempBundleService2]
         } else {
-          _tempBundleItems[i] = {..._tempBundleItems[i],associatedServiceOrBundle: [...tempBundleService2]}
+          _tempBundleItems[i] = { ..._tempBundleItems[i], associatedServiceOrBundle: [...tempBundleService2] }
         }
       }
       setTempBundleItems(_tempBundleItems)
@@ -4313,214 +4314,214 @@ export function CreatePortfolio() {
     }
   }
 
-    return (
-      <PortfolioContext.Provider
-        value={{
-          generalComponentData,
-          categoryUsageKeyValue1,
-          stratgyTaskTypeKeyValue,
-        }}
-      >
-        <div className="content-body" style={{ minHeight: "884px" }}>
-          <div className="container-fluid ">
-            <div className="d-flex align-items-center justify-content-between mt-2">
+  return (
+    <PortfolioContext.Provider
+      value={{
+        generalComponentData,
+        categoryUsageKeyValue1,
+        stratgyTaskTypeKeyValue,
+      }}
+    >
+      <div className="content-body" style={{ minHeight: "884px" }}>
+        <div className="container-fluid ">
+          <div className="d-flex align-items-center justify-content-between mt-2">
+            <div className="d-flex justify-content-center align-items-center">
+              <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5>
               <div className="d-flex justify-content-center align-items-center">
-                <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5>
-                <div className="d-flex justify-content-center align-items-center">
-                  <div className="ml-3">
-                    <Select
-                      className="customselectbtn1"
-                      onChange={(e) => handleOption3(e)}
-                      options={options3}
-                      value={value3}
-                    />
-                  </div>
+                <div className="ml-3">
+                  <Select
+                    className="customselectbtn1"
+                    onChange={(e) => handleOption3(e)}
+                    options={options3}
+                    value={value3}
+                  />
+                </div>
 
-                  <div className="ml-3">
-                    <Select
-                      className="customselectbtn"
-                      onChange={(e) => handleOption2(e)}
-                      options={options2}
-                      value={value2}
-                    />
-                  </div>
-                  <div className="rating-star">
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star checked"></span>
-                    <span class="fa fa-star"></span>
-                    <span class="fa fa-star"></span>
-                  </div>
+                <div className="ml-3">
+                  <Select
+                    className="customselectbtn"
+                    onChange={(e) => handleOption2(e)}
+                    options={options2}
+                    value={value2}
+                  />
                 </div>
-              </div>
-              <div className="d-flex">
-                <div>
-                  <React.Fragment>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        textAlign: "center",
-                      }}
-                    >
-                      <IconButton
-                        className="btn bg-primary text-white font-size-14 pr-0 ml-2"
-                        style={{ borderRadius: "5px" }}
-                        onClick={handleClick}
-                        size="small"
-                        aria-controls={open ? "account-menu" : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={open ? "true" : undefined}
-                      >
-                        <span className="convert mx-2">
-                          Convert to
-                          <span>
-                            <KeyboardArrowDownIcon />
-                          </span>
-                        </span>
-                      </IconButton>
-                    </Box>
-                    <Menu
-                      anchorEl={anchorEl}
-                      id="account-menu"
-                      open={open}
-                      onClose={handleClose}
-                      onClick={handleClose}
-                      PaperProps={{
-                        elevation: 0,
-                        sx: {
-                          overflow: "visible",
-                          filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-                          mt: 1.5,
-                          "& .MuiAvatar-root": {
-                            width: 32,
-                            height: 32,
-                            ml: -0.5,
-                            mr: 1,
-                          },
-                          "&:before": {
-                            content: '""',
-                            display: "block",
-                            position: "absolute",
-                            top: 0,
-                            right: 14,
-                            width: 10,
-                            height: 10,
-                            bgcolor: "background.paper",
-                            transform: "translateY(-50%) rotate(45deg)",
-                            zIndex: 0,
-                          },
-                        },
-                      }}
-                      transformOrigin={{ horizontal: "right", vertical: "top" }}
-                      anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-                    >
-                      <MenuItem>Templates</MenuItem>
-                      <MenuItem>Standard Job</MenuItem>
-                      <MenuItem>Kit</MenuItem>
-                      <MenuItem data-toggle="modal" data-target="#quotecreat">
-                        Quote
-                      </MenuItem>
-                      <Divider />
-                    </Menu>
-                  </React.Fragment>
-                </div>
-                <div className="d-flex justify-content-center align-items-center">
-                  <a href="#" className="ml-3 font-size-14" title="Share">
-                    <img src={shareIcon}></img>
-                  </a>
-                  <a
-                    href="#"
-                    className="ml-3 font-size-14"
-                    title="Items to Review"
-                  >
-                    <img src={folderaddIcon}></img>
-                  </a>
-                  <a href="#" className="ml-3 font-size-14" title="Upload">
-                    <img src={uploadIcon}></img>
-                  </a>
-                  {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
-                  <a href="#" className="ml-3 font-size-14" title="Delete">
-                    <img src={deleteIcon}></img>
-                  </a>
-                  <a href="#" className="ml-3 font-size-14" title="Copy">
-                    <img src={copyIcon}></img>
-                  </a>
-                  <a href="#" className="ml-2">
-                    <MuiMenuComponent options={activityOptions} />
-                  </a>
+                <div className="rating-star">
+                  <span class="fa fa-star checked"></span>
+                  <span class="fa fa-star checked"></span>
+                  <span class="fa fa-star checked"></span>
+                  <span class="fa fa-star"></span>
+                  <span class="fa fa-star"></span>
                 </div>
               </div>
             </div>
-            <div className="card p-4 mt-5">
-              <h5 className="d-flex align-items-center mb-0">
-                <div className="" style={{ display: "contents" }}>
-                  <span className="mr-3" style={{ whiteSpace: "pre" }}>
-                    {portfolioId ? "Portfolio Details" : "New Portfolio*"}
-                  </span>
-                  <a href="#" className="btn-sm">
-                    <i className="fa fa-pencil" aria-hidden="true"></i>
-                  </a>
-                  <a href="#" className="btn-sm">
-                    <i className="fa fa-bookmark-o" aria-hidden="true"></i>
-                  </a>
-                  <a href="#" className="btn-sm">
-                    <img style={{ width: "14px" }} src={folderaddIcon}></img>
-                  </a>
-                </div>
-                <div className="input-group icons border-radius-10 border">
-                  <div className="input-group-prepend">
-                    <span
-                      className="input-group-text bg-transparent border-0 pr-0 "
-                      id="basic-addon1"
+            <div className="d-flex">
+              <div>
+                <React.Fragment>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      textAlign: "center",
+                    }}
+                  >
+                    <IconButton
+                      className="btn bg-primary text-white font-size-14 pr-0 ml-2"
+                      style={{ borderRadius: "5px" }}
+                      onClick={handleClick}
+                      size="small"
+                      aria-controls={open ? "account-menu" : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={open ? "true" : undefined}
                     >
-                      <img src={shearchIcon} />
-                    </span>
-                  </div>
-                  <input
-                    type="search"
-                    className="form-control search-form-control"
-                    aria-label="Search Dashboard"
-                  />
-                </div>
-              </h5>
-              <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
-                <TabContext value={value}>
-                  <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                    <TabList
-                      onChange={handleChange}
-                      aria-label="lab API tabs example"
-                    >
-                      <Tab label="General" value={"general"} />
-                      <Tab label="Validity " value={"validity"} />
-                      <Tab label="Strategy" value={"strategy"} />
-                      <Tab label="Administrative" value={"administrative"} />
-                      <Tab label="Price" value={"price"} />
-                      <Tab
-                        label="Price Agreement"
-                        disabled={!priceAgreementOption}
-                        value={"priceAgreement"}
-                      />
-                      <Tab label="Coverage" value={"coverage"} />
-                    </TabList>
+                      <span className="convert mx-2">
+                        Convert to
+                        <span>
+                          <KeyboardArrowDownIcon />
+                        </span>
+                      </span>
+                    </IconButton>
                   </Box>
-                  <TabPanel value={"general"}>
-                    <div className="row mt-4">
-                      <div className="col-md-3 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            SELECT TYPE
-                          </label>
-                          <Select
-                            placeholder="Select"
-                            options={headerTypeKeyValue}
-                            value={headerType}
-                            onChange={handleHeaderTypeChange}
-                            isLoading={
-                              headerTypeKeyValue.length > 0 ? false : true
-                            }
-                          />
-                          {/* <div>
+                  <Menu
+                    anchorEl={anchorEl}
+                    id="account-menu"
+                    open={open}
+                    onClose={handleClose}
+                    onClick={handleClose}
+                    PaperProps={{
+                      elevation: 0,
+                      sx: {
+                        overflow: "visible",
+                        filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                        mt: 1.5,
+                        "& .MuiAvatar-root": {
+                          width: 32,
+                          height: 32,
+                          ml: -0.5,
+                          mr: 1,
+                        },
+                        "&:before": {
+                          content: '""',
+                          display: "block",
+                          position: "absolute",
+                          top: 0,
+                          right: 14,
+                          width: 10,
+                          height: 10,
+                          bgcolor: "background.paper",
+                          transform: "translateY(-50%) rotate(45deg)",
+                          zIndex: 0,
+                        },
+                      },
+                    }}
+                    transformOrigin={{ horizontal: "right", vertical: "top" }}
+                    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                  >
+                    <MenuItem>Templates</MenuItem>
+                    <MenuItem>Standard Job</MenuItem>
+                    <MenuItem>Kit</MenuItem>
+                    <MenuItem data-toggle="modal" data-target="#quotecreat">
+                      Quote
+                    </MenuItem>
+                    <Divider />
+                  </Menu>
+                </React.Fragment>
+              </div>
+              <div className="d-flex justify-content-center align-items-center">
+                <a href="#" className="ml-3 font-size-14" title="Share">
+                  <img src={shareIcon}></img>
+                </a>
+                <a
+                  href="#"
+                  className="ml-3 font-size-14"
+                  title="Items to Review"
+                >
+                  <img src={folderaddIcon}></img>
+                </a>
+                <a href="#" className="ml-3 font-size-14" title="Upload">
+                  <img src={uploadIcon}></img>
+                </a>
+                {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
+                <a href="#" className="ml-3 font-size-14" title="Delete">
+                  <img src={deleteIcon}></img>
+                </a>
+                <a href="#" className="ml-3 font-size-14" title="Copy">
+                  <img src={copyIcon}></img>
+                </a>
+                <a href="#" className="ml-2">
+                  <MuiMenuComponent options={activityOptions} />
+                </a>
+              </div>
+            </div>
+          </div>
+          <div className="card p-4 mt-5">
+            <h5 className="d-flex align-items-center mb-0">
+              <div className="" style={{ display: "contents" }}>
+                <span className="mr-3" style={{ whiteSpace: "pre" }}>
+                  {portfolioId ? "Portfolio Details" : "New Portfolio*"}
+                </span>
+                <a href="#" className="btn-sm">
+                  <i className="fa fa-pencil" aria-hidden="true"></i>
+                </a>
+                <a href="#" className="btn-sm">
+                  <i className="fa fa-bookmark-o" aria-hidden="true"></i>
+                </a>
+                <a href="#" className="btn-sm">
+                  <img style={{ width: "14px" }} src={folderaddIcon}></img>
+                </a>
+              </div>
+              <div className="input-group icons border-radius-10 border">
+                <div className="input-group-prepend">
+                  <span
+                    className="input-group-text bg-transparent border-0 pr-0 "
+                    id="basic-addon1"
+                  >
+                    <img src={shearchIcon} />
+                  </span>
+                </div>
+                <input
+                  type="search"
+                  className="form-control search-form-control"
+                  aria-label="Search Dashboard"
+                />
+              </div>
+            </h5>
+            <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
+              <TabContext value={value}>
+                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                  <TabList
+                    onChange={handleChange}
+                    aria-label="lab API tabs example"
+                  >
+                    <Tab label="General" value={"general"} />
+                    <Tab label="Validity " value={"validity"} />
+                    <Tab label="Strategy" value={"strategy"} />
+                    <Tab label="Administrative" value={"administrative"} />
+                    <Tab label="Price" value={"price"} />
+                    <Tab
+                      label="Price Agreement"
+                      disabled={!priceAgreementOption}
+                      value={"priceAgreement"}
+                    />
+                    <Tab label="Coverage" value={"coverage"} />
+                  </TabList>
+                </Box>
+                <TabPanel value={"general"}>
+                  <div className="row mt-4">
+                    <div className="col-md-3 col-sm-3">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          SELECT TYPE
+                        </label>
+                        <Select
+                          placeholder="Select"
+                          options={headerTypeKeyValue}
+                          value={headerType}
+                          onChange={handleHeaderTypeChange}
+                          isLoading={
+                            headerTypeKeyValue.length > 0 ? false : true
+                          }
+                        />
+                        {/* <div>
                                                     <ToggleButtonGroup
                                                         color="primary"
                                                         value={alignment}
@@ -4532,297 +4533,296 @@ export function CreatePortfolio() {
                                                     </ToggleButtonGroup>
                                                 </div> */}
 
-                          {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponentData.portfolioName} onChange={handleGeneralInputChange} /> */}
-                        </div>
-                      </div>
-                      <div className="col-md-3 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            {prefilgabelGeneral} ID
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            placeholder="(Auto-generated)"
-                            // value={portfolioId}
-                            // onChange={handleGeneralInputChange}
-                            disabled={true}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-3 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            {prefilgabelGeneral} NAME
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            name="name"
-                            placeholder="Name"
-                            value={generalComponentData.name}
-                            onChange={handleGeneralInputChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-3 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY)
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            name="description"
-                            placeholder="Optional"
-                            value={generalComponentData.description}
-                            onChange={handleGeneralInputChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-3 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            REFERENCE
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            name="externalReference"
-                            placeholder="Reference"
-                            value={generalComponentData.externalReference}
-                            onChange={handleGeneralInputChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-3 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            CUSTOMER SEGMENT
-                          </label>
-                          <Select
-                            onChange={handleCustomerSegmentChange}
-                            value={generalComponentData.customerSegment}
-                            options={customerSegmentKeyValue}
-                            placeholder="Optionals"
-                          />
-                        </div>
+                        {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponentData.portfolioName} onChange={handleGeneralInputChange} /> */}
                       </div>
                     </div>
-                    <div className="row" style={{ justifyContent: "right" }}>
-                      <button
-                        type="button"
-                        onClick={handleNextClick}
-                        className="btn btn-light"
-                        id="general"
-                      >
-                        Save & Next
-                      </button>
-                    </div>
-                    {isView ? (
-                      <div className="row mt-4">
-                        <div className="col-md-4 col-sm-3">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              PORTFOLIO ID
-                            </p>
-                            <h6 className="font-weight-500">
-                              CVA - Premium plan
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-3">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              PORTFOLIO DESCRIPTION
-                            </p>
-                            <h6 className="font-weight-500">
-                              Premium Customer Value Agreement D8T and D6T
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-3">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              SERVICE PROGRAM DESCRIPTION (IF ANY)
-                            </p>
-                            <h6 className="font-weight-500">NA</h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-3">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              REFERENCE
-                            </p>
-                            <h6 className="font-weight-500">NA</h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-3">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              CUSTOMER SEGMENT
-                            </p>
-                            <h6 className="font-weight-500">Construction</h6>
-                          </div>
-                        </div>
+                    <div className="col-md-3 col-sm-3">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          {prefilgabelGeneral} ID
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="(Auto-generated)"
+                          // value={portfolioId}
+                          // onChange={handleGeneralInputChange}
+                          disabled={true}
+                        />
                       </div>
-                    ) : (
-                      <></>
-                    )}
-                  </TabPanel>
-                  <TabPanel value={"validity"}>
+                    </div>
+                    <div className="col-md-3 col-sm-3">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          {prefilgabelGeneral} NAME
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          name="name"
+                          placeholder="Name"
+                          value={generalComponentData.name}
+                          onChange={handleGeneralInputChange}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-3 col-sm-3">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY)
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          name="description"
+                          placeholder="Optional"
+                          value={generalComponentData.description}
+                          onChange={handleGeneralInputChange}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-3 col-sm-3">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          REFERENCE
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          name="externalReference"
+                          placeholder="Reference"
+                          value={generalComponentData.externalReference}
+                          onChange={handleGeneralInputChange}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-3 col-sm-3">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          CUSTOMER SEGMENT
+                        </label>
+                        <Select
+                          onChange={handleCustomerSegmentChange}
+                          value={generalComponentData.customerSegment}
+                          options={customerSegmentKeyValue}
+                          placeholder="Optionals"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row" style={{ justifyContent: "right" }}>
+                    <button
+                      type="button"
+                      onClick={handleNextClick}
+                      className="btn btn-light"
+                      id="general"
+                    >
+                      Save & Next
+                    </button>
+                  </div>
+                  {isView ? (
                     <div className="row mt-4">
-                      <div className="col-md-12">
-                        <div className="row">
-                          <div className="col-md-6 col-sm-6">
-                            <div className="d-flex align-items-center date-box">
-                              <label
-                                className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
-                                htmlFor="exampleInputEmail1"
-                              >
-                                <span className=" mr-2">FROM</span>
-                              </label>
-                              <div className="form-group w-100">
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                  <DatePicker
-                                    variant="inline"
-                                    format="dd/MM/yyyy"
-                                    className="form-controldate border-radius-10"
-                                    label=""
-                                    value={validityData.fromDate}
-                                    onChange={(e) =>
-                                      setValidityData({
-                                        ...validityData,
-                                        fromDate: e,
-                                        inputFlag: false,
-                                      })
-                                    }
-                                  />
-                                </MuiPickersUtilsProvider>
-                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
-                              </div>
-                              <label
-                                className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
-                                htmlFor="exampleInputEmail1"
-                              >
-                                TO
-                              </label>
-                              <div className="form-group w-100">
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                  <DatePicker
-                                    variant="inline"
-                                    className="form-controldate border-radius-10"
-                                    label=""
-                                    format="dd/MM/yyyy"
-                                    value={validityData.toDate}
-                                    onChange={(e) =>
-                                      setValidityData({
-                                        ...validityData,
-                                        toDate: e,
-                                        dateFlag: true,
-                                        inputFlag: false,
-                                      })
-                                    }
-                                  />
-                                </MuiPickersUtilsProvider>
-                              </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            PORTFOLIO ID
+                          </p>
+                          <h6 className="font-weight-500">
+                            CVA - Premium plan
+                          </h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            PORTFOLIO DESCRIPTION
+                          </p>
+                          <h6 className="font-weight-500">
+                            Premium Customer Value Agreement D8T and D6T
+                          </h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            SERVICE PROGRAM DESCRIPTION (IF ANY)
+                          </p>
+                          <h6 className="font-weight-500">NA</h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            REFERENCE
+                          </p>
+                          <h6 className="font-weight-500">NA</h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            CUSTOMER SEGMENT
+                          </p>
+                          <h6 className="font-weight-500">Construction</h6>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                </TabPanel>
+                <TabPanel value={"validity"}>
+                  <div className="row mt-4">
+                    <div className="col-md-12">
+                      <div className="row">
+                        <div className="col-md-6 col-sm-6">
+                          <div className="d-flex align-items-center date-box">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              <span className=" mr-2">FROM</span>
+                            </label>
+                            <div className="form-group w-100">
+                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <DatePicker
+                                  variant="inline"
+                                  format="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  label=""
+                                  value={validityData.fromDate}
+                                  onChange={(e) =>
+                                    setValidityData({
+                                      ...validityData,
+                                      fromDate: e,
+                                      inputFlag: false,
+                                    })
+                                  }
+                                />
+                              </MuiPickersUtilsProvider>
+                              {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
+                            </div>
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              TO
+                            </label>
+                            <div className="form-group w-100">
+                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <DatePicker
+                                  variant="inline"
+                                  className="form-controldate border-radius-10"
+                                  label=""
+                                  format="dd/MM/yyyy"
+                                  value={validityData.toDate}
+                                  onChange={(e) =>
+                                    setValidityData({
+                                      ...validityData,
+                                      toDate: e,
+                                      dateFlag: true,
+                                      inputFlag: false,
+                                    })
+                                  }
+                                />
+                              </MuiPickersUtilsProvider>
                             </div>
                           </div>
                         </div>
-                        <div
-                          className="row"
-                          style={{ textAlign: "center", margin: "8px" }}
-                        >
-                          <div className="col-6">
-                            <h6 className="font-weight-500">OR</h6>
-                          </div>
-                          <div className="col-6"></div>
+                      </div>
+                      <div
+                        className="row"
+                        style={{ textAlign: "center", margin: "8px" }}
+                      >
+                        <div className="col-6">
+                          <h6 className="font-weight-500">OR</h6>
                         </div>
-                        <div className="row">
-                          <div className="col-md-6 col-sm-6">
-                            <div className="d-flex align-items-center">
-                              <div className="d-flex align-items-center date-box w-100">
-                                <label
-                                  className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
-                                  htmlFor="exampleInputEmail1"
-                                >
-                                  <span className="mr-2">FROM</span>
-                                </label>
-                                <div className="form-group w-100">
-                                  <div className=" d-flex form-control-date ">
-                                    <Select
-                                      className="select-input"
-                                      value={validityData.from}
+                        <div className="col-6"></div>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-6 col-sm-6">
+                          <div className="d-flex align-items-center">
+                            <div className="d-flex align-items-center date-box w-100">
+                              <label
+                                className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                <span className="mr-2">FROM</span>
+                              </label>
+                              <div className="form-group w-100">
+                                <div className=" d-flex form-control-date ">
+                                  <Select
+                                    className="select-input"
+                                    value={validityData.from}
+                                    onChange={(e) =>
+                                      setValidityData({
+                                        ...validityData,
+                                        from: e,
+                                      })
+                                    }
+                                    options={validityKeyValue}
+                                    placeholder="Select "
+                                  />
+                                  <div>
+                                    <input
+                                      type="text"
+                                      className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                      id="fromInput"
+                                      aria-describedby="emailHelp"
+                                      placeholder="From"
+                                      value={validityData.fromInput}
                                       onChange={(e) =>
                                         setValidityData({
                                           ...validityData,
-                                          from: e,
+                                          fromInput: e.target.value,
+                                          dateFlag: false,
                                         })
                                       }
-                                      options={validityKeyValue}
-                                      placeholder="Select "
                                     />
-                                    <div>
-                                      <input
-                                        type="text"
-                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                                        id="fromInput"
-                                        aria-describedby="emailHelp"
-                                        placeholder="From"
-                                        value={validityData.fromInput}
-                                        onChange={(e) =>
-                                          setValidityData({
-                                            ...validityData,
-                                            fromInput: e.target.value,
-                                            dateFlag: false,
-                                          })
-                                        }
-                                      />
-                                    </div>
                                   </div>
                                 </div>
                               </div>
-                              <div className="d-flex align-items-center date-box w-100">
-                                <label
-                                  className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
-                                  htmlFor="exampleInputEmail1"
-                                >
-                                  <span className="">TO</span>
-                                </label>
-                                <div className="form-group w-100">
-                                  <div className=" d-flex form-control-date">
-                                    <Select
-                                      className="select-input"
-                                      value={validityData.from}
-                                      defaultValue={selectedOption}
+                            </div>
+                            <div className="d-flex align-items-center date-box w-100">
+                              <label
+                                className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                <span className="">TO</span>
+                              </label>
+                              <div className="form-group w-100">
+                                <div className=" d-flex form-control-date">
+                                  <Select
+                                    className="select-input"
+                                    value={validityData.from}
+                                    defaultValue={selectedOption}
+                                    onChange={(e) =>
+                                      setValidityData({
+                                        ...validityData,
+                                        to: e,
+                                      })
+                                    }
+                                    isDisabled={true}
+                                    options={validityKeyValue}
+                                    placeholder="Select "
+                                  />
+                                  <div>
+                                    <input
+                                      type="email"
+                                      className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                      id="exampleInputEmail1"
+                                      aria-describedby="emailHelp"
+                                      placeholder=""
+                                      value={validityData.toInput}
                                       onChange={(e) =>
                                         setValidityData({
                                           ...validityData,
-                                          to: e,
+                                          toInput: e.target.value,
+                                          dateFlag: false,
+                                          inputFlag: true,
                                         })
                                       }
-                                      isDisabled={true}
-                                      options={validityKeyValue}
-                                      placeholder="Select "
                                     />
-                                    <div>
-                                      <input
-                                        type="email"
-                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                                        id="exampleInputEmail1"
-                                        aria-describedby="emailHelp"
-                                        placeholder=""
-                                        value={validityData.toInput}
-                                        onChange={(e) =>
-                                          setValidityData({
-                                            ...validityData,
-                                            toInput: e.target.value,
-                                            dateFlag: false,
-                                            inputFlag: true,
-                                          })
-                                        }
-                                      />
-                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -4830,8 +4830,9 @@ export function CreatePortfolio() {
                           </div>
                         </div>
                       </div>
+                    </div>
 
-                      {/* <div className="col-md-6 col-sm-6">
+                    {/* <div className="col-md-6 col-sm-6">
                                             <div className="d-flex align-items-center">
                                                 <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" htmlFor="exampleInputEmail1">FROM</label>
                                                 <div className="form-group w-100">
@@ -4843,15 +4844,15 @@ export function CreatePortfolio() {
                                                 </div>
                                             </div>
                                         </div> */}
-                      {/* <div className="col-md-12 col-sm-12">
+                    {/* <div className="col-md-12 col-sm-12">
                 <div className="form-group">
                   <Link to={"/repairOption"} className="btn bg-primary text-white">
                  Next
                   </Link>
                 </div>
                 </div> */}
-                    </div>
-                    {/* <div className="row mt-4">
+                  </div>
+                  {/* <div className="row mt-4">
                                         <div className="col-md-6 col-sm-6">
 
                                             <div className="d-flex align-items-center">
@@ -4881,1113 +4882,1021 @@ export function CreatePortfolio() {
                                             </div>
                                         </div>
                                     </div> */}
-                    <div className="row" style={{ justifyContent: "right" }}>
-                      <button
-                        type="button"
-                        onClick={handleNextClick}
-                        className="btn btn-light"
-                        id="validity"
-                      >
-                        Save & Next
-                      </button>
+                  <div className="row" style={{ justifyContent: "right" }}>
+                    <button
+                      type="button"
+                      onClick={handleNextClick}
+                      className="btn btn-light"
+                      id="validity"
+                    >
+                      Save & Next
+                    </button>
+                  </div>
+                </TabPanel>
+                <TabPanel value={"strategy"}>
+                  <div className="row">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          CATEGORY USAGE
+                        </label>
+                        <Select
+                          options={categoryList}
+                          value={categoryUsageKeyValue1}
+                          onChange={(e) => HandleCatUsage(e)}
+                        />
+                        {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
+                      </div>
                     </div>
-                  </TabPanel>
-                  <TabPanel value={"strategy"}>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          STRATEGY TASK
+                        </label>
+                        <Select
+                          options={updatedList}
+                          value={stratgyTaskUsageKeyValue}
+                          onChange={(e) => HandleStrategyUsage(e)}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          TASK TYPE
+                        </label>
+                        <Select
+                          options={updatedTaskList}
+                          value={stratgyTaskTypeKeyValue}
+                          placeholder="Optional"
+                          onChange={(e) => {
+                            setStratgyTaskTypeKeyValue(e);
+                            addPortFolioItem.taskType = "";
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          OPTIONALS
+                        </label>
+                        <Select
+                          placeholder="Optional"
+                          options={strategyOptionals}
+                          value={stratgyOptionalsKeyValue}
+                          onChange={(e) => setStratgyOptionalsKeyValue(e)}
+                        // options={rTimeList}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          RESPONSE TIME
+                        </label>
+                        <Select
+                          placeholder="Optional"
+                          options={rTimeList}
+                          value={stratgyResponseTimeKeyValue}
+                          onChange={(e) => setStratgyResponseTimeKeyValue(e)}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          PRODUCT HIERARCHY
+                        </label>
+                        <Select
+                          placeholder="Optional"
+                          options={productList}
+                          value={stratgyHierarchyKeyValue}
+                          onChange={(e) => setStratgyHierarchyKeyValue(e)}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          GEOGRAPHIC
+                        </label>
+                        <Select
+                          placeholder="Optional"
+                          options={geographicList}
+                          value={stratgyGeographicKeyValue}
+                          onChange={(e) => setStratgyGeographicKeyValue(e)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  {isView ? (
                     <div className="row">
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            CATEGORY USAGE
-                          </label>
-                          <Select
-                            options={categoryList}
-                            value={categoryUsageKeyValue1}
-                            onChange={(e) => HandleCatUsage(e)}
-                          />
-                          {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
+                          <p className="font-size-12 font-weight-500 mb-2">
                             STRATEGY TASK
-                          </label>
-                          <Select
-                            options={updatedList}
-                            value={stratgyTaskUsageKeyValue}
-                            onChange={(e) => HandleStrategyUsage(e)}
-                          />
+                          </p>
+                          <h6 className="font-weight-500">PM</h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            TASK TYPE
-                          </label>
-                          <Select
-                            options={updatedTaskList}
-                            value={stratgyTaskTypeKeyValue}
-                            placeholder="Optional"
-                            onChange={(e) => {
-                              setStratgyTaskTypeKeyValue(e);
-                              addPortFolioItem.taskType = "";
-                            }}
-                          />
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            CATEGORY USAGE
+                          </p>
+                          <h6 className="font-weight-500">Contract</h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
+                          <p className="font-size-12 font-weight-500 mb-2">
                             OPTIONALS
-                          </label>
-                          <Select
-                            placeholder="Optional"
-                            options={strategyOptionals}
-                            value={stratgyOptionalsKeyValue}
-                            onChange={(e) => setStratgyOptionalsKeyValue(e)}
-                          // options={rTimeList}
-                          />
+                          </p>
+                          <h6 className="font-weight-500">Misc</h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
+                          <p className="font-size-12 font-weight-500 mb-2">
                             RESPONSE TIME
-                          </label>
-                          <Select
-                            placeholder="Optional"
-                            options={rTimeList}
-                            value={stratgyResponseTimeKeyValue}
-                            onChange={(e) => setStratgyResponseTimeKeyValue(e)}
-                          />
+                          </p>
+                          <h6 className="font-weight-500">
+                            Fast - 24x7 available,response within 4 hours of
+                            call
+                          </h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
+                          <p className="font-size-12 font-weight-500 mb-2">
                             PRODUCT HIERARCHY
-                          </label>
-                          <Select
-                            placeholder="Optional"
-                            options={productList}
-                            value={stratgyHierarchyKeyValue}
-                            onChange={(e) => setStratgyHierarchyKeyValue(e)}
-                          />
+                          </p>
+                          <h6 className="font-weight-500">End Product</h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
+                          <p className="font-size-12 font-weight-500 mb-2">
                             GEOGRAPHIC
-                          </label>
-                          <Select
-                            placeholder="Optional"
-                            options={geographicList}
-                            value={stratgyGeographicKeyValue}
-                            onChange={(e) => setStratgyGeographicKeyValue(e)}
-                          />
+                          </p>
+                          <h6 className="font-weight-500">Field Support</h6>
                         </div>
                       </div>
                     </div>
-                    {isView ? (
-                      <div className="row">
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              STRATEGY TASK
-                            </p>
-                            <h6 className="font-weight-500">PM</h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              CATEGORY USAGE
-                            </p>
-                            <h6 className="font-weight-500">Contract</h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              OPTIONALS
-                            </p>
-                            <h6 className="font-weight-500">Misc</h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              RESPONSE TIME
-                            </p>
-                            <h6 className="font-weight-500">
-                              Fast - 24x7 available,response within 4 hours of
-                              call
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              PRODUCT HIERARCHY
-                            </p>
-                            <h6 className="font-weight-500">End Product</h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              GEOGRAPHIC
-                            </p>
-                            <h6 className="font-weight-500">Field Support</h6>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <></>
-                    )}
+                  ) : (
+                    <></>
+                  )}
 
-                    <div className="row" style={{ justifyContent: "right" }}>
-                      <button
-                        type="button"
-                        onClick={handleNextClick}
-                        className="btn btn-light"
-                        id="strategy"
-                      >
-                        Save & Next
-                      </button>
-                    </div>
-                  </TabPanel>
-                  <TabPanel value={"administrative"}>
-                    <div className="row">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PREPARED BY
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            name="preparedBy"
-                            value={administrative.preparedBy}
-                            onChange={handleAdministrativreChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            APPROVED BY
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            placeholder="Optional"
-                            name="approvedBy"
-                            value={administrative.approvedBy}
-                            onChange={handleAdministrativreChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PREPARED ON
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            placeholder="Optional"
-                            name="preparedOn"
-                            value={administrative.preparedOn}
-                            onChange={handleAdministrativreChange}
-                          />
-                        </div>
+                  <div className="row" style={{ justifyContent: "right" }}>
+                    <button
+                      type="button"
+                      onClick={handleNextClick}
+                      className="btn btn-light"
+                      id="strategy"
+                    >
+                      Save & Next
+                    </button>
+                  </div>
+                </TabPanel>
+                <TabPanel value={"administrative"}>
+                  <div className="row">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          PREPARED BY
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          name="preparedBy"
+                          value={administrative.preparedBy}
+                          onChange={handleAdministrativreChange}
+                        />
                       </div>
                     </div>
-                    <div className="row">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            REVISED BY
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            placeholder="Optional"
-                            name="revisedBy"
-                            value={administrative.revisedBy}
-                            onChange={handleAdministrativreChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            REVISED ON
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            placeholder="Optional"
-                            name="revisedOn"
-                            value={administrative.revisedOn}
-                            onChange={handleAdministrativreChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            SALSE OFFICE/BRANCH
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            name="branch"
-                            value={administrative.branch}
-                            onChange={handleAdministrativreChange}
-                          />
-                        </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          APPROVED BY
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="Optional"
+                          name="approvedBy"
+                          value={administrative.approvedBy}
+                          onChange={handleAdministrativreChange}
+                        />
                       </div>
                     </div>
-                    <div className="row">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            OFFER VALIDITY
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            placeholder="Optional"
-                            name="offerValidity"
-                            value={administrative.offerValidity}
-                            onChange={handleAdministrativreChange}
-                          />
-                        </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          PREPARED ON
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="Optional"
+                          name="preparedOn"
+                          value={administrative.preparedOn}
+                          onChange={handleAdministrativreChange}
+                        />
                       </div>
                     </div>
-                  </TabPanel>
-                  <TabPanel value={"price"}>
-                    <div className="row">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PRICE LIST
-                          </label>
-                          <Select
-                            defaultValue={selectedOption}
-                            onChange={setSelectedOption}
-                            options={options}
-                            placeholder="placeholder (Optional)"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PRICE METHOD
-                          </label>
-                          <Select
-                            defaultValue={selectedOption}
-                            onChange={setSelectedOption}
-                            options={priceMethodKeyValue}
-                            placeholder="required"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PRICE DATE
-                          </label>
-                          <Select
-                            defaultValue={selectedOption}
-                            onChange={setSelectedOption}
-                            options={options}
-                            placeholder="placeholder (Optional)"
-                          />
-                        </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          REVISED BY
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="Optional"
+                          name="revisedBy"
+                          value={administrative.revisedBy}
+                          onChange={handleAdministrativreChange}
+                        />
                       </div>
                     </div>
-                    <hr />
-                    <h6>PRICES</h6>
-                    <div className="row">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PRICE TYPE
-                          </label>
-                          <Select
-                            defaultValue={selectedOption}
-                            onChange={setSelectedOption}
-                            options={options}
-                            placeholder="placeholder (Optional)"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PRICE{" "}
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            id="exampleInputEmail1"
-                            aria-describedby="emailHelp"
-                            placeholder="Optional"
-                          />
-                        </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          REVISED ON
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="Optional"
+                          name="revisedOn"
+                          value={administrative.revisedOn}
+                          onChange={handleAdministrativreChange}
+                        />
                       </div>
                     </div>
-                    <div className="row">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group date-box">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            ADDITIONAL
-                          </label>
-                          <div className=" d-flex form-control-date">
-                            {/* <Select className="select-input"
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          SALSE OFFICE/BRANCH
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          name="branch"
+                          value={administrative.branch}
+                          onChange={handleAdministrativreChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          OFFER VALIDITY
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="Optional"
+                          name="offerValidity"
+                          value={administrative.offerValidity}
+                          onChange={handleAdministrativreChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </TabPanel>
+                <TabPanel value={"price"}>
+                  <div className="row">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          PRICE LIST
+                        </label>
+                        <Select
+                          defaultValue={selectedOption}
+                          onChange={setSelectedOption}
+                          options={options}
+                          placeholder="placeholder (Optional)"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          PRICE METHOD
+                        </label>
+                        <Select
+                          defaultValue={selectedOption}
+                          onChange={setSelectedOption}
+                          options={priceMethodKeyValue}
+                          placeholder="required"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          PRICE DATE
+                        </label>
+                        <Select
+                          defaultValue={selectedOption}
+                          onChange={setSelectedOption}
+                          options={options}
+                          placeholder="placeholder (Optional)"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <hr />
+                  <h6>PRICES</h6>
+                  <div className="row">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          PRICE TYPE
+                        </label>
+                        <Select
+                          defaultValue={selectedOption}
+                          onChange={setSelectedOption}
+                          options={options}
+                          placeholder="placeholder (Optional)"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          PRICE{" "}
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          id="exampleInputEmail1"
+                          aria-describedby="emailHelp"
+                          placeholder="Optional"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          ADDITIONAL
+                        </label>
+                        <div className=" d-flex form-control-date">
+                          {/* <Select className="select-input"
                             defaultValue={selectedOption}
                             onChange={setSelectedOption}
                             options={options}
                             placeholder="placeholder "
                           /> */}
-                            <div className="">
-                              <Select
-                                onChange={setSelectedOption}
-                                isClearable={true}
-                                // value={options}
-                                options={options}
-                                placeholder="Select"
-                              />
-                            </div>
-                            <input
-                              type="text"
-                              className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                              id="exampleInputEmail1"
-                              aria-describedby="emailHelp"
-                              placeholder="optional"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group date-box">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PRICE ESCALATON
-                          </label>
-                          <div className=" d-flex align-items-center form-control-date">
+                          <div className="">
                             <Select
-                              className="select-input"
-                              defaultValue={selectedOption}
                               onChange={setSelectedOption}
+                              isClearable={true}
+                              // value={options}
                               options={options}
-                              placeholder="placeholder "
-                            />
-                            <input
-                              type="text"
-                              className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                              id="exampleInputEmail1"
-                              aria-describedby="emailHelp"
-                              placeholder="optional"
+                              placeholder="Select"
                             />
                           </div>
-                        </div>
-                      </div>
-                    </div>
-                    <hr />
-                    <div className="row">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            CALCULATED PRICE
-                          </label>
                           <input
                             type="text"
-                            className="form-control border-radius-10"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
                             id="exampleInputEmail1"
-                            placeholder="required"
+                            aria-describedby="emailHelp"
+                            placeholder="optional"
                           />
                         </div>
                       </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group date-box">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PRICE BREAK DOWN
-                          </label>
-                          <div className=" d-flex form-control-date">
-                            <Select
-                              className="select-input"
-                              defaultValue={selectedOption}
-                              onChange={setSelectedOption}
-                              options={options}
-                              placeholder="placeholder "
-                            />
-                            <input
-                              type="text"
-                              className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                              id="exampleInputEmail1"
-                              aria-describedby="emailHelp"
-                              placeholder="optional"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group date-box">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PRICE BREAK DOWN
-                          </label>
-                          <div className=" d-flex form-control-date">
-                            <Select
-                              className="select-input"
-                              defaultValue={selectedOption}
-                              onChange={setSelectedOption}
-                              options={options}
-                              placeholder="placeholder "
-                            />
-                            <input
-                              type="text"
-                              className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                              id="exampleInputEmail1"
-                              aria-describedby="emailHelp"
-                              placeholder="optional"
-                            />
-                          </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          PRICE ESCALATON
+                        </label>
+                        <div className=" d-flex align-items-center form-control-date">
+                          <Select
+                            className="select-input"
+                            defaultValue={selectedOption}
+                            onChange={setSelectedOption}
+                            options={options}
+                            placeholder="placeholder "
+                          />
+                          <input
+                            type="text"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            id="exampleInputEmail1"
+                            aria-describedby="emailHelp"
+                            placeholder="optional"
+                          />
                         </div>
                       </div>
                     </div>
-                    <div className="row" style={{ justifyContent: "right" }}>
-                      <button
-                        type="button"
-                        onClick={handleNextClick}
-                        className="btn btn-light"
-                        id="price"
-                      >
-                        {" "}
-                        Save & Next
-                      </button>
-                    </div>
-                  </TabPanel>
-
-                  <TabPanel value={"priceAgreement"} className="customTabPanel">
-                    <div className="card border">
-                      <div className="d-flex align-items-center justify-content-between px-3">
-                        <div className="">
-                          <div className="d-flex ">
-                            <h5 className=" mb-0">
-                              <span>Price Agreement</span>
-                            </h5>
-                            <p className=" mb-0">
-                              <a href="#" className="ml-3 ">
-                                <img src={editIcon}></img>
-                              </a>
-                              <a href="#" className="ml-3 ">
-                                <img src={shareIcon}></img>
-                              </a>
-                            </p>
-                          </div>
-                        </div>
-                        <div className="d-flex align-items-center ">
-                          <div className=" text-center border-left py-4 pl-3">
-                            <a
-                              className="cursor"
-                              onClick={handleAddNewRowPriceAgreement}
-                            >
-                              + Add
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="table-responsive custometable">
-                        <table className="table">
-                          <thead>
-                            <tr>
-                              <th scope="col">#</th>
-                              <th scope="col">Item Type</th>
-                              <th scope="col">Item Number</th>
-                              <th scope="col">Special Price</th>
-                              <th scope="col">Discount%</th>
-                              <th scope="col">Absolute discount</th>
-                              <th scope="col">Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody>{priceAgreementRows}</tbody>
-                        </table>
-                      </div>
-                    </div>
-                    <div className="row" style={{ justifyContent: "right" }}>
-                      <button
-                        type="button"
-                        onClick={() => setValue("coverage")}
-                        className="btn btn-light"
-                      >
-                        Save & Next
-                      </button>
-                    </div>
-                  </TabPanel>
-
-                  <TabPanel value="coverage">
-                    <div
-                      className="custom-table card p-3 "
-                      style={{ width: "100%", backgroundColor: "#fff" }}
-                    >
-                      <div
-                        className="row align-items-center m-0"
-                        style={{ flexFlow: "unset" }}
-                      >
-                        <QuerySearchComp
-                          setMasterData={setMasterData}
-                          setFilterMasterData={setFilterMasterData}
-                          setSelectedMasterData={setSelectedMasterData}
-                          setFlagIs={setFlagIs}
-                          compoFlag="coverage"
-                          options={[
-                            { label: "Make", value: "make" },
-                            { label: "Model", value: "model" },
-                            { label: "Prefix", value: "prefix" },
-                            { label: "Family", value: "family" },
-                          ]}
+                  </div>
+                  <hr />
+                  <div className="row">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          CALCULATED PRICE
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          id="exampleInputEmail1"
+                          placeholder="required"
                         />
-                        <div className=" ml-3">
-                          <Link to="#" className="btn bg-primary text-white">
-                            <FileUploadOutlinedIcon />{" "}
-                            <span className="ml-1">Upload</span>
-                          </Link>
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          PRICE BREAK DOWN
+                        </label>
+                        <div className=" d-flex form-control-date">
+                          <Select
+                            className="select-input"
+                            defaultValue={selectedOption}
+                            onChange={setSelectedOption}
+                            options={options}
+                            placeholder="placeholder "
+                          />
+                          <input
+                            type="text"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            id="exampleInputEmail1"
+                            aria-describedby="emailHelp"
+                            placeholder="optional"
+                          />
                         </div>
                       </div>
-                      {masterData.length > 0 ? (
-                        <>
-                          <hr />
-                          <DataTable
-                            className=""
-                            title=""
-                            columns={masterColumns}
-                            data={masterData}
-                            customStyles={customStyles}
-                            pagination
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          PRICE BREAK DOWN
+                        </label>
+                        <div className=" d-flex form-control-date">
+                          <Select
+                            className="select-input"
+                            defaultValue={selectedOption}
+                            onChange={setSelectedOption}
+                            options={options}
+                            placeholder="placeholder "
                           />
-                          <div>
-                            <div className="text-right">
-                              <input
-                                onClick={() => {
-                                  setSelectedMasterData(filterMasterData);
-                                  setMasterData([]);
-                                }}
-                                className="btn bg-primary text-white"
-                                value="+ Add Selected"
-                                disabled={!flagIs}
-                              />
+                          <input
+                            type="text"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            id="exampleInputEmail1"
+                            aria-describedby="emailHelp"
+                            placeholder="optional"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row" style={{ justifyContent: "right" }}>
+                    <button
+                      type="button"
+                      onClick={handleNextClick}
+                      className="btn btn-light"
+                      id="price"
+                    >
+                      {" "}
+                      Save & Next
+                    </button>
+                  </div>
+                </TabPanel>
 
-                              {/* <Link to="#"
+                <TabPanel value={"priceAgreement"} className="customTabPanel">
+                  <div className="card border">
+                    <div className="d-flex align-items-center justify-content-between px-3">
+                      <div className="">
+                        <div className="d-flex ">
+                          <h5 className=" mb-0">
+                            <span>Price Agreement</span>
+                          </h5>
+                          <p className=" mb-0">
+                            <a href="#" className="ml-3 ">
+                              <img src={editIcon}></img>
+                            </a>
+                            <a href="#" className="ml-3 ">
+                              <img src={shareIcon}></img>
+                            </a>
+                          </p>
+                        </div>
+                      </div>
+                      <div className="d-flex align-items-center ">
+                        <div className=" text-center border-left py-4 pl-3">
+                          <a
+                            className="cursor"
+                            onClick={handleAddNewRowPriceAgreement}
+                          >
+                            + Add
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="table-responsive custometable">
+                      <table className="table">
+                        <thead>
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Item Type</th>
+                            <th scope="col">Item Number</th>
+                            <th scope="col">Special Price</th>
+                            <th scope="col">Discount%</th>
+                            <th scope="col">Absolute discount</th>
+                            <th scope="col">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>{priceAgreementRows}</tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div className="row" style={{ justifyContent: "right" }}>
+                    <button
+                      type="button"
+                      onClick={() => setValue("coverage")}
+                      className="btn btn-light"
+                    >
+                      Save & Next
+                    </button>
+                  </div>
+                </TabPanel>
+
+                <TabPanel value="coverage">
+                  <div
+                    className="custom-table card p-3 "
+                    style={{ width: "100%", backgroundColor: "#fff" }}
+                  >
+                    <div
+                      className="row align-items-center m-0"
+                      style={{ flexFlow: "unset" }}
+                    >
+                      <QuerySearchComp
+                        setMasterData={setMasterData}
+                        setFilterMasterData={setFilterMasterData}
+                        setSelectedMasterData={setSelectedMasterData}
+                        setFlagIs={setFlagIs}
+                        compoFlag="coverage"
+                        options={[
+                          { label: "Make", value: "make" },
+                          { label: "Model", value: "model" },
+                          { label: "Prefix", value: "prefix" },
+                          { label: "Family", value: "family" },
+                        ]}
+                      />
+                      <div className=" ml-3">
+                        <Link to="#" className="btn bg-primary text-white">
+                          <FileUploadOutlinedIcon />{" "}
+                          <span className="ml-1">Upload</span>
+                        </Link>
+                      </div>
+                    </div>
+                    {masterData.length > 0 ? (
+                      <>
+                        <hr />
+                        <DataTable
+                          className=""
+                          title=""
+                          columns={masterColumns}
+                          data={masterData}
+                          customStyles={customStyles}
+                          pagination
+                        />
+                        <div>
+                          <div className="text-right">
+                            <input
+                              onClick={() => {
+                                setSelectedMasterData(filterMasterData);
+                                setMasterData([]);
+                              }}
+                              className="btn bg-primary text-white"
+                              value="+ Add Selected"
+                              disabled={!flagIs}
+                            />
+
+                            {/* <Link to="#"
                           onClick={() => {
                             setSelectedMasterData(filterMasterData)
                             setMasterData([])
                           }}
                           className="btn bg-primary text-white"
                         >+ Add Selected</Link> */}
-                            </div>
                           </div>
-                        </>
-                      ) : (
-                        <></>
-                      )}
-                      {selectedMasterData.length > 0 ? (
-                        <>
-                          <hr />
-                          <label htmlFor="Included-model">
-                            <h5 className="font-weight-400 text-black mb-2 mt-1">
-                              Included models
-                            </h5>
-                          </label>
-                          <DataTable
-                            className="mt-3"
-                            title=""
-                            columns={selectedMasterColumns}
-                            data={selectedMasterData}
-                            customStyles={customStyles}
-                            pagination
+                        </div>
+                      </>
+                    ) : (
+                      <></>
+                    )}
+                    {selectedMasterData.length > 0 ? (
+                      <>
+                        <hr />
+                        <label htmlFor="Included-model">
+                          <h5 className="font-weight-400 text-black mb-2 mt-1">
+                            Included models
+                          </h5>
+                        </label>
+                        <DataTable
+                          className="mt-3"
+                          title=""
+                          columns={selectedMasterColumns}
+                          data={selectedMasterData}
+                          customStyles={customStyles}
+                          pagination
+                        />
+                      </>
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+
+                  <div className="row" style={{ display: "none" }}>
+                    <div className="col-md-4 col-sm-3">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          <Checkbox className="text-white" {...label} />
+                        </label>
+                        {makeKeyValue.length > 0 ? (
+                          <Select
+                            onChange={(e) => handleDropdownChange(ENUM.MAKE, e)}
+                            isClearable={true}
+                            value={coverageData.makeSelect}
+                            isLoading={makeKeyValue.length > 0 ? false : true}
+                            options={makeKeyValue}
                           />
-                        </>
-                      ) : (
-                        <></>
-                      )}
+                        ) : (
+                          <input
+                            type="email"
+                            className="form-control border-radius-10"
+                            name="make"
+                            placeholder=""
+                            value={coverageData.make}
+                            onChange={handleCoverageInputChange}
+                          />
+                        )}
+
+                        {/* <input type="email" className="form-control border-radius-10" name="make" placeholder="" value={coverageData.make} onChange={handleCoverageInputChange} /> */}
+                      </div>
                     </div>
+                    <div className="col-md-4 col-sm-3">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          MAKE
+                        </label>
+                        {makeKeyValue.length > 0 ? (
+                          <Select
+                            onChange={(e) => handleDropdownChange(ENUM.MAKE, e)}
+                            isClearable={true}
+                            value={coverageData.makeSelect}
+                            isLoading={makeKeyValue.length > 0 ? false : true}
+                            options={makeKeyValue}
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="make"
+                            placeholder=""
+                            value={coverageData.make}
+                            onChange={handleCoverageInputChange}
+                          />
+                        )}
 
-                    <div className="row" style={{ display: "none" }}>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            <Checkbox className="text-white" {...label} />
-                          </label>
-                          {makeKeyValue.length > 0 ? (
-                            <Select
-                              onChange={(e) => handleDropdownChange(ENUM.MAKE, e)}
-                              isClearable={true}
-                              value={coverageData.makeSelect}
-                              isLoading={makeKeyValue.length > 0 ? false : true}
-                              options={makeKeyValue}
-                            />
-                          ) : (
-                            <input
-                              type="email"
-                              className="form-control border-radius-10"
-                              name="make"
-                              placeholder=""
-                              value={coverageData.make}
-                              onChange={handleCoverageInputChange}
-                            />
-                          )}
-
-                          {/* <input type="email" className="form-control border-radius-10" name="make" placeholder="" value={coverageData.make} onChange={handleCoverageInputChange} /> */}
-                        </div>
+                        {/* <input type="email" className="form-control border-radius-10" name="make" placeholder="" value={coverageData.make} onChange={handleCoverageInputChange} /> */}
                       </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            MAKE
-                          </label>
-                          {makeKeyValue.length > 0 ? (
-                            <Select
-                              onChange={(e) => handleDropdownChange(ENUM.MAKE, e)}
-                              isClearable={true}
-                              value={coverageData.makeSelect}
-                              isLoading={makeKeyValue.length > 0 ? false : true}
-                              options={makeKeyValue}
-                            />
-                          ) : (
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              name="make"
-                              placeholder=""
-                              value={coverageData.make}
-                              onChange={handleCoverageInputChange}
-                            />
-                          )}
-
-                          {/* <input type="email" className="form-control border-radius-10" name="make" placeholder="" value={coverageData.make} onChange={handleCoverageInputChange} /> */}
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            MODEL(S)
-                          </label>
-                          {/* <Select
+                    </div>
+                    <div className="col-md-4 col-sm-3">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          MODEL(S)
+                        </label>
+                        {/* <Select
                                                     onChange={(e) => handleDropdownChange(ENUM.MACHINE_COMPONENT, e)}
                                                     isClearable={true}
                                                     value={coverageData.machineComponent}
                                                     isLoading={typeKeyValue.length > 0 ? false : true}
                                                     options={typeKeyValue}
                                                 /> */}
-                          {modelKeyValue.length > 0 ? (
-                            <Select
-                              onChange={(e) =>
-                                handleDropdownChange(ENUM.MODEL, e)
-                              }
-                              isClearable={true}
-                              value={coverageData.modelSelect}
-                              isLoading={modelKeyValue.length > 0 ? false : true}
-                              options={modelKeyValue}
-                            />
-                          ) : (
-                            <input
-                              type="email"
-                              className="form-control border-radius-10"
-                              name="modal"
-                              placeholder=""
-                              value={coverageData.modal}
-                              onChange={handleCoverageInputChange}
-                            />
-                          )}
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            PREFIX(S)
-                          </label>
-                          {prefixKeyValue.length > 0 ? (
-                            <Select
-                              onChange={(e) =>
-                                handleDropdownChange(ENUM.PREFIX, e)
-                              }
-                              isClearable={true}
-                              value={coverageData.prefixSelect}
-                              isLoading={prefixKeyValue.length > 0 ? false : true}
-                              options={prefixKeyValue}
-                            />
-                          ) : (
-                            <input
-                              type="email"
-                              className="form-control border-radius-10"
-                              name="prefix"
-                              placeholder=""
-                              value={coverageData.prefix}
-                              onChange={handleCoverageInputChange}
-                            />
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            MACHINE/COMPOMENT
-                          </label>
+                        {modelKeyValue.length > 0 ? (
                           <Select
                             onChange={(e) =>
-                              handleDropdownChange(ENUM.MACHINE_COMPONENT, e)
+                              handleDropdownChange(ENUM.MODEL, e)
                             }
                             isClearable={true}
-                            value={coverageData.machineComponent}
-                            isLoading={typeKeyValue.length > 0 ? false : true}
-                            options={typeKeyValue}
+                            value={coverageData.modelSelect}
+                            isLoading={modelKeyValue.length > 0 ? false : true}
+                            options={modelKeyValue}
                           />
-                        </div>
+                        ) : (
+                          <input
+                            type="email"
+                            className="form-control border-radius-10"
+                            name="modal"
+                            placeholder=""
+                            value={coverageData.modal}
+                            onChange={handleCoverageInputChange}
+                          />
+                        )}
                       </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            MACHINE TYPE
-                          </label>
+                    </div>
+                    <div className="col-md-4 col-sm-3">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          PREFIX(S)
+                        </label>
+                        {prefixKeyValue.length > 0 ? (
                           <Select
                             onChange={(e) =>
-                              handleDropdownChange(ENUM.MACHINE_TYPE, e)
+                              handleDropdownChange(ENUM.PREFIX, e)
                             }
                             isClearable={true}
-                            value={coverageData.machineType}
-                            isLoading={
-                              machineTypeKeyValue.length > 0 ? false : true
-                            }
-                            options={machineTypeKeyValue}
+                            value={coverageData.prefixSelect}
+                            isLoading={prefixKeyValue.length > 0 ? false : true}
+                            options={prefixKeyValue}
                           />
-                        </div>
+                        ) : (
+                          <input
+                            type="email"
+                            className="form-control border-radius-10"
+                            name="prefix"
+                            placeholder=""
+                            value={coverageData.prefix}
+                            onChange={handleCoverageInputChange}
+                          />
+                        )}
                       </div>
-                      {/* <div className="col-md-4 col-sm-4"> */}
-                      {/* <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">COVERAGE DATA</label>
-                                            </div> */}
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            COVERAGE DATA
-                          </label>
-                          <h6>
-                            Coverage123
-                            <span
-                              className="ml-3 cursor"
-                              onClick={() => setShowAvailableCoverage(true)}
-                            >
-                              <i className="fa fa-external-link"></i>
-                            </span>
-                          </h6>
-                        </div>
-                      </div>
-                      {/* <a href="#" className="btn btn-primary w-100" onClick={() => setShowAvailableCoverage(true)}> Create New</a> */}
-                      {/* </div> */}
                     </div>
 
-                    {isView ? (
-                      <div className="row">
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              MAKE
-                            </p>
-                            <h6 className="font-weight-600">Caterpillar</h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              MODEL(S)
-                            </p>
-                            <h6 className="font-weight-600">D8T,D6T</h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              PREFIX(S)
-                            </p>
-                            <h6 className="font-weight-600">MBB</h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              MACHINE/COMPOMENT
-                            </p>
-                            <h6 className="font-weight-600">Machine</h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              MACHINE TYPE
-                            </p>
-                            <h6 className="font-weight-600">New</h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              MACHINE DATE
-                            </p>
-                            <h6 className="font-weight-600">Coverrage123</h6>
-                          </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          MACHINE/COMPOMENT
+                        </label>
+                        <Select
+                          onChange={(e) =>
+                            handleDropdownChange(ENUM.MACHINE_COMPONENT, e)
+                          }
+                          isClearable={true}
+                          value={coverageData.machineComponent}
+                          isLoading={typeKeyValue.length > 0 ? false : true}
+                          options={typeKeyValue}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          MACHINE TYPE
+                        </label>
+                        <Select
+                          onChange={(e) =>
+                            handleDropdownChange(ENUM.MACHINE_TYPE, e)
+                          }
+                          isClearable={true}
+                          value={coverageData.machineType}
+                          isLoading={
+                            machineTypeKeyValue.length > 0 ? false : true
+                          }
+                          options={machineTypeKeyValue}
+                        />
+                      </div>
+                    </div>
+                    {/* <div className="col-md-4 col-sm-4"> */}
+                    {/* <div className="form-group">
+                                                <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">COVERAGE DATA</label>
+                                            </div> */}
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          COVERAGE DATA
+                        </label>
+                        <h6>
+                          Coverage123
+                          <span
+                            className="ml-3 cursor"
+                            onClick={() => setShowAvailableCoverage(true)}
+                          >
+                            <i className="fa fa-external-link"></i>
+                          </span>
+                        </h6>
+                      </div>
+                    </div>
+                    {/* <a href="#" className="btn btn-primary w-100" onClick={() => setShowAvailableCoverage(true)}> Create New</a> */}
+                    {/* </div> */}
+                  </div>
+
+                  {isView ? (
+                    <div className="row">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            MAKE
+                          </p>
+                          <h6 className="font-weight-600">Caterpillar</h6>
                         </div>
                       </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            MODEL(S)
+                          </p>
+                          <h6 className="font-weight-600">D8T,D6T</h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            PREFIX(S)
+                          </p>
+                          <h6 className="font-weight-600">MBB</h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            MACHINE/COMPOMENT
+                          </p>
+                          <h6 className="font-weight-600">Machine</h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            MACHINE TYPE
+                          </p>
+                          <h6 className="font-weight-600">New</h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            MACHINE DATE
+                          </p>
+                          <h6 className="font-weight-600">Coverrage123</h6>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+
+                  <div className="row" style={{ justifyContent: "right" }}>
+                    {selectedMasterData.length > 0 ? (
+                      <button
+                        type="button"
+                        onClick={handleNextClick}
+                        className="btn btn-light"
+                        id="coverage"
+                      >
+                        Save
+                      </button>
                     ) : (
                       <></>
                     )}
+                  </div>
+                </TabPanel>
+              </TabContext>
+            </Box>
+          </div>
 
-                    <div className="row" style={{ justifyContent: "right" }}>
-                      {selectedMasterData.length > 0 ? (
-                        <button
-                          type="button"
-                          onClick={handleNextClick}
-                          className="btn btn-light"
-                          id="coverage"
-                        >
-                          Save
-                        </button>
-                      ) : (
-                        <></>
-                      )}
-                    </div>
-                  </TabPanel>
-                </TabContext>
-              </Box>
-            </div>
-
-            {/* hide portfolio item querySearch */}
-            <div className="card mt-4 px-4">
-              <div className="row align-items-center mt-3">
-                <div className="col-11 mx-1">
-                  <div className="d-flex align-items-center w-100">
-                    <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
-                      <h5 className="mb-0 text-black">
-                        <span>Portfolio Items</span>
-                      </h5>
-                    </div>
+          {/* hide portfolio item querySearch */}
+          <div className="card mt-4 px-4">
+            <div className="row align-items-center mt-3">
+              <div className="col-11 mx-1">
+                <div className="d-flex align-items-center w-100">
+                  <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
+                    <h5 className="mb-0 text-black">
+                      <span>Portfolio Items</span>
+                    </h5>
                   </div>
                 </div>
               </div>
-              {bundleItems.length > 0 ? (
-                <div>
-                  <div
-                    className="custom-table  card"
-                    style={{ height: 400, width: "100%" }}
-                  >
-                    <DataTable
-                      title=""
-                      columns={bundleItemColumns}
-                      data={bundleItems}
-                      customStyles={customStyles}
-                      expandableRows
-                      expandableRowsComponent={ExpandedComponent}
-                      pagination
-                    />
-                  </div>
-                </div>
-              ) : loadingItem === "03" ? (
-                <div className="d-flex align-items-center justify-content-center">
-                  <Loader
-                    type="spinner-default"
-                    bgColor={"#872ff7"}
-                    title={"spinner-default"}
-                    color={"#FFFFFF"}
-                    size={35}
+            </div>
+            {bundleItems.length > 0 ? (
+              <div>
+                <div
+                  className="custom-table  card"
+                  style={{ height: 400, width: "100%" }}
+                >
+                  <DataTable
+                    title=""
+                    columns={bundleItemColumns}
+                    data={bundleItems}
+                    customStyles={customStyles}
+                    expandableRows
+                    expandableRowsComponent={ExpandedComponent}
+                    pagination
                   />
                 </div>
-              ) : (
-                <div className="p-4  row">
-                  <div
-                    className="col-md-6 col-sm-6"
-                    onClick={handleNewBundleItem}
-                  >
-                    <Link to="#" className="add-new-recod">
-                      <div>
-                        <FontAwesomeIcon icon={faPlus} />
-                        <p className="font-weight-600">Add Portfolio Item</p>
-                      </div>
-                    </Link>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="add-new-recod">
-                      <div>
-                        <FontAwesomeIcon
-                          className="cloudupload"
-                          icon={faCloudUploadAlt}
-                        />
-                        <h6 className="font-weight-500 mt-3">
-                          Drag and drop files to upload <br /> or
-                        </h6>
-                        <a
-                          onClick={() => setOpen3(true)}
-                          style={{ cursor: "pointer" }}
-                          className="btn text-light border-light font-weight-500 border-radius-10 mt-3"
-                        >
-                          <span className="mr-2">
-                            <FontAwesomeIcon icon={faPlus} />
-                          </span>
-                          Select files to upload
-                        </a>
-                        <p className="mt-3">
-                          Single upload file should not be more than <br />
-                          10MB. Only the .lgs, .lgsx file types are allowed
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-        <Modal
-          show={open1}
-          onHide={handleClose1}
-          size="lg"
-          aria-labelledby="contained-modal-title-vcenter"
-          centered
-        >
-          <Modal.Body className="">
-            <div className="d-flex align-items-center justify-content-between mt-2">
-              <h5 className="font-weight-600 mb-0">Coverage</h5>
-              <div className="d-flex justify-content-center align-items-center">
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={shareIcon}></img>
-                </a>
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={folderaddIcon}></img>
-                </a>
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={uploadIcon}></img>
-                </a>
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={cpqIcon}></img>
-                </a>
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={deleteIcon}></img>
-                </a>
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={copyIcon}></img>
-                </a>
-                <a href="#" className="ml-2">
-                  <MuiMenuComponent options={activityOptions} />
-                </a>
               </div>
-            </div>
-            <div className="card mt-4">
-              <div className="fileheader border-bottom d-flex align-items-center justify-content-between">
-                <h6 className="font-weight-600 text-light mb-0 ml-3">
-                  Table Name
-                  <span>
-                    {" "}
-                    <a href="#" className="ml-3 font-size-14">
-                      <FontAwesomeIcon icon={faPen} />
-                    </a>
-                  </span>
-                </h6>
-                <div>
-                  <a href="#" className="btn">
-                    +Add
-                  </a>
-                </div>
+            ) : loadingItem === "03" ? (
+              <div className="d-flex align-items-center justify-content-center">
+                <Loader
+                  type="spinner-default"
+                  bgColor={"#872ff7"}
+                  title={"spinner-default"}
+                  color={"#FFFFFF"}
+                  size={35}
+                />
               </div>
+            ) : (
               <div className="p-4  row">
-                <div className="col-md-6 col-sm-6">
-                  <a href="#" className="add-new-recod">
+                <div
+                  className="col-md-6 col-sm-6"
+                  onClick={handleNewBundleItem}
+                >
+                  <Link to="#" className="add-new-recod">
                     <div>
                       <FontAwesomeIcon icon={faPlus} />
-                      <p className="font-weight-600">Add new record</p>
+                      <p className="font-weight-600">Add Portfolio Item</p>
                     </div>
-                  </a>
+                  </Link>
                 </div>
                 <div className="col-md-6 col-sm-6">
                   <div className="add-new-recod">
@@ -6000,7 +5909,7 @@ export function CreatePortfolio() {
                         Drag and drop files to upload <br /> or
                       </h6>
                       <a
-                        onClick={() => setOpen(true)}
+                        onClick={() => setOpen3(true)}
                         style={{ cursor: "pointer" }}
                         className="btn text-light border-light font-weight-500 border-radius-10 mt-3"
                       >
@@ -6017,88 +5926,180 @@ export function CreatePortfolio() {
                   </div>
                 </div>
               </div>
+            )}
+          </div>
+        </div>
+      </div>
+      <Modal
+        show={open1}
+        onHide={handleClose1}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Body className="">
+          <div className="d-flex align-items-center justify-content-between mt-2">
+            <h5 className="font-weight-600 mb-0">Coverage</h5>
+            <div className="d-flex justify-content-center align-items-center">
+              <a href="#" className="ml-3 font-size-14">
+                <img src={shareIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={folderaddIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={uploadIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={cpqIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={deleteIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={copyIcon}></img>
+              </a>
+              <a href="#" className="ml-2">
+                <MuiMenuComponent options={activityOptions} />
+              </a>
             </div>
-          </Modal.Body>
-        </Modal>
-        <Modal
-          show={showAvailableCoverage}
-          onHide={() => setShowAvailableCoverage(!showAvailableCoverage)}
-          size="lg"
-          aria-labelledby="contained-modal-title-vcenter"
-          centered
-        >
-          <Modal.Body className="">
-            <div className="d-flex align-items-center justify-content-between mt-2">
-              <h5 className="font-weight-600 mb-0">Coverage</h5>
-              <div className="d-flex justify-content-center align-items-center">
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={shareIcon}></img>
-                </a>
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={folderaddIcon}></img>
-                </a>
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={uploadIcon}></img>
-                </a>
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={cpqIcon}></img>
-                </a>
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={deleteIcon}></img>
-                </a>
-                <a href="#" className="ml-3 font-size-14">
-                  <img src={copyIcon}></img>
-                </a>
-                <a href="#" className="ml-2">
-                  <MuiMenuComponent options={activityOptions} />
+          </div>
+          <div className="card mt-4">
+            <div className="fileheader border-bottom d-flex align-items-center justify-content-between">
+              <h6 className="font-weight-600 text-light mb-0 ml-3">
+                Table Name
+                <span>
+                  {" "}
+                  <a href="#" className="ml-3 font-size-14">
+                    <FontAwesomeIcon icon={faPen} />
+                  </a>
+                </span>
+              </h6>
+              <div>
+                <a href="#" className="btn">
+                  +Add
                 </a>
               </div>
             </div>
-            <div className="card mt-4">
-              {/* <div className="fileheader border-bottom d-flex align-items-center justify-content-between">
+            <div className="p-4  row">
+              <div className="col-md-6 col-sm-6">
+                <a href="#" className="add-new-recod">
+                  <div>
+                    <FontAwesomeIcon icon={faPlus} />
+                    <p className="font-weight-600">Add new record</p>
+                  </div>
+                </a>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div className="add-new-recod">
+                  <div>
+                    <FontAwesomeIcon
+                      className="cloudupload"
+                      icon={faCloudUploadAlt}
+                    />
+                    <h6 className="font-weight-500 mt-3">
+                      Drag and drop files to upload <br /> or
+                    </h6>
+                    <a
+                      onClick={() => setOpen(true)}
+                      style={{ cursor: "pointer" }}
+                      className="btn text-light border-light font-weight-500 border-radius-10 mt-3"
+                    >
+                      <span className="mr-2">
+                        <FontAwesomeIcon icon={faPlus} />
+                      </span>
+                      Select files to upload
+                    </a>
+                    <p className="mt-3">
+                      Single upload file should not be more than <br />
+                      10MB. Only the .lgs, .lgsx file types are allowed
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+      <Modal
+        show={showAvailableCoverage}
+        onHide={() => setShowAvailableCoverage(!showAvailableCoverage)}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Body className="">
+          <div className="d-flex align-items-center justify-content-between mt-2">
+            <h5 className="font-weight-600 mb-0">Coverage</h5>
+            <div className="d-flex justify-content-center align-items-center">
+              <a href="#" className="ml-3 font-size-14">
+                <img src={shareIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={folderaddIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={uploadIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={cpqIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={deleteIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={copyIcon}></img>
+              </a>
+              <a href="#" className="ml-2">
+                <MuiMenuComponent options={activityOptions} />
+              </a>
+            </div>
+          </div>
+          <div className="card mt-4">
+            {/* <div className="fileheader border-bottom d-flex align-items-center justify-content-between">
                             <h6 className="font-weight-600 text-light mb-0 ml-3">Fleets<span> <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faPen} /></a></span></h6>
                             <div>
                                 <a href="#" className="btn">+Add</a>
                             </div>
                         </div> */}
-              <ReactTableNested />
-            </div>
-          </Modal.Body>
-        </Modal>
-        <Modal
-          show={open3}
-          onHide={() => setOpen3(false)}
-          size="md"
-          aria-labelledby="contained-modal-title-vcenter"
-          centered
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Import Files</Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="p-0">
-            <div className="p-3">
-              <div className="add-new-recod">
-                <div>
-                  <FontAwesomeIcon
-                    className="cloudupload"
-                    icon={faCloudUploadAlt}
-                  />
-                  <h6 className="font-weight-500 mt-3">
-                    Drag and drop files to upload <br /> or
-                  </h6>
-                  <FileUploader
-                    handleChange={handleChange}
-                    name="file"
-                    types={fileTypes}
-                  />
-                </div>
+            <ReactTableNested />
+          </div>
+        </Modal.Body>
+      </Modal>
+      <Modal
+        show={open3}
+        onHide={() => setOpen3(false)}
+        size="md"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Import Files</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-0">
+          <div className="p-3">
+            <div className="add-new-recod">
+              <div>
+                <FontAwesomeIcon
+                  className="cloudupload"
+                  icon={faCloudUploadAlt}
+                />
+                <h6 className="font-weight-500 mt-3">
+                  Drag and drop files to upload <br /> or
+                </h6>
+                <FileUploader
+                  handleChange={handleChange}
+                  name="file"
+                  types={fileTypes}
+                />
               </div>
-              <p className="mt-3">
-                Single upload file should not be more than 10MB. Only the .lgs,
-                .lgsx file types are allowed
-              </p>
             </div>
-            {/* <div className="recent-div p-3">
+            <p className="mt-3">
+              Single upload file should not be more than 10MB. Only the .lgs,
+              .lgsx file types are allowed
+            </p>
+          </div>
+          {/* <div className="recent-div p-3">
                         <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
                         <div className="recent-items mt-3">
                             <div className="d-flex justify-content-between align-items-center ">
@@ -6143,38 +6144,296 @@ export function CreatePortfolio() {
                             <p className="font-size-12 mb-0">Part List </p>
                         </div>
                     </div> */}
-          </Modal.Body>
-          <div className="row m-0 p-3">
-            <div className="col-md-6 col-sm-6">
-              <button
-                className="btn border w-100 bg-white"
-                onClick={() => setOpen3(false)}
-              >
-                Cancel
-              </button>
-            </div>
-            <div className="col-md-6 col-sm-6">
-              <button
-                className="btn btn-primary w-100"
-                onClick={() => setOpenCoveragetable(true)}
-                style={{ cursor: "pointer" }}
-              >
-                <FontAwesomeIcon className="mr-2" icon={faCloudUploadAlt} />
-                Upload
-              </button>
+        </Modal.Body>
+        <div className="row m-0 p-3">
+          <div className="col-md-6 col-sm-6">
+            <button
+              className="btn border w-100 bg-white"
+              onClick={() => setOpen3(false)}
+            >
+              Cancel
+            </button>
+          </div>
+          <div className="col-md-6 col-sm-6">
+            <button
+              className="btn btn-primary w-100"
+              onClick={() => setOpenCoveragetable(true)}
+              style={{ cursor: "pointer" }}
+            >
+              <FontAwesomeIcon className="mr-2" icon={faCloudUploadAlt} />
+              Upload
+            </button>
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        show={openCoverage}
+        onHide={handleCoveragetable}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Body className="">
+          <div className="d-flex align-items-center justify-content-between mt-2">
+            <h5 className="font-weight-600 mb-0">Coverage</h5>
+            <div className="d-flex justify-content-center align-items-center">
+              <a href="#" className="ml-3 font-size-14">
+                <img src={shareIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={folderaddIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={uploadIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={cpqIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={deleteIcon}></img>
+              </a>
+              <a href="#" className="ml-3 font-size-14">
+                <img src={copyIcon}></img>
+              </a>
+              <a href="#" className="ml-2">
+                <MuiMenuComponent options={activityOptions} />
+              </a>
             </div>
           </div>
-        </Modal>
-        <Modal
-          show={openCoverage}
-          onHide={handleCoveragetable}
-          size="lg"
-          aria-labelledby="contained-modal-title-vcenter"
-          centered
-        >
-          <Modal.Body className="">
+          <div className="card px-4 pb-4 mt-5 pt-0">
+            <div className="row align-items-center">
+              <div className="col-3">
+                <div className="d-flex ">
+                  <h5 className=" mb-0">
+                    <span>Coverage123</span>
+                  </h5>
+                  <p className=" mb-0">
+                    <a href="#" className="ml-3 ">
+                      <img src={editIcon}></img>
+                    </a>
+                    <a href="#" className="ml-3 ">
+                      <img src={shareIcon}></img>
+                    </a>
+                  </p>
+                </div>
+              </div>
+              <div className="col-5">
+                <div
+                  className="d-flex align-items-center"
+                  style={{
+                    background: "#F9F9F9",
+                    padding: "10px 15px",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <div
+                    className="search-icon mr-2"
+                    style={{ lineHeight: "24px" }}
+                  >
+                    <img src={searchstatusIcon}></img>
+                  </div>
+                  <div className="w-100 mx-2">
+                    <div className="machine-drop d-flex align-items-center">
+                      <div>
+                        <lable className="label-div">Machine</lable>
+                      </div>
+                      <FormControl className="" sx={{ m: 1 }}>
+                        <Select
+                          id="demo-simple-select-autowidth"
+                          value={age}
+                          onChange={handleChangedrop}
+                          autoWidth
+                        >
+                          <MenuItem value="5">
+                            <em>Engine</em>
+                          </MenuItem>
+                          <MenuItem value={10}>Twenty</MenuItem>
+                          <MenuItem value={21}>Twenty one</MenuItem>
+                          <MenuItem value={22}>Twenty one and a half</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="d-flex align-items-center">
+                  <div className="col-7 text-center">
+                    <a href="#" className="p-1 more-btn">
+                      + 3 more
+                      <span className="c-btn">C</span>
+                      <span className="b-btn">B</span>
+                      <span className="a-btn">A</span>
+                    </a>
+                  </div>
+                  <div className="col-5 text-center border-left py-4">
+                    <a href="#" className=" ">
+                      + Add Part
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              className=""
+              style={{ height: 400, width: "100%", backgroundColor: "#fff" }}
+            >
+              <DataGrid
+                sx={{
+                  "& .MuiDataGrid-columnHeaders": {
+                    backgroundColor: "#872ff7",
+                    color: "#fff",
+                  },
+                }}
+                rows={rows}
+                columns={columns}
+                pageSize={5}
+                rowsPerPageOptions={[5]}
+                checkboxSelection
+              />
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+      <Modal
+        show={openSearchSolution}
+        onHide={() => setOpenSearchSolution(false)}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+      >
+        <Modal.Body className="">
+          Search Solution
+          <div className="maintableheader bg-white mt-3 border-radius-10">
+            <div className="d-flex justify-content-between align-items-center pl-2">
+              <div className="d-flex align-items-center">
+                <div className="customselect d-flex ml-3">
+                  {/* <span>
+                                        <a href="#" className="btn-sm">+</a>
+                                    </span> */}
+                  <Select
+                    onChange={handleTypeOfSearchChange}
+                    isClearable={true}
+                    value={typeOfSearch}
+                    options={columnSearchKeyValue}
+                    placeholder="Add by"
+                  />
+                </div>
+                {typeOfSearch != null ? (
+                  <div className="customselect d-flex ml-3">
+                    <span>
+                      <a href="#" className="btn-sm">
+                        +
+                      </a>
+                    </span>
+                    <Select
+                      onChange={handleTypeOfSearchColumnChange}
+                      isClearable={true}
+                      value={typeOfSearchColumn}
+                      options={typeOfSearchColumnKeyValue}
+                      placeholder="Select"
+                    />
+                    {typeOfSearchColumn != null ? (
+                      // <></>
+                      <input
+                        type="email"
+                        className=""
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Enter text"
+                        style={{
+                          border: "none",
+                          background: "transparent",
+                          width: "80px",
+                          fontWeight: "600",
+                          paddingLeft: "10px",
+                        }}
+                        value={columnSearchText}
+                        onChange={(e) => setColumnSearchText(e.target.value)}
+                      ></input>
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+                ) : (
+                  <></>
+                )}
+              </div>
+              <div>
+                <div className="">
+                  <a
+                    href="#"
+                    style={{ cursor: "pointer" }}
+                    className="btn border-left"
+                  >
+                    <span>+</span> Add
+                  </a>
+                  <a href="#" className="btn border-left">
+                    Cancel
+                  </a>
+                </div>
+              </div>
+            </div>
+            {columnSearchText.trim() != "" && typeOfSearchColumn != null ? (
+              <div className="tableheader">
+                <ul
+                  className="submenu accordion mt-0"
+                  style={{ display: "block" }}
+                >
+                  <li>
+                    <a className="result cursor">RESULTS</a>
+                  </li>
+                  <li>
+                    <a
+                      className="cursor"
+                      onClick={handleBundleItemSaveAndContinue}
+                    >
+                      PM125
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      className="cursor"
+                      onClick={handleBundleItemSaveAndContinue}
+                    >
+                      PM2
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      onClick={handleCreateNewServiceBundle}
+                      className="lastOption text-violet cursor"
+                    >
+                      <span className="mr-2">+</span>Create New{" "}
+                      {typeOfSearch != null
+                        ? typeOfSearch.value == "bundle"
+                          ? "Bundle"
+                          : typeOfSearch.value == "service"
+                            ? "Service"
+                            : typeOfSearch.value == "portfolioItem"
+                              ? "Portfolio Item"
+                              : ""
+                        : ""}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            ) : (
+              <></>
+            )}
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        show={createNewBundle}
+        onHide={() => setCreateNewBundle(false)}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+      >
+        <Modal.Body className="">
+          <div className="container-fluid ">
             <div className="d-flex align-items-center justify-content-between mt-2">
-              <h5 className="font-weight-600 mb-0">Coverage</h5>
+              <h5 className="font-weight-600 mb-0">Add Bundle</h5>
               <div className="d-flex justify-content-center align-items-center">
                 <a href="#" className="ml-3 font-size-14">
                   <img src={shareIcon}></img>
@@ -6195,584 +6454,326 @@ export function CreatePortfolio() {
                   <img src={copyIcon}></img>
                 </a>
                 <a href="#" className="ml-2">
-                  <MuiMenuComponent options={activityOptions} />
+                  <MuiMenuComponent
+                    onClick={() => alert()}
+                    options={activityOptions}
+                  />
                 </a>
               </div>
             </div>
-            <div className="card px-4 pb-4 mt-5 pt-0">
-              <div className="row align-items-center">
-                <div className="col-3">
-                  <div className="d-flex ">
-                    <h5 className=" mb-0">
-                      <span>Coverage123</span>
-                    </h5>
-                    <p className=" mb-0">
-                      <a href="#" className="ml-3 ">
-                        <img src={editIcon}></img>
-                      </a>
-                      <a href="#" className="ml-3 ">
-                        <img src={shareIcon}></img>
-                      </a>
-                    </p>
-                  </div>
+            <div className="card p-4 mt-5">
+              <h5 className="d-flex align-items-center mb-0">
+                <div className="" style={{ display: "contents" }}>
+                  <span className="mr-3">Header</span>
+                  <a href="#" className="btn-sm">
+                    <i className="fa fa-pencil" aria-hidden="true"></i>
+                  </a>
+                  <a href="#" className="btn-sm">
+                    <i className="fa fa-bookmark-o" aria-hidden="true"></i>
+                  </a>
+                  <a href="#" className="btn-sm">
+                    <img style={{ width: "14px" }} src={folderaddIcon}></img>
+                  </a>
                 </div>
-                <div className="col-5">
-                  <div
-                    className="d-flex align-items-center"
-                    style={{
-                      background: "#F9F9F9",
-                      padding: "10px 15px",
-                      borderRadius: "10px",
-                    }}
-                  >
-                    <div
-                      className="search-icon mr-2"
-                      style={{ lineHeight: "24px" }}
+                <div className="input-group icons border-radius-10 border">
+                  <div className="input-group-prepend">
+                    <span
+                      className="input-group-text bg-transparent border-0 pr-0 "
+                      id="basic-addon1"
                     >
-                      <img src={searchstatusIcon}></img>
-                    </div>
-                    <div className="w-100 mx-2">
-                      <div className="machine-drop d-flex align-items-center">
-                        <div>
-                          <lable className="label-div">Machine</lable>
-                        </div>
-                        <FormControl className="" sx={{ m: 1 }}>
-                          <Select
-                            id="demo-simple-select-autowidth"
-                            value={age}
-                            onChange={handleChangedrop}
-                            autoWidth
-                          >
-                            <MenuItem value="5">
-                              <em>Engine</em>
-                            </MenuItem>
-                            <MenuItem value={10}>Twenty</MenuItem>
-                            <MenuItem value={21}>Twenty one</MenuItem>
-                            <MenuItem value={22}>Twenty one and a half</MenuItem>
-                          </Select>
-                        </FormControl>
-                      </div>
-                    </div>
+                      <img src={shearchIcon} />
+                    </span>
                   </div>
+                  <input
+                    type="search"
+                    className="form-control search-form-control"
+                    aria-label="Search Dashboard"
+                  />
                 </div>
-                <div className="col-4">
-                  <div className="d-flex align-items-center">
-                    <div className="col-7 text-center">
-                      <a href="#" className="p-1 more-btn">
-                        + 3 more
-                        <span className="c-btn">C</span>
-                        <span className="b-btn">B</span>
-                        <span className="a-btn">A</span>
-                      </a>
-                    </div>
-                    <div className="col-5 text-center border-left py-4">
-                      <a href="#" className=" ">
-                        + Add Part
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                className=""
-                style={{ height: 400, width: "100%", backgroundColor: "#fff" }}
-              >
-                <DataGrid
-                  sx={{
-                    "& .MuiDataGrid-columnHeaders": {
-                      backgroundColor: "#872ff7",
-                      color: "#fff",
-                    },
-                  }}
-                  rows={rows}
-                  columns={columns}
-                  pageSize={5}
-                  rowsPerPageOptions={[5]}
-                  checkboxSelection
-                />
-              </div>
-            </div>
-          </Modal.Body>
-        </Modal>
-        <Modal
-          show={openSearchSolution}
-          onHide={() => setOpenSearchSolution(false)}
-          size="lg"
-          aria-labelledby="contained-modal-title-vcenter"
-        >
-          <Modal.Body className="">
-            Search Solution
-            <div className="maintableheader bg-white mt-3 border-radius-10">
-              <div className="d-flex justify-content-between align-items-center pl-2">
-                <div className="d-flex align-items-center">
-                  <div className="customselect d-flex ml-3">
-                    {/* <span>
-                                        <a href="#" className="btn-sm">+</a>
-                                    </span> */}
-                    <Select
-                      onChange={handleTypeOfSearchChange}
-                      isClearable={true}
-                      value={typeOfSearch}
-                      options={columnSearchKeyValue}
-                      placeholder="Add by"
-                    />
-                  </div>
-                  {typeOfSearch != null ? (
-                    <div className="customselect d-flex ml-3">
-                      <span>
-                        <a href="#" className="btn-sm">
-                          +
-                        </a>
-                      </span>
-                      <Select
-                        onChange={handleTypeOfSearchColumnChange}
-                        isClearable={true}
-                        value={typeOfSearchColumn}
-                        options={typeOfSearchColumnKeyValue}
-                        placeholder="Select"
-                      />
-                      {typeOfSearchColumn != null ? (
-                        // <></>
-                        <input
-                          type="email"
-                          className=""
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Enter text"
-                          style={{
-                            border: "none",
-                            background: "transparent",
-                            width: "80px",
-                            fontWeight: "600",
-                            paddingLeft: "10px",
-                          }}
-                          value={columnSearchText}
-                          onChange={(e) => setColumnSearchText(e.target.value)}
-                        ></input>
-                      ) : (
-                        <></>
-                      )}
-                    </div>
-                  ) : (
-                    <></>
-                  )}
-                </div>
-                <div>
-                  <div className="">
-                    <a
-                      href="#"
-                      style={{ cursor: "pointer" }}
-                      className="btn border-left"
-                    >
-                      <span>+</span> Add
-                    </a>
-                    <a href="#" className="btn border-left">
-                      Cancel
-                    </a>
-                  </div>
-                </div>
-              </div>
-              {columnSearchText.trim() != "" && typeOfSearchColumn != null ? (
-                <div className="tableheader">
-                  <ul
-                    className="submenu accordion mt-0"
-                    style={{ display: "block" }}
-                  >
-                    <li>
-                      <a className="result cursor">RESULTS</a>
-                    </li>
-                    <li>
-                      <a
-                        className="cursor"
-                        onClick={handleBundleItemSaveAndContinue}
-                      >
-                        PM125
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        className="cursor"
-                        onClick={handleBundleItemSaveAndContinue}
-                      >
-                        PM2
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        onClick={handleCreateNewServiceBundle}
-                        className="lastOption text-violet cursor"
-                      >
-                        <span className="mr-2">+</span>Create New{" "}
-                        {typeOfSearch != null
-                          ? typeOfSearch.value == "bundle"
-                            ? "Bundle"
-                            : typeOfSearch.value == "service"
-                              ? "Service"
-                              : typeOfSearch.value == "portfolioItem"
-                                ? "Portfolio Item"
-                                : ""
-                          : ""}
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              ) : (
-                <></>
-              )}
-            </div>
-          </Modal.Body>
-        </Modal>
-
-        <Modal
-          show={createNewBundle}
-          onHide={() => setCreateNewBundle(false)}
-          size="lg"
-          aria-labelledby="contained-modal-title-vcenter"
-        >
-          <Modal.Body className="">
-            <div className="container-fluid ">
-              <div className="d-flex align-items-center justify-content-between mt-2">
-                <h5 className="font-weight-600 mb-0">Add Bundle</h5>
-                <div className="d-flex justify-content-center align-items-center">
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={shareIcon}></img>
-                  </a>
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={folderaddIcon}></img>
-                  </a>
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={uploadIcon}></img>
-                  </a>
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={cpqIcon}></img>
-                  </a>
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={deleteIcon}></img>
-                  </a>
-                  <a href="#" className="ml-3 font-size-14">
-                    <img src={copyIcon}></img>
-                  </a>
-                  <a href="#" className="ml-2">
-                    <MuiMenuComponent
-                      onClick={() => alert()}
-                      options={activityOptions}
-                    />
-                  </a>
-                </div>
-              </div>
-              <div className="card p-4 mt-5">
-                <h5 className="d-flex align-items-center mb-0">
-                  <div className="" style={{ display: "contents" }}>
-                    <span className="mr-3">Header</span>
-                    <a href="#" className="btn-sm">
-                      <i className="fa fa-pencil" aria-hidden="true"></i>
-                    </a>
-                    <a href="#" className="btn-sm">
-                      <i className="fa fa-bookmark-o" aria-hidden="true"></i>
-                    </a>
-                    <a href="#" className="btn-sm">
-                      <img style={{ width: "14px" }} src={folderaddIcon}></img>
-                    </a>
-                  </div>
-                  <div className="input-group icons border-radius-10 border">
-                    <div className="input-group-prepend">
-                      <span
-                        className="input-group-text bg-transparent border-0 pr-0 "
-                        id="basic-addon1"
-                      >
-                        <img src={shearchIcon} />
-                      </span>
-                    </div>
+              </h5>
+              <div className="row mt-4">
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-500">
+                      SERVICE ID
+                    </label>
                     <input
-                      type="search"
-                      className="form-control search-form-control"
-                      aria-label="Search Dashboard"
+                      type="email"
+                      className="form-control border-radius-10"
+                      disabled
+                      name="name"
+                      placeholder="Service ID(AUTO)"
+                      value={generalComponentData.name}
+                      onChange={handleGeneralInputChange}
                     />
                   </div>
-                </h5>
-                <div className="row mt-4">
-                  <div className="col-md-4 col-sm-3">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-12 font-weight-500">
-                        SERVICE ID
-                      </label>
-                      <input
-                        type="email"
-                        className="form-control border-radius-10"
-                        disabled
-                        name="name"
-                        placeholder="Service ID(AUTO)"
-                        value={generalComponentData.name}
-                        onChange={handleGeneralInputChange}
-                      />
-                    </div>
+                </div>
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-500">
+                      SERVICE DESCRIPTION
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control border-radius-10"
+                      name="serviceDescription"
+                      placeholder="Service Description"
+                      value={newBundle.serviceDescription}
+                      onChange={handleAddBundleInputChange}
+                    />
                   </div>
-                  <div className="col-md-4 col-sm-3">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-12 font-weight-500">
-                        SERVICE DESCRIPTION
-                      </label>
-                      <input
-                        type="email"
-                        className="form-control border-radius-10"
-                        name="serviceDescription"
-                        placeholder="Service Description"
-                        value={newBundle.serviceDescription}
-                        onChange={handleAddBundleInputChange}
-                      />
-                    </div>
+                </div>
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-500">
+                      BUNDLE FLAG
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control border-radius-10"
+                      name="bundleFlag"
+                      placeholder="Bundle Flag"
+                      value={newBundle.bundleFlag}
+                      onChange={handleAddBundleInputChange}
+                    />
                   </div>
-                  <div className="col-md-4 col-sm-3">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-12 font-weight-500">
-                        BUNDLE FLAG
-                      </label>
-                      <input
-                        type="email"
-                        className="form-control border-radius-10"
-                        name="bundleFlag"
-                        placeholder="Bundle Flag"
-                        value={newBundle.bundleFlag}
-                        onChange={handleAddBundleInputChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-3">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        REFERENCE
-                      </label>
-                      <input
-                        type="email"
-                        className="form-control border-radius-10"
-                        name="reference"
-                        placeholder="Reference"
-                        value={newBundle.reference}
-                        onChange={handleAddBundleInputChange}
-                      />
-                      {/* <Select
+                </div>
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      REFERENCE
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control border-radius-10"
+                      name="reference"
+                      placeholder="Reference"
+                      value={newBundle.reference}
+                      onChange={handleAddBundleInputChange}
+                    />
+                    {/* <Select
                                             defaultValue={selectedOption}
                                             onChange={setSelectedOption}
                                             options={options}
                                             placeholder="Preventive Maintenance"
                                         /> */}
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-3">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-12 font-weight-500">
-                        CUSTOMER SEGMENT
-                      </label>
-                      <Select
-                        defaultValue={selectedOption}
-                        onChange={setSelectedOption}
-                        options={options}
-                        placeholder="Customer Segment"
-                      />
-                      {/* <input type="email" className="form-control border-radius-10" name="reference" placeholder="Customer Segment" value={generalComponentData.externalReference} onChange={handleGeneralInputChange} /> */}
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-3">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-12 font-weight-500">
-                        MAKE
-                      </label>
-                      <input
-                        type="email"
-                        className="form-control border-radius-10"
-                        name="customerSegment"
-                        placeholder="Placeholder"
-                        value={generalComponentData.customerSegment}
-                        onChange={handleGeneralInputChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-3">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-12 font-weight-500">
-                        MODEL(S)
-                      </label>
-                      <input
-                        type="email"
-                        className="form-control border-radius-10"
-                        name="customerSegment"
-                        placeholder="Placeholder"
-                        value={generalComponentData.customerSegment}
-                        onChange={handleGeneralInputChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-3">
-                    <div className="form-group">
-                      <label className="text-light-dark font-size-12 font-weight-500">
-                        PREFIX(S)
-                      </label>
-                      <input
-                        type="email"
-                        className="form-control border-radius-10"
-                        name="customerSegment"
-                        placeholder="Placeholder"
-                        value={generalComponentData.customerSegment}
-                        onChange={handleGeneralInputChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-3">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        MACHINE/COMPONENT
-                      </label>
-                      <Select
-                        onChange={(e) =>
-                          handleAddBundleDropdownChange(ENUM.MACHINE_COMPONENT, e)
-                        }
-                        isClearable={true}
-                        value={newBundle.machineComponent}
-                        isLoading={typeKeyValue.length > 0 ? false : true}
-                        options={typeKeyValue}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-3">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        ADDITIONALS
-                      </label>
-                      <Select
-                        defaultValue={selectedOption}
-                        onChange={setSelectedOption}
-                        options={options}
-                        placeholder="Preventive Maintenance"
-                      />
-                    </div>
                   </div>
                 </div>
-                <div className="row" style={{ justifyContent: "right" }}>
-                  <button
-                    type="button"
-                    onClick={handleAddNewBundle}
-                    className="btn btn-light"
-                  >
-                    Save
-                  </button>
-                </div>
-                {isView ? (
-                  <div className="row mt-4">
-                    <div className="col-md-4 col-sm-3">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          PORTFOLIO ID
-                        </p>
-                        <h6 className="font-weight-600">CVA - Premium plan</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-3">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          PORTFOLIO DESCRIPTION
-                        </p>
-                        <h6 className="font-weight-600">
-                          Premium Customer Value Agreement D8T and D6T
-                        </h6>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-3">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          SERVICE PROGRAM DESCRIPTION (IF ANY)
-                        </p>
-                        <h6 className="font-weight-600">NA</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-3">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          REFERENCE
-                        </p>
-                        <h6 className="font-weight-600">NA</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-3">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          CUSTOMER SEGMENT
-                        </p>
-                        <h6 className="font-weight-600">Construction</h6>
-                      </div>
-                    </div>
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-500">
+                      CUSTOMER SEGMENT
+                    </label>
+                    <Select
+                      defaultValue={selectedOption}
+                      onChange={setSelectedOption}
+                      options={options}
+                      placeholder="Customer Segment"
+                    />
+                    {/* <input type="email" className="form-control border-radius-10" name="reference" placeholder="Customer Segment" value={generalComponentData.externalReference} onChange={handleGeneralInputChange} /> */}
                   </div>
-                ) : (
-                  <></>
-                )}
-              </div>
-              <div className="card mt-5">
-                <div className="fileheader p-4 border-bottom d-flex justify-content-between align-items-center">
-                  <h6 className="font-weight-600 text-light mb-0">
-                    Bundle Items
-                    <span>
-                      {" "}
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faPen} />
-                      </a>
-                    </span>
-                  </h6>
                 </div>
-                <div className="p-4  row">
-                  <div className="col-md-6 col-sm-6">
-                    <a
-                      href="#"
-                      className="add-new-recod"
-                      onClick={handleNewBundleItem}
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-500">
+                      MAKE
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control border-radius-10"
+                      name="customerSegment"
+                      placeholder="Placeholder"
+                      value={generalComponentData.customerSegment}
+                      onChange={handleGeneralInputChange}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-500">
+                      MODEL(S)
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control border-radius-10"
+                      name="customerSegment"
+                      placeholder="Placeholder"
+                      value={generalComponentData.customerSegment}
+                      onChange={handleGeneralInputChange}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-500">
+                      PREFIX(S)
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control border-radius-10"
+                      name="customerSegment"
+                      placeholder="Placeholder"
+                      value={generalComponentData.customerSegment}
+                      onChange={handleGeneralInputChange}
+                    />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
                     >
-                      <div>
-                        <FontAwesomeIcon icon={faPlus} />
-                        <p className="font-weight-600">Add new record</p>
-                      </div>
-                    </a>
+                      MACHINE/COMPONENT
+                    </label>
+                    <Select
+                      onChange={(e) =>
+                        handleAddBundleDropdownChange(ENUM.MACHINE_COMPONENT, e)
+                      }
+                      isClearable={true}
+                      value={newBundle.machineComponent}
+                      isLoading={typeKeyValue.length > 0 ? false : true}
+                      options={typeKeyValue}
+                    />
                   </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="add-new-recod">
-                      <div>
-                        <FontAwesomeIcon
-                          className="cloudupload"
-                          icon={faCloudUploadAlt}
-                        />
-                        <h6 className="font-weight-500 mt-3">
-                          Drag and drop files to upload <br /> or
-                        </h6>
-                        <a
-                          onClick={() => setOpen(true)}
-                          style={{ cursor: "pointer" }}
-                          className="btn text-light border-light font-weight-500 border-radius-10 mt-3"
-                        >
-                          <span className="mr-2">
-                            <FontAwesomeIcon icon={faPlus} />
-                          </span>
-                          Select files to upload
-                        </a>
-                        <p className="mt-3">
-                          Single upload file should not be more than <br />
-                          10MB. Only the .lgs, .lgsx file types are allowed
-                        </p>
-                      </div>
+                </div>
+                <div className="col-md-4 col-sm-3">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      ADDITIONALS
+                    </label>
+                    <Select
+                      defaultValue={selectedOption}
+                      onChange={setSelectedOption}
+                      options={options}
+                      placeholder="Preventive Maintenance"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="row" style={{ justifyContent: "right" }}>
+                <button
+                  type="button"
+                  onClick={handleAddNewBundle}
+                  className="btn btn-light"
+                >
+                  Save
+                </button>
+              </div>
+              {isView ? (
+                <div className="row mt-4">
+                  <div className="col-md-4 col-sm-3">
+                    <div className="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        PORTFOLIO ID
+                      </p>
+                      <h6 className="font-weight-600">CVA - Premium plan</h6>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-3">
+                    <div className="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        PORTFOLIO DESCRIPTION
+                      </p>
+                      <h6 className="font-weight-600">
+                        Premium Customer Value Agreement D8T and D6T
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-3">
+                    <div className="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        SERVICE PROGRAM DESCRIPTION (IF ANY)
+                      </p>
+                      <h6 className="font-weight-600">NA</h6>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-3">
+                    <div className="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        REFERENCE
+                      </p>
+                      <h6 className="font-weight-600">NA</h6>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-3">
+                    <div className="form-group">
+                      <p className="font-size-12 font-weight-500 mb-2">
+                        CUSTOMER SEGMENT
+                      </p>
+                      <h6 className="font-weight-600">Construction</h6>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <></>
+              )}
+            </div>
+            <div className="card mt-5">
+              <div className="fileheader p-4 border-bottom d-flex justify-content-between align-items-center">
+                <h6 className="font-weight-600 text-light mb-0">
+                  Bundle Items
+                  <span>
+                    {" "}
+                    <a href="#" className="ml-3 font-size-14">
+                      <FontAwesomeIcon icon={faPen} />
+                    </a>
+                  </span>
+                </h6>
+              </div>
+              <div className="p-4  row">
+                <div className="col-md-6 col-sm-6">
+                  <a
+                    href="#"
+                    className="add-new-recod"
+                    onClick={handleNewBundleItem}
+                  >
+                    <div>
+                      <FontAwesomeIcon icon={faPlus} />
+                      <p className="font-weight-600">Add new record</p>
+                    </div>
+                  </a>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="add-new-recod">
+                    <div>
+                      <FontAwesomeIcon
+                        className="cloudupload"
+                        icon={faCloudUploadAlt}
+                      />
+                      <h6 className="font-weight-500 mt-3">
+                        Drag and drop files to upload <br /> or
+                      </h6>
+                      <a
+                        onClick={() => setOpen(true)}
+                        style={{ cursor: "pointer" }}
+                        className="btn text-light border-light font-weight-500 border-radius-10 mt-3"
+                      >
+                        <span className="mr-2">
+                          <FontAwesomeIcon icon={faPlus} />
+                        </span>
+                        Select files to upload
+                      </a>
+                      <p className="mt-3">
+                        Single upload file should not be more than <br />
+                        10MB. Only the .lgs, .lgsx file types are allowed
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </Modal.Body>
-        </Modal>
+          </div>
+        </Modal.Body>
+      </Modal>
 
-        {/* <Modal
+      {/* <Modal
         show={openAddBundleItem}
         onHide={() => setOpenAddBundleItem(false)}
         size="lg"
@@ -7019,10 +7020,10 @@ export function CreatePortfolio() {
                       onChange={(e) =>
                         setAddportFolioItem({
                           ...addPortFolioItem,
-                          strategyEvents: e.target.value,
+                          numberOfEvents: e.target.value,
                         })
                       }
-                      value={addPortFolioItem.strategyEvents}
+                      value={addPortFolioItem.numberOfEvents}
                     />
                   </div>
                 </div>
@@ -7172,425 +7173,425 @@ export function CreatePortfolio() {
         </Modal.Body>
       </Modal> */}
 
-        <Modal
-          show={open2}
-          onHide={() => setOpen2(false)}
-          size="lg"
-          aria-labelledby="contained-modal-title-vcenter"
-          centered
-        >
-          <Modal.Header>
-            <Modal.Title>Price Calculator</Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="p-0 bg-white">
-            <div className="ligt-greey-bg p-3">
-              <div>
-                <span className="mr-3">
-                  <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
-                  <span className="ml-2">Edit</span>
-                </span>
-                <span className="mr-3">
-                  <MonetizationOnOutlinedIcon className=" font-size-16" />
-                  <span className="ml-2"> Adjust price</span>
-                </span>
-                <span className="mr-3">
-                  <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                  <span className="ml-2">Related part list(s)</span>
-                </span>
-                <span className="mr-3">
-                  <AccessAlarmOutlinedIcon className=" font-size-16" />
-                  <span className="ml-2">Related service estimate(s)</span>
-                </span>
-                <span>
-                  <SellOutlinedIcon className=" font-size-16" />
-                  <span className="ml-2">Split price</span>
-                </span>
-              </div>
-            </div>
+      <Modal
+        show={open2}
+        onHide={() => setOpen2(false)}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header>
+          <Modal.Title>Price Calculator</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="p-0 bg-white">
+          <div className="ligt-greey-bg p-3">
             <div>
-              <div className="p-3">
-                <h6 className="text-light-dark font-size-12 font-weight-500">
-                  PRICES
-                </h6>
-                <div className="row">
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        PRICE TYPE
-                      </label>
-                      <Select
-                        options={options}
-                        value={priceCalculator.priceMethod}
-                        onChange={(e) =>
-                          setPriceCalculator({
-                            ...priceCalculator,
-                            priceMethod: e,
-                          })
-                        }
-                        placeholder="placeholder (Optional)"
-                      />
-                    </div>
+              <span className="mr-3">
+                <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                <span className="ml-2">Edit</span>
+              </span>
+              <span className="mr-3">
+                <MonetizationOnOutlinedIcon className=" font-size-16" />
+                <span className="ml-2"> Adjust price</span>
+              </span>
+              <span className="mr-3">
+                <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                <span className="ml-2">Related part list(s)</span>
+              </span>
+              <span className="mr-3">
+                <AccessAlarmOutlinedIcon className=" font-size-16" />
+                <span className="ml-2">Related service estimate(s)</span>
+              </span>
+              <span>
+                <SellOutlinedIcon className=" font-size-16" />
+                <span className="ml-2">Split price</span>
+              </span>
+            </div>
+          </div>
+          <div>
+            <div className="p-3">
+              <h6 className="text-light-dark font-size-12 font-weight-500">
+                PRICES
+              </h6>
+              <div className="row">
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      PRICE TYPE
+                    </label>
+                    <Select
+                      options={options}
+                      value={priceCalculator.priceMethod}
+                      onChange={(e) =>
+                        setPriceCalculator({
+                          ...priceCalculator,
+                          priceMethod: e,
+                        })
+                      }
+                      placeholder="placeholder (Optional)"
+                    />
                   </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        LIST PRICE{" "}
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10"
-                        aria-describedby="emailHelp"
-                        placeholder="$100"
-                        value={priceCalculator.listPrice}
-                        onChange={(e) =>
-                          setPriceCalculator({
-                            ...priceCalculator,
-                            listPrice: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      LIST PRICE{" "}
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      aria-describedby="emailHelp"
+                      placeholder="$100"
+                      value={priceCalculator.listPrice}
+                      onChange={(e) =>
+                        setPriceCalculator({
+                          ...priceCalculator,
+                          listPrice: e.target.value,
+                        })
+                      }
+                    />
                   </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group date-box">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        ADDITIONAL
-                      </label>
-                      <div className=" d-flex form-control-date">
-                        <div className="">
-                          <Select
-                            isClearable={true}
-                            value={priceCalculator.priceAdditionalSelect}
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator,
-                                priceAdditionalSelect: e,
-                              })
-                            }
-                            options={options}
-                            placeholder="Select"
-                          />
-                        </div>
-                        <input
-                          type="text"
-                          className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                          placeholder="10%"
-                          value={priceCalculator.priceAdditionalInput}
-                          onChange={(e) =>
-                            setPriceCalculator({
-                              ...priceCalculator,
-                              priceAdditionalInput: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group date-box">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        PRICE ESCALATON
-                      </label>
-                      <div className=" d-flex align-items-center form-control-date">
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group date-box">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      ADDITIONAL
+                    </label>
+                    <div className=" d-flex form-control-date">
+                      <div className="">
                         <Select
-                          className="select-input"
-                          // defaultValue={selectedOption}
-                          value={priceCalculator.priceEscalationSelect}
+                          isClearable={true}
+                          value={priceCalculator.priceAdditionalSelect}
                           onChange={(e) =>
                             setPriceCalculator({
                               ...priceCalculator,
-                              priceEscalationSelect: e,
+                              priceAdditionalSelect: e,
                             })
                           }
                           options={options}
-                          placeholder="placeholder "
-                        />
-                        <input
-                          type="text"
-                          className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                          placeholder="20%"
-                          value={priceCalculator.priceEscalationInput}
-                          onChange={(e) =>
-                            setPriceCalculator({
-                              ...priceCalculator,
-                              priceEscalationInput: e.target.value,
-                            })
-                          }
+                          placeholder="Select"
                         />
                       </div>
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        CALCULATED PRICE
-                      </label>
                       <input
                         type="text"
-                        className="form-control border-radius-10"
-                        value={priceCalculator.calculatedPrice}
+                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                        placeholder="10%"
+                        value={priceCalculator.priceAdditionalInput}
                         onChange={(e) =>
                           setPriceCalculator({
                             ...priceCalculator,
-                            calculatedPrice: e.target.value,
+                            priceAdditionalInput: e.target.value,
                           })
                         }
-                        placeholder="$100"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        FLAT PRICE / ADJUSTED PRICE
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10"
-                        value={priceCalculator.flatPrice}
-                        onChange={(e) =>
-                          setPriceCalculator({
-                            ...priceCalculator,
-                            flatPrice: e.target.value,
-                          })
-                        }
-                        placeholder="$100"
                       />
                     </div>
                   </div>
                 </div>
-                <div className="row">
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group date-box">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        DISCOUNT TYPE
-                      </label>
-                      <div className=" d-flex form-control-date">
-                        <div className="">
-                          <Select
-                            value={priceCalculator.discountTypeSelect}
-                            onChange={(e) =>
-                              setPriceCalculator({
-                                ...priceCalculator,
-                                discountTypeSelect: e,
-                              })
-                            }
-                            isClearable={true}
-                            options={options}
-                            placeholder="Select"
-                          />
-                        </div>
-                        <input
-                          type="text"
-                          className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                          value={priceCalculator.discountTypeInput}
-                          onChange={(e) =>
-                            setPriceCalculator({
-                              ...priceCalculator,
-                              discountTypeInput: e.target.value,
-                            })
-                          }
-                          placeholder="10%"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* <div className="card"> */}
-                <div className="row">
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        YEAR
-                      </label>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group date-box">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      PRICE ESCALATON
+                    </label>
+                    <div className=" d-flex align-items-center form-control-date">
                       <Select
+                        className="select-input"
                         // defaultValue={selectedOption}
-                        value={priceCalculator.priceYear}
+                        value={priceCalculator.priceEscalationSelect}
                         onChange={(e) =>
-                          setPriceCalculator({ ...priceCalculator, priceYear: e })
+                          setPriceCalculator({
+                            ...priceCalculator,
+                            priceEscalationSelect: e,
+                          })
                         }
                         options={options}
-                        placeholder="Year"
+                        placeholder="placeholder "
                       />
-                    </div>
-                  </div>
-                </div>
-
-                <h6 className="text-light-dark font-size-12 font-weight-500">
-                  USAGE
-                </h6>
-                <div className="row">
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group date-box">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        START USAGE
-                      </label>
-                      <div
-                        className=" d-flex form-control-date"
-                        style={{ overflow: "hidden" }}
-                      >
-                        <input
-                          type="text"
-                          className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                          placeholder="per hour"
-                          value={priceCalculator.startUsage}
-                          onChange={(e) =>
-                            setPriceCalculator({
-                              ...priceCalculator,
-                              startUsage: e.target.value,
-                            })
-                          }
-                        />
-                        <span className="hours-div">hours</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group date-box">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        END USAGE
-                      </label>
-                      <div
-                        className=" d-flex form-control-date"
-                        style={{ overflow: "hidden" }}
-                      >
-                        <input
-                          type="text"
-                          className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                          placeholder="10%"
-                          value={priceCalculator.endUsage}
-                          onChange={(e) =>
-                            setPriceCalculator({
-                              ...priceCalculator,
-                              endUsage: e.target.value,
-                            })
-                          }
-                        />
-                        <span className="hours-div">hours</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        USAGE TYPE
-                      </label>
-                      <Select
-                        defaultValue={selectedOption}
-                        options={options}
-                        value={priceCalculator.usageType}
+                      <input
+                        type="text"
+                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                        placeholder="20%"
+                        value={priceCalculator.priceEscalationInput}
                         onChange={(e) =>
-                          setPriceCalculator({ ...priceCalculator, usageType: e })
+                          setPriceCalculator({
+                            ...priceCalculator,
+                            priceEscalationInput: e.target.value,
+                          })
                         }
-                        placeholder="placeholder (Optional)"
                       />
                     </div>
                   </div>
                 </div>
-
-                <h6 className="text-light-dark font-size-12 font-weight-500">
-                  QUANTITY
-                </h6>
-                <div className="row">
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        FREQUENCY
-                      </label>
-                      <Select
-                        defaultValue={addPortFolioItem.frequency}
-                        // selectedValue={addPortFolioItem.frequency}
-                        options={frequencyOptions}
-                        value={priceCalculator.frequency}
-                        onChange={(e) =>
-                          setPriceCalculator({ ...priceCalculator, frequency: e })
-                        }
-                        placeholder="Cyclical"
-                      />
-                    </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      CALCULATED PRICE
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      value={priceCalculator.calculatedPrice}
+                      onChange={(e) =>
+                        setPriceCalculator({
+                          ...priceCalculator,
+                          calculatedPrice: e.target.value,
+                        })
+                      }
+                      placeholder="$100"
+                    />
                   </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group date-box">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        CYCLE
-                      </label>
-                      <div
-                        className=" d-flex form-control-date"
-                        style={{ overflow: "hidden" }}
-                      >
-                        <input
-                          type="text"
-                          className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                          placeholder="250"
-                          value={priceCalculator.cycle}
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      FLAT PRICE / ADJUSTED PRICE
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      value={priceCalculator.flatPrice}
+                      onChange={(e) =>
+                        setPriceCalculator({
+                          ...priceCalculator,
+                          flatPrice: e.target.value,
+                        })
+                      }
+                      placeholder="$100"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group date-box">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      DISCOUNT TYPE
+                    </label>
+                    <div className=" d-flex form-control-date">
+                      <div className="">
+                        <Select
+                          value={priceCalculator.discountTypeSelect}
                           onChange={(e) =>
                             setPriceCalculator({
                               ...priceCalculator,
-                              cycle: e.target.value,
+                              discountTypeSelect: e,
                             })
                           }
+                          isClearable={true}
+                          options={options}
+                          placeholder="Select"
                         />
-                        <span className="hours-div">hours</span>
                       </div>
+                      <input
+                        type="text"
+                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                        value={priceCalculator.discountTypeInput}
+                        onChange={(e) =>
+                          setPriceCalculator({
+                            ...priceCalculator,
+                            discountTypeInput: e.target.value,
+                          })
+                        }
+                        placeholder="10%"
+                      />
                     </div>
                   </div>
                 </div>
-
-                {/* </div> */}
-                <div className="d-flex align-items-center">
-                  <div>
-                    <h6 className="text-light-dark font-size-12 font-weight-500 mr-4">
-                      NET PRICE
-                    </h6>
-                    ${priceCalculator.netPrice}
-                  </div>
-                  <div>
-                    <h6 className="text-light-dark font-size-12 font-weight-500">
-                      TOTAL PRICE
-                    </h6>
-                    ${priceCalculator.netPrice}
+              </div>
+              {/* <div className="card"> */}
+              <div className="row">
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      YEAR
+                    </label>
+                    <Select
+                      // defaultValue={selectedOption}
+                      value={priceCalculator.priceYear}
+                      onChange={(e) =>
+                        setPriceCalculator({ ...priceCalculator, priceYear: e })
+                      }
+                      options={options}
+                      placeholder="Year"
+                    />
                   </div>
                 </div>
-                {/* <div className="row mt-4">
+              </div>
+
+              <h6 className="text-light-dark font-size-12 font-weight-500">
+                USAGE
+              </h6>
+              <div className="row">
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group date-box">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      START USAGE
+                    </label>
+                    <div
+                      className=" d-flex form-control-date"
+                      style={{ overflow: "hidden" }}
+                    >
+                      <input
+                        type="text"
+                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                        placeholder="per hour"
+                        value={priceCalculator.startUsage}
+                        onChange={(e) =>
+                          setPriceCalculator({
+                            ...priceCalculator,
+                            startUsage: e.target.value,
+                          })
+                        }
+                      />
+                      <span className="hours-div">hours</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group date-box">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      END USAGE
+                    </label>
+                    <div
+                      className=" d-flex form-control-date"
+                      style={{ overflow: "hidden" }}
+                    >
+                      <input
+                        type="text"
+                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                        placeholder="10%"
+                        value={priceCalculator.endUsage}
+                        onChange={(e) =>
+                          setPriceCalculator({
+                            ...priceCalculator,
+                            endUsage: e.target.value,
+                          })
+                        }
+                      />
+                      <span className="hours-div">hours</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      USAGE TYPE
+                    </label>
+                    <Select
+                      defaultValue={selectedOption}
+                      options={options}
+                      value={priceCalculator.usageType}
+                      onChange={(e) =>
+                        setPriceCalculator({ ...priceCalculator, usageType: e })
+                      }
+                      placeholder="placeholder (Optional)"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <h6 className="text-light-dark font-size-12 font-weight-500">
+                QUANTITY
+              </h6>
+              <div className="row">
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      FREQUENCY
+                    </label>
+                    <Select
+                      defaultValue={addPortFolioItem.frequency}
+                      // selectedValue={addPortFolioItem.frequency}
+                      options={frequencyOptions}
+                      value={priceCalculator.frequency}
+                      onChange={(e) =>
+                        setPriceCalculator({ ...priceCalculator, frequency: e })
+                      }
+                      placeholder="Cyclical"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group date-box">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      CYCLE
+                    </label>
+                    <div
+                      className=" d-flex form-control-date"
+                      style={{ overflow: "hidden" }}
+                    >
+                      <input
+                        type="text"
+                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                        placeholder="250"
+                        value={priceCalculator.cycle}
+                        onChange={(e) =>
+                          setPriceCalculator({
+                            ...priceCalculator,
+                            cycle: e.target.value,
+                          })
+                        }
+                      />
+                      <span className="hours-div">hours</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* </div> */}
+              <div className="d-flex align-items-center">
+                <div>
+                  <h6 className="text-light-dark font-size-12 font-weight-500 mr-4">
+                    NET PRICE
+                  </h6>
+                  ${priceCalculator.netPrice}
+                </div>
+                <div>
+                  <h6 className="text-light-dark font-size-12 font-weight-500">
+                    TOTAL PRICE
+                  </h6>
+                  ${priceCalculator.netPrice}
+                </div>
+              </div>
+              {/* <div className="row mt-4">
               <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">
                 <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">GROUP NUMBER</label>
@@ -7658,358 +7659,358 @@ export function CreatePortfolio() {
                 </div>
                 </div>
               </div> */}
-              </div>
-              <div className="m-3 text-right">
-                <a
-                  href="#"
-                  onClick={() => setOpen2(false)}
-                  className="btn border mr-3 "
-                >
-                  {" "}
-                  Cancel
-                </a>
-                <a
-                  href="#"
-                  className="btn text-white bg-primary"
-                  onClick={
-                    serviceOrBundlePrefix === ""
-                      ? handleBundleItemSaveAndContinue
-                      : saveAddNewServiceOrBundle
-                  }
-                >
-                  Save
-                </a>
-              </div>
             </div>
-          </Modal.Body>
-        </Modal>
+            <div className="m-3 text-right">
+              <a
+                href="#"
+                onClick={() => setOpen2(false)}
+                className="btn border mr-3 "
+              >
+                {" "}
+                Cancel
+              </a>
+              <a
+                href="#"
+                className="btn text-white bg-primary"
+                onClick={
+                  serviceOrBundlePrefix === ""
+                    ? handleBundleItemSaveAndContinue
+                    : saveAddNewServiceOrBundle
+                }
+              >
+                Save
+              </a>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
 
-        <Modal
-          show={showAddSolutionModal}
-          onHide={handleShowAddSolution}
-          size="lg"
-          aria-labelledby="contained-modal-title-vcenter"
-          centered
-        >
-          {/* <Modal.Header closeButton>
+      <Modal
+        show={showAddSolutionModal}
+        onHide={handleShowAddSolution}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        {/* <Modal.Header closeButton>
           <Modal.Title>Modal heading</Modal.Title>
         </Modal.Header> */}
-          <Modal.Body>
-            <div className="d-flex align-items-center justify-content-between">
-              <div>
-                <h5 className="">Choose what solution you want to build</h5>
-              </div>
-              {/* <div>
+        <Modal.Body>
+          <div className="d-flex align-items-center justify-content-between">
+            <div>
+              <h5 className="">Choose what solution you want to build</h5>
+            </div>
+            {/* <div>
                         <a href='#' className='btn border-light font-weight-500 bg-light-grey font-size-18'>Explore available solution</a>
                     </div> */}
-            </div>
-            <div className="card mt-4 p-4">
-              <div className="row">
-                <div className="col-md-6 my-3 ">
-                  <div className="d-flex">
-                    <div className="mr-2">
-                      <img src={Portfoliosicon}></img>
-                    </div>
-                    <div>
-                      <h5 className="text-light">Bundle</h5>
-                      <p>
-                        <b>You build Bundle here. </b>
-                        Examples of Portfolios are Premium Maintenance Plan, Value
-                        added plan etc. A service program is a marketing or
-                        product improvement program.
-                      </p>
-                      <div className="">
-                        <a
-                          onClick={() => handleCreateSolution("bundle")}
-                          className="btn bg-primary text-white cursor"
-                        >
-                          Create <img className="ml-2" src={Buttonarrow}></img>
-                        </a>
-                      </div>
-                    </div>
+          </div>
+          <div className="card mt-4 p-4">
+            <div className="row">
+              <div className="col-md-6 my-3 ">
+                <div className="d-flex">
+                  <div className="mr-2">
+                    <img src={Portfoliosicon}></img>
                   </div>
-                </div>
-                <div className="col-md-6 my-3">
-                  <div className="d-flex">
-                    <div className="mr-2">
-                      <img src={contract}></img>
-                    </div>
-                    <div>
-                      <h5 className="text-light">Service</h5>
-                      <p>
-                        <b>
-                          You build Service & maintenance solutions for your
-                          customer segment here.{" "}
-                        </b>
-                        Examples of pre-built template are Level I contracts like
-                        subscriptions or Level IV contract for Total Maintenance
-                        and Repair.
-                      </p>
-                      <div className="">
-                        <a
-                          onClick={() => handleCreateSolution("service")}
-                          className="btn bg-primary text-white cursor"
-                        >
-                          Create <img className="ml-2" src={Buttonarrow}></img>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-6 my-3">
-                  <div className="d-flex">
-                    <div className="mr-2">
-                      <img src={repairicon}></img>
-                    </div>
-                    <div>
-                      <h5 className="text-light">Bundle Item</h5>
-                      <p>
-                        <b>You build Bundle Item here. </b>
-                        Examples of repair solutions are complex engine overhaul,
-                        engine reconditioning, componenet replacment , assembly of
-                        comlex
-                      </p>
-                      <div className="">
-                        <a
-                          onClick={() => handleCreateSolution("bundleItem")}
-                          className="btn bg-primary text-white cursor"
-                        >
-                          Create <img className="ml-2" src={Buttonarrow}></img>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Modal.Body>
-        </Modal>
-        <div
-          className="modal fade"
-          id="AddCoverage"
-          tabindex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-        >
-          <div
-            className="modal-dialog modal-dialog-centered modal-lg"
-            role="document"
-          >
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="exampleModalLabel">
-                  Add Coverage
-                </h5>
-                <button
-                  type="button"
-                  className="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div className="modal-body">
-                <div className="row">
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group w-100">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
+                  <div>
+                    <h5 className="text-light">Bundle</h5>
+                    <p>
+                      <b>You build Bundle here. </b>
+                      Examples of Portfolios are Premium Maintenance Plan, Value
+                      added plan etc. A service program is a marketing or
+                      product improvement program.
+                    </p>
+                    <div className="">
+                      <a
+                        onClick={() => handleCreateSolution("bundle")}
+                        className="btn bg-primary text-white cursor"
                       >
-                        Coverage ID
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10"
-                        disabled
-                        placeholder="(AUTO GENERATE)"
-                        value={editSerialNo.coverageId}
-                        defaultValue={editSerialNo.coverageId}
-                      />
+                        Create <img className="ml-2" src={Buttonarrow}></img>
+                      </a>
                     </div>
                   </div>
-                  {/* <div className="col-md-4 col-sm-4">
+                </div>
+              </div>
+              <div className="col-md-6 my-3">
+                <div className="d-flex">
+                  <div className="mr-2">
+                    <img src={contract}></img>
+                  </div>
+                  <div>
+                    <h5 className="text-light">Service</h5>
+                    <p>
+                      <b>
+                        You build Service & maintenance solutions for your
+                        customer segment here.{" "}
+                      </b>
+                      Examples of pre-built template are Level I contracts like
+                      subscriptions or Level IV contract for Total Maintenance
+                      and Repair.
+                    </p>
+                    <div className="">
+                      <a
+                        onClick={() => handleCreateSolution("service")}
+                        className="btn bg-primary text-white cursor"
+                      >
+                        Create <img className="ml-2" src={Buttonarrow}></img>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-6 my-3">
+                <div className="d-flex">
+                  <div className="mr-2">
+                    <img src={repairicon}></img>
+                  </div>
+                  <div>
+                    <h5 className="text-light">Bundle Item</h5>
+                    <p>
+                      <b>You build Bundle Item here. </b>
+                      Examples of repair solutions are complex engine overhaul,
+                      engine reconditioning, componenet replacment , assembly of
+                      comlex
+                    </p>
+                    <div className="">
+                      <a
+                        onClick={() => handleCreateSolution("bundleItem")}
+                        className="btn bg-primary text-white cursor"
+                      >
+                        Create <img className="ml-2" src={Buttonarrow}></img>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+      <div
+        className="modal fade"
+        id="AddCoverage"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div
+          className="modal-dialog modal-dialog-centered modal-lg"
+          role="document"
+        >
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="exampleModalLabel">
+                Add Coverage
+              </h5>
+              <button
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="row">
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group w-100">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Coverage ID
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      disabled
+                      placeholder="(AUTO GENERATE)"
+                      value={editSerialNo.coverageId}
+                      defaultValue={editSerialNo.coverageId}
+                    />
+                  </div>
+                </div>
+                {/* <div className="col-md-4 col-sm-4">
                   <div className="form-group">
                     <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">Service ID</label>
                     <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
                   </div>
                 </div> */}
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Make
-                      </label>
-                      <Select
-                        options={categoryList}
-                        placeholder={editSerialNo.make}
-                        // onChange={(e) => HandleCatUsage(e)}
-                        value={editSerialNo.make}
-                        defaultValue={editSerialNo.make}
-                        onChange={(e) =>
-                          setEditSerialNo({ ...editSerialNo, make: e.value })
-                        }
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Family
-                      </label>
-                      <Select
-                        options={categoryList}
-                        placeholder={editSerialNo.family}
-                        value={editSerialNo.family}
-                        defaultValue={editSerialNo.family}
-                        onChange={(e) =>
-                          setEditSerialNo({ ...editSerialNo, family: e.value })
-                        }
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Make
+                    </label>
+                    <Select
+                      options={categoryList}
+                      placeholder={editSerialNo.make}
                       // onChange={(e) => HandleCatUsage(e)}
-                      />
-                    </div>
+                      value={editSerialNo.make}
+                      defaultValue={editSerialNo.make}
+                      onChange={(e) =>
+                        setEditSerialNo({ ...editSerialNo, make: e.value })
+                      }
+                    />
                   </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Model No
-                      </label>
-                      <Select
-                        options={categoryList}
-                        placeholder={editSerialNo.modelNo}
-                        value={editSerialNo.modelNo}
-                        defaultValue={editSerialNo.modelNo}
-                        onChange={(e) =>
-                          setEditSerialNo({ ...editSerialNo, modelNo: e.value })
-                        }
-                      // onChange={(e) => HandleCatUsage(e)}
-                      />
-                    </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Family
+                    </label>
+                    <Select
+                      options={categoryList}
+                      placeholder={editSerialNo.family}
+                      value={editSerialNo.family}
+                      defaultValue={editSerialNo.family}
+                      onChange={(e) =>
+                        setEditSerialNo({ ...editSerialNo, family: e.value })
+                      }
+                    // onChange={(e) => HandleCatUsage(e)}
+                    />
                   </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Serial No Prefix
-                      </label>
-                      <Select
-                        options={categoryList}
-                        placeholder={editSerialNo.serialNoPrefix}
-                        value={editSerialNo.serialNoPrefix}
-                        defaultValue={editSerialNo.serialNoPrefix}
-                        onChange={(e) =>
-                          setEditSerialNo({
-                            ...editSerialNo,
-                            serialNoPrefix: e.value,
-                          })
-                        }
-                      // onChange={(e) => HandleCatUsage(e)}
-                      />
-                    </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Model No
+                    </label>
+                    <Select
+                      options={categoryList}
+                      placeholder={editSerialNo.modelNo}
+                      value={editSerialNo.modelNo}
+                      defaultValue={editSerialNo.modelNo}
+                      onChange={(e) =>
+                        setEditSerialNo({ ...editSerialNo, modelNo: e.value })
+                      }
+                    // onChange={(e) => HandleCatUsage(e)}
+                    />
                   </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Start Serial No
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10"
-                        placeholder="(Optional)"
-                        value={editSerialNo.startSerialNo}
-                        defaultValue={editSerialNo.startSerialNo}
-                        onChange={(e) =>
-                          setEditSerialNo({
-                            ...editSerialNo,
-                            startSerialNo: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Serial No Prefix
+                    </label>
+                    <Select
+                      options={categoryList}
+                      placeholder={editSerialNo.serialNoPrefix}
+                      value={editSerialNo.serialNoPrefix}
+                      defaultValue={editSerialNo.serialNoPrefix}
+                      onChange={(e) =>
+                        setEditSerialNo({
+                          ...editSerialNo,
+                          serialNoPrefix: e.value,
+                        })
+                      }
+                    // onChange={(e) => HandleCatUsage(e)}
+                    />
                   </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        End Serial No
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10"
-                        placeholder="(Optional)"
-                        value={editSerialNo.endSerialNo}
-                        defaultValue={editSerialNo.endSerialNo}
-                        onChange={(e) =>
-                          setEditSerialNo({
-                            ...editSerialNo,
-                            endSerialNo: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Start Serial No
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      placeholder="(Optional)"
+                      value={editSerialNo.startSerialNo}
+                      defaultValue={editSerialNo.startSerialNo}
+                      onChange={(e) =>
+                        setEditSerialNo({
+                          ...editSerialNo,
+                          startSerialNo: e.target.value,
+                        })
+                      }
+                    />
                   </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      End Serial No
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      placeholder="(Optional)"
+                      value={editSerialNo.endSerialNo}
+                      defaultValue={editSerialNo.endSerialNo}
+                      onChange={(e) =>
+                        setEditSerialNo({
+                          ...editSerialNo,
+                          endSerialNo: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
 
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Fleet
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10"
-                        placeholder="(Optional)"
-                        value={editSerialNo.fleet}
-                        defaultValue={editSerialNo.fleet}
-                        onChange={(e) =>
-                          setEditSerialNo({
-                            ...editSerialNo,
-                            fleet: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Fleet
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control border-radius-10"
+                      placeholder="(Optional)"
+                      value={editSerialNo.fleet}
+                      defaultValue={editSerialNo.fleet}
+                      onChange={(e) =>
+                        setEditSerialNo({
+                          ...editSerialNo,
+                          fleet: e.target.value,
+                        })
+                      }
+                    />
                   </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Fleet Size
-                      </label>
-                      <Select
-                        value={editSerialNo.fleetSize}
-                        defaultValue={editSerialNo.fleetSize}
-                        placeholder={editSerialNo.fleetSize}
-                        onChange={(e) =>
-                          setEditSerialNo({ ...editSerialNo, fleetSize: e.value })
-                        }
-                        options={categoryList}
-                      // onChange={(e) => HandleCatUsage(e)}
-                      />
-                    </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Fleet Size
+                    </label>
+                    <Select
+                      value={editSerialNo.fleetSize}
+                      defaultValue={editSerialNo.fleetSize}
+                      placeholder={editSerialNo.fleetSize}
+                      onChange={(e) =>
+                        setEditSerialNo({ ...editSerialNo, fleetSize: e.value })
+                      }
+                      options={categoryList}
+                    // onChange={(e) => HandleCatUsage(e)}
+                    />
                   </div>
-                  {/* <div className="col-md-4 col-sm-4">
+                </div>
+                {/* <div className="col-md-4 col-sm-4">
                   <div className="form-group">
                     <label
                       className="text-light-dark font-size-14 font-weight-500"
@@ -8044,200 +8045,200 @@ export function CreatePortfolio() {
                     <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
                   </div>
                 </div> */}
-                </div>
               </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn border w-100 bg-white"
-                  data-dismiss="modal"
-                >
-                  Close
-                </button>
-                <button type="button" className="btn btn-primary w-100">
-                  Save changes
-                </button>
-              </div>
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn border w-100 bg-white"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="button" className="btn btn-primary w-100">
+                Save changes
+              </button>
             </div>
           </div>
         </div>
-        <ToastContainer />
-        {/* <div className="modal fade" id="relatedTable" tabindex="-1" role="dialog" aria-labelledby="exampleReleted" aria-hidden="true">
+      </div>
+      <ToastContainer />
+      {/* <div className="modal fade" id="relatedTable" tabindex="-1" role="dialog" aria-labelledby="exampleReleted" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered modal-lg" role="document"> */}
-        <Modal
-          show={showRelatedModel}
-          onHide={() => setShowRelatedModel(false)}
-          size="lg"
-          aria-labelledby="contained-modal-title-vcenter"
-          centered
-        >
-          <Modal.Header className="align-items-center">
-            <div>
-              <Modal.Title>Included Serial No</Modal.Title>
-            </div>
-            <div>
-              <Link
-                to="#"
-                className=" btn bg-primary text-white"
-                onClick={() => AddNewRowData(openModelBoxDataId)}
-              >
-                Add New
-              </Link>
-            </div>
-          </Modal.Header>
-          <Modal.Body>
-            <DataTable
-              className=""
-              title=""
-              columns={columns4}
-              data={modelIncludedData}
-              customStyles={customStyles}
-            // pagination
-            />
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="primary" onClick={() => setShowRelatedModel(false)}>
-              Close
-            </Button>
-            <Button variant="primary">Save changes</Button>
-          </Modal.Footer>
-        </Modal>
+      <Modal
+        show={showRelatedModel}
+        onHide={() => setShowRelatedModel(false)}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header className="align-items-center">
+          <div>
+            <Modal.Title>Included Serial No</Modal.Title>
+          </div>
+          <div>
+            <Link
+              to="#"
+              className=" btn bg-primary text-white"
+              onClick={() => AddNewRowData(openModelBoxDataId)}
+            >
+              Add New
+            </Link>
+          </div>
+        </Modal.Header>
+        <Modal.Body>
+          <DataTable
+            className=""
+            title=""
+            columns={columns4}
+            data={modelIncludedData}
+            customStyles={customStyles}
+          // pagination
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={() => setShowRelatedModel(false)}>
+            Close
+          </Button>
+          <Button variant="primary">Save changes</Button>
+        </Modal.Footer>
+      </Modal>
 
-        <Modal
-          show={openMiniBundleItem}
-          onHide={() => setOpenMiniBundleItem(false)}
-          size="lg"
-          aria-labelledby="contained-modal-title-vcenter"
-          centered
-        >
-          <Modal.Body className="p-0 bg-white">
-            <div className="px-3">
-              <p className="mt-4">SUMMARY</p>
-              <div className="row mt-4">
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      ID
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control border-radius-10"
-                      disabled
-                      placeholder="(AUTO GENERATE)"
-                      value={
-                        addMiniPortFolioItem.id ? addMiniPortFolioItem.id : ""
-                      }
-                    />
-                  </div>
+      <Modal
+        show={openMiniBundleItem}
+        onHide={() => setOpenMiniBundleItem(false)}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Body className="p-0 bg-white">
+          <div className="px-3">
+            <p className="mt-4">SUMMARY</p>
+            <div className="row mt-4">
+              <div className="col-md-6 col-sm-6">
+                <div className="form-group w-100">
+                  <label
+                    className="text-light-dark font-size-12 font-weight-500"
+                    htmlFor="exampleInputEmail1"
+                  >
+                    ID
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control border-radius-10"
+                    disabled
+                    placeholder="(AUTO GENERATE)"
+                    value={
+                      addMiniPortFolioItem.id ? addMiniPortFolioItem.id : ""
+                    }
+                  />
                 </div>
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      DESCRIPTION
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control border-radius-10"
-                      placeholder="DESCRIPTION"
-                      onChange={(e) =>
-                        setAddMiniportFolioItem({
-                          ...addMiniPortFolioItem,
-                          description: e.target.value,
-                        })
-                      }
-                      value={addMiniPortFolioItem.description}
-                    />
-                  </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div className="form-group w-100">
+                  <label
+                    className="text-light-dark font-size-12 font-weight-500"
+                    htmlFor="exampleInputEmail1"
+                  >
+                    DESCRIPTION
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control border-radius-10"
+                    placeholder="DESCRIPTION"
+                    onChange={(e) =>
+                      setAddMiniportFolioItem({
+                        ...addMiniPortFolioItem,
+                        description: e.target.value,
+                      })
+                    }
+                    value={addMiniPortFolioItem.description}
+                  />
                 </div>
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      USAGE IN
-                    </label>
-                    <Select
-                      placeholder={categoryUsageKeyValue1.label}
-                      options={categoryList}
-                      // selectedValue={categoryUsageKeyValue1.value ? categoryUsageKeyValue1.value : ""}
-                      defaultValue={
-                        categoryUsageKeyValue1.value
-                          ? categoryUsageKeyValue1.value
-                          : ""
-                      }
-                      value={addMiniPortFolioItem.usageIn}
-                      onChange={(e) =>
-                        setAddMiniportFolioItem({
-                          ...addMiniPortFolioItem,
-                          usageIn: e,
-                        })
-                      }
-                    />
-                  </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div className="form-group w-100">
+                  <label
+                    className="text-light-dark font-size-12 font-weight-500"
+                    htmlFor="exampleInputEmail1"
+                  >
+                    USAGE IN
+                  </label>
+                  <Select
+                    placeholder={categoryUsageKeyValue1.label}
+                    options={categoryList}
+                    // selectedValue={categoryUsageKeyValue1.value ? categoryUsageKeyValue1.value : ""}
+                    defaultValue={
+                      categoryUsageKeyValue1.value
+                        ? categoryUsageKeyValue1.value
+                        : ""
+                    }
+                    value={addMiniPortFolioItem.usageIn}
+                    onChange={(e) =>
+                      setAddMiniportFolioItem({
+                        ...addMiniPortFolioItem,
+                        usageIn: e,
+                      })
+                    }
+                  />
                 </div>
-                <div className="col-md-6 col-sm-6">
-                  <div className="form-group">
-                    <label
-                      className="text-light-dark font-size-14 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      TASK TYPE
-                    </label>
-                    <div className="icon-defold">
-                      <div className="form-control">
-                        <Select
-                          options={updatedTaskList}
-                          placeholder={stratgyTaskTypeKeyValue.value}
-                          // selectedValue={stratgyTaskTypeKeyValue.value ? stratgyTaskTypeKeyValue.value : ""}
-                          defaultValue={
-                            stratgyTaskTypeKeyValue.value
-                              ? stratgyTaskTypeKeyValue.value
-                              : ""
-                          }
-                          onChange={(e) =>
-                            setAddMiniportFolioItem({
-                              ...addMiniPortFolioItem,
-                              taskType: e,
-                            })
-                          }
-                          value={addPortFolioItem.taskType}
-                        />
-                        <span className="search-icon searchIcon">
-                          <SearchOutlinedIcon className="font-size-16" />
-                        </span>
-                      </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                  <label
+                    className="text-light-dark font-size-14 font-weight-500"
+                    htmlFor="exampleInputEmail1"
+                  >
+                    TASK TYPE
+                  </label>
+                  <div className="icon-defold">
+                    <div className="form-control">
+                      <Select
+                        options={updatedTaskList}
+                        placeholder={stratgyTaskTypeKeyValue.value}
+                        // selectedValue={stratgyTaskTypeKeyValue.value ? stratgyTaskTypeKeyValue.value : ""}
+                        defaultValue={
+                          stratgyTaskTypeKeyValue.value
+                            ? stratgyTaskTypeKeyValue.value
+                            : ""
+                        }
+                        onChange={(e) =>
+                          setAddMiniportFolioItem({
+                            ...addMiniPortFolioItem,
+                            taskType: e,
+                          })
+                        }
+                        value={addPortFolioItem.taskType}
+                      />
+                      <span className="search-icon searchIcon">
+                        <SearchOutlinedIcon className="font-size-16" />
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="text-right pb-2">
-                <a
-                  href="#"
-                  className="btn border mr-4"
-                  onClick={() => setOpenMiniBundleItem(false)}
-                >
-                  Cancel
-                </a>
-                <Link
-                  to="#"
-                  className="btn border mr-4"
-                  onClick={() => alert("action require")}
-                >
-                  Save & Continue
-                </Link>
-              </div>
             </div>
-          </Modal.Body>
-        </Modal>
+            <div className="text-right pb-2">
+              <a
+                href="#"
+                className="btn border mr-4"
+                onClick={() => setOpenMiniBundleItem(false)}
+              >
+                Cancel
+              </a>
+              <Link
+                to="#"
+                className="btn border mr-4"
+                onClick={() => alert("action require")}
+              >
+                Save & Continue
+              </Link>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
 
-        {/* <Modal
+      {/* <Modal
         show={serviceOrBundleShow}
         onHide={() => setServiceOrBundleShow(false)}
         size="lg"
@@ -8501,1246 +8502,1241 @@ export function CreatePortfolio() {
         </Modal.Body>
       </Modal> */}
 
-        <div
-          className="modal right fade"
-          id="myModal2"
-          tabIndex="-1"
-          role="dialog"
-          aria-labelledby="myModalLabel2"
-        >
-          <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header d-block">
-                <button
-                  type="button"
-                  className="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-                <h4 className="modal-title" id="myModalLabel2">
-                  Inclusion/Exclusion
-                </h4>
+      <div
+        className="modal right fade"
+        id="myModal2"
+        tabIndex="-1"
+        role="dialog"
+        aria-labelledby="myModalLabel2"
+      >
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header d-block">
+              <button
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <h4 className="modal-title" id="myModalLabel2">
+                Inclusion/Exclusion
+              </h4>
+            </div>
+            <div className="modal-body p-0">
+              <div className="bg-light-blue p-3">
+                <h5 className="font-weight-normal text-violet mb-0">
+                  CHOICE OF SPARE PARTS
+                </h5>
               </div>
-              <div className="modal-body p-0">
-                <div className="bg-light-blue p-3">
-                  <h5 className="font-weight-normal text-violet mb-0">
-                    CHOICE OF SPARE PARTS
-                  </h5>
-                </div>
-                <div className="bg-white p-3">
-                  <FormGroup>
-                    <FormControlLabel
-                      control={<Switch defaultChecked />}
-                      label="With Spare Parts"
-                    />
-                    <FormControlLabel
-                      control={<Switch />}
-                      label="I have Spare Parts"
-                    />
-                    <FormControlLabel
-                      control={<Switch />}
-                      label="I need only Spare Parts"
-                    />
-                  </FormGroup>
-                </div>
-                <div className="bg-light-blue p-3">
-                  <h5 className="font-weight-normal text-violet mb-0">
-                    CHOICE OF LABOR
-                  </h5>
-                </div>
-                <div className="bg-white p-3">
-                  <div className=" d-flex justify-content-between ">
-                    <div>
-                      <FormGroup>
-                        <FormControlLabel
-                          control={<Switch defaultChecked />}
-                          label="With Labor"
-                        />
-                        <FormControlLabel
-                          control={<Switch />}
-                          label="Without Labor"
-                        />
-                      </FormGroup>
-                    </div>
-                    <div>
-                      <a href="#" className="ml-3 font-size-14">
-                        <img src={deleteIcon}></img>
-                      </a>
-                    </div>
+              <div className="bg-white p-3">
+                <FormGroup>
+                  <FormControlLabel
+                    control={<Switch defaultChecked />}
+                    label="With Spare Parts"
+                  />
+                  <FormControlLabel
+                    control={<Switch />}
+                    label="I have Spare Parts"
+                  />
+                  <FormControlLabel
+                    control={<Switch />}
+                    label="I need only Spare Parts"
+                  />
+                </FormGroup>
+              </div>
+              <div className="bg-light-blue p-3">
+                <h5 className="font-weight-normal text-violet mb-0">
+                  CHOICE OF LABOR
+                </h5>
+              </div>
+              <div className="bg-white p-3">
+                <div className=" d-flex justify-content-between ">
+                  <div>
+                    <FormGroup>
+                      <FormControlLabel
+                        control={<Switch defaultChecked />}
+                        label="With Labor"
+                      />
+                      <FormControlLabel
+                        control={<Switch />}
+                        label="Without Labor"
+                      />
+                    </FormGroup>
+                  </div>
+                  <div>
+                    <a href="#" className="ml-3 font-size-14">
+                      <img src={deleteIcon}></img>
+                    </a>
                   </div>
                 </div>
-                <div className="bg-light-blue p-3">
-                  <h5 className="font-weight-normal text-violet mb-0">
-                    CHOICE MISC.
-                  </h5>
-                </div>
-                <div className="bg-white p-3">
-                  <FormGroup>
-                    <FormControlLabel control={<Switch />} label=" Lubricants" />
-                    <FormControlLabel
-                      control={<Switch />}
-                      label="Travel Expenses"
-                    />
-                    <FormControlLabel control={<Switch />} label="Tools" />
-                    <FormControlLabel
-                      control={<Switch />}
-                      label="External Work"
-                    />
-                  </FormGroup>
-                  <h5 className="d-flex align-items-center mb-0">
-                    <div className="" style={{ display: "contents" }}>
-                      <span className="mr-3 white-space">Includes</span>
-                    </div>
-                    <div className="hr"></div>
-                  </h5>
-                </div>
-                <div className="bg-light-blue p-3">
-                  <h5 className="font-weight-normal text-violet mb-0">
-                    SERVICES
-                  </h5>
-                </div>
-                <div className="bg-white p-3">
-                  <div className=" d-flex justify-content-between align-items-center">
-                    <div>
-                      <FormGroup>
-                        <FormControlLabel
-                          control={<Switch />}
-                          label=" Changee Oil and Filter"
-                        />
-                      </FormGroup>
-                    </div>
-                    <div>
-                      <a href="#" className="ml-3 font-size-14">
-                        <img src={deleteIcon}></img>
-                      </a>
-                    </div>
+              </div>
+              <div className="bg-light-blue p-3">
+                <h5 className="font-weight-normal text-violet mb-0">
+                  CHOICE MISC.
+                </h5>
+              </div>
+              <div className="bg-white p-3">
+                <FormGroup>
+                  <FormControlLabel control={<Switch />} label=" Lubricants" />
+                  <FormControlLabel
+                    control={<Switch />}
+                    label="Travel Expenses"
+                  />
+                  <FormControlLabel control={<Switch />} label="Tools" />
+                  <FormControlLabel
+                    control={<Switch />}
+                    label="External Work"
+                  />
+                </FormGroup>
+                <h5 className="d-flex align-items-center mb-0">
+                  <div className="" style={{ display: "contents" }}>
+                    <span className="mr-3 white-space">Includes</span>
                   </div>
-                  <h5 className="d-flex align-items-center mb-0">
-                    <div className="" style={{ display: "contents" }}>
-                      <span className="mr-3 white-space">Optianal services</span>
-                    </div>
-                    <div className="hr"></div>
-                  </h5>
-                  <FormGroup>
-                    <FormControlLabel
-                      control={<Switch />}
-                      label="Air Filter Replacement"
-                    />
-                    <FormControlLabel
-                      control={<Switch />}
-                      label="Cabin Air Filter"
-                    />
-                    <FormControlLabel control={<Switch />} label="Rotete Tires" />
-                  </FormGroup>
-                  <h5 className="d-flex align-items-center mb-0">
-                    <div className="" style={{ display: "contents" }}>
-                      <span className="mr-3 white-space">Includes</span>
-                    </div>
-                    <div className="hr"></div>
-                  </h5>
-                  <div className="mt-3">
-                    <h6>
-                      <a
-                        href="#"
-                        className="btn-sm text-white mr-2"
-                        style={{ background: "#79CBA2" }}
-                      >
-                        Free
-                      </a>{" "}
-                      50 Point Inspection
-                    </h6>
-                    <h6 className="mt-3">
-                      <a
-                        href="#"
-                        className="btn-sm text-white mr-2 "
-                        style={{ background: "#79CBA2" }}
-                      >
-                        Free
-                      </a>{" "}
-                      50 Point Inspection
-                    </h6>
+                  <div className="hr"></div>
+                </h5>
+              </div>
+              <div className="bg-light-blue p-3">
+                <h5 className="font-weight-normal text-violet mb-0">
+                  SERVICES
+                </h5>
+              </div>
+              <div className="bg-white p-3">
+                <div className=" d-flex justify-content-between align-items-center">
+                  <div>
+                    <FormGroup>
+                      <FormControlLabel
+                        control={<Switch />}
+                        label=" Changee Oil and Filter"
+                      />
+                    </FormGroup>
                   </div>
-                  <div className=" d-flex justify-content-between mt-4">
-                    <div>
-                      <a href="#" className="btn text-violet bg-light-blue">
-                        <b>
-                          <span className="mr-2">+</span>Add more services
-                        </b>
-                      </a>
-                    </div>
-                    <div>
-                      <a href="#" className="btn text-violet">
-                        <b>I Have Parts</b>
-                      </a>
-                    </div>
+                  <div>
+                    <a href="#" className="ml-3 font-size-14">
+                      <img src={deleteIcon}></img>
+                    </a>
+                  </div>
+                </div>
+                <h5 className="d-flex align-items-center mb-0">
+                  <div className="" style={{ display: "contents" }}>
+                    <span className="mr-3 white-space">Optianal services</span>
+                  </div>
+                  <div className="hr"></div>
+                </h5>
+                <FormGroup>
+                  <FormControlLabel
+                    control={<Switch />}
+                    label="Air Filter Replacement"
+                  />
+                  <FormControlLabel
+                    control={<Switch />}
+                    label="Cabin Air Filter"
+                  />
+                  <FormControlLabel control={<Switch />} label="Rotete Tires" />
+                </FormGroup>
+                <h5 className="d-flex align-items-center mb-0">
+                  <div className="" style={{ display: "contents" }}>
+                    <span className="mr-3 white-space">Includes</span>
+                  </div>
+                  <div className="hr"></div>
+                </h5>
+                <div className="mt-3">
+                  <h6>
+                    <a
+                      href="#"
+                      className="btn-sm text-white mr-2"
+                      style={{ background: "#79CBA2" }}
+                    >
+                      Free
+                    </a>{" "}
+                    50 Point Inspection
+                  </h6>
+                  <h6 className="mt-3">
+                    <a
+                      href="#"
+                      className="btn-sm text-white mr-2 "
+                      style={{ background: "#79CBA2" }}
+                    >
+                      Free
+                    </a>{" "}
+                    50 Point Inspection
+                  </h6>
+                </div>
+                <div className=" d-flex justify-content-between mt-4">
+                  <div>
+                    <a href="#" className="btn text-violet bg-light-blue">
+                      <b>
+                        <span className="mr-2">+</span>Add more services
+                      </b>
+                    </a>
+                  </div>
+                  <div>
+                    <a href="#" className="btn text-violet">
+                      <b>I Have Parts</b>
+                    </a>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <Modal
-          size="xl"
-          show={itemModelShow}
-          onHide={() => setItemModelShow(false)}
-        >
-          <Modal.Body>
-            <Box sx={{ typography: "body1" }}>
-              <TabContext value={tabs}>
-                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                  <TabList
-                    onChange={(e, newValue) => setTabs(newValue)}
-                    aria-label="lab API tabs example"
-                  >
-                    <Tab label="Portfolio Item" value="1" />
-                    <Tab label="Service/Bundle" value="2" />
-                    {/* <Tab label="Solution" value="3" /> */}
-                    {/*use it in useCase-4 */}
-                    {categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE" && <Tab label="Component Data" value="4" />}
-                    <Tab label="Price Calculator" value="5" />
-                    <Tab label="Review" value="6" />
-                  </TabList>
-                </Box>
-                <TabPanel value="1">
-                  <AddPortfolioItem
-                    // openAddBundleItemHeader={openAddBundleItemHeader}
-                    categoryList={categoryList}
-                    updatedTaskList={updatedTaskList}
-                    setTabs={setTabs}
-                    getAddportfolioItemDataFun={getAddportfolioItemDataFun}
-                    compoFlag="ITEM"
-                    handleBundleItemSaveAndContinue={
-                      handleBundleItemSaveAndContinue
-                    }
-                  />
-                </TabPanel>
-                <TabPanel value="2">
-                  <QuerySearchComp
-                    compoFlag="bundleSearch"
-                    options={[
-                      { label: "Make", value: "itemHeaderMake" },
-                      { label: "Family", value: "itemHeaderFamily" },
-                      { label: "Model", value: "model" },
-                      { label: "Prefix", value: "prefix" },
-                    ]}
-                    setTempBundleService1={setTempBundleService1}
-                    setLoadingItem={setLoadingItem}
-                  />
-                  {loadingItem === "01" ? ("loading") :
-                    <>
-                      {tempBundleService1.length > 0 && (<>
-                        <DataTable
-                          title=""
-                          columns={tempBundleItemColumns1}
-                          data={tempBundleService1}
-                          customStyles={customStyles}
-                          selectableRows
-                          onSelectedRowsChange={(state) => setTempBundleService2(state.selectedRows)}
-                          pagination
-                        />{tempBundleService2.length > 0 && (<div className="row mt-5" style={{ justifyContent: "right" }}>
-                          <button
-                            type="button"
-                            className="btn btn-light"
-                            onClick={() => {
-                              setTempBundleService3(tempBundleService2)
-                              setTempBundleService1([])
-                            }}
-                          >
-                            Add Selected
-                          </button>
-                        </div>)}
-                      </>)}
-                    </>
-
-                  }
-                  {tempBundleService3.length > 0 && <>
-                    <DataTable
-                      title=""
-                      columns={tempBundleItemColumns1}
-                      data={tempBundleService3}
-                      customStyles={customStyles}
-                      expandableRows
-                      expandableRowsComponent={ExpandedPriceCalculator}
-                      onRowExpandToggled={handleExpandRowForPriceCalculator}
-                      pagination
-                    />
-                    <div className="row mt-5" style={{ justifyContent: "right" }}>
-                      <button type="button" className="btn btn-light"
-                        onClick={() => {
-                          if(categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE"){
-                            setTabs("4")
-                            setTempBundleService3([])
-                          }else{
-                            setTabs("5")
-                            setTempBundleService3([])                            
-                          }
-                          // categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE" ? (setTabs("4")&&setTempBundleService3([])) : setTabs("5")&&setTempBundleService3([])
-                        }}
-                      >Continue</button>
-                    </div>
-                  </>}
-
-                </TabPanel>
-                <TabPanel value="3">
-                  <Solution setTabs={setTabs} />
-                </TabPanel>
-                <TabPanel value="4">
-                  <>
-                    <div className="ligt-greey-bg p-3 mb-5">
-                      <div>
-                        <span className="mr-3">
-                          <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                          <span className="ml-2">Related part list(s)</span>
-                        </span>
-                        <span className="mr-3">
-                          <AccessAlarmOutlinedIcon className=" font-size-16" />
-                          <span className="ml-2">Related template(s)</span>
-                        </span>
-                        <span>
-                          <SellOutlinedIcon className=" font-size-16" />
-                          <span className="ml-2">Related repair option</span>
-                        </span>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-14 font-weight-500">
-                            Component Code
-                          </label>
-
-                          <div className="customselectsearch">
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              name="componentCode"
-                              value={componentData.componentCode}
-                              onChange={handleComponentChange}
-                              autoComplete="off"
-                            />
-
-                            {<ul className={`list-group customselectsearch-list scrollbar scrolbarCode style`}>
-                              {componentData.codeSuggestions.map(
-                                (currentItem, j) => (
-                                  <li className="list-group-item" key={j} onClick={(e) => handleComponentCodeSuggetionsClick(e, j)}
-                                  >
-                                    {currentItem.componentCode}
-                                  </li>
-                                )
-                              )}
-                            </ul>}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-14 font-weight-500">
-                            Component Description
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            name="description"
-                            value={componentData.description}
-                            onChange={handleComponentChange}
-                            placeholder="Optional"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-14 font-weight-500">
-                            Make
-                          </label>
-                          <div className="customselectsearch">
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              name="make"
-                              value={componentData.make}
-                              onChange={handleComponentChange}
-                              autoComplete="off"
-                            />
-                            {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrollbarMake">
-                              {componentData.makeSuggestions.map(
-                                (currentItem, j) => (
-                                  <li className="list-group-item" key={j} onClick={(e) => handleComponentMakeSuggetionsClick(e, j)}>
-                                    {currentItem.make}
-                                  </li>
-                                )
-                              )}
-                            </ul>}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-14 font-weight-500">
-                            Model
-                          </label>
-                          <div className="customselectsearch">
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              name="model"
-                              value={componentData.model}
-                              onChange={handleComponentChange}
-                              autoComplete="off"
-                            />
-                            {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrollbarModel">
-                              {componentData.modelSuggestions.map(
-                                (currentItem, j) => (
-                                  <li className="list-group-item" key={j} onClick={(e) => handleComponentModelSuggetionsClick(e, j)}>
-                                    {currentItem.model}
-                                  </li>
-                                )
-                              )}
-                            </ul>}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-14 font-weight-500">
-                            Serial No.
-                          </label>
-                          <div className="customselectsearch">
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              name="serialNo"
-                              value={componentData.serialNo}
-                              onChange={handleComponentChange}
-                              autoComplete="off"
-                            />
-
-                            {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrolbarSerialNo">
-                              {componentData.serialNoSuggestions.map(
-                                (currentItem, j) => (
-                                  <li className="list-group-item" key={j} onClick={(e) => handleComponentSerialNoSuggetionsClick(e, j)}>
-                                    {currentItem.family}
-                                  </li>
-                                )
-                              )}
-                            </ul>}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="row mt-3">
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            PRICE METHOD
-                          </label>
-                          <Select
-                            options={priceMethodKeyValue}
-                            value={componentData.priceMethod}
-                            name="priceMethod"
-                            onChange={(e) => setComponentData({ ...componentData, priceMethod: e })}
-                            placeholder="placeholder (Optional)"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group date-box">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            ADDITIONAL
-                          </label>
-                          <div className=" d-flex form-control-date">
-                            <div className="">
-                              <Select
-                                isClearable={true}
-                                value={componentData.priceAdditionalSelect}
-                                name="priceAdditionalSelect"
-                                onChange={(e) => setComponentData({ ...componentData, priceAdditionalSelect: e })}
-                                options={options}
-                                placeholder="Select"
-                              />
-                            </div>
-                            <input
-                              type="text"
-                              className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                              placeholder="10%"
-                              // defaultValue={props?.priceCalculator?.priceAdditionalInput}
-                              value={componentData.priceAdditionalInput}
-                              name="priceAdditionalInput"
-                              onChange={handleComponentChange}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group date-box">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            PRICE ESCALATON
-                          </label>
-                          <div className=" d-flex align-items-center form-control-date">
-                            <Select
-                              className="select-input"
-                              value={componentData.priceEscalationSelect}
-                              name="priceEscalationSelect"
-                              onChange={(e) => setComponentData({ ...componentData, priceEscalationSelect: e })}
-                              options={options}
-                              placeholder="placeholder "
-                            />
-                            <input
-                              type="text"
-                              className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                              placeholder="20%"
-                              // defaultValue={props?.priceCalculator?.priceEscalationInput}
-                              value={componentData.priceEscalationInput}
-                              name="priceEscalationInput"
-                              onChange={handleComponentChange}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            CALCULATED PRICE
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            // defaultValue={props?.priceCalculator?.calculatedPrice}
-                            value={componentData.calculatedPrice}
-                            name="calculatedPrice"
-                            onChange={handleComponentChange}
-                            placeholder="$100"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            FLAT PRICE / ADJUSTED PRICE
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            value={componentData.flatPrice}
-                            name="flatPrice"
-                            onChange={handleComponentChange}
-                            placeholder="$100"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group date-box">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            DISCOUNT TYPE
-                          </label>
-                          <div className=" d-flex form-control-date">
-                            <div className="">
-                              <Select
-                                value={componentData.discountTypeSelect}
-                                name="discountTypeSelect"
-                                onChange={(e) => setComponentData({ ...componentData, discountTypeSelect: e })}
-                                isClearable={true}
-                                options={options}
-                                placeholder="Select"
-                              />
-                            </div>
-                            <input
-                              type="text"
-                              className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                              value={componentData.discountTypeInput}
-                              name="discountTypeInput"
-                              onChange={handleComponentChange}
-                              placeholder="10%"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="row mt-5" style={{ justifyContent: "right" }}>
-                      <button
-                        type="button"
-                        onClick={handleComponentDataSave}
-                        className="btn btn-light"
-                      >
-                        Save and Continue
-                      </button>
-                    </div>
-                  </>
-                </TabPanel>
-                <TabPanel value="5">
-                  {/* <PriceCalculator
+      <Modal
+        size="xl"
+        show={itemModelShow}
+        onHide={() => setItemModelShow(false)}
+      >
+        <Modal.Body>
+          <Box sx={{ typography: "body1" }}>
+            <TabContext value={tabs}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <TabList
+                  onChange={(e, newValue) => setTabs(newValue)}
+                  aria-label="lab API tabs example"
+                >
+                  <Tab label="Portfolio Item" value="1" />
+                  <Tab label="Service/Bundle" value="2" />
+                  {/* <Tab label="Solution" value="3" /> */}
+                  {/*use it in useCase-4 */}
+                  {categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE" && <Tab label="Component Data" value="4" />}
+                  <Tab label="Price Calculator" value="5" />
+                  <Tab label="Review" value="6" />
+                </TabList>
+              </Box>
+              <TabPanel value="1">
+                <AddPortfolioItem
+                  stratgyTaskTypeKeyValue={stratgyTaskTypeKeyValue}
                   setTabs={setTabs}
-                  priceCalculator={priceCalculator}
-                  serviceOrBundlePrefix={serviceOrBundlePrefix}
-                  getPriceCalculatorDataFun={getPriceCalculatorDataFun}
-                  handleSavePrices={handleSavePrices}
-                /> */}
+                  getAddportfolioItemDataFun={getAddportfolioItemDataFun}
+                  compoFlag="ITEM"
+                />
+              </TabPanel>
+              <TabPanel value="2">
+                <QuerySearchComp
+                  compoFlag="bundleSearch"
+                  options={[
+                    { label: "Make", value: "itemHeaderMake" },
+                    { label: "Family", value: "itemHeaderFamily" },
+                    { label: "Model", value: "model" },
+                    { label: "Prefix", value: "prefix" },
+                  ]}
+                  setTempBundleService1={setTempBundleService1}
+                  setLoadingItem={setLoadingItem}
+                />
+                {loadingItem === "01" ? ("loading") :
+                  <>
+                    {tempBundleService1.length > 0 && (<>
+                      <DataTable
+                        title=""
+                        columns={tempBundleItemColumns1}
+                        data={tempBundleService1}
+                        customStyles={customStyles}
+                        selectableRows
+                        onSelectedRowsChange={(state) => setTempBundleService2(state.selectedRows)}
+                        pagination
+                      />{tempBundleService2.length > 0 && (<div className="row mt-5" style={{ justifyContent: "right" }}>
+                        <button
+                          type="button"
+                          className="btn btn-light"
+                          onClick={() => {
+                            setTempBundleService3(tempBundleService2)
+                            setTempBundleService1([])
+                          }}
+                        >
+                          Add Selected
+                        </button>
+                      </div>)}
+                    </>)}
+                  </>
 
-                  <div className="ligt-greey-bg p-3">
+                }
+                {tempBundleService3.length > 0 && <>
+                  <DataTable
+                    title=""
+                    columns={tempBundleItemColumns1}
+                    data={tempBundleService3}
+                    customStyles={customStyles}
+                    expandableRows
+                    expandableRowsComponent={ExpandedPriceCalculator}
+                    onRowExpandToggled={handleExpandRowForPriceCalculator}
+                    pagination
+                  />
+                  <div className="row mt-5" style={{ justifyContent: "right" }}>
+                    <button type="button" className="btn btn-light"
+                      onClick={() => {
+                        if (categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE") {
+                          setTabs("4")
+                          setTempBundleService3([])
+                        } else {
+                          setTabs("5")
+                          setTempBundleService3([])
+                        }
+                        // categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE" ? (setTabs("4")&&setTempBundleService3([])) : setTabs("5")&&setTempBundleService3([])
+                      }}
+                    >Continue</button>
+                  </div>
+                </>}
+
+              </TabPanel>
+              <TabPanel value="3">
+                <Solution setTabs={setTabs} />
+              </TabPanel>
+              <TabPanel value="4">
+                <>
+                  <div className="ligt-greey-bg p-3 mb-5">
                     <div>
-                      <span className="mr-3 cursor" onClick={() => setDisable(!disable)}>
-                        <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
-                        <span className="ml-2">Edit</span>
-                      </span>
-                      <span className="mr-3">
-                        <MonetizationOnOutlinedIcon className=" font-size-16" />
-                        <span className="ml-2"> Adjust price</span>
-                      </span>
                       <span className="mr-3">
                         <FormatListBulletedOutlinedIcon className=" font-size-16" />
                         <span className="ml-2">Related part list(s)</span>
                       </span>
                       <span className="mr-3">
                         <AccessAlarmOutlinedIcon className=" font-size-16" />
-                        <span className="ml-2">Related service estimate(s)</span>
+                        <span className="ml-2">Related template(s)</span>
                       </span>
                       <span>
                         <SellOutlinedIcon className=" font-size-16" />
-                        <span className="ml-2">Split price</span>
+                        <span className="ml-2">Related repair option</span>
                       </span>
                     </div>
                   </div>
+                  <div className="row">
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-14 font-weight-500">
+                          Component Code
+                        </label>
 
-                  <div className="mt-3">
-                    <div className="row">
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            Net Parts $
-                          </label>
+                        <div className="customselectsearch">
                           <input
                             type="text"
                             className="form-control border-radius-10"
-                            name="netParts"
-                            disabled={disable}
-                            value={itemPriceCalculator.netParts}
-                            onChange={handleItemPriceCalculatorChange}
+                            name="componentCode"
+                            value={componentData.componentCode}
+                            onChange={handleComponentChange}
+                            autoComplete="off"
                           />
+
+                          {<ul className={`list-group customselectsearch-list scrollbar scrolbarCode style`}>
+                            {componentData.codeSuggestions.map(
+                              (currentItem, j) => (
+                                <li className="list-group-item" key={j} onClick={(e) => handleComponentCodeSuggetionsClick(e, j)}
+                                >
+                                  {currentItem.componentCode}
+                                </li>
+                              )
+                            )}
+                          </ul>}
                         </div>
                       </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            Net Service $
-                          </label>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-14 font-weight-500">
+                          Component Description
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          name="description"
+                          value={componentData.description}
+                          onChange={handleComponentChange}
+                          placeholder="Optional"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-14 font-weight-500">
+                          Make
+                        </label>
+                        <div className="customselectsearch">
                           <input
                             type="text"
                             className="form-control border-radius-10"
-                            name="netService"
-                            disabled={disable}
-                            value={itemPriceCalculator.netService}
-                            onChange={handleItemPriceCalculatorChange}
+                            name="make"
+                            value={componentData.make}
+                            onChange={handleComponentChange}
+                            autoComplete="off"
                           />
+                          {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrollbarMake">
+                            {componentData.makeSuggestions.map(
+                              (currentItem, j) => (
+                                <li className="list-group-item" key={j} onClick={(e) => handleComponentMakeSuggetionsClick(e, j)}>
+                                  {currentItem.make}
+                                </li>
+                              )
+                            )}
+                          </ul>}
                         </div>
                       </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            Price type
-                          </label>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-14 font-weight-500">
+                          Model
+                        </label>
+                        <div className="customselectsearch">
                           <input
                             type="text"
                             className="form-control border-radius-10"
-                            placeholder="Optional"
-                            name="priceType"
-                            disabled={disable}
-                            value={itemPriceCalculator.priceType}
-                            onChange={handleItemPriceCalculatorChange}
+                            name="model"
+                            value={componentData.model}
+                            onChange={handleComponentChange}
+                            autoComplete="off"
                           />
+                          {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrollbarModel">
+                            {componentData.modelSuggestions.map(
+                              (currentItem, j) => (
+                                <li className="list-group-item" key={j} onClick={(e) => handleComponentModelSuggetionsClick(e, j)}>
+                                  {currentItem.model}
+                                </li>
+                              )
+                            )}
+                          </ul>}
                         </div>
                       </div>
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            Net Price
-                          </label>
+                    </div>
+
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-14 font-weight-500">
+                          Serial No.
+                        </label>
+                        <div className="customselectsearch">
                           <input
                             type="text"
                             className="form-control border-radius-10"
-                            name="netPrice"
-                            disabled={disable}
-                            value={itemPriceCalculator.netPrice}
-                            onChange={handleItemPriceCalculatorChange}
+                            name="serialNo"
+                            value={componentData.serialNo}
+                            onChange={handleComponentChange}
+                            autoComplete="off"
+                          />
+
+                          {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrolbarSerialNo">
+                            {componentData.serialNoSuggestions.map(
+                              (currentItem, j) => (
+                                <li className="list-group-item" key={j} onClick={(e) => handleComponentSerialNoSuggetionsClick(e, j)}>
+                                  {currentItem.family}
+                                </li>
+                              )
+                            )}
+                          </ul>}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row mt-3">
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          PRICE METHOD
+                        </label>
+                        <Select
+                          options={priceMethodKeyValue}
+                          value={componentData.priceMethod}
+                          name="priceMethod"
+                          onChange={(e) => setComponentData({ ...componentData, priceMethod: e })}
+                          placeholder="placeholder (Optional)"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          ADDITIONAL
+                        </label>
+                        <div className=" d-flex form-control-date">
+                          <div className="">
+                            <Select
+                              isClearable={true}
+                              value={componentData.priceAdditionalSelect}
+                              name="priceAdditionalSelect"
+                              onChange={(e) => setComponentData({ ...componentData, priceAdditionalSelect: e })}
+                              options={options}
+                              placeholder="Select"
+                            />
+                          </div>
+                          <input
+                            type="text"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            placeholder="10%"
+                            // defaultValue={props?.priceCalculator?.priceAdditionalInput}
+                            value={componentData.priceAdditionalInput}
+                            name="priceAdditionalInput"
+                            onChange={handleComponentChange}
                           />
                         </div>
                       </div>
                     </div>
-                    <div className="row">
-                      <div className="col-md-6 col-sm-6">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            for="exampleInputEmail1"
-                          >
-                            Net Additionals $
-                          </label>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          PRICE ESCALATON
+                        </label>
+                        <div className=" d-flex align-items-center form-control-date">
+                          <Select
+                            className="select-input"
+                            value={componentData.priceEscalationSelect}
+                            name="priceEscalationSelect"
+                            onChange={(e) => setComponentData({ ...componentData, priceEscalationSelect: e })}
+                            options={options}
+                            placeholder="placeholder "
+                          />
                           <input
                             type="text"
-                            className="form-control border-radius-10"
-                            name="netAdditionals"
-                            disabled={disable}
-                            value={itemPriceCalculator.netAdditionals}
-                            onChange={handleItemPriceCalculatorChange}
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            placeholder="20%"
+                            // defaultValue={props?.priceCalculator?.priceEscalationInput}
+                            value={componentData.priceEscalationInput}
+                            name="priceEscalationInput"
+                            onChange={handleComponentChange}
                           />
                         </div>
                       </div>
                     </div>
-                    <div className="m-3 text-right">
-                      <a
-                        href="#"
-                        className="btn text-white bg-primary"
-                        onClick={handleItemPriceCalculatorSave}
-                      >
-                        Save
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          CALCULATED PRICE
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          // defaultValue={props?.priceCalculator?.calculatedPrice}
+                          value={componentData.calculatedPrice}
+                          name="calculatedPrice"
+                          onChange={handleComponentChange}
+                          placeholder="$100"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          FLAT PRICE / ADJUSTED PRICE
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          value={componentData.flatPrice}
+                          name="flatPrice"
+                          onChange={handleComponentChange}
+                          placeholder="$100"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group date-box">
+                        <label
+                          className="text-light-dark font-size-12 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          DISCOUNT TYPE
+                        </label>
+                        <div className=" d-flex form-control-date">
+                          <div className="">
+                            <Select
+                              value={componentData.discountTypeSelect}
+                              name="discountTypeSelect"
+                              onChange={(e) => setComponentData({ ...componentData, discountTypeSelect: e })}
+                              isClearable={true}
+                              options={options}
+                              placeholder="Select"
+                            />
+                          </div>
+                          <input
+                            type="text"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            value={componentData.discountTypeInput}
+                            name="discountTypeInput"
+                            onChange={handleComponentChange}
+                            placeholder="10%"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row mt-5" style={{ justifyContent: "right" }}>
+                    <button
+                      type="button"
+                      onClick={handleComponentDataSave}
+                      className="btn btn-light"
+                    >
+                      Save and Continue
+                    </button>
+                  </div>
+                </>
+              </TabPanel>
+              <TabPanel value="5">
+                {/* <PriceCalculator
+                  setTabs={setTabs}
+                  priceCalculator={priceCalculator}
+                  serviceOrBundlePrefix={serviceOrBundlePrefix}
+                  getPriceCalculatorDataFun={getPriceCalculatorDataFun}
+                  // handleSavePrices={handleSavePrices}
+                /> */}
+
+                <div className="ligt-greey-bg p-3">
+                  <div>
+                    <span className="mr-3 cursor" onClick={() => setDisable(!disable)}>
+                      <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                      <span className="ml-2">Edit</span>
+                    </span>
+                    <span className="mr-3">
+                      <MonetizationOnOutlinedIcon className=" font-size-16" />
+                      <span className="ml-2"> Adjust price</span>
+                    </span>
+                    <span className="mr-3">
+                      <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                      <span className="ml-2">Related part list(s)</span>
+                    </span>
+                    <span className="mr-3">
+                      <AccessAlarmOutlinedIcon className=" font-size-16" />
+                      <span className="ml-2">Related service estimate(s)</span>
+                    </span>
+                    <span>
+                      <SellOutlinedIcon className=" font-size-16" />
+                      <span className="ml-2">Split price</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-3">
+                  <div className="row">
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          Net Parts $
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          name="netParts"
+                          disabled={disable}
+                          value={itemPriceCalculator.netParts}
+                          onChange={handleItemPriceCalculatorChange}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          Net Service $
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          name="netService"
+                          disabled={disable}
+                          value={itemPriceCalculator.netService}
+                          onChange={handleItemPriceCalculatorChange}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          Price type
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="Optional"
+                          name="priceType"
+                          disabled={disable}
+                          value={itemPriceCalculator.priceType}
+                          onChange={handleItemPriceCalculatorChange}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          Net Price
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          name="netPrice"
+                          disabled={disable}
+                          value={itemPriceCalculator.netPrice}
+                          onChange={handleItemPriceCalculatorChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          for="exampleInputEmail1"
+                        >
+                          Net Additionals $
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          name="netAdditionals"
+                          disabled={disable}
+                          value={itemPriceCalculator.netAdditionals}
+                          onChange={handleItemPriceCalculatorChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="m-3 text-right">
+                    <a
+                      href="#"
+                      className="btn text-white bg-primary"
+                      onClick={handleItemPriceCalculatorSave}
+                    >
+                      Save
+                    </a>
+                  </div>
+                </div>
+              </TabPanel>
+
+
+              <TabPanel value="6">
+                {loadingItem === "02" ? (
+                  <div className="d-flex align-items-center justify-content-center">
+                    <Loader
+                      type="spinner-default"
+                      bgColor={"#872ff7"}
+                      title={"spinner-default"}
+                      color={"#FFFFFF"}
+                      size={35}
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="custom-table  card"
+                    style={{ height: 400, width: "100%" }}
+                  >
+                    <DataTable
+                      title=""
+                      columns={tempBundleItemColumns}
+                      data={tempBundleItems}
+                      customStyles={customStyles}
+                      expandableRows
+                      expandableRowsComponent={ExpandedComponent}
+                      pagination
+                    />
+                  </div>
+                )}
+              </TabPanel>
+            </TabContext>
+          </Box>
+        </Modal.Body>
+        <Modal.Footer>
+          {tabs === "6" && (
+            <Button variant="primary" onClick={addTempItemIntobundleItem}>
+              Add Selected
+            </Button>
+          )}
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        size="xl"
+        show={bundleServiceShow}
+        onHide={() => setBundleServiceShow(false)}
+      >
+        <Modal.Body>
+          <Box sx={{ typography: "body1" }}>
+            <TabContext value={bundleTabs}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <TabList
+                  onChange={(e, newValue) => setBundleTabs(newValue)}
+                  aria-label="lab API tabs example"
+                >
+                  <Tab label={`${serviceOrBundlePrefix} HEADER`} value="1" />
+                  {serviceOrBundlePrefix === "BUNDLE" && (
+                    <Tab label={`${serviceOrBundlePrefix} BODY`} value="2" />
+                  )}
+                  <Tab label="PRICE CALCULATOR" value="3" />
+                </TabList>
+              </Box>
+              <TabPanel value="1">
+                <div className="container-fluid ">
+                  <div className="d-flex align-items-center justify-content-between mt-2">
+                    <h5 className="font-weight-600 mb-0">
+                      {/* ADD {serviceOrBundlePrefix} */}
+                    </h5>
+                    <div className="d-flex justify-content-center align-items-center">
+                      <a href="#" className="ml-3 font-size-14">
+                        <img src={shareIcon}></img>
+                      </a>
+                      <a href="#" className="ml-3 font-size-14">
+                        <img src={folderaddIcon}></img>
+                      </a>
+                      <a href="#" className="ml-3 font-size-14">
+                        <img src={uploadIcon}></img>
+                      </a>
+                      <a href="#" className="ml-3 font-size-14">
+                        <img src={cpqIcon}></img>
+                      </a>
+                      <a href="#" className="ml-3 font-size-14">
+                        <img src={deleteIcon}></img>
+                      </a>
+                      <a href="#" className="ml-3 font-size-14">
+                        <img src={copyIcon}></img>
+                      </a>
+                      <a href="#" className="ml-2">
+                        <MuiMenuComponent
+                          onClick={() => alert()}
+                          options={activityOptions}
+                        />
                       </a>
                     </div>
                   </div>
-                </TabPanel>
-
-
-                <TabPanel value="6">
-                  {loadingItem === "02" ? (
-                    <div className="d-flex align-items-center justify-content-center">
-                      <Loader
-                        type="spinner-default"
-                        bgColor={"#872ff7"}
-                        title={"spinner-default"}
-                        color={"#FFFFFF"}
-                        size={35}
-                      />
-                    </div>
-                  ) : (
-                    <div
-                      className="custom-table  card"
-                      style={{ height: 400, width: "100%" }}
-                    >
-                      <DataTable
-                        title=""
-                        columns={tempBundleItemColumns}
-                        data={tempBundleItems}
-                        customStyles={customStyles}
-                        expandableRows
-                        expandableRowsComponent={ExpandedComponent}
-                        pagination
-                      />
-                    </div>
-                  )}
-                </TabPanel>
-              </TabContext>
-            </Box>
-          </Modal.Body>
-          <Modal.Footer>
-            {tabs === "6" && (
-              <Button variant="primary" onClick={addTempItemIntobundleItem}>
-                Add Selected
-              </Button>
-            )}
-          </Modal.Footer>
-        </Modal>
-
-        <Modal
-          size="xl"
-          show={bundleServiceShow}
-          onHide={() => setBundleServiceShow(false)}
-        >
-          <Modal.Body>
-            <Box sx={{ typography: "body1" }}>
-              <TabContext value={bundleTabs}>
-                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                  <TabList
-                    onChange={(e, newValue) => setBundleTabs(newValue)}
-                    aria-label="lab API tabs example"
-                  >
-                    <Tab label={`${serviceOrBundlePrefix} HEADER`} value="1" />
-                    {serviceOrBundlePrefix === "BUNDLE" && (
-                      <Tab label={`${serviceOrBundlePrefix} BODY`} value="2" />
-                    )}
-                    <Tab label="PRICE CALCULATOR" value="3" />
-                  </TabList>
-                </Box>
-                <TabPanel value="1">
-                  <div className="container-fluid ">
-                    <div className="d-flex align-items-center justify-content-between mt-2">
-                      <h5 className="font-weight-600 mb-0">
-                        {/* ADD {serviceOrBundlePrefix} */}
-                      </h5>
-                      <div className="d-flex justify-content-center align-items-center">
-                        <a href="#" className="ml-3 font-size-14">
-                          <img src={shareIcon}></img>
+                  <div className="card p-4 mt-5">
+                    <h5 className="d-flex align-items-center mb-0">
+                      <div className="" style={{ display: "contents" }}>
+                        <span className="mr-3">Header</span>
+                        <a href="#" className="btn-sm">
+                          <i className="fa fa-pencil" aria-hidden="true"></i>
                         </a>
-                        <a href="#" className="ml-3 font-size-14">
-                          <img src={folderaddIcon}></img>
+                        <a href="#" className="btn-sm">
+                          <i
+                            className="fa fa-bookmark-o"
+                            aria-hidden="true"
+                          ></i>
                         </a>
-                        <a href="#" className="ml-3 font-size-14">
-                          <img src={uploadIcon}></img>
-                        </a>
-                        <a href="#" className="ml-3 font-size-14">
-                          <img src={cpqIcon}></img>
-                        </a>
-                        <a href="#" className="ml-3 font-size-14">
-                          <img src={deleteIcon}></img>
-                        </a>
-                        <a href="#" className="ml-3 font-size-14">
-                          <img src={copyIcon}></img>
-                        </a>
-                        <a href="#" className="ml-2">
-                          <MuiMenuComponent
-                            onClick={() => alert()}
-                            options={activityOptions}
-                          />
+                        <a href="#" className="btn-sm">
+                          <img
+                            style={{ width: "14px" }}
+                            src={folderaddIcon}
+                          ></img>
                         </a>
                       </div>
-                    </div>
-                    <div className="card p-4 mt-5">
-                      <h5 className="d-flex align-items-center mb-0">
-                        <div className="" style={{ display: "contents" }}>
-                          <span className="mr-3">Header</span>
-                          <a href="#" className="btn-sm">
-                            <i className="fa fa-pencil" aria-hidden="true"></i>
-                          </a>
-                          <a href="#" className="btn-sm">
-                            <i
-                              className="fa fa-bookmark-o"
-                              aria-hidden="true"
-                            ></i>
-                          </a>
-                          <a href="#" className="btn-sm">
-                            <img
-                              style={{ width: "14px" }}
-                              src={folderaddIcon}
-                            ></img>
-                          </a>
+                      <div className="input-group icons border-radius-10 border">
+                        <div className="input-group-prepend">
+                          <span
+                            className="input-group-text bg-transparent border-0 pr-0 "
+                            id="basic-addon1"
+                          >
+                            <img src={shearchIcon} />
+                          </span>
                         </div>
-                        <div className="input-group icons border-radius-10 border">
-                          <div className="input-group-prepend">
-                            <span
-                              className="input-group-text bg-transparent border-0 pr-0 "
-                              id="basic-addon1"
-                            >
-                              <img src={shearchIcon} />
-                            </span>
-                          </div>
+                        <input
+                          type="search"
+                          className="form-control search-form-control"
+                          aria-label="Search Dashboard"
+                        />
+                      </div>
+                    </h5>
+                    <div className="row mt-4">
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            {serviceOrBundlePrefix}
+                          </label>
                           <input
-                            type="search"
-                            className="form-control search-form-control"
-                            aria-label="Search Dashboard"
+                            type="text"
+                            className="form-control border-radius-10"
+                            disabled
+                            name="id"
+                            placeholder="ID(AUTO)"
+                            value={
+                              createServiceOrBundle.id
+                                ? createServiceOrBundle.id
+                                : ""
+                            }
                           />
                         </div>
-                      </h5>
-                      <div className="row mt-4">
-                        <div className="col-md-4 col-sm-3">
-                          <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              {serviceOrBundlePrefix}
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              disabled
-                              name="id"
-                              placeholder="ID(AUTO)"
-                              value={
-                                createServiceOrBundle.id
-                                  ? createServiceOrBundle.id
-                                  : ""
-                              }
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-3">
-                          <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              {serviceOrBundlePrefix} DESCRIPTION
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              name="description"
-                              placeholder="Description"
-                              value={createServiceOrBundle.description}
-                              onChange={handleAddServiceBundleChange}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-3">
-                          <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              BUNDLE FLAG
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              name="bundleFlag"
-                              placeholder="Bundle Flag"
-                              value={
-                                serviceOrBundlePrefix === "SERVICE"
-                                  ? "SERVICE"
-                                  : "BUNDLE_ITEM"
-                              }
-                              onChange={handleAddServiceBundleChange}
-                              disabled
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-3">
-                          <div className="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              htmlFor="exampleInputEmail1"
-                            >
-                              REFERENCE
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              name="reference"
-                              placeholder="Reference"
-                              value={createServiceOrBundle.reference}
-                              onChange={handleAddServiceBundleChange}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-3">
-                          <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              CUSTOMER SEGMENT
-                            </label>
-                            <Select
-                              onChange={(e) =>
-                                setCreateServiceOrBundle({
-                                  ...createServiceOrBundle,
-                                  customerSegment: e,
-                                })
-                              }
-                              value={createServiceOrBundle.customerSegment}
-                              options={options}
-                              placeholder="Customer Segment"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-3">
-                          <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              MAKE
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              name="make"
-                              placeholder="Make"
-                              value={createServiceOrBundle.make}
-                              onChange={handleAddServiceBundleChange}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-3">
-                          <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              MODEL(S)
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              name="models"
-                              placeholder="Model(S)"
-                              value={createServiceOrBundle.models}
-                              onChange={handleAddServiceBundleChange}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-3">
-                          <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              PREFIX(S)
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              name="prefix"
-                              placeholder="Prefix(S)"
-                              value={createServiceOrBundle.prefix}
-                              onChange={handleAddServiceBundleChange}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-3">
-                          <div className="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              htmlFor="exampleInputEmail1"
-                            >
-                              MACHINE/COMPONENT
-                            </label>
-                            <Select
-                              isClearable={true}
-                              value={createServiceOrBundle.machineComponent}
-                              onChange={(e) =>
-                                setCreateServiceOrBundle({
-                                  ...createServiceOrBundle,
-                                  machineComponent: e,
-                                })
-                              }
-                              isLoading={typeKeyValue.length > 0 ? false : true}
-                              options={typeKeyValue}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-3">
-                          <div className="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              htmlFor="exampleInputEmail1"
-                            >
-                              ADDITIONALS
-                            </label>
-                            <Select
-                              onChange={(e) =>
-                                setCreateServiceOrBundle({
-                                  ...createServiceOrBundle,
-                                  additional: e,
-                                })
-                              }
-                              value={createServiceOrBundle.additional}
-                              options={options}
-                              placeholder="Preventive Maintenance"
-                            />
-                          </div>
+                      </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            {serviceOrBundlePrefix} DESCRIPTION
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="description"
+                            placeholder="Description"
+                            value={createServiceOrBundle.description}
+                            onChange={handleAddServiceBundleChange}
+                          />
                         </div>
                       </div>
-                      <div className="row" style={{ justifyContent: "right" }}>
-                        <button
-                          type="button"
-                          onClick={handleAddNewServiceOrBundle}
-                          className="btn btn-light"
-                        >
-                          Save
-                        </button>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            BUNDLE FLAG
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="bundleFlag"
+                            placeholder="Bundle Flag"
+                            value={
+                              serviceOrBundlePrefix === "SERVICE"
+                                ? "SERVICE"
+                                : "BUNDLE_ITEM"
+                            }
+                            onChange={handleAddServiceBundleChange}
+                            disabled
+                          />
+                        </div>
                       </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            REFERENCE
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="reference"
+                            placeholder="Reference"
+                            value={createServiceOrBundle.reference}
+                            onChange={handleAddServiceBundleChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            CUSTOMER SEGMENT
+                          </label>
+                          <Select
+                            onChange={(e) =>
+                              setCreateServiceOrBundle({
+                                ...createServiceOrBundle,
+                                customerSegment: e,
+                              })
+                            }
+                            value={createServiceOrBundle.customerSegment}
+                            options={options}
+                            placeholder="Customer Segment"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            MAKE
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="make"
+                            placeholder="Make"
+                            value={createServiceOrBundle.make}
+                            onChange={handleAddServiceBundleChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            MODEL(S)
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="models"
+                            placeholder="Model(S)"
+                            value={createServiceOrBundle.models}
+                            onChange={handleAddServiceBundleChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            PREFIX(S)
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="prefix"
+                            placeholder="Prefix(S)"
+                            value={createServiceOrBundle.prefix}
+                            onChange={handleAddServiceBundleChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            MACHINE/COMPONENT
+                          </label>
+                          <Select
+                            isClearable={true}
+                            value={createServiceOrBundle.machineComponent}
+                            onChange={(e) =>
+                              setCreateServiceOrBundle({
+                                ...createServiceOrBundle,
+                                machineComponent: e,
+                              })
+                            }
+                            isLoading={typeKeyValue.length > 0 ? false : true}
+                            options={typeKeyValue}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            ADDITIONALS
+                          </label>
+                          <Select
+                            onChange={(e) =>
+                              setCreateServiceOrBundle({
+                                ...createServiceOrBundle,
+                                additional: e,
+                              })
+                            }
+                            value={createServiceOrBundle.additional}
+                            options={options}
+                            placeholder="Preventive Maintenance"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row" style={{ justifyContent: "right" }}>
+                      <button
+                        type="button"
+                        onClick={handleAddNewServiceOrBundle}
+                        className="btn btn-light"
+                      >
+                        Save
+                      </button>
                     </div>
                   </div>
-                </TabPanel>
-                <TabPanel value="2">
-                  <AddPortfolioItem
-                    setBundleTabs={setBundleTabs}
-                    compoFlag="BUNDLE"
-                    saveAddNewServiceOrBundle={saveAddNewServiceOrBundle}
-                  />
-                </TabPanel>
-                <TabPanel value="3">
-                  <PriceCalculator
-                    serviceOrBundlePrefix={serviceOrBundlePrefix}
-                    setBundleTabs={setBundleTabs}
-                    setBundleServiceShow={setBundleServiceShow}
-                    priceCalculator={priceCalculator}
-                    getPriceCalculatorDataFun={getPriceCalculatorDataFun}
-                    handleSavePrices={handleSavePrices}
-                  />
-                </TabPanel>
-              </TabContext>
-            </Box>
-          </Modal.Body>
-        </Modal>
+                </div>
+              </TabPanel>
+              <TabPanel value="2">
+                <AddPortfolioItem
+                  setBundleTabs={setBundleTabs}
+                  compoFlag="BUNDLE"
+                  saveAddNewServiceOrBundle={saveAddNewServiceOrBundle}
+                />
+              </TabPanel>
+              <TabPanel value="3">
+                <PriceCalculator
+                  serviceOrBundlePrefix={serviceOrBundlePrefix}
+                  setBundleTabs={setBundleTabs}
+                  setBundleServiceShow={setBundleServiceShow}
+                  priceCalculator={priceCalculator}
+                  getPriceCalculatorDataFun={getPriceCalculatorDataFun}
+                // handleSavePrices={handleSavePrices}
+                />
+              </TabPanel>
+            </TabContext>
+          </Box>
+        </Modal.Body>
+      </Modal>
 
-        <Modal
-          size="lg"
-          show={editItemShow}
-          onHide={() => setEditItemShow(false)}
-        >
-          <Modal.Body>
-            {/* itemEdit flag will work for item,bundle/service */}
-            <AddPortfolioItem
-              passItemEditRowData={passItemEditRowData}
-              handleItemEditSave={handleItemEditSave}
-              compoFlag="itemEdit"
-            />
-          </Modal.Body>
-        </Modal>
-        <div
-          class="modal fade"
-          id="quotecreat"
-          tabindex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog" role="document">
-            <div class="modal-content bg-white border-none">
-              <div class="modal-header border-none">
-                <h5 class="modal-title" id="exampleModalLabel">
-                  Quote Create
-                </h5>
+      <Modal
+        size="lg"
+        show={editItemShow}
+        onHide={() => setEditItemShow(false)}
+      >
+        <Modal.Body>
+          {/* itemEdit flag will work for item,bundle/service */}
+          <AddPortfolioItem
+            passItemEditRowData={passItemEditRowData}
+            handleItemEditSave={handleItemEditSave}
+            compoFlag="itemEdit"
+          />
+        </Modal.Body>
+      </Modal>
+      <div
+        class="modal fade"
+        id="quotecreat"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content bg-white border-none">
+            <div class="modal-header border-none">
+              <h5 class="modal-title" id="exampleModalLabel">
+                Quote Create
+              </h5>
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <p className="d-block px-3">
+              It is a long established fact that a reader will be distracted by
+              the readable content of a page when looking at its layout.
+            </p>
+            <hr className="my-1" />
+            <div class="modal-body">
+              <div className="row">
+                <div className="col-md-12 col-sm-12">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Quote Type
+                    </label>
+                    <Select
+                      defaultValue={selectedOption}
+                      onChange={setSelectedOption}
+                      options={options}
+                      placeholder="Cyclical"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-12 col-sm-12">
+                  <div class="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Quote ID
+                    </label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp"
+                      placeholder="Enter email"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-12 col-sm-12">
+                  <div class="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Description
+                    </label>
+                    <textarea
+                      class="form-control"
+                      id="exampleFormControlTextarea1"
+                      rows="3"
+                    ></textarea>
+                  </div>
+                </div>
+                <div className="col-md-12 col-sm-12">
+                  <div class="form-group">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Reference
+                    </label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="exampleInputEmail1"
+                      aria-describedby="emailHelp"
+                      placeholder="Enter email"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="row">
+                <div class="col-md-12 col-sm-12">
+                  <div class="form-group mt-3">
+                    <p class="font-size-12 font-weight-500 mb-2">QUOTE TYPE </p>
+                    <h6 class="font-weight-500">
+                      Repair Quote with Spare Parts
+                    </h6>
+                  </div>
+                </div>
+                <div class="col-md-12 col-sm-12">
+                  <div class="form-group mt-3">
+                    <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
+                    <h6 class="font-weight-500">SB12345</h6>
+                  </div>
+                </div>
+                <div class="col-md-12 col-sm-12">
+                  <div class="form-group mt-3">
+                    <p class="font-size-12 font-weight-500 mb-2">
+                      QUOTE DESCRIPTION
+                    </p>
+                    <h6 class="font-weight-500">Holder text</h6>
+                  </div>
+                </div>
+                <div class="col-md-12 col-sm-12">
+                  <div class="form-group mt-3">
+                    <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
+                    <h6 class="font-weight-500">Holder text</h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer" style={{ display: "unset" }}>
+              <div className="mb-2">
+                <a
+                  href="#"
+                  onClick={() => handleCreate()}
+                  data-dismiss="modal"
+                  className="btn bg-primary d-block text-white"
+                >
+                  Done
+                </a>
+              </div>
+              <div>
+                <button class="btn  btn-primary">Create</button>
                 <button
                   type="button"
-                  class="close"
+                  class="btn pull-right border"
                   data-dismiss="modal"
-                  aria-label="Close"
                 >
-                  <span aria-hidden="true">&times;</span>
+                  Cancel
                 </button>
-              </div>
-              <p className="d-block px-3">
-                It is a long established fact that a reader will be distracted by
-                the readable content of a page when looking at its layout.
-              </p>
-              <hr className="my-1" />
-              <div class="modal-body">
-                <div className="row">
-                  <div className="col-md-12 col-sm-12">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Quote Type
-                      </label>
-                      <Select
-                        defaultValue={selectedOption}
-                        onChange={setSelectedOption}
-                        options={options}
-                        placeholder="Cyclical"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div class="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Quote ID
-                      </label>
-                      <input
-                        type="email"
-                        class="form-control"
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
-                        placeholder="Enter email"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div class="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Description
-                      </label>
-                      <textarea
-                        class="form-control"
-                        id="exampleFormControlTextarea1"
-                        rows="3"
-                      ></textarea>
-                    </div>
-                  </div>
-                  <div className="col-md-12 col-sm-12">
-                    <div class="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        Reference
-                      </label>
-                      <input
-                        type="email"
-                        class="form-control"
-                        id="exampleInputEmail1"
-                        aria-describedby="emailHelp"
-                        placeholder="Enter email"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="row">
-                  <div class="col-md-12 col-sm-12">
-                    <div class="form-group mt-3">
-                      <p class="font-size-12 font-weight-500 mb-2">QUOTE TYPE </p>
-                      <h6 class="font-weight-500">
-                        Repair Quote with Spare Parts
-                      </h6>
-                    </div>
-                  </div>
-                  <div class="col-md-12 col-sm-12">
-                    <div class="form-group mt-3">
-                      <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
-                      <h6 class="font-weight-500">SB12345</h6>
-                    </div>
-                  </div>
-                  <div class="col-md-12 col-sm-12">
-                    <div class="form-group mt-3">
-                      <p class="font-size-12 font-weight-500 mb-2">
-                        QUOTE DESCRIPTION
-                      </p>
-                      <h6 class="font-weight-500">Holder text</h6>
-                    </div>
-                  </div>
-                  <div class="col-md-12 col-sm-12">
-                    <div class="form-group mt-3">
-                      <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
-                      <h6 class="font-weight-500">Holder text</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="modal-footer" style={{ display: "unset" }}>
-                <div className="mb-2">
-                  <a
-                    href="#"
-                    onClick={() => handleCreate()}
-                    data-dismiss="modal"
-                    className="btn bg-primary d-block text-white"
-                  >
-                    Done
-                  </a>
-                </div>
-                <div>
-                  <button class="btn  btn-primary">Create</button>
-                  <button
-                    type="button"
-                    class="btn pull-right border"
-                    data-dismiss="modal"
-                  >
-                    Cancel
-                  </button>
-                </div>
               </div>
             </div>
           </div>
         </div>
-      </PortfolioContext.Provider>
-    );
-  }
+      </div>
+    </PortfolioContext.Provider>
+  );
+}

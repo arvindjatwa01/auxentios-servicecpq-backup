@@ -33,7 +33,9 @@ const PriceCalculator = (props) => {
   });
 
   useEffect(() => {
-    setPriceCalculator(props.priceCalculator);
+    if(props.priceCalculator){
+      setPriceCalculator(props.priceCalculator);
+    }
   }, [props]);
 
 
@@ -54,13 +56,13 @@ const PriceCalculator = (props) => {
     // props.setTabs("6")
     props.setTabs("4"); // previous flow
     props.getPriceCalculatorDataFun(priceCalculator);
-    props.handleSavePrices();
+    // props.handleSavePrices(); //called it at getPriceCalculatorDataFun
   };
   const handleBundlePriceSave = () => {
-    props.setTabs("6")//just for check new flow
-    props.setBundleServiceShow(false);
+    // props.setTabs("6")//just for check new flow
+    // props.setBundleServiceShow(false);
     props.getPriceCalculatorDataFun(priceCalculator);
-    props.handleSavePrices();
+    // props.setBundleTabs("1")
   };
 
   const handlePriceChange = (e) => {
