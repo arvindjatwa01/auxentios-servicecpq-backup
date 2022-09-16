@@ -2494,7 +2494,6 @@ cursor: pointer;
     overflow-y: scroll;
     width: 100%;
     margin: 0;
-    /* display: none; */
     }
     .style{
       height: 150px;
@@ -2576,3 +2575,5 @@ cursor: pointer;
 .customselect1 .css-6j8wv5-Input{ color: #fff !important;}
 .customselect1 .css-qc6sy-singleValue{color: #fff !important;}
 .customselect1 .css-tj5bde-Svg{color: #fff !important;}
+.cmFPbp{ background:#872ff7 !important;}
+.doQoVi{ overflow: hidden !important;}
