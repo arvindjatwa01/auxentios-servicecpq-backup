@@ -112,6 +112,8 @@ export const Analytics = () => {
 
    const [columnTextSearch, setColumnTextSearch] = useState([])
 
+   const [bundleServiceShow, setBundleServiceShow] = useState(false)
+
    const [age, setAge] = React.useState('5');
    const [age1, setAge1] = React.useState('5');
    const [age2, setAge2] = React.useState('5');
@@ -401,6 +403,10 @@ export const Analytics = () => {
       }
    }
 
+   const showBundleServices = () => {
+      setBundleServiceShow(true)
+   }
+
    const handleShowSearchParentCallback = (data) => {
       setOpenSearchSolution(true)
       setOpenSolutionSelector(false)
@@ -513,25 +519,51 @@ export const Analytics = () => {
 
    }
    const handleQuerySearchClick = () => {
+      try {
 
-      $(".scrollbar").css("display", "none")
+         $(".scrollbar").css("display", "none")
 
-      console.log("handleQuerySearchClick", querySearchSelector)
-      var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
+         console.log("handleQuerySearchClick", querySearchSelector)
 
-      for (let i = 1; i < querySearchSelector.length; i++) {
-         searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + "~" + querySearchSelector[i].inputSearch
+         if (
+            querySearchSelector[0]?.selectFamily?.value == "" ||
+            querySearchSelector[0]?.inputSearch == "" ||
+            querySearchSelector[0]?.selectFamily?.value === undefined
+         ) {
+            throw "Please fill data properly"
+         }
+
+
+
+         var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
+
+         for (let i = 1; i < querySearchSelector.length; i++) {
+            searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + "~" + querySearchSelector[i].inputSearch
+         }
+
+         console.log("searchStr", searchStr)
+         getSearchQueryCoverage(searchStr).then((res) => {
+            console.log("search Query Result :", res)
+            setMasterData(res)
+            setBundleServiceShow(true)
+
+         }).catch((err) => {
+            console.log("error in getSearchQueryCoverage", err)
+         })
+
+      } catch (error) {
+         console.log("error in getSearchQueryCoverage", error);
+         toast("😐" + error, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+         });
+         return
       }
-
-      console.log("searchStr", searchStr)
-      getSearchQueryCoverage(searchStr).then((res) => {
-         console.log("search Query Result :", res)
-         setMasterData(res)
-
-
-      }).catch((err) => {
-         console.log("error in getSearchQueryCoverage", err)
-      })
 
    }
    const addSearchQuerryHtml = () => {
@@ -673,6 +705,62 @@ export const Analytics = () => {
             if (row.itemId !== currentItem.itemId) return currentItem;
          });
          setExploreFilterMasterData(updated);
+      }
+   };
+
+   const handleCoverageCheckboxData = (e, row) => {
+      if (e.target.checked) {
+         var _searchedData = [...masterData];
+
+         const updated = _searchedData.map((currentItem, i) => {
+            if (row.id == currentItem.id) {
+               return { ...currentItem, ["check1"]: e.target.checked };
+            } else return currentItem;
+         });
+
+         setMasterData([...updated]);
+
+         const isFound = filterMasterData.some((element) => {
+            if (element.id === row.id) {
+               return true;
+            }
+
+            return false;
+         });
+
+         if (!isFound) {
+            const _filterMasterData = [...filterMasterData, { ...row }];
+            const updatedItems = _filterMasterData.map((currentItem, i) => {
+               return {
+                  ...currentItem,
+                  items: [
+                     {
+                        family: currentItem.family,
+                        model: currentItem.model,
+                        noSeriese: "0JAPA000470",
+                        location: "LIMA",
+                        startDate: "08/04/20017",
+                        endDate: "08/04/20017",
+                     },
+                  ],
+               };
+            });
+            setFilterMasterData(updatedItems);
+            // setFilterMasterData([...filterMasterData, { ...row }])
+         }
+      } else {
+         var _masterData = [...masterData];
+         const updated1 = _masterData.map((currentItem, i) => {
+            if (row.id == currentItem.id) {
+               return { ...currentItem, ["check1"]: e.target.checked };
+            } else return currentItem;
+         });
+         setMasterData([...updated1]);
+         var _filterMasterData = [...filterMasterData];
+         const updated = _filterMasterData.filter((currentItem, i) => {
+            if (row.id !== currentItem.id) return currentItem;
+         });
+         setFilterMasterData(updated);
       }
    };
 
@@ -1027,6 +1115,296 @@ export const Analytics = () => {
       },
    ];
 
+   const masterColumns = [
+      {
+         name: (
+            <>
+               <div>Select</div>
+            </>
+         ),
+         selector: (row) => row.check1,
+         wrap: true,
+         sortable: true,
+         maxWidth: "300px",
+         cell: (row) => (
+            <Checkbox
+               className="text-black"
+               checked={row.check1}
+               onChange={(e) => handleCoverageCheckboxData(e, row)}
+            />
+         ),
+      },
+      {
+         name: (
+            <>
+               <div>Make</div>
+            </>
+         ),
+         selector: (row) => row.make,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.make,
+      },
+      {
+         name: (
+            <>
+               <div>Family</div>
+            </>
+         ),
+         selector: (row) => row.family,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.family,
+      },
+      {
+         name: (
+            <>
+               <div>Model</div>
+            </>
+         ),
+         selector: (row) => row.model,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.model,
+      },
+      {
+         name: (
+            <>
+               <div>Prefix</div>
+            </>
+         ),
+         selector: (row) => row.prefix,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.prefix,
+      },
+      // {
+      //   name: (
+      //     <>
+      //       <div>
+      //         Serial No
+      //       </div>
+      //     </>
+      //   ),
+      //   selector: (row) => row.bundleId,
+      //   sortable: true,
+      //   maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
+      //   // cell: row => row.bundleId,
+      //   // cell: (row) => <button onClick={() => alert()}>1</button>,
+      //   // cell: (row) => <Checkbox className="text-black" {...label} />,
+      //   format: (row) => row.bundleId,
+      // },
+      // {
+      //   name: (
+      //     <>
+      //       <div>
+      //         <img className="mr-2" src={boxicon}></img>Start Serial No
+      //       </div>
+
+      //     </>
+      //   ),
+      //   selector: (row) => row.bundleDescription,
+      //   wrap: true,
+      //   sortable: true,
+      //   format: (row) => row.bundleDescription,
+      // },
+      // {
+      //   name: (
+      //     <>
+      //       <div>End Serial No</div>
+      //     </>
+      //   ),
+      //   selector: (row) => row.strategy,
+      //   wrap: true,
+      //   sortable: true,
+      //   format: (row) => row.strategy,
+      // },
+   ];
+
+   const selectedMasterColumns = [
+      {
+         name: (
+            <>
+               <div>Make</div>
+            </>
+         ),
+         selector: (row) => row.make,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.make,
+      },
+      {
+         name: (
+            <>
+               <div>Family</div>
+            </>
+         ),
+         selector: (row) => row.family,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.family,
+      },
+      {
+         name: (
+            <>
+               <div>Model</div>
+            </>
+         ),
+         selector: (row) => row.model,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.model,
+      },
+      {
+         name: (
+            <>
+               <div>Prefix</div>
+            </>
+         ),
+         selector: (row) => row.prefix,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.prefix,
+      },
+      // {
+      //   name: (
+      //     <>
+      //       <div>
+      //         Serial No
+      //       </div>
+      //     </>
+      //   ),
+      //   selector: (row) => row.bundleId,
+      //   sortable: true,
+      //   maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
+      //   // cell: row => row.bundleId,
+      //   // cell: (row) => <button onClick={() => alert()}>1</button>,
+      //   // cell: (row) => <Checkbox className="text-black" {...label} />,
+      //   format: (row) => row.bundleId,
+      // },
+      // {
+      //   name: (
+      //     <>
+      //       <div>
+      //         <img className="mr-2" src={boxicon}></img>Start Serial No
+      //       </div>
+
+      //     </>
+      //   ),
+      //   selector: (row) => row.bundleDescription,
+      //   wrap: true,
+      //   sortable: true,
+      //   format: (row) => row.bundleDescription,
+      // },
+      // {
+      //   name: (
+      //     <>
+      //       <div>End Serial No</div>
+      //     </>
+      //   ),
+      //   selector: (row) => row.strategy,
+      //   wrap: true,
+      //   sortable: true,
+      //   format: (row) => row.strategy,
+      // },
+      {
+         name: (
+            <>
+               <div>Action</div>
+            </>
+         ),
+         selector: (row) => row.action,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.action,
+         cell: (row) => (
+            <div>
+               {/* <Link
+                  to="#"
+                  onClick={(e) => handleEditIncludeSerialNo(e, row)}
+                  className="btn-svg text-white cursor mx-2"
+                  data-toggle="modal"
+                  data-target="#AddCoverage"
+               >
+                  <svg
+                     version="1.1"
+                     viewBox="0 0 1696.162 1696.143"
+                     xmlSpace="preserve"
+                     xmlns="http://www.w3.org/2000/svg"
+                     xmlnslgink="http://www.w3.org/1999/lgink"
+                  >
+                     <g id="pen">
+                        <path d="M1648.016,305.367L1390.795,48.149C1359.747,17.098,1318.466,0,1274.555,0c-43.907,0-85.188,17.098-116.236,48.148   L81.585,1124.866c-10.22,10.22-16.808,23.511-18.75,37.833L0.601,1621.186c-2.774,20.448,4.161,41.015,18.753,55.605   c12.473,12.473,29.313,19.352,46.714,19.352c2.952,0,5.923-0.197,8.891-0.601l458.488-62.231   c14.324-1.945,27.615-8.529,37.835-18.752L1648.016,537.844c31.049-31.048,48.146-72.33,48.146-116.237   C1696.162,377.696,1679.064,336.415,1648.016,305.367z M493.598,1505.366l-350.381,47.558l47.56-350.376L953.78,439.557   l302.818,302.819L493.598,1505.366z M1554.575,444.404l-204.536,204.533l-302.821-302.818l204.535-204.532   c8.22-8.218,17.814-9.446,22.802-9.446c4.988,0,14.582,1.228,22.803,9.446l257.221,257.218c8.217,8.217,9.443,17.812,9.443,22.799   S1562.795,436.186,1554.575,444.404z" />
+                     </g>
+                     <g id="Layer_1" />
+                  </svg>
+               </Link> */}
+               <Link
+                  to="#"
+                  onClick={(e) => handleDeleteIncludeSerialNo(e, row)}
+                  className="btn-svg text-white cursor mr-2"
+               >
+                  <svg
+                     data-name="Layer 41"
+                     id="Layer_41"
+                     viewBox="0 0 50 50"
+                     xmlns="http://www.w3.org/2000/svg"
+                  >
+                     <title />
+                     <path
+                        className="cls-1"
+                        d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                     />
+                     <path
+                        className="cls-1"
+                        d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                     />
+                     <path
+                        className="cls-1"
+                        d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                     />
+                  </svg>
+               </Link>
+               {/* <Link
+                  to="#"
+                  className="btn-svg text-white cursor "
+                  onClick={() => ShowRelatedIncludeModelBox(row)}
+               >
+                  <svg
+                     data-name="Layer 1"
+                     id="Layer_1"
+                     viewBox="0 0 24 24"
+                     xmlns="http://www.w3.org/2000/svg"
+                     style={{
+                        fill: "none",
+                        width: "18px",
+                        strokeLinecap: "round",
+                        strokeLinejoin: "round",
+                        strokeWidth: "2px",
+                     }}
+                  >
+                     <title />
+                     <g data-name="&lt;Group&gt;" id="_Group_">
+                        <path
+                           className="cls-1"
+                           d="M13.38,10.79h0a3.5,3.5,0,0,1,0,5L10.52,18.6a3.5,3.5,0,0,1-5,0h0a3.5,3.5,0,0,1,0-5l.86-.86"
+                           data-name="&lt;Path&gt;"
+                           id="_Path_"
+                        />
+                        <path
+                           className="cls-1"
+                           d="M11,13.21h0a3.5,3.5,0,0,1,0-5L13.81,5.4a3.5,3.5,0,0,1,5,0h0a3.5,3.5,0,0,1,0,5l-.86.86"
+                           data-name="&lt;Path&gt;"
+                           id="_Path_2"
+                        />
+                     </g>
+                  </svg>
+               </Link> */}
+            </div>
+         ),
+      },
+   ];
+
 
 
 
@@ -1364,10 +1742,10 @@ export const Analytics = () => {
                               </div>
                            </div>
                            {/* <div className="px-3">
-                           <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
-                             <SearchIcon /><span className="ml-1">Search</span>
-                           </Link>
-                         </div> */}
+                              <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
+                                 <SearchIcon /><span className="ml-1">Search</span>
+                              </Link>
+                           </div> */}
                         </div>
 
                      </div>
@@ -1376,6 +1754,9 @@ export const Analytics = () => {
                            <Link to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable"  >
                               <SearchIcon /><span className="ml-1">Search</span>
                            </Link>
+                           {/* <Link to="#" className="p-1 text-white" onClick={handleQuerySearchClick}>
+                              <SearchIcon /><span className="ml-1">Search</span>
+                           </Link> */}
 
                         </div>
 
@@ -1392,6 +1773,7 @@ export const Analytics = () => {
                </div>
                <div className="card">
 
+                  {/* <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}> */}
                   <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
                      <DataGrid
                         sx={{
@@ -1697,6 +2079,7 @@ export const Analytics = () => {
                      <div>
                         <div className="card w-100 p-2">
 
+                           {/* <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}> */}
                            <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
                               <DataGrid
                                  sx={{
@@ -1720,8 +2103,8 @@ export const Analytics = () => {
 
                         </div>
                         <div className="m-2 text-right">
-                           <input className="btn text-white bg-primary" value="+ Add Selected" disabled={!flagIs} />
-                           {/* <a href="#" className="btn text-white bg-primary">+ Add Selected</a> */}
+                           {/* <input className="btn text-white bg-primary" value="+ Add Selected" disabled={!flagIs} /> */}
+                           <a href="#" className="btn text-white bg-primary">+ Add Selected</a>
 
                         </div>
                      </div>
@@ -1729,6 +2112,96 @@ export const Analytics = () => {
                </div>
             </div>
          </div>
+         <Modal
+            size="xl"
+            show={bundleServiceShow}
+            onHide={() => setBundleServiceShow(false)}
+         >
+            <Modal.Body>
+               <div class="modal-header p-3">
+                  <div className="d-flex" >
+                     <h5>Search Result</h5>
+                  </div>
+               </div>
+               <div>
+                  {masterData.length > 0 ?
+                     <>
+
+                        <div className="card w-100 p-2">
+
+                           {/* <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}> */}
+                           <div className="" style={{ width: '100%', backgroundColor: '#fff' }}>
+                              {/* <DataGrid
+                                       sx={{
+                                          '& .MuiDataGrid-columnHeaders': {
+                                             // backgroundColor: '#7380E4', color: '#fff'
+                                             backgroundColor: '#872ff7', color: '#fff'
+                                          }
+                                       }}
+                                       rows={rows}
+                                       columns={columns}
+                                       pageSize={5}
+                                       rowsPerPageOptions={[5]}
+                                       checkboxSelection
+                                       onCellClick={(e) => handleRowClick(e)}
+
+
+                                    /> */}
+                              <DataTable
+                                 className=""
+                                 title=""
+                                 columns={masterColumns}
+                                 data={masterData}
+                                 customStyles={customStyles}
+                                 pagination
+                              />
+
+                           </div>
+
+
+                        </div>
+                        <div className="m-2 text-right">
+                           <input
+                              onClick={() => {
+                                 setSelectedMasterData(filterMasterData);
+                                 setMasterData([]);
+                              }}
+                              className="btn text-white bg-primary"
+                              value="+ Add Selected"
+                              disabled={!flagIs} />
+                           {/* <a href="#" className="btn text-white bg-primary">+ Add Selected</a> */}
+
+                        </div>
+                     </> : <></>}
+
+                  {selectedMasterData.length > 0 ? (
+                     <>
+                        <div className="card w-100 p-2">
+
+                           {/* <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}> */}
+                           <div className="" style={{ width: '100%', backgroundColor: '#fff' }}>
+                              <label htmlFor="Included-model">
+                                 <h5 className="font-weight-400 text-black mb-2 mt-1">
+                                    Included models
+                                 </h5>
+                              </label>
+                              <DataTable
+                                 className="mt-3"
+                                 title=""
+                                 columns={selectedMasterColumns}
+                                 data={selectedMasterData}
+                                 customStyles={customStyles}
+                                 pagination
+                              />
+                           </div>
+                        </div>
+                     </>
+                  ) : (
+                     <></>
+                  )}
+               </div>
+            </Modal.Body>
+         </Modal>
       </>
    )
 };

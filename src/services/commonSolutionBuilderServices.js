@@ -211,3 +211,27 @@ export const getMachineTypeKeyValue = () => {
     }
   });
 };
+
+/**
+ * Function to fetch Life Stage of Machine keyvalue.
+ */
+export const getLifeStageKeyValue = () => {
+  // console.log("commonSolutionBuilder > getLifeStageKeyValue called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(Common_SOLUTION_BUILDER_URL() + "/life-stage-of-machine")
+        .then((res) => {
+          // console.log("getLifeStageKeyValue > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          // console.log("getLifeStageKeyValue > axios err=", err);
+          reject("Error in getLifeStageKeyValue axios!");
+        });
+    } catch (error) {
+      // console.error("in userServices > getLifeStageKeyValue, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};

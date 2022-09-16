@@ -409,14 +409,10 @@ const Question3 = (props) => {
 
         // console.log("dropdown : ", state.guidedSolution?.withDropDown)
         // setWithDropDown(state.guidedSolution?.withDropDown)
-    }, [demo]);
-
-
-    console.log("make Key Value Pair is  : ", makeKeyValuePair)
-    console.log("make data is : ", makeData)
+    },[]);
 
     return <>
-        <div className=" mt-3 p-3">
+    <div className=" mt-3 p-3">
             <div className="d-flex">
                 <div className="col-12">
                     <p>QUESTION 03/10</p>
