@@ -77,7 +77,7 @@ const AddPortfolioItem = (props) => {
         taskType: { label: taskType, value: taskType },
         frequency: { label: frequency, value: frequency },
         unit: { label: unit, value: unit },
-        recommendedValue: { label: recommendedValue, value: recommendedValue },
+        recommendedValue:recommendedValue,
         quantity,
         numberOfEvents: numberOfEvents,
         templateDescription: {
@@ -95,11 +95,9 @@ const AddPortfolioItem = (props) => {
     } else if (props.compoFlag === "ITEM") {
       props.setTabs("2");
       props.getAddportfolioItemDataFun(addPortFolioItem);
-      props.handleBundleItemSaveAndContinue();
     } else {
+      props.getAddportfolioItemData(addPortFolioItem)
       props.setBundleTabs("3");
-      // props?.saveAddNewServiceOrBundle();
-      
     }
   };
 
@@ -275,7 +273,7 @@ const AddPortfolioItem = (props) => {
                 className="form-control border-radius-10"
                 // options={options}
 
-                onChange={(e) =>setAddportFolioItem({...addPortFolioItem,recommendedValue: e,})}
+                onChange={(e) =>setAddportFolioItem({...addPortFolioItem,recommendedValue: e.target.value,})}
                 value={addPortFolioItem.recommendedValue}
                 isDisabled={editable}
               />
@@ -529,7 +527,7 @@ const AddPortfolioItem = (props) => {
                     USAGE IN
                   </label>
                   <Select
-                    options={props.categoryList}
+                    options={categoryList}
                     value={addPortFolioItem.usageIn}
                     onChange={(e) =>
                       setAddportFolioItem({ ...addPortFolioItem, usageIn: e })
@@ -552,7 +550,7 @@ const AddPortfolioItem = (props) => {
                   <div className="icon-defold">
                     <div className="form-control">
                       <Select
-                        options={props.updatedTaskList}
+                        options={updatedTaskList}
                         onChange={(e) =>
                           setAddportFolioItem({
                             ...addPortFolioItem,

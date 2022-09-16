@@ -601,52 +601,6 @@ const [priceCalculator,setPriceCalculator]=useState({})
       // if(createServiceOrBundle.description==""||createServiceOrBundle.model==""){
       //   throw "Please fill fields properly"
       // }
-      let reqObjHeader= {
-       
-      }
-      if(serviceOrBundlePrefix==="BUNDLE"){
-        let reqObjBody={
-          itemBodyId: 0,
-          itemBodyDescription: "",
-          quantity: 0,
-          startUsage: "",
-          endUsage: "",
-          standardJobId: "",
-          frequency: "",
-          additional: "",
-          spareParts: ["WITH_SPARE_PARTS"],
-          labours: ["WITH_LABOUR"],
-          miscellaneous: ["LUBRICANTS"],
-          taskType: ["PM1"],
-          solutionCode: "",
-          usageIn: "",
-          recommendedValue: 0,
-          usage: "",
-          repairKitId: "",
-          templateDescription: "",
-          partListId: "",
-          serviceEstimateId: "",
-          numberOfEvents: 0,
-          repairOption: "",
-          priceMethod: "LIST_PRICE",
-          listPrice: 0,
-          priceEscalation: "",
-          calculatedPrice: 0,
-          flatPrice: 0,
-          discountType: "",
-          year: "",
-          avgUsage: 0,
-          unit: "",
-          sparePartsPrice: 0,
-          sparePartsPriceBreakDownPercentage: 0,
-          servicePrice: 0,
-          servicePriceBreakDownPercentage: 0,
-          miscPrice: 0,
-          miscPriceBreakDownPercentage: 0,
-          totalPrice: 0
-        }
-
-      }
       let reqObj = {
         itemId: 0,
         itemName: "",
@@ -655,8 +609,8 @@ const [priceCalculator,setPriceCalculator]=useState({})
           bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
           portfolioItemId: 0,
           reference: createServiceOrBundle.reference,
-          itemHeaderMake: createServiceOrBundle.itemHeaderMake,
-          itemHeaderFamily: createServiceOrBundle.itemHeaderFamily,
+          itemHeaderMake: createServiceOrBundle.make,
+          itemHeaderFamily: createServiceOrBundle.family,
           model: createServiceOrBundle.model,
           prefix: createServiceOrBundle.prefix,
           type: "MACHINE",
@@ -695,7 +649,7 @@ const [priceCalculator,setPriceCalculator]=useState({})
           partListId: "",
           serviceEstimateId: "",
           numberOfEvents:serviceOrBundlePrefix==="BUNDLE"?parseInt(addPortFolioItem.numberOfEvents): 0,
-          repairOption: serviceOrBundlePrefix==="BUNDLE"?addPortFolioItem.repairOption:"",
+          repairOption: serviceOrBundlePrefix==="BUNDLE"?addPortFolioItem.repairOption.value:"",
           priceMethod: "LIST_PRICE",
           listPrice:priceCalculator.listPrice?parseInt(priceCalculator.listPrice): 0,
           priceEscalation: "",
@@ -743,98 +697,6 @@ const [priceCalculator,setPriceCalculator]=useState({})
     }
   };
 
-  const handleSavePrices = async () => {
-    try {
-      alert("save");
-      // let reqObj = {
-      //   itemId: parseInt(addPortFolioItem.id),
-      //   itemName: "",
-      //   itemHeaderModel: {
-      //     itemHeaderId: 0,
-      //     // itemHeaderId: parseInt(generalComponentData.portfolioId),
-      //     itemHeaderDescription: createServiceOrBundle.description,
-      //     bundleFlag:
-      //       serviceOrBundlePrefix === ""
-      //         ? "PORTFOLIO"
-      //         : serviceOrBundlePrefix === "SERVICE"
-      //           ? "SERVICE"
-      //           : "BUNDLE_ITEM",
-      //     reference: createServiceOrBundle.reference,
-      //     itemHeaderMake: createServiceOrBundle.make,
-      //     itemHeaderFamily: "",
-      //     model: createServiceOrBundle.model,
-      //     prefix: createServiceOrBundle.prefix,
-      //     type: "MACHINE",
-      //     additional: createServiceOrBundle.additional.value,
-      //     currency: "",
-      //     netPrice: 0,
-      //     itemProductHierarchy: generalComponentData.productHierarchy,
-      //     itemHeaderGeographic: generalComponentData.geographic,
-      //     responseTime: generalComponentData.responseTime,
-      //     usage: "",
-      //     validFrom: generalComponentData.validFrom,
-      //     validTo: generalComponentData.validTo,
-      //     estimatedTime: "",
-      //     servicePrice: 0,
-      //     status: "NEW",
-      //   },
-      //   itemBodyModel: {
-      //     itemBodyId: parseInt(addPortFolioItem.id),
-      //     itemBodyDescription: addPortFolioItem.description,
-      //     quantity: parseInt(addPortFolioItem.quantity),
-      //     startUsage: priceCalculator.startUsage,
-      //     endUsage: priceCalculator.endUsage,
-      //     standardJobId: "",
-      //     frequency: addPortFolioItem.frequency.value,
-      //     additional: "",
-      //     spareParts: ["WITH_SPARE_PARTS"],
-      //     labours: ["WITH_LABOUR"],
-      //     miscellaneous: ["LUBRICANTS"],
-      //     taskType: [addPortFolioItem.taskType.value],
-      //     solutionCode: "",
-      //     usageIn: addPortFolioItem.usageIn.value,
-      //     recommendedValue: 0,
-      //     usage: "",
-      //     repairKitId: "",
-      //     templateDescription: addPortFolioItem.description.value,
-      //     partListId: "",
-      //     serviceEstimateId: "",
-      //     numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
-      //     repairOption: addPortFolioItem.repairOption.value,
-      //     priceMethod: "LIST_PRICE",
-      //     listPrice: parseInt(priceCalculator.listPrice),
-      //     priceEscalation: "",
-      //     calculatedPrice: parseInt(priceCalculator.calculatedPrice),
-      //     flatPrice: parseInt(priceCalculator.flatPrice),
-      //     discountType: "",
-      //     year: priceCalculator.priceYear.value,
-      //     avgUsage: 0,
-      //     unit: addPortFolioItem.unit.value,
-      //     sparePartsPrice: 0,
-      //     sparePartsPriceBreakDownPercentage: 0,
-      //     servicePrice: 0,
-      //     servicePriceBreakDownPercentage: 0,
-      //     miscPrice: 0,
-      //     miscPriceBreakDownPercentage: 0,
-      //     totalPrice: 0,
-      //   },
-      // };
-      // const { data, status } = await updateItemData(currentItemId, reqObj);
-    } catch (error) {
-      console.log("error in handleSavePrices", error);
-      toast("😐" + error, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      return;
-    }
-  };
-
   const handleAddServiceBundleChange = (e) => {
     setCreateServiceOrBundle({ ...createServiceOrBundle, [e.target.name]: e.target.value, });
   };
@@ -854,11 +716,16 @@ const [priceCalculator,setPriceCalculator]=useState({})
     }
     // setTabs("4") //moving to component Data tab in create Item model
   };
+  const getAddportfolioItemData=(data)=>{
+    setAddportFolioItem(data)
+  }
   const getPriceCalculatorDataFun = (data) => {
     setPriceCalculator(data);
-    saveAddNewServiceOrBundle();
-
+    setBundleServiceShow(false);
+    setBundleTabs("1")
+    saveAddNewServiceOrBundle();//bundle/service creation API called
   };
+
   const handleCreateChange = (e) => {
     if (e.value === "PORTFOLIO") {
       histoy.push("/portfolioBuilder/new")
@@ -873,9 +740,6 @@ const [priceCalculator,setPriceCalculator]=useState({})
     }
 
   }
-const getAddportfolioItemData=(data)=>{
-  setAddportFolioItem(data)
-}
 
   return (
     <>
@@ -884,56 +748,7 @@ const getAddportfolioItemData=(data)=>{
         <div class="container-fluid">
           <div className="d-flex align-items-center justify-content-between mt-2">
             <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5>
-            {/* <div>
-              <Button
-                id="basic-button"
-                className="bg-primary text-white px-4 py-2"
-                aria-controls={open1 ? "basic-menu" : undefined}
-                aria-haspopup="true"
-                aria-expanded={open1 ? "true" : undefined}
-                onClick={handleClick}
-              >
-                <span className="mr-2 font-size-12">
-                  <FontAwesomeIcon icon={faPlus} />
-                </span>
-                Create
-                <span className="ml-2">
-                  <KeyboardArrowDownIcon style={{ fontSize: "28px" }} />
-                </span>
-              </Button>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={open1}
-                onClose={handleClose1}
-                MenuListProps={{
-                  "aria-labelledby": "basic-button",
-                }}
-              >
-                <MenuItem onClick={handleClose1}>
-                  <Link
-                    to={{
-                      pathname: "/portfolioBuilder/new",
-                      state: { portfolioResponse },
-                    }}
-                    onClick={handleCreatePortfolio}
-                  >
-                    Portfolio
-                  </Link>
-                </MenuItem>
-                <MenuItem
-                  onClick={() => changeServiceOrBundlePrefix1("SERVICE")}
-                >
-                  Service
-                </MenuItem>
-                <MenuItem
-                  onClick={() => changeServiceOrBundlePrefix1("BUNDLE")}
-                >
-                  Bundles
-                </MenuItem>
-              </Menu>
-            </div> */}
-            <Select 
+            <Select className="customselect1"
               placeholder=" + CREATE"
               styles={customStyles}
               options={[
@@ -1973,7 +1788,6 @@ const getAddportfolioItemData=(data)=>{
                   setBundleTabs={setBundleTabs}
                   compoFlag="BUNDLE"
                   getAddportfolioItemData={getAddportfolioItemData}
-                // saveAddNewServiceOrBundle={saveAddNewServiceOrBundle}
                   />
               </TabPanel>
               <TabPanel value="3">
@@ -1982,8 +1796,6 @@ const getAddportfolioItemData=(data)=>{
                   setBundleTabs={setBundleTabs}
                   setBundleServiceShow={setBundleServiceShow}
                   getPriceCalculatorDataFun={getPriceCalculatorDataFun}
-                // priceCalculator={priceCalculator}
-                // handleSavePrices={handleSavePrices}
                 />
               </TabPanel>
             </TabContext>
