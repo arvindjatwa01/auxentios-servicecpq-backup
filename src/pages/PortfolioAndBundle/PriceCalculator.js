@@ -60,10 +60,9 @@ const PriceCalculator = (props) => {
   };
   const handleBundlePriceSave = () => {
     // props.setTabs("6")//just for check new flow
-    props.setBundleServiceShow(false);
+    // props.setBundleServiceShow(false);
     props.getPriceCalculatorDataFun(priceCalculator);
-    props.setBundleTabs("1")
-    // props.handleSavePrices(); //called it at getPriceCalculatorDataFun
+    // props.setBundleTabs("1")
   };
 
   const handlePriceChange = (e) => {

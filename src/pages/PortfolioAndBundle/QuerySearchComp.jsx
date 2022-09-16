@@ -36,7 +36,6 @@ const QuerySearchComp = (props) => {
     obj.itemType = e;
     tempArray[id] = obj;
     setQuerySearchSelector(tempArray);
-    console.log("tempArray", tempArray)
   }
   const handleitemTypeOperator = (e, id) => {
     let tempArray = [...querySearchSelector];
