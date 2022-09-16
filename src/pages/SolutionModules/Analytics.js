@@ -38,6 +38,11 @@ import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 
 import { SolutionBuilderModal } from "../../pages/SolutionModules/index"
+import { SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO } from '../../navigation/CONSTANTS'
+
+import Portfoliosicon from '../../assets/icons/svg/Portfolios-icon.svg'
+import contract from '../../assets/icons/svg/contract.svg'
+import repairicon from '../../assets/icons/svg/repair-icon.svg'
 
 import SelectFilter from 'react-select';
 import QuerySearchComp from "../PortfolioAndBundle/QuerySearchComp";
@@ -101,6 +106,7 @@ export const Analytics = () => {
    const [openAddBundleItemHeader, setOpenAddBundleItemHeader] = useState("")
 
    const [openSearchSolution, setOpenSearchSolution] = useState(false)
+   const [openSearchSolutionNew, setOpenSearchSolutionNew] = useState(false)
    const [typeOfSearch, setTypeOfSearch] = useState(null)
    const [typeOfSolutionSelector, setTypeOfSolutionSelector] = useState(-1)
    const [typeOfSearchColumn, setTypeOfSearchColumn] = useState(null)
@@ -119,12 +125,18 @@ export const Analytics = () => {
    const [age2, setAge2] = React.useState('5');
    const [show, setShow] = React.useState(false);
 
+   const [showPopup, setShowPopup] = useState(false)
+   const [solutionsPopup, setSolutionsPopup] = useState(false)
+
    const [querySearchSelectItem, setQuerySearchSelectItem] = useState([])
 
    const [exploreMasterData, setExploreMasterData] = useState([])
    const [exploreFilterMasterData, setExploreFilterMasterData] = useState([])
    const [selectedExploreMasterData, setSelectedExploreMasterData] = useState([])
    const [exploreFlagIs, setExploreFlagIs] = useState(false)
+
+   const [selectTypeOfSolution, setSelectTypeOfSolution] = useState(-1)
+   const [solutionValue, setSolutionValue] = useState(0)
 
    let history = useHistory()
 
@@ -147,6 +159,20 @@ export const Analytics = () => {
             draggable: true,
             progress: undefined,
          });
+      }
+
+   }
+
+   const handleTypeOfSolution = (e) => {
+      setSelectTypeOfSolution(e.target.value)
+      console.log("valll ", e.target.value)
+      console.log("typeee ", typeof e.target.value)
+      if (e.target.value === "2") {
+         setSolutionValue(2)
+      } else if (e.target.value === "1") {
+         setSolutionValue(1)
+      } else{
+         setSolutionValue(0)
       }
 
    }
@@ -764,6 +790,34 @@ export const Analytics = () => {
       }
    };
 
+
+
+   const PopupModelBoxShow = () => {
+      setShowPopup(true)
+   }
+
+   const continueClickNextStep = () => {
+      // alert("Hello")
+      setSolutionsPopup(true)
+      setShowPopup(false)
+
+   }
+
+   const handleShowSearch = () => {
+      console.log("solutionValue : ", solutionValue)
+      if (solutionValue == 2) {
+         history.push('/solutionBuilder/guide');
+      } else if (solutionValue == 1) {
+         // setActiveStep(2)
+         // setOpenSearchSolutionNew(true)
+         console.log("this is Solution Portfolio Solution")
+      } else {
+         // alert("Portfolio ?")
+         // history.push('/portfolioBuilder/new');
+         setOpenSearchSolutionNew(true)
+         setSolutionsPopup(false)
+      }
+   }
    useEffect(() => {
       if (masterData.some((masterDataitem) => masterDataitem.check1 === true)) {
          setFlagIs(true);
@@ -1417,7 +1471,10 @@ export const Analytics = () => {
                <div className="d-flex align-items-center justify-content-between mt-2">
                   <h5 className="font-weight-600 mb-0">Solution Builder</h5>
                   <div>
-                     <a href="#" onClick={handleShow} style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
+                     {/* <a href="#" onClick={handleShow} style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
+                        <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create New<span className="ml-2"></span>
+                     </a> */}
+                     <a href="#" onClick={PopupModelBoxShow} style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
                         <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Create New<span className="ml-2"></span>
                      </a>
                   </div>
@@ -1814,7 +1871,8 @@ export const Analytics = () => {
                      <Modal.Title>Solution Selector</Modal.Title>
                   </Modal.Header>
                   <Modal.Body className="p25 pt-4" style={{ backgroundColor: '#F8F8F8 !important' }}>
-                     <div>
+                     <div>import Solution from './../PortfolioAndBundle/Solution';
+
                         <h5 className='text-black'>How do you want to build the solution ?</h5>
                         <RadioGroup className=''
                            row
@@ -2202,6 +2260,259 @@ export const Analytics = () => {
                </div>
             </Modal.Body>
          </Modal>
+
+         {/* New Flow Work On Create New Button */}
+
+         <Modal show={showPopup} onHide={() => setShowPopup(false)} size="xl"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered>
+            {/* <Modal.Header closeButton>
+          <Modal.Title>Modal heading</Modal.Title>
+        </Modal.Header> */}
+            <Modal.Body>
+               <div className='d-flex align-items-center justify-content-between'>
+                  <div><h5 class="">Choose what solution you want to build</h5></div>
+               </div>
+               <div className='card mt-4 p-4'>
+                  <div className='row'>
+                     <div className='col-md-6 my-3 '>
+                        <div className='d-flex'>
+                           <div className='mr-2'><img src={Portfoliosicon}></img></div>
+                           <div>
+                              <h5 className='text-light'>Pre-Configure Solution</h5>
+                              <p><b>You build pre-configured repair & maintenance solutions for your customer segment here. </b>
+                                 {/* <p><b>You build Portfolios or Service Programs here. </b> */}
+                                 Examples of Portfolios are Premium Maintenance Plan, Value added plan etc. A service program is a marketing or product improvement program.
+                              </p>
+                              <div className=''>
+                                 <a onClick={continueClickNextStep} className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></a>
+                              </div>
+
+                           </div>
+                        </div>
+                     </div>
+                     <div className='col-md-6 my-3'>
+                        <div className='d-flex'>
+                           <div className='mr-2'><img src={contract}></img></div>
+                           <div>
+                              <h5 className='text-light'>Customized Portfolio</h5>
+                              <p><b>You build Customized Portfolio here. </b>
+                                 Examples of pre-built template are Level I contracts like subscriptions or Level IV contract for Total Maintenance and Repair.
+                              </p>
+                              <div className=''>
+                                 <a onClick={() => history.push(SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO)} className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></a>
+                              </div>
+
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </Modal.Body>
+            {/* <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleClose}>
+            Save Changes
+          </Button>
+        </Modal.Footer> */}
+         </Modal>
+
+         <Modal show={solutionsPopup} onHide={() => setSolutionsPopup(false)} size="xl"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered>
+            {/* <Modal.Header closeButton>
+               <Modal.Title>Modal heading</Modal.Title>
+            </Modal.Header> */}
+            <Modal.Body>
+               <div className="p-3">
+                  <div>
+                     <h5 className='text-black'>Do you want create a new solution or use an existing one?</h5>
+                     <RadioGroup className='my-3'
+                        row
+                        aria-labelledby="demo-form-control-label-placement"
+                        name="position"
+                        defaultValue="top"
+                        value={selectTypeOfSolution}
+                        onChange={handleTypeOfSolution}
+                     >
+
+                        <FormControlLabel
+                           className="col-md-4 m-0 card py-4 align-itemsstart"
+                           value="0"
+                           control={<Radio />}
+                           label="Portfolio Template"
+                           labelPlacement="bottom"
+                        />
+                        <FormControlLabel
+                           className="col-md-4 m-0 card py-4 align-itemsstart"
+                           value="1"
+                           control={<Radio />}
+                           label="Solution Template"
+                           labelPlacement="bottom"
+                        />
+                        <FormControlLabel
+                           className="col-md-4 m-0 card py-4 align-itemsstart"
+                           value="2"
+                           control={<Radio />}
+                           label="Guided Solutions"
+                           labelPlacement="bottom"
+                        />
+                     </RadioGroup>
+                     <div>
+                        {/* <button onClick={() => HandleNextStepClick()} className="btn btn-primary w-100">Next  <img className='ml-2' src={Buttonarrow}></img></button> */}
+                        <button onClick={() => handleShowSearch()} className="btn btn-primary w-100">Next  <img className='ml-2' src={Buttonarrow}></img></button>
+                     </div>
+                  </div>
+               </div>
+            </Modal.Body>
+            {/* <Modal.Footer>
+               <Button variant="secondary" onClick={handleClose}>
+                  Close
+               </Button>
+               <Button variant="primary" onClick={handleClose}>
+                  Save Changes
+               </Button>
+            </Modal.Footer> */}
+         </Modal>
+
+         <Modal show={openSearchSolutionNew} onHide={() => setOpenSearchSolutionNew(false)} size="xl"
+            aria-labelledby="contained-modal-title-vcenter">
+            <Modal.Body className="">
+               Search {solutionValue == 0 ? "Portfolio Templates" : "Solution Templates"}
+               <div className="maintableheader bg-white mt-3 border-radius-10">
+                  <QuerySearchComp
+                     compoFlag="itemSearch1"
+                     options={[
+                        { label: "Make", value: "itemHeaderMake" },
+                        { label: "Family", value: "itemHeaderFamily" },
+                        { label: "Model", value: "model" },
+                        { label: "Prefix", value: "prefix" },
+                     ]}
+                     ItemSearchResponseFun={ItemSearchResponseFun}
+                     setExploreMasterData={setExploreMasterData}
+                     setSelectedExploreMasterData={setSelectedExploreMasterData}
+
+                  // setQuerySearchSelectItem={setQuerySearchSelectItem}
+                  // setTempBundleService1={setTempBundleService1}
+                  // setLoadingItem={setLoadingItem} 
+                  />
+                  {/* <div className="d-flex justify-content-between align-items-center pl-2">
+                           <div className="d-flex align-items-center">
+                              <div className="customselect d-flex ml-3"> */}
+                  {/* <span>
+                                        <a href="#" className="btn-sm">+</a>
+                                    </span> */}
+                  {/* <Select2
+                                    onChange={handleTypeOfSearchChange}
+                                    isClearable={true}
+                                    value={typeOfSearch}
+                                    options={[{ label: "Bundle", value: 'bundle' }, { label: "Service", value: 'service' }, { label: "Portfolio Item", value: 'portfolioItem' }]}
+                                    placeholder="Add by"
+                                 /> */}
+                  {/* </div>
+                              {typeOfSearch != null
+                                 ?
+                                 <div className="customselect d-flex ml-3">
+                                    <span>
+                                       <a href="#" className="btn-sm">+</a>
+                                    </span>
+                                    <Select2
+                                       onChange={handleTypeOfSearchColumnChange}
+                                       isClearable={true}
+                                       value={typeOfSearchColumn}
+                                       options={typeOfSearchColumnKeyValue}
+                                       placeholder="Select"
+                                    />
+                                    {typeOfSearchColumn != null
+                                       ?
+                                       // <></>
+                                       <input type="email" class="" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter text" style={{ border: 'none', background: 'transparent', width: '80px', fontWeight: '600', paddingLeft: '10px' }} value={columnSearchText} onChange={(e) => setColumnSearchText(e.target.value)}></input>
+                                       : <></>
+                                    }
+                                 </div>
+                                 : <></>
+                              }
+
+                           </div> */}
+                  {/* <div>
+                              <div className="">
+                                 <a href="#" style={{ cursor: 'pointer' }} className="btn border-left"><span>+</span> Add</a>
+                                 <a href="#" className="btn border-left">Cancel</a>
+                              </div>
+                           </div> */}
+                  {/* </div> */}
+                  {columnSearchText.trim() != "" && typeOfSearchColumn != null
+                     ?
+                     <div className="tableheader">
+                        <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
+                           <li><a className="cursor result" >RESULTS</a></li>
+                           <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM125</a></li>
+                           <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM2</a></li>
+                           <li><a className="cursor lastOption text-violet" onClick={handleCreateNewServiceBundle}><span className="mr-2">+</span>Create New {typeOfSearch != null ? typeOfSearch.value == 'bundle' ? "Bundle" : typeOfSearch.value == 'service' ? "Service" : typeOfSearch.value == 'portfolioItem' ? "Portfolio Item" : "" : ""}</a></li>
+                        </ul>
+                     </div>
+                     :
+                     <></>}
+                  {exploreMasterData.length > 0 ?
+                     <>
+                        <div className="tableheader">
+                           <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
+                              <li><a className="cursor result" >RESULTS</a></li>
+                           </ul>
+                           <DataTable
+                              className=""
+                              title=""
+                              columns={exploreMasterColumn}
+                              data={exploreMasterData}
+                              customStyles={customStyles}
+                              pagination
+                           />
+                           <div className="m-2 text-right">
+                              <input
+                                 onClick={() => {
+                                    setSelectedExploreMasterData(exploreFilterMasterData);
+                                    setExploreMasterData([]);
+                                 }}
+                                 className="btn text-white bg-primary"
+                                 value="+ Add Selected"
+                                 disabled={!exploreFlagIs}
+                              />
+                           </div>
+                        </div>
+                     </> : <></>
+                  }
+                  {selectedExploreMasterData.length > 0 ? (
+                     <>
+                        <div className="tableheader">
+                           <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
+                              <li><a className="cursor result" >Included Data</a></li>
+                           </ul>
+                           <DataTable
+                              className="mt-3"
+                              title=""
+                              columns={SelectedExploreMasterDataColumn}
+                              data={selectedExploreMasterData}
+                              customStyles={customStyles}
+                              pagination
+                           />
+                        </div>
+                     </>
+                  ) : (
+                     <></>
+                  )}
+               </div>
+            </Modal.Body>
+            <Modal.Footer>
+               {selectedExploreMasterData.length > 0 ?
+                  <div>
+                     <button className="btn btn-primary w-100" onClick={handleBundleItemSaveAndContinue}>Save & Continue</button>
+                  </div>
+                  : <></>}
+            </Modal.Footer>
+         </Modal>
+
       </>
    )
 };
