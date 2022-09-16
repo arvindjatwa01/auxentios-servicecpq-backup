@@ -914,7 +914,7 @@ export function CreatePortfolio() {
         },
       };
 
-      0
+      const res = await itemCreation(reqObj);
       setCurrentItemId(res.data.itemId);
       if (res.status == 200) {
         toast(`👏 ${serviceOrBundlePrefix} created`, {
