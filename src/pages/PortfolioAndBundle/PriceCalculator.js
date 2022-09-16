@@ -10,7 +10,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { itemCreation, updatePortfolio } from "../../services/index";
 
 const PriceCalculator = (props) => {
-  const [disable, setDisable] = useState(true);
   const [priceCalculator, setPriceCalculator] = useState({
     priceMethod: "",
     listPrice: "",
@@ -31,17 +30,13 @@ const PriceCalculator = (props) => {
     suppresion: "",
     netPrice: 1200,
     totalPrice: 1200,
-
-    netParts: "",
-    netService: "",
-    priceType: "",
-    netPrice: "",
-    netAdditionals: "",
   });
 
   useEffect(() => {
     setPriceCalculator(props.priceCalculator);
   }, [props]);
+
+
   const frequencyOptions = [
     { label: "Cyclic", value: "Cyclic" },
     { label: "once", value: "once" },
@@ -55,19 +50,9 @@ const PriceCalculator = (props) => {
     { value: "Construction", label: "Construction" },
   ];
 
-  const handlePriceSelectChange = (e) => {
-    setPriceCalculator({
-      priceCalculator,
-      [e.target.name]: e.target.value,
-    });
-  };
-  const handlePriceInputChange = (e) => {
-    console.log("handlePriceInputChange");
-  };
-
   const handleItemPriceSave = () => {
-    props.setTabs("6")
-    // props.setTabs("4"); // previous flow
+    // props.setTabs("6")
+    props.setTabs("4"); // previous flow
     props.getPriceCalculatorDataFun(priceCalculator);
     props.handleSavePrices();
   };
@@ -87,143 +72,7 @@ const PriceCalculator = (props) => {
 
   return (
     <>
-      <div className="ligt-greey-bg p-3">
-        <div>
-          <span className="mr-3 cursor" onClick={() => setDisable(!disable)}>
-            <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
-            <span className="ml-2">Edit</span>
-          </span>
-          <span className="mr-3">
-            <MonetizationOnOutlinedIcon className=" font-size-16" />
-            <span className="ml-2"> Adjust price</span>
-          </span>
-          <span className="mr-3">
-            <FormatListBulletedOutlinedIcon className=" font-size-16" />
-            <span className="ml-2">Related part list(s)</span>
-          </span>
-          <span className="mr-3">
-            <AccessAlarmOutlinedIcon className=" font-size-16" />
-            <span className="ml-2">Related service estimate(s)</span>
-          </span>
-          <span>
-            <SellOutlinedIcon className=" font-size-16" />
-            <span className="ml-2">Split price</span>
-          </span>
-        </div>
-      </div>
-
-      <div className="mt-3">
-        <div className="row">
-          <div className="col-md-6 col-sm-6">
-            <div className="form-group">
-              <label
-                className="text-light-dark font-size-14 font-weight-500"
-                for="exampleInputEmail1"
-              >
-                Net Parts $
-              </label>
-              <input
-                type="text"
-                className="form-control border-radius-10"
-                name="netParts"
-                disabled={disable}
-                value={priceCalculator.netParts}
-                onChange={handlePriceChange}
-              />
-            </div>
-          </div>
-          <div className="col-md-6 col-sm-6">
-            <div className="form-group">
-              <label
-                className="text-light-dark font-size-14 font-weight-500"
-                for="exampleInputEmail1"
-              >
-                Net Service $
-              </label>
-              <input
-                type="text"
-                className="form-control border-radius-10"
-                name="netService"
-                disabled={disable}
-                value={priceCalculator.netService}
-                onChange={handlePriceChange}
-              />
-            </div>
-          </div>
-          <div className="col-md-6 col-sm-6">
-            <div className="form-group">
-              <label
-                className="text-light-dark font-size-14 font-weight-500"
-                for="exampleInputEmail1"
-              >
-                Price type
-              </label>
-              <input
-                type="text"
-                className="form-control border-radius-10"
-                placeholder="Optional"
-                name="priceType"
-                disabled={disable}
-                value={priceCalculator.priceType}
-                onChange={handlePriceChange}
-              />
-            </div>
-          </div>
-          <div className="col-md-6 col-sm-6">
-            <div className="form-group">
-              <label
-                className="text-light-dark font-size-14 font-weight-500"
-                for="exampleInputEmail1"
-              >
-                Net Price
-              </label>
-              <input
-                type="text"
-                className="form-control border-radius-10"
-                name="netPrice"
-                disabled={disable}
-                value={priceCalculator.netPrice}
-                onChange={handlePriceChange}
-              />
-            </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-md-6 col-sm-6">
-            <div className="form-group">
-              <label
-                className="text-light-dark font-size-14 font-weight-500"
-                for="exampleInputEmail1"
-              >
-                Net Additionals $
-              </label>
-              <input
-                type="text"
-                className="form-control border-radius-10"
-                name="netAdditionals"
-                disabled={disable}
-                value={priceCalculator.netAdditionals}
-                onChange={handlePriceChange}
-              />
-            </div>
-          </div>
-        </div>
-        <div className="m-3 text-right">
-          <a
-            href="#"
-            className="btn text-white bg-primary"
-            onClick={
-              props.serviceOrBundlePrefix === ""
-                ? handleItemPriceSave
-                : handleBundlePriceSave
-            }
-          >
-            Save
-          </a>
-        </div>
-      </div>
-
-      <div className="d-none">
+      <div className="">
         <div className="p-3">
           <div className="row">
             <div className="col-md-6 col-sm-6">
