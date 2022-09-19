@@ -75,7 +75,7 @@ const QuerySearchComp = (props) => {
           console.log("err in api call", err);
         });
       obj.inputSearch = e.target.value;
-    } else if (props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "itemSearch1") {
+    } else if (props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "itemSearch1" || props.compoFlag === "portfolioTempItemSearch") {
       // itemSearchSuggestion(tempArray[id].selectFamily.value, e.target.value)
       //   .then((res) => {
       //     // obj.selectOptions = [...res];
@@ -130,6 +130,8 @@ const QuerySearchComp = (props) => {
     props.compoFlag === "coverage" && props?.setOpenedModelBoxData([]);
     props.compoFlag === "itemSearch1" && props?.setExploreMasterData([]);
     props.compoFlag === "itemSearch1" && props?.setSelectedExploreMasterData([]);
+    props.compoFlag === "portfolioTempItemSearch" && props?.setPortfolioTempMasterData([]);
+    props.compoFlag === "portfolioTempItemSearch" && props?.setSelectedPortfolioTempMasterData([]);
 
 
     props.setTempBundleService1([])
@@ -190,7 +192,7 @@ const QuerySearchComp = (props) => {
         temArray[0].associatedServiceOrBundle = res2
         props.setBundleItems(temArray)
         props.setLoadingItem(false)
-      } else if (props.compoFlag === "itemSearch1") {
+      } else if (props.compoFlag === "itemSearch1" || props.compoFlag === "portfolioTempItemSearch") {
         const res3 = await itemSearch(searchStr)
         console.log("res3 is  : ", res3)
         props.ItemSearchResponseFun(res3, querySearchSelector)
@@ -304,7 +306,7 @@ const QuerySearchComp = (props) => {
                     ) : (
                       <></>
                     )}
-                    {(props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "itemSearch1") &&
+                    {(props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "itemSearch1" || props.compoFlag === "portfolioTempItemSearch") &&
                       <>
                         <Select
                           placeholder="Bundle Flag"

@@ -1,6 +1,7 @@
 export { SolutionBuilderModal } from "./SolutionBuilderModal";
 export { Analytics } from "./Analytics";
 export { CustomizedPortfolio } from "./CustomizedPortfolio";
+export { PortfolioTemplatesResult } from "./PortfolioTemplatesResult";
 export { SolutionSelector } from "./SolutionSelector";
 export { ServicePortfolio } from "./ServicePortfolio";
 export { SolutionBuilderCreate } from "./SolutionBuilderCreate";
