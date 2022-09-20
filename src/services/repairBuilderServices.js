@@ -13,6 +13,7 @@ import {
   FETCH_BUILDER_VERSION_DETAILS,
   FETCH_PARTS_OF_PARTLIST,
   FETCH_REPAIR_BUILDER_PARTLIST,
+  PRICING_COMMON_CONFIG,
   SEARCH_CUSTOMER,
   SEARCH_MACHINE,
   SEARCH_SPAREPART,
@@ -579,6 +580,32 @@ export const fetchBuilderVersionDet =  (builderNo, versionNo) => {
         });
     } catch (error) {
       console.error("in RepairBuilder > fetchBuilderVersionDet, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//Fetch pricing Methods
+export const fetchBuilderPricingMethods =  (category) => {
+  console.log("RepairBuilder > fetchBuilderPricingMethods called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(PRICING_COMMON_CONFIG+category, config)
+        .then((res) => {
+          console.log("fetchBuilderPricingMethods > axios res=", res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject('Error occurred while calling fetchBuilderPricingMethods');
+        })
+        .catch((err) => {
+          console.log("fetchBuilderPricingMethods > axios err=", err);
+          reject("Error in fetchBuilderPricingMethods axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > fetchBuilderPricingMethods, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

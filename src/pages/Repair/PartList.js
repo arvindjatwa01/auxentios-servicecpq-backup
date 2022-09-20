@@ -13,7 +13,11 @@ import LabelIcon from "@mui/icons-material/LabelTwoTone";
 import DeleteIcon from "@mui/icons-material/DeleteTwoTone";
 import { MuiMenuComponent } from "./components/MuiMenuRepair";
 // import { MuiMenuComponent } from "pages/Operational";
-import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridActionsCellItem,
+  useGridApiContext,
+} from "@mui/x-data-grid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import shareIcon from "../../assets/icons/svg/share.svg";
 import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
@@ -44,6 +48,7 @@ import {
   createBuilderVersion,
   customerSearch,
   fetchBuilderDetails,
+  fetchBuilderPricingMethods,
   fetchBuilderVersionDet,
   fetchPartlistFromBuilder,
   fetchPartsFromPartlist,
@@ -63,8 +68,39 @@ import Validator from "utils/validator";
 import CustomSnackbar from "../Common/CustomSnackBar";
 import DynamicSearchComponent from "./components/DynamicSearchComponent";
 import AddNewSparepartModal from "./components/AddNewSparePart";
-import { FormControl, InputLabel, Rating, TextField } from "@mui/material";
-import { Popper, TextareaAutosize } from "@material-ui/core";
+import {
+  FormControl,
+  InputLabel,
+  Rating,
+  TextareaAutosize,
+} from "@mui/material";
+
+function CommentEditInputCell(props) {
+  const { id, value, field } = props;
+  // console.log(id, value, field);
+  const apiRef = useGridApiContext();
+
+  const handleChange = async (event) => {
+    // console.log("newValue", event);
+    // Explore debounce option
+    apiRef.current.setEditCellValue(
+      { id, field, value: event.target.value },
+      event
+    );
+  };
+
+  return (
+    <Box sx={{ display: "flex", alignItems: "center" }}>
+      <TextareaAutosize
+        // ref={handleRef}
+        name="comment"
+        style={{ width: "100%" }}
+        value={value}
+        onChange={handleChange}
+      />
+    </Box>
+  );
+}
 
 function PartList(props) {
   const history = useHistory();
@@ -89,7 +125,7 @@ function PartList(props) {
   const [partsLoading, setPartsLoading] = useState(false);
   const [bulkUpdateProgress, setBulkUpdateProgress] = useState(false);
   const [rating, setRating] = useState(null);
-  const [versionDesc, setVersionDesc] = useState('');
+  const [versionDesc, setVersionDesc] = useState("");
   const [tagClicked, setTagClicked] = useState("");
   const tags = [
     { label: "None", value: "" },
@@ -140,6 +176,13 @@ function PartList(props) {
     revisedOn: new Date(),
     salesOffice: null,
   });
+  const [pricingData, setPricingData] = useState({
+    priceMethod: null,
+    netPrice: 0.0,
+    priceDate: new Date(),
+    adjustedPrice: 0.0,
+    currency: "USD",
+  });
   const initialSparePart = {
     groupNumber: "",
     partType: "",
@@ -164,6 +207,24 @@ function PartList(props) {
     { value: "60", label: "2 months" },
   ];
 
+  const [priceMethodOptions, setPriceMethodOptions] = useState([]);
+  const populatePricingMethods = () => {
+    fetchBuilderPricingMethods("price-method")
+      .then((res) => {
+        const options = res.map((d) => ({
+          value: d.key,
+          label: d.value,
+        }));
+        setPriceMethodOptions(options);
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          `😐 Error occurred while fetching pricing methods!`
+        );
+      });
+  };
+
   const salesOfficeOptions = [
     { value: "Location1", label: "Location1" },
     { value: "Location2", label: "Location2" },
@@ -183,6 +244,7 @@ function PartList(props) {
   };
 
   useEffect(() => {
+    populatePricingMethods();
     if (state && state.type === "new") {
       setBuilderId(state.builderId);
       setBId(state.bId);
@@ -218,7 +280,7 @@ function PartList(props) {
 
   const fetchPartsOfPartlist = async (partlistId) => {
     setPartsLoading(true);
-    console.log("partlistNo", partlistId);
+    // console.log("partlistNo", partlistId);
     await fetchPartsFromPartlist(partlistId)
       .then((result) => {
         setSpareparts(result);
@@ -290,7 +352,6 @@ function PartList(props) {
       estViewOnly: true,
     });
   };
-
 
   const createVersion = async () => {
     await createBuilderVersion(bId, versionDesc)
@@ -605,7 +666,7 @@ function PartList(props) {
 
   // Open spare part modal to view or edit
   const openSparePartRow = (row) => {
-    console.log(row);
+    // console.log(row);
     setSparePart(row);
     setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
     setPartFieldViewonly(true);
@@ -677,7 +738,12 @@ function PartList(props) {
     { headerName: "Qty", field: "quantity", flex: 1, editable: true },
     { headerName: "Unit Of Measures", field: "unitOfMeasure", flex: 1 },
     { headerName: "Unit Price", field: "unitPrice", flex: 1 },
-    { headerName: "Extended Price", field: "extendedPrice", flex: 1 },
+    {
+      headerName: "Extended Price",
+      field: "extendedPrice",
+      flex: 1,
+      editable: true,
+    },
     { headerName: "Currency", field: "currency", flex: 1 },
     {
       headerName: "% Usage",
@@ -691,10 +757,14 @@ function PartList(props) {
       field: "comment",
       flex: 1,
       editable: true,
-      // renderEditCell: (props) => <TextareaAutosize {...props} />
+      renderEditCell: CommentEditInputCell,
     },
     // {
-    //   renderEditCell: (props) =>    
+    //   headerName: "Tag",
+    //   field: "tag",
+    //   flex: 1,
+    //   editable: true,
+    //   renderEditCell: (props) =>
     //     <FormControl fullWidth size="small">
     //       <InputLabel id="demo-select-small" style={{ fontSize: 11 }}>
     //         Tags
@@ -733,7 +803,7 @@ function PartList(props) {
             label="Delete"
             // onClick={handleDeleteClick(id)}
             color="inherit"
-          />
+          />,
         ];
       },
     },
@@ -886,13 +956,13 @@ function PartList(props) {
     const selectedRowsData = ids.map((id) =>
       masterData.find((row) => row.id === id)
     );
-    console.log(selectedRowsData);
+    // console.log(selectedRowsData);
     setSelectedMasterData(selectedRowsData);
   };
 
   // Add the selected parts from search result to partlist
   const addSelectedPartsToPartList = async () => {
-    console.log(selectedMasterData);
+    // console.log(selectedMasterData);
     const parts = [];
     selectedMasterData.map((item) => {
       let data = {
@@ -937,16 +1007,19 @@ function PartList(props) {
           newRow.usagePercentage !== oldRow.usagePercentage ||
           newRow.comment !== oldRow.comment
         ) {
-          console.log(newRow, newRow.quantity !== oldRow.quantity);
+          // console.log(newRow, newRow.quantity !== oldRow.quantity);
           const index = rowsToUpdate.findIndex(
             (object) => object.id === newRow.id
           );
-          // newRow.extendedPrice = newRow.quantity * newRow.unitPrice
-          // rowsToUpdate.map(x => (x.id === newRow.id) ? newRow : x)
+          newRow.totalPrice =
+            newRow.usagePercentage > 0
+              ? parseFloat(
+                  newRow.extendedPrice * 0.01 * newRow.usagePercentage
+                ).toFixed(2)
+              : parseFloat(newRow.extendedPrice).toFixed(2);
           if (index === -1) {
-            console.log("add");
+            // console.log("add");
             setRowsToUpdate((prevRows) => [...prevRows, newRow]);
-            // rowsToUpdate.push(newRow);
           } else {
             rowsToUpdate[index] = newRow;
           }
@@ -954,7 +1027,7 @@ function PartList(props) {
           // Save the arguments to resolve or reject the promise later
           resolve(newRow);
         } else {
-          console.log(oldRow);
+          // console.log(oldRow);
           resolve(oldRow); // Nothing was changed
         }
       }),
@@ -963,17 +1036,21 @@ function PartList(props) {
 
   // Updates the bulk edits
   const bulkUpdateParts = async () => {
-    await addMultiPartsToPartList(partListNo, rowsToUpdate)
-      .then((result) => {
-        handleSnack("success", `👏 Parts have been updated!`);
-        setRowsToUpdate([]);
-        fetchPartsOfPartlist(partListNo);
-      })
-      .catch((err) => {
-        console.log(err);
-        setRowsToUpdate([]);
-        handleSnack("error", `😐 Error occurred while adding the parts!`);
-      });
+    if (rowsToUpdate.length === 0) {
+      handleSnack("info", `😐 No modifications to update!`);
+    } else {
+      await addMultiPartsToPartList(partListNo, rowsToUpdate)
+        .then((result) => {
+          handleSnack("success", `👏 Parts have been updated!`);
+          setRowsToUpdate([]);
+          fetchPartsOfPartlist(partListNo);
+        })
+        .catch((err) => {
+          console.log(err);
+          setRowsToUpdate([]);
+          handleSnack("error", `😐 Error occurred while adding the parts!`);
+        });
+    }
   };
 
   const [show, setShow] = React.useState(false);
@@ -1981,17 +2058,26 @@ function PartList(props) {
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
+                        <div className="align-items-center date-box">
                           <label className="text-light-dark font-size-12 font-weight-500">
                             PRICE DATE
                           </label>
-                          <input
-                            type="email"
-                            className="form-control border-radius-10"
-                            id="exampleInputEmail1"
-                            aria-describedby="emailHelp"
-                            placeholder="Placeholder (Optional)"
-                          />
+                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <DatePicker
+                              variant="inline"
+                              format="dd/MM/yyyy"
+                              className="form-controldate border-radius-10"
+                              label=""
+                              disableFuture
+                              value={pricingData.priceDate}
+                              onChange={(e) =>
+                                setPricingData({
+                                  ...pricingData,
+                                  priceDate: e,
+                                })
+                              }
+                            />
+                          </MuiPickersUtilsProvider>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
@@ -2015,8 +2101,11 @@ function PartList(props) {
                           </label>
                           <Select
                             defaultValue={selectedOption}
-                            onChange={setSelectedOption}
-                            options={options}
+                            value={pricingData.priceMethod}
+                            onChange={(e) =>
+                              setPricingData({ ...pricingData, priceMethod: e })
+                            }
+                            options={priceMethodOptions}
                             placeholder="placeholder (Optional)"
                           />
                         </div>
@@ -2192,7 +2281,10 @@ function PartList(props) {
               rows={spareparts}
               columns={columnsPartList}
               editMode="row"
-              onRowEditStart={(e) => setBulkUpdateProgress(true)}
+              onRowEditStart={(e) => {
+                // console.log(e);
+                setBulkUpdateProgress(true);
+              }}
               onRowEditStop={(e) => setBulkUpdateProgress(false)}
               paginationMode="server"
               // pageSize={5}
@@ -2216,7 +2308,7 @@ function PartList(props) {
               <button
                 className="btn text-white bg-primary"
                 onClick={bulkUpdateParts}
-                disabled={bulkUpdateProgress || rowsToUpdate.length === 0}
+                disabled={bulkUpdateProgress}
               >
                 Save
               </button>

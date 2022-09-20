@@ -201,7 +201,7 @@ const DynamicSearchComponent = (props) => {
             to="#"
             className="btn-sm border mr-2"
           >
-            <SearchIcon sx={{color: 'grey', "&:hover": { color: "blue" }, fontSize: 18}}/>
+            <SearchIcon sx={{color: 'grey', "&:hover": { color: "blue" }, fontSize: 17}}/>
           </Link>
         </div>
       </div>
