@@ -107,14 +107,10 @@ function WithoutSparePartsHeader(props) {
   const open = Boolean(anchorEl);
 
   useEffect(() => {
-    setBuilderId(state.builderId);
-    setBId(state.bId);
-    setGeneralData({ ...generalData, estimationNo: state.builderId });
-    // setBuilderId("RB00008");
-    // setBId(8);
-    // setPartListNo(7);
-    // setGeneralData({ ...generalData, estimationNo: "PL000007" });
-    if (state.type === "new") {
+    if(state && state.type === "new"){
+      setBuilderId(state.builderId);
+      setBId(state.bId);
+      setGeneralData({ ...generalData, estimationNo: state.builderId });
       console.log("Created a new builder");
     }
   }, []);

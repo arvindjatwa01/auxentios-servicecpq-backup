@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import SelectFilter from "react-select";
 import { sparePartSearch } from "services/repairBuilderServices";
+import SearchIcon from "@mui/icons-material/Search";
+import DeleteIcon from "@mui/icons-material/Delete";
 import $ from "jquery";
 
 const DynamicSearchComponent = (props) => {
@@ -61,7 +63,7 @@ const DynamicSearchComponent = (props) => {
       ]);
       setCount(count + 1);
     } else {
-      props.handleSnack("info", true, "Please fill current search criteria");
+      props.handleSnack("info", "Please fill current search criteria");
     }
   };
   const handleInputSearch = (e, id) => {
@@ -188,30 +190,18 @@ const DynamicSearchComponent = (props) => {
             +
           </Link>
         </div>
+        
         <div onClick={handleDeletQuerySearch}>
-          <Link to="#" className="btn-sm border">
-            <svg
-              data-name="Layer 41"
-              id="Layer_41"
-              fill="black"
-              viewBox="0 0 50 50"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <title />
-              <path
-                className="cls-1"
-                d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-              />
-              <path
-                className="cls-1"
-                d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-              />
-              <path
-                className="cls-1"
-                d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-              />
-            </svg>
-            {/* <DeleteIcon className="font-size-16" /> */}
+          <Link to="#" className="btn-sm border mr-2">
+            <i class="fa fa-trash fa-lg" ></i>         
+          </Link>
+        </div>
+        <div onClick={props.searchClick}>
+          <Link
+            to="#"
+            className="btn-sm border mr-2"
+          >
+            <SearchIcon sx={{color: 'grey', "&:hover": { color: "blue" }, fontSize: 18}}/>
           </Link>
         </div>
       </div>

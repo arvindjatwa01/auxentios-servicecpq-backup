@@ -11,8 +11,8 @@ import TabPanel from "@mui/lab/TabPanel";
 import EditIcon from "@mui/icons-material/EditTwoTone";
 import LabelIcon from "@mui/icons-material/LabelTwoTone";
 import DeleteIcon from "@mui/icons-material/DeleteTwoTone";
-// import { MuiMenuComponent } from "./components/MuiMenuRepair";
-import { MuiMenuComponent } from "pages/Operational";
+import { MuiMenuComponent } from "./components/MuiMenuRepair";
+// import { MuiMenuComponent } from "pages/Operational";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import shareIcon from "../../assets/icons/svg/share.svg";
@@ -36,7 +36,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import $ from "jquery";
-import SearchIcon from "@mui/icons-material/Search";
+// import SearchIcon from "@mui/icons-material/Search";
 import DateFnsUtils from "@date-io/date-fns";
 import {
   addMultiPartsToPartList,
@@ -44,6 +44,7 @@ import {
   createBuilderVersion,
   customerSearch,
   fetchBuilderDetails,
+  fetchBuilderVersionDet,
   fetchPartlistFromBuilder,
   fetchPartsFromPartlist,
   machineSearch,
@@ -62,7 +63,8 @@ import Validator from "utils/validator";
 import CustomSnackbar from "../Common/CustomSnackBar";
 import DynamicSearchComponent from "./components/DynamicSearchComponent";
 import AddNewSparepartModal from "./components/AddNewSparePart";
-import { FormControl, InputLabel, Rating } from "@mui/material";
+import { FormControl, InputLabel, Rating, TextField } from "@mui/material";
+import { Popper, TextareaAutosize } from "@material-ui/core";
 
 function PartList(props) {
   const history = useHistory();
@@ -87,52 +89,16 @@ function PartList(props) {
   const [partsLoading, setPartsLoading] = useState(false);
   const [bulkUpdateProgress, setBulkUpdateProgress] = useState(false);
   const [rating, setRating] = useState(null);
+  const [versionDesc, setVersionDesc] = useState('');
   const [tagClicked, setTagClicked] = useState("");
-
-  const processRowUpdate = React.useCallback(
-    (newRow, oldRow) =>
-      new Promise((resolve, reject) => {
-        if (
-          newRow.quantity !== oldRow.quantity ||
-          newRow.extendedPrice !== oldRow.extendedPrice ||
-          newRow.comment !== oldRow.comment
-        ) {
-          console.log(newRow, newRow.quantity !== oldRow.quantity);
-          const index = rowsToUpdate.findIndex(
-            (object) => object.id === newRow.id
-          );
-
-          // rowsToUpdate.map(x => (x.id === newRow.id) ? newRow : x)
-          if (index === -1) {
-            console.log("add");
-            setRowsToUpdate((prevRows) => [...prevRows, newRow]);
-            // rowsToUpdate.push(newRow);
-          } else {
-            rowsToUpdate[index] = newRow;
-          }
-          // newRow.extendedPrice = newRow.quantity * newRow.unitPrice
-          // Save the arguments to resolve or reject the promise later
-          resolve(newRow);
-        } else {
-          console.log(oldRow);
-          resolve(oldRow); // Nothing was changed
-        }
-      }),
-    []
-  );
-
-  const bulkUpdateParts = async () => {
-    await addMultiPartsToPartList(partListNo, rowsToUpdate)
-      .then((result) => {
-        handleSnack("success", true, `👏 Parts have been updated!`);
-        setRowsToUpdate([]);
-        fetchPartsOfPartlist(partListNo);
-      })
-      .catch((err) => {
-        console.log(err);
-        handleSnack("error", true, `😐 Error occurred while adding the parts!`);
-      });
-  };
+  const tags = [
+    { label: "None", value: "" },
+    { label: "Required", value: "required" },
+    { label: "Optional", value: "optional" },
+    { label: "Additional", value: "additional" },
+    { label: "Missing", value: "missing" },
+    { label: "Core", value: "core" },
+  ];
 
   const [viewOnlyTab, setViewOnlyTab] = useState({
     custViewOnly: false,
@@ -204,8 +170,17 @@ function PartList(props) {
     { value: "Location3", label: "Location3" },
     { value: "Location4", label: "Location4" },
   ];
+  const [builderVersionOptions, setBuilderVersionOptions] = useState([
+    { label: "Version 1", value: 1 },
+  ]);
 
-  const label = { inputProps: { "aria-label": "Checkbox demo" } };
+  const handleVersion = (e) => {
+    setSelectedVersion(e);
+    fetchBuilderVersionDet(builderId, e.value).then((result) => {
+      populateHeader(result);
+      fetchPartlist(result.id);
+    });
+  };
 
   useEffect(() => {
     if (state && state.type === "new") {
@@ -214,18 +189,15 @@ function PartList(props) {
       setPartListNo(state.partListNo);
       setPartListId(state.partListId);
       setGeneralData({ ...generalData, estimationNo: state.partListId });
-      // setBuilderId("RB00008");
-      // setBId(8);
-      // setPartListNo(7);
-      // setGeneralData({ ...generalData, estimationNo: "PL000007" });
       if (state.type === "new") {
         console.log("Created a new builder");
       }
-    } else {
-      setPartListNo(1);
-      setBuilderId("RB00001");
-      setBId(1);
-      fetchAllDetails(1, 1);
+    } else if (state) {
+      setBuilderId(state.builderId);
+      setBId(state.bId);
+      setPartListNo(state.partListNo);
+      setPartListId(state.partListId);
+      fetchAllDetails(state.bId, state.partListNo);
     }
   }, []);
 
@@ -237,16 +209,9 @@ function PartList(props) {
           populateHeader(result);
         })
         .catch((err) => {
-          handleSnack(
-            "error",
-            true,
-            "Error occured while fetching header details"
-          );
+          handleSnack("error", "Error occured while fetching header details");
         });
       setHeaderLoading(false);
-      // await fetchPartLists(8).then(result => {
-
-      // })
       fetchPartsOfPartlist(partlistId);
     }
   };
@@ -259,13 +224,28 @@ function PartList(props) {
         setSpareparts(result);
       })
       .catch((err) => {
-        handleSnack("error", true, "Error occured while fetching parts");
+        handleSnack("error", "Error occured while fetching parts");
       });
     setPartsLoading(false);
   };
 
   const populateHeader = (result) => {
     setRating(result.rating);
+    setSelBuilderStatus(
+      builderStatusOptions.filter((x) => x.value === result.status)[0]
+    );
+    // console.log("BuilderStatus", result.status, builderStatusOptions.filter((x) => x.value === result.status)[0]);
+    // console.log(result.versionList, "versionNo" + result.versionNumber);
+    let versions = result.versionList?.map((versionNo) => ({
+      value: versionNo,
+      label: "Version " + versionNo,
+    }));
+    setBuilderVersionOptions(versions);
+    setSelectedVersion({
+      label: "Version " + result.versionNumber,
+      value: result.versionNumber,
+    });
+
     setCustomerData({
       customerID: result.customerId,
       contactEmail: result.contactEmail,
@@ -303,8 +283,6 @@ function PartList(props) {
         (element) => element.value === result.salesOffice
       ),
     });
-    setValue3(result.versionNumber);
-    setValue4(result.versionNumber);
     setViewOnlyTab({
       custViewOnly: true,
       machineViewOnly: true,
@@ -313,35 +291,38 @@ function PartList(props) {
     });
   };
 
+
   const createVersion = async () => {
-    await createBuilderVersion(bId)
+    await createBuilderVersion(bId, versionDesc)
       .then((result) => {
         setBId(result.id);
-        setValue3(result.version);
-        setValue4(result.version);
+        setSelectedVersion({
+          label: "Version " + result.version,
+          value: result.version,
+        });
         populateHeader(result);
-        fetchPartlistFromBuilder(result.id)
-          .then((partListResult) => {
-            setPartListNo(partListResult[0]);
-            fetchPartsOfPartlist(partListResult[0]);
-          })
-          .catch((err) => {
-            handleSnack(
-              "error",
-              true,
-              "Error occurred while fetching all parts of partlist"
-            );
-          });
+        fetchPartlist(result.id);
+      })
+      .catch((err) => {
+        handleSnack("error", "Error occurred while creating builder version");
+      });
+  };
+
+  const fetchPartlist = (id) => {
+    fetchPartlistFromBuilder(id)
+      .then((partListResult) => {
+        if (partListResult) {
+          setPartListNo(partListResult[0]);
+          fetchPartsOfPartlist(partListResult[0]);
+        }
       })
       .catch((err) => {
         handleSnack(
           "error",
-          true,
-          "Error occurred while creating builder version"
+          "Error occurred while fetching all parts of partlist"
         );
       });
   };
-
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -353,21 +334,19 @@ function PartList(props) {
   };
 
   // Search Customer with customer ID
-  const handleCustSearch = async (searchCustfieldName, searchText) => {
+  const handleCustSearch = async (searchText) => {
     // console.log("clear data", searchText);
     setSearchCustResults([]);
     customerData.customerID = searchText;
     if (searchText) {
-      await customerSearch(searchCustfieldName + "~" + searchText)
+      await customerSearch(
+        "customerId~" + searchText + " OR fullName~" + searchText
+      )
         .then((result) => {
           setSearchCustResults(result);
         })
         .catch((e) => {
-          handleSnack(
-            "error",
-            true,
-            "Error occurred while searching the customer!"
-          );
+          handleSnack("error", "Error occurred while searching the customer!");
         });
     }
   };
@@ -428,11 +407,7 @@ function PartList(props) {
           }
         })
         .catch((e) => {
-          handleSnack(
-            "error",
-            true,
-            "Error occurred while searching the machine!"
-          );
+          handleSnack("error", "Error occurred while searching the machine!");
         });
     } else {
       searchMachinefieldName === "model"
@@ -500,12 +475,11 @@ function PartList(props) {
         .then((result) => {
           setValue("machine");
           setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
-          handleSnack("success", true, "Customer details updated!");
+          handleSnack("success", "Customer details updated!");
         })
         .catch((err) => {
           handleSnack(
             "error",
-            true,
             "Error occurred while updating the customer data!"
           );
         });
@@ -513,6 +487,11 @@ function PartList(props) {
   };
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const handleTagChange = (rowId, value) => {
+    console.log(rowId, value);
+    setTagClicked("");
   };
 
   const updateMachineData = () => {
@@ -529,14 +508,10 @@ function PartList(props) {
       .then((result) => {
         setValue("estimation");
         setViewOnlyTab({ ...viewOnlyTab, machineViewOnly: true });
-        handleSnack("success", true, "Machine details updated!");
+        handleSnack("success", "Machine details updated!");
       })
       .catch((err) => {
-        handleSnack(
-          "error",
-          true,
-          "Error occurred while updating the machine data!"
-        );
+        handleSnack("error", "Error occurred while updating the machine data!");
       });
   };
 
@@ -553,12 +528,11 @@ function PartList(props) {
       .then((result) => {
         setValue("price");
         setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
-        handleSnack("success", true, "General details updated!");
+        handleSnack("success", "General details updated!");
       })
       .catch((err) => {
         handleSnack(
           "error",
-          true,
           "Error occurred while updating the general details!"
         );
       });
@@ -578,12 +552,11 @@ function PartList(props) {
       .then((result) => {
         setValue("general");
         setViewOnlyTab({ ...viewOnlyTab, estViewOnly: true });
-        handleSnack("success", true, "Estimation details updated!");
+        handleSnack("success", "Estimation details updated!");
       })
       .catch((err) => {
         handleSnack(
           "error",
-          true,
           "Error occurred while updating the estimation details!"
         );
       });
@@ -613,29 +586,24 @@ function PartList(props) {
       .then((result) => {
         handleAddPartClose();
         if (addPartModalTitle === "Add Part")
-          handleSnack("success", true, `👏 New Spare Part has been added!`);
+          handleSnack("success", `👏 New Spare Part has been added!`);
         else
-          handleSnack(
-            "success",
-            true,
-            `👏 Selected part detail has been updated!`
-          );
+          handleSnack("success", `👏 Selected part detail has been updated!`);
         fetchPartsOfPartlist(partListNo);
       })
       .catch((err) => {
-        handleSnack("error", true, `😐 Error occurred while adding spare part`);
+        handleSnack("error", `😐 Error occurred while adding spare part`);
       });
   };
-  const fileTypes = ["xls", "xlsx"];
 
   const handleReadFile = (file) => {
     // e.preventDefault();
     if (file) {
-      console.log(file.name);
       setFile(file);
     }
   };
 
+  // Open spare part modal to view or edit
   const openSparePartRow = (row) => {
     console.log(row);
     setSparePart(row);
@@ -644,6 +612,7 @@ function PartList(props) {
     setAddPartOpen(true);
   };
 
+  //Uplaod spare parts through excel sheet
   const handleUploadFile = async () => {
     // console.log("Upload");
     const form = new FormData();
@@ -653,23 +622,26 @@ function PartList(props) {
         fetchPartsOfPartlist(partListNo);
         handleSnack(
           "success",
-          true,
           `New parts have been uploaded to the partlist: ${partListId}`
         );
       })
       .catch((err) => {
-        handleSnack("error", true, `Failed to upload the parts!`);
+        handleSnack("error", `Failed to upload the parts!`);
       });
     setFileUploadOpen(false);
   };
 
   const handleClose = () => setOpen(false);
+
+  //Close Add part modal
   const handleAddPartClose = () => {
     setAddPartOpen(false);
     setSparePart(initialSparePart);
     setPartFieldViewonly(false);
     setAddPartModalTitle("Add Part");
   };
+
+  // Close SparePart search modal
   const handleSearchResClose = () => {
     setSearchResultOpen(false);
     setSelectedMasterData([]);
@@ -681,6 +653,7 @@ function PartList(props) {
     if (selectedOption === "Create Versions") createVersion();
   };
 
+  // Search table column for spareparts
   const columnsPartListSearch = [
     { headerName: "GroupNumber", field: "groupNumber", flex: 1, width: 70 },
     { headerName: "Type", field: "partType", flex: 1, width: 130 },
@@ -696,6 +669,7 @@ function PartList(props) {
     { headerName: "Status", field: "status", flex: 1, width: 130 },
   ];
 
+  //Columns to display spare parts for the partlist
   const columnsPartList = [
     { headerName: "GroupNumber", field: "groupNumber", flex: 1 },
     { headerName: "Type", field: "partType", flex: 1 },
@@ -712,7 +686,33 @@ function PartList(props) {
       editable: true,
     },
     { headerName: "Total Price", field: "totalPrice", flex: 1 },
-    { headerName: "Comment", field: "comment", flex: 1, editable: true },
+    {
+      headerName: "Comment",
+      field: "comment",
+      flex: 1,
+      editable: true,
+      // renderEditCell: (props) => <TextareaAutosize {...props} />
+    },
+    // {
+    //   renderEditCell: (props) =>    
+    //     <FormControl fullWidth size="small">
+    //       <InputLabel id="demo-select-small" style={{ fontSize: 11 }}>
+    //         Tags
+    //       </InputLabel>
+    //       <SelectBox
+    //         label="tags"
+    //         value={props.row.tag}
+    //         onChange={(e) => handleTagChange(props.row.id, e.target.value)}
+    //         sx={{ width: 100 }}
+    //       >
+    //         {tags.map((element) => (
+    //           <MenuItem value={element.value} style={{ fontSize: 11 }}>
+    //             {element.label}
+    //           </MenuItem>
+    //         ))}
+    //       </SelectBox>
+    //     </FormControl>
+    // },
     {
       field: "actions",
       type: "actions",
@@ -720,45 +720,20 @@ function PartList(props) {
       width: 100,
       cellClassName: "actions",
       getActions: (params) => {
-        if (!(tagClicked === params.row.id))
-          return [
-            <GridActionsCellItem
-              icon={<EditIcon />}
-              label="Edit"
-              className="textPrimary"
-              onClick={() => openSparePartRow(params.row)}
-              color="inherit"
-            />,
-            <GridActionsCellItem
-              icon={<DeleteIcon />}
-              label="Delete"
-              // onClick={handleDeleteClick(id)}
-              color="inherit"
-            />,
-            <GridActionsCellItem
-              icon={<LabelIcon />}
-              label="Edit"
-              className="textPrimary"
-              onClick={() => {
-                setTagClicked(params.row.id);
-              }}
-              color="inherit"
-            />,
-          ];
         return [
-          <FormControl fullWidth size="small">
-            <InputLabel id="demo-select-small">Tags</InputLabel>
-            <SelectBox label="tags" value={1} onChange={handleChange}>
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={"required"}>Required</MenuItem>
-              <MenuItem value={"optional"}>Optional</MenuItem>
-              <MenuItem value={"additional"}>Additional</MenuItem>
-              <MenuItem value={"missing"}>Missing</MenuItem>
-              <MenuItem value={"core"}>Core</MenuItem>
-            </SelectBox>
-          </FormControl>,
+          <GridActionsCellItem
+            icon={<EditIcon />}
+            label="Edit"
+            className="textPrimary"
+            onClick={() => openSparePartRow(params.row)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={<DeleteIcon />}
+            label="Delete"
+            // onClick={handleDeleteClick(id)}
+            color="inherit"
+          />
         ];
       },
     },
@@ -771,38 +746,42 @@ function PartList(props) {
     { value: "Construction", label: "Construction" },
   ];
 
+  //Logic to handle status changes
   const disableStatusOptions = (option) => {
     const selectedValue = selBuilderStatus.value;
     const changeToValue = option.value;
     return !(
-      (["draft", "revised"].indexOf(selectedValue) > -1 &&
-        changeToValue === "active") ||
-      (["archived", "revised"].indexOf(changeToValue) > -1 &&
-        selectedValue === "active")
+      (["DRAFT", "REVISED"].indexOf(selectedValue) > -1 &&
+        changeToValue === "ACTIVE") ||
+      (["ARCHIVED", "REVISED"].indexOf(changeToValue) > -1 &&
+        selectedValue === "ACTIVE")
     );
   };
 
+  // Update the status of the builder : Active, Revised etc.
   const handleBuilderStatus = async (e) => {
     await updateBuilderStatus(partListNo, e.value)
       .then((result) => {
         setSelBuilderStatus(e);
-        handleSnack("success", true, result);
+        handleSnack("success", "Status has been updated!");
       })
       .catch((err) => {
-        handleSnack("error", true, `Failed to update the status!`);
+        handleSnack("error", `Failed to update the status!`);
       });
   };
   const builderStatusOptions = [
-    { value: "draft", label: "Draft" },
-    { value: "active", label: "Active" },
-    { value: "revised", label: "Revised" },
-    { value: "archived", label: "Archived" },
+    { value: "DRAFT", label: "Draft" },
+    { value: "ACTIVE", label: "Active" },
+    { value: "REVISED", label: "Revised" },
+    { value: "ARCHIVED", label: "Archived" },
   ];
 
-  const [value3, setValue3] = useState(1);
-  const [value4, setValue4] = useState(1);
+  const [selectedVersion, setSelectedVersion] = useState({
+    label: "Version 1",
+    value: 1,
+  });
   const [selBuilderStatus, setSelBuilderStatus] = useState({
-    value: "draft",
+    value: "DRAFT",
     label: "Draft",
   });
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -839,7 +818,6 @@ function PartList(props) {
       return searchStr;
     });
 
-    //console.log("searchStr", searchStr);
     try {
       if (searchStr) {
         const res = await sparePartSearch(searchStr);
@@ -847,18 +825,19 @@ function PartList(props) {
         setMasterData(res);
         setSearchResultOpen(true);
       } else {
-        handleSnack("info", true, "Please fill the search criteria!");
+        handleSnack("info", "Please fill the search criteria!");
       }
     } catch (err) {
-      handleSnack("error", true, "Error occurred while fetching spare parts!");
+      handleSnack("error", "Error occurred while fetching spare parts!");
     }
   };
-
-  const handleSnack = (snackSeverity, snackStatus, snackMessage) => {
+  // To display the notifications
+  const handleSnack = (snackSeverity, snackMessage) => {
     setSnackMessage(snackMessage);
     setSeverity(snackSeverity);
-    setOpenSnack(snackStatus);
+    setOpenSnack(true);
   };
+
   const [querySearchSelector, setQuerySearchSelector] = useState([
     {
       id: 0,
@@ -870,11 +849,13 @@ function PartList(props) {
     },
   ]);
 
+  // Once parts are selected to add clear the search results
   const clearFilteredData = () => {
     setMasterData([]);
     setSelectedMasterData([]);
   };
 
+  // Logic to make the header tabs editable
   const makeHeaderEditable = () => {
     if (value === "customer" && viewOnlyTab.custViewOnly)
       setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
@@ -894,10 +875,12 @@ function PartList(props) {
 
   const [selectedMasterData, setSelectedMasterData] = useState([]);
   const [masterData, setMasterData] = useState([]);
+
   const handleRowClick = (e) => {
     setShow(true);
   };
 
+  // Select parts to add
   const onRowsSelectionHandler = (ids) => {
     setSelectedMasterData([]);
     const selectedRowsData = ids.map((id) =>
@@ -907,6 +890,7 @@ function PartList(props) {
     setSelectedMasterData(selectedRowsData);
   };
 
+  // Add the selected parts from search result to partlist
   const addSelectedPartsToPartList = async () => {
     console.log(selectedMasterData);
     const parts = [];
@@ -922,7 +906,7 @@ function PartList(props) {
         currency: item.currency,
         totalPrice: 0,
         comment: "",
-        description: sparePart.description,
+        description: item.partDescription,
         unitOfMeasure: item.salesUnit,
       };
       parts.push(data);
@@ -933,14 +917,62 @@ function PartList(props) {
         handleSearchResClose();
         handleSnack(
           "success",
-          true,
           `👏 New parts have been added with default quantity as 1!`
         );
         fetchPartsOfPartlist(partListNo);
       })
       .catch((err) => {
         console.log(err);
-        handleSnack("error", true, `😐 Error occurred while adding the parts!`);
+        handleSnack("error", `😐 Error occurred while adding the parts!`);
+      });
+  };
+
+  // Add the sparepart edited rows to the state variable to update later
+  const processRowUpdate = React.useCallback(
+    (newRow, oldRow) =>
+      new Promise((resolve, reject) => {
+        if (
+          newRow.quantity !== oldRow.quantity ||
+          newRow.extendedPrice !== oldRow.extendedPrice ||
+          newRow.usagePercentage !== oldRow.usagePercentage ||
+          newRow.comment !== oldRow.comment
+        ) {
+          console.log(newRow, newRow.quantity !== oldRow.quantity);
+          const index = rowsToUpdate.findIndex(
+            (object) => object.id === newRow.id
+          );
+          // newRow.extendedPrice = newRow.quantity * newRow.unitPrice
+          // rowsToUpdate.map(x => (x.id === newRow.id) ? newRow : x)
+          if (index === -1) {
+            console.log("add");
+            setRowsToUpdate((prevRows) => [...prevRows, newRow]);
+            // rowsToUpdate.push(newRow);
+          } else {
+            rowsToUpdate[index] = newRow;
+          }
+
+          // Save the arguments to resolve or reject the promise later
+          resolve(newRow);
+        } else {
+          console.log(oldRow);
+          resolve(oldRow); // Nothing was changed
+        }
+      }),
+    []
+  );
+
+  // Updates the bulk edits
+  const bulkUpdateParts = async () => {
+    await addMultiPartsToPartList(partListNo, rowsToUpdate)
+      .then((result) => {
+        handleSnack("success", `👏 Parts have been updated!`);
+        setRowsToUpdate([]);
+        fetchPartsOfPartlist(partListNo);
+      })
+      .catch((err) => {
+        console.log(err);
+        setRowsToUpdate([]);
+        handleSnack("error", `😐 Error occurred while adding the parts!`);
       });
   };
 
@@ -961,7 +993,14 @@ function PartList(props) {
               <h5 className="font-weight-600 mb-0">Part List</h5>
               <div className="d-flex justify-content-center align-items-center">
                 <div className="ml-3">
-                  <span>Version {value3}</span>
+                  <Select
+                    className="customselectbtn"
+                    onChange={(e) => handleVersion(e)}
+                    options={builderVersionOptions}
+                    value={selectedVersion}
+                  />
+
+                  {/* <span>Version {value3}</span> */}
                 </div>
                 <div className="ml-3">
                   <Select
@@ -1003,6 +1042,7 @@ function PartList(props) {
                     </IconButton>
                   </Box>
                   <Menu
+                    className=""
                     anchorEl={anchorEl}
                     id="account-menu"
                     open={open}
@@ -1037,8 +1077,12 @@ function PartList(props) {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    <MenuItem>Kit</MenuItem>
-                    <MenuItem data-toggle="modal" data-target="#quotecreat">
+                    <MenuItem className="custommenu">Kit</MenuItem>
+                    <MenuItem
+                      className="custommenu"
+                      data-toggle="modal"
+                      data-target="#quotecreat"
+                    >
                       Quote
                     </MenuItem>
                     <Divider />
@@ -1153,7 +1197,7 @@ function PartList(props) {
                               <SearchBox
                                 value={customerData.customerID}
                                 onChange={(e) =>
-                                  handleCustSearch("customerId", e.target.value)
+                                  handleCustSearch(e.target.value)
                                 }
                                 type="customerId"
                                 result={searchCustResults}
@@ -1826,7 +1870,9 @@ function PartList(props) {
                                 className="form-control border-radius-10"
                                 placeholder="Placeholder (Optional)"
                                 disabled
-                                value={parseFloat(value3).toFixed(1)}
+                                value={parseFloat(
+                                  selectedVersion.value
+                                ).toFixed(1)}
                               />
                             </div>
                           </div>
@@ -1911,7 +1957,7 @@ function PartList(props) {
                               VERSION
                             </p>
                             <h6 className="font-weight-500">
-                              {parseFloat(value3).toFixed(1)}
+                              {parseFloat(selectedVersion.value).toFixed(1)}
                             </h6>
                           </div>
                         </div>
@@ -2079,7 +2125,7 @@ function PartList(props) {
                     <h5 className="mr-2 mb-0 text-black">
                       <span>Parts Table</span>
                     </h5>
-                    <span>Version {value4}</span>
+                    <span>Version {selectedVersion.value}</span>
                   </div>
                   <DynamicSearchComponent
                     querySearchSelector={querySearchSelector}
@@ -2087,19 +2133,20 @@ function PartList(props) {
                     clearFilteredData={clearFilteredData}
                     handleSnack={handleSnack}
                     searchAPI={sparePartSearch}
+                    searchClick={handleQuerySearchClick}
                   />
                 </div>
               </div>
               <div className="col-4">
                 <div className="text-right pl-3 py-3">
-                  <button
+                  {/* <button
                     type="button"
                     className="btn bg-primary text-white"
                     onClick={handleQuerySearchClick}
                   >
                     <SearchIcon />
                     <span className="ml-1">Search</span>
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => setFileUploadOpen(true)}
                     style={{ cursor: "pointer" }}
@@ -2131,6 +2178,16 @@ function PartList(props) {
                 "& .MuiDataGrid-columnHeader .MuiDataGrid-columnSeparator": {
                   display: "none",
                 },
+                "&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell": {
+                  fontSize: 12,
+                  py: "8px",
+                },
+                "&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell": {
+                  py: "15px",
+                },
+                "&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell": {
+                  py: "22px",
+                },
               }}
               rows={spareparts}
               columns={columnsPartList}
@@ -2148,6 +2205,8 @@ function PartList(props) {
               processRowUpdate={(newRow, oldRow) =>
                 processRowUpdate(newRow, oldRow)
               }
+              getEstimatedRowHeight={() => 200}
+              getRowHeight={() => "auto"}
               onProcessRowUpdateError={(error) => console.log(error)}
               // checkboxSelection
               // onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
@@ -2201,7 +2260,7 @@ function PartList(props) {
                     <FileUploader
                       handleChange={handleReadFile}
                       name="file"
-                      types={fileTypes}
+                      types={["xls", "xlsx"]}
                       onClick={(event) => {
                         event.currentTarget.value = null;
                       }}
