@@ -124,6 +124,7 @@ const customStyles = {
             paddingLeft: "8px", // override the cell padding for head cells
             paddingRight: "8px",
             backgroundColor: "#7571f9",
+            // backgroundColor: "#872ff7",
             color: "#fff",
         },
     },
@@ -1534,89 +1535,89 @@ export function PortfolioTemplatesResult(props) {
     useEffect(() => {
         let itemIdData = []
         // itemIdData.push({ "itemId": location.selectedPortfolioTempItems[0].itemId })
-        
-        // const customItemsId = location.selectedPortfolioTempItems.map((data, i) => {
-        //     if(i == data.length-1){
-        //         itemIdData.push({ "itemId": data.itemId })
-        //     }
-        //     console.log("data length ", data.length)
-        //     // itemIdData.push({ "itemId": data.itemId })
-        //     // itemIdValue.push(data)
-        //     // itemIdData.push({
-        //     //     customItemId: data.itemId,
-        //     //     itemName: data.itemName,
-        //     //     customItemHeaderModel: {
-        //     //         customItemHeaderId : data.itemHeaderModel.itemHeaderId,
-        //     //         itemHeaderDescription: data.itemHeaderModel.itemHeaderDescription,
-        //     //         bundleFlag: data.itemHeaderModel.bundleFlag,
-        //     //         portfolioItemId: data.itemHeaderModel.portfolioItemId,
-        //     //         reference: data.itemHeaderModel.reference,
-        //     //         itemHeaderMake: data.itemHeaderModel.itemHeaderMake,
-        //     //         itemHeaderFamily: data.itemHeaderModel.itemHeaderFamily,
-        //     //         model: data.itemHeaderModel.model,
-        //     //         prefix: data.itemHeaderModel.prefix,
-        //     //         type: data.itemHeaderModel.type,
-        //     //         additional: data.itemHeaderModel.additional,
-        //     //         currency: data.itemHeaderModel.currency,
-        //     //         netPrice: data.itemHeaderModel.netPrice,
-        //     //         itemProductHierarchy :  data.itemHeaderModel.itemProductHierarchy,
-        //     //         itemHeaderGeographic: data.itemHeaderModel.itemHeaderGeographic,
-        //     //         responseTime: data.itemHeaderModel.responseTime,
-        //     //         usage: data.itemHeaderModel.usage,
-        //     //         validFrom: data.itemHeaderModel.validFrom,
-        //     //         validTo: data.itemHeaderModel.validTo,
-        //     //         estimatedTime: data.itemHeaderModel.estimatedTime,
-        //     //         servicePrice: data.itemHeaderModel.servicePrice,
-        //     //         status: data.itemHeaderModel.status,
-        //     //     },
-        //     //     customItemBodyModel : {
-        //     //         customItemBodyId: data.itemBodyModel.itemBodyId,
-        //     //         itemBodyDescription: data.itemBodyModel.itemBodyDescription,
-        //     //         quantity: data.itemBodyModel.quantity,
-        //     //         startUsage: data.itemBodyModel.startUsage,
-        //     //         endUsage: data.itemBodyModel.endUsage,
-        //     //         standardJobId: data.itemBodyModel.standardJobId,
-        //     //         frequency: data.itemBodyModel.frequency,
-        //     //         additional: data.itemBodyModel.additional,
-        //     //         spareParts: data.itemBodyModel.spareParts,
-        //     //         labours: data.itemBodyModel.labours,
-        //     //         miscellaneous: data.itemBodyModel.miscellaneous,
-        //     //         taskType: data.itemBodyModel.taskType,
-        //     //         solutionCode: data.itemBodyModel.solutionCode,
-        //     //         usageIn: data.itemBodyModel.usageIn,
-        //     //         recommendedValue: data.itemBodyModel.recommendedValue,
-        //     //         usage: data.itemBodyModel.usage,
-        //     //         repairKitId: data.itemBodyModel.repairKitId,
-        //     //         repairKitId: data.itemBodyModel.repairKitId,
-        //     //         templateDescription: data.itemBodyModel.templateDescription,
-        //     //         partListId: data.itemBodyModel.partListId,
-        //     //         serviceEstimateId: data.itemBodyModel.serviceEstimateId,
-        //     //         numberOfEvents: data.itemBodyModel.numberOfEvents,
-        //     //         repairOption: data.itemBodyModel.repairOption,
-        //     //         priceMethod: data.itemBodyModel.priceMethod,
-        //     //         listPrice: data.itemBodyModel.listPrice,
-        //     //         priceEscalation: data.itemBodyModel.priceEscalation,
-        //     //         calculatedPrice: data.itemBodyModel.calculatedPrice,
-        //     //         flatPrice: data.itemBodyModel.flatPrice,
-        //     //         discountType: data.itemBodyModel.discountType,
-        //     //         year: data.itemBodyModel.year,
-        //     //         avgUsage: data.itemBodyModel.avgUsage,
-        //     //         unit: data.itemBodyModel.unit,
-        //     //         sparePartsPrice: data.itemBodyModel.sparePartsPrice,
-        //     //         sparePartsPriceBreakDownPercentage: data.itemBodyModel.sparePartsPriceBreakDownPercentage,
-        //     //         servicePrice: data.itemBodyModel.servicePrice,
-        //     //         servicePriceBreakDownPercentage: data.itemBodyModel.servicePriceBreakDownPercentage,
-        //     //         miscPrice: data.itemBodyModel.miscPrice,
-        //     //         miscPriceBreakDownPercentage: data.itemBodyModel.miscPriceBreakDownPercentage,
-        //     //         totalPrice: data.itemBodyModel.totalPrice,
-        //     //     },
-        //     //     createdAt: data.createdAt
-        //     // })
-        //     // console.log("map function data is => " ,data)
 
-        //     // setSelectedCustomItems([...selectedCustomItems, { "itemId": data.itemId }])
-        //     // console.log("Item Id's : ", data.itemId)
-        // })
+        const customItemsId = location.selectedPortfolioTempItems.map((data, i) => {
+            // if(i == data.length-1){
+            //     itemIdData.push({ "itemId": data.itemId })
+            // }
+            // console.log("data length ", data.length)
+            itemIdData.push({ "itemId": data.itemId })
+            // itemIdValue.push(data)
+            // itemIdData.push({
+            //     customItemId: data.itemId,
+            //     itemName: data.itemName,
+            //     customItemHeaderModel: {
+            //         customItemHeaderId : data.itemHeaderModel.itemHeaderId,
+            //         itemHeaderDescription: data.itemHeaderModel.itemHeaderDescription,
+            //         bundleFlag: data.itemHeaderModel.bundleFlag,
+            //         portfolioItemId: data.itemHeaderModel.portfolioItemId,
+            //         reference: data.itemHeaderModel.reference,
+            //         itemHeaderMake: data.itemHeaderModel.itemHeaderMake,
+            //         itemHeaderFamily: data.itemHeaderModel.itemHeaderFamily,
+            //         model: data.itemHeaderModel.model,
+            //         prefix: data.itemHeaderModel.prefix,
+            //         type: data.itemHeaderModel.type,
+            //         additional: data.itemHeaderModel.additional,
+            //         currency: data.itemHeaderModel.currency,
+            //         netPrice: data.itemHeaderModel.netPrice,
+            //         itemProductHierarchy :  data.itemHeaderModel.itemProductHierarchy,
+            //         itemHeaderGeographic: data.itemHeaderModel.itemHeaderGeographic,
+            //         responseTime: data.itemHeaderModel.responseTime,
+            //         usage: data.itemHeaderModel.usage,
+            //         validFrom: data.itemHeaderModel.validFrom,
+            //         validTo: data.itemHeaderModel.validTo,
+            //         estimatedTime: data.itemHeaderModel.estimatedTime,
+            //         servicePrice: data.itemHeaderModel.servicePrice,
+            //         status: data.itemHeaderModel.status,
+            //     },
+            //     customItemBodyModel : {
+            //         customItemBodyId: data.itemBodyModel.itemBodyId,
+            //         itemBodyDescription: data.itemBodyModel.itemBodyDescription,
+            //         quantity: data.itemBodyModel.quantity,
+            //         startUsage: data.itemBodyModel.startUsage,
+            //         endUsage: data.itemBodyModel.endUsage,
+            //         standardJobId: data.itemBodyModel.standardJobId,
+            //         frequency: data.itemBodyModel.frequency,
+            //         additional: data.itemBodyModel.additional,
+            //         spareParts: data.itemBodyModel.spareParts,
+            //         labours: data.itemBodyModel.labours,
+            //         miscellaneous: data.itemBodyModel.miscellaneous,
+            //         taskType: data.itemBodyModel.taskType,
+            //         solutionCode: data.itemBodyModel.solutionCode,
+            //         usageIn: data.itemBodyModel.usageIn,
+            //         recommendedValue: data.itemBodyModel.recommendedValue,
+            //         usage: data.itemBodyModel.usage,
+            //         repairKitId: data.itemBodyModel.repairKitId,
+            //         repairKitId: data.itemBodyModel.repairKitId,
+            //         templateDescription: data.itemBodyModel.templateDescription,
+            //         partListId: data.itemBodyModel.partListId,
+            //         serviceEstimateId: data.itemBodyModel.serviceEstimateId,
+            //         numberOfEvents: data.itemBodyModel.numberOfEvents,
+            //         repairOption: data.itemBodyModel.repairOption,
+            //         priceMethod: data.itemBodyModel.priceMethod,
+            //         listPrice: data.itemBodyModel.listPrice,
+            //         priceEscalation: data.itemBodyModel.priceEscalation,
+            //         calculatedPrice: data.itemBodyModel.calculatedPrice,
+            //         flatPrice: data.itemBodyModel.flatPrice,
+            //         discountType: data.itemBodyModel.discountType,
+            //         year: data.itemBodyModel.year,
+            //         avgUsage: data.itemBodyModel.avgUsage,
+            //         unit: data.itemBodyModel.unit,
+            //         sparePartsPrice: data.itemBodyModel.sparePartsPrice,
+            //         sparePartsPriceBreakDownPercentage: data.itemBodyModel.sparePartsPriceBreakDownPercentage,
+            //         servicePrice: data.itemBodyModel.servicePrice,
+            //         servicePriceBreakDownPercentage: data.itemBodyModel.servicePriceBreakDownPercentage,
+            //         miscPrice: data.itemBodyModel.miscPrice,
+            //         miscPriceBreakDownPercentage: data.itemBodyModel.miscPriceBreakDownPercentage,
+            //         totalPrice: data.itemBodyModel.totalPrice,
+            //     },
+            //     createdAt: data.createdAt
+            // })
+            // console.log("map function data is => " ,data)
+
+            // setSelectedCustomItems([...selectedCustomItems, { "itemId": data.itemId }])
+            // console.log("Item Id's : ", data.itemId)
+        })
         setSelectedCustomItems(itemIdData)
         console.log("selected Custom Items Data are  : ", selectedCustomItems)
     }, [])
@@ -4415,6 +4416,7 @@ export function PortfolioTemplatesResult(props) {
                     </div>
                     {/* hide portfolio item querySearch */}
                     <div className="card mt-4 px-4">
+
                         <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
                             {/* <DataGrid
                                 sx={{
@@ -4428,8 +4430,6 @@ export function PortfolioTemplatesResult(props) {
                                 rowsPerPageOptions={[5]}
                                 checkboxSelection
                                 // onCellClick={(e) => handleRowClick(e)}
-
-
                             /> */}
 
                             <DataTable
