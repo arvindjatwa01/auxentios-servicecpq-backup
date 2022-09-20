@@ -39,6 +39,7 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 
 import { SolutionBuilderModal } from "../../pages/SolutionModules/index"
 import { SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO } from '../../navigation/CONSTANTS'
+import { SOLUTION_BUILDER_PORRTFOLIO_TEMP } from "../../navigation/CONSTANTS";
 
 import Portfoliosicon from '../../assets/icons/svg/Portfolios-icon.svg'
 import contract from '../../assets/icons/svg/contract.svg'
@@ -135,6 +136,13 @@ export const Analytics = () => {
    const [selectedExploreMasterData, setSelectedExploreMasterData] = useState([])
    const [exploreFlagIs, setExploreFlagIs] = useState(false)
 
+   // Portfolio Templates States
+
+   const [portfolioTempMasterData, setPortfolioTempMasterData] = useState([])
+   const [portfolioTempFilterMasterData, setPortfolioTempFilterMasterData] = useState([])
+   const [selectedPortfolioTempMasterData, setSelectedPortfolioTempMasterData] = useState([])
+   const [portfolioTempFlagIs, setPortfolioTempFlagIs] = useState(false)
+
    const [selectTypeOfSolution, setSelectTypeOfSolution] = useState(-1)
    const [solutionValue, setSolutionValue] = useState(0)
 
@@ -147,6 +155,7 @@ export const Analytics = () => {
       if (data.length > 0) {
          setExploreMasterData(data)
          setQuerySearchSelectItem(searchData)
+         setPortfolioTempMasterData(data)
          // setShowExplore(true)
          // setOpenSearchSolution(false)
       } else {
@@ -171,7 +180,7 @@ export const Analytics = () => {
          setSolutionValue(2)
       } else if (e.target.value === "1") {
          setSolutionValue(1)
-      } else{
+      } else {
          setSolutionValue(0)
       }
 
@@ -458,6 +467,22 @@ export const Analytics = () => {
       setShowExplore(true)
    }
 
+   const handlePortfolioTempItemSaveAndContinue = () => {
+      // setOpenSolutionSelector(false)
+      // setSolutionBuilderShow(false);
+      // setModalComponent(null)
+      // setOpenSearchSolutionNew(false)
+      // return <>
+      //    <PortfolioTemplatesResult NewData="newData" />
+      // </>
+      history.push({
+         pathname : SOLUTION_BUILDER_PORRTFOLIO_TEMP,
+         selectedPortfolioTempItems : selectedPortfolioTempMasterData,
+         state : { NewData: "NewData isss" }
+      });
+
+   }
+
    const handleCloseExplore = () => {
       setShowExplore(false);
    }
@@ -734,6 +759,52 @@ export const Analytics = () => {
       }
    };
 
+   const handlePortfolioTempCheckboxData = (e, row) => {
+      if (e.target.checked) {
+         var _searchedPortfolioTempData = [...portfolioTempMasterData];
+
+         const updated = _searchedPortfolioTempData.map((currentItem, i) => {
+            if (row.itemId == currentItem.itemId) {
+               return { ...currentItem, ["check1"]: e.target.checked };
+            } else return currentItem;
+         });
+
+         setPortfolioTempMasterData([...updated]);
+
+         const isFound = portfolioTempFilterMasterData.some((element) => {
+            if (element.itemId === row.itemId) {
+               return true;
+            }
+
+            return false;
+         });
+
+         if (!isFound) {
+            const _portfolioTempFilterMasterData = [...portfolioTempFilterMasterData, { ...row }];
+            const updatedItems = _portfolioTempFilterMasterData.map((currentItem, i) => {
+               return {
+                  ...currentItem
+               };
+            });
+            setPortfolioTempFilterMasterData(updatedItems);
+            // setFilterMasterData([...filterMasterData, { ...row }])
+         }
+      } else {
+         var _portfolioTempMasterData = [...portfolioTempMasterData];
+         const updated1 = _portfolioTempMasterData.map((currentItem, i) => {
+            if (row.itemId == currentItem.itemId) {
+               return { ...currentItem, ["check1"]: e.target.checked };
+            } else return currentItem;
+         });
+         setPortfolioTempMasterData([...updated1]);
+         var _portfolioTempFilterMasterData = [...portfolioTempFilterMasterData];
+         const updated = _portfolioTempFilterMasterData.filter((currentItem, i) => {
+            if (row.itemId !== currentItem.itemId) return currentItem;
+         });
+         setPortfolioTempFilterMasterData(updated);
+      }
+   };
+
    const handleCoverageCheckboxData = (e, row) => {
       if (e.target.checked) {
          var _searchedData = [...masterData];
@@ -833,6 +904,14 @@ export const Analytics = () => {
          setExploreFlagIs(false);
       }
    }, [exploreMasterData]);
+
+   useEffect(() => {
+      if (portfolioTempMasterData.some((portfolioTempmasterDataitem) => portfolioTempmasterDataitem.check1 === true)) {
+         setPortfolioTempFlagIs(true);
+      } else {
+         setPortfolioTempFlagIs(false);
+      }
+   }, [portfolioTempMasterData]);
 
    const handleDeleteIncludeSerialNo = (e, row) => {
       const updated = selectedMasterData.filter((obj) => {
@@ -1456,6 +1535,106 @@ export const Analytics = () => {
                </Link> */}
             </div>
          ),
+      },
+   ];
+
+   // Portfolio Solution Templates 
+
+   const portfolioTemplatesMasterColumn = [
+      {
+         name: (
+            <>
+               <div>Select</div>
+            </>
+         ),
+         selector: (row) => row.itemId,
+         wrap: true,
+         sortable: true,
+         // format: (row) => row.itemId,
+         cell: (row) => (
+            <Checkbox
+               className="text-black"
+               checked={row.check1}
+               onChange={(e) => handlePortfolioTempCheckboxData(e, row)}
+            />
+         ),
+      },
+      {
+         name: (
+            <>
+               <div>ID</div>
+            </>
+         ),
+         selector: (row) => row.itemId,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemId,
+      },
+      {
+         name: (
+            <>
+               <div>Description</div>
+            </>
+         ),
+         selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemHeaderModel.itemHeaderDescription,
+      },
+      {
+         name: (
+            <>
+               <div>Solution Code</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.solutionCode,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.solutionCode,
+      },
+      {
+         name: (
+            <>
+               <div>Repair Option</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.repairOption,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.repairOption,
+      },
+      {
+         name: (
+            <>
+               <div>Frequency</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.frequency,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.frequency,
+      },
+      {
+         name: (
+            <>
+               <div>Quantity</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.quantity,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.quantity,
+      },
+      {
+         name: (
+            <>
+               <div>Total $</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.totalPrice,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.totalPrice,
       },
    ];
 
@@ -2383,7 +2562,7 @@ export const Analytics = () => {
                Search {solutionValue == 0 ? "Portfolio Templates" : "Solution Templates"}
                <div className="maintableheader bg-white mt-3 border-radius-10">
                   <QuerySearchComp
-                     compoFlag="itemSearch1"
+                     compoFlag="portfolioTempItemSearch"
                      options={[
                         { label: "Make", value: "itemHeaderMake" },
                         { label: "Family", value: "itemHeaderFamily" },
@@ -2391,109 +2570,52 @@ export const Analytics = () => {
                         { label: "Prefix", value: "prefix" },
                      ]}
                      ItemSearchResponseFun={ItemSearchResponseFun}
-                     setExploreMasterData={setExploreMasterData}
-                     setSelectedExploreMasterData={setSelectedExploreMasterData}
+                     setPortfolioTempMasterData={setPortfolioTempMasterData}
+                     setSelectedPortfolioTempMasterData={setSelectedPortfolioTempMasterData}
 
                   // setQuerySearchSelectItem={setQuerySearchSelectItem}
                   // setTempBundleService1={setTempBundleService1}
                   // setLoadingItem={setLoadingItem} 
                   />
-                  {/* <div className="d-flex justify-content-between align-items-center pl-2">
-                           <div className="d-flex align-items-center">
-                              <div className="customselect d-flex ml-3"> */}
-                  {/* <span>
-                                        <a href="#" className="btn-sm">+</a>
-                                    </span> */}
-                  {/* <Select2
-                                    onChange={handleTypeOfSearchChange}
-                                    isClearable={true}
-                                    value={typeOfSearch}
-                                    options={[{ label: "Bundle", value: 'bundle' }, { label: "Service", value: 'service' }, { label: "Portfolio Item", value: 'portfolioItem' }]}
-                                    placeholder="Add by"
-                                 /> */}
-                  {/* </div>
-                              {typeOfSearch != null
-                                 ?
-                                 <div className="customselect d-flex ml-3">
-                                    <span>
-                                       <a href="#" className="btn-sm">+</a>
-                                    </span>
-                                    <Select2
-                                       onChange={handleTypeOfSearchColumnChange}
-                                       isClearable={true}
-                                       value={typeOfSearchColumn}
-                                       options={typeOfSearchColumnKeyValue}
-                                       placeholder="Select"
-                                    />
-                                    {typeOfSearchColumn != null
-                                       ?
-                                       // <></>
-                                       <input type="email" class="" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter text" style={{ border: 'none', background: 'transparent', width: '80px', fontWeight: '600', paddingLeft: '10px' }} value={columnSearchText} onChange={(e) => setColumnSearchText(e.target.value)}></input>
-                                       : <></>
-                                    }
-                                 </div>
-                                 : <></>
-                              }
-
-                           </div> */}
-                  {/* <div>
-                              <div className="">
-                                 <a href="#" style={{ cursor: 'pointer' }} className="btn border-left"><span>+</span> Add</a>
-                                 <a href="#" className="btn border-left">Cancel</a>
-                              </div>
-                           </div> */}
-                  {/* </div> */}
-                  {columnSearchText.trim() != "" && typeOfSearchColumn != null
-                     ?
-                     <div className="tableheader">
-                        <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
-                           <li><a className="cursor result" >RESULTS</a></li>
-                           <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM125</a></li>
-                           <li><a className="cursor" onClick={handleBundleItemSaveAndContinue}>PM2</a></li>
-                           <li><a className="cursor lastOption text-violet" onClick={handleCreateNewServiceBundle}><span className="mr-2">+</span>Create New {typeOfSearch != null ? typeOfSearch.value == 'bundle' ? "Bundle" : typeOfSearch.value == 'service' ? "Service" : typeOfSearch.value == 'portfolioItem' ? "Portfolio Item" : "" : ""}</a></li>
-                        </ul>
-                     </div>
-                     :
-                     <></>}
-                  {exploreMasterData.length > 0 ?
+                  {portfolioTempMasterData.length > 0 ?
                      <>
                         <div className="tableheader">
                            <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
-                              <li><a className="cursor result" >RESULTS</a></li>
+                              <li><a className="cursor result" >PORTFOLIO TEMPLATE ITEM RESULTS</a></li>
                            </ul>
                            <DataTable
                               className=""
                               title=""
-                              columns={exploreMasterColumn}
-                              data={exploreMasterData}
+                              columns={portfolioTemplatesMasterColumn}
+                              data={portfolioTempMasterData}
                               customStyles={customStyles}
                               pagination
                            />
                            <div className="m-2 text-right">
                               <input
                                  onClick={() => {
-                                    setSelectedExploreMasterData(exploreFilterMasterData);
-                                    setExploreMasterData([]);
+                                    setSelectedPortfolioTempMasterData(portfolioTempFilterMasterData);
+                                    setPortfolioTempMasterData([]);
                                  }}
                                  className="btn text-white bg-primary"
                                  value="+ Add Selected"
-                                 disabled={!exploreFlagIs}
+                                 disabled={!portfolioTempFlagIs}
                               />
                            </div>
                         </div>
                      </> : <></>
                   }
-                  {selectedExploreMasterData.length > 0 ? (
+                  {selectedPortfolioTempMasterData.length > 0 ? (
                      <>
                         <div className="tableheader">
                            <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
-                              <li><a className="cursor result" >Included Data</a></li>
+                              <li><a className="cursor result" >Included Portfolio Template Items</a></li>
                            </ul>
                            <DataTable
                               className="mt-3"
                               title=""
                               columns={SelectedExploreMasterDataColumn}
-                              data={selectedExploreMasterData}
+                              data={selectedPortfolioTempMasterData}
                               customStyles={customStyles}
                               pagination
                            />
@@ -2505,9 +2627,9 @@ export const Analytics = () => {
                </div>
             </Modal.Body>
             <Modal.Footer>
-               {selectedExploreMasterData.length > 0 ?
+               {selectedPortfolioTempMasterData.length > 0 ?
                   <div>
-                     <button className="btn btn-primary w-100" onClick={handleBundleItemSaveAndContinue}>Save & Continue</button>
+                     <button className="btn btn-primary w-100" onClick={handlePortfolioTempItemSaveAndContinue}>Save & Continue</button>
                   </div>
                   : <></>}
             </Modal.Footer>
