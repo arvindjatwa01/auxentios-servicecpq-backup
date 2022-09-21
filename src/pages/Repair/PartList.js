@@ -15,6 +15,7 @@ import { MuiMenuComponent } from "./components/MuiMenuRepair";
 // import { MuiMenuComponent } from "pages/Operational";
 import {
   DataGrid,
+  getGridStringOperators,
   GridActionsCellItem,
   useGridApiContext,
 } from "@mui/x-data-grid";
@@ -69,18 +70,20 @@ import CustomSnackbar from "../Common/CustomSnackBar";
 import DynamicSearchComponent from "./components/DynamicSearchComponent";
 import AddNewSparepartModal from "./components/AddNewSparePart";
 import {
+  debounce,
   FormControl,
   InputLabel,
   Rating,
   TextareaAutosize,
 } from "@mui/material";
+import { INITIAL_PAGE_NO, INITIAL_PAGE_SIZE } from "./CONSTANTS";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
   // console.log(id, value, field);
   const apiRef = useGridApiContext();
 
-  const handleChange = async (event) => {
+  const handleCommentChange = async (event) => {
     // console.log("newValue", event);
     // Explore debounce option
     apiRef.current.setEditCellValue(
@@ -96,7 +99,7 @@ function CommentEditInputCell(props) {
         name="comment"
         style={{ width: "100%" }}
         value={value}
-        onChange={handleChange}
+        onChange={handleCommentChange}
       />
     </Box>
   );
@@ -125,8 +128,12 @@ function PartList(props) {
   const [partsLoading, setPartsLoading] = useState(false);
   const [bulkUpdateProgress, setBulkUpdateProgress] = useState(false);
   const [rating, setRating] = useState(null);
+  const [pageSize, setPageSize] = useState(5);
+  const [page, setPage] = useState(0);
   const [versionDesc, setVersionDesc] = useState("");
   const [tagClicked, setTagClicked] = useState("");
+  const [totalPartsCount, setTotalPartsCount] = useState(0);
+  const [filterQuery, setFilterQuery] = useState("");
   const tags = [
     { label: "None", value: "" },
     { label: "Required", value: "required" },
@@ -225,12 +232,14 @@ function PartList(props) {
       });
   };
 
+  // TODO: Replace it with tenant details
   const salesOfficeOptions = [
     { value: "Location1", label: "Location1" },
     { value: "Location2", label: "Location2" },
     { value: "Location3", label: "Location3" },
     { value: "Location4", label: "Location4" },
   ];
+
   const [builderVersionOptions, setBuilderVersionOptions] = useState([
     { label: "Version 1", value: 1 },
   ]);
@@ -274,30 +283,47 @@ function PartList(props) {
           handleSnack("error", "Error occured while fetching header details");
         });
       setHeaderLoading(false);
-      fetchPartsOfPartlist(partlistId);
+      fetchPartsOfPartlist(partlistId, INITIAL_PAGE_NO, INITIAL_PAGE_SIZE);
     }
   };
 
-  const fetchPartsOfPartlist = async (partlistId) => {
+  const filterOperators = getGridStringOperators().filter(({ value }) =>
+    ["equals", "contains"].includes(value)
+  );
+
+  const fetchPartsOfPartlist = async (partlistId, pageNo, rowsPerPage) => {
     setPartsLoading(true);
-    // console.log("partlistNo", partlistId);
-    await fetchPartsFromPartlist(partlistId)
-      .then((result) => {
-        setSpareparts(result);
+    setPage(pageNo);
+    setPageSize(rowsPerPage);
+    let sort = sortDetail.sortColumn
+      ? `&sortColumn=${sortDetail.sortColumn}&orderBY=${sortDetail.orderBy}`
+      : "";
+    let filter = filterQuery ? `&search=${filterQuery}` : "";
+    const query = `pageNumber=${pageNo}&pageSize=${rowsPerPage}${sort}${filter}`;
+    // console.log(page, pageSize, pageNo, rowsPerPage);
+    await fetchPartsFromPartlist(partlistId, query)
+      .then((partsResult) => {
+        setTotalPartsCount(partsResult.totalRows);
+        setSpareparts(partsResult.result);
       })
       .catch((err) => {
         handleSnack("error", "Error occured while fetching parts");
       });
     setPartsLoading(false);
   };
+  const [sortDetail, setSortDetail] = useState({ sortColumn: "", orderBy: "" });
+  // const [orderBy, setOrderBy] = useState('');
+
+  useEffect(() => {
+    // console.log("partListNo", partListNo);
+    if (partListNo) fetchPartsOfPartlist(partListNo, page, pageSize);
+  }, [sortDetail, filterQuery]);
 
   const populateHeader = (result) => {
     setRating(result.rating);
     setSelBuilderStatus(
       builderStatusOptions.filter((x) => x.value === result.status)[0]
     );
-    // console.log("BuilderStatus", result.status, builderStatusOptions.filter((x) => x.value === result.status)[0]);
-    // console.log(result.versionList, "versionNo" + result.versionNumber);
     let versions = result.versionList?.map((versionNo) => ({
       value: versionNo,
       label: "Version " + versionNo,
@@ -374,7 +400,11 @@ function PartList(props) {
       .then((partListResult) => {
         if (partListResult) {
           setPartListNo(partListResult[0]);
-          fetchPartsOfPartlist(partListResult[0]);
+          fetchPartsOfPartlist(
+            partListResult[0],
+            INITIAL_PAGE_NO,
+            INITIAL_PAGE_SIZE
+          );
         }
       })
       .catch((err) => {
@@ -650,7 +680,7 @@ function PartList(props) {
           handleSnack("success", `👏 New Spare Part has been added!`);
         else
           handleSnack("success", `👏 Selected part detail has been updated!`);
-        fetchPartsOfPartlist(partListNo);
+        fetchPartsOfPartlist(partListNo, page, pageSize);
       })
       .catch((err) => {
         handleSnack("error", `😐 Error occurred while adding spare part`);
@@ -680,7 +710,7 @@ function PartList(props) {
     form.append("file", file);
     await uploadPartsToPartlist(partListNo, form)
       .then((result) => {
-        fetchPartsOfPartlist(partListNo);
+        fetchPartsOfPartlist(partListNo, page, pageSize);
         handleSnack(
           "success",
           `New parts have been uploaded to the partlist: ${partListId}`
@@ -962,7 +992,6 @@ function PartList(props) {
 
   // Add the selected parts from search result to partlist
   const addSelectedPartsToPartList = async () => {
-    // console.log(selectedMasterData);
     const parts = [];
     selectedMasterData.map((item) => {
       let data = {
@@ -989,13 +1018,26 @@ function PartList(props) {
           "success",
           `👏 New parts have been added with default quantity as 1!`
         );
-        fetchPartsOfPartlist(partListNo);
+        fetchPartsOfPartlist(partListNo, page, pageSize);
       })
       .catch((err) => {
         console.log(err);
         handleSnack("error", `😐 Error occurred while adding the parts!`);
       });
   };
+
+  const onPartsFilterChange = React.useCallback((filterModel) => {
+    // console.log(filterModel);
+    filterModel.items.map((indFilter) => {
+      if (indFilter.operatorValue === "equals")
+        debounce(
+          setFilterQuery(indFilter.columnField + ":" + indFilter.value),
+          200
+        );
+      else if (indFilter.operatorValue === "contains")
+        setFilterQuery(indFilter.columnField + "~" + indFilter.value);
+    });
+  }, []);
 
   // Add the sparepart edited rows to the state variable to update later
   const processRowUpdate = React.useCallback(
@@ -1043,7 +1085,7 @@ function PartList(props) {
         .then((result) => {
           handleSnack("success", `👏 Parts have been updated!`);
           setRowsToUpdate([]);
-          fetchPartsOfPartlist(partListNo);
+          fetchPartsOfPartlist(partListNo, page, pageSize);
         })
         .catch((err) => {
           console.log(err);
@@ -1052,6 +1094,18 @@ function PartList(props) {
         });
     }
   };
+
+  function sortPartsTable(sortEvent) {
+    // console.log("sorting called");
+    if (sortEvent.length > 0) {
+      setSortDetail({
+        sortColumn: sortEvent[0].field,
+        orderBy: sortEvent[0].sort === "asc" ? "ASC" : "DESC",
+      });
+    } else {
+      setSortDetail({ sortColumn: "", orderBy: "" });
+    }
+  }
 
   const [show, setShow] = React.useState(false);
   return (
@@ -2279,20 +2333,31 @@ function PartList(props) {
                 },
               }}
               rows={spareparts}
-              columns={columnsPartList}
+              columns={columnsPartList.map((column) => ({
+                ...column,
+                filterOperators,
+              }))}
               editMode="row"
-              onRowEditStart={(e) => {
-                // console.log(e);
-                setBulkUpdateProgress(true);
-              }}
+              page={page}
+              pageSize={pageSize}
+              onPageChange={(newPage) =>
+                fetchPartsOfPartlist(partListNo, newPage, pageSize)
+              }
+              onPageSizeChange={(newPageSize) =>
+                fetchPartsOfPartlist(partListNo, page, newPageSize)
+              }
+              onRowEditStart={(e) => setBulkUpdateProgress(true)}
+              sortingMode="server"
+              onSortModelChange={(e) => sortPartsTable(e)}
+              filterMode="server"
+              onFilterModelChange={onPartsFilterChange}
               onRowEditStop={(e) => setBulkUpdateProgress(false)}
               paginationMode="server"
-              // pageSize={5}
               autoHeight
               loading={partsLoading}
-              // rowsPerPageOptions={[5, 10, 20]}
+              rowsPerPageOptions={[5, 10, 20]}
               pagination
-              rowCount={10} //relace this with server rowcount
+              rowCount={totalPartsCount}
               experimentalFeatures={{ newEditingApi: true }}
               processRowUpdate={(newRow, oldRow) =>
                 processRowUpdate(newRow, oldRow)
@@ -2300,9 +2365,6 @@ function PartList(props) {
               getEstimatedRowHeight={() => 200}
               getRowHeight={() => "auto"}
               onProcessRowUpdateError={(error) => console.log(error)}
-              // checkboxSelection
-              // onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
-              // onCellClick={(e) => handleRowClick(e)}
             />
             <div className=" my-3 text-right">
               <button

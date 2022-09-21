@@ -3,6 +3,7 @@ import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBullet
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
 import SearchBox from "./SearchBox";
 import { useState } from "react";
+import { TextareaAutosize } from "@material-ui/core";
 
 const AddNewSparepartModal = (props) => {
   const [searchGroupNoResults, setSearchGroupNoResults] = useState([]);
@@ -354,7 +355,7 @@ const AddNewSparepartModal = (props) => {
                     <label className="text-light-dark font-size-12 font-weight-500">
                       COMMENT
                     </label>
-                    <input
+                    <TextareaAutosize
                       type="text"
                       className="form-control border-radius-10"
                       value={props.sparePart.comment}
