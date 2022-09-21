@@ -348,8 +348,6 @@ export function PortfolioTemplatesResult(props) {
         });
     };
 
-
-
     const handleRemove = (index) => {
         var temp = priceAgreementRows.slice();
         temp.splice(index, 1);
@@ -1533,10 +1531,70 @@ export function PortfolioTemplatesResult(props) {
     }, [dispatch]);
 
     useEffect(() => {
-        let itemIdData = []
-        // itemIdData.push({ "itemId": location.selectedPortfolioTempItems[0].itemId })
 
-        const customItemsId = location.selectedPortfolioTempItems.map((data, i) => {
+        // Solution Templates Auto fill  Data Conditons 
+
+        if (location.solutionValueIs == 1) {
+
+            setGeneralComponentData({
+                name: location.selectedTemplateItems[0].itemName,
+                description: location.selectedTemplateItems[0].itemHeaderModel.itemHeaderDescription,
+                serviceDescription: "",
+                externalReference: location.selectedTemplateItems[0].itemHeaderModel.reference,
+                customerSegment: null,
+                items: [],
+                coverages: [],
+            });
+            setValidityData({
+                ...validityData,
+                fromDate: location.selectedTemplateItems[0].itemHeaderModel.validFrom,
+                toDate: location.selectedTemplateItems[0].itemHeaderModel.validTo,
+                from: null,
+                to: null,
+                fromInput: "",
+                toInput: "",
+            })
+            // stratgyTaskTypeKeyValue({value: location.selectedTemplateItems[0].itemBodyModel.taskType})
+            setStratgyResponseTimeKeyValue([{
+                "label": location.selectedTemplateItems[0].itemHeaderModel.responseTime,
+                "value": location.selectedTemplateItems[0].itemHeaderModel.responseTime
+            }])
+            setStratgyHierarchyKeyValue([{
+                "label": location.selectedTemplateItems[0].itemHeaderModel.itemProductHierarchy,
+                "value": location.selectedTemplateItems[0].itemHeaderModel.itemProductHierarchy
+            }])
+            
+            setStratgyGeographicKeyValue([{
+                "label": location.selectedTemplateItems[0].itemHeaderModel.itemHeaderGeographic,
+                "value": location.selectedTemplateItems[0].itemHeaderModel.itemHeaderGeographic
+            }])
+
+            // setPriceMethodKeyValue([{
+            //     "label": location.selectedTemplateItems[0].itemBodyModel.priceMethod,
+            //     "value": location.selectedTemplateItems[0].itemBodyModel.priceMethod
+            // }])
+            // setPriceCalculator({
+            //     ...priceCalculator,
+            //     priceMethod: location.selectedTemplateItems[0].itemBodyModel.priceMethod,
+            //     listPrice: location.selectedTemplateItems[0].itemBodyModel.listPrice,
+            //     priceEscalationInput: location.selectedTemplateItems[0].itemBodyModel.priceEscalation,
+            //     priceAdditionalInput: location.selectedTemplateItems[0].itemBodyModel.additional,
+            //     calculatedPrice: location.selectedTemplateItems[0].itemBodyModel.calculatedPrice,
+            //     flatPrice: location.selectedTemplateItems[0].itemBodyModel.flatPrice,
+            //     discountTypeInput: location.selectedTemplateItems[0].itemBodyModel.discountType,
+            //     year: location.selectedTemplateItems[0].itemBodyModel.year,
+            //     totalPrice: location.selectedTemplateItems[0].itemBodyModel.totalPrice,
+            // })
+
+
+        }
+
+        console.log("location.selectedTemplateItems : ", location.selectedTemplateItems)
+
+        let itemIdData = []
+        // itemIdData.push({ "itemId": location.selectedTemplateItems[0].itemId })
+
+        const customItemsId = location.selectedTemplateItems.map((data, i) => {
             // if(i == data.length-1){
             //     itemIdData.push({ "itemId": data.itemId })
             // }
@@ -3134,6 +3192,7 @@ export function PortfolioTemplatesResult(props) {
                                                     onChange={handleCustomerSegmentChange}
                                                     value={generalComponentData.customerSegment}
                                                     options={customerSegmentKeyValue}
+                                                    defa
                                                 // options={strategyList}
                                                 />
                                             </div>
@@ -4436,7 +4495,7 @@ export function PortfolioTemplatesResult(props) {
                                 className=""
                                 title=""
                                 columns={selectedportfolioTempItemsColumn}
-                                data={location.selectedPortfolioTempItems}
+                                data={location.selectedTemplateItems}
                                 customStyles={customStyles}
                                 pagination
                             />
