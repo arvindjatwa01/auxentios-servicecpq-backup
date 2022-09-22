@@ -107,7 +107,7 @@ export const Analytics = () => {
    const [openAddBundleItemHeader, setOpenAddBundleItemHeader] = useState("")
 
    const [openSearchSolution, setOpenSearchSolution] = useState(false)
-   const [openSearchSolutionNew, setOpenSearchSolutionNew] = useState(false)
+   const [openSearchTemplateSolution, setOpenSearchTemplateSolution] = useState(false)
    const [typeOfSearch, setTypeOfSearch] = useState(null)
    const [typeOfSolutionSelector, setTypeOfSolutionSelector] = useState(-1)
    const [typeOfSearchColumn, setTypeOfSearchColumn] = useState(null)
@@ -118,6 +118,7 @@ export const Analytics = () => {
    const [buildSolutionValue, setBuildSolutionValue] = useState(-1)
 
    const [columnTextSearch, setColumnTextSearch] = useState([])
+   const [loadingStatus, setLoadingStatus] = useState("")
 
    const [bundleServiceShow, setBundleServiceShow] = useState(false)
 
@@ -143,39 +144,34 @@ export const Analytics = () => {
    const [selectedPortfolioTempMasterData, setSelectedPortfolioTempMasterData] = useState([])
    const [portfolioTempFlagIs, setPortfolioTempFlagIs] = useState(false)
 
+   // Solution Templates States 
+
+   const [solutionTempMasterData, setSolutionTempMasterData] = useState([])
+   const [selectedSolutionTempMasterData, setSelectedSolutionTempMasterData] = useState([])
+   const [solutionTempFlagIs, setSolutionTempFlagIs] = useState(false)
+   const [solutionLoadingStatus, setSolutionLoadingStatus] = useState("")
+   const [solutionRadioCheck, setSolutionRadioCheck] = useState("");
+
    const [selectTypeOfSolution, setSelectTypeOfSolution] = useState(-1)
    const [solutionValue, setSolutionValue] = useState(0)
 
    let history = useHistory()
 
-   const ItemSearchResponseFun = (data, searchData) => {
-      console.log("itemSerach Response Data : ", data)
-      console.log("querySearchSelectItem  => ", searchData)
-      // console.log("item type : ", querySearchSelectItem[0].itemType.label)
-      if (data.length > 0) {
-         setExploreMasterData(data)
-         setQuerySearchSelectItem(searchData)
-         setPortfolioTempMasterData(data)
-         // setShowExplore(true)
-         // setOpenSearchSolution(false)
-      } else {
-         toast("😐" + "No Record Found ", {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-         });
-      }
+   // const ItemSearchResponseFun = (data, searchData) => {
+   //    if (data.length > 0) {
+   //       // setExploreMasterData(data)
+   //       setQuerySearchSelectItem(searchData)
+   //       setPortfolioTempMasterData(data)
+   //       // setShowExplore(true)
+   //       // setOpenSearchSolution(false)
+   //    }
 
-   }
+   // }
 
    const handleTypeOfSolution = (e) => {
       setSelectTypeOfSolution(e.target.value)
-      console.log("valll ", e.target.value)
-      console.log("typeee ", typeof e.target.value)
+      // console.log("valll ", e.target.value)
+      // console.log("typeee ", typeof e.target.value)
       if (e.target.value === "2") {
          setSolutionValue(2)
       } else if (e.target.value === "1") {
@@ -183,7 +179,6 @@ export const Analytics = () => {
       } else {
          setSolutionValue(0)
       }
-
    }
 
 
@@ -467,19 +462,32 @@ export const Analytics = () => {
       setShowExplore(true)
    }
 
-   const handlePortfolioTempItemSaveAndContinue = () => {
+   const handleTemplateItemSaveAndContinue = () => {
       // setOpenSolutionSelector(false)
       // setSolutionBuilderShow(false);
       // setModalComponent(null)
-      // setOpenSearchSolutionNew(false)
+      // setOpenSearchTemplateSolution(false)
       // return <>
       //    <PortfolioTemplatesResult NewData="newData" />
       // </>
-      history.push({
-         pathname : SOLUTION_BUILDER_PORRTFOLIO_TEMP,
-         selectedPortfolioTempItems : selectedPortfolioTempMasterData,
-         state : { NewData: "NewData isss" }
-      });
+      if (solutionValue == 1) {
+         history.push({
+            pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
+            selectedTemplateItems: selectedSolutionTempMasterData,
+            solutionValueIs: solutionValue
+         });
+      } else if (solutionValue == 0) {
+         history.push({
+            pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
+            selectedTemplateItems: selectedPortfolioTempMasterData,
+            solutionValueIs: solutionValue
+         });
+      }
+      // history.push({
+      //    pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
+      //    selectedTemplateItems: selectedPortfolioTempMasterData,
+      //    state: { NewData: "NewData isss" }
+      // });
 
    }
 
@@ -805,6 +813,17 @@ export const Analytics = () => {
       }
    };
 
+   const handleSolutinTemoRadioData = (e, row) => {
+      if (e.target.checked) {
+         // console.log("Checked value is : ", row.itemId)
+         setSolutionRadioCheck(row.itemId)
+         setSelectedSolutionTempMasterData([row])
+         setSolutionTempFlagIs(true)
+         console.log("Solution Temp Flag is :=> ", solutionTempFlagIs)
+
+      }
+   }
+
    const handleCoverageCheckboxData = (e, row) => {
       if (e.target.checked) {
          var _searchedData = [...masterData];
@@ -875,17 +894,16 @@ export const Analytics = () => {
    }
 
    const handleShowSearch = () => {
-      console.log("solutionValue : ", solutionValue)
       if (solutionValue == 2) {
          history.push('/solutionBuilder/guide');
       } else if (solutionValue == 1) {
-         // setActiveStep(2)
-         // setOpenSearchSolutionNew(true)
+         setOpenSearchTemplateSolution(true)
+         setSolutionsPopup(false)
          console.log("this is Solution Portfolio Solution")
       } else {
          // alert("Portfolio ?")
          // history.push('/portfolioBuilder/new');
-         setOpenSearchSolutionNew(true)
+         setOpenSearchTemplateSolution(true)
          setSolutionsPopup(false)
       }
    }
@@ -912,6 +930,13 @@ export const Analytics = () => {
          setPortfolioTempFlagIs(false);
       }
    }, [portfolioTempMasterData]);
+
+   // useEffect(() => {
+
+   //    console.log("selected Solution Temp Master Data is Before : ", selectedSolutionTempMasterData)
+   //    console.log("selected Solution Temp Master Data is After : ", selectedSolutionTempMasterData)
+
+   // },[selectedSolutionTempMasterData])
 
    const handleDeleteIncludeSerialNo = (e, row) => {
       const updated = selectedMasterData.filter((obj) => {
@@ -1638,6 +1663,109 @@ export const Analytics = () => {
       },
    ];
 
+   const solutionTemplatesMasterColumn = [
+      {
+         name: (
+            <>
+               <div>Select</div>
+            </>
+         ),
+         selector: (row) => row.itemId,
+         wrap: true,
+         sortable: true,
+         // format: (row) => row.itemId,
+         cell: (row) => (
+            // <Checkbox
+            //    className="text-black"
+            //    checked={row.check1}
+            //    onChange={(e) => handlePortfolioTempCheckboxData(e, row)}
+            // />
+            <Radio
+               className="text-black"
+               checked={solutionRadioCheck == row.itemId}
+               onChange={(e) => handleSolutinTemoRadioData(e, row)}
+            />
+         ),
+      },
+      {
+         name: (
+            <>
+               <div>ID</div>
+            </>
+         ),
+         selector: (row) => row.itemId,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemId,
+      },
+      {
+         name: (
+            <>
+               <div>Description</div>
+            </>
+         ),
+         selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemHeaderModel.itemHeaderDescription,
+      },
+      {
+         name: (
+            <>
+               <div>Solution Code</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.solutionCode,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.solutionCode,
+      },
+      {
+         name: (
+            <>
+               <div>Repair Option</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.repairOption,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.repairOption,
+      },
+      {
+         name: (
+            <>
+               <div>Frequency</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.frequency,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.frequency,
+      },
+      {
+         name: (
+            <>
+               <div>Quantity</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.quantity,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.quantity,
+      },
+      {
+         name: (
+            <>
+               <div>Total $</div>
+            </>
+         ),
+         selector: (row) => row.itemBodyModel.totalPrice,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.itemBodyModel.totalPrice,
+      },
+
+   ]
 
 
 
@@ -1998,13 +2126,13 @@ export const Analytics = () => {
 
                      </div>
                      {/* <div className="col-auto">
-           <div className="d-flex align-items-center justify-content-center">
-             <div className="text-center border-left pl-3 py-3">
-             <Link to="/repairOptions" className="p-1 text-white">+ Add Part</Link>
-             
-             </div>
-           </div>
-         </div> */}
+                        <div className="d-flex align-items-center justify-content-center">
+                           <div className="text-center border-left pl-3 py-3">
+                           <Link to="/repairOptions" className="p-1 text-white">+ Add Part</Link>
+                           
+                           </div>
+                        </div>
+                     </div> */}
                   </div>
                </div>
                <div className="card">
@@ -2102,7 +2230,6 @@ export const Analytics = () => {
                               { label: "Model", value: "model" },
                               { label: "Prefix", value: "prefix" },
                            ]}
-                           ItemSearchResponseFun={ItemSearchResponseFun}
                            setExploreMasterData={setExploreMasterData}
                            setSelectedExploreMasterData={setSelectedExploreMasterData}
 
@@ -2556,80 +2683,162 @@ export const Analytics = () => {
             </Modal.Footer> */}
          </Modal>
 
-         <Modal show={openSearchSolutionNew} onHide={() => setOpenSearchSolutionNew(false)} size="xl"
+         <Modal show={openSearchTemplateSolution} onHide={() => setOpenSearchTemplateSolution(false)} size="xl"
             aria-labelledby="contained-modal-title-vcenter">
             <Modal.Body className="">
-               Search {solutionValue == 0 ? "Portfolio Templates" : "Solution Templates"}
+               Search {solutionValue == 0 ? "Portfolio" : "Solution"} Templates
                <div className="maintableheader bg-white mt-3 border-radius-10">
-                  <QuerySearchComp
-                     compoFlag="portfolioTempItemSearch"
-                     options={[
-                        { label: "Make", value: "itemHeaderMake" },
-                        { label: "Family", value: "itemHeaderFamily" },
-                        { label: "Model", value: "model" },
-                        { label: "Prefix", value: "prefix" },
-                     ]}
-                     ItemSearchResponseFun={ItemSearchResponseFun}
-                     setPortfolioTempMasterData={setPortfolioTempMasterData}
-                     setSelectedPortfolioTempMasterData={setSelectedPortfolioTempMasterData}
-
-                  // setQuerySearchSelectItem={setQuerySearchSelectItem}
-                  // setTempBundleService1={setTempBundleService1}
-                  // setLoadingItem={setLoadingItem} 
-                  />
-                  {portfolioTempMasterData.length > 0 ?
+                  {solutionValue == 0 ?
                      <>
-                        <div className="tableheader">
-                           <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
-                              <li><a className="cursor result" >PORTFOLIO TEMPLATE ITEM RESULTS</a></li>
-                           </ul>
-                           <DataTable
-                              className=""
-                              title=""
-                              columns={portfolioTemplatesMasterColumn}
-                              data={portfolioTempMasterData}
-                              customStyles={customStyles}
-                              pagination
-                           />
-                           <div className="m-2 text-right">
-                              <input
-                                 onClick={() => {
-                                    setSelectedPortfolioTempMasterData(portfolioTempFilterMasterData);
-                                    setPortfolioTempMasterData([]);
-                                 }}
-                                 className="btn text-white bg-primary"
-                                 value="+ Add Selected"
-                                 disabled={!portfolioTempFlagIs}
+                        <QuerySearchComp
+                           compoFlag="portfolioTempItemSearch"
+                           options={[
+                              // { label: "Make", value: "itemHeaderMake" },
+                              // { label: "Family", value: "itemHeaderFamily" },
+                              { label: "Make", value: "make" },
+                              { label: "Family", value: "family" },
+                              { label: "Model", value: "model" },
+                              { label: "Prefix", value: "prefix" },
+                           ]}
+                           setPortfolioTempMasterData={setPortfolioTempMasterData}
+                           setSelectedPortfolioTempMasterData={setSelectedPortfolioTempMasterData}
+                           setLoadingStatus={setLoadingStatus}
+                        />
+                     </>
+
+                     : <>
+                        <QuerySearchComp
+                           compoFlag="solutionTempItemSearch"
+                           options={[
+                              { label: "Make", value: "itemHeaderMake" },
+                              { label: "Family", value: "itemHeaderFamily" },
+                              { label: "Model", value: "model" },
+                              { label: "Prefix", value: "prefix" },
+                           ]}
+                           setSolutionTempMasterData={setSolutionTempMasterData}
+                           setSelectedSolutionTempMasterData={setSelectedSolutionTempMasterData}
+                           setSolutionLoadingStatus={setSolutionLoadingStatus}
+                        />
+                     </>}
+
+                  {/* Portfolio Templates Search Result Master & Selected Data Starting */}
+
+                  {solutionValue == 0 ? <>
+
+                     {loadingStatus === "01" ? ("loading") :
+                        <>
+                           {portfolioTempMasterData.length > 0 ?
+                              <>
+                                 <div className="tableheader">
+                                    <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
+                                       <li><a className="cursor result" >PORTFOLIO TEMPLATE ITEMS RESULT</a></li>
+                                    </ul>
+                                    <DataTable
+                                       className=""
+                                       title=""
+                                       columns={portfolioTemplatesMasterColumn}
+                                       data={portfolioTempMasterData}
+                                       customStyles={customStyles}
+                                       pagination
+                                    />
+                                    {/* {portfolioTempFlagIs === true ?
+                                    <>
+                                       <div className="m-2 text-right">
+                                          <input
+                                             onClick={() => {
+                                                setSelectedPortfolioTempMasterData(portfolioTempFilterMasterData);
+                                                setPortfolioTempMasterData([]);
+                                             }}
+                                             className="btn text-white bg-primary"
+                                             value="+ Add Selected"
+                                             disabled={!portfolioTempFlagIs}
+                                          />
+                                       </div>
+                                    </> : <></>} */}
+                                    <div className="m-2 text-right">
+                                       <input
+                                          onClick={() => {
+                                             setSelectedPortfolioTempMasterData(portfolioTempFilterMasterData);
+                                             setPortfolioTempMasterData([]);
+                                          }}
+                                          className="btn text-white bg-primary"
+                                          value="+ Add Selected"
+                                          disabled={!portfolioTempFlagIs}
+                                       />
+                                    </div>
+                                 </div>
+                              </> : <></>
+                           }
+                        </>}
+
+                     {selectedPortfolioTempMasterData.length > 0 ? (
+                        <>
+                           <div className="tableheader">
+                              <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
+                                 <li><a className="cursor result" >Included Portfolio Template Items</a></li>
+                              </ul>
+                              <DataTable
+                                 className="mt-3"
+                                 title=""
+                                 columns={SelectedExploreMasterDataColumn}
+                                 data={selectedPortfolioTempMasterData}
+                                 customStyles={customStyles}
+                                 pagination
                               />
                            </div>
-                        </div>
-                     </> : <></>
-                  }
-                  {selectedPortfolioTempMasterData.length > 0 ? (
+                        </>
+                     ) : (
+                        <></>
+                     )}
+
+                  </> : <></>}
+
+                  {/* Solution Templates Search Result Master & Selected Data Starting */}
+
+                  {solutionValue == 1 ?
                      <>
-                        <div className="tableheader">
-                           <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
-                              <li><a className="cursor result" >Included Portfolio Template Items</a></li>
-                           </ul>
-                           <DataTable
-                              className="mt-3"
-                              title=""
-                              columns={SelectedExploreMasterDataColumn}
-                              data={selectedPortfolioTempMasterData}
-                              customStyles={customStyles}
-                              pagination
-                           />
-                        </div>
-                     </>
-                  ) : (
-                     <></>
-                  )}
+                        {solutionLoadingStatus === "01" ? ("loading") :
+                           <>
+                              {solutionTempMasterData.length > 0 ?
+                                 <>
+                                    <div className="tableheader">
+                                       <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
+                                          <li><a className="cursor result" >SOLUTION TEMPLATE ITEMS RESULT</a></li>
+                                       </ul>
+                                       <DataTable
+                                          className=""
+                                          title=""
+                                          columns={solutionTemplatesMasterColumn}
+                                          data={solutionTempMasterData}
+                                          customStyles={customStyles}
+                                          pagination
+                                       />
+                                       <div className="m-2 text-right">
+                                          <input
+                                             // onClick={() => {
+
+                                             //    setPortfolioTempMasterData([]);
+                                             // }}
+                                             onClick={handleTemplateItemSaveAndContinue}
+                                             className="btn text-white bg-primary"
+                                             value="+ Add Selected"
+                                             disabled={!solutionTempFlagIs}
+                                          />
+                                       </div>
+                                    </div>
+                                 </> : <></>
+                              }
+                           </>
+                        }
+                     </> : <></>}
+
+
                </div>
             </Modal.Body>
             <Modal.Footer>
                {selectedPortfolioTempMasterData.length > 0 ?
                   <div>
-                     <button className="btn btn-primary w-100" onClick={handlePortfolioTempItemSaveAndContinue}>Save & Continue</button>
+                     <button className="btn btn-primary w-100" onClick={handleTemplateItemSaveAndContinue}>Save & Continue</button>
                   </div>
                   : <></>}
             </Modal.Footer>
