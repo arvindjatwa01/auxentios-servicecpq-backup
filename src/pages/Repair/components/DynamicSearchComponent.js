@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import SelectFilter from "react-select";
-import { sparePartSearch } from "services/repairBuilderServices";
+import { sparePartSearch } from "services/searchServices";
 import SearchIcon from "@mui/icons-material/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
 import $ from "jquery";

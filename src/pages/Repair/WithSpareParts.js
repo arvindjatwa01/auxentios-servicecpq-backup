@@ -18,7 +18,7 @@ import React, { useEffect, useState } from "react";
 import Moment from "react-moment";
 import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
-import { customerSearch, machineSearch, updateBuilderCustomer, updateBuilderEstimation, updateBuilderGeneralDet, updateBuilderMachine, updateBuilderStatus } from "services/repairBuilderServices";
+import { updateBuilderCustomer, updateBuilderEstimation, updateBuilderGeneralDet, updateBuilderMachine, updateBuilderStatus } from "services/repairBuilderServices";
 import Validator from "utils/validator";
 import copyIcon from "../../assets/icons/svg/Copy.svg";
 import deleteIcon from "../../assets/icons/svg/delete.svg";
@@ -26,6 +26,7 @@ import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
 import shareIcon from "../../assets/icons/svg/share.svg";
 import uploadIcon from "../../assets/icons/svg/upload.svg";
 import SearchBox from "./components/SearchBox";
+import { customerSearch, machineSearch } from "services/searchServices";
 
 function WithSpareParts(props) {
   const history = useHistory();

@@ -47,14 +47,11 @@ import {
   addMultiPartsToPartList,
   addPartToPartList,
   createBuilderVersion,
-  customerSearch,
   fetchBuilderDetails,
   fetchBuilderPricingMethods,
   fetchBuilderVersionDet,
   fetchPartlistFromBuilder,
   fetchPartsFromPartlist,
-  machineSearch,
-  sparePartSearch,
   updateBuilderCustomer,
   updateBuilderEstimation,
   updateBuilderGeneralDet,
@@ -76,7 +73,10 @@ import {
   Rating,
   TextareaAutosize,
 } from "@mui/material";
-import { INITIAL_PAGE_NO, INITIAL_PAGE_SIZE } from "./CONSTANTS";
+import { INITIAL_PAGE_NO, INITIAL_PAGE_SIZE, PARTS_TAG_OPTIONS } from "./CONSTANTS";
+import { RenderConfirmDialog } from "./components/ConfirmationBox";
+import { Typography } from "@material-ui/core";
+import { customerSearch, machineSearch, sparePartSearch } from "services/searchServices";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -104,6 +104,49 @@ function CommentEditInputCell(props) {
     </Box>
   );
 }
+
+// function renderTag(params) {
+//   console.log(params);
+//   return <span>{params.value}</span>
+// }
+
+// function TagComponent(props) {
+//   const { id, value, field } = props;
+//   console.log(id, value, field);
+//   const apiRef = useGridApiContext();
+
+//   const handleTagChange = async (event) => {
+//     console.log("newValue", event.target.value);
+//     // Explore debounce option
+//     apiRef.current.setEditCellValue(
+//       { id, field, value: event.target.value },
+//       event
+//     );
+//   };
+
+//   return (
+//     <Box sx={{ display: "flex", alignItems: "center" }}>
+//       <FormControl fullWidth size="small">
+//           <InputLabel id="demo-select-small" style={{ fontSize: 11 }}>
+//              Tags
+//            </InputLabel>
+//            <SelectBox
+//              label="tags"
+//              value={value}
+//              defaultValue='required'
+//              onChange={handleTagChange}
+//              sx={{ width: 100 }}
+//            >
+//              {PARTS_TAG_OPTIONS.map((element) => (
+//                <MenuItem value={element.value} style={{ fontSize: 11 }}>
+//                  {element.label}
+//                </MenuItem>
+//              ))}
+//            </SelectBox>
+//          </FormControl>
+//     </Box>
+//   );
+// }
 
 function PartList(props) {
   const history = useHistory();
@@ -134,14 +177,7 @@ function PartList(props) {
   const [tagClicked, setTagClicked] = useState("");
   const [totalPartsCount, setTotalPartsCount] = useState(0);
   const [filterQuery, setFilterQuery] = useState("");
-  const tags = [
-    { label: "None", value: "" },
-    { label: "Required", value: "required" },
-    { label: "Optional", value: "optional" },
-    { label: "Additional", value: "additional" },
-    { label: "Missing", value: "missing" },
-    { label: "Core", value: "core" },
-  ];
+
 
   const [viewOnlyTab, setViewOnlyTab] = useState({
     custViewOnly: false,
@@ -739,9 +775,13 @@ function PartList(props) {
   };
 
   const activityOptions = ["Create Versions", "Show Errors", "Review"];
-
+  const [confirmationOpen, setConfirmationOpen] = useState(false)
   const headerMenuClick = (selectedOption) => {
-    if (selectedOption === "Create Versions") createVersion();
+    if (selectedOption === "Create Versions") {
+    //   setConfirmationOpen(true);
+    // }
+      createVersion();
+    }
   };
 
   // Search table column for spareparts
@@ -794,24 +834,8 @@ function PartList(props) {
     //   field: "tag",
     //   flex: 1,
     //   editable: true,
-    //   renderEditCell: (props) =>
-    //     <FormControl fullWidth size="small">
-    //       <InputLabel id="demo-select-small" style={{ fontSize: 11 }}>
-    //         Tags
-    //       </InputLabel>
-    //       <SelectBox
-    //         label="tags"
-    //         value={props.row.tag}
-    //         onChange={(e) => handleTagChange(props.row.id, e.target.value)}
-    //         sx={{ width: 100 }}
-    //       >
-    //         {tags.map((element) => (
-    //           <MenuItem value={element.value} style={{ fontSize: 11 }}>
-    //             {element.label}
-    //           </MenuItem>
-    //         ))}
-    //       </SelectBox>
-    //     </FormControl>
+    //   renderCell: renderTag,
+    //   renderEditCell: TagComponent
     // },
     {
       field: "actions",
@@ -860,7 +884,7 @@ function PartList(props) {
 
   // Update the status of the builder : Active, Revised etc.
   const handleBuilderStatus = async (e) => {
-    await updateBuilderStatus(partListNo, e.value)
+    await updateBuilderStatus(bId, e.value)
       .then((result) => {
         setSelBuilderStatus(e);
         handleSnack("success", "Status has been updated!");
@@ -1078,6 +1102,7 @@ function PartList(props) {
 
   // Updates the bulk edits
   const bulkUpdateParts = async () => {
+    setConfirmationOpen(false);
     if (rowsToUpdate.length === 0) {
       handleSnack("info", `😐 No modifications to update!`);
     } else {
@@ -1110,13 +1135,19 @@ function PartList(props) {
   const [show, setShow] = React.useState(false);
   return (
     <>
-      {/* <CommanComponents /> */}
       <CustomSnackbar
         handleClose={handleSnackBarClose}
         open={openSnack}
         severity={severity}
         message={snackMessage}
       />
+      <RenderConfirmDialog 
+        confimationOpen={confirmationOpen}
+        message={`Pressing 'Yes' will save all the changes to partlist ${partListId}`}
+        handleNo={() => setConfirmationOpen(false)}
+        handleYes={bulkUpdateParts}
+      />
+
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
@@ -1241,7 +1272,7 @@ function PartList(props) {
                 <a href="#" className="ml-3 font-size-14" title="Duplicate">
                   <img src={copyIcon}></img>
                 </a>
-                <a href="#" className="ml-2">
+                <a href={undefined} className="ml-2">
                   <MuiMenuComponent
                     options={activityOptions}
                     onClick={headerMenuClick}
@@ -2369,7 +2400,7 @@ function PartList(props) {
             <div className=" my-3 text-right">
               <button
                 className="btn text-white bg-primary"
-                onClick={bulkUpdateParts}
+                onClick={() => setConfirmationOpen(true)}
                 disabled={bulkUpdateProgress}
               >
                 Save
