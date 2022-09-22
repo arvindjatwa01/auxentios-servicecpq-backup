@@ -431,15 +431,23 @@ const [value, setValue] = React.useState('1');
   //   console.log("---")
   //   setLoginData(reduxState.user.loginData)
   //
-  //
   //   setInterval(() =>
   //     setTime(new Date().getHours() + " : " + new Date().getMinutes()),
   //     1000)
   //
-  //
-  //
-  //
   // }, [reduxState.user]);
+  useEffect(()=>{
+    var now = new Date();
+    var day = new Date().getDate();
+    var monthArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    var month = monthArray[new Date().getMonth()];
+    var year = new Date().getFullYear()
+    setDateObj({
+      day: day,
+      month: month,
+      year: year
+    })
+  },[])
 
   return (
     <>

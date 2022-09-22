@@ -629,7 +629,6 @@ export function CreatePortfolio() {
 
   const handleBundleItemSaveAndContinue = async () => {
     try {
-      // setLoadingItem("???");
       let reqObj = {
         itemId: 0,
         itemName: "",
@@ -699,49 +698,10 @@ export function CreatePortfolio() {
         },
       };
       const itemRes = await itemCreation(reqObj);
-      console.log("itemCreation res:", itemRes);
       if (itemRes.status !== 200) {
-        alert("something went wrong");
-        return;
+        throw "Something went wrong/Item not created"
       }
       setCurrentItemId(itemRes.data.itemId);
-      // const itemPriceRes = await getItemPrice({
-      //   standardJobId: itemRes.data.itemBodyModel.standardJobId,
-      //   repairKitId: itemRes.data.itemBodyModel.repairKitId,
-      //   itemId: itemRes.data.itemId,
-      // });
-      // const {
-      //   priceMethod,
-      //   listPrice,
-      //   priceEscalation,
-      //   additional,
-      //   calculatedPrice,
-      //   flatPrice,
-      //   discountType,
-      //   year,
-      //   totalPrice,
-      //   usage,
-      //   avgUsage,
-      //   frequency,
-      // } = itemPriceRes.itemBodyModel;
-
-      // setPriceCalculator({
-      //   ...priceCalculator,
-      //   priceMethod: { label: priceMethod, value: priceMethod },
-      //   listPrice,
-      //   priceEscalationInput: priceEscalation,
-      //   priceAdditionalInput: additional,
-      //   calculatedPrice,
-      //   flatPrice,
-      //   discountTypeInput: discountType,
-      //   priceYear: { label: year, value: year },
-      //   totalPrice,
-      //   frequency: { label: frequency, value: frequency },
-      //   usageType: { label: usage, value: usage },
-      //   startUsage: avgUsage,
-      //   endUsage: avgUsage,
-      // });
-
       const _generalComponentData = { ...generalComponentData };
       _generalComponentData.items?.push({ itemId: itemRes.data.itemId });
       // put API for porfolio update Item id
@@ -2970,7 +2930,7 @@ export function CreatePortfolio() {
           className="d-flex justify-content-center align-items-center row-svg-div"
           style={{ minWidth: "180px !important" }}
         >
-          <div className=" cursor" onClick={handleBundleItemOpen}>
+          {/* <div className=" cursor" onClick={handleBundleItemOpen}>
             <Tooltip title="Create Bundle">
               <Link to="#" className="px-1">
                 <BusinessCenterOutlinedIcon />
@@ -2983,7 +2943,7 @@ export function CreatePortfolio() {
                 <LayersOutlinedIcon />
               </Link>
             </Tooltip>
-          </div>
+          </div> */}
           <div
             className=" cursor"
             onClick={(e) => handleServiceItemEdit(e, row)}
@@ -3001,7 +2961,7 @@ export function CreatePortfolio() {
               </Link>
             </Tooltip>
           </div>
-          <div
+          {/* <div
             className=" cursor"
             onClick={(e) => handleServiceItemSave(e, row)}
           >
@@ -3010,7 +2970,7 @@ export function CreatePortfolio() {
                 <SaveOutlinedIcon />
               </Link>
             </Tooltip>
-          </div>
+          </div> */}
           <div className="" onClick={(e) => handleServiceItemDelete(e, row)}>
             <Tooltip title="Delete">
               <Link to="#" className="px-1">
@@ -3189,10 +3149,11 @@ export function CreatePortfolio() {
     },
   ];
   const tempBundleItemColumns1 = [
+
     {
       name: (
         <>
-          <div>Id</div>
+          <div>Id3</div>
         </>
       ),
       selector: (row) => row.itemId,
@@ -3634,27 +3595,10 @@ export function CreatePortfolio() {
   }
 
   const handleExpandePriceChange = (e) => {
-    console.log("up")
     // setExpandedPriceCalculator({ ...expandedPriceCalculator, [e.target.name]: e.target.value })
-    console.log("down")
   }
   const handleExpandedPriceSave = async (e, rowData) => {
     try {
-      console.log(`$(#description)`, $("#description").val())
-      // fetch values from input fields
-      let description = $("#description").val()
-      let startUsage = $("#startUsage").val()
-      let endUsage = $("#endUsage").val()
-      let frequency = $("#frequency").val()
-      let recommendedValue = $("#recommendedValue").val()
-      let numberOfEvents = $("#numberOfEvents").val()
-      let calculatedPrice = $("#calculatedPrice").val()
-      let flatPrice = $("#flatPrice").val()
-      let discountTypeInput = $("#discountTypeInput").val()
-      let priceAdditionalInput = $("#priceAdditionalInput").val()
-      // let flatPrice=$("#flatPrice").val()
-
-
       const { itemId, itemName, itemHeaderModel, itemBodyModel } = rowData
       let reqObj1 = {
         itemId,
@@ -3678,7 +3622,7 @@ export function CreatePortfolio() {
       }
       const res = await updateItemData(itemId, reqObj1)
       if (res.status == 200) {
-        toast(`😎 ${rowData.itemHeaderModel.bundleFlag} updated`, {
+        toast(`😎 ${itemId}: price updated`, {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
@@ -3821,7 +3765,7 @@ export function CreatePortfolio() {
               {bundleAndService.itemBodyModel.totalPrice}
             </div>
           </div>
-          <div
+          {bundleItems.length>0&&(<div
             id="cell-11-undefined"
             data-column-id="11"
             role="gridcell"
@@ -3878,13 +3822,14 @@ export function CreatePortfolio() {
                 </Link>
               </Tooltip>
             </div>
-          </div>
+          </div>)}
+          
         </div>
       ))}
     </div>
   );
   const ExpandedPriceCalculator = ({ data }) => (<>
-    <div className="row ml-5">
+    <div className="row mt-3">
       <div className="col-md-6 col-sm-6">
         <div className="form-group">
           <label
@@ -4009,7 +3954,7 @@ export function CreatePortfolio() {
         </div>
       </div>
     </div>
-    <div className="row ml-5 mb-3">
+    <div className="row mb-3 ">
       <div className="col-md-6 col-sm-6">
         <div className="form-group">
           <label
@@ -4154,7 +4099,7 @@ export function CreatePortfolio() {
       </div>
 
     </div>
-    <div className="row" style={{ justifyContent: "right" }}>
+    <div className="text-right">
       <button type="button" className="btn btn-light" onClick={(e) => handleExpandedPriceSave(e, data)}>Save</button>
     </div>
   </>)
@@ -4225,19 +4170,31 @@ export function CreatePortfolio() {
 
   }
 
+
+  
   const handleComponentDataSave = async () => {
     try {
-      // call put API for portfolio item to gety price calculator data
-      // getItemPrice
-      // let reqObj = {
-      //   itemId: 0,
-      //   standardJobId: "",
-      //   repairKitId: ""
-      // }
-      // const res = await getItemPrice(reqObj)
+      // call put API for portfolio item to get price calculator data
+      let reqObj = {}
+      for (let i = 0; i < tempBundleItems.length; i++) {
+        if (tempBundleItems[i].itemId === currentItemId) {
+          reqObj = {
+            itemId: tempBundleItems[i].itemId,
+            standardJobId: tempBundleItems[i].itemBodyModel.standardJobId,
+            repairKitId: tempBundleItems[i].itemBodyModel.repairKitId,
+          }
+          break;
+        }
+      }
+      const itemPriceRes = await getItemPrice(reqObj)
+      setItemPriceCalculator({
+        netParts: "11",
+        netService: "11",
+        priceType: "11",
+        netPrice: itemPriceRes.itemHeaderModel.netPrice,
+        netAdditionals: "11",
+      })
       setTabs("5")
-      alert("Component Data Save")
-
 
 
     } catch (error) {
@@ -4298,10 +4255,10 @@ export function CreatePortfolio() {
       if (currentItemId === _tempBundleItems[i].itemId) {
         if (_tempBundleItems[i].associatedServiceOrBundle) {
           for (let j = 0; j < _tempBundleItems[i].associatedServiceOrBundle.length; j++) {
-            console.log("tempBundleService2",tempBundleService2)
+            console.log("tempBundleService2", tempBundleService2)
             for (let k = 0; k < tempBundleService2.length; k++) {
               if (_tempBundleItems[i].associatedServiceOrBundle[j].itemId == tempBundleService2[k].itemId) {
-                tempBundleService2.splice(k,1)//remove object if already exist
+                tempBundleService2.splice(k, 1)//remove object if already exist
                 break;
               }
             }
@@ -4313,6 +4270,63 @@ export function CreatePortfolio() {
       }
       setTempBundleItems(_tempBundleItems)
       setLoadingItem("22")
+    }
+  }
+
+  const handleContinueOfServiceOrBundle = async () => {
+    setTempBundleService3([])
+    if (categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE") {
+      setTabs("4")//navigate to component data tab
+    } else {
+      // let find that id and get reqData for API
+      let reqObj = {}
+      for (let i = 0; i < tempBundleItems.length; i++) {
+        if (tempBundleItems[i].itemId === currentItemId) {
+          reqObj = {
+            itemId: tempBundleItems[i].itemId,
+            standardJobId: tempBundleItems[i].itemBodyModel.standardJobId,
+            repairKitId: tempBundleItems[i].itemBodyModel.repairKitId,
+          }
+          break;
+        }
+      }
+      const itemPriceRes = await getItemPrice(reqObj)
+      setItemPriceCalculator({
+        netParts: "11",
+        netService: "11",
+        priceType: "11",
+        netPrice: itemPriceRes.itemHeaderModel.netPrice,
+        netAdditionals: "11",
+      })
+
+      // call put  rkid API to get price and populate it in tab 5
+      // const itemPriceRes = await getItemPrice({
+      //   standardJobId: itemRes.data.itemBodyModel.standardJobId,
+      //   repairKitId: itemRes.data.itemBodyModel.repairKitId,
+      //   itemId: itemRes.data.itemId,
+      // });
+      // const {priceMethod,listPrice,priceEscalation,additional,calculatedPrice,flatPrice,discountType,year,totalPrice,usage,avgUsage,frequency,} = itemPriceRes.itemBodyModel;
+      // setPriceCalculator({
+      //   ...priceCalculator,
+      //   priceMethod: { label: priceMethod, value: priceMethod },
+      //   listPrice,
+      //   priceEscalationInput: priceEscalation,
+      //   priceAdditionalInput: additional,
+      //   calculatedPrice,
+      //   flatPrice,
+      //   discountTypeInput: discountType,
+      //   priceYear: { label: year, value: year },
+      //   totalPrice,
+      //   frequency: { label: frequency, value: frequency },
+      //   usageType: { label: usage, value: usage },
+      //   startUsage: avgUsage,
+      //   endUsage: avgUsage,
+      // });
+
+
+      setTabs("5")
+
+
     }
   }
 
@@ -8768,17 +8782,7 @@ export function CreatePortfolio() {
                   />
                   <div className="row mt-5" style={{ justifyContent: "right" }}>
                     <button type="button" className="btn btn-light"
-                      onClick={() => {
-                        if (categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE") {
-                          setTabs("4")
-                          setTempBundleService3([])
-                        } else {
-                          setTabs("5")
-                          setTempBundleService3([])
-                        }
-                        // categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE" ? (setTabs("4")&&setTempBundleService3([])) : setTabs("5")&&setTempBundleService3([])
-                      }}
-                    >Continue</button>
+                      onClick={handleContinueOfServiceOrBundle}>Continue</button>
                   </div>
                 </>}
 
@@ -9587,6 +9591,7 @@ export function CreatePortfolio() {
           />
         </Modal.Body>
       </Modal>
+
       <div
         class="modal fade"
         id="quotecreat"
