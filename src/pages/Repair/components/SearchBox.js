@@ -9,7 +9,7 @@ const SearchBox = (props) => {
         autoComplete="off"
         onChange={props.onChange}
       />
-      { props.result && props.result.length > 0 && (
+      {props.result && props.result.length > 0 && (
         <ul
           className={`list-group customselectsearch-list scrollbar`}
           id="style"
@@ -20,7 +20,9 @@ const SearchBox = (props) => {
               className="list-group-item"
               onClick={(e) => props.onSelect(props.type, currentItem)}
             >
-              {currentItem[props.type]}
+              {props.type === "customerId"
+                ? currentItem[props.type] + " " + currentItem["fullName"]
+                : currentItem[props.type]}
             </li>
           ))}
         </ul>

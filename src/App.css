@@ -2575,5 +2575,13 @@ cursor: pointer;
 .customselect1 .css-6j8wv5-Input{ color: #fff !important;}
 .customselect1 .css-qc6sy-singleValue{color: #fff !important;}
 .customselect1 .css-tj5bde-Svg{color: #fff !important;}
+
 .cmFPbp{ background:#872ff7 !important;}
 .doQoVi{ overflow: hidden !important;}
+
+.custommenu{display: block !important;
+  padding: 8px !important;}
+.MuiMenu-list{}  
+.MuiMenu-list li{display: block;
+  padding: 8px;}
+

@@ -679,7 +679,7 @@ const history=useHistory()
 
                                           {
 
-                                            <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i}`} id="style">
+                                            <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}>
                                               {obj.selectOptions.map((currentItem, j) => (
                                                 <li className="list-group-item" key={j} onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}>{currentItem}</li>
                                               ))}

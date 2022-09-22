@@ -303,7 +303,7 @@ const handleCreate=()=>{
         </div>
         <div className="Add-new-segment-div p-3 border-radius-10">
         <Link to={"/WithoutRepairOption01"} className="btn bg-primary text-white">
-        <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add Opretion<span className="ml-2"><FontAwesomeIcon icon={faAngleDown} /></span>
+        <span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Add Operation<span className="ml-2"><FontAwesomeIcon icon={faAngleDown} /></span>
           </Link>
          
         </div>

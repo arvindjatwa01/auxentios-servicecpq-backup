@@ -749,7 +749,7 @@ const [priceCalculator,setPriceCalculator]=useState({})
           <div className="d-flex align-items-center justify-content-between mt-2">
             <h5 className="font-weight-600 mb-0">Portfolio and Bundles</h5>
             <Select className="customselect1"
-              placeholder=" + CREATE"
+              placeholder=" + Create"
               styles={customStyles}
               options={[
                 { label: "Porfolio", value: "PORTFOLIO" },

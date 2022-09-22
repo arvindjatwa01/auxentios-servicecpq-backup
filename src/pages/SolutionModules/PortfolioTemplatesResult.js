@@ -23,7 +23,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import FormControl from '@mui/material/FormControl';
 import Checkbox from '@mui/material/Checkbox';
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { FileUploader } from "react-drag-drop-files";
 // import MuiMenuComponent from "../Operational/MuiMenuComponent";
@@ -124,6 +124,7 @@ const customStyles = {
             paddingLeft: "8px", // override the cell padding for head cells
             paddingRight: "8px",
             backgroundColor: "#7571f9",
+            // backgroundColor: "#872ff7",
             color: "#fff",
         },
     },
@@ -135,7 +136,10 @@ const customStyles = {
     },
 };
 
-export function CustomizedPortfolio(props) {
+export function PortfolioTemplatesResult(props) {
+
+    const location = useLocation();
+
     const [makeKeyValue, setMakeKeyValue] = useState([]);
     const [modelKeyValue, setModelKeyValue] = useState([]);
     const [prefixKeyValue, setPrefixKeyValue] = useState([]);
@@ -195,6 +199,9 @@ export function CustomizedPortfolio(props) {
     const [openModelRowData, setOpenModelRowData] = useState({});
     const [openedModelBoxData, setOpenedModelBoxData] = useState([]);
     const [modelIncludedData, setModelIncludedData] = useState([]);
+
+    // const [selectePortfolioTempItemsData, setSelectedPortfolioTempItemsData] = useState([]);
+    const [selectedCustomItems, setSelectedCustomItems] = useState([]);
 
     const [coverageData, setCoverageData] = useState({
         make: "",
@@ -340,8 +347,6 @@ export function CustomizedPortfolio(props) {
             customerSegment: e,
         });
     };
-
-
 
     const handleRemove = (index) => {
         var temp = priceAgreementRows.slice();
@@ -893,7 +898,7 @@ export function CustomizedPortfolio(props) {
                 ...coverageData,
                 machineType: e,
             });
-        }else if (type == ENUM.LIFE_STAGE_OF_MACHINE) {
+        } else if (type == ENUM.LIFE_STAGE_OF_MACHINE) {
             setCoverageData({
                 ...coverageData,
                 lifeStageOfMachine: e,
@@ -942,6 +947,7 @@ export function CustomizedPortfolio(props) {
                 lifeStageOfMachine: "NEW_BREAKIN",
                 supportLevel: "PREMIUM",
                 serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
+                customItems: selectedCustomItems,
             };
 
             const portfolioRes = await createCustomPortfolio(reqData);
@@ -1519,7 +1525,162 @@ export function CustomizedPortfolio(props) {
         getPortfolioDetails(portfolioId);
         initFetch();
         dispatch(taskActions.fetchTaskList());
+
+
+
     }, [dispatch]);
+
+    useEffect(() => {
+
+        // Solution Templates Auto fill  Data Conditons 
+
+        if (location.solutionValueIs == 1) {
+
+            setGeneralComponentData({
+                name: location.selectedTemplateItems[0].itemName,
+                description: location.selectedTemplateItems[0].itemHeaderModel.itemHeaderDescription,
+                serviceDescription: "",
+                externalReference: location.selectedTemplateItems[0].itemHeaderModel.reference,
+                customerSegment: null,
+                items: [],
+                coverages: [],
+            });
+            setValidityData({
+                ...validityData,
+                fromDate: location.selectedTemplateItems[0].itemHeaderModel.validFrom,
+                toDate: location.selectedTemplateItems[0].itemHeaderModel.validTo,
+                from: null,
+                to: null,
+                fromInput: "",
+                toInput: "",
+            })
+            // stratgyTaskTypeKeyValue({value: location.selectedTemplateItems[0].itemBodyModel.taskType})
+            setStratgyResponseTimeKeyValue([{
+                "label": location.selectedTemplateItems[0].itemHeaderModel.responseTime,
+                "value": location.selectedTemplateItems[0].itemHeaderModel.responseTime
+            }])
+            setStratgyHierarchyKeyValue([{
+                "label": location.selectedTemplateItems[0].itemHeaderModel.itemProductHierarchy,
+                "value": location.selectedTemplateItems[0].itemHeaderModel.itemProductHierarchy
+            }])
+            
+            setStratgyGeographicKeyValue([{
+                "label": location.selectedTemplateItems[0].itemHeaderModel.itemHeaderGeographic,
+                "value": location.selectedTemplateItems[0].itemHeaderModel.itemHeaderGeographic
+            }])
+
+            // setPriceMethodKeyValue([{
+            //     "label": location.selectedTemplateItems[0].itemBodyModel.priceMethod,
+            //     "value": location.selectedTemplateItems[0].itemBodyModel.priceMethod
+            // }])
+            // setPriceCalculator({
+            //     ...priceCalculator,
+            //     priceMethod: location.selectedTemplateItems[0].itemBodyModel.priceMethod,
+            //     listPrice: location.selectedTemplateItems[0].itemBodyModel.listPrice,
+            //     priceEscalationInput: location.selectedTemplateItems[0].itemBodyModel.priceEscalation,
+            //     priceAdditionalInput: location.selectedTemplateItems[0].itemBodyModel.additional,
+            //     calculatedPrice: location.selectedTemplateItems[0].itemBodyModel.calculatedPrice,
+            //     flatPrice: location.selectedTemplateItems[0].itemBodyModel.flatPrice,
+            //     discountTypeInput: location.selectedTemplateItems[0].itemBodyModel.discountType,
+            //     year: location.selectedTemplateItems[0].itemBodyModel.year,
+            //     totalPrice: location.selectedTemplateItems[0].itemBodyModel.totalPrice,
+            // })
+
+
+        }
+
+        console.log("location.selectedTemplateItems : ", location.selectedTemplateItems)
+
+        let itemIdData = []
+        // itemIdData.push({ "itemId": location.selectedTemplateItems[0].itemId })
+
+        const customItemsId = location.selectedTemplateItems.map((data, i) => {
+            // if(i == data.length-1){
+            //     itemIdData.push({ "itemId": data.itemId })
+            // }
+            // console.log("data length ", data.length)
+            itemIdData.push({ "itemId": data.itemId })
+            // itemIdValue.push(data)
+            // itemIdData.push({
+            //     customItemId: data.itemId,
+            //     itemName: data.itemName,
+            //     customItemHeaderModel: {
+            //         customItemHeaderId : data.itemHeaderModel.itemHeaderId,
+            //         itemHeaderDescription: data.itemHeaderModel.itemHeaderDescription,
+            //         bundleFlag: data.itemHeaderModel.bundleFlag,
+            //         portfolioItemId: data.itemHeaderModel.portfolioItemId,
+            //         reference: data.itemHeaderModel.reference,
+            //         itemHeaderMake: data.itemHeaderModel.itemHeaderMake,
+            //         itemHeaderFamily: data.itemHeaderModel.itemHeaderFamily,
+            //         model: data.itemHeaderModel.model,
+            //         prefix: data.itemHeaderModel.prefix,
+            //         type: data.itemHeaderModel.type,
+            //         additional: data.itemHeaderModel.additional,
+            //         currency: data.itemHeaderModel.currency,
+            //         netPrice: data.itemHeaderModel.netPrice,
+            //         itemProductHierarchy :  data.itemHeaderModel.itemProductHierarchy,
+            //         itemHeaderGeographic: data.itemHeaderModel.itemHeaderGeographic,
+            //         responseTime: data.itemHeaderModel.responseTime,
+            //         usage: data.itemHeaderModel.usage,
+            //         validFrom: data.itemHeaderModel.validFrom,
+            //         validTo: data.itemHeaderModel.validTo,
+            //         estimatedTime: data.itemHeaderModel.estimatedTime,
+            //         servicePrice: data.itemHeaderModel.servicePrice,
+            //         status: data.itemHeaderModel.status,
+            //     },
+            //     customItemBodyModel : {
+            //         customItemBodyId: data.itemBodyModel.itemBodyId,
+            //         itemBodyDescription: data.itemBodyModel.itemBodyDescription,
+            //         quantity: data.itemBodyModel.quantity,
+            //         startUsage: data.itemBodyModel.startUsage,
+            //         endUsage: data.itemBodyModel.endUsage,
+            //         standardJobId: data.itemBodyModel.standardJobId,
+            //         frequency: data.itemBodyModel.frequency,
+            //         additional: data.itemBodyModel.additional,
+            //         spareParts: data.itemBodyModel.spareParts,
+            //         labours: data.itemBodyModel.labours,
+            //         miscellaneous: data.itemBodyModel.miscellaneous,
+            //         taskType: data.itemBodyModel.taskType,
+            //         solutionCode: data.itemBodyModel.solutionCode,
+            //         usageIn: data.itemBodyModel.usageIn,
+            //         recommendedValue: data.itemBodyModel.recommendedValue,
+            //         usage: data.itemBodyModel.usage,
+            //         repairKitId: data.itemBodyModel.repairKitId,
+            //         repairKitId: data.itemBodyModel.repairKitId,
+            //         templateDescription: data.itemBodyModel.templateDescription,
+            //         partListId: data.itemBodyModel.partListId,
+            //         serviceEstimateId: data.itemBodyModel.serviceEstimateId,
+            //         numberOfEvents: data.itemBodyModel.numberOfEvents,
+            //         repairOption: data.itemBodyModel.repairOption,
+            //         priceMethod: data.itemBodyModel.priceMethod,
+            //         listPrice: data.itemBodyModel.listPrice,
+            //         priceEscalation: data.itemBodyModel.priceEscalation,
+            //         calculatedPrice: data.itemBodyModel.calculatedPrice,
+            //         flatPrice: data.itemBodyModel.flatPrice,
+            //         discountType: data.itemBodyModel.discountType,
+            //         year: data.itemBodyModel.year,
+            //         avgUsage: data.itemBodyModel.avgUsage,
+            //         unit: data.itemBodyModel.unit,
+            //         sparePartsPrice: data.itemBodyModel.sparePartsPrice,
+            //         sparePartsPriceBreakDownPercentage: data.itemBodyModel.sparePartsPriceBreakDownPercentage,
+            //         servicePrice: data.itemBodyModel.servicePrice,
+            //         servicePriceBreakDownPercentage: data.itemBodyModel.servicePriceBreakDownPercentage,
+            //         miscPrice: data.itemBodyModel.miscPrice,
+            //         miscPriceBreakDownPercentage: data.itemBodyModel.miscPriceBreakDownPercentage,
+            //         totalPrice: data.itemBodyModel.totalPrice,
+            //     },
+            //     createdAt: data.createdAt
+            // })
+            // console.log("map function data is => " ,data)
+
+            // setSelectedCustomItems([...selectedCustomItems, { "itemId": data.itemId }])
+            // console.log("Item Id's : ", data.itemId)
+        })
+        setSelectedCustomItems(itemIdData)
+        console.log("selected Custom Items Data are  : ", selectedCustomItems)
+    }, [])
+
+
 
     const categoryList = useAppSelector(
         selectStrategyTaskOption(selectCategoryList)
@@ -2521,6 +2682,86 @@ export function CustomizedPortfolio(props) {
         },
     ];
 
+    const selectedportfolioTempItemsColumn = [
+        {
+            name: (
+                <>
+                    <div>ID</div>
+                </>
+            ),
+            selector: (row) => row.itemId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemId,
+        },
+        {
+            name: (
+                <>
+                    <div>Description</div>
+                </>
+            ),
+            selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemHeaderModel.itemHeaderDescription,
+        },
+        {
+            name: (
+                <>
+                    <div>Solution Code</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.solutionCode,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.solutionCode,
+        },
+        {
+            name: (
+                <>
+                    <div>Repair Option</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.repairOption,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.repairOption,
+        },
+        {
+            name: (
+                <>
+                    <div>Frequency</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.frequency,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.frequency,
+        },
+        {
+            name: (
+                <>
+                    <div>Quantity</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.quantity,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.quantity,
+        },
+        {
+            name: (
+                <>
+                    <div>Total $</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.totalPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.totalPrice,
+        },
+    ];
+
     const handleServiceItemOpen = () => {
         setServiceOrBundlePrefix("SERVICE");
         // setServiceOrBundleShow(true);
@@ -2951,6 +3192,7 @@ export function CustomizedPortfolio(props) {
                                                     onChange={handleCustomerSegmentChange}
                                                     value={generalComponentData.customerSegment}
                                                     options={customerSegmentKeyValue}
+                                                    defa
                                                 // options={strategyList}
                                                 />
                                             </div>
@@ -4233,174 +4475,12 @@ export function CustomizedPortfolio(props) {
                     </div>
                     {/* hide portfolio item querySearch */}
                     <div className="card mt-4 px-4">
-                        {/* <div className="row align-items-center mt-3">
-                        <div className="col-11 mx-1">
-                            <div className="d-flex align-items-center w-100">
-                            <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
-                                <h5 className="mb-0 text-black">
-                                <span>Portfolio Items</span>
-                                </h5>
-                                <p className="ml-2 mb-0">
-                                <a href="#" className="ml-3">
-                                    <FontAwesomeIcon icon={faPen} />
-                                </a>
-                                </p>
-                            </div>
-                            <QuerySearchComp
-                                compoFlag="itemSearch"
-                                options={[
-                                { label: "Make", value: "make" },
-                                { label: "Model", value: "model" },
-                                { label: "Prefix", value: "prefix" },
-                                { label: "Family", value: "family" },
-                                ]}
-                                setBundleItems={setBundleItems}
-                                setLoadingItem={setLoadingItem}
-                                setOpenedModelBoxData={setOpenedModelBoxData}
-                            />
-                            </div>
-                        </div>
-                        <div className="">
-                            <h6
-                            className="font-weight-600 text-light mb-0 cursor"
-                            onClick={handleAddSolutionPress}
-                            >
-                            <span className="mr-2">+</span>Add Solution
-                            </h6>
-                        </div>
-                        </div> */}
-                        {bundleItems.length > 0 ? (
-                            <div>
-                                <div
-                                    className="custom-table  card"
-                                    style={{ height: 400, width: "100%" }}
-                                >
-                                    <DataTable
-                                        title=""
-                                        columns={bundleItemColumns}
-                                        data={bundleItems}
-                                        customStyles={customStyles}
-                                        expandableRows
-                                        expandableRowsComponent={ExpandedComponent}
-                                        pagination
-                                    />
-                                </div>
-                            </div>
-                        ) : loadingItem ? (
-                            <div className="d-flex align-items-center justify-content-center">
-                                {/* <Loader
-                  type="spinner-default"
-                  bgColor={"#7571f9"}
-                  title={"spinner-default"}
-                  color={"#FFFFFF"}
-                  size={35}
-                /> */}
-                                "loading"
-                            </div>
-                        ) : (
-                            <div className="p-4  row">
-                                <div
-                                    className="col-md-6 col-sm-6"
-                                    onClick={handleNewBundleItem}
-                                >
-                                    <Link to="#" className="add-new-recod">
-                                        <div>
-                                            <FontAwesomeIcon icon={faPlus} />
-                                            <p className="font-weight-600">Add Portfolio Item</p>
-                                        </div>
-                                    </Link>
-                                </div>
-                                <div className="col-md-6 col-sm-6">
-                                    <div className="add-new-recod">
-                                        <div>
-                                            <FontAwesomeIcon
-                                                className="cloudupload"
-                                                icon={faCloudUploadAlt}
-                                            />
-                                            <h6 className="font-weight-500 mt-3">
-                                                Drag and drop files to upload <br /> or
-                                            </h6>
-                                            <a
-                                                onClick={() => setOpen(true)}
-                                                style={{ cursor: "pointer" }}
-                                                className="btn text-light border-light font-weight-500 border-radius-10 mt-3"
-                                            >
-                                                <span className="mr-2">
-                                                    <FontAwesomeIcon icon={faPlus} />
-                                                </span>
-                                                Select files to upload
-                                            </a>
-                                            <p className="mt-3">
-                                                Single upload file should not be more than <br />
-                                                10MB. Only the .lgs, .lgsx file types are allowed
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                    {/* <div className="card px-4 pb-4 mt-5 pt-0">
-                        <div className="row align-items-center">
-                            <div className="col-3">
-                                <div className="d-flex ">
-                                    <h5 className="mr-4 mb-0"><span>Bundle Item</span></h5>
-                                    <p className="ml-4 mb-0">
-                                        <a href="#" className="ml-3 "><img src={editIcon}></img></a>
-                                        <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="col-6">
-                                <div className="d-flex align-items-center" style={{ background: '#F9F9F9', padding: '10px 15px', borderRadius: '10px' }}>
-                                    <div className="search-icon mr-2" style={{ lineHeight: '24px' }}>
-                                        <img src={searchstatusIcon}></img>
-                                    </div>
-                                    <div className="w-100 mx-2">
-                                        <div className="machine-drop d-flex align-items-center">
 
-                                            <FormControl className="" sx={{ m: 1, }}>
-                                                <Select
-                                                    placeholder="Search By"
-                                                    id="demo-simple-select-autowidth"
-                                                    value={age}
-                                                    onChange={handleChangedrop}
-                                                    autoWidth
-                                                >
-                                                    <MenuItem value="5">
-                                                        <em>Engine</em>
-                                                    </MenuItem>
-                                                    <MenuItem value={10}>Twenty</MenuItem>
-                                                    <MenuItem value={21}>Twenty one</MenuItem>
-                                                    <MenuItem value={22}>Twenty one and a half</MenuItem>
-                                                </Select>
-                                            </FormControl>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                            </div>
-                            <div className="col-3">
-                                <div className="d-flex align-items-center">
-                                    <div className="col-8 text-center">
-                                        <a href="#" className="p-1 more-btn">+ 3 more
-                                            <span className="c-btn">C</span>
-                                            <span className="b-btn">B</span>
-                                            <span className="a-btn">A</span>
-                                        </a>
-                                    </div>
-                                    <div className="col-4 text-center border-left py-4">
-                                        <a href="#" className="p-1 ">+ Add Part</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
-                            <DataGrid
+                            {/* <DataGrid
                                 sx={{
                                     '& .MuiDataGrid-columnHeaders': {
-                                        backgroundColor: '#872ff7', color: '#fff'
+                                        backgroundColor: '#7380E4', color: '#fff'
                                     }
                                 }}
                                 rows={rows}
@@ -4408,21 +4488,19 @@ export function CustomizedPortfolio(props) {
                                 pageSize={5}
                                 rowsPerPageOptions={[5]}
                                 checkboxSelection
+                                // onCellClick={(e) => handleRowClick(e)}
+                            /> */}
 
-
+                            <DataTable
+                                className=""
+                                title=""
+                                columns={selectedportfolioTempItemsColumn}
+                                data={location.selectedTemplateItems}
+                                customStyles={customStyles}
+                                pagination
                             />
                         </div>
-                    </div> */}
-                    {/* <QuerySearchComp
-                        options={[
-                            { label: "Make", value: "make" },
-                            { label: "Model", value: "model" },
-                            { label: "Prefix", value: "prefix" },
-                            { label: "Family", value: "family" },
-                        ]}
-                        compoFlag="coverage"
-
-                    /> */}
+                    </div>
                     <Modal show={open1} onHide={handleClose1} size="lg"
                         aria-labelledby="contained-modal-title-vcenter"
                         centered>
@@ -4641,444 +4719,6 @@ export function CustomizedPortfolio(props) {
                     </Modal>
                 </div>
             </div>
-            <Modal
-                show={showRelatedModel}
-                onHide={() => setShowRelatedModel(false)}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header className="align-items-center">
-                    <div>
-                        <Modal.Title>Included Serial No</Modal.Title>
-                    </div>
-                    <div>
-                        <Link
-                            to="#"
-                            className=" btn bg-primary text-white"
-                            onClick={() => AddNewRowData(openModelBoxDataId)}
-                        >
-                            Add New
-                        </Link>
-                    </div>
-                </Modal.Header>
-                <Modal.Body>
-                    <DataTable
-                        className=""
-                        title=""
-                        columns={columns4}
-                        data={modelIncludedData}
-                        customStyles={customStyles}
-                    // pagination
-                    />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="primary" onClick={() => setShowRelatedModel(false)}>
-                        Close
-                    </Button>
-                    <Button variant="primary">Save changes</Button>
-                </Modal.Footer>
-            </Modal>
-
-
-            <Modal
-                size="xl"
-                show={itemModelShow}
-                onHide={() => setItemModelShow(false)}
-            >
-                <Modal.Body>
-                    <Box sx={{ typography: "body1" }}>
-                        <TabContext value={tabs}>
-                            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                                <TabList
-                                    onChange={(e, newValue) => setTabs(newValue)}
-                                    aria-label="lab API tabs example"
-                                >
-                                    <Tab label="Portfolio Item" value="1" />
-                                    <Tab label="Price Calculator" value="2" />
-                                    <Tab label="Component Data" value="3" />
-                                </TabList>
-                            </Box>
-                            <TabPanel value="1">
-                                <AddPortfolioItem
-                                    // openAddBundleItemHeader={openAddBundleItemHeader}
-                                    categoryList={categoryList}
-                                    updatedTaskList={updatedTaskList}
-                                    setTabs={setTabs}
-                                    getAddportfolioItemDataFun={getAddportfolioItemDataFun}
-                                    compoFlag="ITEM"
-                                    handleBundleItemSaveAndContinue={handleBundleItemSaveAndContinue}
-                                />
-                            </TabPanel>
-
-                            <TabPanel value="2">
-                                <PriceCalculator
-                                    generalComponentData={generalComponentData}
-                                    setGeneralComponentData={setGeneralComponentData}
-
-                                    setBundleItems={setBundleItems}
-                                    bundleItems={bundleItems}
-                                    tempBundleItems={tempBundleItems}
-                                    setTempBundleItems={setTempBundleItems}
-                                    setOpenAddBundleItem={setOpenAddBundleItem}
-                                    setOpenSearchSolution={setOpenSearchSolution}
-                                    createServiceOrBundle={createServiceOrBundle}
-                                    addPortFolioItem={addPortFolioItem}
-                                    serviceOrBundlePrefix={serviceOrBundlePrefix}
-                                    setLoadingItem={setLoadingItem}
-                                    setTabs={setTabs}
-
-                                    priceCalculator={priceCalculator}
-
-                                />
-                            </TabPanel>
-
-                            <TabPanel value="3">
-                                {loadingItem ? (
-                                    <div className="d-flex align-items-center justify-content-center">
-                                        <Loader
-                                            type="spinner-default"
-                                            bgColor={"#7571f9"}
-                                            title={"spinner-default"}
-                                            color={"#FFFFFF"}
-                                            size={35}
-                                        />
-                                    </div>
-                                ) : (
-                                    <div
-                                        className="custom-table  card"
-                                        style={{ height: 400, width: "100%" }}
-                                    >
-                                        <DataTable
-                                            title=""
-                                            columns={tempBundleItemColumns}
-                                            data={tempBundleItems}
-                                            customStyles={customStyles}
-                                            pagination
-                                        />
-                                    </div>
-                                )}
-                            </TabPanel>
-
-                        </TabContext>
-                    </Box>
-                </Modal.Body>
-                <Modal.Footer>
-                    {tabs === "3" && (
-                        <Button variant="primary" onClick={addTempItemIntobundleItem}>
-                            Add Selected
-                        </Button>
-                    )}
-                </Modal.Footer>
-            </Modal>
-
-            <Modal
-                size="xl"
-                show={bundleServiceShow}
-                onHide={() => setBundleServiceShow(false)}
-            >
-                <Modal.Body>
-                    <Box sx={{ typography: "body1" }}>
-                        <TabContext value={bundleTabs}>
-                            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                                <TabList
-                                    onChange={(e, newValue) => setBundleTabs(newValue)}
-                                    aria-label="lab API tabs example"
-                                >
-                                    <Tab label={`${serviceOrBundlePrefix} HEADER`} value="1" />
-                                    {serviceOrBundlePrefix === "BUNDLE" && <Tab label={`${serviceOrBundlePrefix} BODY`} value="2" />}
-                                    <Tab label="PRICE CALCULATOR" value="3" />
-                                </TabList>
-                            </Box>
-                            <TabPanel value="1">
-                                <div className="container-fluid ">
-                                    <div className="d-flex align-items-center justify-content-between mt-2">
-                                        <h5 className="font-weight-600 mb-0">
-                                            ADD {serviceOrBundlePrefix}
-                                        </h5>
-                                        <div className="d-flex justify-content-center align-items-center">
-                                            <a href="#" className="ml-3 font-size-14">
-                                                <img src={shareIcon}></img>
-                                            </a>
-                                            <a href="#" className="ml-3 font-size-14">
-                                                <img src={folderaddIcon}></img>
-                                            </a>
-                                            <a href="#" className="ml-3 font-size-14">
-                                                <img src={uploadIcon}></img>
-                                            </a>
-                                            <a href="#" className="ml-3 font-size-14">
-                                                <img src={cpqIcon}></img>
-                                            </a>
-                                            <a href="#" className="ml-3 font-size-14">
-                                                <img src={deleteIcon}></img>
-                                            </a>
-                                            <a href="#" className="ml-3 font-size-14">
-                                                <img src={copyIcon}></img>
-                                            </a>
-                                            <a href="#" className="ml-2">
-                                                <MuiMenuComponent
-                                                    onClick={() => alert()}
-                                                    options={activityOptions}
-                                                />
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div className="card p-4 mt-5">
-                                        <h5 className="d-flex align-items-center mb-0">
-                                            <div className="" style={{ display: "contents" }}>
-                                                <span className="mr-3">Header</span>
-                                                <a href="#" className="btn-sm">
-                                                    <i className="fa fa-pencil" aria-hidden="true"></i>
-                                                </a>
-                                                <a href="#" className="btn-sm">
-                                                    <i
-                                                        className="fa fa-bookmark-o"
-                                                        aria-hidden="true"
-                                                    ></i>
-                                                </a>
-                                                <a href="#" className="btn-sm">
-                                                    <img
-                                                        style={{ width: "14px" }}
-                                                        src={folderaddIcon}
-                                                    ></img>
-                                                </a>
-                                            </div>
-                                            <div className="input-group icons border-radius-10 border">
-                                                <div className="input-group-prepend">
-                                                    <span
-                                                        className="input-group-text bg-transparent border-0 pr-0 "
-                                                        id="basic-addon1"
-                                                    >
-                                                        <img src={shearchIcon} />
-                                                    </span>
-                                                </div>
-                                                <input
-                                                    type="search"
-                                                    className="form-control search-form-control"
-                                                    aria-label="Search Dashboard"
-                                                />
-                                            </div>
-                                        </h5>
-                                        <div className="row mt-4">
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label className="text-light-dark font-size-12 font-weight-500">
-                                                        {serviceOrBundlePrefix} ID
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10"
-                                                        disabled
-                                                        name="id"
-                                                        placeholder="ID(AUTO)"
-                                                        value={
-                                                            createServiceOrBundle.id
-                                                                ? createServiceOrBundle.id
-                                                                : ""
-                                                        }
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label className="text-light-dark font-size-12 font-weight-500">
-                                                        {serviceOrBundlePrefix} DESCRIPTION
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10"
-                                                        name="description"
-                                                        placeholder="Description"
-                                                        value={createServiceOrBundle.description}
-                                                        onChange={handleAddServiceBundleChange}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label className="text-light-dark font-size-12 font-weight-500">
-                                                        BUNDLE FLAG
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10"
-                                                        name="bundleFlag"
-                                                        placeholder="Bundle Flag"
-                                                        value={
-                                                            serviceOrBundlePrefix === "SERVICE"
-                                                                ? "SERVICE"
-                                                                : "BUNDLE_ITEM"
-                                                        }
-                                                        onChange={handleAddServiceBundleChange}
-                                                        disabled
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label
-                                                        className="text-light-dark font-size-12 font-weight-500"
-                                                        for="exampleInputEmail1"
-                                                    >
-                                                        REFERENCE
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10"
-                                                        name="reference"
-                                                        placeholder="Reference"
-                                                        value={createServiceOrBundle.reference}
-                                                        onChange={handleAddServiceBundleChange}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label className="text-light-dark font-size-12 font-weight-500">
-                                                        CUSTOMER SEGMENT
-                                                    </label>
-                                                    <Select
-                                                        onChange={(e) =>
-                                                            setCreateServiceOrBundle({
-                                                                ...createServiceOrBundle,
-                                                                customerSegment: e,
-                                                            })
-                                                        }
-                                                        value={createServiceOrBundle.customerSegment}
-                                                        options={options}
-                                                        placeholder="Customer Segment"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label className="text-light-dark font-size-12 font-weight-500">
-                                                        MAKE
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10"
-                                                        name="make"
-                                                        placeholder="Make"
-                                                        value={createServiceOrBundle.make}
-                                                        onChange={handleAddServiceBundleChange}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label className="text-light-dark font-size-12 font-weight-500">
-                                                        MODEL(S)
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10"
-                                                        name="models"
-                                                        placeholder="Model(S)"
-                                                        value={createServiceOrBundle.models}
-                                                        onChange={handleAddServiceBundleChange}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label className="text-light-dark font-size-12 font-weight-500">
-                                                        PREFIX(S)
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10"
-                                                        name="prefix"
-                                                        placeholder="Prefix(S)"
-                                                        value={createServiceOrBundle.prefix}
-                                                        onChange={handleAddServiceBundleChange}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label
-                                                        className="text-light-dark font-size-12 font-weight-500"
-                                                        for="exampleInputEmail1"
-                                                    >
-                                                        MACHINE/COMPONENT
-                                                    </label>
-                                                    <Select
-                                                        isClearable={true}
-                                                        onChange={(e) =>
-                                                            setCreateServiceOrBundle({
-                                                                ...createServiceOrBundle,
-                                                                machineComponent: e,
-                                                            })
-                                                        }
-                                                        value={newBundle.machineComponent}
-                                                        isLoading={typeKeyValue.length > 0 ? false : true}
-                                                        options={typeKeyValue}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label
-                                                        className="text-light-dark font-size-12 font-weight-500"
-                                                        for="exampleInputEmail1"
-                                                    >
-                                                        ADDITIONALS
-                                                    </label>
-                                                    <Select
-                                                        onChange={(e) =>
-                                                            setCreateServiceOrBundle({
-                                                                ...createServiceOrBundle,
-                                                                additional: e,
-                                                            })
-                                                        }
-                                                        value={createServiceOrBundle.additional}
-                                                        options={options}
-                                                        placeholder="Preventive Maintenance"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="row" style={{ justifyContent: "right" }}>
-                                            <button
-                                                type="button"
-                                                onClick={handleAddNewServiceOrBundle}
-                                                className="btn btn-light"
-                                            >
-                                                Save
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </TabPanel>
-                            <TabPanel value="2">
-                                <AddPortfolioItem
-                                    setBundleTabs={setBundleTabs}
-                                    compoFlag="BUNDLE"
-                                    saveAddNewServiceOrBundle={saveAddNewServiceOrBundle}
-
-                                />
-
-                            </TabPanel>
-                            <TabPanel value="3">
-                                <PriceCalculator
-                                    serviceOrBundlePrefix={serviceOrBundlePrefix}
-                                    generalComponentData={generalComponentData}
-                                    setGeneralComponentData={setGeneralComponentData}
-                                    createServiceOrBundle={createServiceOrBundle}
-                                    addPortFolioItem={addPortFolioItem}
-                                    bundleItems={bundleItems}
-                                    setBundleItems={setBundleItems}
-                                    setLoadingItem={setLoadingItem}
-                                    setBundleServiceShow={setBundleServiceShow}
-
-                                />
-                            </TabPanel>
-
-                        </TabContext>
-                    </Box>
-                </Modal.Body>
-            </Modal>
         </>
     )
 }

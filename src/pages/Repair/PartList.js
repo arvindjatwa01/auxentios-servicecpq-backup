@@ -2,15 +2,23 @@ import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Select from "react-select";
+import SelectBox from "@mui/material/Select";
 import { Modal } from "react-bootstrap";
 import Checkbox from "@mui/material/Checkbox";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/DeleteOutlined";
-import { MuiMenuComponent } from "pages/Operational";
-import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
+import EditIcon from "@mui/icons-material/EditTwoTone";
+import LabelIcon from "@mui/icons-material/LabelTwoTone";
+import DeleteIcon from "@mui/icons-material/DeleteTwoTone";
+import { MuiMenuComponent } from "./components/MuiMenuRepair";
+// import { MuiMenuComponent } from "pages/Operational";
+import {
+  DataGrid,
+  getGridStringOperators,
+  GridActionsCellItem,
+  useGridApiContext,
+} from "@mui/x-data-grid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import shareIcon from "../../assets/icons/svg/share.svg";
 import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
@@ -21,32 +29,30 @@ import { Link, useHistory } from "react-router-dom";
 import { faFileAlt, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
 import FormGroup from "@mui/material/FormGroup";
 import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
-
+import Loader from "react-js-loader";
 import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
-import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
-import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
-import DataTable from "react-data-table-component";
-import { faPen } from "@fortawesome/free-solid-svg-icons";
 import { FileUploader } from "react-drag-drop-files";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import boxicon from "../../assets/icons/png/box.png";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import $ from "jquery";
-import SelectFilter from "react-select";
-import SearchIcon from "@mui/icons-material/Search";
+// import SearchIcon from "@mui/icons-material/Search";
 import DateFnsUtils from "@date-io/date-fns";
 import {
   addMultiPartsToPartList,
-  addPartlist,
   addPartToPartList,
-  createBuilder,
+  createBuilderVersion,
   customerSearch,
+  fetchBuilderDetails,
+  fetchBuilderPricingMethods,
+  fetchBuilderVersionDet,
+  fetchPartlistFromBuilder,
+  fetchPartsFromPartlist,
   machineSearch,
   sparePartSearch,
   updateBuilderCustomer,
@@ -63,10 +69,45 @@ import Validator from "utils/validator";
 import CustomSnackbar from "../Common/CustomSnackBar";
 import DynamicSearchComponent from "./components/DynamicSearchComponent";
 import AddNewSparepartModal from "./components/AddNewSparePart";
+import {
+  debounce,
+  FormControl,
+  InputLabel,
+  Rating,
+  TextareaAutosize,
+} from "@mui/material";
+import { INITIAL_PAGE_NO, INITIAL_PAGE_SIZE } from "./CONSTANTS";
+
+function CommentEditInputCell(props) {
+  const { id, value, field } = props;
+  // console.log(id, value, field);
+  const apiRef = useGridApiContext();
+
+  const handleCommentChange = async (event) => {
+    // console.log("newValue", event);
+    // Explore debounce option
+    apiRef.current.setEditCellValue(
+      { id, field, value: event.target.value },
+      event
+    );
+  };
+
+  return (
+    <Box sx={{ display: "flex", alignItems: "center" }}>
+      <TextareaAutosize
+        // ref={handleRef}
+        name="comment"
+        style={{ width: "100%" }}
+        value={value}
+        onChange={handleCommentChange}
+      />
+    </Box>
+  );
+}
 
 function PartList(props) {
   const history = useHistory();
-  const {state} = props.location;
+  const { state } = props.location;
   const [searchCustResults, setSearchCustResults] = useState([]);
   const [searchModelResults, setSearchModelResults] = useState([]);
   const [searchSerialResults, setSearchSerialResults] = useState([]);
@@ -74,7 +115,6 @@ function PartList(props) {
   const [bId, setBId] = useState("");
   const [partListNo, setPartListNo] = useState("");
   const [partListId, setPartListId] = useState("");
-  const [allParts, setAllParts] = useState([]);
   const [rowsToUpdate, setRowsToUpdate] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [value, setValue] = useState("customer");
@@ -83,26 +123,25 @@ function PartList(props) {
   const [searchResultOpen, setSearchResultOpen] = useState(false);
   const [file, setFile] = useState(null);
   const [fileUploadOpen, setFileUploadOpen] = useState(false);
-
-  const processRowUpdate = React.useCallback(
-    (newRow, oldRow) =>
-      new Promise((resolve, reject) => {
-        if (newRow.quantity !== oldRow.quantity) {
-          console.log(newRow, newRow.quantity !== oldRow.quantity);
-          // Save the arguments to resolve or reject the promise later
-          rowsToUpdate.push(newRow);
-          resolve(newRow);
-        } else {
-          resolve(oldRow); // Nothing was changed
-        }
-      }),
-    []
-  );
-
-  const updateRowToUpdate = (newRow) => {
-    console.log(newRow);
-    setRowsToUpdate(...rowsToUpdate, newRow);
-  };
+  const [spareparts, setSpareparts] = useState([]);
+  const [headerLoading, setHeaderLoading] = useState(false);
+  const [partsLoading, setPartsLoading] = useState(false);
+  const [bulkUpdateProgress, setBulkUpdateProgress] = useState(false);
+  const [rating, setRating] = useState(null);
+  const [pageSize, setPageSize] = useState(5);
+  const [page, setPage] = useState(0);
+  const [versionDesc, setVersionDesc] = useState("");
+  const [tagClicked, setTagClicked] = useState("");
+  const [totalPartsCount, setTotalPartsCount] = useState(0);
+  const [filterQuery, setFilterQuery] = useState("");
+  const tags = [
+    { label: "None", value: "" },
+    { label: "Required", value: "required" },
+    { label: "Optional", value: "optional" },
+    { label: "Additional", value: "additional" },
+    { label: "Missing", value: "missing" },
+    { label: "Core", value: "core" },
+  ];
 
   const [viewOnlyTab, setViewOnlyTab] = useState({
     custViewOnly: false,
@@ -144,6 +183,13 @@ function PartList(props) {
     revisedOn: new Date(),
     salesOffice: null,
   });
+  const [pricingData, setPricingData] = useState({
+    priceMethod: null,
+    netPrice: 0.0,
+    priceDate: new Date(),
+    adjustedPrice: 0.0,
+    currency: "USD",
+  });
   const initialSparePart = {
     groupNumber: "",
     partType: "",
@@ -168,6 +214,25 @@ function PartList(props) {
     { value: "60", label: "2 months" },
   ];
 
+  const [priceMethodOptions, setPriceMethodOptions] = useState([]);
+  const populatePricingMethods = () => {
+    fetchBuilderPricingMethods("price-method")
+      .then((res) => {
+        const options = res.map((d) => ({
+          value: d.key,
+          label: d.value,
+        }));
+        setPriceMethodOptions(options);
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          `😐 Error occurred while fetching pricing methods!`
+        );
+      });
+  };
+
+  // TODO: Replace it with tenant details
   const salesOfficeOptions = [
     { value: "Location1", label: "Location1" },
     { value: "Location2", label: "Location2" },
@@ -175,23 +240,180 @@ function PartList(props) {
     { value: "Location4", label: "Location4" },
   ];
 
-  const label = { inputProps: { "aria-label": "Checkbox demo" } };
+  const [builderVersionOptions, setBuilderVersionOptions] = useState([
+    { label: "Version 1", value: 1 },
+  ]);
+
+  const handleVersion = (e) => {
+    setSelectedVersion(e);
+    fetchBuilderVersionDet(builderId, e.value).then((result) => {
+      populateHeader(result);
+      fetchPartlist(result.id);
+    });
+  };
 
   useEffect(() => {
-    setBuilderId(state.builderId);
-    setBId(state.bId);
-    setPartListNo(state.partListNo);
-    setPartListId(state.partListId);
-    setGeneralData({ ...generalData, estimationNo: state.partListId });
-    // setBuilderId("RB00008");
-    // setBId(8);
-    // setPartListNo(7);
-    // setGeneralData({ ...generalData, estimationNo: "PL000007" });
-    if(state.type === 'new'){
-      console.log("Created a new builder");
+    populatePricingMethods();
+    if (state && state.type === "new") {
+      setBuilderId(state.builderId);
+      setBId(state.bId);
+      setPartListNo(state.partListNo);
+      setPartListId(state.partListId);
+      setGeneralData({ ...generalData, estimationNo: state.partListId });
+      if (state.type === "new") {
+        console.log("Created a new builder");
+      }
+    } else if (state) {
+      setBuilderId(state.builderId);
+      setBId(state.bId);
+      setPartListNo(state.partListNo);
+      setPartListId(state.partListId);
+      fetchAllDetails(state.bId, state.partListNo);
     }
   }, []);
 
+  const fetchAllDetails = async (builderId, partlistId) => {
+    if (builderId && partlistId) {
+      setHeaderLoading(true);
+      await fetchBuilderDetails(builderId)
+        .then((result) => {
+          populateHeader(result);
+        })
+        .catch((err) => {
+          handleSnack("error", "Error occured while fetching header details");
+        });
+      setHeaderLoading(false);
+      fetchPartsOfPartlist(partlistId, INITIAL_PAGE_NO, INITIAL_PAGE_SIZE);
+    }
+  };
+
+  const filterOperators = getGridStringOperators().filter(({ value }) =>
+    ["equals", "contains"].includes(value)
+  );
+
+  const fetchPartsOfPartlist = async (partlistId, pageNo, rowsPerPage) => {
+    setPartsLoading(true);
+    setPage(pageNo);
+    setPageSize(rowsPerPage);
+    let sort = sortDetail.sortColumn
+      ? `&sortColumn=${sortDetail.sortColumn}&orderBY=${sortDetail.orderBy}`
+      : "";
+    let filter = filterQuery ? `&search=${filterQuery}` : "";
+    const query = `pageNumber=${pageNo}&pageSize=${rowsPerPage}${sort}${filter}`;
+    // console.log(page, pageSize, pageNo, rowsPerPage);
+    await fetchPartsFromPartlist(partlistId, query)
+      .then((partsResult) => {
+        setTotalPartsCount(partsResult.totalRows);
+        setSpareparts(partsResult.result);
+      })
+      .catch((err) => {
+        handleSnack("error", "Error occured while fetching parts");
+      });
+    setPartsLoading(false);
+  };
+  const [sortDetail, setSortDetail] = useState({ sortColumn: "", orderBy: "" });
+  // const [orderBy, setOrderBy] = useState('');
+
+  useEffect(() => {
+    // console.log("partListNo", partListNo);
+    if (partListNo) fetchPartsOfPartlist(partListNo, page, pageSize);
+  }, [sortDetail, filterQuery]);
+
+  const populateHeader = (result) => {
+    setRating(result.rating);
+    setSelBuilderStatus(
+      builderStatusOptions.filter((x) => x.value === result.status)[0]
+    );
+    let versions = result.versionList?.map((versionNo) => ({
+      value: versionNo,
+      label: "Version " + versionNo,
+    }));
+    setBuilderVersionOptions(versions);
+    setSelectedVersion({
+      label: "Version " + result.versionNumber,
+      value: result.versionNumber,
+    });
+
+    setCustomerData({
+      customerID: result.customerId,
+      contactEmail: result.contactEmail,
+      contactName: result.contactName,
+      contactPhone: result.contactPhone,
+      customerGroup: result.customerGroup,
+      customerName: result.customerName,
+      source: result.source,
+    });
+    setMachineData({
+      model: result.model,
+      serialNo: result.serialNo,
+      fleetNo: result.fleetNo,
+      smu: result.smu,
+      registrationNo: result.registrationNo,
+      chasisNo: result.chasisNo,
+    });
+    setGeneralData({
+      description: result.description,
+      estimationDate: result.estimationDate,
+      estimationNo: result.estimationNumber,
+      reference: result.reference,
+      validity: validityOptions.find(
+        (element) => element.value == result.validityDays
+      ),
+      version: result.versionNumber,
+    });
+    setEstimationData({
+      approvedBy: result.approver,
+      preparedBy: result.preparedBy,
+      preparedOn: result.preparedOn,
+      revisedBy: result.revisedBy,
+      revisedOn: result.revisedOn,
+      salesOffice: salesOfficeOptions.find(
+        (element) => element.value === result.salesOffice
+      ),
+    });
+    setViewOnlyTab({
+      custViewOnly: true,
+      machineViewOnly: true,
+      generalViewOnly: true,
+      estViewOnly: true,
+    });
+  };
+
+  const createVersion = async () => {
+    await createBuilderVersion(bId, versionDesc)
+      .then((result) => {
+        setBId(result.id);
+        setSelectedVersion({
+          label: "Version " + result.version,
+          value: result.version,
+        });
+        populateHeader(result);
+        fetchPartlist(result.id);
+      })
+      .catch((err) => {
+        handleSnack("error", "Error occurred while creating builder version");
+      });
+  };
+
+  const fetchPartlist = (id) => {
+    fetchPartlistFromBuilder(id)
+      .then((partListResult) => {
+        if (partListResult) {
+          setPartListNo(partListResult[0]);
+          fetchPartsOfPartlist(
+            partListResult[0],
+            INITIAL_PAGE_NO,
+            INITIAL_PAGE_SIZE
+          );
+        }
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          "Error occurred while fetching all parts of partlist"
+        );
+      });
+  };
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -203,21 +425,19 @@ function PartList(props) {
   };
 
   // Search Customer with customer ID
-  const handleCustSearch = async (searchCustfieldName, searchText) => {
+  const handleCustSearch = async (searchText) => {
     // console.log("clear data", searchText);
     setSearchCustResults([]);
     customerData.customerID = searchText;
     if (searchText) {
-      await customerSearch(searchCustfieldName + "~" + searchText)
+      await customerSearch(
+        "customerId~" + searchText + " OR fullName~" + searchText
+      )
         .then((result) => {
           setSearchCustResults(result);
         })
         .catch((e) => {
-          handleSnack(
-            "error",
-            true,
-            "Error occurred while searching the customer!"
-          );
+          handleSnack("error", "Error occurred while searching the customer!");
         });
     }
   };
@@ -278,11 +498,7 @@ function PartList(props) {
           }
         })
         .catch((e) => {
-          handleSnack(
-            "error",
-            true,
-            "Error occurred while searching the machine!"
-          );
+          handleSnack("error", "Error occurred while searching the machine!");
         });
     } else {
       searchMachinefieldName === "model"
@@ -348,14 +564,13 @@ function PartList(props) {
     } else {
       updateBuilderCustomer(bId, data)
         .then((result) => {
-          setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
           setValue("machine");
-          handleSnack("success", true, "Customer details updated!");
+          setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
+          handleSnack("success", "Customer details updated!");
         })
         .catch((err) => {
           handleSnack(
             "error",
-            true,
             "Error occurred while updating the customer data!"
           );
         });
@@ -363,6 +578,11 @@ function PartList(props) {
   };
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const handleTagChange = (rowId, value) => {
+    console.log(rowId, value);
+    setTagClicked("");
   };
 
   const updateMachineData = () => {
@@ -379,14 +599,10 @@ function PartList(props) {
       .then((result) => {
         setValue("estimation");
         setViewOnlyTab({ ...viewOnlyTab, machineViewOnly: true });
-        handleSnack("success", true, "Machine details updated!");
+        handleSnack("success", "Machine details updated!");
       })
       .catch((err) => {
-        handleSnack(
-          "error",
-          true,
-          "Error occurred while updating the machine data!"
-        );
+        handleSnack("error", "Error occurred while updating the machine data!");
       });
   };
 
@@ -403,12 +619,11 @@ function PartList(props) {
       .then((result) => {
         setValue("price");
         setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
-        handleSnack("success", true, "General details updated!");
+        handleSnack("success", "General details updated!");
       })
       .catch((err) => {
         handleSnack(
           "error",
-          true,
           "Error occurred while updating the general details!"
         );
       });
@@ -428,12 +643,11 @@ function PartList(props) {
       .then((result) => {
         setValue("general");
         setViewOnlyTab({ ...viewOnlyTab, estViewOnly: true });
-        handleSnack("success", true, "Estimation details updated!");
+        handleSnack("success", "Estimation details updated!");
       })
       .catch((err) => {
         handleSnack(
           "error",
-          true,
           "Error occurred while updating the estimation details!"
         );
       });
@@ -456,68 +670,69 @@ function PartList(props) {
       usagePercentage: sparePart.usagePercentage,
       totalPrice: sparePart.totalPrice,
       comment: sparePart.comment,
-      // description: sparePart.description,
+      description: sparePart.description,
       unitOfMeasure: sparePart.unitOfMeasure,
     };
     addPartToPartList(partListNo, data)
       .then((result) => {
         handleAddPartClose();
         if (addPartModalTitle === "Add Part")
-          handleSnack("success", true, `👏 New Spare Part has been added!`);
+          handleSnack("success", `👏 New Spare Part has been added!`);
         else
-          handleSnack(
-            "success",
-            true,
-            `👏 Selected part detail has been updated!`
-          );
+          handleSnack("success", `👏 Selected part detail has been updated!`);
+        fetchPartsOfPartlist(partListNo, page, pageSize);
       })
       .catch((err) => {
-        handleSnack("error", true, `😐 Error occurred while adding spare part`);
+        handleSnack("error", `😐 Error occurred while adding spare part`);
       });
   };
-  const fileTypes = ["xls", "xlsx"];
 
   const handleReadFile = (file) => {
     // e.preventDefault();
     if (file) {
-      console.log(file.name);
       setFile(file);
     }
   };
 
+  // Open spare part modal to view or edit
   const openSparePartRow = (row) => {
-    console.log(row);
+    // console.log(row);
     setSparePart(row);
     setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
     setPartFieldViewonly(true);
     setAddPartOpen(true);
   };
 
+  //Uplaod spare parts through excel sheet
   const handleUploadFile = async () => {
     // console.log("Upload");
     const form = new FormData();
     form.append("file", file);
     await uploadPartsToPartlist(partListNo, form)
       .then((result) => {
+        fetchPartsOfPartlist(partListNo, page, pageSize);
         handleSnack(
           "success",
-          true,
           `New parts have been uploaded to the partlist: ${partListId}`
         );
       })
       .catch((err) => {
-        handleSnack("error", true, `Failed to upload the parts!`);
+        handleSnack("error", `Failed to upload the parts!`);
       });
     setFileUploadOpen(false);
   };
 
   const handleClose = () => setOpen(false);
+
+  //Close Add part modal
   const handleAddPartClose = () => {
     setAddPartOpen(false);
     setSparePart(initialSparePart);
     setPartFieldViewonly(false);
     setAddPartModalTitle("Add Part");
   };
+
+  // Close SparePart search modal
   const handleSearchResClose = () => {
     setSearchResultOpen(false);
     setSelectedMasterData([]);
@@ -525,39 +740,11 @@ function PartList(props) {
 
   const activityOptions = ["Create Versions", "Show Errors", "Review"];
 
-  const allPartListData = [
-    {
-      id: 4,
-      groupNumber: 3620656,
-      partType: "NEW",
-      unitOfMeasure: "PC",
-      unitPrice: 20.01,
-      partNumber: "1944411",
-      comment: "sample comment",
-      description: "sample description",
-      currency: "USD",
-      quantity: 5,
-      usagePercentage: 80,
-      extendedPrice: 100.05,
-      totalPrice: 80.04,
-    },
-    {
-      id: 5,
-      groupNumber: 111111,
-      partType: "NEW",
-      unitOfMeasure: "PC",
-      unitPrice: 20.01,
-      partNumber: "2222222",
-      comment: "sample comment",
-      description: "sample description",
-      currency: "USD",
-      quantity: 5,
-      usagePercentage: 80,
-      extendedPrice: 100.05,
-      totalPrice: 80.04,
-    },
-  ];
+  const headerMenuClick = (selectedOption) => {
+    if (selectedOption === "Create Versions") createVersion();
+  };
 
+  // Search table column for spareparts
   const columnsPartListSearch = [
     { headerName: "GroupNumber", field: "groupNumber", flex: 1, width: 70 },
     { headerName: "Type", field: "partType", flex: 1, width: 130 },
@@ -573,6 +760,7 @@ function PartList(props) {
     { headerName: "Status", field: "status", flex: 1, width: 130 },
   ];
 
+  //Columns to display spare parts for the partlist
   const columnsPartList = [
     { headerName: "GroupNumber", field: "groupNumber", flex: 1 },
     { headerName: "Type", field: "partType", flex: 1 },
@@ -580,7 +768,12 @@ function PartList(props) {
     { headerName: "Qty", field: "quantity", flex: 1, editable: true },
     { headerName: "Unit Of Measures", field: "unitOfMeasure", flex: 1 },
     { headerName: "Unit Price", field: "unitPrice", flex: 1 },
-    { headerName: "Extended Price", field: "extendedPrice", flex: 1 },
+    {
+      headerName: "Extended Price",
+      field: "extendedPrice",
+      flex: 1,
+      editable: true,
+    },
     { headerName: "Currency", field: "currency", flex: 1 },
     {
       headerName: "% Usage",
@@ -589,7 +782,37 @@ function PartList(props) {
       editable: true,
     },
     { headerName: "Total Price", field: "totalPrice", flex: 1 },
-    { headerName: "Comment", field: "comment", flex: 1, editable: true },
+    {
+      headerName: "Comment",
+      field: "comment",
+      flex: 1,
+      editable: true,
+      renderEditCell: CommentEditInputCell,
+    },
+    // {
+    //   headerName: "Tag",
+    //   field: "tag",
+    //   flex: 1,
+    //   editable: true,
+    //   renderEditCell: (props) =>
+    //     <FormControl fullWidth size="small">
+    //       <InputLabel id="demo-select-small" style={{ fontSize: 11 }}>
+    //         Tags
+    //       </InputLabel>
+    //       <SelectBox
+    //         label="tags"
+    //         value={props.row.tag}
+    //         onChange={(e) => handleTagChange(props.row.id, e.target.value)}
+    //         sx={{ width: 100 }}
+    //       >
+    //         {tags.map((element) => (
+    //           <MenuItem value={element.value} style={{ fontSize: 11 }}>
+    //             {element.label}
+    //           </MenuItem>
+    //         ))}
+    //       </SelectBox>
+    //     </FormControl>
+    // },
     {
       field: "actions",
       type: "actions",
@@ -623,53 +846,42 @@ function PartList(props) {
     { value: "Construction", label: "Construction" },
   ];
 
-  const disableOptions = (option) => {
+  //Logic to handle status changes
+  const disableStatusOptions = (option) => {
     const selectedValue = selBuilderStatus.value;
     const changeToValue = option.value;
     return !(
-      (["draft", "revised"].indexOf(selectedValue) > -1 &&
-        changeToValue === "active") ||
-      (["archived", "revised"].indexOf(changeToValue) > -1 &&
-        selectedValue === "active")
+      (["DRAFT", "REVISED"].indexOf(selectedValue) > -1 &&
+        changeToValue === "ACTIVE") ||
+      (["ARCHIVED", "REVISED"].indexOf(changeToValue) > -1 &&
+        selectedValue === "ACTIVE")
     );
   };
 
+  // Update the status of the builder : Active, Revised etc.
   const handleBuilderStatus = async (e) => {
     await updateBuilderStatus(partListNo, e.value)
       .then((result) => {
         setSelBuilderStatus(e);
-        handleSnack("success", true, result);
+        handleSnack("success", "Status has been updated!");
       })
       .catch((err) => {
-        handleSnack("error", true, `Failed to update the status!`);
+        handleSnack("error", `Failed to update the status!`);
       });
   };
   const builderStatusOptions = [
-    { value: "draft", label: "Draft" },
-    { value: "active", label: "Active" },
-    { value: "revised", label: "Revised" },
-    { value: "archived", label: "Archived" },
+    { value: "DRAFT", label: "Draft" },
+    { value: "ACTIVE", label: "Active" },
+    { value: "REVISED", label: "Revised" },
+    { value: "ARCHIVED", label: "Archived" },
   ];
-  const builderVersionOptions = [
-    { value: "1", label: "1" },
-    { value: "2", label: "2" },
-    { value: "3", label: "3" },
-  ];
-  const options4 = [
-    { value: "1", label: "1" },
-    { value: "2", label: "2" },
-    { value: "3", label: "3" },
-  ];
-  const handleOption3 = (e) => {
-    setValue3(e);
-  };
-  const handleOption4 = (e) => {
-    setValue4(e);
-  };
-  const [value3, setValue3] = useState({ value: "1", label: "1" });
-  const [value4, setValue4] = useState({ value: "1", label: "1" });
+
+  const [selectedVersion, setSelectedVersion] = useState({
+    label: "Version 1",
+    value: 1,
+  });
   const [selBuilderStatus, setSelBuilderStatus] = useState({
-    value: "draft",
+    value: "DRAFT",
     label: "Draft",
   });
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -706,7 +918,6 @@ function PartList(props) {
       return searchStr;
     });
 
-    //console.log("searchStr", searchStr);
     try {
       if (searchStr) {
         const res = await sparePartSearch(searchStr);
@@ -714,18 +925,19 @@ function PartList(props) {
         setMasterData(res);
         setSearchResultOpen(true);
       } else {
-        handleSnack("info", true, "Please fill the search criteria!");
+        handleSnack("info", "Please fill the search criteria!");
       }
     } catch (err) {
-      handleSnack("error", true, "Error occurred while fetching spare parts!");
+      handleSnack("error", "Error occurred while fetching spare parts!");
     }
   };
-
-  const handleSnack = (snackSeverity, snackStatus, snackMessage) => {
+  // To display the notifications
+  const handleSnack = (snackSeverity, snackMessage) => {
     setSnackMessage(snackMessage);
     setSeverity(snackSeverity);
-    setOpenSnack(snackStatus);
+    setOpenSnack(true);
   };
+
   const [querySearchSelector, setQuerySearchSelector] = useState([
     {
       id: 0,
@@ -737,11 +949,13 @@ function PartList(props) {
     },
   ]);
 
+  // Once parts are selected to add clear the search results
   const clearFilteredData = () => {
     setMasterData([]);
     setSelectedMasterData([]);
   };
 
+  // Logic to make the header tabs editable
   const makeHeaderEditable = () => {
     if (value === "customer" && viewOnlyTab.custViewOnly)
       setViewOnlyTab({ ...viewOnlyTab, custViewOnly: false });
@@ -761,23 +975,24 @@ function PartList(props) {
 
   const [selectedMasterData, setSelectedMasterData] = useState([]);
   const [masterData, setMasterData] = useState([]);
+
   const handleRowClick = (e) => {
     setShow(true);
   };
 
+  // Select parts to add
   const onRowsSelectionHandler = (ids) => {
     setSelectedMasterData([]);
     const selectedRowsData = ids.map((id) =>
       masterData.find((row) => row.id === id)
     );
-    console.log(selectedRowsData);
+    // console.log(selectedRowsData);
     setSelectedMasterData(selectedRowsData);
-    
   };
 
-  const addSelectedPartsToPartList = () => {
-    console.log(selectedMasterData);
-    const parts= [];
+  // Add the selected parts from search result to partlist
+  const addSelectedPartsToPartList = async () => {
+    const parts = [];
     selectedMasterData.map((item) => {
       let data = {
         partlistId: partListNo,
@@ -790,26 +1005,107 @@ function PartList(props) {
         currency: item.currency,
         totalPrice: 0,
         comment: "",
-        // description: sparePart.description,
+        description: item.partDescription,
         unitOfMeasure: item.salesUnit,
       };
       parts.push(data);
     });
 
-    addMultiPartsToPartList(partListNo, parts)
+    await addMultiPartsToPartList(partListNo, parts)
       .then((result) => {
         handleSearchResClose();
         handleSnack(
           "success",
-          true,
           `👏 New parts have been added with default quantity as 1!`
         );
+        fetchPartsOfPartlist(partListNo, page, pageSize);
       })
       .catch((err) => {
         console.log(err);
-        handleSnack("error", true, `😐 Error occurred while adding the parts!`);
+        handleSnack("error", `😐 Error occurred while adding the parts!`);
       });
   };
+
+  const onPartsFilterChange = React.useCallback((filterModel) => {
+    // console.log(filterModel);
+    filterModel.items.map((indFilter) => {
+      if (indFilter.operatorValue === "equals")
+        debounce(
+          setFilterQuery(indFilter.columnField + ":" + indFilter.value),
+          200
+        );
+      else if (indFilter.operatorValue === "contains")
+        setFilterQuery(indFilter.columnField + "~" + indFilter.value);
+    });
+  }, []);
+
+  // Add the sparepart edited rows to the state variable to update later
+  const processRowUpdate = React.useCallback(
+    (newRow, oldRow) =>
+      new Promise((resolve, reject) => {
+        if (
+          newRow.quantity !== oldRow.quantity ||
+          newRow.extendedPrice !== oldRow.extendedPrice ||
+          newRow.usagePercentage !== oldRow.usagePercentage ||
+          newRow.comment !== oldRow.comment
+        ) {
+          // console.log(newRow, newRow.quantity !== oldRow.quantity);
+          const index = rowsToUpdate.findIndex(
+            (object) => object.id === newRow.id
+          );
+          newRow.totalPrice =
+            newRow.usagePercentage > 0
+              ? parseFloat(
+                  newRow.extendedPrice * 0.01 * newRow.usagePercentage
+                ).toFixed(2)
+              : parseFloat(newRow.extendedPrice).toFixed(2);
+          if (index === -1) {
+            // console.log("add");
+            setRowsToUpdate((prevRows) => [...prevRows, newRow]);
+          } else {
+            rowsToUpdate[index] = newRow;
+          }
+
+          // Save the arguments to resolve or reject the promise later
+          resolve(newRow);
+        } else {
+          // console.log(oldRow);
+          resolve(oldRow); // Nothing was changed
+        }
+      }),
+    []
+  );
+
+  // Updates the bulk edits
+  const bulkUpdateParts = async () => {
+    if (rowsToUpdate.length === 0) {
+      handleSnack("info", `😐 No modifications to update!`);
+    } else {
+      await addMultiPartsToPartList(partListNo, rowsToUpdate)
+        .then((result) => {
+          handleSnack("success", `👏 Parts have been updated!`);
+          setRowsToUpdate([]);
+          fetchPartsOfPartlist(partListNo, page, pageSize);
+        })
+        .catch((err) => {
+          console.log(err);
+          setRowsToUpdate([]);
+          handleSnack("error", `😐 Error occurred while adding the parts!`);
+        });
+    }
+  };
+
+  function sortPartsTable(sortEvent) {
+    // console.log("sorting called");
+    if (sortEvent.length > 0) {
+      setSortDetail({
+        sortColumn: sortEvent[0].field,
+        orderBy: sortEvent[0].sort === "asc" ? "ASC" : "DESC",
+      });
+    } else {
+      setSortDetail({ sortColumn: "", orderBy: "" });
+    }
+  }
 
   const [show, setShow] = React.useState(false);
   return (
@@ -830,28 +1126,23 @@ function PartList(props) {
                 <div className="ml-3">
                   <Select
                     className="customselectbtn"
-                    onChange={(e) => handleOption3(e)}
+                    onChange={(e) => handleVersion(e)}
                     options={builderVersionOptions}
-                    value={value3}
+                    value={selectedVersion}
                   />
-                </div>
 
+                  {/* <span>Version {value3}</span> */}
+                </div>
                 <div className="ml-3">
                   <Select
                     className="customselectbtn"
                     onChange={(e) => handleBuilderStatus(e)}
-                    isOptionDisabled={(e) => disableOptions(e)}
+                    isOptionDisabled={(e) => disableStatusOptions(e)}
                     options={builderStatusOptions}
                     value={selBuilderStatus}
                   />
                 </div>
-                <div className="rating-star">
-                  <span className="fa fa-star checked"></span>
-                  <span className="fa fa-star checked"></span>
-                  <span className="fa fa-star checked"></span>
-                  <span className="fa fa-star"></span>
-                  <span className="fa fa-star"></span>
-                </div>
+                <Rating value={rating} readOnly size="small" sx={{ ml: 2 }} />
               </div>
             </div>
             <div className="d-flex">
@@ -882,6 +1173,7 @@ function PartList(props) {
                     </IconButton>
                   </Box>
                   <Menu
+                    className=""
                     anchorEl={anchorEl}
                     id="account-menu"
                     open={open}
@@ -916,10 +1208,12 @@ function PartList(props) {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    <MenuItem>Templates</MenuItem>
-                    <MenuItem>Standard Job</MenuItem>
-                    <MenuItem>Kit</MenuItem>
-                    <MenuItem data-toggle="modal" data-target="#quotecreat">
+                    <MenuItem className="custommenu">Kit</MenuItem>
+                    <MenuItem
+                      className="custommenu"
+                      data-toggle="modal"
+                      data-target="#quotecreat"
+                    >
                       Quote
                     </MenuItem>
                     <Divider />
@@ -948,7 +1242,10 @@ function PartList(props) {
                   <img src={copyIcon}></img>
                 </a>
                 <a href="#" className="ml-2">
-                  <MuiMenuComponent options={activityOptions} />
+                  <MuiMenuComponent
+                    options={activityOptions}
+                    onClick={headerMenuClick}
+                  />
                 </a>
               </div>
             </div>
@@ -983,933 +1280,981 @@ function PartList(props) {
               <div className="hr"></div>
             </h5>
             <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
-              <TabContext value={value}>
-                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                  <TabList onChange={handleChange}>
-                    <Tab label="Customer" value="customer" />
-                    <Tab label="Machine " value="machine" />
-                    <Tab label="Estimation Details" value="estimation" />
-                    <Tab label="General Details" value="general" />
-                    <Tab label="Price" value="price" />
-                  </TabList>
-                </Box>
-                <TabPanel value="customer">
-                  {!viewOnlyTab.custViewOnly ? (
-                    <>
-                      <div className="row">
-                        <div className="col-md-6 col-sm-6">
+              {headerLoading ? (
+                <div className="d-flex align-items-center justify-content-center">
+                  <Loader
+                    type="spinner-default"
+                    bgColor={"#872ff7"}
+                    title={"spinner-default"}
+                    color={"#FFFFFF"}
+                    size={35}
+                  />
+                </div>
+              ) : (
+                <TabContext value={value}>
+                  <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                    <TabList onChange={handleChange}>
+                      <Tab label="Customer" value="customer" />
+                      <Tab label="Machine " value="machine" />
+                      <Tab label="Estimation Details" value="estimation" />
+                      <Tab label="General Details" value="general" />
+                      <Tab label="Price" value="price" />
+                    </TabList>
+                  </Box>
+                  <TabPanel value="customer">
+                    {!viewOnlyTab.custViewOnly ? (
+                      <>
+                        <div className="row">
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                SOURCE
+                              </label>
+                              <input
+                                type="text"
+                                disabled
+                                className="form-control border-radius-10"
+                                id="customer-src"
+                                placeholder="Placeholder (Required)"
+                                value={customerData.source}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                CUSTOMER ID
+                              </label>
+                              <SearchBox
+                                value={customerData.customerID}
+                                onChange={(e) =>
+                                  handleCustSearch(e.target.value)
+                                }
+                                type="customerId"
+                                result={searchCustResults}
+                                onSelect={handleCustSelect}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                CUSTOMER NAME
+                              </label>
+                              <input
+                                type="text"
+                                value={customerData.customerName}
+                                name="customerName"
+                                onChange={handleCustomerDataChange}
+                                className="form-control border-radius-10"
+                                id="customerNameid"
+                                placeholder="Placeholder (Optional)"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group w-100">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                CONTACT NAME
+                              </label>
+                              <input
+                                type="text"
+                                value={customerData.contactName}
+                                name="contactName"
+                                onChange={handleCustomerDataChange}
+                                className="form-control border-radius-10"
+                                id="contactNameid"
+                                placeholder="Placeholder (Required)"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                CONTACT EMAIL
+                              </label>
+                              <input
+                                type="email"
+                                value={customerData.contactEmail}
+                                name="contactEmail"
+                                onChange={handleCustomerDataChange}
+                                className="form-control border-radius-10"
+                                id="contatEmail"
+                                aria-describedby="emailHelp"
+                                placeholder="Placeholder (Required)"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                CONTACT PHONE
+                              </label>
+                              <input
+                                type="tel"
+                                className="form-control border-radius-10"
+                                onChange={handleCustomerDataChange}
+                                value={customerData.contactPhone}
+                                name="contactPhone"
+                                placeholder="Phone (Optional)"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                CUSTOMER GROUP
+                              </label>
+                              <input
+                                type="text"
+                                value={customerData.customerGroup}
+                                name="customerGroup"
+                                onChange={handleCustomerDataChange}
+                                className="form-control border-radius-10"
+                                id="custGroup"
+                                placeholder="Placeholder (Required)"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          className="row"
+                          style={{ justifyContent: "right" }}
+                        >
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            disabled={
+                              !customerData.source ||
+                              !customerData.contactEmail ||
+                              !customerData.customerGroup ||
+                              !customerData.contactName
+                            }
+                            onClick={updateCustomerData}
+                          >
+                            Save & Next
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="row mt-3">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
+                            <p className="font-size-12 font-weight-500 mb-2">
                               SOURCE
-                            </label>
-                            <input
-                              type="text"
-                              disabled
-                              className="form-control border-radius-10"
-                              id="customer-src"
-                              placeholder="Placeholder (Required)"
-                              value={customerData.source}
-                            />
+                            </p>
+                            <h6 className="font-weight-500">
+                              {customerData.source}
+                            </h6>
                           </div>
                         </div>
-                        <div className="col-md-6 col-sm-6">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
+                            <p className="font-size-12 font-weight-500 mb-2">
                               CUSTOMER ID
-                            </label>
-                            <SearchBox
-                              value={customerData.customerID}
-                              onChange={(e) =>
-                                handleCustSearch("customerId", e.target.value)
-                              }
-                              type="customerId"
-                              result={searchCustResults}
-                              onSelect={handleCustSelect}
-                            />
+                            </p>
+                            <h6 className="font-weight-500">
+                              {customerData.customerID}
+                            </h6>
                           </div>
                         </div>
-                        <div className="col-md-6 col-sm-6">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
+                            <p className="font-size-12 font-weight-500 mb-2">
                               CUSTOMER NAME
-                            </label>
-                            <input
-                              type="text"
-                              value={customerData.customerName}
-                              name="customerName"
-                              onChange={handleCustomerDataChange}
-                              className="form-control border-radius-10"
-                              id="customerNameid"
-                              placeholder="Placeholder (Optional)"
-                            />
+                            </p>
+                            <h6 className="font-weight-500">
+                              {customerData.customerName}
+                            </h6>
                           </div>
                         </div>
-                        <div className="col-md-6 col-sm-6">
-                          <div className="form-group w-100">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              CONTACT NAME
-                            </label>
-                            <input
-                              type="text"
-                              value={customerData.contactName}
-                              name="contactName"
-                              onChange={handleCustomerDataChange}
-                              className="form-control border-radius-10"
-                              id="contactNameid"
-                              placeholder="Placeholder (Required)"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6 col-sm-6">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              CONTACT EMAIL
-                            </label>
-                            <input
-                              type="email"
-                              value={customerData.contactEmail}
-                              name="contactEmail"
-                              onChange={handleCustomerDataChange}
-                              className="form-control border-radius-10"
-                              id="contatEmail"
-                              aria-describedby="emailHelp"
-                              placeholder="Placeholder (Required)"
-                            />
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              CUSTOMER EMAIL
+                            </p>
+                            <h6 className="font-weight-500">
+                              {customerData.contactEmail}
+                            </h6>
                           </div>
                         </div>
-                        <div className="col-md-6 col-sm-6">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
+                            <p className="font-size-12 font-weight-500 mb-2">
                               CONTACT PHONE
-                            </label>
-                            <input
-                              type="tel"
-                              className="form-control border-radius-10"
-                              onChange={handleCustomerDataChange}
-                              value={customerData.contactPhone}
-                              name="contactPhone"
-                              placeholder="Phone (Optional)"
-                            />
+                            </p>
+                            <h6 className="font-weight-500">
+                              {customerData.contactPhone}
+                            </h6>
                           </div>
                         </div>
-                        <div className="col-md-6 col-sm-6">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
+                            <p className="font-size-12 font-weight-500 mb-2">
                               CUSTOMER GROUP
-                            </label>
-                            <input
-                              type="text"
-                              value={customerData.customerGroup}
-                              name="customerGroup"
-                              onChange={handleCustomerDataChange}
-                              className="form-control border-radius-10"
-                              id="custGroup"
-                              placeholder="Placeholder (Required)"
-                            />
+                            </p>
+                            <h6 className="font-weight-500">
+                              {customerData.customerGroup}
+                            </h6>
                           </div>
                         </div>
                       </div>
-                      <div className="row" style={{ justifyContent: "right" }}>
-                        <button
-                          type="button"
-                          className="btn btn-light bg-primary text-white"
-                          disabled={
-                            !customerData.source ||
-                            !customerData.contactEmail ||
-                            !customerData.customerGroup ||
-                            !customerData.contactName
-                          }
-                          onClick={updateCustomerData}
+                    )}
+                  </TabPanel>
+                  <TabPanel value="machine">
+                    {!viewOnlyTab.machineViewOnly ? (
+                      <>
+                        <div className="row">
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                MODEL
+                              </label>
+                              <SearchBox
+                                value={machineData.model}
+                                onChange={(e) =>
+                                  handleMachineSearch("model", e.target.value)
+                                }
+                                type="model"
+                                result={searchModelResults}
+                                onSelect={handleModelSelect}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                SERIAL #
+                              </label>
+                              <SearchBox
+                                value={machineData.serialNo}
+                                onChange={(e) =>
+                                  handleMachineSearch(
+                                    "serialNo",
+                                    e.target.value
+                                  )
+                                }
+                                type="equipmentNumber"
+                                result={searchSerialResults}
+                                onSelect={handleModelSelect}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                SMU
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10"
+                                id="smu-id"
+                                name="smu"
+                                value={machineData.smu}
+                                onChange={handleMachineDataChange}
+                                placeholder="Placeholder (Optional)"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                UNIT NO / FLEET NO
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10"
+                                onChange={handleMachineDataChange}
+                                value={machineData.fleetNo}
+                                name="fleetNo"
+                                id="fleet-id"
+                                placeholder="Placeholder (Optional)"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                REGISTRATION NO
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10"
+                                onChange={handleMachineDataChange}
+                                value={machineData.registrationNo}
+                                name="registrationNo"
+                                id="registration-id"
+                                placeholder="Placeholder (Optional)"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                CHASIS NO
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10"
+                                id="chasis-id"
+                                onChange={handleMachineDataChange}
+                                value={machineData.chasisNo}
+                                name="chasisNo"
+                                placeholder="Placeholder (Optional)"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          className="row"
+                          style={{ justifyContent: "right" }}
                         >
-                          Save & Next
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="row mt-3">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            SOURCE
-                          </p>
-                          <h6 className="font-weight-500">
-                            {customerData.source}
-                          </h6>
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            disabled={
+                              !machineData.model || !machineData.serialNo
+                            }
+                            onClick={updateMachineData}
+                          >
+                            Save & Next
+                          </button>
                         </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            CUSTOMER ID
-                          </p>
-                          <h6 className="font-weight-500">
-                            {customerData.customerID}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            CUSTOMER NAME
-                          </p>
-                          <h6 className="font-weight-500">
-                            {customerData.customerName}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            CUSTOMER EMAIL
-                          </p>
-                          <h6 className="font-weight-500">
-                            {customerData.contactEmail}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            CONTACT PHONE
-                          </p>
-                          <h6 className="font-weight-500">
-                            {customerData.contactPhone}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            CUSTOMER GROUP
-                          </p>
-                          <h6 className="font-weight-500">
-                            {customerData.customerGroup}
-                          </h6>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </TabPanel>
-                <TabPanel value="machine">
-                  {!viewOnlyTab.machineViewOnly ? (
-                    <>
-                      <div className="row">
-                        <div className="col-md-6 col-sm-6">
+                      </>
+                    ) : (
+                      <div className="row mt-3">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
+                            <p className="font-size-12 font-weight-500 mb-2">
                               MODEL
-                            </label>
-                            <SearchBox
-                              value={machineData.model}
-                              onChange={(e) =>
-                                handleMachineSearch("model", e.target.value)
-                              }
-                              type="model"
-                              result={searchModelResults}
-                              onSelect={handleModelSelect}
-                            />
+                            </p>
+                            <h6 className="font-weight-500">
+                              {machineData.model}
+                            </h6>
                           </div>
                         </div>
-                        <div className="col-md-6 col-sm-6">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              SERIAL #
-                            </label>
-                            <SearchBox
-                              value={machineData.serialNo}
-                              onChange={(e) =>
-                                handleMachineSearch("serialNo", e.target.value)
-                              }
-                              type="equipmentNumber"
-                              result={searchSerialResults}
-                              onSelect={handleModelSelect}
-                            />
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              SERIAL NO
+                            </p>
+                            <h6 className="font-weight-500">
+                              {machineData.serialNo}{" "}
+                            </h6>
                           </div>
                         </div>
-                        <div className="col-md-6 col-sm-6">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
+                            <p className="font-size-12 font-weight-500 mb-2">
                               SMU
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              id="smu-id"
-                              name="smu"
-                              value={machineData.smu}
-                              onChange={handleMachineDataChange}
-                              placeholder="Placeholder (Optional)"
-                            />
+                            </p>
+                            <h6 className="font-weight-500">
+                              {machineData.smu}
+                            </h6>
                           </div>
                         </div>
-                        <div className="col-md-6 col-sm-6">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              {" "}
                               UNIT NO / FLEET NO
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              onChange={handleMachineDataChange}
-                              value={machineData.fleetNo}
-                              name="fleetNo"
-                              id="fleet-id"
-                              placeholder="Placeholder (Optional)"
-                            />
+                            </p>
+                            <h6 className="font-weight-500">
+                              {machineData.fleetNo}
+                            </h6>
                           </div>
                         </div>
-                        <div className="col-md-6 col-sm-6">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
+                            <p className="font-size-12 font-weight-500 mb-2">
                               REGISTRATION NO
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              onChange={handleMachineDataChange}
-                              value={machineData.registrationNo}
-                              name="registrationNo"
-                              id="registration-id"
-                              placeholder="Placeholder (Optional)"
-                            />
+                            </p>
+                            <h6 className="font-weight-500">
+                              {machineData.registrationNo}
+                            </h6>
                           </div>
                         </div>
-                        <div className="col-md-6 col-sm-6">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              CHASIS NO
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              id="chasis-id"
-                              onChange={handleMachineDataChange}
-                              value={machineData.chasisNo}
-                              name="chasisNo"
-                              placeholder="Placeholder (Optional)"
-                            />
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              CHASSIS NO
+                            </p>
+                            <h6 className="font-weight-500">
+                              {machineData.chasisNo}
+                            </h6>
                           </div>
                         </div>
                       </div>
-                      <div className="row" style={{ justifyContent: "right" }}>
-                        <button
-                          type="button"
-                          className="btn btn-light bg-primary text-white"
-                          disabled={!machineData.model || !machineData.serialNo}
-                          onClick={updateMachineData}
+                    )}
+                  </TabPanel>
+                  <TabPanel value="estimation">
+                    {!viewOnlyTab.estViewOnly ? (
+                      <>
+                        <div className="row">
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                PREPARED BY
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10"
+                                placeholder="Required"
+                                value={estimationData.preparedBy}
+                                name="preparedBy"
+                                onChange={handleEstimationDataChange}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                APPROVED BY
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10"
+                                value={estimationData.approvedBy}
+                                name="approvedBy"
+                                onChange={handleEstimationDataChange}
+                                placeholder="Placeholder (Optional)"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="align-items-center date-box">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                PREPARED ON
+                              </label>
+
+                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <DatePicker
+                                  variant="inline"
+                                  format="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  label=""
+                                  value={estimationData.preparedOn}
+                                  onChange={(e) =>
+                                    setEstimationData({
+                                      ...estimationData,
+                                      preparedOn: e,
+                                    })
+                                  }
+                                />
+                              </MuiPickersUtilsProvider>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                REVISED BY
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10"
+                                value={estimationData.revisedBy}
+                                name="revisedBy"
+                                onChange={handleEstimationDataChange}
+                                placeholder="Placeholder (Optional)"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="align-items-center date-box">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                REVISED ON
+                              </label>
+                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <DatePicker
+                                  variant="inline"
+                                  format="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  label=""
+                                  value={estimationData.revisedOn}
+                                  onChange={(e) =>
+                                    setEstimationData({
+                                      ...estimationData,
+                                      revisedOn: e,
+                                    })
+                                  }
+                                />
+                              </MuiPickersUtilsProvider>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                SALES OFFICE / BRANCH
+                              </label>
+                              <Select
+                                onChange={(e) =>
+                                  setEstimationData({
+                                    ...estimationData,
+                                    salesOffice: e,
+                                  })
+                                }
+                                options={salesOfficeOptions}
+                                placeholder="Required"
+                                value={estimationData.salesOffice}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          className="row"
+                          style={{ justifyContent: "right" }}
                         >
-                          Save & Next
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="row mt-3">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            MODEL
-                          </p>
-                          <h6 className="font-weight-500">
-                            {machineData.model}
-                          </h6>
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            onClick={updateEstData}
+                            disabled={
+                              !estimationData.preparedBy ||
+                              !estimationData.preparedOn ||
+                              !estimationData.salesOffice
+                            }
+                          >
+                            Save & Next
+                          </button>
                         </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            SERIAL NO
-                          </p>
-                          <h6 className="font-weight-500">
-                            {machineData.serialNo}{" "}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            SMU
-                          </p>
-                          <h6 className="font-weight-500">{machineData.smu}</h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            {" "}
-                            UNIT NO / FLEET NO
-                          </p>
-                          <h6 className="font-weight-500">
-                            {machineData.fleetNo}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            REGISTRATION NO
-                          </p>
-                          <h6 className="font-weight-500">
-                            {machineData.registrationNo}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            CHASSIS NO
-                          </p>
-                          <h6 className="font-weight-500">
-                            {machineData.chasisNo}
-                          </h6>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </TabPanel>
-                <TabPanel value="estimation">
-                  {!viewOnlyTab.estViewOnly ? (
-                    <>
-                      <div className="row">
-                        <div className="col-md-6 col-sm-6">
+                      </>
+                    ) : (
+                      <div className="row mt-3">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
+                            <p className="font-size-12 font-weight-500 mb-2">
                               PREPARED BY
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              placeholder="Required"
-                              value={estimationData.preparedBy}
-                              name="preparedBy"
-                              onChange={handleEstimationDataChange}
-                            />
+                            </p>
+                            <h6 className="font-weight-500">
+                              {estimationData.preparedBy}
+                            </h6>
                           </div>
                         </div>
-                        <div className="col-md-6 col-sm-6">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
+                            <p className="font-size-12 font-weight-500 mb-2">
                               APPROVED BY
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              value={estimationData.approvedBy}
-                              name="approvedBy"
-                              onChange={handleEstimationDataChange}
-                              placeholder="Placeholder (Optional)"
-                            />
+                            </p>
+                            <h6 className="font-weight-500">
+                              {estimationData.approvedBy}
+                            </h6>
                           </div>
                         </div>
-                        <div className="col-md-6 col-sm-6">
-                          <div className="align-items-center date-box">
-                            <label className="text-light-dark font-size-12 font-weight-500">
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
                               PREPARED ON
-                            </label>
-
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                              <DatePicker
-                                variant="inline"
-                                format="dd/MM/yyyy"
-                                className="form-controldate border-radius-10"
-                                label=""
-                                value={estimationData.preparedOn}
-                                onChange={(e) =>
-                                  setEstimationData({
-                                    ...estimationData,
-                                    preparedOn: e,
-                                  })
-                                }
-                              />
-                            </MuiPickersUtilsProvider>
+                            </p>
+                            <h6 className="font-weight-500">
+                              <Moment format="DD/MM/YYYY">
+                                {estimationData.preparedOn}
+                              </Moment>
+                            </h6>
                           </div>
                         </div>
-                        <div className="col-md-6 col-sm-6">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              REVISED BY
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              value={estimationData.revisedBy}
-                              name="revisedBy"
-                              onChange={handleEstimationDataChange}
-                              placeholder="Placeholder (Optional)"
-                            />
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              REVISED BY{" "}
+                            </p>
+                            <h6 className="font-weight-500">
+                              {estimationData.revisedBy}
+                            </h6>
                           </div>
                         </div>
-                        <div className="col-md-6 col-sm-6">
-                          <div className="align-items-center date-box">
-                            <label className="text-light-dark font-size-12 font-weight-500">
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
                               REVISED ON
-                            </label>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                              <DatePicker
-                                variant="inline"
-                                format="dd/MM/yyyy"
-                                className="form-controldate border-radius-10"
-                                label=""
-                                value={estimationData.revisedOn}
-                                onChange={(e) =>
-                                  setEstimationData({
-                                    ...estimationData,
-                                    revisedOn: e,
-                                  })
-                                }
-                              />
-                            </MuiPickersUtilsProvider>
+                            </p>
+                            <h6 className="font-weight-500">
+                              <Moment format="DD/MM/YYYY">
+                                {estimationData.revisedOn}
+                              </Moment>
+                            </h6>
                           </div>
                         </div>
-                        <div className="col-md-6 col-sm-6">
+                        <div className="col-md-4 col-sm-4">
                           <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
+                            <p className="font-size-12 font-weight-500 mb-2">
                               SALES OFFICE / BRANCH
-                            </label>
-                            <Select
-                              onChange={(e) =>
-                                setEstimationData({
-                                  ...estimationData,
-                                  salesOffice: e,
-                                })
-                              }
-                              options={salesOfficeOptions}
-                              placeholder="Required"
-                              value={estimationData.salesOffice}
-                            />
+                            </p>
+                            <h6 className="font-weight-500">
+                              {estimationData.salesOffice?.value}
+                            </h6>
                           </div>
                         </div>
                       </div>
-                      <div className="row" style={{ justifyContent: "right" }}>
-                        <button
-                          type="button"
-                          className="btn btn-light bg-primary text-white"
-                          onClick={updateEstData}
-                          disabled={
-                            !estimationData.preparedBy ||
-                            !estimationData.preparedOn ||
-                            !estimationData.salesOffice
-                          }
-                        >
-                          Save & Next
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="row mt-3">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            PREPARED BY
-                          </p>
-                          <h6 className="font-weight-500">
-                            {estimationData.preparedBy}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            APPROVED BY
-                          </p>
-                          <h6 className="font-weight-500">
-                            {estimationData.approvedBy}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            PREPARED ON
-                          </p>
-                          <h6 className="font-weight-500">
-                            <Moment format="DD/MM/YYYY">
-                              {estimationData.preparedOn}
-                            </Moment>
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            REVISED BY{" "}
-                          </p>
-                          <h6 className="font-weight-500">
-                            {estimationData.revisedBy}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            REVISED ON
-                          </p>
-                          <h6 className="font-weight-500">
-                            <Moment format="DD/MM/YYYY">
-                              {estimationData.revisedOn}
-                            </Moment>
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            SALES OFFICE / BRANCH
-                          </p>
-                          <h6 className="font-weight-500">
-                            {estimationData.salesOffice?.value}
-                          </h6>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </TabPanel>
-                <TabPanel value="general">
-                  {!viewOnlyTab.generalViewOnly ? (
-                    <>
-                      <div className="row">
-                        <div className="col-md-6 col-sm-6">
-                          <div className="align-items-center date-box">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              <span className=" mr-2">ESTIMATION DATE</span>
-                            </label>
-                            {/* <div className="form-group w-100"> */}
+                    )}
+                  </TabPanel>
+                  <TabPanel value="general">
+                    {!viewOnlyTab.generalViewOnly ? (
+                      <>
+                        <div className="row">
+                          <div className="col-md-6 col-sm-6">
+                            <div className="align-items-center date-box">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                <span className=" mr-2">ESTIMATION DATE</span>
+                              </label>
+                              {/* <div className="form-group w-100"> */}
 
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                              <DatePicker
-                                variant="inline"
-                                format="dd/MM/yyyy"
-                                className="form-controldate border-radius-10"
-                                label=""
-                                value={generalData.estimationDate}
+                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <DatePicker
+                                  variant="inline"
+                                  format="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  label=""
+                                  value={generalData.estimationDate}
+                                  onChange={(e) =>
+                                    setGeneralData({
+                                      ...generalData,
+                                      estimationDate: e,
+                                    })
+                                  }
+                                />
+                              </MuiPickersUtilsProvider>
+                              {/* </div> */}
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                ESTIMATION #
+                              </label>
+                              <input
+                                type="text"
+                                disabled
+                                className="form-control border-radius-10"
+                                id="estNoId"
+                                value={generalData.estimationNo}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                DESCRIPTION
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10"
+                                id="desc-id"
+                                placeholder="Required"
+                                maxLength={140}
+                                value={generalData.description}
                                 onChange={(e) =>
                                   setGeneralData({
                                     ...generalData,
-                                    estimationDate: e,
+                                    description: e.target.value,
                                   })
                                 }
                               />
-                            </MuiPickersUtilsProvider>
-                            {/* </div> */}
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                REFERENCE
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10"
+                                id="desc-id"
+                                placeholder="Required"
+                                maxLength={140}
+                                value={generalData.reference}
+                                onChange={(e) =>
+                                  setGeneralData({
+                                    ...generalData,
+                                    reference: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                VALIDITY
+                              </label>
+                              <Select
+                                // defaultValue={selectedOption}
+                                onChange={(e) =>
+                                  setGeneralData({
+                                    ...generalData,
+                                    validity: e,
+                                  })
+                                }
+                                options={validityOptions}
+                                placeholder="Required"
+                                value={generalData.validity}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                VERSION
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10"
+                                placeholder="Placeholder (Optional)"
+                                disabled
+                                value={parseFloat(
+                                  selectedVersion.value
+                                ).toFixed(1)}
+                              />
+                            </div>
                           </div>
                         </div>
-                        <div className="col-md-6 col-sm-6">
-                          <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              ESTIMATION #
-                            </label>
-                            <input
-                              type="text"
-                              disabled
-                              className="form-control border-radius-10"
-                              id="estNoId"
-                              value={generalData.estimationNo}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6 col-sm-6">
-                          <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              DESCRIPTION
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              id="desc-id"
-                              placeholder="Required"
-                              maxLength={140}
-                              value={generalData.description}
-                              onChange={(e) =>
-                                setGeneralData({
-                                  ...generalData,
-                                  description: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6 col-sm-6">
-                          <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              REFERENCE
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              id="desc-id"
-                              placeholder="Required"
-                              maxLength={140}
-                              value={generalData.reference}
-                              onChange={(e) =>
-                                setGeneralData({
-                                  ...generalData,
-                                  reference: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6 col-sm-6">
-                          <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              VALIDITY
-                            </label>
-                            <Select
-                              // defaultValue={selectedOption}
-                              onChange={(e) =>
-                                setGeneralData({ ...generalData, validity: e })
-                              }
-                              options={validityOptions}
-                              placeholder="Required"
-                              value={generalData.validity}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6 col-sm-6">
-                          <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              VERSION
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              placeholder="Placeholder (Optional)"
-                              disabled
-                              value={parseFloat(value3.value).toFixed(1)}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row" style={{ justifyContent: "right" }}>
-                        <button
-                          type="button"
-                          className="btn btn-light bg-primary text-white"
-                          onClick={updateGeneralData}
-                          disabled={
-                            !generalData.estimationDate ||
-                            !generalData.description ||
-                            !generalData.estimationNo ||
-                            !generalData.reference ||
-                            !generalData.validity
-                          }
+                        <div
+                          className="row"
+                          style={{ justifyContent: "right" }}
                         >
-                          Save & Next
-                        </button>
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            onClick={updateGeneralData}
+                            disabled={
+                              !generalData.estimationDate ||
+                              !generalData.description ||
+                              !generalData.estimationNo ||
+                              !generalData.reference ||
+                              !generalData.validity
+                            }
+                          >
+                            Save & Next
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="row mt-3">
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              ESTIMATION DATE{" "}
+                            </p>
+                            <h6 className="font-weight-500">
+                              <Moment format="DD/MM/YYYY">
+                                {generalData.estimationDate}
+                              </Moment>
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              ESTIMATION #
+                            </p>
+                            <h6 className="font-weight-500">
+                              {generalData.estimationNo}{" "}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              DESCRIPTION
+                            </p>
+                            <h6 className="font-weight-500">
+                              {generalData.description}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              REFERENCE{" "}
+                            </p>
+                            <h6 className="font-weight-500">
+                              {generalData.reference}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              VALIDTITY (DAYs)
+                            </p>
+                            <h6 className="font-weight-500">
+                              {generalData.validity?.value}{" "}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              VERSION
+                            </p>
+                            <h6 className="font-weight-500">
+                              {parseFloat(selectedVersion.value).toFixed(1)}
+                            </h6>
+                          </div>
+                        </div>
                       </div>
-                    </>
-                  ) : (
+                    )}
+                  </TabPanel>
+                  <TabPanel value="price">
+                    <div className="row">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            NET PRICE
+                          </label>
+                          <input
+                            type="email"
+                            className="form-control border-radius-10"
+                            id="exampleInputEmail1"
+                            aria-describedby="emailHelp"
+                            placeholder="Placeholder (Optional)"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="align-items-center date-box">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            PRICE DATE
+                          </label>
+                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <DatePicker
+                              variant="inline"
+                              format="dd/MM/yyyy"
+                              className="form-controldate border-radius-10"
+                              label=""
+                              disableFuture
+                              value={pricingData.priceDate}
+                              onChange={(e) =>
+                                setPricingData({
+                                  ...pricingData,
+                                  priceDate: e,
+                                })
+                              }
+                            />
+                          </MuiPickersUtilsProvider>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            COST PRICE
+                          </label>
+                          <input
+                            type="email"
+                            className="form-control border-radius-10"
+                            id="exampleInputEmail1"
+                            aria-describedby="emailHelp"
+                            placeholder="Placeholder (Optional)"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            PRICE METHOD
+                          </label>
+                          <Select
+                            defaultValue={selectedOption}
+                            value={pricingData.priceMethod}
+                            onChange={(e) =>
+                              setPricingData({ ...pricingData, priceMethod: e })
+                            }
+                            options={priceMethodOptions}
+                            placeholder="placeholder (Optional)"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            ADJUSTED PRICE
+                          </label>
+                          <input
+                            type="email"
+                            className="form-control border-radius-10"
+                            id="exampleInputEmail1"
+                            aria-describedby="emailHelp"
+                            placeholder="Placeholder (Optional)"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            CURRENCY
+                          </label>
+                          <Select
+                            defaultValue={selectedOption}
+                            onChange={setSelectedOption}
+                            options={options}
+                            placeholder="placeholder (Optional)"
+                          />
+                        </div>
+                      </div>
+                    </div>
                     <div className="row mt-3">
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="font-size-12 font-weight-500 mb-2">
-                            ESTIMATION DATE{" "}
+                            NET PRICE
                           </p>
-                          <h6 className="font-weight-500">
-                            <Moment format="DD/MM/YYYY">
-                              {generalData.estimationDate}
-                            </Moment>
-                          </h6>
+                          <h6 className="font-weight-500">Mining</h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="font-size-12 font-weight-500 mb-2">
-                            ESTIMATION #
+                            PRICE DATE
                           </p>
-                          <h6 className="font-weight-500">
-                            {generalData.estimationNo}{" "}
-                          </h6>
+                          <h6 className="font-weight-500">01.09.2021</h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="font-size-12 font-weight-500 mb-2">
-                            DESCRIPTION
+                            COST PRICE
                           </p>
-                          <h6 className="font-weight-500">
-                            {generalData.description}
-                          </h6>
+                          <h6 className="font-weight-500">01.09.2021</h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="font-size-12 font-weight-500 mb-2">
-                            REFERENCE{" "}
+                            PRICE METHOD
                           </p>
-                          <h6 className="font-weight-500">
-                            {generalData.reference}
-                          </h6>
+                          <h6 className="font-weight-500">List Price </h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="font-size-12 font-weight-500 mb-2">
-                            VALIDTITY (DAYs)
+                            ADJUSTED PRICE{" "}
                           </p>
-                          <h6 className="font-weight-500">
-                            {generalData.validity?.value}{" "}
-                          </h6>
+                          <h6 className="font-weight-500">Mining</h6>
                         </div>
                       </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            VERSION
-                          </p>
-                          <h6 className="font-weight-500">
-                            {parseFloat(value3.value).toFixed(1)}
-                          </h6>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </TabPanel>
-                <TabPanel value="price">
-                  <div className="row">
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          NET PRICE
-                        </label>
-                        <input
-                          type="email"
-                          className="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          PRICE DATE
-                        </label>
-                        <input
-                          type="email"
-                          className="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          COST PRICE
-                        </label>
-                        <input
-                          type="email"
-                          className="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          PRICE METHOD
-                        </label>
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          ADJUSTED PRICE
-                        </label>
-                        <input
-                          type="email"
-                          className="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
 
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          CURRENCY
-                        </label>
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="placeholder (Optional)"
-                        />
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            CURRENCY{" "}
+                          </p>
+                          <h6 className="font-weight-500">AUD</h6>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="row mt-3">
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          NET PRICE
-                        </p>
-                        <h6 className="font-weight-500">Mining</h6>
-                      </div>
+                    <div className="row" style={{ justifyContent: "right" }}>
+                      <button
+                        type="button"
+                        className="btn btn-light bg-primary text-white"
+                      >
+                        Next
+                      </button>
                     </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          PRICE DATE
-                        </p>
-                        <h6 className="font-weight-500">01.09.2021</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          COST PRICE
-                        </p>
-                        <h6 className="font-weight-500">01.09.2021</h6>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          PRICE METHOD
-                        </p>
-                        <h6 className="font-weight-500">List Price </h6>
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          ADJUSTED PRICE{" "}
-                        </p>
-                        <h6 className="font-weight-500">Mining</h6>
-                      </div>
-                    </div>
-
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <p className="font-size-12 font-weight-500 mb-2">
-                          CURRENCY{" "}
-                        </p>
-                        <h6 className="font-weight-500">AUD</h6>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row" style={{ justifyContent: "right" }}>
-                    <button
-                      type="button"
-                      className="btn btn-light bg-primary text-white"
-                    >
-                      Next
-                    </button>
-                  </div>
-                </TabPanel>
-              </TabContext>
+                  </TabPanel>
+                </TabContext>
+              )}
             </Box>
           </div>
           <div className="card border mt-4 px-4">
@@ -1923,13 +2268,7 @@ function PartList(props) {
                     <h5 className="mr-2 mb-0 text-black">
                       <span>Parts Table</span>
                     </h5>
-                    <Select
-                      className="customselectbtn col-auto"
-                      onChange={(e) => handleOption4(e)}
-                      options={options4}
-                      value={value4}
-                    />
-                    
+                    <span>Version {selectedVersion.value}</span>
                   </div>
                   <DynamicSearchComponent
                     querySearchSelector={querySearchSelector}
@@ -1937,19 +2276,20 @@ function PartList(props) {
                     clearFilteredData={clearFilteredData}
                     handleSnack={handleSnack}
                     searchAPI={sparePartSearch}
+                    searchClick={handleQuerySearchClick}
                   />
                 </div>
               </div>
               <div className="col-4">
                 <div className="text-right pl-3 py-3">
-                  <button
+                  {/* <button
                     type="button"
                     className="btn bg-primary text-white"
                     onClick={handleQuerySearchClick}
                   >
                     <SearchIcon />
                     <span className="ml-1">Search</span>
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => setFileUploadOpen(true)}
                     style={{ cursor: "pointer" }}
@@ -1981,32 +2321,59 @@ function PartList(props) {
                 "& .MuiDataGrid-columnHeader .MuiDataGrid-columnSeparator": {
                   display: "none",
                 },
+                "&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell": {
+                  fontSize: 12,
+                  py: "8px",
+                },
+                "&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell": {
+                  py: "15px",
+                },
+                "&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell": {
+                  py: "22px",
+                },
               }}
-              rows={allPartListData}
-              columns={columnsPartList}
+              rows={spareparts}
+              columns={columnsPartList.map((column) => ({
+                ...column,
+                filterOperators,
+              }))}
               editMode="row"
-              pageSize={5}
+              page={page}
+              pageSize={pageSize}
+              onPageChange={(newPage) =>
+                fetchPartsOfPartlist(partListNo, newPage, pageSize)
+              }
+              onPageSizeChange={(newPageSize) =>
+                fetchPartsOfPartlist(partListNo, page, newPageSize)
+              }
+              onRowEditStart={(e) => setBulkUpdateProgress(true)}
+              sortingMode="server"
+              onSortModelChange={(e) => sortPartsTable(e)}
+              filterMode="server"
+              onFilterModelChange={onPartsFilterChange}
+              onRowEditStop={(e) => setBulkUpdateProgress(false)}
+              paginationMode="server"
               autoHeight
-              rowsPerPageOptions={[5]}
+              loading={partsLoading}
+              rowsPerPageOptions={[5, 10, 20]}
+              pagination
+              rowCount={totalPartsCount}
               experimentalFeatures={{ newEditingApi: true }}
               processRowUpdate={(newRow, oldRow) =>
                 processRowUpdate(newRow, oldRow)
               }
+              getEstimatedRowHeight={() => 200}
+              getRowHeight={() => "auto"}
               onProcessRowUpdateError={(error) => console.log(error)}
-              // checkboxSelection
-              // onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
-              // onCellClick={(e) => handleRowClick(e)}
             />
-            {/* <DataTable
-              className="mr-2"
-              title=""
-              columns={columns}
-              data={data}
-              customStyles={customStyles}
-              pagination
-            /> */}
             <div className=" my-3 text-right">
-              <button className="btn text-white bg-primary">Save</button>
+              <button
+                className="btn text-white bg-primary"
+                onClick={bulkUpdateParts}
+                disabled={bulkUpdateProgress}
+              >
+                Save
+              </button>
             </div>
           </div>
           {/* Open Modal to add individual spare part to the part list */}
@@ -2047,7 +2414,7 @@ function PartList(props) {
                     <FileUploader
                       handleChange={handleReadFile}
                       name="file"
-                      types={fileTypes}
+                      types={["xls", "xlsx"]}
                       onClick={(event) => {
                         event.currentTarget.value = null;
                       }}

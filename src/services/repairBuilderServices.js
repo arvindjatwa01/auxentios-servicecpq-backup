@@ -1,11 +1,19 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
+import Cookies from "js-cookie";
 import {
   ADD_REPAIR_BUILDER_PARTLIST,
   ADD_REPAIR_MULTI_PARTS_TO_PARTLIST,
   ADD_REPAIR_PART_TO_PARTLIST,
+  ADD_SEGMENT_OPERATION,
+  CREATE_BUILDER_SEGMENT,
   CREATE_BUILDER_VERSION,
   CREATE_REPAIR_BUILDER,
+  FETCH_BUILDER_DETAILS,
+  FETCH_BUILDER_VERSION_DETAILS,
+  FETCH_PARTS_OF_PARTLIST,
+  FETCH_REPAIR_BUILDER_PARTLIST,
+  PRICING_COMMON_CONFIG,
   SEARCH_CUSTOMER,
   SEARCH_MACHINE,
   SEARCH_SPAREPART,
@@ -17,6 +25,8 @@ import {
   UPDATE_REPAIR_STATUS,
   UPLOAD_REPAIR_PARTS_TO_PARTLIST,
 } from "./CONSTANTS";
+const accessToken = Cookies.get("accessToken");
+
 const config = {
   headers: {
     "Content-Type": "application/json",
@@ -47,6 +57,60 @@ export const createBuilder = (data) => {
         });
     } catch (error) {
       console.error("CreateBuilder general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//Create repair Segment for a builder
+export const createSegment = (builderId, data) => {
+  console.log("service repairbuilder > createSegment called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(CREATE_BUILDER_SEGMENT(builderId), data, config)
+        .then((res) => {
+          console.log("repairbuilder -> createSegment response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("createSegment > axios err=", err);
+          reject("Error in createSegment axios!");
+        });
+    } catch (error) {
+      console.error("CreateBuilder general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//Add Option to the Segment of a builder
+export const AddOperation = (segmentId, data) => {
+  console.log("service repairbuilder > AddOperation called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(ADD_SEGMENT_OPERATION(segmentId), data, config)
+        .then((res) => {
+          console.log("repairbuilder -> AddOperation response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("createSegment > axios err=", err);
+          reject("Error in AddOperation axios!");
+        });
+    } catch (error) {
+      console.error("AddOperation general exception", error);
       reject(SYSTEM_ERROR);
     }
   });
@@ -351,7 +415,7 @@ export const uploadPartsToPartlist = (partListId, file) => {
         .post(UPLOAD_REPAIR_PARTS_TO_PARTLIST(partListId), file, config)
         .then((res) => {
           console.log("repairbuilder -> uploadParts response: ", res);
-          if (res.status === 200) {
+          if (res.status === 200 || res.status === 201) {
             resolve(res.data);
           } else {
             console.log("Error Status:", res.status);
@@ -396,12 +460,12 @@ export const updateBuilderStatus =  (builderId, status) => {
 
 
 //Create a new builder version
-export const createBuilderVersion =  (builderId) => {
+export const createBuilderVersion =  (builderId, description) => {
   console.log("RepairBuilder > createVersion called...");
   return new Promise((resolve, reject) => {
     try {
       axios
-        .put(CREATE_BUILDER_VERSION(builderId), {}, config)
+        .post(CREATE_BUILDER_VERSION(builderId), description, config)
         .then((res) => {
           console.log("createVersion > axios res=", res);
           if(res.status === 200)
@@ -415,6 +479,133 @@ export const createBuilderVersion =  (builderId) => {
         });
     } catch (error) {
       console.error("in RepairBuilder > createVersion, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Fetch Builder Details
+export const fetchBuilderDetails =  (builderId) => {
+  console.log("RepairBuilder > fetchBuilderDetails called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_BUILDER_DETAILS(builderId), config)
+        .then((res) => {
+          console.log("fetchBuilderDetails > axios res=", res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject('Error occurred while calling fetchBuilderDetails');
+        })
+        .catch((err) => {
+          console.log("fetchBuilderDetails > axios err=", err);
+          reject("Error in fetchBuilderDetails axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > fetchBuilderDetails, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Fetch parts from partlist
+export const fetchPartsFromPartlist =  (partlistId, query) => {
+  console.log("RepairBuilder > fetchPartsFromPartlist called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_PARTS_OF_PARTLIST(partlistId, query), config)
+        .then((res) => {
+          console.log("fetchPartsFromPartlist > axios res=", res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject('Error occurred while calling fetchPartsFromPartlist');
+        })
+        .catch((err) => {
+          console.log("fetchPartsFromPartlist > axios err=", err);
+          reject("Error in fetchPartsFromPartlist axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > fetchPartsFromPartlist, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Fetch partlist from builder
+export const fetchPartlistFromBuilder =  (builderId) => {
+  console.log("RepairBuilder > fetchPartlistFromBuilder called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_REPAIR_BUILDER_PARTLIST(builderId), config)
+        .then((res) => {
+          console.log("fetchPartlistFromBuilder > axios res=", res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject('Error occurred while calling fetchPartlistFromBuilder');
+        })
+        .catch((err) => {
+          console.log("fetchPartlistFromBuilder > axios err=", err);
+          reject("Error in fetchPartlistFromBuilder axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > fetchPartlistFromBuilder, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//Fetch builder details from its versions
+export const fetchBuilderVersionDet =  (builderNo, versionNo) => {
+  console.log("RepairBuilder > fetchBuilderVersionDet called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_BUILDER_VERSION_DETAILS(builderNo, versionNo), config)
+        .then((res) => {
+          console.log("fetchBuilderVersionDet > axios res=", res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject('Error occurred while calling fetchBuilderVersionDet');
+        })
+        .catch((err) => {
+          console.log("fetchBuilderVersionDet > axios err=", err);
+          reject("Error in fetchBuilderVersionDet axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > fetchBuilderVersionDet, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//Fetch pricing Methods
+export const fetchBuilderPricingMethods =  (category) => {
+  console.log("RepairBuilder > fetchBuilderPricingMethods called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(PRICING_COMMON_CONFIG+category, config)
+        .then((res) => {
+          console.log("fetchBuilderPricingMethods > axios res=", res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject('Error occurred while calling fetchBuilderPricingMethods');
+        })
+        .catch((err) => {
+          console.log("fetchBuilderPricingMethods > axios err=", err);
+          reject("Error in fetchBuilderPricingMethods axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > fetchBuilderPricingMethods, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });
