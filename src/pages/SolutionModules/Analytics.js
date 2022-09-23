@@ -15,6 +15,7 @@ import { faUpload } from '@fortawesome/free-solid-svg-icons'
 import { faPen } from '@fortawesome/free-solid-svg-icons'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import Radio from '@mui/material/Radio';
+import Button from "@material-ui/core/Button";
 import RadioGroup from '@mui/material/RadioGroup';
 import OwlCarousel from 'react-owl-carousel';
 import 'owl.carousel/dist/assets/owl.carousel.css';
@@ -107,7 +108,7 @@ export const Analytics = () => {
    const [openAddBundleItemHeader, setOpenAddBundleItemHeader] = useState("")
 
    const [openSearchSolution, setOpenSearchSolution] = useState(false)
-   const [openSearchTemplateSolution, setOpenSearchTemplateSolution] = useState(false)
+   const [openTemplateSerachModelBox, setOpenTemplatesSearchModelBox] = useState(false)
    const [typeOfSearch, setTypeOfSearch] = useState(null)
    const [typeOfSolutionSelector, setTypeOfSolutionSelector] = useState(-1)
    const [typeOfSearchColumn, setTypeOfSearchColumn] = useState(null)
@@ -154,6 +155,7 @@ export const Analytics = () => {
 
    const [selectTypeOfSolution, setSelectTypeOfSolution] = useState(-1)
    const [solutionValue, setSolutionValue] = useState(0)
+   const [selectedTemplateLabel, setSelectedTemplateLabel] = useState("");
 
    let history = useHistory()
 
@@ -172,12 +174,17 @@ export const Analytics = () => {
       setSelectTypeOfSolution(e.target.value)
       // console.log("valll ", e.target.value)
       // console.log("typeee ", typeof e.target.value)
-      if (e.target.value === "2") {
-         setSolutionValue(2)
-      } else if (e.target.value === "1") {
+      // if (e.target.value === "2") {
+      //    setSolutionValue(2)
+
+      // } else 
+
+      if (e.target.value === "1") {
          setSolutionValue(1)
+         setSelectedTemplateLabel("Solution Template");
       } else {
          setSolutionValue(0)
+         setSelectedTemplateLabel("Portfolio Template");
       }
    }
 
@@ -466,10 +473,11 @@ export const Analytics = () => {
       // setOpenSolutionSelector(false)
       // setSolutionBuilderShow(false);
       // setModalComponent(null)
-      // setOpenSearchTemplateSolution(false)
+      // setOpenTemplatesSearchModelBox(false)
       // return <>
       //    <PortfolioTemplatesResult NewData="newData" />
       // </>
+
       if (solutionValue == 1) {
          history.push({
             pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
@@ -888,22 +896,24 @@ export const Analytics = () => {
 
    const continueClickNextStep = () => {
       // alert("Hello")
-      setSolutionsPopup(true)
+      // setSolutionsPopup(true)
+      setOpenTemplatesSearchModelBox(true)
       setShowPopup(false)
 
    }
 
    const handleShowSearch = () => {
-      if (solutionValue == 2) {
-         history.push('/solutionBuilder/guide');
-      } else if (solutionValue == 1) {
-         setOpenSearchTemplateSolution(true)
+      // if (solutionValue == 2) {
+      //    history.push('/solutionBuilder/guide');
+      // } else 
+      if (solutionValue == 1) {
+         setOpenTemplatesSearchModelBox(true)
          setSolutionsPopup(false)
-         console.log("this is Solution Portfolio Solution")
+         // console.log("this is Solution Portfolio Solution")
       } else {
          // alert("Portfolio ?")
          // history.push('/portfolioBuilder/new');
-         setOpenSearchTemplateSolution(true)
+         setOpenTemplatesSearchModelBox(true)
          setSolutionsPopup(false)
       }
    }
@@ -2673,21 +2683,55 @@ export const Analytics = () => {
                   </div>
                </div>
             </Modal.Body>
-            {/* <Modal.Footer>
-               <Button variant="secondary" onClick={handleClose}>
-                  Close
-               </Button>
-               <Button variant="primary" onClick={handleClose}>
-                  Save Changes
-               </Button>
-            </Modal.Footer> */}
          </Modal>
 
-         <Modal show={openSearchTemplateSolution} onHide={() => setOpenSearchTemplateSolution(false)} size="xl"
+         <Modal show={openTemplateSerachModelBox} onHide={() => setOpenTemplatesSearchModelBox(false)} size="xl"
             aria-labelledby="contained-modal-title-vcenter">
+            {/* <Modal.Header className="py-2">
+               <div className="col-md-9">
+                  <h5>Search {selectedTemplateLabel}</h5>
+
+               </div>
+               <div className="mx-2 text-right">
+                  <Button className="btn text-white bg-primary px-3">Guided Solution</Button>
+               </div>
+            </Modal.Header> */}
             <Modal.Body className="">
-               Search {solutionValue == 0 ? "Portfolio" : "Solution"} Templates
-               <div className="maintableheader bg-white mt-3 border-radius-10">
+               <div className="col-md-12">
+                  <div className="row">
+                     <div className="col-md-9">Search {selectedTemplateLabel}</div>
+                     <div className="col-md-3">
+                        <div className="mx-0 text-right">
+                           <Button className="btn text-white bg-primary px-3 text-capitalize">Guided Solution</Button>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div className="maintableheader bg-white mt-2 border-radius-10">
+                  <RadioGroup className='my-2'
+                     row
+                     aria-labelledby="demo-form-control-label-placement"
+                     name="position"
+                     defaultValue="top"
+                     value={selectTypeOfSolution}
+                     onChange={handleTypeOfSolution}
+                  >
+
+                     <FormControlLabel
+                        className="col-md-4 m-0 align-itemsstart"
+                        value="0"
+                        control={<Radio className="mx-1"  checked={solutionValue == 0}/>}
+                        label="Portfolio Template"
+                        labelPlacement="end"
+                     />
+                     <FormControlLabel
+                        className="col-md-4 m-0 align-itemsstart"
+                        value="1"
+                        control={<Radio className="mx-1" />}
+                        label="Solution Template"
+                        labelPlacement="end"
+                     />
+                  </RadioGroup>
                   {solutionValue == 0 ?
                      <>
                         <QuerySearchComp
@@ -2697,8 +2741,10 @@ export const Analytics = () => {
                               // { label: "Family", value: "itemHeaderFamily" },
                               { label: "Make", value: "make" },
                               { label: "Family", value: "family" },
-                              { label: "Model", value: "model" },
-                              { label: "Prefix", value: "prefix" },
+                              { label: "Model", value: "itemHeaderModel" },
+                              { label: "Prefix", value: "itemHeaderPrefix" },
+                              // { label: "Model", value: "model" },
+                              // { label: "Prefix", value: "prefix" },
                            ]}
                            setPortfolioTempMasterData={setPortfolioTempMasterData}
                            setSelectedPortfolioTempMasterData={setSelectedPortfolioTempMasterData}
@@ -2710,10 +2756,14 @@ export const Analytics = () => {
                         <QuerySearchComp
                            compoFlag="solutionTempItemSearch"
                            options={[
-                              { label: "Make", value: "itemHeaderMake" },
-                              { label: "Family", value: "itemHeaderFamily" },
-                              { label: "Model", value: "model" },
-                              { label: "Prefix", value: "prefix" },
+                              // { label: "Make", value: "itemHeaderMake" },
+                              // { label: "Family", value: "itemHeaderFamily" },
+                              { label: "Make", value: "make" },
+                              { label: "Family", value: "family" },
+                              { label: "Model", value: "itemHeaderModel" },
+                              { label: "Prefix", value: "itemHeaderPrefix" },
+                              // { label: "Model", value: "model" },
+                              // { label: "Prefix", value: "prefix" },
                            ]}
                            setSolutionTempMasterData={setSolutionTempMasterData}
                            setSelectedSolutionTempMasterData={setSelectedSolutionTempMasterData}
@@ -2836,7 +2886,7 @@ export const Analytics = () => {
                </div>
             </Modal.Body>
             <Modal.Footer>
-               {selectedPortfolioTempMasterData.length > 0 ?
+               {(selectedPortfolioTempMasterData.length > 0 && solutionValue == 0) ?
                   <div>
                      <button className="btn btn-primary w-100" onClick={handleTemplateItemSaveAndContinue}>Save & Continue</button>
                   </div>

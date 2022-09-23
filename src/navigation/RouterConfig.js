@@ -36,12 +36,13 @@ import WithoutSparePartsHeader from "pages/Repair/WithoutSparePartsHeader";
 import WithoutRepairOption01 from "pages/Repair/WithoutRepairOption01";
 import SolutionTemplates from "pages/SolutionModules/SolutionTemplates";
 
-
+// alert(window.location.pathname)
 export const RouterConfig = () => {
 
   return (
     <div id="main-wrapper" className="show">
-      <CommanComponents />
+      {window.location.pathname !== LOGIN ? <><CommanComponents /></> : <></> }
+      {/* <CommanComponents /> */}
       <Switch>
         {/* List all public routes here */}
         <Route exact path={LOGIN} component={Startup} />

@@ -212,7 +212,7 @@ const QuerySearchComp = (props) => {
           props.setPortfolioTempMasterData(res3)
           // props.ItemSearchResponseFun(res3, querySearchSelector)
           props.setLoadingStatus("")
-  
+
         }
         let temArray = []
         // for (let i = 0; i <= res2.length; i++) {
@@ -224,7 +224,7 @@ const QuerySearchComp = (props) => {
         // }
         // temArray[0].associatedServiceOrBundle = res2
         // props.setLoadingStatus("")
-      }else if (props.compoFlag === "solutionTempItemSearch") {
+      } else if (props.compoFlag === "solutionTempItemSearch") {
         const res4 = await itemSearch(searchStr)
         // console.log("res4 is  : ", res3)
         if (!res4.length > 0) {
@@ -236,9 +236,9 @@ const QuerySearchComp = (props) => {
           props.setSolutionTempMasterData(res4)
           // props.ItemSearchResponseFun(res4, querySearchSelector)
           props.setSolutionLoadingStatus("")
-  
+
         }
-        
+
       } else {
         // for other cases or default case
         const res = await getSearchQueryCoverage(searchStr)
@@ -339,35 +339,69 @@ const QuerySearchComp = (props) => {
                     ) : (
                       <></>
                     )}
-                    {(props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "portfolioTempItemSearch" || props.compoFlag === "solutionTempItemSearch") &&
-                      <>
-                        <Select
-                          placeholder="Bundle Flag"
-                          options={props.compoFlag === "bundleSearch" ? ([
-                            { label: "Bundle", value: "BUNDLE_ITEM" },
-                            { label: "Service", value: "SERVICE" },
-                          ]) : ([
-                            // { label: "Bundle", value: "bundle" },
-                            // { label: "Service", value: "service" },
-                            // { label: "Portfolio Item", value: "portfolioItem" },
-                            { label: "Bundle", value: "BUNDLE_ITEM" },
-                            { label: "Service", value: "SERVICE" },
-                            { label: "Portfolio Item", value: "PORTFOLIO" },
-                          ])}
-                          value={querySearchSelector.itemType}
-                          onChange={(e) => handleItemType(e, i)}
-                        />
-                        <Select
-                          options={[
-                            { label: "AND", value: "AND" },
-                            { label: "OR", value: "OR" },
-                          ]}
-                          placeholder="And/OR"
-                          value={querySearchSelector.itemTypeOperator}
-                          onChange={(e) => handleitemTypeOperator(e, i)}
-                        />
-                      </>
-                    }
+                    {i === 0 ? <>
+                      {(props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch") &&
+                        <>
+                          <Select
+                            placeholder="Bundle Flag"
+                            options={(props.compoFlag === "bundleSearch" || props.compoFlag === "solutionTempItemSearch") ? ([
+                              { label: "Bundle", value: "BUNDLE_ITEM" },
+                              { label: "Service", value: "SERVICE" },
+                            ]) : ([
+                              // { label: "Bundle", value: "bundle" },
+                              // { label: "Service", value: "service" },
+                              // { label: "Portfolio Item", value: "portfolioItem" },
+                              { label: "Bundle", value: "BUNDLE_ITEM" },
+                              { label: "Service", value: "SERVICE" },
+                              { label: "Portfolio Item", value: "PORTFOLIO" },
+                            ])}
+                            value={querySearchSelector.itemType}
+                            onChange={(e) => handleItemType(e, i)}
+                          />
+                          <Select
+                            options={[
+                              { label: "AND", value: "AND" },
+                              { label: "OR", value: "OR" },
+                            ]}
+                            placeholder="And/OR"
+                            value={querySearchSelector.itemTypeOperator}
+                            onChange={(e) => handleitemTypeOperator(e, i)}
+                          />
+                        </>
+                      }
+
+                      {(props.compoFlag === "portfolioTempItemSearch" || props.compoFlag === "solutionTempItemSearch") &&
+                        <>
+                          <Select
+                            placeholder="Bundle Flag"
+                            options={(props.compoFlag === "solutionTempItemSearch") ? ([
+                              { label: "Bundle", value: "BUNDLE_ITEM" },
+                              { label: "Service", value: "SERVICE" },
+                            ]) : ([
+                              // { label: "Bundle", value: "bundle" },
+                              // { label: "Service", value: "service" },
+                              // { label: "Portfolio Item", value: "portfolioItem" },
+                              // { label: "Bundle", value: "BUNDLE_ITEM" },
+                              // { label: "Service", value: "SERVICE" },
+                              { label: "Portfolio Item", value: "PORTFOLIO" },
+                            ])}
+                            value={querySearchSelector.itemType}
+                            onChange={(e) => handleItemType(e, i)}
+                          />
+                          <Select
+                            options={[
+                              { label: "AND", value: "AND" },
+                              { label: "OR", value: "OR" },
+                            ]}
+                            placeholder="And/OR"
+                            value={querySearchSelector.itemTypeOperator}
+                            onChange={(e) => handleitemTypeOperator(e, i)}
+                          />
+                        </>
+                      }
+
+                    </> : <></>}
+
                     <div>
                       {(props.compoFlag === "itemSearch" && querySearchSelector[i].itemType?.value === "portfolioItem") || (props.compoFlag !== "itemSearch") ? (
                         <Select
