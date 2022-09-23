@@ -275,7 +275,7 @@ export const RepairWithoutSpareParts = () => {
         builderDetails.bId = result.id;
 
         history.push({
-          pathname: "/WithoutSparePartsHeader",
+          pathname: "/RepairWithoutSpareParts/BuilderDetails",
           state: builderDetails,
         });
       })
@@ -283,6 +283,20 @@ export const RepairWithoutSpareParts = () => {
         console.log("Error Occurred", err);
         handleSnack("error", true, "Error occurred while creating builder!");
       });
+  };
+
+  const makeBuilderEditable = () => {
+    let builderDetails = {
+      builderId: "",
+      bId: "",
+      type: "fetch",
+    };
+    builderDetails.builderId = "RB000003";
+    builderDetails.bId = "3";
+    history.push({
+      pathname: "/RepairWithoutSpareParts/BuilderDetails",
+      state: builderDetails,
+    });
   };
 
   return (
@@ -329,14 +343,17 @@ export const RepairWithoutSpareParts = () => {
                           </span>
                         </p>
                         <div className="d-flex align-items-center">
-                          <div className="white-space custom-checkbox">
-                            <FormGroup>
-                              <FormControlLabel
-                                control={<Checkbox defaultChecked />}
-                                label=""
-                              />
-                            </FormGroup>
-                          </div>
+                          <a
+                              href={undefined}
+                              className="btn-sm"
+                              style={{ cursor: "pointer" }}
+                            >
+                            <i
+                              className="fa fa-pencil"
+                              aria-hidden="true"
+                              onClick={makeBuilderEditable}
+                            ></i>
+                          </a>
                           <a href="#" className="ml-3 font-size-14">
                             <FontAwesomeIcon icon={faShareAlt} />
                           </a>

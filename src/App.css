@@ -2548,6 +2548,19 @@ cursor: pointer;
     background-color: #872ff7;
     border-color: #872ff7;
 }
+.btn-no-border {
+  border: none;
+  background-color: #fff;
+  color: #872ff7 !important;
+  cursor: pointer;
+}
+
+.btn-no-border:disabled  {
+  border: none;
+  background-color: #fff;
+  display: none;
+}
+
 .css-vqmohf-MuiButtonBase-root-MuiRadio-root.Mui-checked {
     color: #872ff7 !important;
 }

@@ -73,10 +73,18 @@ import {
   Rating,
   TextareaAutosize,
 } from "@mui/material";
-import { INITIAL_PAGE_NO, INITIAL_PAGE_SIZE, PARTS_TAG_OPTIONS } from "./CONSTANTS";
+import {
+  INITIAL_PAGE_NO,
+  INITIAL_PAGE_SIZE,
+  PARTS_TAG_OPTIONS,
+} from "./CONSTANTS";
 import { RenderConfirmDialog } from "./components/ConfirmationBox";
 import { Typography } from "@material-ui/core";
-import { customerSearch, machineSearch, sparePartSearch } from "services/searchServices";
+import {
+  customerSearch,
+  machineSearch,
+  sparePartSearch,
+} from "services/searchServices";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -178,7 +186,6 @@ function PartList(props) {
   const [totalPartsCount, setTotalPartsCount] = useState(0);
   const [filterQuery, setFilterQuery] = useState("");
 
-
   const [viewOnlyTab, setViewOnlyTab] = useState({
     custViewOnly: false,
     machineViewOnly: false,
@@ -196,6 +203,8 @@ function PartList(props) {
     customerGroup: "",
   });
   const [machineData, setMachineData] = useState({
+    make: "",
+    family: "",
     model: "",
     serialNo: "",
     smu: "",
@@ -377,9 +386,11 @@ function PartList(props) {
       contactPhone: result.contactPhone,
       customerGroup: result.customerGroup,
       customerName: result.customerName,
-      source: result.source,
+      source: result.source ? result.source : "User Generated",
     });
     setMachineData({
+      make: result.make,
+      family: result.family,
       model: result.model,
       serialNo: result.serialNo,
       fleetNo: result.fleetNo,
@@ -558,6 +569,8 @@ function PartList(props) {
         fleetNo: currentItem.stockNumber,
         serialNo: currentItem.equipmentNumber,
         smu: currentItem.sensorId,
+        make: currentItem.maker,
+        family: currentItem.market,
       });
       setSearchSerialResults([]);
     }
@@ -624,6 +637,8 @@ function PartList(props) {
   const updateMachineData = () => {
     let data = {
       builderId,
+      make: machineData.make,
+      family: machineData.family,
       model: machineData.model,
       fleetNo: machineData.fleetNo,
       smu: machineData.smu,
@@ -775,11 +790,11 @@ function PartList(props) {
   };
 
   const activityOptions = ["Create Versions", "Show Errors", "Review"];
-  const [confirmationOpen, setConfirmationOpen] = useState(false)
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
   const headerMenuClick = (selectedOption) => {
     if (selectedOption === "Create Versions") {
-    //   setConfirmationOpen(true);
-    // }
+      //   setConfirmationOpen(true);
+      // }
       createVersion();
     }
   };
@@ -1141,7 +1156,7 @@ function PartList(props) {
         severity={severity}
         message={snackMessage}
       />
-      <RenderConfirmDialog 
+      <RenderConfirmDialog
         confimationOpen={confirmationOpen}
         message={`Pressing 'Yes' will save all the changes to partlist ${partListId}`}
         handleNo={() => setConfirmationOpen(false)}
@@ -1539,6 +1554,40 @@ function PartList(props) {
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
+                                Make
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10"
+                                id="make-id"
+                                name="make"
+                                value={machineData.make}
+                                onChange={handleMachineDataChange}
+                                placeholder="Auto Filled"
+                                disabled
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                Family
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10"
+                                id="family-id"
+                                name="family"
+                                value={machineData.family}
+                                onChange={handleMachineDataChange}
+                                placeholder="Auto Filled"
+                                disabled
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
                                 MODEL
                               </label>
                               <SearchBox
@@ -1654,6 +1703,26 @@ function PartList(props) {
                       </>
                     ) : (
                       <div className="row mt-3">
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              Make
+                            </p>
+                            <h6 className="font-weight-500">
+                              {machineData.make}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              Family
+                            </p>
+                            <h6 className="font-weight-500">
+                              {machineData.family}
+                            </h6>
+                          </div>
+                        </div>
                         <div className="col-md-4 col-sm-4">
                           <div className="form-group">
                             <p className="font-size-12 font-weight-500 mb-2">
