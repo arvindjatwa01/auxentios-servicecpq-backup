@@ -2,7 +2,7 @@ import React from "react";
 import { Switch, Route } from "react-router-dom";
 import Dashboard from "pages/Dashboard";
 import { NotFound } from "navigation/NotFound";
-import { ROOT, RESET, VERIFY_EMAIL, WORK_LIST_NEW, SOLUTION_BUILDER_NEW, PERMISSION, PERMISSION_SETTING, SERVICE_NEW, WITHOUT_REPAIR_OPTION01, LOGIN, PORTFOLIO_SUMMARY, ANALYTICS, WORK_LIST, REPORTS, PROFILE, DASHBOARD, PAGE1, AUTH_PAGE1, TEST_REACT_TABLE_NESTED, GUIDED_SOLUTION_BUILDER, SOLUTION_TEMPLATES, PORTFOLIO_AND_BUILDER_NEW, SOLUTION_BUILDER_ANALYTICS, SOLUTION_BUILDER_SERVICE_PORTFOLIO, SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO, SOLUTION_BUILDER_PORRTFOLIO_TEMP, ACCOUNT, BULID_REPAIR_OPTION, RIPAIR_SEGMENT01_TRANSMISSION, RIPAIR_SEGMENT01_DISASSEMBLE, RIPAIR_OPTION01, RIPAIR_SERVICE_ESTIMATE, WITHOUTSPARE_REPAIR_OPTION, PART_LIST, REPAIR_PARTLIST, REPAIR_WITH_SPARE_PARTS, REPAIR_WITHOUT_SPARE_PARTS, WITH_SPARE_PARTS, REPAIR_STANDARD_JOBS, REPAIR_KITS, ADD_PARTLIST, STANDARD_JOBS, WITHOUT_SPARE_PARTS_HEADER, KITS, } from "navigation/CONSTANTS";
+import { ROOT, RESET, VERIFY_EMAIL, WORK_LIST_NEW, SOLUTION_BUILDER_NEW, PERMISSION, PERMISSION_SETTING, SERVICE_NEW, WITHOUT_REPAIR_OPTION01, LOGIN, PORTFOLIO_SUMMARY, ANALYTICS, WORK_LIST, REPORTS, PROFILE, DASHBOARD, PAGE1, AUTH_PAGE1, TEST_REACT_TABLE_NESTED, GUIDED_SOLUTION_BUILDER, SOLUTION_TEMPLATES, PORTFOLIO_AND_BUILDER_NEW, SOLUTION_BUILDER_ANALYTICS, SOLUTION_BUILDER_SERVICE_PORTFOLIO, SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO, SOLUTION_BUILDER_PORRTFOLIO_TEMP, ACCOUNT, BULID_REPAIR_OPTION, RIPAIR_SEGMENT01_TRANSMISSION, RIPAIR_SEGMENT01_DISASSEMBLE, RIPAIR_OPTION01, RIPAIR_SERVICE_ESTIMATE, WITHOUTSPARE_REPAIR_OPTION, PART_LIST, REPAIR_PARTLIST, REPAIR_WITH_SPARE_PARTS, REPAIR_WITHOUT_SPARE_PARTS, WITH_SPARE_PARTS, REPAIR_STANDARD_JOBS, REPAIR_KITS, ADD_PARTLIST, STANDARD_JOBS, WITHOUT_SPARE_PARTS_HEADER, QUOTE_SPARE_PARTS, QUOTE_SEARCH_QUOTE, QUOTE_CONFIGURATION, QUOTE_REPAIR_OPTION, QUOTE_REPAIR_QUOTE, QUOTE_REPAIR_SEARCH, QUOTE_REPAIR_CONFIGURATION, KITS, } from "navigation/CONSTANTS";
 import { Analytics, ServicePortfolio, SolutionBuilderCreate, CustomizedPortfolio, PortfolioTemplatesResult } from "../pages/SolutionModules/index"
 import { Profile } from '../pages/User/index'
 import { CreatePortfolio, WorkList, CreateWorkList, PortfolioSummary } from "../pages/PortfolioAndBundle/index"
@@ -35,6 +35,13 @@ import WithSpareParts from "pages/Repair/WithSpareParts";
 import WithoutSparePartsHeader from "pages/Repair/WithoutSparePartsHeader";
 import WithoutRepairOption01 from "pages/Repair/WithoutRepairOption01";
 import SolutionTemplates from "pages/SolutionModules/SolutionTemplates";
+import QuoteSpareParts from "pages/SolutionModules/QuoteSpareParts";
+import QuoteSearchQuote from "pages/SolutionModules/QuoteSearchQuote";
+import QuoteConfiguration from "pages/SolutionModules/QuoteConfiguration";
+import QuoteRepairOption from "pages/SolutionModules/QuoteRepairOption";
+import QuoteRepairQuote from "pages/SolutionModules/QuoteRepairQuote";
+import QuoteRepairSearch from "pages/SolutionModules/QuoteRepairSearch";
+import QuoteRepairConfiguration from "pages/SolutionModules/QuoteRepairConfiguration";
 
 
 export const RouterConfig = () => {
@@ -84,6 +91,13 @@ export const RouterConfig = () => {
         <Route exact path={REPAIR_KITS} component={RepairKits} />
         <Route exact path={STANDARD_JOBS} component={StandardJobs} />
         <Route exact path={KITS} component={Kits} />
+        <Route exact path={QUOTE_SPARE_PARTS} component={QuoteSpareParts} />
+        <Route exact path={QUOTE_SEARCH_QUOTE} component={QuoteSearchQuote} />
+        <Route exact path={QUOTE_CONFIGURATION} component={QuoteConfiguration} />
+        <Route exact path={QUOTE_REPAIR_OPTION} component={QuoteRepairOption} />
+        <Route exact path={QUOTE_REPAIR_QUOTE} component={QuoteRepairQuote} />
+        <Route exact path={QUOTE_REPAIR_SEARCH} component={QuoteRepairSearch} />
+        <Route exact path={QUOTE_REPAIR_CONFIGURATION} component={QuoteRepairConfiguration} />
         <Route exact path="/indexing" component={CommanComponents} />
         
         {/* <Route exact path={PAGE1} component={Page1} /> */}
