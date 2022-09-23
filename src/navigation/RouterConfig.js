@@ -1,5 +1,5 @@
-import React from "react";
-import { Switch, Route } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Switch, Route, useLocation } from "react-router-dom";
 import Dashboard from "pages/Dashboard";
 import { NotFound } from "navigation/NotFound";
 import { ROOT, RESET, VERIFY_EMAIL, WORK_LIST_NEW, SOLUTION_BUILDER_NEW, PERMISSION, PERMISSION_SETTING, SERVICE_NEW, WITHOUT_REPAIR_OPTION01, LOGIN, PORTFOLIO_SUMMARY, ANALYTICS, WORK_LIST, REPORTS, PROFILE, DASHBOARD, PAGE1, AUTH_PAGE1, TEST_REACT_TABLE_NESTED, GUIDED_SOLUTION_BUILDER, SOLUTION_TEMPLATES, PORTFOLIO_AND_BUILDER_NEW, SOLUTION_BUILDER_ANALYTICS, SOLUTION_BUILDER_SERVICE_PORTFOLIO, SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO, SOLUTION_BUILDER_PORRTFOLIO_TEMP, ACCOUNT, BULID_REPAIR_OPTION, RIPAIR_SEGMENT01_TRANSMISSION, RIPAIR_SEGMENT01_DISASSEMBLE, RIPAIR_OPTION01, RIPAIR_SERVICE_ESTIMATE, WITHOUTSPARE_REPAIR_OPTION, PART_LIST, REPAIR_PARTLIST, REPAIR_WITH_SPARE_PARTS, REPAIR_WITHOUT_SPARE_PARTS, WITH_SPARE_PARTS, REPAIR_STANDARD_JOBS, REPAIR_KITS, ADD_PARTLIST, STANDARD_JOBS, WITHOUT_SPARE_PARTS_HEADER, KITS, } from "navigation/CONSTANTS";
@@ -9,7 +9,7 @@ import { CreatePortfolio, WorkList, CreateWorkList, PortfolioSummary } from "../
 import { CreateService } from "../pages/Service/index"
 import { ReactTableNested } from '../pages/Test/index'
 import { AuthorizedPage1 } from "pages/AuthorizedPage1";
-import {PrivateRoute} from "../components/Common";
+import { PrivateRoute } from "../components/Common";
 import { Startup, ResetPassword } from './../pages/LoginSignUp/index'
 import { GuidedSolution } from "pages/SolutionModules/GuidedSolution";
 import { AnalyticsDashboard, ReportDashboard } from "../pages/Dashboard/index"
@@ -38,10 +38,12 @@ import SolutionTemplates from "pages/SolutionModules/SolutionTemplates";
 
 // alert(window.location.pathname)
 export const RouterConfig = () => {
+  const location = useLocation();
+  
 
   return (
     <div id="main-wrapper" className="show">
-      {window.location.pathname !== LOGIN ? <><CommanComponents /></> : <></> }
+      {location.pathname == LOGIN ? <></> : <><CommanComponents /></>}
       {/* <CommanComponents /> */}
       <Switch>
         {/* List all public routes here */}
@@ -86,7 +88,7 @@ export const RouterConfig = () => {
         <Route exact path={STANDARD_JOBS} component={StandardJobs} />
         <Route exact path={KITS} component={Kits} />
         <Route exact path="/indexing" component={CommanComponents} />
-        
+
         {/* <Route exact path={PAGE1} component={Page1} /> */}
         <Route path="/gettingStart">
           <Startup />

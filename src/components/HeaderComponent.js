@@ -6,14 +6,16 @@ import profileIcon from "../assets/icons/svg/profile.svg";
 import messageIcon from "../assets/icons/svg/message-text.svg";
 import supportIcon from "../assets/icons/svg/24-support.svg";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import { history } from 'utils';
 
 export function HeaderComponent(props) {
+  let history = useHistory();
   const [age, setAge] = React.useState("5");
 
   const handleChangedrop = (event) => {
@@ -22,7 +24,8 @@ export function HeaderComponent(props) {
 
   const handleLogout = () => {
     localStorage.clear();
-    window.location.href = "/login";
+    history.push("/login");
+    // window.location.href = "/login";
   };
   return (
     <>

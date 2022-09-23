@@ -26,9 +26,13 @@ export const Startup = () => {
     const dispatch = useDispatch();
     const result = useSelector((state) => state.signUp);
     console.log("result of user ", result.activeStep)
+    console.log("result signup ", result)
+
+    console.log("dispatch : ", dispatch);
     const { search } = useLocation();
     const queryString = new URLSearchParams(search);
 
+    // const [loginUrl, setLoginUrl] = useState(dispatch(signUpActions.getStarted()))
 
     //   console.log("query String of login",queryString.get('uuid'));
 
@@ -47,6 +51,26 @@ export const Startup = () => {
         // setActiveStep(step);
     };
 
+    const handleLoginInput = (e) => {
+
+        const name = e.target.name;
+        const value = e.target.value;
+        setSignInInputData({
+            ...signInInputData,
+            [name]: value
+        })
+
+        // var dict = {
+        //     emailId: e.target.value,
+        //     password: "12",
+        // };
+        // console.log("event is : ", e.target.value);
+        // setSignInInputData(dict);
+        // console.log("object 11 : ", signInInputData);
+        // console.log()
+    }
+
+    console.log("object : ", signInInputData);
     const handleLogin = () => {
         var dict = {
             emailId: signInInputData.emailId,
@@ -59,6 +83,8 @@ export const Startup = () => {
         //     console.log(err)
         // })
         console.log("signInResponse");
+
+        console.log("dict is : ", dict);
 
         dispatch(authActions.login(dict));
         // history.push('/')
@@ -75,7 +101,7 @@ export const Startup = () => {
         if (uuid) {
             dispatch(signUpActions.verifyEmail());
         }
-    },[]);
+    }, []);
 
     return (
         <div className="content-body" style={{ minHeight: "884px" }}>
@@ -117,6 +143,7 @@ export const Startup = () => {
                                             <br />
                                             <a
                                                 // onClick={() => setActiveStep(0)}
+                                                onClick={() => dispatch(signUpActions.registration())} style={{ cursor: "pointer" }}
                                                 className="text-white text-decoration-line text-underline-offset cursor"
                                             >
                                                 Create an account
@@ -158,6 +185,9 @@ export const Startup = () => {
                                                     id="exampleInputEmail1"
                                                     aria-describedby="emailHelp"
                                                     placeholder="Email Address"
+                                                    name="emailId"
+                                                    value={signInInputData.emailId}
+                                                    onChange={ handleLoginInput }
                                                 />
                                             </div>
                                         </div>
@@ -172,9 +202,12 @@ export const Startup = () => {
                                                 <input
                                                     type="password"
                                                     className="form-control border-radius-10"
-                                                    id="exampleInputEmail1"
+                                                    id="exampleInputPassword"
                                                     aria-describedby="emailHelp"
                                                     placeholder="Password"
+                                                    name="password"
+                                                    value={signInInputData.password}
+                                                    onChange={ handleLoginInput }
                                                 />
                                             </div>
                                         </div>
@@ -266,7 +299,7 @@ export const Startup = () => {
                           placeholder="Email Address"
                         /> */}
                                                 <p>Varification Successfull</p>
-                                                <div onClick={() => dispatch(signUpActions.getStarted())} style={{cursor: "pointer"}}>Let's Get Started</div>
+                                                <div onClick={() => dispatch(signUpActions.getStarted())} style={{ cursor: "pointer" }}>Let's Get Started</div>
                                                 {/* <div onClick={}>GetS Started</div> */}
                                                 {/* <a href="#">please verify email address using email sent on registered email</a> */}
                                             </div>
@@ -298,6 +331,18 @@ export const Startup = () => {
                                 <div className="bg-violet py-4 px-4 h-100">
                                     <div className="text-center">
                                         <img src={logoIcon}></img>
+                                    </div>
+                                    <div className="mt-4">
+                                        <div>
+                                            <img src={erroricon}></img>
+                                        </div>
+                                        <p className="text-white mt-2">
+                                            Already have an account?
+                                            <a onClick={() => dispatch(signUpActions.getStarted())} style={{ cursor: "pointer" }}
+                                                className="text-white text-decoration-line text-underline-offset cursor"
+                                            > Login
+                                            </a>
+                                        </p>
                                     </div>
                                     <div className="mt-4">
                                         <div>
