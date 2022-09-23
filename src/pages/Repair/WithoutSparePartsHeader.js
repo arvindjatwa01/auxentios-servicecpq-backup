@@ -41,7 +41,6 @@ import WithoutSpareParts from "./WithoutSpareParts";
 import { Rating } from "@mui/material";
 import { customerSearch, machineSearch } from "services/searchServices";
 
-
 function WithoutSparePartsHeader(props) {
   const history = useHistory();
   const { state } = props.location;
@@ -227,7 +226,7 @@ function WithoutSparePartsHeader(props) {
       contactPhone: result.contactPhone,
       customerGroup: result.customerGroup,
       customerName: result.customerName,
-      source: result.source,
+      source: result.source ? result.source : "User Generated",
     });
     setMachineData({
       make: result.make,
@@ -288,11 +287,7 @@ function WithoutSparePartsHeader(props) {
           setSearchCustResults(result);
         })
         .catch((e) => {
-          handleSnack(
-            "error",
-            true,
-            "Error occurred while searching the customer!"
-          );
+          handleSnack("error", "Error occurred while searching the customer!");
         });
     }
   };
@@ -353,11 +348,7 @@ function WithoutSparePartsHeader(props) {
           }
         })
         .catch((e) => {
-          handleSnack(
-            "error",
-            true,
-            "Error occurred while searching the machine!"
-          );
+          handleSnack("error", "Error occurred while searching the machine!");
         });
     } else {
       searchMachinefieldName === "model"
@@ -382,7 +373,7 @@ function WithoutSparePartsHeader(props) {
         serialNo: currentItem.equipmentNumber,
         smu: currentItem.sensorId,
         make: currentItem.maker,
-        family: currentItem.market
+        family: currentItem.market,
       });
       setSearchSerialResults([]);
     }
@@ -427,12 +418,11 @@ function WithoutSparePartsHeader(props) {
         .then((result) => {
           setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
           setValue("machine");
-          handleSnack("success", true, "Customer details updated!");
+          handleSnack("success", "Customer details updated!");
         })
         .catch((err) => {
           handleSnack(
             "error",
-            true,
             "Error occurred while updating the customer data!"
           );
         });
@@ -458,14 +448,10 @@ function WithoutSparePartsHeader(props) {
       .then((result) => {
         setValue("estimation");
         setViewOnlyTab({ ...viewOnlyTab, machineViewOnly: true });
-        handleSnack("success", true, "Machine details updated!");
+        handleSnack("success", "Machine details updated!");
       })
       .catch((err) => {
-        handleSnack(
-          "error",
-          true,
-          "Error occurred while updating the machine data!"
-        );
+        handleSnack("error", "Error occurred while updating the machine data!");
       });
   };
 
@@ -482,12 +468,11 @@ function WithoutSparePartsHeader(props) {
       .then((result) => {
         setValue("price");
         setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
-        handleSnack("success", true, "General details updated!");
+        handleSnack("success", "General details updated!");
       })
       .catch((err) => {
         handleSnack(
           "error",
-          true,
           "Error occurred while updating the general details!"
         );
       });
@@ -507,12 +492,11 @@ function WithoutSparePartsHeader(props) {
       .then((result) => {
         setValue("general");
         setViewOnlyTab({ ...viewOnlyTab, estViewOnly: true });
-        handleSnack("success", true, "Estimation details updated!");
+        handleSnack("success", "Estimation details updated!");
       })
       .catch((err) => {
         handleSnack(
           "error",
-          true,
           "Error occurred while updating the estimation details!"
         );
       });
@@ -530,10 +514,10 @@ function WithoutSparePartsHeader(props) {
     );
   };
 
-  const handleSnack = (snackSeverity, snackStatus, snackMessage) => {
+  const handleSnack = (snackSeverity, snackMessage) => {
     setSnackMessage(snackMessage);
     setSeverity(snackSeverity);
-    setOpenSnack(snackStatus);
+    setOpenSnack(true);
   };
 
   const handleClick = (event) => {
@@ -963,7 +947,7 @@ function WithoutSparePartsHeader(props) {
                         {!viewOnlyTab.machineViewOnly ? (
                           <>
                             <div className="row">
-                            <div className="col-md-6 col-sm-6">
+                              <div className="col-md-6 col-sm-6">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     Make
@@ -1806,7 +1790,9 @@ function WithoutSparePartsHeader(props) {
             />
           )}
           {activeElement === "operation" && (
-            <WithoutRepairOption01 builderDetails={{ bId, builderId }} />
+            <WithoutRepairOption01
+              builderDetails={{ bId, builderId, setActiveElement }}
+            />
           )}
         </div>
         <div

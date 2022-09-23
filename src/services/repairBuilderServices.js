@@ -6,6 +6,7 @@ import {
   ADD_REPAIR_MULTI_PARTS_TO_PARTLIST,
   ADD_REPAIR_PART_TO_PARTLIST,
   ADD_SEGMENT_OPERATION,
+  BUILDER_SEGMENT,
   CREATE_BUILDER_SEGMENT,
   CREATE_BUILDER_VERSION,
   CREATE_REPAIR_BUILDER,
@@ -66,7 +67,7 @@ export const createSegment = (builderId, data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(CREATE_BUILDER_SEGMENT(builderId), data, config)
+        .post(BUILDER_SEGMENT(builderId), data, config)
         .then((res) => {
           console.log("repairbuilder -> createSegment response: ", res);
           if (res.status === 200) {
@@ -86,6 +87,31 @@ export const createSegment = (builderId, data) => {
   });
 };
 
+//fetch repair Segments for a builder
+export const fetchSegments = (builderId) => {
+  console.log("service repairbuilder > fetchSegments called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(BUILDER_SEGMENT(builderId), config)
+        .then((res) => {
+          console.log("repairbuilder -> fetchSegments response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("fetchSegments > axios err=", err);
+          reject("Error in fetchSegments axios!");
+        });
+    } catch (error) {
+      console.error("fetchSegments general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
 
 //Add Option to the Segment of a builder
 export const AddOperation = (segmentId, data) => {

@@ -1,20 +1,23 @@
 import { faAngleDown, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import AddIcon from "@mui/icons-material/Add";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { Link, useHistory } from "react-router-dom";
-import { createSegment } from "services/repairBuilderServices";
-import { jobCodeSearch, getComponentCodeSuggetions } from "services/searchServices";
-
+import { createSegment, fetchSegments } from "services/repairBuilderServices";
+import {
+  jobCodeSearch,
+  getComponentCodeSuggetions,
+} from "services/searchServices";
 import SearchBox from "./components/SearchBox";
 
 function WithoutSpareParts(props) {
   const history = useHistory();
   // const { state } = props.location;
+  const { builderDetails } = props;
   const [selectedOption, setSelectedOption] = useState(null);
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
@@ -36,9 +39,40 @@ function WithoutSpareParts(props) {
     jobCode: "",
     title: "",
     componentCode: "",
-    componentCodeDesc: "",
+    description: "",
   };
   const [segmentData, setSegmentData] = useState(newSegment);
+  useEffect(() => {
+    fetchSegmentsOfBuilder();
+  }, []);
+
+  const fetchSegmentsOfBuilder = () => {
+    if (builderDetails.bId) {
+      fetchSegments(builderDetails.bId)
+        .then((result) => {
+          if (result?.length > 0) {
+            setSegments(result);
+            setSegmentViewOnly(true);
+            let lastSegment = result[result.length - 1];
+            setSegmentData({
+              ...lastSegment,
+              header:
+                "Segment " +
+                lastSegment.segmentNumber +
+                " - " +
+                lastSegment.description,
+            });
+          } else {
+            setSegmentData(newSegment);
+          }
+        })
+        .catch((err) => {
+          handleSnack("error", "Error occurred while fetching segments!");
+        });
+    } else {
+      handleSnack("error", "Not a valid builder!");
+    }
+  };
 
   // Search Job Code
   const handleJobCodeSearch = async (searchText) => {
@@ -82,7 +116,7 @@ function WithoutSpareParts(props) {
     setSegmentData({
       ...segmentData,
       componentCode: currentItem.componentCode,
-      componentCodeDesc: currentItem.description,
+      description: currentItem.description,
       title: currentItem.componentCode + " - " + currentItem.description,
     });
     setSearchCompCodeResults([]);
@@ -95,13 +129,45 @@ function WithoutSpareParts(props) {
     setOpenSnack(true);
   };
 
+  const handleAnchors = (direction) => {
+    console.log("entered handle anchors");
+    if (segmentData.segmentNumber > 1 && direction === "backward") {
+      let segmentToLoad = segments.filter(
+        (x) => x.segmentNumber === segmentData.segmentNumber - 1
+      );
+      setSegmentData({
+        ...segmentToLoad[0],
+        header:
+          "Segment " +
+          segmentToLoad[0].segmentNumber +
+          " - " +
+          segmentToLoad[0].description,
+      });
+    } else if (
+      segmentData.segmentNumber < segments.length &&
+      direction === "forward"
+    ) {
+      let segmentToLoad = segments.filter(
+        (x) => x.segmentNumber === segmentData.segmentNumber + 1
+      );
+      setSegmentData({
+        ...segmentToLoad[0],
+        header:
+          "Segment " +
+          segmentToLoad[0].segmentNumber +
+          " - " +
+          segmentToLoad[0].description,
+      });
+    }
+  };
+
   const handleCreateSegment = () => {
     let bid = props.builderDetails?.bId ? props.builderDetails.bId : 77;
     let data = {
       jobCode: segmentData.jobCode,
       title: segmentData.title,
       componentCode: segmentData.componentCode,
-      description: segmentData.componentCodeDesc,
+      description: segmentData.description,
     };
     createSegment(bid, data)
       .then((result) => {
@@ -111,8 +177,13 @@ function WithoutSpareParts(props) {
           header:
             "Segment " + result.segmentNumber + " - " + result.description,
         });
+        // fetchSegmentsOfBuilder();
+        segments.push(result);
         setSegmentViewOnly(true);
-        handleSnack("success", `Successfully added Segment ${result.segmentNumber} details!`);
+        handleSnack(
+          "success",
+          `Successfully added Segment ${result.segmentNumber} details!`
+        );
       })
       .catch((e) => {
         handleSnack("error", "Error occurred while saving the segment data!");
@@ -134,26 +205,28 @@ function WithoutSpareParts(props) {
       <div className="card p-4 mt-5">
         <div className="d-flex justify-content-end align-items-center mb-0">
           <div className="text-right">
-            <a href="#" className="text-primary">
-              <span>
-                <KeyboardArrowLeftIcon />
-              </span>
-              {segmentData.header}
-              <span>
-                <KeyboardArrowRightIcon />
-              </span>
-            </a>
-            <a
-              href={undefined}
-              className="text-primary ml-2 border-left"
-              onClick={loadNewSegmentUI}
-              style={{ cursor: "pointer" }}
+            <button
+              onClick={() => handleAnchors("backward")}
+              className="btn-no-border"
+              disabled={!(segmentData.segmentNumber > 1)}
             >
+              <KeyboardArrowLeftIcon />
+            </button>
+            <span className="text-primary">{segmentData.header}</span>
+            <button
+              onClick={() => handleAnchors("forward")}
+              className="btn-no-border"
+              disabled={!(segmentData.segmentNumber !== segments.length)}
+            >
+              <KeyboardArrowRightIcon />
+            </button>
+            {/* </a> */}
+            <button className="btn-no-border ml-2" onClick={loadNewSegmentUI}>
               <span className="ml-2">
                 <AddIcon />
               </span>
               Add New
-            </a>
+            </button>
           </div>
         </div>
         <h5 className="d-flex align-items-center mb-0">
@@ -221,7 +294,7 @@ function WithoutSpareParts(props) {
                     type="text"
                     class="form-control border-radius-10"
                     placeholder="Required"
-                    value={segmentData.componentCodeDesc}
+                    value={segmentData.description}
                     disabled
                   />
                 </div>
@@ -274,15 +347,13 @@ function WithoutSpareParts(props) {
                   <p className="font-size-12 font-weight-500 mb-2">
                     COMPONENT CODE DESCRIPTION{" "}
                   </p>
-                  <h6 className="font-weight-500">
-                    {segmentData.componentCodeDesc}
-                  </h6>
+                  <h6 className="font-weight-500">{segmentData.description}</h6>
                 </div>
               </div>
             </div>
             <div className="Add-new-segment-div p-3 border-radius-10">
-              <Link
-                to={"/WithoutRepairOption01"}
+              <button
+                onClick={() => builderDetails.setActiveElement("operation")}
                 className="btn bg-primary text-white"
               >
                 <span className="mr-2">
@@ -292,7 +363,7 @@ function WithoutSpareParts(props) {
                 <span className="ml-2">
                   <FontAwesomeIcon icon={faAngleDown} />
                 </span>
-              </Link>
+              </button>
             </div>
           </React.Fragment>
         )}
