@@ -12,6 +12,9 @@ import EditIcon from "@mui/icons-material/EditTwoTone";
 import LabelIcon from "@mui/icons-material/LabelTwoTone";
 import DeleteIcon from "@mui/icons-material/DeleteTwoTone";
 import { MuiMenuComponent } from "./components/MuiMenuRepair";
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton'
+// import logoIcon from '../assets/icons/svg/menu.png'
 // import { MuiMenuComponent } from "pages/Operational";
 import {
   DataGrid,
@@ -774,7 +777,7 @@ function PartList(props) {
     setSelectedMasterData([]);
   };
 
-  const activityOptions = ["Create Versions", "Show Errors", "Review"];
+  const activityOptions = ["New Versions", "Show Errors", "Review"];
   const [confirmationOpen, setConfirmationOpen] = useState(false)
   const headerMenuClick = (selectedOption) => {
     if (selectedOption === "Create Versions") {
@@ -1272,12 +1275,18 @@ function PartList(props) {
                 <a href="#" className="ml-3 font-size-14" title="Duplicate">
                   <img src={copyIcon}></img>
                 </a>
-                <a href={undefined} className="ml-2">
+                {/* <a href={undefined} className="ml-2">
                   <MuiMenuComponent
                     options={activityOptions}
                     onClick={headerMenuClick}
                   />
-                </a>
+                </a> */}
+                <DropdownButton className="customDropdown ml-2" id="dropdown-item-button">
+                {/* <Dropdown.ItemText>New Versions</Dropdown.ItemText> */}
+                <Dropdown.Item as="button" data-toggle="modal" data-target="#exampleModalCenter">New Versions</Dropdown.Item>
+                <Dropdown.Item as="button">Show Errors</Dropdown.Item>
+                <Dropdown.Item as="button">Review</Dropdown.Item>
+              </DropdownButton>
               </div>
             </div>
           </div>
@@ -3005,6 +3014,39 @@ function PartList(props) {
             </div>
           </Modal.Body>
         </Modal>
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header border-none">
+                <h5 class="modal-title" id="exampleModalLongTitle">New Version</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <p className="mx-3 mt-0">Description, product experts convert the repair option to a standard job or template.</p>
+              <div className="hr"></div>
+              <div class="modal-body">
+               <h6>NAME</h6>
+               <div className="card w-100 border" >
+                <p className="mx-3" style={{marginTop: "1rem"}}>Copy of Quote</p>
+               </div>
+              </div>
+              <div class="modal-footer">
+          
+              <button className="btn  btn-primary w-100">Create</button>
+                  <button
+                    type="button"
+                    className="btn btn-primary w-100"
+                    data-dismiss="modal"
+                  >
+                    Cancel
+                  </button>
+                {/* <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button> */}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
