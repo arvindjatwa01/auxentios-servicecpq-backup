@@ -47,8 +47,8 @@ export function SubHeaderComponent(props) {
   const [selectedOption, setSelectedOption] = useState(null);
   const handleChange = (event, newValue) => {
     setValue(newValue);
-};
-const [value, setValue] = React.useState('1');
+  };
+  const [value, setValue] = React.useState('1');
   const [dateObj, setDateObj] = useState({
     day: '0',
     month: "0",
@@ -91,7 +91,7 @@ const [value, setValue] = React.useState('1');
     { value: 'strawberry', label: 'Construction-Low' },
     { value: 'vanilla', label: 'Construction-Medium' },
     { value: 'Construction', label: 'Construction' },
-];
+  ];
   const list = (anchor) => (
     <>
       {isShareSideBar ?
@@ -237,16 +237,16 @@ const [value, setValue] = React.useState('1');
             <div className="card border p-3 bg-primary ">
               <h5 className="d-flex align-items-center justify-content-between mb-0">
                 <div className="text-white" style={{ display: 'contents' }}><span className="mr-3">Service Estimate 01</span>
-                <div>
-                <a href="#" className="btn-sm text-white"><i className="fa fa-pencil" aria-hidden="true"></i></a> 
-                <a href="#" className="btn-sm text-white"><i className="fa fa-bookmark-o" aria-hidden="true"></i></a> 
-                <a href="#" className="btn-sm text-white"><i className="fa fa-folder-o" aria-hidden="true"></i></a></div>
+                  <div>
+                    <a href="#" className="btn-sm text-white"><i className="fa fa-pencil" aria-hidden="true"></i></a>
+                    <a href="#" className="btn-sm text-white"><i className="fa fa-bookmark-o" aria-hidden="true"></i></a>
+                    <a href="#" className="btn-sm text-white"><i className="fa fa-folder-o" aria-hidden="true"></i></a></div>
                 </div>
               </h5>
-              </div>
-              <div className="card border p-3">
+            </div>
+            <div className="card border p-3">
               <div className="d-flex justify-content-between align-items-center">
-                <p className="mb-0">5 Aug 21, 1:38 pm 
+                <p className="mb-0">5 Aug 21, 1:38 pm
                   <a href="#" className="p-1 more-btn " style={{ marginLeft: '35px' }}>+ 2
                     <span className="c-btn">J</span>
                   </a>
@@ -254,7 +254,7 @@ const [value, setValue] = React.useState('1');
                 <p className="mb-0"><a href="#" className=""><MuiMenuComponent options={activityOptions} /></a></p>
 
               </div>
-             
+
               <div className="mt-3">
                 <small>MAKE</small>
               </div>
@@ -295,16 +295,16 @@ const [value, setValue] = React.useState('1');
             <div className="card border p-3 bg-primary ">
               <h5 className="d-flex align-items-center justify-content-between mb-0">
                 <div className="text-white" style={{ display: 'contents' }}><span className="mr-3">Service Estimate 02</span>
-                <div>
-                <a href="#" className="btn-sm text-white"><i className="fa fa-pencil" aria-hidden="true"></i></a> 
-                <a href="#" className="btn-sm text-white"><i className="fa fa-bookmark-o" aria-hidden="true"></i></a> 
-                <a href="#" className="btn-sm text-white"><i className="fa fa-folder-o" aria-hidden="true"></i></a></div>
+                  <div>
+                    <a href="#" className="btn-sm text-white"><i className="fa fa-pencil" aria-hidden="true"></i></a>
+                    <a href="#" className="btn-sm text-white"><i className="fa fa-bookmark-o" aria-hidden="true"></i></a>
+                    <a href="#" className="btn-sm text-white"><i className="fa fa-folder-o" aria-hidden="true"></i></a></div>
                 </div>
               </h5>
-              </div>
-              <div className="card border p-3">
+            </div>
+            <div className="card border p-3">
               <div className="d-flex justify-content-between align-items-center">
-                <p className="mb-0">5 Aug 21, 1:38 pm 
+                <p className="mb-0">5 Aug 21, 1:38 pm
                   <a href="#" className="p-1 more-btn " style={{ marginLeft: '35px' }}>+ 2
                     <span className="c-btn">J</span>
                   </a>
@@ -312,7 +312,7 @@ const [value, setValue] = React.useState('1');
                 <p className="mb-0"><a href="#" className=""><MuiMenuComponent options={activityOptions} /></a></p>
 
               </div>
-             
+
               <div className="mt-3">
                 <small>MAKE</small>
               </div>
@@ -431,9 +431,13 @@ const [value, setValue] = React.useState('1');
   //   console.log("---")
   //   setLoginData(reduxState.user.loginData)
   //
+  //
   //   setInterval(() =>
   //     setTime(new Date().getHours() + " : " + new Date().getMinutes()),
   //     1000)
+  //
+  //
+  //
   //
   // }, [reduxState.user]);
   useEffect(()=>{
@@ -448,7 +452,6 @@ const [value, setValue] = React.useState('1');
       year: year
     })
   },[])
-
   return (
     <>
 
@@ -465,11 +468,11 @@ const [value, setValue] = React.useState('1');
                       {/* <li className="cursor"><a href="#" data-toggle="modal" data-target="#Versionhistory"><img src={repeateIcon}></img></a></li> */}
                       {/* <li className="cursor"><a href="#" onClick={toggleDrawer(anchor, true, false)}><img src={repeateIcon}></img></a></li>
                       <li className="cursor"><a href="#" data-original-title="" title="" onClick={toggleDrawer(anchor, true, true)}><img src={peopleIcon}></img></a></li> */}
-                        <li className="cursor"><a href="#" onClick={toggleDrawer(anchor, true, false)}><img className="mr-2" src={repeateIcon}></img>Version history</a></li>
+                      <li className="cursor"><a href="#" onClick={toggleDrawer(anchor, true, false)}><img className="mr-2" src={repeateIcon}></img>Version history</a></li>
                       <li className="cursor"><a href="#" data-original-title="" title="" onClick={toggleDrawer(anchor, true, true)}><img className="mr-2" src={peopleIcon}></img>Collaborators</a></li>
-                      <li className="cursor"><a href="#" data-original-title="" title=""><BarChartOutlinedIcon  className="mr-2" style={{fontSize:'21px', color:'#000'}}/>Insights </a></li>
-                      <li className="cursor"><a href="#" data-original-title="" title="Note" data-toggle="modal" data-target="#notemodal"><EventNoteOutlinedIcon className="mr-2" style={{fontSize:'21px', color:'#000'}}/>Notes </a></li>
-                      <li className="cursor"><a href="#" data-toggle="modal" data-target="#myModal2"><WarningAmberIcon className="mr-2" style={{fontSize:'21px', color:'#000'}}/>Errors</a></li>
+                      <li className="cursor"><a href="#" data-original-title="" title=""><BarChartOutlinedIcon className="mr-2" style={{ fontSize: '21px', color: '#000' }} />Insights </a></li>
+                      <li className="cursor"><a href="#" data-original-title="" title="Note" data-toggle="modal" data-target="#notemodal"><EventNoteOutlinedIcon className="mr-2" style={{ fontSize: '21px', color: '#000' }} />Notes </a></li>
+                      <li className="cursor"><a href="#" data-toggle="modal" data-target="#myModal2"><WarningAmberIcon className="mr-2" style={{ fontSize: '21px', color: '#000' }} />Errors</a></li>
                     </ul>
                   </div>
                   <div className="col-6 h-100 ">
@@ -640,101 +643,101 @@ const [value, setValue] = React.useState('1');
             <div className="modal-header">
               <h4 className="modal-title" id="myModalLabel2">Add Notes</h4>
               <div className="d-flex">
-                      <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-               </div>
-              
+                <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              </div>
+
             </div>
             <div className="bg-light p-4">
-            <a href="#" className="mr-4"><EditOutlinedIcon className="mr-2"/>Edit</a>
-            <a href="#" className="mr-2"><ShareOutlinedIcon className="mr-2"/>Share</a> 
-            </div>
-            
-              
-            <div className="modal-body" style={{background:'white'}}>
-            <div className="row">
-            <div className="col-md-6 col-sm-6">
-            <div className="form-group">
-            <label className="text-light-dark font-size-12 font-weight-600" htmlFor="exampleInputEmail1">NOTE FOR</label>
-              <Select
-                  defaultValue={selectedOption}
-                  onChange={setSelectedOption}
-                  options={options}
-                  placeholder="1000-ENGINE"
-              />
-          </div>
-            </div>
-            <div className="col-md-6 col-sm-6">
-            <div className="form-group">
-            <label className="text-light-dark font-size-12 font-weight-600" htmlFor="exampleInputEmail1">NOTE TYPE</label>
-              <Select
-                  defaultValue={selectedOption}
-                  onChange={setSelectedOption}
-                  options={options}
-                  placeholder="1000-ENGINE"
-              />
-          </div>
-            </div>
-            <div className="col-md-6 col-sm-6">
-            <div className="d-block align-items-center date-box">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
-                              htmlFor="exampleInputEmail1"
-                            >
-                              <span className=" mr-2">DATE</span>
-                            </label>
-                            <div className="form-group w-100">
-                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <DatePicker
-                                  variant="inline"
-                                  format="dd/MM/yyyy"
-                                  className="form-controldate border-radius-10"
-                                  label=""
-                                  value={validityData.fromDate}
-                                  onChange={(e) =>
-                                    setValidityData({
-                                      ...validityData,
-                                      fromDate: e,
-                                    })
-                                  }
-                                />
-                              </MuiPickersUtilsProvider>
-                              {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
-                            </div>
-                          </div>
+              <a href="#" className="mr-4"><EditOutlinedIcon className="mr-2" />Edit</a>
+              <a href="#" className="mr-2"><ShareOutlinedIcon className="mr-2" />Share</a>
             </div>
 
-            </div>
-            <div className="mt-4">
-            <h6 className="mt-3">NOTE</h6>
-                       </div>
-                       <div className="d-flex float-left mr-2 pb-2 pt-2">
-                       <div><button type="button" className="btn-sm btn-warning  mr-3 border-none" style={{    borderRadius: '15px'}}>External</button></div>
-                       <div><button type="button" className="btn-sm btn-success" style={{    borderRadius: '15px'}}>Recommendations</button></div>
 
-                        </div>
-                        <div className="form-group">
-                        <textarea name="comments" className="w-100 p-2 border rounded-5"  rows="5" id="comments"placeholder="Reply">
-                        </textarea>
-                        <div className="bg-primary p-3 cardradi">
-                            <a href="#" className="mr-2"><EditOutlinedIcon className="text-white font-size-18"/></a>
-                            <a href="#" className="mr-2"><AttachFileOutlinedIcon className="text-white font-size-18"/></a>
-                            <a href="#" className="mr-2"><CreateNewFolderOutlinedIcon className="text-white font-size-18"/></a>
-                            <a href="#" className="mr-2"><ShareOutlinedIcon className="text-white font-size-18" /></a>
-                        </div>
-                        </div>
-                        <div className="modal-footer mr-auto">
-              <button type="button" className="btn border bg-white" data-dismiss="modal">Cancel</button>
-              <button type="button" className="btn btn-primary">Save</button>
-            </div>
-            {/* <h6 className="  font-size-14">NOTE</h6> */}
-                    {/* <div style={{borderBottom: '1px solid #cfcece'}}> */}
-                    {/* <ul className="nav internalexternaltabs intexttab">
+            <div className="modal-body" style={{ background: 'white' }}>
+              <div className="row">
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-600" htmlFor="exampleInputEmail1">NOTE FOR</label>
+                    <Select
+                      defaultValue={selectedOption}
+                      onChange={setSelectedOption}
+                      options={options}
+                      placeholder="1000-ENGINE"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-12 font-weight-600" htmlFor="exampleInputEmail1">NOTE TYPE</label>
+                    <Select
+                      defaultValue={selectedOption}
+                      onChange={setSelectedOption}
+                      options={options}
+                      placeholder="1000-ENGINE"
+                    />
+                  </div>
+                </div>
+                <div className="col-md-6 col-sm-6">
+                  <div className="d-block align-items-center date-box">
+                    <label
+                      className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      <span className=" mr-2">DATE</span>
+                    </label>
+                    <div className="form-group w-100">
+                      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <DatePicker
+                          variant="inline"
+                          format="dd/MM/yyyy"
+                          className="form-controldate border-radius-10"
+                          label=""
+                          value={validityData.fromDate}
+                          onChange={(e) =>
+                            setValidityData({
+                              ...validityData,
+                              fromDate: e,
+                            })
+                          }
+                        />
+                      </MuiPickersUtilsProvider>
+                      {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+              <div className="mt-4">
+                <h6 className="mt-3">NOTE</h6>
+              </div>
+              <div className="d-flex float-left mr-2 pb-2 pt-2">
+                <div><button type="button" className="btn-sm btn-warning  mr-3 border-none" style={{ borderRadius: '15px' }}>External</button></div>
+                <div><button type="button" className="btn-sm btn-success" style={{ borderRadius: '15px' }}>Recommendations</button></div>
+
+              </div>
+              <div className="form-group">
+                <textarea name="comments" className="w-100 p-2 border rounded-5" rows="5" id="comments" placeholder="Reply">
+                </textarea>
+                <div className="bg-primary p-3 cardradi">
+                  <a href="#" className="mr-2"><EditOutlinedIcon className="text-white font-size-18" /></a>
+                  <a href="#" className="mr-2"><AttachFileOutlinedIcon className="text-white font-size-18" /></a>
+                  <a href="#" className="mr-2"><CreateNewFolderOutlinedIcon className="text-white font-size-18" /></a>
+                  <a href="#" className="mr-2"><ShareOutlinedIcon className="text-white font-size-18" /></a>
+                </div>
+              </div>
+              <div className="modal-footer mr-auto">
+                <button type="button" className="btn border bg-white" data-dismiss="modal">Cancel</button>
+                <button type="button" className="btn btn-primary">Save</button>
+              </div>
+              {/* <h6 className="  font-size-14">NOTE</h6> */}
+              {/* <div style={{borderBottom: '1px solid #cfcece'}}> */}
+              {/* <ul className="nav internalexternaltabs intexttab">
                       <li className="active"><a data-toggle="tab" href="#internal1" className="btn active show">Internal</a></li>
                       <li><a data-toggle="tab" href="#external1" className="btn">External</a></li>
                     </ul> */}
-                    {/* </div> */}
+              {/* </div> */}
 
-                    {/* <div className="tab-content">
+              {/* <div className="tab-content">
                       <div id="internal1" className="tab-pane fade in active show">
 
                       
@@ -818,7 +821,7 @@ const [value, setValue] = React.useState('1');
                       <p className="text-grey  mb-0 font-size-12 mt-2"><b>2:38pm, 19 Aug 21</b></p>
                       </div>
                     </div> */}
-                    </div>
+            </div>
             {/* <div className="modal-footer">
               <button type="button" className="btn border w-100 bg-white" data-dismiss="modal">Close</button>
               <button type="button" className="btn btn-primary w-100">Save changes</button>
@@ -827,66 +830,66 @@ const [value, setValue] = React.useState('1');
         </div>
       </div>
       <div class="modal right fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
 
-				<div class="modal-header">
-        <h4 class="modal-title" id="myModalLabel2"><ErrorOutlineIcon  className="mr-2" style={{fontSize:'32px'}}/>Errors</h4>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-          </button>
-				</div>
+            <div class="modal-header">
+              <h4 class="modal-title" id="myModalLabel2"><ErrorOutlineIcon className="mr-2" style={{ fontSize: '32px' }} />Errors</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
 
-				<div class="modal-body">
-        <div className='d-flex justify-content-between align-items-center px-3 border-bottom'>
-                            <h6 className='mb-0'>3 errors found in line items</h6>
-                            <div>
-                                <a href='#' className='btn'><ClearIcon className="mr-2" style={{color:'#000'}}/>Clear All</a>
-                            </div>
+            <div class="modal-body">
+              <div className='d-flex justify-content-between align-items-center px-3 border-bottom'>
+                <h6 className='mb-0'>3 errors found in line items</h6>
+                <div>
+                  <a href='#' className='btn'><ClearIcon className="mr-2" style={{ color: '#000' }} />Clear All</a>
+                </div>
+              </div>
+              <div className=' mt-2'>
+                <h6 className="px-3">FILTER</h6>
+                <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
+                  <TabContext value={value}>
+                    <Box className="custom-tabs" sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                      <TabList onChange={handleChange} aria-label="lab API tabs example">
+                        <Tab label="Part list" value="1" />
+                        <Tab label="Service Estimates" value="2" />
+                        <Tab label="Form" value="3" />
+
+                      </TabList>
+                    </Box>
+                    <TabPanel className="px-3" value="1">
+                      <div className="card border p-3 mb-0">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <p className="mb-0">Invalid data</p>
+                          <h6 className="mb-0">2 min ago</h6>
                         </div>
-                        <div className=' mt-2'>
-                            <h6 className="px-3">FILTER</h6>
-                            <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
-                                <TabContext value={value}>
-                                    <Box className="custom-tabs" sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                                        <TabList onChange={handleChange} aria-label="lab API tabs example">
-                                            <Tab label="Part list" value="1" />
-                                            <Tab label="Service Estimates" value="2" />
-                                            <Tab label="Form" value="3" />
+                        <h6 className="mb-0"> Part list header component code</h6>
+                        <p className="mb-0">Fix <a href="#" className="btn">Go to field</a></p>
+                      </div>
+                    </TabPanel>
+                    <TabPanel value="2">Item Two</TabPanel>
+                    <TabPanel value="3">Item Three</TabPanel>
+                  </TabContext>
+                </Box>
+                <hr className="mb-0" />
+                <div className="p-3">
+                  <a href='#' className='btn text-light border-light px-2'>Go Back to Solution</a>
+                  <a href='#' className='btn btn-primary float-right px-2'>Choose the correct portfolio</a>
+                </div>
+              </div>
+            </div>
 
-                                        </TabList>
-                                    </Box>
-                                    <TabPanel className="px-3" value="1">
-                                        <div className="card border p-3 mb-0">
-                                            <div className="d-flex justify-content-between align-items-center">
-                                                <p className="mb-0">Invalid data</p>
-                                                <h6 className="mb-0">2 min ago</h6>
-                                            </div>
-                                            <h6 className="mb-0"> Part list header component code</h6>
-                                            <p className="mb-0">Fix <a href="#" className="btn">Go to field</a></p>
-                                        </div>
-                                    </TabPanel>
-                                    <TabPanel value="2">Item Two</TabPanel>
-                                    <TabPanel value="3">Item Three</TabPanel>
-                                </TabContext>
-                            </Box>
-                            <hr className="mb-0" />
-                            <div className="p-3">
-                                <a href='#' className='btn text-light border-light px-2'>Go Back to Solution</a>
-                                <a href='#' className='btn btn-primary float-right px-2'>Choose the correct portfolio</a>
-                            </div>
-                        </div>
-				</div>
-
-			</div>
-		</div>
-	</div>
+          </div>
+        </div>
+      </div>
 
 
 
 
 
-      
+
 
     </>
   );
