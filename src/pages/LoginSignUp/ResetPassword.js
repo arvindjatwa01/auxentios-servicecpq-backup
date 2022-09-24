@@ -6,6 +6,8 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepButton from '@mui/material/StepButton';
 import auxentionlogo from '../../assets/icons/png/auxentionlogo.png'
+import logoIcon from '../../assets/icons/svg/Logo.svg';
+
 import erroricon from '../../assets/icons/png/error.png'
 import { signup, signIn } from '../../services/index'
 export function ResetPassword() {
@@ -68,7 +70,8 @@ export function ResetPassword() {
                             <div className="col-md-4 col-sm-4">
                                 <div className="bg-violet py-4 px-4 h-100">
                                     <div className="text-center">
-                                        <img src={auxentionlogo}></img>
+                                        {/* <img src={auxentionlogo}></img> */}
+                                        <img src={logoIcon}></img>
                                     </div>
                                     <div className="mt-4">
                                         <p className="text-white mt-2">We’ll email you instructions to reset your password.</p>

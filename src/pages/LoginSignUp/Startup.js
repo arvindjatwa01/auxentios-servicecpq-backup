@@ -17,6 +17,8 @@ import { authActions } from "../../features/auth/authSlice";
 import { history } from "../../utils";
 import { useLocation } from "react-router-dom";
 
+import Validator from "../../utils/validator";
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export const Startup = () => {
@@ -26,15 +28,11 @@ export const Startup = () => {
     const dispatch = useDispatch();
     const result = useSelector((state) => state.signUp);
     console.log("result of user ", result.activeStep)
-    console.log("result signup ", result)
+    // console.log("result signup ", result)
 
-    console.log("dispatch : ", dispatch);
+    // console.log("dispatch : ", dispatch);
     const { search } = useLocation();
     const queryString = new URLSearchParams(search);
-
-    // const [loginUrl, setLoginUrl] = useState(dispatch(signUpActions.getStarted()))
-
-    //   console.log("query String of login",queryString.get('uuid'));
 
     const [signUpInputData, setSignUpInputData] = useState({
         firstName: "",
@@ -59,15 +57,6 @@ export const Startup = () => {
             ...signInInputData,
             [name]: value
         })
-
-        // var dict = {
-        //     emailId: e.target.value,
-        //     password: "12",
-        // };
-        // console.log("event is : ", e.target.value);
-        // setSignInInputData(dict);
-        // console.log("object 11 : ", signInInputData);
-        // console.log()
     }
 
     console.log("object : ", signInInputData);
@@ -76,23 +65,31 @@ export const Startup = () => {
             emailId: signInInputData.emailId,
             password: signInInputData.password,
         };
-        // signIn(dict).then((res) => {
-        //     localStorage.setItem('loginAuth', JSON.stringify(res));
-        //     window.location.href = "/"
-        // }).catch((err) => {
-        //     console.log(err)
-        // })
+
+        const validator = new Validator();
+
+        if (!validator.emailValidation(signInInputData.emailId)) {
+            alert("Please enter the email address in correct format");
+        } else if (!validator.passwordValidation(signInInputData.password)) {
+            alert("Please enter the password");
+        } else {
+            dispatch(authActions.login(dict));
+            // dispatch(authActions.login(dict));
+            // alert("login error ?")
+        }
+
         console.log("signInResponse");
 
         console.log("dict is : ", dict);
 
-        dispatch(authActions.login(dict));
+        // dispatch(authActions.login(dict));
         // history.push('/')
     };
 
     const handleSendVerification = () => {
         dispatch(signUpActions.verifyEmail());
     };
+
     useEffect(() => {
         const uuid = queryString.get('uuid')
 
@@ -175,19 +172,19 @@ export const Startup = () => {
                                             <div className="form-group mt-3">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-600"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="loginInputEmail"
                                                 >
                                                     USER ID
                                                 </label>
                                                 <input
                                                     type="email"
                                                     className="form-control border-radius-10"
-                                                    id="exampleInputEmail1"
+                                                    id="loginInputEmail"
                                                     aria-describedby="emailHelp"
                                                     placeholder="Email Address"
                                                     name="emailId"
                                                     value={signInInputData.emailId}
-                                                    onChange={ handleLoginInput }
+                                                    onChange={handleLoginInput}
                                                 />
                                             </div>
                                         </div>
@@ -195,19 +192,19 @@ export const Startup = () => {
                                             <div className="form-group mt-3">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-600"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="loginInputPassword"
                                                 >
                                                     PASSWORD
                                                 </label>
                                                 <input
                                                     type="password"
                                                     className="form-control border-radius-10"
-                                                    id="exampleInputPassword"
+                                                    id="loginInputPassword"
                                                     aria-describedby="emailHelp"
                                                     placeholder="Password"
                                                     name="password"
                                                     value={signInInputData.password}
-                                                    onChange={ handleLoginInput }
+                                                    onChange={handleLoginInput}
                                                 />
                                             </div>
                                         </div>
@@ -287,7 +284,7 @@ export const Startup = () => {
                                             <div className="form-group mt-3">
                                                 {/* <label
                           className="text-light-dark font-size-12 font-weight-600"
-                          for="exampleInputEmail1"
+                          htmlFor="exampleInputEmail1"
                         >
                           Email
                         </label>
@@ -332,7 +329,7 @@ export const Startup = () => {
                                     <div className="text-center">
                                         <img src={logoIcon}></img>
                                     </div>
-                                    <div className="mt-4">
+                                    {/* <div className="mt-4">
                                         <div>
                                             <img src={erroricon}></img>
                                         </div>
@@ -343,7 +340,7 @@ export const Startup = () => {
                                             > Login
                                             </a>
                                         </p>
-                                    </div>
+                                    </div> */}
                                     <div className="mt-4">
                                         <div>
                                             <img src={erroricon}></img>
@@ -389,7 +386,7 @@ export const Startup = () => {
                                 {/*    <div className="row m-0">*/}
                                 {/*        <div className="col-md-6 col-sm-6">*/}
                                 {/*            <div className="form-group mt-3">*/}
-                                {/*                <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">FIRST NAME</label>*/}
+                                {/*                <label className="text-light-dark font-size-12 font-weight-600" htmlFor="exampleInputEmail1">FIRST NAME</label>*/}
                                 {/*                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="John" value={signUpInputData.firstName} onChange={(e) => setSignUpInputData({*/}
                                 {/*                    ...signUpInputData,*/}
                                 {/*                    firstName: e.target.value*/}
@@ -398,7 +395,7 @@ export const Startup = () => {
                                 {/*        </div>*/}
                                 {/*        <div className="col-md-6 col-sm-6">*/}
                                 {/*            <div className="form-group mt-3">*/}
-                                {/*                <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">LAST NAME</label>*/}
+                                {/*                <label className="text-light-dark font-size-12 font-weight-600" htmlFor="exampleInputEmail1">LAST NAME</label>*/}
                                 {/*                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Doe" value={signUpInputData.lastName} onChange={(e) => setSignUpInputData({*/}
                                 {/*                    ...signUpInputData,*/}
                                 {/*                    lastName: e.target.value*/}
@@ -407,7 +404,7 @@ export const Startup = () => {
                                 {/*        </div>*/}
                                 {/*        <div className="col-md-6 col-sm-6">*/}
                                 {/*            <div className="form-group mt-3">*/}
-                                {/*                <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">WORK EMAIL</label>*/}
+                                {/*                <label className="text-light-dark font-size-12 font-weight-600" htmlFor="exampleInputEmail1">WORK EMAIL</label>*/}
                                 {/*                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Email Address" value={signUpInputData.workEmail} onChange={(e) => setSignUpInputData({*/}
                                 {/*                    ...signUpInputData,*/}
                                 {/*                    workEmail: e.target.value*/}
@@ -416,7 +413,7 @@ export const Startup = () => {
                                 {/*        </div>*/}
                                 {/*        <div className="col-md-12 col-sm-12">*/}
                                 {/*            <div className="form-group mt-3">*/}
-                                {/*                <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">CREATE PASSWORD</label>*/}
+                                {/*                <label className="text-light-dark font-size-12 font-weight-600" htmlFor="exampleInputEmail1">CREATE PASSWORD</label>*/}
                                 {/*                <input type="password" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder=" Create Password" value={signUpInputData.password} onChange={(e) => setSignUpInputData({*/}
                                 {/*                    ...signUpInputData,*/}
                                 {/*                    password: e.target.value*/}

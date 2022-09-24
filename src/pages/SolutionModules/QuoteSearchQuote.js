@@ -94,7 +94,7 @@ const  QuoteSearchQuote=()=>{
   }
     return(
       <>
-      <CommanComponents />
+      {/* <CommanComponents /> */}
       <div className="content-body" style={{ minHeight: '884px' }}>
       <div class="container-fluid ">
           <div className="card p-4 mt-5">
