@@ -20,7 +20,7 @@ const initialState: SignUpState = {
   isLoggedIn: false,
   logging: false,
   currentUser: undefined,
-  activeStep: 0,
+  activeStep: 2,
 };
 
 const signUpSlice = createSlice({
@@ -46,6 +46,9 @@ const signUpSlice = createSlice({
     },
     signUpFailed(state, action: PayloadAction<string>) {
       console.log(action.payload);
+    },
+    registration(state, action: PayloadAction<string>){
+      state.activeStep = 0;
     },
     logout(state) {
       state.isLoggedIn = false;

@@ -9,7 +9,7 @@ interface props {
 }
 var signUpState
 export const SignUp: React.FC<props> = ({ id }: props) => {
- 
+
   const [signUpInputData, setSignUpInputData] = useState({
     firstName: "",
     lastName: "",
@@ -42,8 +42,8 @@ export const SignUp: React.FC<props> = ({ id }: props) => {
 
   };
 
-  console.log("signUpState",signUpState)
-  
+  console.log("signUpState", signUpState)
+
   return (
     <div className="pt-5">
       <h4 className="ml-3">Sign up</h4>
@@ -153,6 +153,12 @@ export const SignUp: React.FC<props> = ({ id }: props) => {
               Sign Up
             </a>
           </div>
+        </div>
+        <div className="col-md-12 col-sm-12">
+          {/* <div className="d-flex justify-content-center form-group mt-3">
+            <p>Already have an account? <a onClick={props.loginUrl} style={{ cursor: "pointer" }}> Login </a></p>
+           
+          </div> */}
         </div>
       </div>
     </div>

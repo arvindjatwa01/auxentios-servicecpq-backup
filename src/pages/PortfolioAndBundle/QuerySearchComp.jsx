@@ -35,6 +35,7 @@ const QuerySearchComp = (props) => {
     let obj = tempArray[id];
     obj.itemType = e;
     tempArray[id] = obj;
+    console.log("tempArray : ", tempArray)
     setQuerySearchSelector(tempArray);
   }
   const handleitemTypeOperator = (e, id) => {
@@ -137,6 +138,7 @@ const QuerySearchComp = (props) => {
     props.setTempBundleService1([])
 
   };
+  
   const handleQuerySearchClick = async () => {
     try {
       if (props.compoFlag === "portfolioTempItemSearch") {
@@ -383,10 +385,14 @@ const QuerySearchComp = (props) => {
                               // { label: "Portfolio Item", value: "portfolioItem" },
                               // { label: "Bundle", value: "BUNDLE_ITEM" },
                               // { label: "Service", value: "SERVICE" },
-                              { label: "Portfolio Item", value: "PORTFOLIO" },
+                              { label: "Portfolio", value: "PORTFOLIO" },
+
                             ])}
+                            
+                            // defaultValue={props.compoFlag === "portfolioTempItemSearch" ? ({ label: "Portfolio", value: "PORTFOLIO" }) : ""}
                             value={querySearchSelector.itemType}
                             onChange={(e) => handleItemType(e, i)}
+                            // autoSelect={props.compoFlag === "portfolioTempItemSearch"}
                           />
                           <Select
                             options={[
