@@ -29,7 +29,14 @@ export const ADD_PARTLIST = "/AddPartlist";
 export const REPAIR_KITS = "/RepairKits";
 export const STANDARD_JOBS = "/StandardJobs";
 export const KITS = "/Kits";
-export const WITHOUT_SPARE_PARTS_HEADER = "/WithoutSparePartsHeader";
+export const WITHOUT_SPARE_PARTS_DETAILS = "/RepairWithoutSpareParts/BuilderDetails";
+export const QUOTE_SPARE_PARTS ="/QuoteSpareParts";
+export const QUOTE_SEARCH_QUOTE ="/QuoteSearchQuote";
+export const QUOTE_CONFIGURATION ="/QuoteConfiguration";
+export const QUOTE_REPAIR_OPTION ="/QuoteRepairOption";
+export const QUOTE_REPAIR_QUOTE ="/QuoteRepairQuote";
+export const QUOTE_REPAIR_SEARCH ="/QuoteRepairSearch";
+export const QUOTE_REPAIR_CONFIGURATION ="/QuoteRepairConfiguration";
 
 export const VERIFY_EMAIL = "/verify-email/:id";
 

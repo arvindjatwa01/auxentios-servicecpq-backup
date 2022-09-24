@@ -1275,6 +1275,22 @@ nav.main-menu li.active>a,
   font-size: 10px;
   margin-right: 10px;
 }
+.customDropdown{}
+.customDropdown.dropdown{position: relative;}
+.customDropdown .dropdown-menu.show{min-width: 160px !important;top: 26px !important;}
+.customDropdown .dropdown-toggle{background: transparent;
+  border: none; background-image: url(../src/assets/icons/svg/menu.png);
+  background-repeat: no-repeat;
+  background-size: contain; 
+width: 100%;}
+.customDropdown .btn {
+  padding: 8px 8px;
+}
+.btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active, .show > .btn-primary.dropdown-toggle {
+  color: #fff;
+  background-color: #f3f3f9;
+  border-color: #f3f3f9;
+}
 
 .dropdown-menu.show {
   transform: none !important;
@@ -2548,6 +2564,19 @@ cursor: pointer;
     background-color: #872ff7;
     border-color: #872ff7;
 }
+.btn-no-border {
+  border: none;
+  background-color: #fff;
+  color: #872ff7 !important;
+  cursor: pointer;
+}
+
+.btn-no-border:disabled  {
+  border: none;
+  background-color: #fff;
+  display: none;
+}
+
 .css-vqmohf-MuiButtonBase-root-MuiRadio-root.Mui-checked {
     color: #872ff7 !important;
 }

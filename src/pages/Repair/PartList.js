@@ -12,6 +12,9 @@ import EditIcon from "@mui/icons-material/EditTwoTone";
 import LabelIcon from "@mui/icons-material/LabelTwoTone";
 import DeleteIcon from "@mui/icons-material/DeleteTwoTone";
 import { MuiMenuComponent } from "./components/MuiMenuRepair";
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton'
+// import logoIcon from '../assets/icons/svg/menu.png'
 // import { MuiMenuComponent } from "pages/Operational";
 import {
   DataGrid,
@@ -47,14 +50,11 @@ import {
   addMultiPartsToPartList,
   addPartToPartList,
   createBuilderVersion,
-  customerSearch,
   fetchBuilderDetails,
   fetchBuilderPricingMethods,
   fetchBuilderVersionDet,
   fetchPartlistFromBuilder,
   fetchPartsFromPartlist,
-  machineSearch,
-  sparePartSearch,
   updateBuilderCustomer,
   updateBuilderEstimation,
   updateBuilderGeneralDet,
@@ -76,7 +76,18 @@ import {
   Rating,
   TextareaAutosize,
 } from "@mui/material";
-import { INITIAL_PAGE_NO, INITIAL_PAGE_SIZE } from "./CONSTANTS";
+import {
+  INITIAL_PAGE_NO,
+  INITIAL_PAGE_SIZE,
+  PARTS_TAG_OPTIONS,
+} from "./CONSTANTS";
+import { RenderConfirmDialog } from "./components/ConfirmationBox";
+import { Typography } from "@material-ui/core";
+import {
+  customerSearch,
+  machineSearch,
+  sparePartSearch,
+} from "services/searchServices";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -104,6 +115,49 @@ function CommentEditInputCell(props) {
     </Box>
   );
 }
+
+// function renderTag(params) {
+//   console.log(params);
+//   return <span>{params.value}</span>
+// }
+
+// function TagComponent(props) {
+//   const { id, value, field } = props;
+//   console.log(id, value, field);
+//   const apiRef = useGridApiContext();
+
+//   const handleTagChange = async (event) => {
+//     console.log("newValue", event.target.value);
+//     // Explore debounce option
+//     apiRef.current.setEditCellValue(
+//       { id, field, value: event.target.value },
+//       event
+//     );
+//   };
+
+//   return (
+//     <Box sx={{ display: "flex", alignItems: "center" }}>
+//       <FormControl fullWidth size="small">
+//           <InputLabel id="demo-select-small" style={{ fontSize: 11 }}>
+//              Tags
+//            </InputLabel>
+//            <SelectBox
+//              label="tags"
+//              value={value}
+//              defaultValue='required'
+//              onChange={handleTagChange}
+//              sx={{ width: 100 }}
+//            >
+//              {PARTS_TAG_OPTIONS.map((element) => (
+//                <MenuItem value={element.value} style={{ fontSize: 11 }}>
+//                  {element.label}
+//                </MenuItem>
+//              ))}
+//            </SelectBox>
+//          </FormControl>
+//     </Box>
+//   );
+// }
 
 function PartList(props) {
   const history = useHistory();
@@ -134,14 +188,6 @@ function PartList(props) {
   const [tagClicked, setTagClicked] = useState("");
   const [totalPartsCount, setTotalPartsCount] = useState(0);
   const [filterQuery, setFilterQuery] = useState("");
-  const tags = [
-    { label: "None", value: "" },
-    { label: "Required", value: "required" },
-    { label: "Optional", value: "optional" },
-    { label: "Additional", value: "additional" },
-    { label: "Missing", value: "missing" },
-    { label: "Core", value: "core" },
-  ];
 
   const [viewOnlyTab, setViewOnlyTab] = useState({
     custViewOnly: false,
@@ -160,6 +206,8 @@ function PartList(props) {
     customerGroup: "",
   });
   const [machineData, setMachineData] = useState({
+    make: "",
+    family: "",
     model: "",
     serialNo: "",
     smu: "",
@@ -341,9 +389,11 @@ function PartList(props) {
       contactPhone: result.contactPhone,
       customerGroup: result.customerGroup,
       customerName: result.customerName,
-      source: result.source,
+      source: result.source ? result.source : "User Generated",
     });
     setMachineData({
+      make: result.make,
+      family: result.family,
       model: result.model,
       serialNo: result.serialNo,
       fleetNo: result.fleetNo,
@@ -522,6 +572,8 @@ function PartList(props) {
         fleetNo: currentItem.stockNumber,
         serialNo: currentItem.equipmentNumber,
         smu: currentItem.sensorId,
+        make: currentItem.maker,
+        family: currentItem.market,
       });
       setSearchSerialResults([]);
     }
@@ -588,6 +640,8 @@ function PartList(props) {
   const updateMachineData = () => {
     let data = {
       builderId,
+      make: machineData.make,
+      family: machineData.family,
       model: machineData.model,
       fleetNo: machineData.fleetNo,
       smu: machineData.smu,
@@ -738,10 +792,16 @@ function PartList(props) {
     setSelectedMasterData([]);
   };
 
-  const activityOptions = ["Create Versions", "Show Errors", "Review"];
+
+  const activityOptions = ["New Versions", "Show Errors", "Review"];
+  const [confirmationOpen, setConfirmationOpen] = useState(false)
 
   const headerMenuClick = (selectedOption) => {
-    if (selectedOption === "Create Versions") createVersion();
+    if (selectedOption === "Create Versions") {
+      //   setConfirmationOpen(true);
+      // }
+      createVersion();
+    }
   };
 
   // Search table column for spareparts
@@ -794,24 +854,8 @@ function PartList(props) {
     //   field: "tag",
     //   flex: 1,
     //   editable: true,
-    //   renderEditCell: (props) =>
-    //     <FormControl fullWidth size="small">
-    //       <InputLabel id="demo-select-small" style={{ fontSize: 11 }}>
-    //         Tags
-    //       </InputLabel>
-    //       <SelectBox
-    //         label="tags"
-    //         value={props.row.tag}
-    //         onChange={(e) => handleTagChange(props.row.id, e.target.value)}
-    //         sx={{ width: 100 }}
-    //       >
-    //         {tags.map((element) => (
-    //           <MenuItem value={element.value} style={{ fontSize: 11 }}>
-    //             {element.label}
-    //           </MenuItem>
-    //         ))}
-    //       </SelectBox>
-    //     </FormControl>
+    //   renderCell: renderTag,
+    //   renderEditCell: TagComponent
     // },
     {
       field: "actions",
@@ -860,7 +904,7 @@ function PartList(props) {
 
   // Update the status of the builder : Active, Revised etc.
   const handleBuilderStatus = async (e) => {
-    await updateBuilderStatus(partListNo, e.value)
+    await updateBuilderStatus(bId, e.value)
       .then((result) => {
         setSelBuilderStatus(e);
         handleSnack("success", "Status has been updated!");
@@ -1078,6 +1122,7 @@ function PartList(props) {
 
   // Updates the bulk edits
   const bulkUpdateParts = async () => {
+    setConfirmationOpen(false);
     if (rowsToUpdate.length === 0) {
       handleSnack("info", `😐 No modifications to update!`);
     } else {
@@ -1110,13 +1155,19 @@ function PartList(props) {
   const [show, setShow] = React.useState(false);
   return (
     <>
-      {/* <CommanComponents /> */}
       <CustomSnackbar
         handleClose={handleSnackBarClose}
         open={openSnack}
         severity={severity}
         message={snackMessage}
       />
+      <RenderConfirmDialog
+        confimationOpen={confirmationOpen}
+        message={`Pressing 'Yes' will save all the changes to partlist ${partListId}`}
+        handleNo={() => setConfirmationOpen(false)}
+        handleYes={bulkUpdateParts}
+      />
+
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
@@ -1241,12 +1292,18 @@ function PartList(props) {
                 <a href="#" className="ml-3 font-size-14" title="Duplicate">
                   <img src={copyIcon}></img>
                 </a>
-                <a href="#" className="ml-2">
+                {/* <a href={undefined} className="ml-2">
                   <MuiMenuComponent
                     options={activityOptions}
                     onClick={headerMenuClick}
                   />
-                </a>
+                </a> */}
+                <DropdownButton className="customDropdown ml-2" id="dropdown-item-button">
+                {/* <Dropdown.ItemText>New Versions</Dropdown.ItemText> */}
+                <Dropdown.Item as="button" data-toggle="modal" data-target="#exampleModalCenter">New Versions</Dropdown.Item>
+                <Dropdown.Item as="button">Show Errors</Dropdown.Item>
+                <Dropdown.Item as="button">Review</Dropdown.Item>
+              </DropdownButton>
               </div>
             </div>
           </div>
@@ -1508,6 +1565,40 @@ function PartList(props) {
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
+                                Make
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10"
+                                id="make-id"
+                                name="make"
+                                value={machineData.make}
+                                onChange={handleMachineDataChange}
+                                placeholder="Auto Filled"
+                                disabled
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                Family
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10"
+                                id="family-id"
+                                name="family"
+                                value={machineData.family}
+                                onChange={handleMachineDataChange}
+                                placeholder="Auto Filled"
+                                disabled
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
                                 MODEL
                               </label>
                               <SearchBox
@@ -1623,6 +1714,26 @@ function PartList(props) {
                       </>
                     ) : (
                       <div className="row mt-3">
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              Make
+                            </p>
+                            <h6 className="font-weight-500">
+                              {machineData.make}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              Family
+                            </p>
+                            <h6 className="font-weight-500">
+                              {machineData.family}
+                            </h6>
+                          </div>
+                        </div>
                         <div className="col-md-4 col-sm-4">
                           <div className="form-group">
                             <p className="font-size-12 font-weight-500 mb-2">
@@ -2369,7 +2480,7 @@ function PartList(props) {
             <div className=" my-3 text-right">
               <button
                 className="btn text-white bg-primary"
-                onClick={bulkUpdateParts}
+                onClick={() => setConfirmationOpen(true)}
                 disabled={bulkUpdateProgress}
               >
                 Save
@@ -2974,6 +3085,39 @@ function PartList(props) {
             </div>
           </Modal.Body>
         </Modal>
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header border-none">
+                <h5 class="modal-title" id="exampleModalLongTitle">New Version</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <p className="mx-3 mt-0">Description, product experts convert the repair option to a standard job or template.</p>
+              <div className="hr"></div>
+              <div class="modal-body">
+               <h6>NAME</h6>
+               <div className="card w-100 border" >
+                <p className="mx-3" style={{marginTop: "1rem"}}>Copy of Quote</p>
+               </div>
+              </div>
+              <div class="modal-footer">
+          
+              <button className="btn  btn-primary w-100">Create</button>
+                  <button
+                    type="button"
+                    className="btn btn-primary w-100"
+                    data-dismiss="modal"
+                  >
+                    Cancel
+                  </button>
+                {/* <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button> */}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
