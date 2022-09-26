@@ -2039,8 +2039,7 @@ export const Analytics = () => {
                                     querySearchSelector.map((obj, i) => {
                                        return (
                                           <>
-
-                                             <div className="customselect d-flex align-items-center mr-3 my-2">
+                                             <div className="customselect d-flex align-items-center mr-3 my-2" key={i}>
                                                 {
                                                    i > 0 ?
                                                       <SelectFilter
@@ -2188,7 +2187,8 @@ export const Analytics = () => {
                      <Modal.Title>Solution Selector</Modal.Title>
                   </Modal.Header>
                   <Modal.Body className="p25 pt-4" style={{ backgroundColor: '#F8F8F8 !important' }}>
-                     <div>import Solution from './../PortfolioAndBundle/Solution';
+                     <div>
+                        {/* import Solution from './../PortfolioAndBundle/Solution'; */}
 
                         <h5 className='text-black'>How do you want to build the solution ?</h5>
                         <RadioGroup className=''
@@ -2699,10 +2699,10 @@ export const Analytics = () => {
             <Modal.Body className="">
                <div className="col-md-12">
                   <div className="row">
-                     <div className="col-md-9">Search {selectedTemplateLabel}</div>
+                     <div className="col-md-9">Search {selectedTemplateLabel === "" ? "Portfolio Template" : selectedTemplateLabel}</div>
                      <div className="col-md-3">
                         <div className="mx-0 text-right">
-                           <Button className="btn text-white bg-primary px-3 text-capitalize">Guided Solution</Button>
+                           <Button className="btn text-white bg-primary px-3 text-capitalize" onClick={() => history.push('/solutionBuilder/guide')}>Guided Solution</Button>
                         </div>
                      </div>
                   </div>

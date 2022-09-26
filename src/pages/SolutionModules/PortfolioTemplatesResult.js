@@ -947,7 +947,7 @@ export function PortfolioTemplatesResult(props) {
                 lifeStageOfMachine: "NEW_BREAKIN",
                 supportLevel: "PREMIUM",
                 serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
-                customItems: selectedCustomItems,
+                customItems: [],
             };
 
             const portfolioRes = await createCustomPortfolio(reqData);
@@ -1071,6 +1071,7 @@ export function PortfolioTemplatesResult(props) {
                 responseTime: stratgyResponseTimeKeyValue.value,
                 productHierarchy: stratgyHierarchyKeyValue.value,
                 geographic: stratgyGeographicKeyValue.value,
+                customItems: selectedCustomItems,
             };
 
 
@@ -1563,7 +1564,7 @@ export function PortfolioTemplatesResult(props) {
                 "label": location.selectedTemplateItems[0].itemHeaderModel.itemProductHierarchy,
                 "value": location.selectedTemplateItems[0].itemHeaderModel.itemProductHierarchy
             }])
-            
+
             setStratgyGeographicKeyValue([{
                 "label": location.selectedTemplateItems[0].itemHeaderModel.itemHeaderGeographic,
                 "value": location.selectedTemplateItems[0].itemHeaderModel.itemHeaderGeographic
@@ -1592,20 +1593,27 @@ export function PortfolioTemplatesResult(props) {
         console.log("location.selectedTemplateItems : ", location.selectedTemplateItems)
 
         let itemIdData = []
+        let priceDataId = []
         // itemIdData.push({ "itemId": location.selectedTemplateItems[0].itemId })
 
         const customItemsId = location.selectedTemplateItems.map((data, i) => {
-            // if(i == data.length-1){
-            //     itemIdData.push({ "itemId": data.itemId })
-            // }
-            // console.log("data length ", data.length)
-            itemIdData.push({ "itemId": data.itemId })
+
+            console.log("my map data is :=> ", data);
+            console.log("itemHeaderId is :=>  ", data.itemHeaderModel.itemHeaderId);
+            console.log("itemHeaderModel is => :  ", data.itemHeaderModel);
+            itemIdData.push({ "customItemId": parseInt(data.itemId) })
             // itemIdValue.push(data)
+
+            // data.itemBodyModel.itemPrices.map((pricedata, j) => {
+            //     priceDataId.push({ "customItemPriceDataId": pricedata.itemPriceDataId })
+            // });
+
+
             // itemIdData.push({
-            //     customItemId: data.itemId,
+            //     customItemId: "",
             //     itemName: data.itemName,
             //     customItemHeaderModel: {
-            //         customItemHeaderId : data.itemHeaderModel.itemHeaderId,
+            //         customItemHeaderId: data.itemHeaderModel.itemHeaderId,
             //         itemHeaderDescription: data.itemHeaderModel.itemHeaderDescription,
             //         bundleFlag: data.itemHeaderModel.bundleFlag,
             //         portfolioItemId: data.itemHeaderModel.portfolioItemId,
@@ -1618,7 +1626,7 @@ export function PortfolioTemplatesResult(props) {
             //         additional: data.itemHeaderModel.additional,
             //         currency: data.itemHeaderModel.currency,
             //         netPrice: data.itemHeaderModel.netPrice,
-            //         itemProductHierarchy :  data.itemHeaderModel.itemProductHierarchy,
+            //         itemProductHierarchy: data.itemHeaderModel.itemProductHierarchy,
             //         itemHeaderGeographic: data.itemHeaderModel.itemHeaderGeographic,
             //         responseTime: data.itemHeaderModel.responseTime,
             //         usage: data.itemHeaderModel.usage,
@@ -1627,60 +1635,50 @@ export function PortfolioTemplatesResult(props) {
             //         estimatedTime: data.itemHeaderModel.estimatedTime,
             //         servicePrice: data.itemHeaderModel.servicePrice,
             //         status: data.itemHeaderModel.status,
+            //         componentCode: data.itemHeaderModel.componentCode,
+            //         componentDescription: data.itemHeaderModel.componentDescription,
+            //         serialNumber: data.itemHeaderModel.serialNumber,
+            //         itemHeaderStrategy: data.itemHeaderModel.itemHeaderStrategy,
+            //         variant: data.itemHeaderModel.variant,
+            //         itemHeaderCustomerSegment: data.itemHeaderModel.itemHeaderCustomerSegment,
+            //         jobCode: data.itemHeaderModel.jobCode,
+            //         preparedBy: data.itemHeaderModel.preparedBy,
+            //         approvedBy: data.itemHeaderModel.approvedBy,
+            //         preparedOn: data.itemHeaderModel.preparedOn,
+            //         revisedBy: data.itemHeaderModel.revisedBy,
+            //         revisedOn: data.itemHeaderModel.revisedOn,
+            //         salesOffice: data.itemHeaderModel.salesOffice,
+            //         offerValidity: data.itemHeaderModel.offerValidity
             //     },
-            //     customItemBodyModel : {
+            //     customItemBodyModel: {
             //         customItemBodyId: data.itemBodyModel.itemBodyId,
             //         itemBodyDescription: data.itemBodyModel.itemBodyDescription,
-            //         quantity: data.itemBodyModel.quantity,
-            //         startUsage: data.itemBodyModel.startUsage,
-            //         endUsage: data.itemBodyModel.endUsage,
-            //         standardJobId: data.itemBodyModel.standardJobId,
-            //         frequency: data.itemBodyModel.frequency,
-            //         additional: data.itemBodyModel.additional,
             //         spareParts: data.itemBodyModel.spareParts,
             //         labours: data.itemBodyModel.labours,
             //         miscellaneous: data.itemBodyModel.miscellaneous,
             //         taskType: data.itemBodyModel.taskType,
             //         solutionCode: data.itemBodyModel.solutionCode,
             //         usageIn: data.itemBodyModel.usageIn,
-            //         recommendedValue: data.itemBodyModel.recommendedValue,
             //         usage: data.itemBodyModel.usage,
-            //         repairKitId: data.itemBodyModel.repairKitId,
-            //         repairKitId: data.itemBodyModel.repairKitId,
-            //         templateDescription: data.itemBodyModel.templateDescription,
-            //         partListId: data.itemBodyModel.partListId,
-            //         serviceEstimateId: data.itemBodyModel.serviceEstimateId,
-            //         numberOfEvents: data.itemBodyModel.numberOfEvents,
-            //         repairOption: data.itemBodyModel.repairOption,
-            //         priceMethod: data.itemBodyModel.priceMethod,
-            //         listPrice: data.itemBodyModel.listPrice,
-            //         priceEscalation: data.itemBodyModel.priceEscalation,
-            //         calculatedPrice: data.itemBodyModel.calculatedPrice,
-            //         flatPrice: data.itemBodyModel.flatPrice,
-            //         discountType: data.itemBodyModel.discountType,
             //         year: data.itemBodyModel.year,
             //         avgUsage: data.itemBodyModel.avgUsage,
             //         unit: data.itemBodyModel.unit,
-            //         sparePartsPrice: data.itemBodyModel.sparePartsPrice,
-            //         sparePartsPriceBreakDownPercentage: data.itemBodyModel.sparePartsPriceBreakDownPercentage,
-            //         servicePrice: data.itemBodyModel.servicePrice,
-            //         servicePriceBreakDownPercentage: data.itemBodyModel.servicePriceBreakDownPercentage,
-            //         miscPrice: data.itemBodyModel.miscPrice,
-            //         miscPriceBreakDownPercentage: data.itemBodyModel.miscPriceBreakDownPercentage,
-            //         totalPrice: data.itemBodyModel.totalPrice,
+            //         customItemPrices: priceDataId,
             //     },
             //     createdAt: data.createdAt
             // })
+
+
             // console.log("map function data is => " ,data)
 
             // setSelectedCustomItems([...selectedCustomItems, { "itemId": data.itemId }])
             // console.log("Item Id's : ", data.itemId)
         })
         setSelectedCustomItems(itemIdData)
-        console.log("selected Custom Items Data are  : ", selectedCustomItems)
+        // console.log("selected Custom Items Data are  : ", selectedCustomItems)
     }, [])
 
-
+    console.log("selected Custom Items Data are  : ", selectedCustomItems)
 
     const categoryList = useAppSelector(
         selectStrategyTaskOption(selectCategoryList)
