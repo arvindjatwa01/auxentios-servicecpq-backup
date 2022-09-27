@@ -17,7 +17,7 @@ import SearchBox from "./components/SearchBox";
 function WithoutSpareParts(props) {
   const history = useHistory();
   // const { state } = props.location;
-  const { builderDetails } = props;
+  const { activeElement, setActiveElement } = props.builderDetails;
   const [selectedOption, setSelectedOption] = useState(null);
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
@@ -26,6 +26,8 @@ function WithoutSpareParts(props) {
   const [searchCompCodeResults, setSearchCompCodeResults] = useState([]);
   const [segmentViewOnly, setSegmentViewOnly] = useState(false);
   const [segments, setSegments] = useState([]);
+  const [noOptionsCompCode, setNoOptionsCompCode] = useState(false);
+  const [noOptionsJobCode, setNoOptionsJobCode] = useState(false);
 
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -40,6 +42,7 @@ function WithoutSpareParts(props) {
     title: "",
     componentCode: "",
     description: "",
+    id: "",
   };
   const [segmentData, setSegmentData] = useState(newSegment);
   useEffect(() => {
@@ -47,8 +50,8 @@ function WithoutSpareParts(props) {
   }, []);
 
   const fetchSegmentsOfBuilder = () => {
-    if (builderDetails.bId) {
-      fetchSegments(builderDetails.bId)
+    if (activeElement.bId) {
+      fetchSegments(activeElement.bId)
         .then((result) => {
           if (result?.length > 0) {
             setSegments(result);
@@ -81,7 +84,12 @@ function WithoutSpareParts(props) {
     if (searchText) {
       await jobCodeSearch("jobCode~" + searchText)
         .then((result) => {
-          setSearchJobCodeResults(result);
+          if (result && result.length > 0) {
+            setSearchJobCodeResults(result);
+            setNoOptionsJobCode(false);
+          } else {
+            setNoOptionsJobCode(true);
+          }
         })
         .catch((e) => {
           handleSnack("error", "Error occurred while searching the customer!");
@@ -104,7 +112,12 @@ function WithoutSpareParts(props) {
     if (searchText) {
       await getComponentCodeSuggetions("componentCode~" + searchText)
         .then((result) => {
-          setSearchCompCodeResults(result);
+          if (result && result.length > 0) {
+            setSearchCompCodeResults(result);
+            setNoOptionsCompCode(false);
+          } else {
+            setNoOptionsCompCode(true);
+          }
         })
         .catch((e) => {
           handleSnack("error", "Error occurred while searching the component!");
@@ -162,7 +175,7 @@ function WithoutSpareParts(props) {
   };
 
   const handleCreateSegment = () => {
-    let bid = props.builderDetails?.bId ? props.builderDetails.bId : 77;
+    let bid = activeElement?.bId ? activeElement.bId : 77;
     let data = {
       jobCode: segmentData.jobCode,
       title: segmentData.title,
@@ -174,6 +187,7 @@ function WithoutSpareParts(props) {
         setSegmentData({
           ...segmentData,
           segmentNumber: result.segmentNumber,
+          id: result.id,
           header:
             "Segment " + result.segmentNumber + " - " + result.description,
         });
@@ -249,6 +263,7 @@ function WithoutSpareParts(props) {
                     type="jobCode"
                     result={searchJobCodeResults}
                     onSelect={handleJobCodeSelect}
+                    noOptions={noOptionsJobCode}
                   />
                 </div>
               </div>
@@ -282,6 +297,7 @@ function WithoutSpareParts(props) {
                     type="componentCode"
                     result={searchCompCodeResults}
                     onSelect={handleCompCodeSelect}
+                    noOptions={noOptionsCompCode}
                   />
                 </div>
               </div>
@@ -304,6 +320,13 @@ function WithoutSpareParts(props) {
               <button
                 className="btn border bg-primary text-white"
                 onClick={handleCreateSegment}
+                disabled={
+                  !(
+                    segmentData.componentCode &&
+                    segmentData.description &&
+                    segmentData.title
+                  )
+                }
               >
                 Save
               </button>
@@ -353,8 +376,22 @@ function WithoutSpareParts(props) {
             </div>
             <div className="Add-new-segment-div p-3 border-radius-10">
               <button
-                onClick={() => builderDetails.setActiveElement("operation")}
                 className="btn bg-primary text-white"
+                onClick={() =>
+                  setActiveElement({ ...activeElement, name: "header" })
+                }
+              >
+                Back
+              </button>
+              <button
+                onClick={() =>
+                  setActiveElement({
+                    ...activeElement,
+                    name: "operation",
+                    sId: segmentData.id,
+                  })
+                }
+                className="btn bg-primary text-white ml-2"
               >
                 <span className="mr-2">
                   <FontAwesomeIcon icon={faPlus} />

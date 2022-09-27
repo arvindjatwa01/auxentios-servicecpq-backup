@@ -245,7 +245,7 @@ export const RepairWithSpareParts = () => {
       type: "new",
     };
     createBuilder({
-      builderType: "BUIDER_WITH_SPAREPART",
+      builderType: "BUILDER_WITH_SPAREPART",
       activeVersion: true,
       versionNumber: 1,
       status: "DRAFT",

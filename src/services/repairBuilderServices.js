@@ -5,9 +5,8 @@ import {
   ADD_REPAIR_BUILDER_PARTLIST,
   ADD_REPAIR_MULTI_PARTS_TO_PARTLIST,
   ADD_REPAIR_PART_TO_PARTLIST,
-  ADD_SEGMENT_OPERATION,
+  SEGMENT_OPERATION,
   BUILDER_SEGMENT,
-  CREATE_BUILDER_SEGMENT,
   CREATE_BUILDER_VERSION,
   CREATE_REPAIR_BUILDER,
   FETCH_BUILDER_DETAILS,
@@ -15,6 +14,7 @@ import {
   FETCH_PARTS_OF_PARTLIST,
   FETCH_REPAIR_BUILDER_PARTLIST,
   PRICING_COMMON_CONFIG,
+  SEARCH_Builder,
   UPDATE_REPAIR_CUSTOMER,
   UPDATE_REPAIR_ESTIMATION_TEAM,
   UPDATE_REPAIR_GENERAL_DETAILS,
@@ -113,13 +113,13 @@ export const fetchSegments = (builderId) => {
   });
 };
 
-//Add Option to the Segment of a builder
+//Add operation to the Segment of a builder
 export const AddOperation = (segmentId, data) => {
   console.log("service repairbuilder > AddOperation called...");
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(ADD_SEGMENT_OPERATION(segmentId), data, config)
+        .post(SEGMENT_OPERATION(segmentId), data, config)
         .then((res) => {
           console.log("repairbuilder -> AddOperation response: ", res);
           if (res.status === 200) {
@@ -134,6 +134,32 @@ export const AddOperation = (segmentId, data) => {
         });
     } catch (error) {
       console.error("AddOperation general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//fetch operations of a segment
+export const fetchOperations = (segmentId) => {
+  console.log("service repairbuilder > fetchOperations called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(SEGMENT_OPERATION(segmentId), config)
+        .then((res) => {
+          console.log("repairbuilder -> fetchOperations response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("fetchOperations > axios err=", err);
+          reject("Error in fetchOperations axios!");
+        });
+    } catch (error) {
+      console.error("fetchOperations general exception", error);
       reject(SYSTEM_ERROR);
     }
   });
@@ -421,7 +447,7 @@ export const createBuilderVersion =  (builderId, description) => {
           if(res.status === 200)
             resolve(res.data);
           else
-            reject('Error occurred while calling createVersion');
+            reject(res.data);
         })
         .catch((err) => {
           console.log("createVersion > axios err=", err);
@@ -556,6 +582,31 @@ export const fetchBuilderPricingMethods =  (category) => {
         });
     } catch (error) {
       console.error("in RepairBuilder > fetchBuilderPricingMethods, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Search builders
+export const builderSearch =  (searchStr) => {
+  console.log("RepairBuilder > builderSearch called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(SEARCH_Builder(searchStr), config)
+        .then((res) => {
+          console.log("builderSearch > axios res=", res);
+          if(res.status === 200)
+            resolve(res.data);
+          else
+            reject('Error occurred while fetching builders');
+        })
+        .catch((err) => {
+          console.log("builderSearch > axios err=", err);
+          reject("Error in builderSearch axios!");
+        });
+    } catch (error) {
+      console.error("in RepairBuilder > builderSearch, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

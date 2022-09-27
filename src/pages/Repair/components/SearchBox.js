@@ -27,6 +27,7 @@ const SearchBox = (props) => {
           ))}
         </ul>
       )}
+      {props.noOptions && <span style={{color: 'red', fontSize: 12}}>No Options Found!</span>}
     </div>
   );
 };

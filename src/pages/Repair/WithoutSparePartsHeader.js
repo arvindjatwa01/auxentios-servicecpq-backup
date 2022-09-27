@@ -40,6 +40,7 @@ import WithoutRepairOption01 from "./WithoutRepairOption01";
 import WithoutSpareParts from "./WithoutSpareParts";
 import { Rating } from "@mui/material";
 import { customerSearch, machineSearch } from "services/searchServices";
+import RepairServiceEstimate from "./RepairServiceEstimate";
 
 function WithoutSparePartsHeader(props) {
   const history = useHistory();
@@ -49,7 +50,12 @@ function WithoutSparePartsHeader(props) {
   const [searchSerialResults, setSearchSerialResults] = useState([]);
   const [builderId, setBuilderId] = useState("");
   const [bId, setBId] = useState("");
-  const [activeElement, setActiveElement] = useState("header");
+  const [activeElement, setActiveElement] = useState({
+    name: "header",
+    bId: "",
+    sId: "",
+    oId: "",
+  });
   const [selBuilderStatus, setSelBuilderStatus] = useState({
     value: "DRAFT",
     label: "Draft",
@@ -205,6 +211,12 @@ function WithoutSparePartsHeader(props) {
     });
   };
   const populateHeader = (result) => {
+    setViewOnlyTab({
+      custViewOnly: result.customerId ? true : false,
+      machineViewOnly: result.serialNo ? true : false,
+      generalViewOnly: result.estimationNumber ? true : false,
+      estViewOnly: result.preparedBy ? true : false,
+    });
     setRating(result.rating);
     setSelBuilderStatus(
       builderStatusOptions.filter((x) => x.value === result.status)[0]
@@ -257,12 +269,6 @@ function WithoutSparePartsHeader(props) {
       salesOffice: salesOfficeOptions.find(
         (element) => element.value === result.salesOffice
       ),
-    });
-    setViewOnlyTab({
-      custViewOnly: true,
-      machineViewOnly: true,
-      generalViewOnly: true,
-      estViewOnly: true,
     });
   };
 
@@ -689,7 +695,7 @@ function WithoutSparePartsHeader(props) {
               </div>
             </div>
           </div>
-          {activeElement === "header" && (
+          {activeElement.name === "header" && (
             <React.Fragment>
               <div className="card p-4 mt-5">
                 <h5 className="d-flex align-items-center mb-0">
@@ -1773,7 +1779,7 @@ function WithoutSparePartsHeader(props) {
               Add New Segment
             </Link> */}
                 <button
-                  onClick={() => setActiveElement("segment")}
+                  onClick={() => setActiveElement({ name: "segment", bId })}
                   className="btn bg-primary text-white"
                 >
                   <span className="mr-2">
@@ -1784,14 +1790,19 @@ function WithoutSparePartsHeader(props) {
               </div>
             </React.Fragment>
           )}
-          {activeElement === "segment" && (
+          {activeElement.name === "segment" && (
             <WithoutSpareParts
-              builderDetails={{ bId, builderId, setActiveElement }}
+              builderDetails={{ activeElement, setActiveElement }}
             />
           )}
-          {activeElement === "operation" && (
+          {activeElement.name === "operation" && (
             <WithoutRepairOption01
-              builderDetails={{ bId, builderId, setActiveElement }}
+              builderDetails={{ activeElement, setActiveElement }}
+            />
+          )}
+          {activeElement.name === "service" && (
+            <RepairServiceEstimate
+              builderDetails={{ activeElement, setActiveElement }}
             />
           )}
         </div>
