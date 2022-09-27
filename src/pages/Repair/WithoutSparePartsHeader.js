@@ -20,6 +20,7 @@ import Moment from "react-moment";
 import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
 import {
+  createBuilderVersion,
   fetchBuilderDetails,
   fetchBuilderPricingMethods,
   fetchBuilderVersionDet,
@@ -41,6 +42,9 @@ import WithoutSpareParts from "./WithoutSpareParts";
 import { Rating } from "@mui/material";
 import { customerSearch, machineSearch } from "services/searchServices";
 import RepairServiceEstimate from "./RepairServiceEstimate";
+import ModalCreateVersion from "./components/ModalCreateVersion";
+import { Dropdown, DropdownButton } from "react-bootstrap";
+import { ERROR_MAX_VERSIONS } from "./CONSTANTS";
 
 function WithoutSparePartsHeader(props) {
   const history = useHistory();
@@ -50,6 +54,8 @@ function WithoutSparePartsHeader(props) {
   const [searchSerialResults, setSearchSerialResults] = useState([]);
   const [builderId, setBuilderId] = useState("");
   const [bId, setBId] = useState("");
+  const [versionOpen, setVersionOpen] = useState(false);
+  const [versionDescription, setVersionDescription] = useState("");
   const [activeElement, setActiveElement] = useState({
     name: "header",
     bId: "",
@@ -209,6 +215,12 @@ function WithoutSparePartsHeader(props) {
     fetchBuilderVersionDet(builderId, e.value).then((result) => {
       populateHeader(result);
     });
+    setActiveElement({
+      name: "header",
+      bId,
+      sId: "",
+      oId: "",
+    })
   };
   const populateHeader = (result) => {
     setViewOnlyTab({
@@ -217,6 +229,7 @@ function WithoutSparePartsHeader(props) {
       generalViewOnly: result.estimationNumber ? true : false,
       estViewOnly: result.preparedBy ? true : false,
     });
+    setBId(result.id);
     setRating(result.rating);
     setSelBuilderStatus(
       builderStatusOptions.filter((x) => x.value === result.status)[0]
@@ -536,7 +549,6 @@ function WithoutSparePartsHeader(props) {
   const handleCreate = () => {
     history.push("/quoteTemplate");
   };
-  const activityOptions = ["Create Versions", "Show Errors", "Review"];
   const options = [
     { value: "Archived", label: "Archived" },
     { value: "Draft", label: "Draft" },
@@ -561,6 +573,31 @@ function WithoutSparePartsHeader(props) {
       });
   };
 
+  const createVersion = async (versionDesc) => {
+    // await createBuilderVersion(bId, versionDesc)
+    //   .then((result) => {
+    //     setVersionOpen(false);
+    //     setBId(result.id);
+    //     setSelectedVersion({
+    //       label: "Version " + result.versionNumber,
+    //       value: result.versionNumber,
+    //     });
+    //     populateHeader(result);
+    //     setVersionDescription('')
+    //     handleSnack("success", `Version ${result.versionNumber} has been created`);
+    //   })
+    //   .catch((err) => {
+    //     setVersionOpen(false);
+        
+    //     if(err.message === "Not Allowed")
+    //       handleSnack("warning", ERROR_MAX_VERSIONS )
+    //     else
+    //       handleSnack("error", "Error occurred while creating builder version");
+    //     setVersionDescription('');
+    //   });
+    handleSnack("info", "Create Version API needs to be finalized for Without Spare Parts");
+  };
+
   return (
     <React.Fragment>
       <CustomizedSnackbar
@@ -568,6 +605,13 @@ function WithoutSparePartsHeader(props) {
         open={openSnack}
         severity={severity}
         message={snackMessage}
+      />
+      <ModalCreateVersion
+        versionOpen={versionOpen}
+        handleCloseVersion={() => setVersionOpen(false)}
+        handleCreateVersion={createVersion}
+        description = {versionDescription}
+        setDescription = {setVersionDescription}
       />
       <div className="content-body">
         <div className="container-fluid ">
@@ -689,9 +733,11 @@ function WithoutSparePartsHeader(props) {
                 <a href="#" className="ml-3 font-size-14" title="Copy">
                   <img src={copyIcon}></img>
                 </a>
-                <a href="#" className="ml-2">
-                  <MuiMenuComponent options={activityOptions} />
-                </a>
+                <DropdownButton className="customDropdown ml-2" id="dropdown-item-button">
+                <Dropdown.Item as="button" onClick={() => setVersionOpen(true)}>New Versions</Dropdown.Item>
+                <Dropdown.Item as="button">Show Errors</Dropdown.Item>
+                <Dropdown.Item as="button">Review</Dropdown.Item>
+              </DropdownButton>  
               </div>
             </div>
           </div>

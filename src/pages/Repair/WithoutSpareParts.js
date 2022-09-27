@@ -6,19 +6,15 @@ import AddIcon from "@mui/icons-material/Add";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-import { Link, useHistory } from "react-router-dom";
 import { createSegment, fetchSegments } from "services/repairBuilderServices";
 import {
-  jobCodeSearch,
-  getComponentCodeSuggetions,
+  getComponentCodeSuggetions, jobCodeSearch
 } from "services/searchServices";
 import SearchBox from "./components/SearchBox";
 
 function WithoutSpareParts(props) {
-  const history = useHistory();
   // const { state } = props.location;
   const { activeElement, setActiveElement } = props.builderDetails;
-  const [selectedOption, setSelectedOption] = useState(null);
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -28,6 +24,7 @@ function WithoutSpareParts(props) {
   const [segments, setSegments] = useState([]);
   const [noOptionsCompCode, setNoOptionsCompCode] = useState(false);
   const [noOptionsJobCode, setNoOptionsJobCode] = useState(false);
+  const [showAddNewButton, setShowAddNewButton] = useState(true);
 
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -66,7 +63,9 @@ function WithoutSpareParts(props) {
                 lastSegment.description,
             });
           } else {
-            setSegmentData(newSegment);
+            loadNewSegmentUI();
+
+            // setSegmentData(newSegment);
           }
         })
         .catch((err) => {
@@ -144,10 +143,23 @@ function WithoutSpareParts(props) {
 
   const handleAnchors = (direction) => {
     console.log("entered handle anchors");
-    if (segmentData.segmentNumber > 1 && direction === "backward") {
-      let segmentToLoad = segments.filter(
-        (x) => x.segmentNumber === segmentData.segmentNumber - 1
-      );
+    if (
+      (segmentData.segmentNumber > 1 ||
+        (segmentData.header === "New Segment" && segments.length > 0)) &&
+      direction === "backward"
+    ) {
+      let segmentToLoad = [];
+      if (segmentData.header === "New Segment") {
+        segmentToLoad = segments.filter(
+          (x) => x.segmentNumber === segments.length - 1
+        );
+        setSegmentViewOnly(true);
+      } else {
+        segmentToLoad = segments.filter(
+          (x) => x.segmentNumber === segmentData.segmentNumber - 1
+        );
+      }
+
       setSegmentData({
         ...segmentToLoad[0],
         header:
@@ -160,17 +172,26 @@ function WithoutSpareParts(props) {
       segmentData.segmentNumber < segments.length &&
       direction === "forward"
     ) {
-      let segmentToLoad = segments.filter(
-        (x) => x.segmentNumber === segmentData.segmentNumber + 1
-      );
-      setSegmentData({
-        ...segmentToLoad[0],
-        header:
-          "Segment " +
-          segmentToLoad[0].segmentNumber +
-          " - " +
-          segmentToLoad[0].description,
-      });
+      let segmentToLoad = [];
+      if (
+        segments[segments.length - 1].header === "New Segment" &&
+        segments.length - 1 === segmentData.segmentNumber
+      ) {
+        setSegmentData({ ...segments[segments.length - 1] });
+        setSegmentViewOnly(false);
+      } else if (segments.length > segmentData.segmentNumber) {
+        segmentToLoad = segments.filter(
+          (x) => x.segmentNumber === segmentData.segmentNumber + 1
+        );
+        setSegmentData({
+          ...segmentToLoad[0],
+          header:
+            "Segment " +
+            segmentToLoad[0].segmentNumber +
+            " - " +
+            segmentToLoad[0].description,
+        });
+      }
     }
   };
 
@@ -192,7 +213,9 @@ function WithoutSpareParts(props) {
             "Segment " + result.segmentNumber + " - " + result.description,
         });
         // fetchSegmentsOfBuilder();
-        segments.push(result);
+        segments[segments.length - 1] = result;
+        setShowAddNewButton(true);
+        console.log(segments);
         setSegmentViewOnly(true);
         handleSnack(
           "success",
@@ -206,6 +229,29 @@ function WithoutSpareParts(props) {
   const loadNewSegmentUI = () => {
     setSegmentViewOnly(false);
     setSegmentData(newSegment);
+    segments.push(newSegment);
+    setShowAddNewButton(false);
+  };
+
+  const handleCancelSegment = () => {
+    if (segments.length > 1) {
+      segments.splice(
+        segments.findIndex((a) => a.header === "New Segment"),
+        1
+      );
+      setSegmentData({
+        ...segments[segments.length - 1],
+        header:
+          "Segment " +
+          segments[segments.length - 1].segmentNumber +
+          " - " +
+          segments[segments.length - 1].description,
+      });
+      setShowAddNewButton(true);
+      setSegmentViewOnly(true);
+    } else {
+      setActiveElement({ ...activeElement, name: "header" });
+    }
   };
 
   return (
@@ -222,7 +268,12 @@ function WithoutSpareParts(props) {
             <button
               onClick={() => handleAnchors("backward")}
               className="btn-no-border"
-              disabled={!(segmentData.segmentNumber > 1)}
+              disabled={
+                !(
+                  segmentData.segmentNumber > 1 ||
+                  (segmentData.header === "New Segment" && segments.length > 1)
+                )
+              }
             >
               <KeyboardArrowLeftIcon />
             </button>
@@ -230,17 +281,22 @@ function WithoutSpareParts(props) {
             <button
               onClick={() => handleAnchors("forward")}
               className="btn-no-border"
-              disabled={!(segmentData.segmentNumber !== segments.length)}
+              disabled={
+                segmentData.segmentNumber === segments.length ||
+                segmentData.header === "New Segment"
+              }
             >
               <KeyboardArrowRightIcon />
             </button>
             {/* </a> */}
-            <button className="btn-no-border ml-2" onClick={loadNewSegmentUI}>
-              <span className="ml-2">
-                <AddIcon />
-              </span>
-              Add New
-            </button>
+            {showAddNewButton && (
+              <button className="btn-no-border ml-2" onClick={loadNewSegmentUI}>
+                <span className="ml-2">
+                  <AddIcon />
+                </span>
+                Add New
+              </button>
+            )}
           </div>
         </div>
         <h5 className="d-flex align-items-center mb-0">
@@ -317,6 +373,14 @@ function WithoutSpareParts(props) {
               </div>
             </div>
             <div className=" text-right">
+              {segments.length > 0 && (
+                <button
+                  className="btn border bg-primary text-white mr-2"
+                  onClick={handleCancelSegment}
+                >
+                  Cancel
+                </button>
+              )}
               <button
                 className="btn border bg-primary text-white"
                 onClick={handleCreateSegment}

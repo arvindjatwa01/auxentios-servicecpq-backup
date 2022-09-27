@@ -20,21 +20,20 @@ const ModalCreateVersion = (props) => {
             Another version of this builder will be created.
           </p>
           <div className="hr"></div>
-          <div class="modal-body">
-            <div className="card w-100 border">
-              <input
-                type="text"
-                className="form-control border-radius-10"
-                placeholder="Builder Description"
-                value={props.description}
-                onChange={(e) => props.setDescription(e.target.value)}
-              />
-            </div>
+          <div class="modal-body" style={{ marginBottom: 10 }}>
+            <input
+              type="text"
+              className="form-control border-radius-10"
+              placeholder="Builder Description"
+              value={props.description}
+              onChange={(e) => props.setDescription(e.target.value)}
+            />
           </div>
           <div class="modal-footer">
             <button
               className="btn  btn-primary w-100"
               onClick={() => props.handleCreateVersion(props.description)}
+              disabled={!props.description}
             >
               Create
             </button>

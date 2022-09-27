@@ -831,14 +831,6 @@ function PartList(props) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [versionOpen, setVersionOpen] = useState(false);
 
-  const headerMenuClick = (selectedOption) => {
-    if (selectedOption === "Create Versions") {
-      //   setConfirmationOpen(true);
-      // }
-      createVersion();
-    }
-  };
-
   // Search table column for spareparts
   const columnsPartListSearch = [
     { headerName: "GroupNumber", field: "groupNumber", flex: 1, width: 70 },

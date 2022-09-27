@@ -26,6 +26,7 @@ function WithoutRepairOption01(props) {
   const [operations, setOperations] = useState([]);
   const [noOptionsCompCode, setNoOptionsCompCode] = useState(false);
   const [noOptionsJobCode, setNoOptionsJobCode] = useState(false);
+  const [showAddNewButton, setShowAddNewButton] = useState(true);
 
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -65,8 +66,10 @@ function WithoutRepairOption01(props) {
                 lastOperation.modifierDescription, //Rename after modifications in UI
             });
           } else {
-            setOperationData(newOperation);
+            loadNewOperationUI();
+            // setOperationData(newOperation);
           }
+          // console.log(operationData);
         })
         .catch((err) => {
           handleSnack("error", "Error occurred while fetching operations!");
@@ -150,10 +153,22 @@ function WithoutRepairOption01(props) {
 
   const handleAnchors = (direction) => {
     console.log("entered handle anchors");
-    if (operationData.operationNumber > 1 && direction === "backward") {
-      let operationToLoad = operations.filter(
-        (x) => x.operationNumber === operationData.operationNumber - 1
-      );
+    if (
+      (operationData.operationNumber > 1 ||
+        (operationData.header === "New Operation" && operations.length > 0)) &&
+      direction === "backward"
+    ) {
+      let operationToLoad = [];
+      if (operationData.header === "New Operation") {
+        operationToLoad = operations.filter(
+          (x) => x.operationNumber === operations.length - 1
+        );
+        setOperationViewOnly(true);
+      } else {
+        operationToLoad = operations.filter(
+          (x) => x.operationNumber === operationData.operationNumber - 1
+        );
+      }
       setOperationData({
         ...operationToLoad[0],
         header:
@@ -166,22 +181,31 @@ function WithoutRepairOption01(props) {
       operationData.operationNumber < operations.length &&
       direction === "forward"
     ) {
-      let operationToLoad = operations.filter(
-        (x) => x.operationNumber === operationData.operationNumber + 1
-      );
-      setOperationData({
-        ...operationToLoad[0],
-        header:
-          "Operation " +
-          operationToLoad[0].operationNumber +
-          " - " +
-          operationToLoad[0].modifierDescription, //Rename
-      });
+      let operationToLoad = [];
+      if (
+        operations[operations.length - 1].header === "New Operation" &&
+        operations.length - 1 === operationData.operationNumber
+      ) {
+        setOperationData({ ...operations[operations.length - 1] });
+        setOperationViewOnly(false);
+      } else if (operations.length > operationData.operationNumber) {
+        operationToLoad = operations.filter(
+          (x) => x.operationNumber === operationData.operationNumber + 1
+        );
+        setOperationData({
+          ...operationToLoad[0],
+          header:
+            "Operation " +
+            operationToLoad[0].operationNumber +
+            " - " +
+            operationToLoad[0].modifierDescription, //Rename
+        });
+      }
     }
   };
 
   const handleCreateOperation = () => {
-    let sid = activeElement?.sId ? activeElement.sId : 77;
+    let sid = activeElement?.sId;
     let data = {
       jobCode: operationData.jobCode,
       jobCodeDescription: operationData.jobCodeDescription,
@@ -202,20 +226,44 @@ function WithoutRepairOption01(props) {
             " - " +
             result.modifierDescription, //Rename to description once API is changed
         });
-        operations.push(result);
+        operations[operations.length - 1] = result;
+        setShowAddNewButton(true);
         setOperationViewOnly(true);
         handleSnack(
           "success",
-          `Successfully added Operation ${result.segmentNumber} details!`
+          `Successfully added Operation ${result.operationNumber} details!`
         );
       })
       .catch((e) => {
-        handleSnack("error", "Error occurred while saving the segment data!");
+        handleSnack("error", "Error occurred while saving the operation data!");
       });
   };
   const loadNewOperationUI = () => {
     setOperationViewOnly(false);
     setOperationData(newOperation);
+    operations.push(newOperation);
+    setShowAddNewButton(false);
+  };
+
+  const handleCancelOperation = () => {
+    if (operations.length > 1) {
+      operations.splice(
+        operations.findIndex((a) => a.header === "New Operation"),
+        1
+      );
+      setOperationData({
+        ...operations[operations.length - 1],
+        header:
+          "Operation " +
+          operations[operations.length - 1].operationNumber +
+          " - " +
+          operations[operations.length - 1].modifierDescription,
+      });
+      setShowAddNewButton(true);
+      setOperationViewOnly(true);
+    } else {
+      setActiveElement({ ...activeElement, name: "segment" });
+    }
   };
 
   return (
@@ -232,7 +280,13 @@ function WithoutRepairOption01(props) {
             <button
               onClick={() => handleAnchors("backward")}
               className="btn-no-border"
-              disabled={!(operationData.operationNumber > 1)}
+              disabled={
+                !(
+                  operationData.operationNumber > 1 ||
+                  (operationData.header === "New Operation" &&
+                    operations.length > 1)
+                )
+              }
             >
               <KeyboardArrowLeftIcon />
             </button>
@@ -240,17 +294,24 @@ function WithoutRepairOption01(props) {
             <button
               onClick={() => handleAnchors("forward")}
               className="btn-no-border"
-              disabled={!(operationData.operationNumber !== operations.length)}
+              disabled={
+                operationData.operationNumber === operations.length ||
+                operationData.header === "New Operation"
+              }
             >
               <KeyboardArrowRightIcon />
             </button>
-
-            <button className="btn-no-border ml-2" onClick={loadNewOperationUI}>
-              <span className="ml-2">
-                <AddIcon />
-              </span>
-              Add New
-            </button>
+            {showAddNewButton && (
+              <button
+                className="btn-no-border ml-2"
+                onClick={loadNewOperationUI}
+              >
+                <span className="ml-2">
+                  <AddIcon />
+                </span>
+                Add New
+              </button>
+            )}
           </div>
         </div>
         <h5 className="d-flex align-items-center mb-0">
@@ -356,7 +417,16 @@ function WithoutRepairOption01(props) {
                 </div>
               </div>
             </div>
+
             <div className=" text-right">
+              {operations.length > 0 && (
+                <button
+                  className="btn border bg-primary text-white mr-2"
+                  onClick={handleCancelOperation}
+                >
+                  Cancel
+                </button>
+              )}
               <button
                 className="btn border bg-primary text-white"
                 onClick={handleCreateOperation}
