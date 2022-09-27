@@ -1599,9 +1599,9 @@ export function PortfolioTemplatesResult(props) {
         const customItemsId = location.selectedTemplateItems.map((data, i) => {
 
             console.log("my map data is :=> ", data);
-            console.log("itemHeaderId is :=>  ", data.itemHeaderModel.itemHeaderId);
-            console.log("itemHeaderModel is => :  ", data.itemHeaderModel);
-            itemIdData.push({ "customItemId": parseInt(data.itemId) })
+            console.log("itemHeaderId is :=>  ", data.customItemHeaderModel?.itemHeaderId);
+            console.log("itemHeaderModel is => :  ", data.customItemHeaderModel);
+            itemIdData.push({ "customItemId": parseInt(data.customItemId) })
             // itemIdValue.push(data)
 
             // data.itemBodyModel.itemPrices.map((pricedata, j) => {
@@ -1678,7 +1678,7 @@ export function PortfolioTemplatesResult(props) {
         // console.log("selected Custom Items Data are  : ", selectedCustomItems)
     }, [])
 
-    console.log("selected Custom Items Data are  : ", selectedCustomItems)
+    // console.log("selected Custom Items Data are  : ", selectedCustomItems)
 
     const categoryList = useAppSelector(
         selectStrategyTaskOption(selectCategoryList)
@@ -2687,10 +2687,21 @@ export function PortfolioTemplatesResult(props) {
                     <div>ID</div>
                 </>
             ),
-            selector: (row) => row.itemId,
+            selector: (row) => row.customItemId,
             wrap: true,
             sortable: true,
-            format: (row) => row.itemId,
+            format: (row) => row.customItemId,
+        },
+        {
+            name: (
+                <>
+                    <div>Name</div>
+                </>
+            ),
+            selector: (row) => row.itemName,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemName,
         },
         {
             name: (
@@ -2698,10 +2709,10 @@ export function PortfolioTemplatesResult(props) {
                     <div>Description</div>
                 </>
             ),
-            selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+            selector: (row) => row.customItemHeaderModel?.itemHeaderDescription,
             wrap: true,
             sortable: true,
-            format: (row) => row.itemHeaderModel.itemHeaderDescription,
+            format: (row) => row.customItemHeaderModel?.itemHeaderDescription,
         },
         {
             name: (
@@ -2709,10 +2720,10 @@ export function PortfolioTemplatesResult(props) {
                     <div>Solution Code</div>
                 </>
             ),
-            selector: (row) => row.itemBodyModel.solutionCode,
+            selector: (row) => row.customItemBodyModel?.solutionCode,
             wrap: true,
             sortable: true,
-            format: (row) => row.itemBodyModel.solutionCode,
+            format: (row) => row.customItemBodyModel?.solutionCode,
         },
         {
             name: (
@@ -2720,32 +2731,32 @@ export function PortfolioTemplatesResult(props) {
                     <div>Repair Option</div>
                 </>
             ),
-            selector: (row) => row.itemBodyModel.repairOption,
+            selector: (row) => row.customItemHeaderModel?.itemHeaderGeographic,
             wrap: true,
             sortable: true,
-            format: (row) => row.itemBodyModel.repairOption,
+            format: (row) => row.customItemHeaderModel?.itemHeaderGeographic,
         },
         {
             name: (
                 <>
-                    <div>Frequency</div>
+                    <div>Component Code</div>
                 </>
             ),
-            selector: (row) => row.itemBodyModel.frequency,
+            selector: (row) => row.customItemHeaderModel?.componentCode,
             wrap: true,
             sortable: true,
-            format: (row) => row.itemBodyModel.frequency,
+            format: (row) => row.customItemHeaderModel?.componentCode,
         },
         {
             name: (
                 <>
-                    <div>Quantity</div>
+                    <div>Task Type</div>
                 </>
             ),
-            selector: (row) => row.itemBodyModel.quantity,
+            selector: (row) => row.customItemBodyModel?.taskType,
             wrap: true,
             sortable: true,
-            format: (row) => row.itemBodyModel.quantity,
+            format: (row) => row.customItemBodyModel?.taskType,
         },
         {
             name: (
@@ -2753,10 +2764,10 @@ export function PortfolioTemplatesResult(props) {
                     <div>Total $</div>
                 </>
             ),
-            selector: (row) => row.itemBodyModel.totalPrice,
+            selector: (row) => row.customItemHeaderModel?.netPrice,
             wrap: true,
             sortable: true,
-            format: (row) => row.itemBodyModel.totalPrice,
+            format: (row) => row.customItemHeaderModel?.netPrice,
         },
     ];
 

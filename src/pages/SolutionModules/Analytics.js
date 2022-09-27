@@ -71,7 +71,8 @@ import {
    getPortfolioCommonConfig,
    getSearchQueryCoverage,
    getSearchCoverageForFamily,
-   itemCreation
+   itemCreation,
+   customitemCreation,
 } from "../../services/index";
 import DataTable from "react-data-table-component";
 
@@ -156,6 +157,8 @@ export const Analytics = () => {
    const [selectTypeOfSolution, setSelectTypeOfSolution] = useState(-1)
    const [solutionValue, setSolutionValue] = useState(0)
    const [selectedTemplateLabel, setSelectedTemplateLabel] = useState("");
+
+   const [createdCustomItems, setCreatedCustomItems] = useState([])
 
    let history = useHistory()
 
@@ -469,7 +472,7 @@ export const Analytics = () => {
       setShowExplore(true)
    }
 
-   const handleTemplateItemSaveAndContinue = () => {
+   const handleTemplateItemSaveAndContinue = async () => {
       // setOpenSolutionSelector(false)
       // setSolutionBuilderShow(false);
       // setModalComponent(null)
@@ -485,11 +488,115 @@ export const Analytics = () => {
             solutionValueIs: solutionValue
          });
       } else if (solutionValue == 0) {
+         // history.push({
+         //    pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
+         //    selectedTemplateItems: selectedPortfolioTempMasterData,
+         //    solutionValueIs: solutionValue
+         // });
+         // alert("solution value is : "+solutionValue)
+
+         // selectedPortfolioTempMasterData.forEach(object => {
+         //    delete object['itemId'];
+         // });
+
+         console.log("selecte Portfolio Items : ", selectedPortfolioTempMasterData);
+
+         console.log("createdCustomItems is :", createdCustomItems);
+         for (let k = 0; k < selectedPortfolioTempMasterData.length; k++) {
+
+            if (selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices.length === 0) {
+
+               selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices = selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices;
+               //console.log("my items are else : ", selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices)
+
+            } else {
+               selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices = selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices.map(item => {
+                  return {
+                     customItemPriceDataId: parseInt(item.itemPriceDataId),
+                  };
+               });
+               //console.log("my items are : ", selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices);
+            }
+
+            let customItemObj = {
+               customItemId: 0,
+               itemName: selectedPortfolioTempMasterData[k].itemName,
+               customItemHeaderModel: {
+                  // customItemHeaderId: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderId,
+                  customItemHeaderId: 0,
+                  itemHeaderDescription: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderDescription,
+                  bundleFlag: selectedPortfolioTempMasterData[k].itemHeaderModel.bundleFlag,
+                  portfolioItemId: selectedPortfolioTempMasterData[k].itemHeaderModel.portfolioItemId,
+                  reference: selectedPortfolioTempMasterData[k].itemHeaderModel.reference,
+                  itemHeaderMake: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderMake,
+                  itemHeaderFamily: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderFamily,
+                  model: selectedPortfolioTempMasterData[k].itemHeaderModel.model,
+                  prefix: selectedPortfolioTempMasterData[k].itemHeaderModel.prefix,
+                  type: selectedPortfolioTempMasterData[k].itemHeaderModel.type,
+                  additional: selectedPortfolioTempMasterData[k].itemHeaderModel.additional,
+                  currency: selectedPortfolioTempMasterData[k].itemHeaderModel.currency,
+                  netPrice: selectedPortfolioTempMasterData[k].itemHeaderModel.netPrice,
+                  itemProductHierarchy: selectedPortfolioTempMasterData[k].itemHeaderModel.itemProductHierarchy,
+                  itemHeaderGeographic: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderGeographic,
+                  responseTime: selectedPortfolioTempMasterData[k].itemHeaderModel.responseTime,
+                  usage: selectedPortfolioTempMasterData[k].itemHeaderModel.usage,
+                  validFrom: selectedPortfolioTempMasterData[k].itemHeaderModel.validFrom,
+                  validTo: selectedPortfolioTempMasterData[k].itemHeaderModel.validTo,
+                  estimatedTime: selectedPortfolioTempMasterData[k].itemHeaderModel.estimatedTime,
+                  servicePrice: selectedPortfolioTempMasterData[k].itemHeaderModel.servicePrice,
+                  status: selectedPortfolioTempMasterData[k].itemHeaderModel.status,
+                  componentCode: selectedPortfolioTempMasterData[k].itemHeaderModel.componentCode,
+                  componentDescription: selectedPortfolioTempMasterData[k].itemHeaderModel.componentDescription,
+                  serialNumber: selectedPortfolioTempMasterData[k].itemHeaderModel.serialNumber,
+                  itemHeaderStrategy: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderStrategy,
+                  variant: selectedPortfolioTempMasterData[k].itemHeaderModel.variant,
+                  itemHeaderCustomerSegment: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderCustomerSegment,
+                  jobCode: selectedPortfolioTempMasterData[k].itemHeaderModel.jobCode,
+                  preparedBy: selectedPortfolioTempMasterData[k].itemHeaderModel.preparedBy,
+                  approvedBy: selectedPortfolioTempMasterData[k].itemHeaderModel.approvedBy,
+                  preparedOn: selectedPortfolioTempMasterData[k].itemHeaderModel.preparedOn,
+                  revisedBy: selectedPortfolioTempMasterData[k].itemHeaderModel.revisedBy,
+                  revisedOn: selectedPortfolioTempMasterData[k].itemHeaderModel.revisedOn,
+                  salesOffice: selectedPortfolioTempMasterData[k].itemHeaderModel.salesOffice,
+                  offerValidity: selectedPortfolioTempMasterData[k].itemHeaderModel.offerValidity
+               },
+               customItemBodyModel: {
+                  // customItemBodyId: parseInt(selectedPortfolioTempMasterData[k].itemBodyModel.itemBodyId),
+                  customItemBodyId: 0,
+                  itemBodyDescription: selectedPortfolioTempMasterData[k].itemBodyModel.itemBodyDescription,
+                  spareParts: selectedPortfolioTempMasterData[k].itemBodyModel.spareParts,
+                  labours: selectedPortfolioTempMasterData[k].itemBodyModel.labours,
+                  miscellaneous: selectedPortfolioTempMasterData[k].itemBodyModel.miscellaneous,
+                  taskType: selectedPortfolioTempMasterData[k].itemBodyModel.taskType,
+                  solutionCode: selectedPortfolioTempMasterData[k].itemBodyModel.solutionCode,
+                  usageIn: selectedPortfolioTempMasterData[k].itemBodyModel.usageIn,
+                  usage: selectedPortfolioTempMasterData[k].itemBodyModel.usage,
+                  year: selectedPortfolioTempMasterData[k].itemBodyModel.year,
+                  avgUsage: selectedPortfolioTempMasterData[k].itemBodyModel.avgUsage,
+                  unit: selectedPortfolioTempMasterData[k].itemBodyModel.unit,
+                  // customItemPrices: selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices,
+                  customItemPrices: [],
+               }
+            }
+
+            const itemRes = await customitemCreation(customItemObj)
+
+            console.log(" Response is : ", itemRes.data)
+            
+            createdCustomItems.push(itemRes.data)
+
+            // console.log("create custom Item response data for index " + selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderId + "  " + itemRes);
+         }
+
          history.push({
             pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
-            selectedTemplateItems: selectedPortfolioTempMasterData,
+            selectedTemplateItems: createdCustomItems,
             solutionValueIs: solutionValue
          });
+
+
+         // console.log("selecte Portfolio Items : ", selectedPortfolioTempMasterData);
+
       }
       // history.push({
       //    pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
@@ -2720,7 +2827,7 @@ export const Analytics = () => {
                      <FormControlLabel
                         className="col-md-4 m-0 align-itemsstart"
                         value="0"
-                        control={<Radio className="mx-1"  checked={solutionValue == 0}/>}
+                        control={<Radio className="mx-1" checked={solutionValue == 0} />}
                         label="Portfolio Template"
                         labelPlacement="end"
                      />
