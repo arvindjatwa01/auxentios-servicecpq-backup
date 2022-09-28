@@ -11,6 +11,7 @@ import {
   getComponentCodeSuggetions, jobCodeSearch
 } from "services/searchServices";
 import SearchBox from "./components/SearchBox";
+import { NEW_SEGMENT } from "./CONSTANTS";
 
 function WithoutSpareParts(props) {
   // const { state } = props.location;
@@ -33,7 +34,7 @@ function WithoutSpareParts(props) {
     setOpenSnack(false);
   };
   const newSegment = {
-    header: "New Segment",
+    header: NEW_SEGMENT,
     segmentNumber: "",
     jobCode: "",
     title: "",
@@ -64,11 +65,10 @@ function WithoutSpareParts(props) {
             });
           } else {
             loadNewSegmentUI();
-
-            // setSegmentData(newSegment);
           }
         })
         .catch((err) => {
+          loadNewSegmentUI();
           handleSnack("error", "Error occurred while fetching segments!");
         });
     } else {
@@ -143,17 +143,14 @@ function WithoutSpareParts(props) {
 
   const handleAnchors = (direction) => {
     console.log("entered handle anchors");
-    if (
-      (segmentData.segmentNumber > 1 ||
-        (segmentData.header === "New Segment" && segments.length > 0)) &&
-      direction === "backward"
-    ) {
+    setSegmentViewOnly(true);
+    if (direction === "backward") {
       let segmentToLoad = [];
-      if (segmentData.header === "New Segment") {
+      if (segmentData.header === NEW_SEGMENT) {
         segmentToLoad = segments.filter(
           (x) => x.segmentNumber === segments.length - 1
         );
-        setSegmentViewOnly(true);
+        
       } else {
         segmentToLoad = segments.filter(
           (x) => x.segmentNumber === segmentData.segmentNumber - 1
@@ -168,13 +165,10 @@ function WithoutSpareParts(props) {
           " - " +
           segmentToLoad[0].description,
       });
-    } else if (
-      segmentData.segmentNumber < segments.length &&
-      direction === "forward"
-    ) {
+    } else if (direction === "forward") {
       let segmentToLoad = [];
       if (
-        segments[segments.length - 1].header === "New Segment" &&
+        segments[segments.length - 1].header === NEW_SEGMENT &&
         segments.length - 1 === segmentData.segmentNumber
       ) {
         setSegmentData({ ...segments[segments.length - 1] });
@@ -196,7 +190,7 @@ function WithoutSpareParts(props) {
   };
 
   const handleCreateSegment = () => {
-    let bid = activeElement?.bId ? activeElement.bId : 77;
+    let bid = activeElement?.bId;
     let data = {
       jobCode: segmentData.jobCode,
       title: segmentData.title,
@@ -236,7 +230,7 @@ function WithoutSpareParts(props) {
   const handleCancelSegment = () => {
     if (segments.length > 1) {
       segments.splice(
-        segments.findIndex((a) => a.header === "New Segment"),
+        segments.findIndex((a) => a.header === NEW_SEGMENT),
         1
       );
       setSegmentData({
@@ -271,7 +265,7 @@ function WithoutSpareParts(props) {
               disabled={
                 !(
                   segmentData.segmentNumber > 1 ||
-                  (segmentData.header === "New Segment" && segments.length > 1)
+                  (segmentData.header === NEW_SEGMENT && segments.length > 1)
                 )
               }
             >
@@ -283,7 +277,7 @@ function WithoutSpareParts(props) {
               className="btn-no-border"
               disabled={
                 segmentData.segmentNumber === segments.length ||
-                segmentData.header === "New Segment"
+                segmentData.header === NEW_SEGMENT
               }
             >
               <KeyboardArrowRightIcon />

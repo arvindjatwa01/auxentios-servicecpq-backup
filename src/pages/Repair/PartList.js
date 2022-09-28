@@ -2471,6 +2471,9 @@ function PartList(props) {
                 "&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell": {
                   py: "22px",
                 },
+                "&.MuiDataGrid-root--densityStandard .MuiTablePagination-select, &.MuiDataGrid-root--densityStandard .MuiSelect-icon": {
+                  marginTop: -1,                  
+                },
               }}
               rows={spareparts}
               columns={columnsPartList.map((column) => ({

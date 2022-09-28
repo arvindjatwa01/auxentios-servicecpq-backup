@@ -8,6 +8,9 @@ export const PARTS_TAG_OPTIONS = [
   { label: "Missing", value: "missing" },
   { label: "Core", value: "core" },
 ];
+export const NEW_SEGMENT = "New Segment";
+export const NEW_OPERATION = "New Operation";
+
 export const ERROR_MAX_VERSIONS =
   "Three versions already exist, if  you want another version then version 3.0 must be archieved";
 export const SPAREPART_SEARCH_Q_OPTIONS = [
