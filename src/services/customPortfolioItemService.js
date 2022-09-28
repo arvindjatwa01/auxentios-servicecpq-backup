@@ -1,6 +1,6 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { CREATE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID } from "./CONSTANTS";
+import { CREATE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID, CREATE_CUSTOM_PRICE } from "./CONSTANTS";
 
 export const customitemCreation = (payLoad) => {
     console.log("customPortfolioItemService > customitemCreation called...");
@@ -85,3 +85,24 @@ export const updateCustomItemData = (id,payLoad) => {
       }
     });
   };
+
+  export const customPriceCreation = (payLoad) => {
+    console.log("customPortfolioItemService > customProiceCreation called...");
+    return new Promise((resolve, reject) => {
+        try {
+            axios
+                .post(CREATE_CUSTOM_PRICE(), payLoad)
+                .then((res) => {
+                    console.log("customProiceCreation > axios res=", res);
+                    resolve(res);
+                })
+                .catch((err) => {
+                    console.log("customProiceCreation > axios err=", err);
+                    reject("Error in customProiceCreation axios!");
+                });
+        } catch (error) {
+            console.error("in customPortfolioItemService > customProiceCreation, Err===", error);
+            reject(SYSTEM_ERROR);
+        }
+    });
+};

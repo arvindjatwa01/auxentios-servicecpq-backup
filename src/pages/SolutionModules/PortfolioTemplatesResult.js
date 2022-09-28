@@ -3141,7 +3141,7 @@ export function PortfolioTemplatesResult(props) {
                                                     type="text"
                                                     className="form-control border-radius-10"
                                                     placeholder="(Auto-generated)"
-                                                    // value={portfolioId}
+                                                    value={location.autocreatedcustomPortfolioData.customPortfolioId}
                                                     // onChange={handleGeneralInputChange}
                                                     disabled={true}
                                                 />

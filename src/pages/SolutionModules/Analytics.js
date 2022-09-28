@@ -72,7 +72,12 @@ import {
    getSearchQueryCoverage,
    getSearchCoverageForFamily,
    itemCreation,
+   getItemPrice,
+   itemPriceDataId,
    customitemCreation,
+   customPriceCreation,
+   createCustomPortfolio,
+   updateCustomPortfolio,
 } from "../../services/index";
 import DataTable from "react-data-table-component";
 
@@ -153,6 +158,8 @@ export const Analytics = () => {
    const [solutionTempFlagIs, setSolutionTempFlagIs] = useState(false)
    const [solutionLoadingStatus, setSolutionLoadingStatus] = useState("")
    const [solutionRadioCheck, setSolutionRadioCheck] = useState("");
+
+   const [createdCustomItemsIdData, setCreatedCustomItemsIdData] = useState([])
 
    const [selectTypeOfSolution, setSelectTypeOfSolution] = useState(-1)
    const [solutionValue, setSolutionValue] = useState(0)
@@ -499,24 +506,122 @@ export const Analytics = () => {
          //    delete object['itemId'];
          // });
 
+         // var customItemsIdData = [];
+         var newCustomItemsId = [];
+
          console.log("selecte Portfolio Items : ", selectedPortfolioTempMasterData);
 
          console.log("createdCustomItems is :", createdCustomItems);
+         let reqData = {
+            type: "MACHINE",
+            name: `${Date.now()}`,
+            description: "",
+            externalReference: "",
+            customerSegment: "",
+            strategyTask: "PREVENTIVE_MAINTENANCE",
+            taskType: "PM1",
+            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+            productHierarchy: "END_PRODUCT",
+            geographic: "ONSITE",
+            availability: "AVAILABILITY_GREATER_95",
+            responseTime: "PROACTIVE",
+            type: "MACHINE",
+            application: "HILL",
+            contractOrSupport: "LEVEL_I",
+            lifeStageOfMachine: "NEW_BREAKIN",
+            supportLevel: "PREMIUM",
+            serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
+         };
+
+         const customPortfolioRes = await createCustomPortfolio(reqData);
+         var CreatedcustomPortfolioData = customPortfolioRes.data;
+
+         console.log("customPortfolioRes customItems : ", CreatedcustomPortfolioData.customItems)
+
          for (let k = 0; k < selectedPortfolioTempMasterData.length; k++) {
 
-            if (selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices.length === 0) {
+            var customItemsIdData = [];
+            var customPriceIdArr = [];
+            // } else {
+            console.log("Hello " + k);
+            for (let j = 0; j < selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices.length; j++) {
 
-               selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices = selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices;
-               //console.log("my items are else : ", selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices)
+               /* =============== Search Custom Price Using selected Item PriceDataId ============== */
 
-            } else {
-               selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices = selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices.map(item => {
-                  return {
-                     customItemPriceDataId: parseInt(item.itemPriceDataId),
-                  };
-               });
-               //console.log("my items are : ", selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices);
+               var itemsPrice = await itemPriceDataId(selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices[j].itemPriceDataId);
+               // console.log("item price is before : ", itemsPrice)
+
+               delete itemsPrice['itemPriceDataId'];
+
+               itemsPrice['customPortfolio'] = {};
+               itemsPrice['customItemPriceDataId'] = 0;
+               delete itemsPrice['portfolio'];
+
+
+               let itemPriceObj = {
+
+                  customItemPriceDataId: 0,
+                  quantity: parseInt(itemsPrice.quantity),
+                  startUsage: itemsPrice.startUsage,
+                  endUsage: itemsPrice.endUsage,
+                  standardJobId: itemsPrice.standardJobId,
+                  repairKitId: itemsPrice.repairKitId,
+                  templateDescription: itemsPrice.templateDescription,
+                  repairOption: itemsPrice.repairOption,
+                  frequency: itemsPrice.frequency,
+                  additional: itemsPrice.additional,
+                  recommendedValue: parseInt(itemsPrice.recommendedValue),
+                  partListId: itemsPrice.partListId,
+                  serviceEstimateId: itemsPrice.serviceEstimateId,
+                  numberOfEvents: parseInt(itemsPrice.numberOfEvents),
+                  priceMethod: itemsPrice.priceMethod,
+                  priceType: itemsPrice.priceType,
+                  listPrice: itemsPrice.listPrice,
+                  priceEscalation: itemsPrice.priceEscalation,
+                  calculatedPrice: itemsPrice.calculatedPrice,
+                  flatPrice: itemsPrice.flatPrice,
+                  discountType: itemsPrice.discountType,
+                  year: itemsPrice.year,
+                  noOfYear: itemsPrice.noOfYear,
+                  sparePartsPrice: itemsPrice.sparePartsPrice,
+                  sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
+                  servicePrice: itemsPrice.servicePrice,
+                  labourPrice: itemsPrice.labourPrice,
+                  labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                  miscPrice: itemsPrice.miscPrice,
+                  miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
+                  totalPrice: itemsPrice.totalPrice,
+                  netService: itemsPrice.netService,
+                  customPortfolio: {
+                     portfolioId: 26
+                  },
+                  tenantId: itemsPrice.tenantId,
+                  partsRequired: itemsPrice.partsRequired,
+                  labourRequired: itemsPrice.labourRequired,
+                  serviceRequired: itemsPrice.serviceRequired,
+                  miscRequired: itemsPrice.miscRequired
+               }
+
+               customItemsIdData.push(itemPriceObj)
+               // console.log("item price is after  : ", itemsPrice)
+
+               // console.log("My values are : ", selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices[j].itemPriceDataId)
+
             }
+            for (let p = 0; p < customItemsIdData.length; p++) {
+               var customPriceDataCreate = await customPriceCreation(customItemsIdData[p])
+
+               customPriceIdArr.push({
+                  customItemPriceDataId: parseInt(customPriceDataCreate.data.customItemPriceDataId),
+               })
+               // var customPriceIdData = customPriceDataCreate.data.map(item => {
+               // return {
+               //    customItemPriceDataId: parseInt(item.itemPriceDataId),
+               // };
+            }
+
+
+            // console.log("customPriceDataCreate 00 : ", customPriceIdArr)
 
             let customItemObj = {
                customItemId: 0,
@@ -561,7 +666,6 @@ export const Analytics = () => {
                   offerValidity: selectedPortfolioTempMasterData[k].itemHeaderModel.offerValidity
                },
                customItemBodyModel: {
-                  // customItemBodyId: parseInt(selectedPortfolioTempMasterData[k].itemBodyModel.itemBodyId),
                   customItemBodyId: 0,
                   itemBodyDescription: selectedPortfolioTempMasterData[k].itemBodyModel.itemBodyDescription,
                   spareParts: selectedPortfolioTempMasterData[k].itemBodyModel.spareParts,
@@ -575,34 +679,50 @@ export const Analytics = () => {
                   avgUsage: selectedPortfolioTempMasterData[k].itemBodyModel.avgUsage,
                   unit: selectedPortfolioTempMasterData[k].itemBodyModel.unit,
                   // customItemPrices: selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices,
-                  customItemPrices: [],
+                  customItemPrices: customPriceIdArr,
                }
             }
+
+
 
             const itemRes = await customitemCreation(customItemObj)
 
             console.log(" Response is : ", itemRes.data)
-            
+
             createdCustomItems.push(itemRes.data)
 
             // console.log("create custom Item response data for index " + selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderId + "  " + itemRes);
          }
+         console.log("createdCustomItems 9871 : ", createdCustomItems)
+         const customItemsId = createdCustomItems.map((data, i) => {
+            CreatedcustomPortfolioData.customItems.push({ "customItemId": parseInt(data.customItemId) })
 
-         history.push({
-            pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
-            selectedTemplateItems: createdCustomItems,
-            solutionValueIs: solutionValue
-         });
+         })
+         // setCreatedCustomItemsIdData(newCustomItemsId)
+
+         console.log("CreatedcustomPortfolioData Final : ", CreatedcustomPortfolioData);
+
+         const updatePortfolioRes = await updateCustomPortfolio(
+            CreatedcustomPortfolioData.customPortfolioId,
+            CreatedcustomPortfolioData
+         );
+         if (updatePortfolioRes.status == 200) {
+            history.push({
+               pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
+               selectedTemplateItems: createdCustomItems,
+               solutionValueIs: solutionValue,
+               autocreatedcustomPortfolioData: CreatedcustomPortfolioData
+            });
+         }
 
 
-         // console.log("selecte Portfolio Items : ", selectedPortfolioTempMasterData);
+         // history.push({
+         //    pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
+         //    selectedTemplateItems: createdCustomItems,
+         //    solutionValueIs: solutionValue
+         // });
 
       }
-      // history.push({
-      //    pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
-      //    selectedTemplateItems: selectedPortfolioTempMasterData,
-      //    state: { NewData: "NewData isss" }
-      // });
 
    }
 
