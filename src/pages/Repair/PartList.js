@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Select from "react-select";
 import SelectBox from "@mui/material/Select";
-import { Modal } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import Checkbox from "@mui/material/Checkbox";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -93,6 +93,7 @@ import {
   sparePartSearch,
 } from "services/searchServices";
 import ModalCreateVersion from "./components/ModalCreateVersion";
+import ModalShare from "./components/ModalShare";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -193,6 +194,11 @@ function PartList(props) {
   const [totalPartsCount, setTotalPartsCount] = useState(0);
   const [filterQuery, setFilterQuery] = useState("");
   const [versionDescription, setVersionDescription] = useState("");
+
+  const activityOptions = ["New Versions", "Show Errors", "Review"];
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [versionOpen, setVersionOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [viewOnlyTab, setViewOnlyTab] = useState({
     custViewOnly: false,
     machineViewOnly: false,
@@ -831,10 +837,6 @@ function PartList(props) {
     setSelectedMasterData([]);
   };
 
-  const activityOptions = ["New Versions", "Show Errors", "Review"];
-  const [confirmationOpen, setConfirmationOpen] = useState(false);
-  const [versionOpen, setVersionOpen] = useState(false);
-
   // Search table column for spareparts
   const columnsPartListSearch = [
     { headerName: "GroupNumber", field: "groupNumber", flex: 1, width: 70 },
@@ -1229,7 +1231,13 @@ function PartList(props) {
         description={versionDescription}
         setDescription={setVersionDescription}
       />
-
+      <ModalShare
+        shareOpen={shareOpen}
+        handleCloseShare={() => setShareOpen(false)}
+        // handleCreateVersion={createVersion}
+        // description={versionDescription}
+        // setDescription={setVersionDescription}
+      />
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
@@ -1334,15 +1342,13 @@ function PartList(props) {
                 </React.Fragment>
               </div>
               <div className="d-flex justify-content-center align-items-center">
-                <a
-                  href="#"
-                  className="ml-3 font-size-14"
+                <button
+                  className="ml-3 btn-no-border font-size-14"
                   title="Share"
-                  data-toggle="modal"
-                  data-target="#exampleModalCenter2"
+                    onClick={() => setShareOpen(true)}
                 >
                   <img src={shareIcon}></img>
-                </a>
+                </button>
                 <a
                   href="#"
                   className="ml-3 font-size-14"
