@@ -36,6 +36,8 @@ import moment from "moment-timezone";
 import Moment from "react-moment";
 import DynamicSearchComponent from "./components/DynamicSearchComponent";
 import { BUILDER_SEARCH_Q_OPTIONS } from "./CONSTANTS";
+import { Typography } from "@mui/material";
+import Loader from "react-js-loader";
 
 export const RepairPartlist = () => {
   const [show, setShow] = React.useState(false);
@@ -44,6 +46,7 @@ export const RepairPartlist = () => {
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
+  const [recentBuildersLoading, setRecentBuildersLoading] = useState(false);
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -52,6 +55,12 @@ export const RepairPartlist = () => {
   };
 
   useEffect(() => {
+    fetcheRecentPartlists();
+  }, []);
+
+  const fetcheRecentPartlists = () => {
+    setRecentBuildersLoading(true);
+
     builderSearch(
       `builderType:PARTLIST&pageSize=10&sortColumn=updatedAt&orderBY=DESC`
     )
@@ -61,7 +70,8 @@ export const RepairPartlist = () => {
       .catch((err) => {
         handleSnack("error", "Error occurred while fetching recent partlists");
       });
-  }, []);
+    setRecentBuildersLoading(false);
+  };
 
   const handleSnack = (snackSeverity, snackMessage) => {
     setSnackMessage(snackMessage);
@@ -84,7 +94,9 @@ export const RepairPartlist = () => {
       flex: 1,
       width: 130,
       renderCell: (params) => (
-        <Moment format="DD MMM YY HH:MM a">{params.value}</Moment>
+        <Moment format="DD MMM YY HH:MM a" style={{ fontSize: 12 }}>
+          {params.value}
+        </Moment>
       ),
     },
     { field: "totalPrice", headerName: "Total $", flex: 1, width: 130 },
@@ -108,7 +120,7 @@ export const RepairPartlist = () => {
       },
     },
   ];
-  
+
   const handleQuerySearchClick = async () => {
     $(".scrollbar").css("display", "none");
     // console.log("handleQuerySearchClick", querySearchSelector);
@@ -155,9 +167,7 @@ export const RepairPartlist = () => {
     },
   ]);
 
-
   const [masterData, setMasterData] = useState([]);
-  const [count, setCount] = useState(1);
 
   const history = useHistory();
   const createNewBuilder = () => {
@@ -255,62 +265,82 @@ export const RepairPartlist = () => {
               <div className="recent-div p-3">
                 <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
                 <div className="row">
-                  {recentPartlists.map((indBuilder) => (
-                    <div className="col-md-4">
-                      <div className="recent-items mt-3">
-                        <div className="d-flex justify-content-between align-items-center ">
-                          <p className="mb-0 ">
-                            <FontAwesomeIcon
-                              className=" font-size-14"
-                              icon={faFileAlt}
-                            />
-                            <span className="font-weight-500 ml-2">
-                              {indBuilder.estimationNumber}
-                            </span>
-                            <span className="ml-2" style={{ fontSize: 10 }}>
-                              V{" "}
-                              {parseFloat(indBuilder.versionNumber).toFixed(1)}
-                            </span>
-                          </p>
+                  {recentBuildersLoading ? (
+                    <div className="d-flex align-items-center justify-content-center">
+                      <Loader
+                        type="spinner-default"
+                        bgColor={"#872ff7"}
+                        title={"spinner-default"}
+                        color={"#FFFFFF"}
+                        size={35}
+                      />
+                    </div>
+                  ) : recentPartlists.length > 0 ? (
+                    recentPartlists.map((indBuilder) => (
+                      <div className="col-md-4">
+                        <div className="recent-items mt-3">
+                          <div className="d-flex justify-content-between align-items-center ">
+                            <p className="mb-0 ">
+                              <FontAwesomeIcon
+                                className=" font-size-14"
+                                icon={faFileAlt}
+                              />
+                              <span className="font-weight-500 ml-2">
+                                {indBuilder.estimationNumber}
+                              </span>
+                              <span className="ml-2" style={{ fontSize: 10 }}>
+                                V{" "}
+                                {parseFloat(indBuilder.versionNumber).toFixed(
+                                  1
+                                )}
+                              </span>
+                            </p>
 
-                          <div className="d-flex align-items-center">
-                            <a
-                              href={undefined}
-                              className="btn-sm"
-                              style={{ cursor: "pointer" }}
-                            >
-                              <i
-                                className="fa fa-pencil"
-                                aria-hidden="true"
-                                onClick={() => makePartlistEditable(indBuilder)}
-                              ></i>
-                            </a>
-                            <a href="#" className="ml-3 font-size-14">
-                              <FontAwesomeIcon icon={faShareAlt} />
-                            </a>
-                            <a href="#" className="ml-3 font-size-14">
-                              <FontAwesomeIcon icon={faFolderPlus} />
-                            </a>
-                            <a href="#" className="ml-3 font-size-14">
-                              <FontAwesomeIcon icon={faUpload} />
-                            </a>
+                            <div className="d-flex align-items-center">
+                              <a
+                                href={undefined}
+                                className="btn-sm"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <i
+                                  className="fa fa-pencil"
+                                  aria-hidden="true"
+                                  onClick={() =>
+                                    makePartlistEditable(indBuilder)
+                                  }
+                                ></i>
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faShareAlt} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faFolderPlus} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faUpload} />
+                              </a>
+                            </div>
                           </div>
                         </div>
+                        <div className="d-flex justify-content-between align-items-center mt-2">
+                          <p className="font-size-12 mb-0">
+                            <Moment format="HH:MM a">
+                              {indBuilder.updatedAt}
+                            </Moment>
+                            ,{" "}
+                            <Moment format="DD MMM YY">
+                              {indBuilder.updatedAt}
+                            </Moment>
+                          </p>
+                          <p className="font-size-12 mb-0">Part List </p>
+                        </div>
                       </div>
-                      <div className="d-flex justify-content-between align-items-center mt-2">
-                        <p className="font-size-12 mb-0">
-                          <Moment format="HH:MM a">
-                            {indBuilder.updatedAt}
-                          </Moment>
-                          ,{" "}
-                          <Moment format="DD MMM YY">
-                            {indBuilder.updatedAt}
-                          </Moment>
-                        </p>
-                        <p className="font-size-12 mb-0">Part List </p>
-                      </div>
+                    ))
+                  ) : (
+                    <div className="ml-3 mt-4">
+                      <Typography>No Recent Partlists Found</Typography>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>
@@ -358,7 +388,7 @@ export const RepairPartlist = () => {
             </div>
           </div>
           <div className="card">
-          <div
+            <div
               className=""
               style={{ width: "100%", backgroundColor: "#fff" }}
             >
@@ -367,6 +397,9 @@ export const RepairPartlist = () => {
                   "& .MuiDataGrid-columnHeaders": {
                     backgroundColor: "#872ff7",
                     color: "#fff",
+                  },
+                  "& .MuiDataGrid-cellContent": {
+                    fontSize: 12,
                   },
                 }}
                 rows={masterData}

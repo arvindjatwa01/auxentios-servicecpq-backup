@@ -13,6 +13,9 @@ import {
   jobCodeSearch,
 } from "services/searchServices";
 import SearchBox from "./components/SearchBox";
+import { NEW_OPERATION } from "./CONSTANTS";
+import Loader from "react-js-loader";
+
 function WithoutRepairOption01(props) {
   const { activeElement, setActiveElement } = props.builderDetails;
 
@@ -27,6 +30,7 @@ function WithoutRepairOption01(props) {
   const [noOptionsCompCode, setNoOptionsCompCode] = useState(false);
   const [noOptionsJobCode, setNoOptionsJobCode] = useState(false);
   const [showAddNewButton, setShowAddNewButton] = useState(true);
+  const [operationLoading, setOperationLoadig] = useState(false);
 
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -35,7 +39,7 @@ function WithoutRepairOption01(props) {
     setOpenSnack(false);
   };
   const newOperation = {
-    header: "New Operation",
+    header: NEW_OPERATION,
     operationNumber: "",
     jobCode: "",
     componentCode: "",
@@ -50,6 +54,7 @@ function WithoutRepairOption01(props) {
   }, []);
 
   const fetchOperationsOfSegment = () => {
+    setOperationLoadig(true);
     if (activeElement.sId) {
       fetchOperations(activeElement.sId)
         .then((result) => {
@@ -69,10 +74,16 @@ function WithoutRepairOption01(props) {
             loadNewOperationUI();
             // setOperationData(newOperation);
           }
+          setOperationLoadig(false);
           // console.log(operationData);
         })
         .catch((err) => {
-          handleSnack("error", "Error occurred while fetching operations!");
+          loadNewOperationUI();
+          handleSnack(
+            "error",
+            "Error occurred while fetching the existing operations!"
+          );
+          setOperationLoadig(false);
         });
     } else {
       handleSnack("error", "Not a valid segment!");
@@ -153,13 +164,9 @@ function WithoutRepairOption01(props) {
 
   const handleAnchors = (direction) => {
     console.log("entered handle anchors");
-    if (
-      (operationData.operationNumber > 1 ||
-        (operationData.header === "New Operation" && operations.length > 0)) &&
-      direction === "backward"
-    ) {
+    if (direction === "backward") {
       let operationToLoad = [];
-      if (operationData.header === "New Operation") {
+      if (operationData.header === NEW_OPERATION) {
         operationToLoad = operations.filter(
           (x) => x.operationNumber === operations.length - 1
         );
@@ -177,13 +184,10 @@ function WithoutRepairOption01(props) {
           " - " +
           operationToLoad[0].modifierDescription, //Rename once changed in API
       });
-    } else if (
-      operationData.operationNumber < operations.length &&
-      direction === "forward"
-    ) {
+    } else if (direction === "forward") {
       let operationToLoad = [];
       if (
-        operations[operations.length - 1].header === "New Operation" &&
+        operations[operations.length - 1].header === NEW_OPERATION &&
         operations.length - 1 === operationData.operationNumber
       ) {
         setOperationData({ ...operations[operations.length - 1] });
@@ -248,7 +252,7 @@ function WithoutRepairOption01(props) {
   const handleCancelOperation = () => {
     if (operations.length > 1) {
       operations.splice(
-        operations.findIndex((a) => a.header === "New Operation"),
+        operations.findIndex((a) => a.header === NEW_OPERATION),
         1
       );
       setOperationData({
@@ -283,7 +287,7 @@ function WithoutRepairOption01(props) {
               disabled={
                 !(
                   operationData.operationNumber > 1 ||
-                  (operationData.header === "New Operation" &&
+                  (operationData.header === NEW_OPERATION &&
                     operations.length > 1)
                 )
               }
@@ -296,7 +300,7 @@ function WithoutRepairOption01(props) {
               className="btn-no-border"
               disabled={
                 operationData.operationNumber === operations.length ||
-                operationData.header === "New Operation"
+                operationData.header === NEW_OPERATION
               }
             >
               <KeyboardArrowRightIcon />
@@ -320,7 +324,17 @@ function WithoutRepairOption01(props) {
           </div>
           <div className="hr"></div>
         </h5>
-        {!operationViewOnly ? (
+        {operationLoading ? (
+          <div className="d-flex align-items-center justify-content-center">
+            <Loader
+              type="spinner-default"
+              bgColor={"#872ff7"}
+              title={"spinner-default"}
+              color={"#FFFFFF"}
+              size={35}
+            />
+          </div>
+        ) : !operationViewOnly ? (
           <>
             <div className="row mt-4">
               <div className="col-md-4 col-sm-4">

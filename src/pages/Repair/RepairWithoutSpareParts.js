@@ -11,8 +11,7 @@ import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { MuiMenuComponent } from "../Operational/index";
-
+import Loader from "react-js-loader";
 import { Typography } from "@material-ui/core";
 import EditIcon from "@mui/icons-material/EditTwoTone";
 import $ from "jquery";
@@ -24,6 +23,7 @@ import { BUILDER_SEARCH_Q_OPTIONS } from "./CONSTANTS";
 
 export const RepairWithoutSpareParts = () => {
   const [recentBuilders, setRecentBuilders] = useState([]);
+  const [recentBuildersLoading, setRecentBuildersLoading] = useState(false);
 
   useEffect(() => {
     fetchRecentBuilders(
@@ -32,6 +32,7 @@ export const RepairWithoutSpareParts = () => {
   }, []);
 
   const fetchRecentBuilders = async (searchQuery) => {
+    setRecentBuildersLoading(true);
     await builderSearch(searchQuery)
       .then((result) => {
         setRecentBuilders(result);
@@ -39,6 +40,7 @@ export const RepairWithoutSpareParts = () => {
       .catch((err) => {
         handleSnack("error", "Error occurred while fetching partlists");
       });
+    setRecentBuildersLoading(false);
   };
 
   const searchBuilderColumns = [
@@ -56,7 +58,9 @@ export const RepairWithoutSpareParts = () => {
       flex: 1,
       width: 130,
       renderCell: (params) => (
-        <Moment format="DD MMM YY HH:MM a">{params.value}</Moment>
+        <Moment format="DD MMM YY HH:MM a" style={{ fontSize: 12 }}>
+          {params.value}
+        </Moment>
       ),
     },
     { field: "totalPrice", headerName: "Total $", flex: 1, width: 130 },
@@ -80,7 +84,6 @@ export const RepairWithoutSpareParts = () => {
       },
     },
   ];
-
 
   const handleQuerySearchClick = async () => {
     $(".scrollbar").css("display", "none");
@@ -108,7 +111,9 @@ export const RepairWithoutSpareParts = () => {
 
     try {
       if (searchStr) {
-        const res = await builderSearch(`builderType:BUIDER_WITHOUT_SPAREPART&${searchStr}`);
+        const res = await builderSearch(
+          `builderType:BUIDER_WITHOUT_SPAREPART&${searchStr}`
+        );
         setMasterData(res);
       } else {
         handleSnack("info", "Please fill the search criteria!");
@@ -161,7 +166,7 @@ export const RepairWithoutSpareParts = () => {
       type: "new",
     };
     createBuilder({
-      builderType: "BUILDER_WITHOUT_SPAREPART",
+      builderType: "BUIDER_WITHOUT_SPAREPART",
       activeVersion: true,
       versionNumber: 1,
       status: "DRAFT",
@@ -226,7 +231,17 @@ export const RepairWithoutSpareParts = () => {
               <div className="recent-div p-3">
                 <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
                 <div className="row">
-                  {recentBuilders.length > 0 ? (
+                  {recentBuildersLoading ? (
+                    <div className="d-flex align-items-center justify-content-center">
+                      <Loader
+                        type="spinner-default"
+                        bgColor={"#872ff7"}
+                        title={"spinner-default"}
+                        color={"#FFFFFF"}
+                        size={35}
+                      />
+                    </div>
+                  ) : recentBuilders.length > 0 ? (
                     recentBuilders.map((indBuilder) => (
                       <div className="col-md-4">
                         <div className="recent-items mt-3">
@@ -330,6 +345,9 @@ export const RepairWithoutSpareParts = () => {
                   "& .MuiDataGrid-columnHeaders": {
                     backgroundColor: "#872ff7",
                     color: "#fff",
+                  },
+                  "& .MuiDataGrid-cellContent": {
+                    fontSize: 12,
                   },
                 }}
                 rows={masterData}
