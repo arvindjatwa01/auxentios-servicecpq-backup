@@ -71,7 +71,13 @@ import {
    getPortfolioCommonConfig,
    getSearchQueryCoverage,
    getSearchCoverageForFamily,
-   itemCreation
+   itemCreation,
+   getItemPrice,
+   itemPriceDataId,
+   customitemCreation,
+   customPriceCreation,
+   createCustomPortfolio,
+   updateCustomPortfolio,
 } from "../../services/index";
 import DataTable from "react-data-table-component";
 
@@ -153,9 +159,13 @@ export const Analytics = () => {
    const [solutionLoadingStatus, setSolutionLoadingStatus] = useState("")
    const [solutionRadioCheck, setSolutionRadioCheck] = useState("");
 
+   const [createdCustomItemsIdData, setCreatedCustomItemsIdData] = useState([])
+
    const [selectTypeOfSolution, setSelectTypeOfSolution] = useState(-1)
    const [solutionValue, setSolutionValue] = useState(0)
    const [selectedTemplateLabel, setSelectedTemplateLabel] = useState("");
+
+   const [createdCustomItems, setCreatedCustomItems] = useState([])
 
    let history = useHistory()
 
@@ -469,7 +479,7 @@ export const Analytics = () => {
       setShowExplore(true)
    }
 
-   const handleTemplateItemSaveAndContinue = () => {
+   const handleTemplateItemSaveAndContinue = async () => {
       // setOpenSolutionSelector(false)
       // setSolutionBuilderShow(false);
       // setModalComponent(null)
@@ -485,17 +495,234 @@ export const Analytics = () => {
             solutionValueIs: solutionValue
          });
       } else if (solutionValue == 0) {
-         history.push({
-            pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
-            selectedTemplateItems: selectedPortfolioTempMasterData,
-            solutionValueIs: solutionValue
-         });
+         // history.push({
+         //    pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
+         //    selectedTemplateItems: selectedPortfolioTempMasterData,
+         //    solutionValueIs: solutionValue
+         // });
+         // alert("solution value is : "+solutionValue)
+
+         // selectedPortfolioTempMasterData.forEach(object => {
+         //    delete object['itemId'];
+         // });
+
+         // var customItemsIdData = [];
+         var newCustomItemsId = [];
+
+         console.log("selecte Portfolio Items : ", selectedPortfolioTempMasterData);
+
+         console.log("createdCustomItems is :", createdCustomItems);
+         let reqData = {
+            type: "MACHINE",
+            name: `${Date.now()}`,
+            description: "",
+            externalReference: "",
+            customerSegment: "",
+            strategyTask: "PREVENTIVE_MAINTENANCE",
+            taskType: "PM1",
+            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+            productHierarchy: "END_PRODUCT",
+            geographic: "ONSITE",
+            availability: "AVAILABILITY_GREATER_95",
+            responseTime: "PROACTIVE",
+            type: "MACHINE",
+            application: "HILL",
+            contractOrSupport: "LEVEL_I",
+            lifeStageOfMachine: "NEW_BREAKIN",
+            supportLevel: "PREMIUM",
+            serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
+         };
+
+         const customPortfolioRes = await createCustomPortfolio(reqData);
+         var CreatedcustomPortfolioData = customPortfolioRes.data;
+
+         console.log("customPortfolioRes customItems : ", CreatedcustomPortfolioData.customItems)
+
+         for (let k = 0; k < selectedPortfolioTempMasterData.length; k++) {
+
+            var customItemsIdData = [];
+            var customPriceIdArr = [];
+            // } else {
+            console.log("Hello " + k);
+            for (let j = 0; j < selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices.length; j++) {
+
+               /* =============== Search Custom Price Using selected Item PriceDataId ============== */
+
+               var itemsPrice = await itemPriceDataId(selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices[j].itemPriceDataId);
+               // console.log("item price is before : ", itemsPrice)
+
+               delete itemsPrice['itemPriceDataId'];
+
+               itemsPrice['customPortfolio'] = {};
+               itemsPrice['customItemPriceDataId'] = 0;
+               delete itemsPrice['portfolio'];
+
+
+               let itemPriceObj = {
+
+                  customItemPriceDataId: 0,
+                  quantity: parseInt(itemsPrice.quantity),
+                  startUsage: itemsPrice.startUsage,
+                  endUsage: itemsPrice.endUsage,
+                  standardJobId: itemsPrice.standardJobId,
+                  repairKitId: itemsPrice.repairKitId,
+                  templateDescription: itemsPrice.templateDescription,
+                  repairOption: itemsPrice.repairOption,
+                  frequency: itemsPrice.frequency,
+                  additional: itemsPrice.additional,
+                  recommendedValue: parseInt(itemsPrice.recommendedValue),
+                  partListId: itemsPrice.partListId,
+                  serviceEstimateId: itemsPrice.serviceEstimateId,
+                  numberOfEvents: parseInt(itemsPrice.numberOfEvents),
+                  priceMethod: itemsPrice.priceMethod,
+                  priceType: itemsPrice.priceType,
+                  listPrice: itemsPrice.listPrice,
+                  priceEscalation: itemsPrice.priceEscalation,
+                  calculatedPrice: itemsPrice.calculatedPrice,
+                  flatPrice: itemsPrice.flatPrice,
+                  discountType: itemsPrice.discountType,
+                  year: itemsPrice.year,
+                  noOfYear: itemsPrice.noOfYear,
+                  sparePartsPrice: itemsPrice.sparePartsPrice,
+                  sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
+                  servicePrice: itemsPrice.servicePrice,
+                  labourPrice: itemsPrice.labourPrice,
+                  labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                  miscPrice: itemsPrice.miscPrice,
+                  miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
+                  totalPrice: itemsPrice.totalPrice,
+                  netService: itemsPrice.netService,
+                  customPortfolio: {
+                     portfolioId: 26
+                  },
+                  tenantId: itemsPrice.tenantId,
+                  partsRequired: itemsPrice.partsRequired,
+                  labourRequired: itemsPrice.labourRequired,
+                  serviceRequired: itemsPrice.serviceRequired,
+                  miscRequired: itemsPrice.miscRequired
+               }
+
+               customItemsIdData.push(itemPriceObj)
+               // console.log("item price is after  : ", itemsPrice)
+
+               // console.log("My values are : ", selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices[j].itemPriceDataId)
+
+            }
+            for (let p = 0; p < customItemsIdData.length; p++) {
+               var customPriceDataCreate = await customPriceCreation(customItemsIdData[p])
+
+               customPriceIdArr.push({
+                  customItemPriceDataId: parseInt(customPriceDataCreate.data.customItemPriceDataId),
+               })
+               // var customPriceIdData = customPriceDataCreate.data.map(item => {
+               // return {
+               //    customItemPriceDataId: parseInt(item.itemPriceDataId),
+               // };
+            }
+
+
+            // console.log("customPriceDataCreate 00 : ", customPriceIdArr)
+
+            let customItemObj = {
+               customItemId: 0,
+               itemName: selectedPortfolioTempMasterData[k].itemName,
+               customItemHeaderModel: {
+                  // customItemHeaderId: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderId,
+                  customItemHeaderId: 0,
+                  itemHeaderDescription: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderDescription,
+                  bundleFlag: selectedPortfolioTempMasterData[k].itemHeaderModel.bundleFlag,
+                  portfolioItemId: selectedPortfolioTempMasterData[k].itemHeaderModel.portfolioItemId,
+                  reference: selectedPortfolioTempMasterData[k].itemHeaderModel.reference,
+                  itemHeaderMake: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderMake,
+                  itemHeaderFamily: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderFamily,
+                  model: selectedPortfolioTempMasterData[k].itemHeaderModel.model,
+                  prefix: selectedPortfolioTempMasterData[k].itemHeaderModel.prefix,
+                  type: selectedPortfolioTempMasterData[k].itemHeaderModel.type,
+                  additional: selectedPortfolioTempMasterData[k].itemHeaderModel.additional,
+                  currency: selectedPortfolioTempMasterData[k].itemHeaderModel.currency,
+                  netPrice: selectedPortfolioTempMasterData[k].itemHeaderModel.netPrice,
+                  itemProductHierarchy: selectedPortfolioTempMasterData[k].itemHeaderModel.itemProductHierarchy,
+                  itemHeaderGeographic: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderGeographic,
+                  responseTime: selectedPortfolioTempMasterData[k].itemHeaderModel.responseTime,
+                  usage: selectedPortfolioTempMasterData[k].itemHeaderModel.usage,
+                  validFrom: selectedPortfolioTempMasterData[k].itemHeaderModel.validFrom,
+                  validTo: selectedPortfolioTempMasterData[k].itemHeaderModel.validTo,
+                  estimatedTime: selectedPortfolioTempMasterData[k].itemHeaderModel.estimatedTime,
+                  servicePrice: selectedPortfolioTempMasterData[k].itemHeaderModel.servicePrice,
+                  status: selectedPortfolioTempMasterData[k].itemHeaderModel.status,
+                  componentCode: selectedPortfolioTempMasterData[k].itemHeaderModel.componentCode,
+                  componentDescription: selectedPortfolioTempMasterData[k].itemHeaderModel.componentDescription,
+                  serialNumber: selectedPortfolioTempMasterData[k].itemHeaderModel.serialNumber,
+                  itemHeaderStrategy: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderStrategy,
+                  variant: selectedPortfolioTempMasterData[k].itemHeaderModel.variant,
+                  itemHeaderCustomerSegment: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderCustomerSegment,
+                  jobCode: selectedPortfolioTempMasterData[k].itemHeaderModel.jobCode,
+                  preparedBy: selectedPortfolioTempMasterData[k].itemHeaderModel.preparedBy,
+                  approvedBy: selectedPortfolioTempMasterData[k].itemHeaderModel.approvedBy,
+                  preparedOn: selectedPortfolioTempMasterData[k].itemHeaderModel.preparedOn,
+                  revisedBy: selectedPortfolioTempMasterData[k].itemHeaderModel.revisedBy,
+                  revisedOn: selectedPortfolioTempMasterData[k].itemHeaderModel.revisedOn,
+                  salesOffice: selectedPortfolioTempMasterData[k].itemHeaderModel.salesOffice,
+                  offerValidity: selectedPortfolioTempMasterData[k].itemHeaderModel.offerValidity
+               },
+               customItemBodyModel: {
+                  customItemBodyId: 0,
+                  itemBodyDescription: selectedPortfolioTempMasterData[k].itemBodyModel.itemBodyDescription,
+                  spareParts: selectedPortfolioTempMasterData[k].itemBodyModel.spareParts,
+                  labours: selectedPortfolioTempMasterData[k].itemBodyModel.labours,
+                  miscellaneous: selectedPortfolioTempMasterData[k].itemBodyModel.miscellaneous,
+                  taskType: selectedPortfolioTempMasterData[k].itemBodyModel.taskType,
+                  solutionCode: selectedPortfolioTempMasterData[k].itemBodyModel.solutionCode,
+                  usageIn: selectedPortfolioTempMasterData[k].itemBodyModel.usageIn,
+                  usage: selectedPortfolioTempMasterData[k].itemBodyModel.usage,
+                  year: selectedPortfolioTempMasterData[k].itemBodyModel.year,
+                  avgUsage: selectedPortfolioTempMasterData[k].itemBodyModel.avgUsage,
+                  unit: selectedPortfolioTempMasterData[k].itemBodyModel.unit,
+                  // customItemPrices: selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices,
+                  customItemPrices: customPriceIdArr,
+               }
+            }
+
+
+
+            const itemRes = await customitemCreation(customItemObj)
+
+            console.log(" Response is : ", itemRes.data)
+
+            createdCustomItems.push(itemRes.data)
+
+            // console.log("create custom Item response data for index " + selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderId + "  " + itemRes);
+         }
+         console.log("createdCustomItems 9871 : ", createdCustomItems)
+         const customItemsId = createdCustomItems.map((data, i) => {
+            CreatedcustomPortfolioData.customItems.push({ "customItemId": parseInt(data.customItemId) })
+
+         })
+         // setCreatedCustomItemsIdData(newCustomItemsId)
+
+         console.log("CreatedcustomPortfolioData Final : ", CreatedcustomPortfolioData);
+
+         const updatePortfolioRes = await updateCustomPortfolio(
+            CreatedcustomPortfolioData.customPortfolioId,
+            CreatedcustomPortfolioData
+         );
+         if (updatePortfolioRes.status == 200) {
+            history.push({
+               pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
+               selectedTemplateItems: createdCustomItems,
+               solutionValueIs: solutionValue,
+               autocreatedcustomPortfolioData: CreatedcustomPortfolioData
+            });
+         }
+
+
+         // history.push({
+         //    pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
+         //    selectedTemplateItems: createdCustomItems,
+         //    solutionValueIs: solutionValue
+         // });
+
       }
-      // history.push({
-      //    pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
-      //    selectedTemplateItems: selectedPortfolioTempMasterData,
-      //    state: { NewData: "NewData isss" }
-      // });
 
    }
 
@@ -2039,8 +2266,7 @@ export const Analytics = () => {
                                     querySearchSelector.map((obj, i) => {
                                        return (
                                           <>
-
-                                             <div className="customselect d-flex align-items-center mr-3 my-2">
+                                             <div className="customselect d-flex align-items-center mr-3 my-2" key={i}>
                                                 {
                                                    i > 0 ?
                                                       <SelectFilter
@@ -2188,7 +2414,8 @@ export const Analytics = () => {
                      <Modal.Title>Solution Selector</Modal.Title>
                   </Modal.Header>
                   <Modal.Body className="p25 pt-4" style={{ backgroundColor: '#F8F8F8 !important' }}>
-                     <div>import Solution from './../PortfolioAndBundle/Solution';
+                     <div>
+                        {/* import Solution from './../PortfolioAndBundle/Solution'; */}
 
                         <h5 className='text-black'>How do you want to build the solution ?</h5>
                         <RadioGroup className=''
@@ -2699,10 +2926,10 @@ export const Analytics = () => {
             <Modal.Body className="">
                <div className="col-md-12">
                   <div className="row">
-                     <div className="col-md-9">Search {selectedTemplateLabel}</div>
+                     <div className="col-md-9">Search {selectedTemplateLabel === "" ? "Portfolio Template" : selectedTemplateLabel}</div>
                      <div className="col-md-3">
                         <div className="mx-0 text-right">
-                           <Button className="btn text-white bg-primary px-3 text-capitalize">Guided Solution</Button>
+                           <Button className="btn text-white bg-primary px-3 text-capitalize" onClick={() => history.push('/solutionBuilder/guide')}>Guided Solution</Button>
                         </div>
                      </div>
                   </div>
@@ -2720,7 +2947,7 @@ export const Analytics = () => {
                      <FormControlLabel
                         className="col-md-4 m-0 align-itemsstart"
                         value="0"
-                        control={<Radio className="mx-1"  checked={solutionValue == 0}/>}
+                        control={<Radio className="mx-1" checked={solutionValue == 0} />}
                         label="Portfolio Template"
                         labelPlacement="end"
                      />
