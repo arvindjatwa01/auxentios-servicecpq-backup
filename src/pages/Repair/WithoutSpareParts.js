@@ -8,10 +8,12 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { createSegment, fetchSegments } from "services/repairBuilderServices";
 import {
-  getComponentCodeSuggetions, jobCodeSearch
+  getComponentCodeSuggetions,
+  jobCodeSearch,
 } from "services/searchServices";
 import SearchBox from "./components/SearchBox";
 import { NEW_SEGMENT } from "./CONSTANTS";
+import Loader from "react-js-loader";
 
 function WithoutSpareParts(props) {
   // const { state } = props.location;
@@ -26,6 +28,7 @@ function WithoutSpareParts(props) {
   const [noOptionsCompCode, setNoOptionsCompCode] = useState(false);
   const [noOptionsJobCode, setNoOptionsJobCode] = useState(false);
   const [showAddNewButton, setShowAddNewButton] = useState(true);
+  const [segmentLoading, setSegmentLoadig] = useState(false);
 
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -48,6 +51,7 @@ function WithoutSpareParts(props) {
   }, []);
 
   const fetchSegmentsOfBuilder = () => {
+    setSegmentLoadig(true);
     if (activeElement.bId) {
       fetchSegments(activeElement.bId)
         .then((result) => {
@@ -66,10 +70,12 @@ function WithoutSpareParts(props) {
           } else {
             loadNewSegmentUI();
           }
+          setSegmentLoadig(false);
         })
         .catch((err) => {
           loadNewSegmentUI();
           handleSnack("error", "Error occurred while fetching segments!");
+          setSegmentLoadig(false);
         });
     } else {
       handleSnack("error", "Not a valid builder!");
@@ -150,7 +156,6 @@ function WithoutSpareParts(props) {
         segmentToLoad = segments.filter(
           (x) => x.segmentNumber === segments.length - 1
         );
-        
       } else {
         segmentToLoad = segments.filter(
           (x) => x.segmentNumber === segmentData.segmentNumber - 1
@@ -282,7 +287,6 @@ function WithoutSpareParts(props) {
             >
               <KeyboardArrowRightIcon />
             </button>
-            {/* </a> */}
             {showAddNewButton && (
               <button className="btn-no-border ml-2" onClick={loadNewSegmentUI}>
                 <span className="ml-2">
@@ -299,7 +303,17 @@ function WithoutSpareParts(props) {
           </div>
           <div className="hr"></div>
         </h5>
-        {!segmentViewOnly ? (
+        {segmentLoading ? (
+          <div className="d-flex align-items-center justify-content-center">
+            <Loader
+              type="spinner-default"
+              bgColor={"#872ff7"}
+              title={"spinner-default"}
+              color={"#FFFFFF"}
+              size={35}
+            />
+          </div>
+        ) : !segmentViewOnly ? (
           <>
             <div className="row mt-4">
               <div className="col-md-6 col-sm-6">

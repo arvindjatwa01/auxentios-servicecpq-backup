@@ -12,8 +12,8 @@ import EditIcon from "@mui/icons-material/EditTwoTone";
 import LabelIcon from "@mui/icons-material/LabelTwoTone";
 import DeleteIcon from "@mui/icons-material/DeleteTwoTone";
 // import { MuiMenuComponent } from "./components/MuiMenuRepair";
-import SearchIcon from '@mui/icons-material/Search';
-import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
+import SearchIcon from "@mui/icons-material/Search";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import { MuiMenuComponent } from "pages/Operational";
 import {
   DataGrid,
@@ -75,8 +75,8 @@ import {
   Rating,
   TextareaAutosize,
 } from "@mui/material";
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton'
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
 // import logoIcon from '../assets/icons/svg/menu.png'
 import {
   ERROR_MAX_VERSIONS,
@@ -305,8 +305,6 @@ function PartList(props) {
     // });
   };
 
-  
-
   useEffect(() => {
     populatePricingMethods();
     if (state && state.type === "new") {
@@ -346,19 +344,23 @@ function PartList(props) {
   // };
 
   const fetchAllDetails = (builderId, versionNumber) => {
-    if(builderId && versionNumber){
-    setHeaderLoading(true);
-    fetchBuilderVersionDet(builderId, versionNumber).then((result) => {
-      populateHeader(result);
-      setHeaderLoading(false);
-      fetchPartlist(result.id);
-    }).catch(err => {
-      setHeaderLoading(false);
-      handleSnack("error", "Error occurred while fetching the version details");
-    });
-    
-  }
-  }
+    if (builderId && versionNumber) {
+      setHeaderLoading(true);
+      fetchBuilderVersionDet(builderId, versionNumber)
+        .then((result) => {
+          populateHeader(result);
+          setHeaderLoading(false);
+          fetchPartlist(result.id);
+        })
+        .catch((err) => {
+          setHeaderLoading(false);
+          handleSnack(
+            "error",
+            "Error occurred while fetching the version details"
+          );
+        });
+    }
+  };
 
   const filterOperators = getGridStringOperators().filter(({ value }) =>
     ["equals", "contains"].includes(value)
@@ -395,10 +397,10 @@ function PartList(props) {
   const populateHeader = (result) => {
     setViewOnlyTab({
       custViewOnly: result.customerId ? true : false,
-     machineViewOnly: result.serialNo ? true : false,
-     generalViewOnly: result.estimationNumber? true: false,
-     estViewOnly: result.preparedBy? true: false,
-   });
+      machineViewOnly: result.serialNo ? true : false,
+      generalViewOnly: result.estimationNumber ? true : false,
+      estViewOnly: result.preparedBy ? true : false,
+    });
     setRating(result.rating);
     setSelBuilderStatus(
       builderStatusOptions.filter((x) => x.value === result.status)[0]
@@ -452,7 +454,6 @@ function PartList(props) {
         (element) => element.value === result.salesOffice
       ),
     });
-
   };
 
   const createVersion = async (versionDesc) => {
@@ -466,17 +467,20 @@ function PartList(props) {
         });
         populateHeader(result);
         fetchPartlist(result.id);
-        setVersionDescription('')
-        handleSnack("success", `Version ${result.versionNumber} has been created`);
+        setVersionDescription("");
+        handleSnack(
+          "success",
+          `Version ${result.versionNumber} has been created`
+        );
       })
       .catch((err) => {
         setVersionOpen(false);
-        
-        if(err.message === "Not Allowed")
-          handleSnack("warning", ERROR_MAX_VERSIONS )
+
+        if (err.message === "Not Allowed")
+          handleSnack("warning", ERROR_MAX_VERSIONS);
         else
           handleSnack("error", "Error occurred while creating builder version");
-        setVersionDescription('');
+        setVersionDescription("");
       });
   };
 
@@ -852,29 +856,53 @@ function PartList(props) {
     { headerName: "GroupNumber", field: "groupNumber", flex: 1 },
     { headerName: "Type", field: "partType", flex: 1 },
     { headerName: "PartNumber", field: "partNumber", flex: 1 },
-    { headerName: "Qty", field: "quantity", flex: 1, editable: true },
-    { headerName: "Unit Of Measures", field: "unitOfMeasure", flex: 1 },
-    { headerName: "Unit Price", field: "unitPrice", flex: 1 },
+    {
+      headerName: "Qty",
+      field: "quantity",
+      flex: 1,
+      editable: true,
+      filterable: false,
+    },
+    {
+      headerName: "Unit Of Measures",
+      field: "unitOfMeasure",
+      flex: 1,
+      filterable: false,
+    },
+    {
+      headerName: "Unit Price",
+      field: "unitPrice",
+      flex: 1,
+      filterable: false,
+    },
     {
       headerName: "Extended Price",
       field: "extendedPrice",
       flex: 1,
       editable: true,
+      filterable: false,
     },
-    { headerName: "Currency", field: "currency", flex: 1 },
+    { headerName: "Currency", field: "currency", flex: 1, filterable: false },
     {
       headerName: "% Usage",
       field: "usagePercentage",
       flex: 1,
       editable: true,
+      filterable: false,
     },
-    { headerName: "Total Price", field: "totalPrice", flex: 1 },
+    {
+      headerName: "Total Price",
+      field: "totalPrice",
+      flex: 1,
+      filterable: false,
+    },
     {
       headerName: "Comment",
       field: "comment",
       flex: 1,
       editable: true,
       renderEditCell: CommentEditInputCell,
+      filterable: false,
     },
     // {
     //   headerName: "Tag",
@@ -1198,8 +1226,8 @@ function PartList(props) {
         versionOpen={versionOpen}
         handleCloseVersion={() => setVersionOpen(false)}
         handleCreateVersion={createVersion}
-        description = {versionDescription}
-        setDescription = {setVersionDescription}
+        description={versionDescription}
+        setDescription={setVersionDescription}
       />
 
       <div className="content-body" style={{ minHeight: "884px" }}>
@@ -1306,7 +1334,13 @@ function PartList(props) {
                 </React.Fragment>
               </div>
               <div className="d-flex justify-content-center align-items-center">
-                <a href="#" className="ml-3 font-size-14" title="Share" data-toggle="modal" data-target="#exampleModalCenter2">
+                <a
+                  href="#"
+                  className="ml-3 font-size-14"
+                  title="Share"
+                  data-toggle="modal"
+                  data-target="#exampleModalCenter2"
+                >
                   <img src={shareIcon}></img>
                 </a>
                 <a
@@ -1326,12 +1360,20 @@ function PartList(props) {
                 <a href="#" className="ml-3 font-size-14" title="Duplicate">
                   <img src={copyIcon}></img>
                 </a>
-                
-                <DropdownButton className="customDropdown ml-2" id="dropdown-item-button">
-                <Dropdown.Item as="button" onClick={() => setVersionOpen(true)}>New Versions</Dropdown.Item>
-                <Dropdown.Item as="button">Show Errors</Dropdown.Item>
-                <Dropdown.Item as="button">Review</Dropdown.Item>
-              </DropdownButton>                
+
+                <DropdownButton
+                  className="customDropdown ml-2"
+                  id="dropdown-item-button"
+                >
+                  <Dropdown.Item
+                    as="button"
+                    onClick={() => setVersionOpen(true)}
+                  >
+                    New Versions
+                  </Dropdown.Item>
+                  <Dropdown.Item as="button">Show Errors</Dropdown.Item>
+                  <Dropdown.Item as="button">Review</Dropdown.Item>
+                </DropdownButton>
               </div>
             </div>
           </div>
@@ -2471,9 +2513,10 @@ function PartList(props) {
                 "&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell": {
                   py: "22px",
                 },
-                "&.MuiDataGrid-root--densityStandard .MuiTablePagination-select, &.MuiDataGrid-root--densityStandard .MuiSelect-icon": {
-                  marginTop: -1,                  
-                },
+                "&.MuiDataGrid-root--densityStandard .MuiTablePagination-select, &.MuiDataGrid-root--densityStandard .MuiSelect-icon":
+                  {
+                    marginTop: -1,
+                  },
               }}
               rows={spareparts}
               columns={columnsPartList.map((column) => ({

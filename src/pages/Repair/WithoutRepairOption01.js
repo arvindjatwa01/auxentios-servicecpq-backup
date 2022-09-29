@@ -14,6 +14,8 @@ import {
 } from "services/searchServices";
 import SearchBox from "./components/SearchBox";
 import { NEW_OPERATION } from "./CONSTANTS";
+import Loader from "react-js-loader";
+
 function WithoutRepairOption01(props) {
   const { activeElement, setActiveElement } = props.builderDetails;
 
@@ -28,6 +30,7 @@ function WithoutRepairOption01(props) {
   const [noOptionsCompCode, setNoOptionsCompCode] = useState(false);
   const [noOptionsJobCode, setNoOptionsJobCode] = useState(false);
   const [showAddNewButton, setShowAddNewButton] = useState(true);
+  const [operationLoading, setOperationLoadig] = useState(false);
 
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -51,6 +54,7 @@ function WithoutRepairOption01(props) {
   }, []);
 
   const fetchOperationsOfSegment = () => {
+    setOperationLoadig(true);
     if (activeElement.sId) {
       fetchOperations(activeElement.sId)
         .then((result) => {
@@ -70,11 +74,16 @@ function WithoutRepairOption01(props) {
             loadNewOperationUI();
             // setOperationData(newOperation);
           }
+          setOperationLoadig(false);
           // console.log(operationData);
         })
         .catch((err) => {
           loadNewOperationUI();
-          handleSnack("error", "Error occurred while fetching the existing operations!");
+          handleSnack(
+            "error",
+            "Error occurred while fetching the existing operations!"
+          );
+          setOperationLoadig(false);
         });
     } else {
       handleSnack("error", "Not a valid segment!");
@@ -155,7 +164,7 @@ function WithoutRepairOption01(props) {
 
   const handleAnchors = (direction) => {
     console.log("entered handle anchors");
-    if ( direction === "backward" ) {
+    if (direction === "backward") {
       let operationToLoad = [];
       if (operationData.header === NEW_OPERATION) {
         operationToLoad = operations.filter(
@@ -315,7 +324,17 @@ function WithoutRepairOption01(props) {
           </div>
           <div className="hr"></div>
         </h5>
-        {!operationViewOnly ? (
+        {operationLoading ? (
+          <div className="d-flex align-items-center justify-content-center">
+            <Loader
+              type="spinner-default"
+              bgColor={"#872ff7"}
+              title={"spinner-default"}
+              color={"#FFFFFF"}
+              size={35}
+            />
+          </div>
+        ) : !operationViewOnly ? (
           <>
             <div className="row mt-4">
               <div className="col-md-4 col-sm-4">
