@@ -74,6 +74,7 @@ export const PORTFOLIO_ITEM_PRICE_BY_ITEM_ID = () => CREATE_PORTFOLIO_ITEM()+ "/
 // Custom Portfolio 
 
 export const CUSTOM_PORTFOLIO_URL = () => SOLUTION_BUILDER_URI + "portfolio/custom";
+export const CUSTOM_PORTFOLIO_SEARCH_QUERY = SOLUTION_BUILDER_URI +"portfolio/custom/search?search=";
 
 // Custom Portfolio Item
 export const CREATE_CUSTOM_PORTFOLIO_ITEM = () => SOLUTION_BUILDER_URI + "item/custom";

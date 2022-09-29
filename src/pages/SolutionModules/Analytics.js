@@ -1051,7 +1051,7 @@ export const Analytics = () => {
    const handleSolutinTemoRadioData = (e, row) => {
       if (e.target.checked) {
          // console.log("Checked value is : ", row.itemId)
-         setSolutionRadioCheck(row.itemId)
+         setSolutionRadioCheck(row.customPortfolioId)
          setSelectedSolutionTempMasterData([row])
          setSolutionTempFlagIs(true)
          console.log("Solution Temp Flag is :=> ", solutionTempFlagIs)
@@ -1907,7 +1907,7 @@ export const Analytics = () => {
                <div>Select</div>
             </>
          ),
-         selector: (row) => row.itemId,
+         selector: (row) => row.customPortfolioId,
          wrap: true,
          sortable: true,
          // format: (row) => row.itemId,
@@ -1919,7 +1919,7 @@ export const Analytics = () => {
             // />
             <Radio
                className="text-black"
-               checked={solutionRadioCheck == row.itemId}
+               checked={solutionRadioCheck == row.customPortfolioId}
                onChange={(e) => handleSolutinTemoRadioData(e, row)}
             />
          ),
@@ -1930,76 +1930,76 @@ export const Analytics = () => {
                <div>ID</div>
             </>
          ),
-         selector: (row) => row.itemId,
+         selector: (row) => row.customPortfolioId,
          wrap: true,
          sortable: true,
-         format: (row) => row.itemId,
+         format: (row) => row.customPortfolioId,
       },
       {
          name: (
             <>
-               <div>Description</div>
+               <div>Name</div>
             </>
          ),
-         selector: (row) => row.itemHeaderModel.itemHeaderDescription,
+         selector: (row) => row.name,
          wrap: true,
          sortable: true,
-         format: (row) => row.itemHeaderModel.itemHeaderDescription,
+         format: (row) => row.name,
       },
       {
          name: (
             <>
-               <div>Solution Code</div>
+               <div>Reference</div>
             </>
          ),
-         selector: (row) => row.itemBodyModel.solutionCode,
+         selector: (row) => row.externalReference,
          wrap: true,
          sortable: true,
-         format: (row) => row.itemBodyModel.solutionCode,
+         format: (row) => row.externalReference,
       },
       {
          name: (
             <>
-               <div>Repair Option</div>
+               <div>Response Time</div>
             </>
          ),
-         selector: (row) => row.itemBodyModel.repairOption,
+         selector: (row) => row.responseTime,
          wrap: true,
          sortable: true,
-         format: (row) => row.itemBodyModel.repairOption,
+         format: (row) => row.responseTime,
       },
       {
          name: (
             <>
-               <div>Frequency</div>
+               <div>Support Level</div>
             </>
          ),
-         selector: (row) => row.itemBodyModel.frequency,
+         selector: (row) => row.supportLevel,
          wrap: true,
          sortable: true,
-         format: (row) => row.itemBodyModel.frequency,
+         format: (row) => row.supportLevel,
       },
       {
          name: (
             <>
-               <div>Quantity</div>
+               <div>Geographic</div>
             </>
          ),
-         selector: (row) => row.itemBodyModel.quantity,
+         selector: (row) => row.geographic,
          wrap: true,
          sortable: true,
-         format: (row) => row.itemBodyModel.quantity,
+         format: (row) => row.geographic,
       },
       {
          name: (
             <>
-               <div>Total $</div>
+               <div>Total Events</div>
             </>
          ),
-         selector: (row) => row.itemBodyModel.totalPrice,
+         selector: (row) => row.numberOfEvents,
          wrap: true,
          sortable: true,
-         format: (row) => row.itemBodyModel.totalPrice,
+         format: (row) => row.numberOfEvents,
       },
 
    ]
@@ -2983,12 +2983,13 @@ export const Analytics = () => {
                         <QuerySearchComp
                            compoFlag="solutionTempItemSearch"
                            options={[
-                              // { label: "Make", value: "itemHeaderMake" },
-                              // { label: "Family", value: "itemHeaderFamily" },
-                              { label: "Make", value: "make" },
-                              { label: "Family", value: "family" },
+                              { label: "Make", value: "itemHeaderMake" },
+                              { label: "Family", value: "itemHeaderFamily" },
+                              // { label: "Make", value: "make" },
+                              // { label: "Family", value: "family" },
                               { label: "Model", value: "itemHeaderModel" },
                               { label: "Prefix", value: "itemHeaderPrefix" },
+                              { label: "Portfolio Id", value: "customPortfolioId" },
                               // { label: "Model", value: "model" },
                               // { label: "Prefix", value: "prefix" },
                            ]}
