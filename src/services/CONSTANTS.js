@@ -52,6 +52,8 @@ export const PORTFOLIO_URL = () => SOLUTION_BUILDER_URI + "portfolio";
 export const Common_SOLUTION_BUILDER_URL = () =>
   SOLUTION_BUILDER_URI + "common-config";
 export const COVERAGE_REST = () => SOLUTION_BUILDER_URI + "coverage";
+export const CUSTOM_COVERAGE_REST = () => SOLUTION_BUILDER_URI + "coverage/custom";
+
 export const GET_STRATEGY_TASK = () =>
   SOLUTION_BUILDER_URI + "common-config/strategy-task";
 export const GET_TASK_TYPE = () =>

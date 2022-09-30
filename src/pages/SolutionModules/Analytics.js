@@ -41,6 +41,7 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { SolutionBuilderModal } from "../../pages/SolutionModules/index"
 import { SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO } from '../../navigation/CONSTANTS'
 import { SOLUTION_BUILDER_PORRTFOLIO_TEMP } from "../../navigation/CONSTANTS";
+import { SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT } from "../../navigation/CONSTANTS";
 
 import Portfoliosicon from '../../assets/icons/svg/Portfolios-icon.svg'
 import contract from '../../assets/icons/svg/contract.svg'
@@ -490,7 +491,7 @@ export const Analytics = () => {
 
       if (solutionValue == 1) {
          history.push({
-            pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
+            pathname: SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT,
             selectedTemplateItems: selectedSolutionTempMasterData,
             solutionValueIs: solutionValue
          });

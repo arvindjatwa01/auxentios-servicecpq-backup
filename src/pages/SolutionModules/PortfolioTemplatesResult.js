@@ -93,6 +93,7 @@ import {
     getSearchCoverageForFamily,
     itemCreation,
     createCoverage,
+    createCutomCoverage,
     getItemPrice
 } from "../../services/index";
 import {
@@ -249,8 +250,8 @@ export function PortfolioTemplatesResult(props) {
         serviceDescription: "",
         externalReference: "",
         customerSegment: null,
-        items: [],
-        coverages: [],
+        customItems: [],
+        customCoverages: [],
     });
 
     const [newBundle, setNewBundle] = useState({
@@ -585,10 +586,10 @@ export function PortfolioTemplatesResult(props) {
                 portfolioPrice: {},
                 additionalPrice: {},
                 escalationPrice: {},
-                coverages: generalComponentData.coverages
+                customCoverages: generalComponentData.coverages
                     ? generalComponentData.coverages
                     : [],
-                items: _generalComponentData.items,
+                customItems: selectedCustomItems,
                 usageCategory: categoryUsageKeyValue1.value,
                 taskType: stratgyTaskTypeKeyValue.value,
                 strategyTask: stratgyTaskUsageKeyValue.value,
@@ -772,10 +773,10 @@ export function PortfolioTemplatesResult(props) {
                     portfolioPrice: {},
                     additionalPrice: {},
                     escalationPrice: {},
-                    coverages: generalComponentData.coverages
+                    customCoverages: generalComponentData.coverages
                         ? generalComponentData.coverages
                         : [],
-                    items: [...generalComponentData.items, { itemId: res.data.itemId }],
+                    customItems: selectedCustomItems,
                     usageCategory: categoryUsageKeyValue1.value,
                     taskType: stratgyTaskTypeKeyValue.value,
                     strategyTask: stratgyTaskUsageKeyValue.value,
@@ -994,8 +995,8 @@ export function PortfolioTemplatesResult(props) {
                 supportLevel: generalComponentData.supportLevel
                     ? generalComponentData.supportLevel
                     : "EMPTY",
-                items: [],
-                coverages: [],
+                
+                customCoverages: [],
                 customerGroup: generalComponentData.customerGroup
                     ? generalComponentData.customerGroup
                     : "EMPTY",
@@ -1027,16 +1028,16 @@ export function PortfolioTemplatesResult(props) {
             });
 
             console.log("reqData is : ", reqData);
-            if(location.solutionValueIs == 1){
+            if (location.solutionValueIs == 1) {
                 var portfolioRes = await createCustomPortfolio(reqData);
-            }else{
+            } else {
                 var portfolioRes = await updateCustomPortfolio(
                     location.autocreatedcustomPortfolioData.customPortfolioId,
                     reqData
                 )
                 // console.log("My new row");
             }
-           
+
             // const portfolioRes = {
             //     status: 3000
             // };
@@ -1145,8 +1146,8 @@ export function PortfolioTemplatesResult(props) {
                 supportLevel: generalComponentData.supportLevel
                     ? generalComponentData.supportLevel
                     : "EMPTY",
-                items: [],
-                coverages: [],
+                customItems: [],
+                customCoverages: [],
                 customerGroup: generalComponentData.customerGroup
                     ? generalComponentData.customerGroup
                     : "EMPTY",
@@ -1197,7 +1198,7 @@ export function PortfolioTemplatesResult(props) {
             setValue("6");
             for (let i = 0; i < selectedMasterData.length; i++) {
                 let reqObj = {
-                    coverageId: 0,
+                    customCoverageId: 0,
                     serviceId: 0,
                     modelNo: selectedMasterData[i].model,
                     serialNumber: "",
@@ -1214,13 +1215,13 @@ export function PortfolioTemplatesResult(props) {
                     actions: "",
                     createdAt: "",
                 };
-                const res = await createCoverage(reqObj);
+                const res = await createCutomCoverage(reqObj);
                 console.log("createCoverage res:", res);
-                cvgIds.push({ coverageId: res.coverageId });
+                cvgIds.push({ coverageId: res.customCoverageId });
             }
             setGeneralComponentData({
                 ...generalComponentData,
-                coverages: cvgIds,
+                customCoverages: cvgIds,
             });
             const { portfolioId, ...res } = generalComponentData;
             let obj = {
@@ -1279,8 +1280,8 @@ export function PortfolioTemplatesResult(props) {
                 portfolioPrice: {},
                 additionalPrice: {},
                 escalationPrice: {},
-                items: [],
-                coverages: cvgIds,
+                customItems: [],
+                customCoverages: cvgIds,
                 usageCategory: categoryUsageKeyValue1.value,
                 taskType: stratgyTaskTypeKeyValue.value,
                 strategyTask: stratgyTaskUsageKeyValue.value,
@@ -1636,8 +1637,8 @@ export function PortfolioTemplatesResult(props) {
                 serviceDescription: "",
                 externalReference: location.selectedTemplateItems[0].externalReference,
                 customerSegment: null,
-                items: [],
-                coverages: [],
+                customItems: [],
+                customCoverages: [],
             });
             setValidityData({
                 ...validityData,
@@ -3155,7 +3156,7 @@ export function PortfolioTemplatesResult(props) {
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid ">
                     <div className="d-flex align-items-center justify-content-between mt-2">
-                        <h5 className="font-weight-600 mb-0">Custom Portfolio</h5>
+                        <h5 className="font-weight-600 mb-0">Custom Portfolio Template</h5>
                         <div className="d-flex justify-content-center align-items-center">
                             <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
                             <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
@@ -3225,28 +3226,31 @@ export function PortfolioTemplatesResult(props) {
                                                 {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponentData.portfolioName} onChange={handleGeneralInputChange} /> */}
                                             </div>
                                         </div>
+                                        {/* {console.log("error are : ", location.autocreatedcustomPortfolioData.customPortfolioId)} */}
                                         <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
                                                     {prefilgabelGeneral} ID
                                                 </label>
-                                                {location.solutionValueIs == 1 ? <input
+                                                {/* {location.solutionValueIs == 1 ? <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    placeholder="(Auto-generated11)"
+                                                     {location.solutionValueIs }
+                                                    comment this value={location.autocreatedcustomPortfolioData.customPortfolioId}
+                                                   omment this onChange={handleGeneralInputChange}
+                                                   omment this disabled={true}
+                                                /> :  */}
+                                                <input
                                                     type="text"
                                                     className="form-control border-radius-10"
                                                     placeholder="(Auto-generated)"
                                                     // {location.solutionValueIs }
-                                                    // value={location.autocreatedcustomPortfolioData.customPortfolioId}
+                                                    // value={location?.autocreatedcustomPortfolioData?.customPortfolioId}
                                                     // onChange={handleGeneralInputChange}
                                                     disabled={true}
-                                                /> : <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    placeholder="(Auto-generated)"
-                                                    // {location.solutionValueIs }
-                                                    value={location.autocreatedcustomPortfolioData.customPortfolioId}
-                                                    // onChange={handleGeneralInputChange}
-                                                    disabled={true}
-                                                />}
+                                                />
+                                                {/* } */}
                                                 {/* <input
                                                     type="text"
                                                     className="form-control border-radius-10"

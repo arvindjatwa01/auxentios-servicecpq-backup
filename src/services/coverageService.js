@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { COVERAGE_REST } from "./CONSTANTS";
+import { COVERAGE_REST, CUSTOM_COVERAGE_REST } from "./CONSTANTS";
 
 /**
  * Function to fetch Make keyvalue.
@@ -92,3 +92,24 @@ export const createCoverage = (data) => {
     }
   });
 };
+
+export const createCutomCoverage = (data) => {
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(CUSTOM_COVERAGE_REST(),data)
+        .then((res) => {
+          console.log("createCoverage > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("createCoverage > axios err=", err);
+          reject("Error in createCoverage axios!");
+        });
+    } catch (error) {
+      console.error("in coverageService > createCoverage, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+

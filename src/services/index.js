@@ -13,7 +13,7 @@ export { getAllPortfolios } from './solutionBuilderServices'
 export { createPortfolio, getPortfolio, updatePortfolio} from './servicePortfolioServices'
 export { createCustomPortfolio, updateCustomPortfolio, getCustomPortfolio} from './customPortfolioSolutions'
 export { getPortfolioCommonConfig } from './pricingCommonConfig'
-export { getMakeKeyValue, getModelKeyValue, getPrefixKeyValue,createCoverage } from './coverageService'
+export { getMakeKeyValue, getModelKeyValue, getPrefixKeyValue,createCoverage,createCutomCoverage} from './coverageService'
 export { getUsageCategoryKeyValue, getStrategyTaskKeyValue, getTaskTypeKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getLifeStageKeyValue, getTypeKeyValue, getResponseTimeTaskKeyValue, getValidityKeyValue } from './commonSolutionBuilderServices'
 export {getSearchQueryCoverage,getSearchCoverageForFamily} from "./searchQueryService"
 export { itemCreation,itemSearchSuggestion,itemSearch,getItemPrice,updateItemData,deleteItem, itemPriceDataId } from './portFolioItemService';
