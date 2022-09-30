@@ -68,7 +68,7 @@ function WithoutRepairOption01(props) {
                 "Operation " +
                 lastOperation.operationNumber +
                 " - " +
-                lastOperation.modifierDescription, //Rename after modifications in UI
+                lastOperation.description, //Rename after modifications in UI
             });
           } else {
             loadNewOperationUI();
@@ -182,7 +182,7 @@ function WithoutRepairOption01(props) {
           "Operation " +
           operationToLoad[0].operationNumber +
           " - " +
-          operationToLoad[0].modifierDescription, //Rename once changed in API
+          operationToLoad[0].description, //Rename once changed in API
       });
     } else if (direction === "forward") {
       let operationToLoad = [];
@@ -202,7 +202,7 @@ function WithoutRepairOption01(props) {
             "Operation " +
             operationToLoad[0].operationNumber +
             " - " +
-            operationToLoad[0].modifierDescription, //Rename
+            operationToLoad[0].description, //Rename
         });
       }
     }
@@ -216,19 +216,19 @@ function WithoutRepairOption01(props) {
       componentCode: operationData.componentCode,
       componentCodeDescription: operationData.componentCodeDescription,
       modifier: operationData.modifier,
-      modifierDescription: operationData.description,
+      description: operationData.description,
     };
     AddOperation(sid, data)
       .then((result) => {
         setOperationData({
           ...operationData,
           operationNumber: result.operationNumber,
-          description: result.modifierDescription,
+          description: result.description,
           header:
             "Operation " +
             result.operationNumber +
             " - " +
-            result.modifierDescription, //Rename to description once API is changed
+            result.description, //Rename to description once API is changed
         });
         operations[operations.length - 1] = result;
         setShowAddNewButton(true);
@@ -261,7 +261,7 @@ function WithoutRepairOption01(props) {
           "Operation " +
           operations[operations.length - 1].operationNumber +
           " - " +
-          operations[operations.length - 1].modifierDescription,
+          operations[operations.length - 1].description,
       });
       setShowAddNewButton(true);
       setOperationViewOnly(true);

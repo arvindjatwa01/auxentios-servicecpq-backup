@@ -69,8 +69,12 @@ const DynamicSearchComponent = (props) => {
   const handleInputSearch = (e, id) => {
     let tempArray = [...props.querySearchSelector];
     let obj = tempArray[id];
+    let searchString = tempArray[id].selectCategory.value + "~" + e.target.value;
     if (tempArray[id].selectCategory.value && e.target.value) {
-      props.searchAPI(tempArray[id].selectCategory.value + "~" + e.target.value)
+      if(props.builderType){
+        searchString = `builderType:${props.builderType}&${searchString}`;
+      } 
+      props.searchAPI(searchString)
         .then((res) => {
           obj.selectOptions = res;
           tempArray[id] = obj;
@@ -137,7 +141,7 @@ const DynamicSearchComponent = (props) => {
 
                   {obj.selectOptions && obj.selectOptions.length > 0 && (
                     <ul
-                      className={`list-group customselectsearch-list scrollbar scrollbar-${i}`}
+                      className={`list-group customselectsearch-list scrollbar-repair-autocomplete scrollbar-${i} style`}
                       id="style"
                     >
                       {obj.selectOptions.map((currentItem, j) => (
@@ -173,12 +177,11 @@ const DynamicSearchComponent = (props) => {
           </Link>
         </div>
         <div onClick={props.searchClick}>
-          <Link
-            to="#"
-            className="btn-sm border mr-2"
+          <span
+            className="btn-sm border mr-2" style={{cursor: 'pointer'}}
           >
             <SearchIcon sx={{color: iconColor? iconColor : 'grey', "&:hover": { color: "blue" }, fontSize: 17}}/>
-          </Link>
+          </span>
         </div>
       </div>
     </div>

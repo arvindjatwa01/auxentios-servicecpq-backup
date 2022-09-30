@@ -27,7 +27,7 @@ export const RepairWithoutSpareParts = () => {
 
   useEffect(() => {
     fetchRecentBuilders(
-      `builderType:BUIDER_WITHOUT_SPAREPART&pageSize=10&sortColumn=updatedAt&orderBY=DESC`
+      `builderType:BUILDER_WITHOUT_SPAREPART&pageSize=10&sortColumn=updatedAt&orderBY=DESC`
     );
   }, []);
 
@@ -38,7 +38,7 @@ export const RepairWithoutSpareParts = () => {
         setRecentBuilders(result);
       })
       .catch((err) => {
-        handleSnack("error", "Error occurred while fetching partlists");
+        handleSnack("error", "Error occurred while fetching builders");
       });
     setRecentBuildersLoading(false);
   };
@@ -112,7 +112,7 @@ export const RepairWithoutSpareParts = () => {
     try {
       if (searchStr) {
         const res = await builderSearch(
-          `builderType:BUIDER_WITHOUT_SPAREPART&${searchStr}`
+          `builderType:BUILDER_WITHOUT_SPAREPART&${searchStr}`
         );
         setMasterData(res);
       } else {
@@ -166,7 +166,7 @@ export const RepairWithoutSpareParts = () => {
       type: "new",
     };
     createBuilder({
-      builderType: "BUIDER_WITHOUT_SPAREPART",
+      builderType: "BUILDER_WITHOUT_SPAREPART",
       activeVersion: true,
       versionNumber: 1,
       status: "DRAFT",
@@ -330,6 +330,7 @@ export const RepairWithoutSpareParts = () => {
                     searchClick={handleQuerySearchClick}
                     options={BUILDER_SEARCH_Q_OPTIONS}
                     color="white"
+                    builderType="BUILDER_WITHOUT_SPAREPART"
                   />
                 </div>
               </div>

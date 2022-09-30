@@ -11,7 +11,7 @@ const SearchBox = (props) => {
       />
       {props.result && props.result.length > 0 && (
         <ul
-          className={`list-group customselectsearch-list scrollbar`}
+          className={`list-group customselectsearch-list scrollbar-repair-autocomplete`}
           id="style"
         >
           {props.result.map((currentItem, index) => (

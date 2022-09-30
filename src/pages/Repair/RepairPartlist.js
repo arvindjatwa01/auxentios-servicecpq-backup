@@ -371,6 +371,7 @@ export const RepairPartlist = () => {
                     searchClick={handleQuerySearchClick}
                     options={BUILDER_SEARCH_Q_OPTIONS}
                     color="white"
+                    builderType="PARTLIST"
                   />
                 </div>
               </div>
