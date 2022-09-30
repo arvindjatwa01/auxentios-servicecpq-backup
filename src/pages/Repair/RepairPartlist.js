@@ -20,11 +20,6 @@ import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import EditIcon from "@mui/icons-material/EditTwoTone";
 import SelectFilter from "react-select";
-import {
-  getSearchCoverageForFamily,
-  getSearchQueryCoverage,
-} from "../../services/index";
-import { MuiMenuComponent } from "../Operational/index";
 
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import {
@@ -156,10 +151,11 @@ export const RepairPartlist = () => {
       handleSnack("error", "Error occurred while fetching spare parts!");
     }
   };
+
   const [querySearchSelector, setQuerySearchSelector] = useState([
     {
       id: 0,
-      selectFamily: "",
+      selectCategory: "",
       selectOperator: "",
       inputSearch: "",
       selectOptions: [],
@@ -349,18 +345,13 @@ export const RepairPartlist = () => {
             <div className="row align-items-center">
               <div className="col-11 mx-2">
                 <div className="d-flex align-items-center bg-primary w-100">
-                  <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
+                  <div
+                    className="d-flex mr-3 py-3"
+                    style={{ whiteSpace: "pre" }}
+                  >
                     <h5 className="mr-2 mb-0 text-white">
                       <span>Search</span>
                     </h5>
-                    <p className="ml-4 mb-0">
-                      <a href="#" className="ml-3 text-white">
-                        <EditOutlinedIcon />
-                      </a>
-                      <a href="#" className="ml-3 text-white">
-                        <ShareOutlinedIcon />
-                      </a>
-                    </p>
                   </div>
                   <DynamicSearchComponent
                     querySearchSelector={querySearchSelector}
@@ -374,17 +365,6 @@ export const RepairPartlist = () => {
                     builderType="PARTLIST"
                   />
                 </div>
-              </div>
-              <div className="text-center border-left pl-3 py-3">
-                <Link
-                  to="#"
-                  className="p-1 text-white"
-                  data-toggle="modal"
-                  data-target="#Datatable"
-                >
-                  <SearchIcon />
-                  <span className="ml-1">Search</span>
-                </Link>
               </div>
             </div>
           </div>
