@@ -1050,7 +1050,7 @@ export const Analytics = () => {
 
    const handleSolutinTemoRadioData = (e, row) => {
       if (e.target.checked) {
-         // console.log("Checked value is : ", row.itemId)
+         console.log("Checked value is : ")
          setSolutionRadioCheck(row.customPortfolioId)
          setSelectedSolutionTempMasterData([row])
          setSolutionTempFlagIs(true)
