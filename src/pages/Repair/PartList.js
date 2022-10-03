@@ -194,7 +194,9 @@ function PartList(props) {
   const [totalPartsCount, setTotalPartsCount] = useState(0);
   const [filterQuery, setFilterQuery] = useState("");
   const [versionDescription, setVersionDescription] = useState("");
-
+  const [noOptionsCust, setNoOptionsCust] = useState(false);
+  const [noOptionsModel, setNoOptionsModel] = useState(false);
+  const [noOptionsSerial, setNoOptionsSerial] = useState(false);
   const activityOptions = ["New Versions", "Show Errors", "Review"];
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [versionOpen, setVersionOpen] = useState(false);
@@ -529,7 +531,12 @@ function PartList(props) {
         "customerId~" + searchText + " OR fullName~" + searchText
       )
         .then((result) => {
-          setSearchCustResults(result);
+          if (result && result.length > 0) {
+            setSearchCustResults(result);
+            setNoOptionsCust(false);
+          } else {
+            setNoOptionsCust(true);
+          }
         })
         .catch((e) => {
           handleSnack("error", "Error occurred while searching the customer!");
@@ -586,9 +593,19 @@ function PartList(props) {
         .then((result) => {
           if (result) {
             if (searchMachinefieldName === "model") {
-              setSearchModelResults(result);
+              if (result && result.length > 0) {
+                setSearchModelResults(result);
+                setNoOptionsModel(false);
+              } else {
+                setNoOptionsModel(true);
+              }
             } else if (searchMachinefieldName === "serialNo") {
-              setSearchSerialResults(result);
+              if (result && result.length > 0) {
+                setSearchSerialResults(result);
+                setNoOptionsSerial(false);
+              } else {
+                setNoOptionsSerial(true);
+              }
             }
           }
         })
@@ -1345,7 +1362,7 @@ function PartList(props) {
                 <button
                   className="ml-3 btn-no-border font-size-14"
                   title="Share"
-                    onClick={() => setShareOpen(true)}
+                  onClick={() => setShareOpen(true)}
                 >
                   <img src={shareIcon}></img>
                 </button>
@@ -1466,6 +1483,7 @@ function PartList(props) {
                                 type="customerId"
                                 result={searchCustResults}
                                 onSelect={handleCustSelect}
+                                noOptions={noOptionsCust}
                               />
                             </div>
                           </div>
@@ -1558,10 +1576,12 @@ function PartList(props) {
                             type="button"
                             className="btn btn-light bg-primary text-white"
                             disabled={
-                              !customerData.source ||
-                              !customerData.contactEmail ||
-                              !customerData.customerGroup ||
-                              !customerData.contactName
+                              !(
+                                customerData.source &&
+                                customerData.contactEmail &&
+                                customerData.customerGroup &&
+                                customerData.contactName
+                              ) || noOptionsCust
                             }
                             onClick={updateCustomerData}
                           >
@@ -1685,6 +1705,7 @@ function PartList(props) {
                                 type="model"
                                 result={searchModelResults}
                                 onSelect={handleModelSelect}
+                                noOptions={noOptionsModel}
                               />
                             </div>
                           </div>
@@ -1704,6 +1725,7 @@ function PartList(props) {
                                 type="equipmentNumber"
                                 result={searchSerialResults}
                                 onSelect={handleModelSelect}
+                                noOptions={noOptionsSerial}
                               />
                             </div>
                           </div>
@@ -1780,7 +1802,9 @@ function PartList(props) {
                             type="button"
                             className="btn btn-light bg-primary text-white"
                             disabled={
-                              !machineData.model || !machineData.serialNo
+                              !(machineData.model && machineData.serialNo) ||
+                              noOptionsModel ||
+                              noOptionsSerial
                             }
                             onClick={updateMachineData}
                           >

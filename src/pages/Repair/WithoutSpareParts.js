@@ -397,7 +397,7 @@ function WithoutSpareParts(props) {
                     segmentData.componentCode &&
                     segmentData.description &&
                     segmentData.title
-                  )
+                  ) || noOptionsCompCode
                 }
               >
                 Save

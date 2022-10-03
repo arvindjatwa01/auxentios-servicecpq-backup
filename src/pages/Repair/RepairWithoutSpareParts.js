@@ -131,7 +131,7 @@ export const RepairWithoutSpareParts = () => {
   const [querySearchSelector, setQuerySearchSelector] = useState([
     {
       id: 0,
-      selectFamily: "",
+      selectCategory: "",
       selectOperator: "",
       inputSearch: "",
       selectOptions: [],
@@ -312,11 +312,14 @@ export const RepairWithoutSpareParts = () => {
               </div>
             </div>
           </div>
-          <div className="bg-primary px-3 mb-3 p-2">
+          <div className="bg-primary px-3 mb-3">
             <div className="row align-items-center">
               <div className="col-11 mx-2">
                 <div className="d-flex align-items-center bg-primary w-100">
-                  <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
+                  <div
+                    className="d-flex mr-3 py-3"
+                    style={{ whiteSpace: "pre" }}
+                  >
                     <h5 className="mr-2 mb-0 text-white">
                       <span>Search</span>
                     </h5>

@@ -56,6 +56,9 @@ function WithoutSparePartsHeader(props) {
   const [bId, setBId] = useState("");
   const [versionOpen, setVersionOpen] = useState(false);
   const [versionDescription, setVersionDescription] = useState("");
+  const [noOptionsCust, setNoOptionsCust] = useState(false);
+  const [noOptionsModel, setNoOptionsModel] = useState(false);
+  const [noOptionsSerial, setNoOptionsSerial] = useState(false);
   const [activeElement, setActiveElement] = useState({
     name: "header",
     bId: "",
@@ -303,7 +306,12 @@ function WithoutSparePartsHeader(props) {
     if (searchText) {
       await customerSearch(searchCustfieldName + "~" + searchText)
         .then((result) => {
-          setSearchCustResults(result);
+          if (result && result.length > 0) {
+            setSearchCustResults(result);
+            setNoOptionsCust(false);
+          } else {
+            setNoOptionsCust(true);
+          }
         })
         .catch((e) => {
           handleSnack("error", "Error occurred while searching the customer!");
@@ -360,9 +368,19 @@ function WithoutSparePartsHeader(props) {
         .then((result) => {
           if (result) {
             if (searchMachinefieldName === "model") {
-              setSearchModelResults(result);
+              if (result && result.length > 0) {
+                setSearchModelResults(result);
+                setNoOptionsModel(false);
+              } else {
+                setNoOptionsModel(true);
+              }
             } else if (searchMachinefieldName === "serialNo") {
-              setSearchSerialResults(result);
+              if (result && result.length > 0) {
+                setSearchSerialResults(result);
+                setNoOptionsSerial(false);
+              } else {
+                setNoOptionsSerial(true);
+              }
             }
           }
         })
@@ -827,6 +845,7 @@ function WithoutSparePartsHeader(props) {
                                     type="customerId"
                                     result={searchCustResults}
                                     onSelect={handleCustSelect}
+                                    noOptions={noOptionsCust}
                                   />
                                 </div>
                               </div>
@@ -919,10 +938,10 @@ function WithoutSparePartsHeader(props) {
                                 type="button"
                                 className="btn btn-light bg-primary text-white"
                                 disabled={
-                                  !customerData.source ||
-                                  !customerData.contactEmail ||
-                                  !customerData.customerGroup ||
-                                  !customerData.contactName
+                                !(customerData.source &&
+                                  customerData.contactEmail &&
+                                  customerData.customerGroup &&
+                                  customerData.contactName) || noOptionsCust
                                 }
                                 onClick={updateCustomerData}
                               >
@@ -1049,6 +1068,7 @@ function WithoutSparePartsHeader(props) {
                                     type="model"
                                     result={searchModelResults}
                                     onSelect={handleModelSelect}
+                                    noOptions={noOptionsModel}
                                   />
                                 </div>
                               </div>
@@ -1068,6 +1088,7 @@ function WithoutSparePartsHeader(props) {
                                     type="equipmentNumber"
                                     result={searchSerialResults}
                                     onSelect={handleModelSelect}
+                                    noOptions={noOptionsSerial}
                                   />
                                 </div>
                               </div>
@@ -1144,7 +1165,7 @@ function WithoutSparePartsHeader(props) {
                                 type="button"
                                 className="btn btn-light bg-primary text-white"
                                 disabled={
-                                  !machineData.model || !machineData.serialNo
+                                  !(machineData.model && machineData.serialNo) || noOptionsModel || noOptionsSerial
                                 }
                                 onClick={updateMachineData}
                               >

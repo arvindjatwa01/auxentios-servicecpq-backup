@@ -451,7 +451,7 @@ function WithoutRepairOption01(props) {
                     operationData.jobCode &&
                     operationData.jobCodeDescription &&
                     operationData.description
-                  )
+                  ) || noOptionsCompCode || noOptionsJobCode
                 }
               >
                 Save
