@@ -5543,7 +5543,7 @@ export function CreatePortfolio() {
                         ]}
                       />
                       <div className=" ml-3">
-                        <Link to="#" className="btn bg-primary text-white">
+                        <Link to="#" onClick={() => setOpen3(true)} className="btn bg-primary text-white">
                           <FileUploadOutlinedIcon />{" "}
                           <span className="ml-1">Upload</span>
                         </Link>

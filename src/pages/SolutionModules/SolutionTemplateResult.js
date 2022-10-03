@@ -93,6 +93,7 @@ import {
     getSearchCoverageForFamily,
     itemCreation,
     createCoverage,
+    createCutomCoverage,
     getItemPrice
 } from "../../services/index";
 import {
@@ -163,6 +164,12 @@ export function SolutionTemplateResult(props) {
     const [productHierarchyKeyValue, setProductHierarchyKeyValue] = useState([]);
     const [geographicKeyValue, setGeographicKeyValue] = useState([]);
     const [typeKeyValue, setTypeKeyValue] = useState([]);
+
+
+    const [machineTypeKeyValueList, setMachineTypeKeyValueList] = useState([])
+    const [lifeStageOfMachineKeyValueList, setLifeStageOfMachineKeyValueList] = useState([])
+
+
     const [machineTypeKeyValue, setMachineTypeKeyValue] = useState([]);
     const [lifeStageOfMachineKeyValue, setLifeStageOfMachineKeyValue] = useState([]);
     const [isView, setIsView] = useState(false);
@@ -257,7 +264,7 @@ export function SolutionTemplateResult(props) {
         externalReference: "",
         customerSegment: null,
         items: [],
-        coverages: [],
+        customCoverages: [],
     });
 
     const [newBundle, setNewBundle] = useState({
@@ -349,7 +356,7 @@ export function SolutionTemplateResult(props) {
 
 
     const makeHeaderEditable = () => {
-        
+        console.log("Data is : ", location.selectedTemplateItems[0])
         if (value === "1" && viewOnlyTab.generalViewOnly)
             setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: false });
         else if (value === "3" && viewOnlyTab.strategyViewOnly) {
@@ -601,7 +608,7 @@ export function SolutionTemplateResult(props) {
                 portfolioPrice: {},
                 additionalPrice: {},
                 escalationPrice: {},
-                coverages: generalComponentData.coverages
+                customCoverages: generalComponentData.coverages
                     ? generalComponentData.coverages
                     : [],
                 items: _generalComponentData.items,
@@ -614,7 +621,7 @@ export function SolutionTemplateResult(props) {
             };
             if (generalComponentData.portfolioId) {
                 const updatePortfolioRes = await updateCustomPortfolio(
-                    generalComponentData.portfolioId,
+                    portfolioId,
                     obj
                 );
                 if (updatePortfolioRes.status != 200) {
@@ -788,7 +795,7 @@ export function SolutionTemplateResult(props) {
                     portfolioPrice: {},
                     additionalPrice: {},
                     escalationPrice: {},
-                    coverages: generalComponentData.coverages
+                    customCoverages: generalComponentData.coverages
                         ? generalComponentData.coverages
                         : [],
                     items: [...generalComponentData.items, { itemId: res.data.itemId }],
@@ -802,7 +809,7 @@ export function SolutionTemplateResult(props) {
                 console.log("request obj for update:", obj);
                 if (generalComponentData.portfolioId) {
                     const updatePortfolioRes = await updateCustomPortfolio(
-                        generalComponentData.portfolioId,
+                        portfolioId,
                         obj
                     );
                     if (updatePortfolioRes.status != 200) {
@@ -942,94 +949,52 @@ export function SolutionTemplateResult(props) {
         if (e.target.id == "general") {
 
 
-            // let reqData = {
-            //     type: prefilgabelGeneral,
-            //     name: generalComponentData.name,
-            //     description: generalComponentData.description,
-            //     externalReference: generalComponentData.externalReference,
+            let reqData = {
+                type: prefilgabelGeneral,
+                name: generalComponentData.name,
+                description: generalComponentData.description,
+                externalReference: generalComponentData.externalReference,
 
-            //     strategyTask: "PREVENTIVE_MAINTENANCE",
-            //     taskType: "PM1",
-            //     usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-            //     productHierarchy: "END_PRODUCT",
-            //     geographic: "ONSITE",
-            //     availability: "AVAILABILITY_GREATER_95",
-            //     responseTime: "PROACTIVE",
-            //     type: "MACHINE",
-            //     application: "HILL",
-            //     contractOrSupport: "LEVEL_I",
-            //     lifeStageOfMachine: "NEW_BREAKIN",
-            //     supportLevel: "PREMIUM",
-            //     serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
+                strategyTask: stratgyTaskUsageKeyValue.value,
+                taskType: stratgyTaskTypeKeyValue.value,
+                usageCategory: categoryUsageKeyValue1.value,
+                productHierarchy: stratgyHierarchyKeyValue.value,
+                geographic: stratgyGeographicKeyValue.value,
 
+                availability: "AVAILABILITY_GREATER_95",
+                responseTime: stratgyResponseTimeKeyValue.value,
+                type: "MACHINE",
+                application: "HILL",
+                contractOrSupport: "LEVEL_I",
+                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                supportLevel: "PREMIUM",
+                serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
+                
+                machineType: machineTypeKeyValue.value,
+                searchTerm: "EMPTY",
+                lubricant: true,
+                customerId: 0,
+                visibleInCommerce: true,
+                customerGroup: generalComponentData.customerGroup
+                    ? generalComponentData.customerGroup
+                    : "EMPTY",
+                customerSegment: generalComponentData.customerSegment.value
+                    ? generalComponentData.customerSegment.value
+                    : "EMPTY",
+                status: generalComponentData.status
+                    ? generalComponentData.status
+                    : "EMPTY",
+                
+                items: [],
+                customCoverages: [],
+                customItems: [],
+                // portfolioPrice: {},
+                // additionalPrice: {},
+                // escalationPrice: {},
 
+            };
 
-            //     visibleInCommerce: true,
-            //     customerId: 0,
-            //     lubricant: true,
-            //     customerSegment: generalComponentData.customerSegment.value
-            //         ? generalComponentData.customerSegment.value
-            //         : "EMPTY",
-            //     machineType: generalComponentData.machineType
-            //         ? generalComponentData.machineType
-            //         : "EMPTY",
-            //     status: generalComponentData.status
-            //         ? generalComponentData.status
-            //         : "EMPTY",
-            //     // strategyTask: generalComponentData.strategyTask
-            //     //     ? generalComponentData.strategyTask
-            //     //     : "EMPTY",
-            //     // taskType: generalComponentData.taskType
-            //     //     ? generalComponentData.taskType
-            //     //     : "EMPTY",
-            //     usageCategory: generalComponentData.usageCategory
-            //         ? generalComponentData.usageCategory
-            //         : "EMPTY",
-            //     // productHierarchy: generalComponentData.productHierarchy
-            //     //     ? generalComponentData.productHierarchy
-            //     //     : "EMPTY",
-            //     // geographic: generalComponentData.geographic
-            //     //     ? generalComponentData.geographic
-            //     //     : "EMPTY",
-            //     availability: generalComponentData.availability
-            //         ? generalComponentData.availability
-            //         : "EMPTY",
-            //     // responseTime: generalComponentData.responseTime
-            //     //     ? generalComponentData.responseTime
-            //     //     : "EMPTY",
-            //     type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-            //     application: generalComponentData.application
-            //         ? generalComponentData.application
-            //         : "EMPTY",
-            //     contractOrSupport: generalComponentData.contractOrSupport
-            //         ? generalComponentData.contractOrSupport
-            //         : "EMPTY",
-            //     lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-            //         ? generalComponentData.lifeStageOfMachine
-            //         : "EMPTY",
-            //     supportLevel: generalComponentData.supportLevel
-            //         ? generalComponentData.supportLevel
-            //         : "EMPTY",
-            //     items: [],
-            //     coverages: [],
-            //     customerGroup: generalComponentData.customerGroup
-            //         ? generalComponentData.customerGroup
-            //         : "EMPTY",
-            //     searchTerm: "EMPTY",
-            //     supportLevel: "EMPTY",
-            //     portfolioPrice: {},
-            //     additionalPrice: {},
-            //     escalationPrice: {},
-
-            //     // usageCategory: categoryUsageKeyValue1.value,
-            //     // taskType: stratgyTaskTypeKeyValue.value,
-            //     // strategyTask: stratgyTaskUsageKeyValue.value,
-            //     // responseTime: stratgyResponseTimeKeyValue.value,
-            //     // productHierarchy: stratgyHierarchyKeyValue.value,
-            //     // geographic: stratgyGeographicKeyValue.value,
-            //     customItems: selectedCustomItems,
-
-            // };
+            console.log("req dat : ", reqData);
 
             setGeneralComponentData({
                 ...generalComponentData,
@@ -1040,25 +1005,32 @@ export function SolutionTemplateResult(props) {
                 responseTime: stratgyResponseTimeKeyValue.value,
                 productHierarchy: stratgyHierarchyKeyValue.value,
                 geographic: stratgyGeographicKeyValue.value,
+                machineType: machineTypeKeyValue.value,
+                lifeStageOfMachine:lifeStageOfMachineKeyValue.value,
             });
 
+            // const portfolioRes = await createCustomPortfolio(reqData);
             // console.log("reqData is : ", reqData);
-            if (location.solutionValueIs == 1) {
-                // var portfolioRes = await createCustomPortfolio(reqData);
-                // var portfolioRes = {
-                //     status: 2000
-                // };
-                setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
-            } else {
-                // var portfolioRes = await updateCustomPortfolio(
-                //     location.autocreatedcustomPortfolioData.customPortfolioId,
-                //     reqData
-                // )
-                var portfolioRes = {
-                    status: 2000
-                };
+            // if (location.solutionValueIs == 1) {
+            //     // var portfolioRes = await createCustomPortfolio(reqData);
+            //     // var portfolioRes = {
+            //     //     status: 2000
+            //     // };
+            //     setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
+            // } else {
+            //     // var portfolioRes = await updateCustomPortfolio(
+            //     //     location.autocreatedcustomPortfolioData.customPortfolioId,
+            //     //     reqData
+            //     // )
+            //     var portfolioRes = {
+            //         status: 2000
+            //     };
 
-            }
+            // }
+            const portfolioRes = await updateCustomPortfolio(
+                portfolioId,
+                reqData
+            );
 
             if (portfolioRes.status === 200) {
                 toast("👏 Portfolio Update Successfully", {
@@ -1071,6 +1043,7 @@ export function SolutionTemplateResult(props) {
                     progress: undefined,
                 });
                 setValue("2");
+                setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
                 setGeneralComponentData({
                     ...generalComponentData,
                     portfolioId: portfolioRes.data.customPortfolioId,
@@ -1109,6 +1082,8 @@ export function SolutionTemplateResult(props) {
                 responseTime: stratgyResponseTimeKeyValue.value,
                 productHierarchy: stratgyHierarchyKeyValue.value,
                 geographic: stratgyGeographicKeyValue.value,
+                machineType: machineTypeKeyValue.value,
+                lifeStageOfMachine:lifeStageOfMachineKeyValue.value,
             });
 
             const { portfolioId, ...res } = generalComponentData;
@@ -1162,15 +1137,15 @@ export function SolutionTemplateResult(props) {
                     ? generalComponentData.supportLevel
                     : "EMPTY",
                 items: [],
-                coverages: [],
+                customCoverages: [],
                 customerGroup: generalComponentData.customerGroup
                     ? generalComponentData.customerGroup
                     : "EMPTY",
                 searchTerm: "EMPTY",
                 supportLevel: "EMPTY",
-                portfolioPrice: {},
-                additionalPrice: {},
-                escalationPrice: {},
+                // portfolioPrice: {},
+                // additionalPrice: {},
+                // escalationPrice: {},
 
                 usageCategory: categoryUsageKeyValue1.value,
                 taskType: stratgyTaskTypeKeyValue.value,
@@ -1180,11 +1155,28 @@ export function SolutionTemplateResult(props) {
                 geographic: stratgyGeographicKeyValue.value,
                 customItems: selectedCustomItems,
             };
-            // console.log(" res is : ", res);
+            console.log(" res is : ", res);
             // console.log("obj", obj);
 
+            // if (location.solutionValueIs == 1) {
+            //     // var portfolioRes = await createCustomPortfolio(reqData);
+            //     // var portfolioRes = {
+            //     //     status: 2000
+            //     // };
+            //     setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: true });
+            // } else {
+            //     // var portfolioRes = await updateCustomPortfolio(
+            //     //     location.autocreatedcustomPortfolioData.customPortfolioId,
+            //     //     reqData
+            //     // )
+            //     var strategyRes = {
+            //         status: 2000
+            //     };
+
+            // }
+
             const strategyRes = await updateCustomPortfolio(
-                generalComponentData.portfolioId,
+                portfolioId,
                 obj
             );
             if (strategyRes.status === 200) {
@@ -1198,6 +1190,7 @@ export function SolutionTemplateResult(props) {
                     progress: undefined,
                 });
                 setValue("administrative");
+                setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: true });
                 // setValue("4");
                 console.log("strategy updating", strategyRes.data);
             } else {
@@ -1230,13 +1223,13 @@ export function SolutionTemplateResult(props) {
                     actions: "",
                     createdAt: "",
                 };
-                const res = await createCoverage(reqObj);
+                const res = await createCutomCoverage(reqObj);
                 console.log("createCoverage res:", res);
-                cvgIds.push({ coverageId: res.coverageId });
+                cvgIds.push({ coverageId: res.customCoverageId });
             }
             setGeneralComponentData({
                 ...generalComponentData,
-                coverages: cvgIds,
+                customCoverages: cvgIds,
             });
             const { portfolioId, ...res } = generalComponentData;
             let obj = {
@@ -1292,11 +1285,12 @@ export function SolutionTemplateResult(props) {
                     : "EMPTY",
                 searchTerm: "EMPTY",
                 supportLevel: "EMPTY",
-                portfolioPrice: {},
-                additionalPrice: {},
-                escalationPrice: {},
+                // portfolioPrice: {},
+                // additionalPrice: {},
+                // escalationPrice: {},
                 items: [],
-                coverages: cvgIds,
+                customItems:[],
+                customCoverages: cvgIds,
                 usageCategory: categoryUsageKeyValue1.value,
                 taskType: stratgyTaskTypeKeyValue.value,
                 strategyTask: stratgyTaskUsageKeyValue.value,
@@ -1306,7 +1300,7 @@ export function SolutionTemplateResult(props) {
             };
             if (generalComponentData.portfolioId) {
                 const updatePortfolioRes = await updateCustomPortfolio(
-                    generalComponentData.portfolioId,
+                    portfolioId,
                     obj
                 );
                 if (updatePortfolioRes.status === 200) {
@@ -1574,7 +1568,7 @@ export function SolutionTemplateResult(props) {
                     value: d.key,
                     label: d.value,
                 }));
-                setMachineTypeKeyValue(options);
+                setMachineTypeKeyValueList(options);
             })
             .catch((err) => {
                 alert(err);
@@ -1586,7 +1580,7 @@ export function SolutionTemplateResult(props) {
                     value: d.key,
                     label: d.value,
                 }));
-                setLifeStageOfMachineKeyValue(options);
+                setLifeStageOfMachineKeyValueList(options);
             })
             .catch((err) => {
                 alert(err);
@@ -1650,8 +1644,10 @@ export function SolutionTemplateResult(props) {
             externalReference: location.selectedTemplateItems[0].externalReference,
             customerSegment: null,
             items: [],
-            coverages: [],
+            customCoverages: [],
         });
+        setPortfolioId(location.selectedTemplateItems[0].customPortfolioId);
+
         setValidityData({
             ...validityData,
             fromDate: location.selectedTemplateItems[0].validFrom,
@@ -1661,37 +1657,64 @@ export function SolutionTemplateResult(props) {
             fromInput: "",
             toInput: "",
         })
-        // stratgyTaskTypeKeyValue({value: location.selectedTemplateItems[0].itemBodyModel.taskType})
-        setStratgyResponseTimeKeyValue([{
+
+        setCategoryUsageKeyValue1({
+            "label": location.selectedTemplateItems[0].usageCategory,
+            "value": location.selectedTemplateItems[0].usageCategory
+        });
+
+        setStratgyTaskUsageKeyValue({
+            "label": location.selectedTemplateItems[0].strategyTask,
+            "value": location.selectedTemplateItems[0].strategyTask
+        });
+
+        setStratgyTaskTypeKeyValue({
+            "label": location.selectedTemplateItems[0].taskType,
+            "value": location.selectedTemplateItems[0].taskType
+        });
+
+        setStratgyResponseTimeKeyValue({
             "label": location.selectedTemplateItems[0].responseTime,
             "value": location.selectedTemplateItems[0].responseTime
-        }])
-        setStratgyHierarchyKeyValue([{
+        });
+
+        setStratgyHierarchyKeyValue({
             "label": location.selectedTemplateItems[0].productHierarchy,
             "value": location.selectedTemplateItems[0].productHierarchy
-        }])
+        });
 
-        setStratgyGeographicKeyValue([{
+        setStratgyGeographicKeyValue({
             "label": location.selectedTemplateItems[0].geographic,
             "value": location.selectedTemplateItems[0].geographic
-        }])
+        });
+
+        setMachineTypeKeyValue({
+            "label": location.selectedTemplateItems[0].machineType,
+            "value": location.selectedTemplateItems[0].machineType
+        });
+
+        setLifeStageOfMachineKeyValue({
+            "label": location.selectedTemplateItems[0].lifeStageOfMachine,
+            "value": location.selectedTemplateItems[0].lifeStageOfMachine
+        });
 
         console.log("location.selectedTemplateItems : ", location.selectedTemplateItems)
+        console.log("New Life stage value is : ", lifeStageOfMachineKeyValue)
 
-        let itemIdData = []
-        let priceDataId = []
+        // let itemIdData = []
+        // let priceDataId = []
         // itemIdData.push({ "itemId": location.selectedTemplateItems[0].itemId })
 
-        const customItemsId = location.selectedTemplateItems.map((data, i) => {
+        // const customItemsId = location.selectedTemplateItems.map((data, i) => {
 
-            console.log("my map data is :=> ", data);
-            console.log("itemHeaderId is :=>  ", data.customItemHeaderModel?.itemHeaderId);
-            console.log("itemHeaderModel is => :  ", data.customItemHeaderModel);
-            itemIdData.push({ "customItemId": parseInt(data.customItemId) })
-        })
-        setSelectedCustomItems(itemIdData)
+        //     console.log("my map data is :=> ", data);
+        //     console.log("itemHeaderId is :=>  ", data.customItemHeaderModel?.itemHeaderId);
+        //     console.log("itemHeaderModel is => :  ", data.customItemHeaderModel);
+        //     itemIdData.push({ "customItemId": parseInt(data.customItemId) })
+        // })
+        // setSelectedCustomItems(itemIdData)
 
-    }, [])
+    }, [portfolioId])
 
 
 
@@ -3159,7 +3182,7 @@ export function SolutionTemplateResult(props) {
                                                             className="form-control border-radius-10"
                                                             placeholder="(Auto-generated)"
                                                             // {location.solutionValueIs }
-                                                            value={location.selectedTemplateItems[0].customPortfolioId}
+                                                            value={portfolioId}
                                                             // onChange={handleGeneralInputChange}
                                                             disabled={true}
                                                         />
@@ -3220,7 +3243,6 @@ export function SolutionTemplateResult(props) {
                                                             onChange={handleCustomerSegmentChange}
                                                             value={generalComponentData.customerSegment}
                                                             options={customerSegmentKeyValue}
-                                                            defa
                                                         // options={strategyList}
                                                         />
                                                     </div>
@@ -3244,7 +3266,7 @@ export function SolutionTemplateResult(props) {
                                                     PORTFOLIO ID
                                                 </p>
                                                 <h6 className="font-weight-500">
-                                                    {location.selectedTemplateItems[0].customPortfolioId}
+                                                    {portfolioId}
                                                 </h6>
                                             </div>
                                         </div>
@@ -3254,7 +3276,8 @@ export function SolutionTemplateResult(props) {
                                                     PORTFOLIO NAME
                                                 </p>
                                                 <h6 className="font-weight-500">
-                                                    {location.selectedTemplateItems[0].name}
+                                                    {(generalComponentData.name)}
+                                                    {/* {generalComponentData.name !== "" ? (generalComponentData.name) : (location.selectedTemplateItems[0].name)} */}
                                                 </h6>
                                             </div>
                                         </div>
@@ -3263,7 +3286,10 @@ export function SolutionTemplateResult(props) {
                                                 <p className="font-size-12 font-weight-500 mb-2">
                                                     SERVICE PROGRAM DESCRIPTION (IF ANY)
                                                 </p>
-                                                <h6 className="font-weight-500">{location.selectedTemplateItems[0].description.length !== 0 ? location.selectedTemplateItems[0].description : "NA"}</h6>
+                                                <h6 className="font-weight-500">
+                                                    {(generalComponentData.description)}
+                                                    {/* {generalComponentData.description !== "" ? (generalComponentData.description) : (location.selectedTemplateItems[0].description)} */}
+                                                    </h6>
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-3">
@@ -3271,7 +3297,10 @@ export function SolutionTemplateResult(props) {
                                                 <p className="font-size-12 font-weight-500 mb-2">
                                                     REFERENCE
                                                 </p>
-                                                <h6 className="font-weight-500">{location.selectedTemplateItems[0].externalReference}</h6>
+                                                <h6 className="font-weight-500">
+                                                    {(generalComponentData.externalReference)}
+                                                    {/* {generalComponentData.externalReference !== "" ? (generalComponentData.externalReference) : (location.selectedTemplateItems[0].externalReference)} */}
+                                                    </h6>
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-3">
@@ -3279,11 +3308,14 @@ export function SolutionTemplateResult(props) {
                                                 <p className="font-size-12 font-weight-500 mb-2">
                                                     CUSTOMER SEGMENT
                                                 </p>
-                                                <h6 className="font-weight-500">{location.selectedTemplateItems[0].customerSegment}</h6>
+                                                <h6 className="font-weight-500">
+                                                    customer segment
+                                                    {/* {location.selectedTemplateItems[0].customerSegment} */}
+                                                    </h6>
                                             </div>
                                         </div>
                                     </div>)}
-                                    {isView ? (
+                                    {/* {isView ? (
                                         <div className="row mt-4">
                                             <div className="col-md-4 col-sm-3">
                                                 <div className="form-group">
@@ -3291,7 +3323,7 @@ export function SolutionTemplateResult(props) {
                                                         PORTFOLIO ID
                                                     </p>
                                                     <h6 className="font-weight-500">
-                                                        {location.selectedTemplateItems[0].customPortfolioId}
+                                                        {portfolioId}
                                                     </h6>
                                                 </div>
                                             </div>
@@ -3332,7 +3364,7 @@ export function SolutionTemplateResult(props) {
                                         </div>
                                     ) : (
                                         <></>
-                                    )}
+                                    )} */}
                                 </TabPanel>
                                 <TabPanel value="2">
 
@@ -3367,7 +3399,7 @@ export function SolutionTemplateResult(props) {
                                                         </div>
                                                         <label
                                                             className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
-                                                            for="exampleInputEmail1"
+                                                            htmlFor="exampleInputEmail1"
                                                         >
                                                             TO
                                                         </label>
@@ -3407,7 +3439,7 @@ export function SolutionTemplateResult(props) {
                                                         <div className="d-flex align-items-center date-box w-100">
                                                             <label
                                                                 className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
-                                                                for="exampleInputEmail1"
+                                                                htmlFor="exampleInputEmail1"
                                                             >
                                                                 <span className="mr-2">FROM</span>
                                                             </label>
@@ -3447,7 +3479,7 @@ export function SolutionTemplateResult(props) {
                                                         <div className="d-flex align-items-center date-box w-100">
                                                             <label
                                                                 className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
-                                                                for="exampleInputEmail1"
+                                                                htmlFor="exampleInputEmail1"
                                                             >
                                                                 <span className="">TO</span>
                                                             </label>
@@ -3493,11 +3525,11 @@ export function SolutionTemplateResult(props) {
 
                                         {/* <div className="col-md-6 col-sm-6">
                                             <div className="d-flex align-items-center">
-                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" for="exampleInputEmail1">FROM</label>
+                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" htmlFor="exampleInputEmail1">FROM</label>
                                                 <div className="form-group w-100">
                                                     <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                 </div>
-                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" for="exampleInputEmail1">HR</label>
+                                                <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" htmlFor="exampleInputEmail1">HR</label>
                                                 <div className="form-group w-100">
                                                     <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                 </div>
@@ -3528,7 +3560,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     CATEGORY USAGE
                                                 </label>
@@ -3544,7 +3576,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     STRATEGY TASK
                                                 </label>
@@ -3559,7 +3591,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     TASK TYPE
                                                 </label>
@@ -3577,7 +3609,7 @@ export function SolutionTemplateResult(props) {
                                         </div>
                                         {/* <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CATEGORY USAGE</label>
+                                                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">CATEGORY USAGE</label>
                                                 <Select options={categoryList} />
                                                 <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" />
                                             </div>
@@ -3586,7 +3618,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     OPTIONALS
                                                 </label>
@@ -3603,7 +3635,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     RESPONSE TIME
                                                 </label>
@@ -3619,7 +3651,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     PRODUCT HIERARCHY
                                                 </label>
@@ -3635,7 +3667,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     GEOGRAPHIC
                                                 </label>
@@ -3645,34 +3677,28 @@ export function SolutionTemplateResult(props) {
                                                     onChange={(e) => setStratgyGeographicKeyValue(e)}
                                                     placeholder="Geographic"
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     MACHINE TYPE
                                                 </label>
                                                 <Select
-                                                    // // options={geographicList}
-                                                    // // value={stratgyGeographicKeyValue}
-                                                    // // onChange={(e) => setStratgyGeographicKeyValue(e)}
-                                                    // defaultValue={selectedOption}
-                                                    // // onChange={setSelectedOption}
-                                                    // options={options}
-                                                    // placeholder="Machine Type"
-                                                    onChange={(e) =>
-                                                        handleDropdownChange(ENUM.MACHINE_TYPE, e)
-                                                    }
-                                                    isClearable={true}
-                                                    value={coverageData.machineType}
+                                                    options={machineTypeKeyValueList}
+                                                    value={machineTypeKeyValue}
+                                                    onChange={(e) => setMachineTypeKeyValue(e)}
+                                                    // onChange={(e) =>
+                                                    //     handleDropdownChange(ENUM.MACHINE_TYPE, e)
+                                                    // }
+                                                    // isClearable={true}
+                                                    // value={coverageData.machineType}
                                                     isLoading={
                                                         machineTypeKeyValue.length > 0 ? false : true
                                                     }
-                                                    options={machineTypeKeyValue}
                                                 />
                                                 {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
@@ -3681,47 +3707,71 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     LIFE STAGE
                                                 </label>
                                                 <Select
-                                                    // options={geographicList}
-                                                    // value={stratgyGeographicKeyValue}
-                                                    // onChange={(e) => setStratgyGeographicKeyValue(e)}
-                                                    // defaultValue={selectedOption}
-                                                    // onChange={setSelectedOption}
-                                                    // options={options}
-                                                    // placeholder="Life Stage"
-                                                    onChange={(e) =>
-                                                        handleDropdownChange(ENUM.LIFE_STAGE_OF_MACHINE, e)
-                                                    }
-                                                    isClearable={true}
-                                                    value={coverageData.lifeStageOfMachine}
+                                                    options={lifeStageOfMachineKeyValueList}
+                                                    value={lifeStageOfMachineKeyValue}
+                                                    onChange={(e) => setLifeStageOfMachineKeyValue(e)}
+                                                    // onChange={(e) =>
+                                                    //     handleDropdownChange(ENUM.LIFE_STAGE_OF_MACHINE, e)
+                                                    // }
+                                                    // isClearable={true}
+                                                    // value={coverageData.lifeStageOfMachine}
                                                     isLoading={
-                                                        lifeStageOfMachineKeyValue.length > 0 ? false : true
+                                                        lifeStageOfMachineKeyValueList.length > 0 ? false : true
                                                     }
-                                                    options={lifeStageOfMachineKeyValue}
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
-                                    </div></>) :
+                                    </div>
+                                        <div className="row" style={{ justifyContent: "right" }}>
+                                            <button
+                                                type="button"
+                                                onClick={handleNextClick}
+                                                className="btn btn-light"
+                                                id="strategy"
+                                            >
+                                                Save & Next
+                                            </button>
+                                        </div>
+                                    </>) :
                                         (<div className="row">
                                             <div className="col-md-4 col-sm-4">
                                                 <div className="form-group">
                                                     <p className="font-size-12 font-weight-500 mb-2">
-                                                        STRATEGY TASK
+                                                        CATEGORY USAGE
+                                                        {/* {console.log("new dataa : ", coverageData.machineType)} */}
                                                     </p>
-                                                    <h6 className="font-weight-500">{location.selectedTemplateItems[0].strategyTask}</h6>
+                                                    <h6 className="font-weight-500">
+                                                        {(console.log("categoryUsageKeyValue1 : ", categoryUsageKeyValue1))}
+                                                        {(categoryUsageKeyValue1.label)}
+                                                        {/* {Object.keys(categoryUsageKeyValue1).length > 0 ? (categoryUsageKeyValue1.label) : (location.selectedTemplateItems[0].usageCategory)} */}
+                                                        </h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-4">
                                                 <div className="form-group">
                                                     <p className="font-size-12 font-weight-500 mb-2">
-                                                        CATEGORY USAGE
+                                                        STRATEGY TASK
                                                     </p>
-                                                    <h6 className="font-weight-500">{location.selectedTemplateItems[0].usageCategory}</h6>
+                                                    <h6 className="font-weight-500">
+                                                        {(stratgyTaskUsageKeyValue.label)}
+                                                        {/* {Object.keys(stratgyTaskUsageKeyValue).length > 0 ? (stratgyTaskUsageKeyValue.label) : (location.selectedTemplateItems[0].strategyTask)} */}
+                                                        </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        TASK TYPE
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        {(stratgyTaskTypeKeyValue.label)}
+                                                        {/* {Object.keys(stratgyTaskTypeKeyValue).length > 0 ? (stratgyTaskTypeKeyValue.label) : (location.selectedTemplateItems[0].taskType)} */}
+                                                        </h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-4">
@@ -3738,7 +3788,8 @@ export function SolutionTemplateResult(props) {
                                                         RESPONSE TIME
                                                     </p>
                                                     <h6 className="font-weight-500">
-                                                        {location.selectedTemplateItems[0].responseTime}
+                                                        {(stratgyResponseTimeKeyValue.label)}
+                                                        {/* {Object.keys(stratgyResponseTimeKeyValue).length > 0 ? (stratgyResponseTimeKeyValue.label) : (location.selectedTemplateItems[0].responseTime)} */}
                                                     </h6>
                                                 </div>
                                             </div>
@@ -3747,7 +3798,10 @@ export function SolutionTemplateResult(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         PRODUCT HIERARCHY
                                                     </p>
-                                                    <h6 className="font-weight-500">{location.selectedTemplateItems[0].productHierarchy}</h6>
+                                                    <h6 className="font-weight-500">
+                                                        {(stratgyHierarchyKeyValue.label)}
+                                                        {/* {Object.keys(stratgyHierarchyKeyValue).length > 0 ? (stratgyHierarchyKeyValue.label) : (location.selectedTemplateItems[0].productHierarchy)} */}
+                                                        </h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-4">
@@ -3755,13 +3809,40 @@ export function SolutionTemplateResult(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         GEOGRAPHIC
                                                     </p>
-                                                    <h6 className="font-weight-500">{location.selectedTemplateItems[0].geographic}</h6>
+                                                    <h6 className="font-weight-500">
+                                                        {(stratgyGeographicKeyValue.label)}
+                                                        {/* {Object.keys(stratgyGeographicKeyValue).length > 0 ? (stratgyGeographicKeyValue.label) : (location.selectedTemplateItems[0].geographic)} */}
+                                                        </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        MACHINE TYPE
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        {/* {Object.keys(machineTypeKeyValue).length > 0 ? (machineTypeKeyValue.label) : (location.selectedTemplateItems[0].machineType)} */}
+                                                        {(machineTypeKeyValue.label)}
+                                                        
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        LIFE STAGE
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        {/* {Object.keys(lifeStageOfMachineKeyValue).length > 0 ? (lifeStageOfMachineKeyValue.label) : location.selectedTemplateItems[0].lifeStageOfMachine} */}
+                                                        {(lifeStageOfMachineKeyValue.label)}
+                                                        {console.log("object123")}
+                                                    </h6>
                                                 </div>
                                             </div>
                                         </div>)
                                     }
 
-                                    {isView ? (
+                                    {/* {isView ? (
                                         <div className="row">
                                             <div className="col-md-4 col-sm-4">
                                                 <div className="form-group">
@@ -3816,17 +3897,8 @@ export function SolutionTemplateResult(props) {
                                         </div>
                                     ) : (
                                         <></>
-                                    )}
-                                    <div className="row" style={{ justifyContent: "right" }}>
-                                        <button
-                                            type="button"
-                                            onClick={handleNextClick}
-                                            className="btn btn-light"
-                                            id="strategy"
-                                        >
-                                            Save & Next
-                                        </button>
-                                    </div>
+                                    )} */}
+
                                 </TabPanel>
                                 <TabPanel value={"administrative"}>
                                     <div className="row">
@@ -3976,7 +4048,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-14 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     PRICE LIST
                                                 </label>
@@ -3992,7 +4064,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-14 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     PRICE METHOD
                                                 </label>
@@ -4009,7 +4081,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-14 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     PRICE DATE
                                                 </label>
@@ -4029,7 +4101,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-14 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     PRICE TYPE
                                                 </label>
@@ -4045,7 +4117,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-14 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     PRICE{" "}
                                                 </label>
@@ -4064,7 +4136,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group date-box">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     ADDITIONAL
                                                 </label>
@@ -4098,7 +4170,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group date-box">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     PRICE ESCALATON
                                                 </label>
@@ -4127,7 +4199,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     CALCULATED PRICE
                                                 </label>
@@ -4144,7 +4216,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group date-box">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     PRICE BREAK DOWN
                                                 </label>
@@ -4170,7 +4242,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group date-box">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     PRICE BREAK DOWN
                                                 </label>
@@ -4467,7 +4539,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     MACHINE/COMPOMENT
                                                 </label>
@@ -4486,7 +4558,7 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
-                                                    for="exampleInputEmail1"
+                                                    htmlFor="exampleInputEmail1"
                                                 >
                                                     MACHINE TYPE
                                                 </label>
@@ -4505,7 +4577,7 @@ export function SolutionTemplateResult(props) {
                                         </div>
                                         {/* <div className="col-md-4 col-sm-4"> */}
                                         {/* <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">COVERAGE DATA</label>
+                                                <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">COVERAGE DATA</label>
                                             </div> */}
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">

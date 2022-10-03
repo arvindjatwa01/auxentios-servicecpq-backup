@@ -64,7 +64,7 @@ const QuerySearchComp = (props) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
 
-    if (props.compoFlag === "coverage" || props.compoFlag === "solutionTempItemSearch") {
+    if (props.compoFlag === "coverage") {
       getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
         .then((res) => {
           obj.selectOptions = res;
@@ -76,7 +76,11 @@ const QuerySearchComp = (props) => {
           console.log("err in api call", err);
         });
       obj.inputSearch = e.target.value;
-    } else if (props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "portfolioTempItemSearch") {
+    } else if (props.compoFlag === "solutionTempItemSearch") {
+      obj.inputSearch = e.target.value;
+      setQuerySearchSelector([...tempArray]);
+    }
+    else if (props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "portfolioTempItemSearch") {
       // itemSearchSuggestion(tempArray[id].selectFamily.value, e.target.value)
       //   .then((res) => {
       //     // obj.selectOptions = [...res];
@@ -138,7 +142,7 @@ const QuerySearchComp = (props) => {
     props.setTempBundleService1([])
 
   };
-  
+
   const handleQuerySearchClick = async () => {
     try {
       if (props.compoFlag === "portfolioTempItemSearch") {
@@ -162,10 +166,10 @@ const QuerySearchComp = (props) => {
       //   querySearchSelector[0]?.selectFamily?.value +
       //   "~" +
       //   querySearchSelector[0]?.inputSearch;
-      if(props.compoFlag === "solutionTempItemSearch"){
+      if (props.compoFlag === "solutionTempItemSearch") {
         var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:${querySearchSelector[0]?.inputSearch}`;
 
-      }else{
+      } else {
         var searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
 
       }
@@ -392,11 +396,11 @@ const QuerySearchComp = (props) => {
                               { label: "Portfolio", value: "PORTFOLIO" },
 
                             ])}
-                            
+
                             // defaultValue={props.compoFlag === "portfolioTempItemSearch" ? ({ label: "Portfolio", value: "PORTFOLIO" }) : ""}
                             value={querySearchSelector.itemType}
                             onChange={(e) => handleItemType(e, i)}
-                            // autoSelect={props.compoFlag === "portfolioTempItemSearch"}
+                          // autoSelect={props.compoFlag === "portfolioTempItemSearch"}
                           />
                           <Select
                             options={[
@@ -440,6 +444,8 @@ const QuerySearchComp = (props) => {
                           className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
 
                         >
+                          {console.log("Obje obj.selectOptions : ", obj.selectOptions)}
+
                           {obj.selectOptions.map(
                             (currentItem, j) => (
                               <li

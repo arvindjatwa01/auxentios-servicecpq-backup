@@ -83,6 +83,7 @@ export const CREATE_CUSTOM_PORTFOLIO_ITEM = () => SOLUTION_BUILDER_URI + "item/c
 export const CUSTOM_PORTFOLIO_ITEM_PRICE_RKID = () => CREATE_CUSTOM_PORTFOLIO_ITEM() + "/get-RB-price-update-item-rkid";
 export const CUSTOM_PORTFOLIO_ITEM_PRICE_SJID = () => CREATE_CUSTOM_PORTFOLIO_ITEM() + "/get-RB-price-update-item-sjid";
 export const CREATE_CUSTOM_PRICE = () => CREATE_CUSTOM_PORTFOLIO_ITEM() + "/price";
+export const SEARCH_CUSTOM_PORTFOLIO_SOLUTION_DATA = SOLUTION_BUILDER_URI + "item/custom";
 
 
 

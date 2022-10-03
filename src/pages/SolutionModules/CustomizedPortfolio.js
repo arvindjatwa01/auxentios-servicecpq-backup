@@ -244,7 +244,7 @@ export function CustomizedPortfolio(props) {
         // serviceDescription: "",
         externalReference: "",
         customerSegment: null,
-        customItems: [{customItemId: 123}],
+        customItems: [],
         items: [],
         customCoverages: [],
     });
@@ -580,9 +580,9 @@ export function CustomizedPortfolio(props) {
                     : "EMPTY",
                 searchTerm: "EMPTY",
                 supportLevel: "EMPTY",
-                portfolioPrice: {},
-                additionalPrice: {},
-                escalationPrice: {},
+                // portfolioPrice: {},
+                // additionalPrice: {},
+                // escalationPrice: {},
                 customCoverages: generalComponentData.coverages
                     ? generalComponentData.coverages
                     : [],
@@ -769,9 +769,9 @@ export function CustomizedPortfolio(props) {
                         : "EMPTY",
                     searchTerm: "EMPTY",
                     supportLevel: "EMPTY",
-                    portfolioPrice: {},
-                    additionalPrice: {},
-                    escalationPrice: {},
+                    // portfolioPrice: {},
+                    // additionalPrice: {},
+                    // escalationPrice: {},
                     customCoverages: generalComponentData.coverages
                         ? generalComponentData.coverages
                         : [],
@@ -923,6 +923,8 @@ export function CustomizedPortfolio(props) {
         }
     };
 
+    /*  =============== Save & Next Button click Function ================== */
+    
     const handleNextClick = async (e) => {
 
         if (e.target.id == "general") {
@@ -1063,9 +1065,9 @@ export function CustomizedPortfolio(props) {
                     : "EMPTY",
                 searchTerm: "EMPTY",
                 supportLevel: "EMPTY",
-                portfolioPrice: {},
-                additionalPrice: {},
-                escalationPrice: {},
+                // portfolioPrice: {},
+                // additionalPrice: {},
+                // escalationPrice: {},
 
                 usageCategory: categoryUsageKeyValue1.value,
                 taskType: stratgyTaskTypeKeyValue.value,
@@ -1199,9 +1201,9 @@ export function CustomizedPortfolio(props) {
                     : "EMPTY",
                 searchTerm: "EMPTY",
                 supportLevel: "EMPTY",
-                portfolioPrice: {},
-                additionalPrice: {},
-                escalationPrice: {},
+                // portfolioPrice: {},
+                // additionalPrice: {},
+                // escalationPrice: {},
                 customeItems: [],
                 items: [],
                 customCoverages: cvgIds,
