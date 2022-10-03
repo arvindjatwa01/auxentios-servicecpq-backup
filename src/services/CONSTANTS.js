@@ -52,6 +52,8 @@ export const PORTFOLIO_URL = () => SOLUTION_BUILDER_URI + "portfolio";
 export const Common_SOLUTION_BUILDER_URL = () =>
   SOLUTION_BUILDER_URI + "common-config";
 export const COVERAGE_REST = () => SOLUTION_BUILDER_URI + "coverage";
+export const CUSTOM_COVERAGE_REST = () => SOLUTION_BUILDER_URI + "coverage/custom";
+
 export const GET_STRATEGY_TASK = () =>
   SOLUTION_BUILDER_URI + "common-config/strategy-task";
 export const GET_TASK_TYPE = () =>
@@ -74,6 +76,7 @@ export const PORTFOLIO_ITEM_PRICE_BY_ITEM_ID = () => CREATE_PORTFOLIO_ITEM()+ "/
 // Custom Portfolio 
 
 export const CUSTOM_PORTFOLIO_URL = () => SOLUTION_BUILDER_URI + "portfolio/custom";
+export const CUSTOM_PORTFOLIO_SEARCH_QUERY = SOLUTION_BUILDER_URI +"portfolio/custom/search?search=";
 
 // Custom Portfolio Item
 export const CREATE_CUSTOM_PORTFOLIO_ITEM = () => SOLUTION_BUILDER_URI + "item/custom";

@@ -93,6 +93,7 @@ import {
     getSearchCoverageForFamily,
     itemCreation,
     createCoverage,
+    createCutomCoverage,
     getItemPrice
 } from "../../services/index";
 import {
@@ -249,8 +250,8 @@ export function PortfolioTemplatesResult(props) {
         serviceDescription: "",
         externalReference: "",
         customerSegment: null,
-        items: [],
-        coverages: [],
+        customItems: [],
+        customCoverages: [],
     });
 
     const [newBundle, setNewBundle] = useState({
@@ -585,10 +586,10 @@ export function PortfolioTemplatesResult(props) {
                 portfolioPrice: {},
                 additionalPrice: {},
                 escalationPrice: {},
-                coverages: generalComponentData.coverages
+                customCoverages: generalComponentData.coverages
                     ? generalComponentData.coverages
                     : [],
-                items: _generalComponentData.items,
+                customItems: selectedCustomItems,
                 usageCategory: categoryUsageKeyValue1.value,
                 taskType: stratgyTaskTypeKeyValue.value,
                 strategyTask: stratgyTaskUsageKeyValue.value,
@@ -772,10 +773,10 @@ export function PortfolioTemplatesResult(props) {
                     portfolioPrice: {},
                     additionalPrice: {},
                     escalationPrice: {},
-                    coverages: generalComponentData.coverages
+                    customCoverages: generalComponentData.coverages
                         ? generalComponentData.coverages
                         : [],
-                    items: [...generalComponentData.items, { itemId: res.data.itemId }],
+                    customItems: selectedCustomItems,
                     usageCategory: categoryUsageKeyValue1.value,
                     taskType: stratgyTaskTypeKeyValue.value,
                     strategyTask: stratgyTaskUsageKeyValue.value,
@@ -925,14 +926,12 @@ export function PortfolioTemplatesResult(props) {
 
         if (e.target.id == "general") {
 
+
             let reqData = {
                 type: prefilgabelGeneral,
                 name: generalComponentData.name,
                 description: generalComponentData.description,
                 externalReference: generalComponentData.externalReference,
-                customerSegment: generalComponentData.customerSegment
-                    ? generalComponentData.customerSegment.value
-                    : "",
 
                 strategyTask: "PREVENTIVE_MAINTENANCE",
                 taskType: "PM1",
@@ -947,12 +946,104 @@ export function PortfolioTemplatesResult(props) {
                 lifeStageOfMachine: "NEW_BREAKIN",
                 supportLevel: "PREMIUM",
                 serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
-                customItems: [],
+
+
+
+                visibleInCommerce: true,
+                customerId: 0,
+                lubricant: true,
+                customerSegment: generalComponentData.customerSegment.value
+                    ? generalComponentData.customerSegment.value
+                    : "EMPTY",
+                machineType: generalComponentData.machineType
+                    ? generalComponentData.machineType
+                    : "EMPTY",
+                status: generalComponentData.status
+                    ? generalComponentData.status
+                    : "EMPTY",
+                // strategyTask: generalComponentData.strategyTask
+                //     ? generalComponentData.strategyTask
+                //     : "EMPTY",
+                // taskType: generalComponentData.taskType
+                //     ? generalComponentData.taskType
+                //     : "EMPTY",
+                usageCategory: generalComponentData.usageCategory
+                    ? generalComponentData.usageCategory
+                    : "EMPTY",
+                // productHierarchy: generalComponentData.productHierarchy
+                //     ? generalComponentData.productHierarchy
+                //     : "EMPTY",
+                // geographic: generalComponentData.geographic
+                //     ? generalComponentData.geographic
+                //     : "EMPTY",
+                availability: generalComponentData.availability
+                    ? generalComponentData.availability
+                    : "EMPTY",
+                // responseTime: generalComponentData.responseTime
+                //     ? generalComponentData.responseTime
+                //     : "EMPTY",
+                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                application: generalComponentData.application
+                    ? generalComponentData.application
+                    : "EMPTY",
+                contractOrSupport: generalComponentData.contractOrSupport
+                    ? generalComponentData.contractOrSupport
+                    : "EMPTY",
+                lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                    ? generalComponentData.lifeStageOfMachine
+                    : "EMPTY",
+                supportLevel: generalComponentData.supportLevel
+                    ? generalComponentData.supportLevel
+                    : "EMPTY",
+                
+                customCoverages: [],
+                customerGroup: generalComponentData.customerGroup
+                    ? generalComponentData.customerGroup
+                    : "EMPTY",
+                searchTerm: "EMPTY",
+                supportLevel: "EMPTY",
+                portfolioPrice: {},
+                additionalPrice: {},
+                escalationPrice: {},
+
+                // usageCategory: categoryUsageKeyValue1.value,
+                // taskType: stratgyTaskTypeKeyValue.value,
+                // strategyTask: stratgyTaskUsageKeyValue.value,
+                // responseTime: stratgyResponseTimeKeyValue.value,
+                // productHierarchy: stratgyHierarchyKeyValue.value,
+                // geographic: stratgyGeographicKeyValue.value,
+                customItems: selectedCustomItems,
+
             };
 
-            const portfolioRes = await createCustomPortfolio(reqData);
+            setGeneralComponentData({
+                ...generalComponentData,
+                usageCategory: categoryUsageKeyValue1.value,
+                taskType: stratgyTaskTypeKeyValue.value,
+                strategyTask: stratgyTaskUsageKeyValue.value,
+                optionals: stratgyOptionalsKeyValue.value,
+                responseTime: stratgyResponseTimeKeyValue.value,
+                productHierarchy: stratgyHierarchyKeyValue.value,
+                geographic: stratgyGeographicKeyValue.value,
+            });
+
+            console.log("reqData is : ", reqData);
+            if (location.solutionValueIs == 1) {
+                var portfolioRes = await createCustomPortfolio(reqData);
+            } else {
+                var portfolioRes = await updateCustomPortfolio(
+                    location.autocreatedcustomPortfolioData.customPortfolioId,
+                    reqData
+                )
+                // console.log("My new row");
+            }
+
+            // const portfolioRes = {
+            //     status: 3000
+            // };
+            // const portfolioRes = await createCustomPortfolio(reqData);
             if (portfolioRes.status === 200) {
-                toast("👏 Portfolio Created", {
+                toast("👏 Portfolio Update Successfully", {
                     position: "top-right",
                     autoClose: 5000,
                     hideProgressBar: false,
@@ -1006,6 +1097,7 @@ export function PortfolioTemplatesResult(props) {
             });
 
             const { portfolioId, ...res } = generalComponentData;
+
             let obj = {
                 ...res,
                 visibleInCommerce: true,
@@ -1054,8 +1146,8 @@ export function PortfolioTemplatesResult(props) {
                 supportLevel: generalComponentData.supportLevel
                     ? generalComponentData.supportLevel
                     : "EMPTY",
-                items: [],
-                coverages: [],
+                customItems: [],
+                customCoverages: [],
                 customerGroup: generalComponentData.customerGroup
                     ? generalComponentData.customerGroup
                     : "EMPTY",
@@ -1073,7 +1165,8 @@ export function PortfolioTemplatesResult(props) {
                 geographic: stratgyGeographicKeyValue.value,
                 customItems: selectedCustomItems,
             };
-
+            // console.log(" res is : ", res);
+            // console.log("obj", obj);
 
             const strategyRes = await updateCustomPortfolio(
                 generalComponentData.portfolioId,
@@ -1105,7 +1198,7 @@ export function PortfolioTemplatesResult(props) {
             setValue("6");
             for (let i = 0; i < selectedMasterData.length; i++) {
                 let reqObj = {
-                    coverageId: 0,
+                    customCoverageId: 0,
                     serviceId: 0,
                     modelNo: selectedMasterData[i].model,
                     serialNumber: "",
@@ -1122,13 +1215,13 @@ export function PortfolioTemplatesResult(props) {
                     actions: "",
                     createdAt: "",
                 };
-                const res = await createCoverage(reqObj);
+                const res = await createCutomCoverage(reqObj);
                 console.log("createCoverage res:", res);
-                cvgIds.push({ coverageId: res.coverageId });
+                cvgIds.push({ coverageId: res.customCoverageId });
             }
             setGeneralComponentData({
                 ...generalComponentData,
-                coverages: cvgIds,
+                customCoverages: cvgIds,
             });
             const { portfolioId, ...res } = generalComponentData;
             let obj = {
@@ -1187,8 +1280,8 @@ export function PortfolioTemplatesResult(props) {
                 portfolioPrice: {},
                 additionalPrice: {},
                 escalationPrice: {},
-                items: [],
-                coverages: cvgIds,
+                customItems: [],
+                customCoverages: cvgIds,
                 usageCategory: categoryUsageKeyValue1.value,
                 taskType: stratgyTaskTypeKeyValue.value,
                 strategyTask: stratgyTaskUsageKeyValue.value,
@@ -1537,19 +1630,20 @@ export function PortfolioTemplatesResult(props) {
 
         if (location.solutionValueIs == 1) {
 
+            console.log("data are here ", location.selectedTemplateItems)
             setGeneralComponentData({
-                name: location.selectedTemplateItems[0].itemName,
-                description: location.selectedTemplateItems[0].itemHeaderModel.itemHeaderDescription,
+                name: location.selectedTemplateItems[0].name,
+                description: location.selectedTemplateItems[0].description,
                 serviceDescription: "",
-                externalReference: location.selectedTemplateItems[0].itemHeaderModel.reference,
+                externalReference: location.selectedTemplateItems[0].externalReference,
                 customerSegment: null,
-                items: [],
-                coverages: [],
+                customItems: [],
+                customCoverages: [],
             });
             setValidityData({
                 ...validityData,
-                fromDate: location.selectedTemplateItems[0].itemHeaderModel.validFrom,
-                toDate: location.selectedTemplateItems[0].itemHeaderModel.validTo,
+                fromDate: location.selectedTemplateItems[0].validFrom,
+                toDate: location.selectedTemplateItems[0].validTo,
                 from: null,
                 to: null,
                 fromInput: "",
@@ -1557,17 +1651,17 @@ export function PortfolioTemplatesResult(props) {
             })
             // stratgyTaskTypeKeyValue({value: location.selectedTemplateItems[0].itemBodyModel.taskType})
             setStratgyResponseTimeKeyValue([{
-                "label": location.selectedTemplateItems[0].itemHeaderModel.responseTime,
-                "value": location.selectedTemplateItems[0].itemHeaderModel.responseTime
+                "label": location.selectedTemplateItems[0].responseTime,
+                "value": location.selectedTemplateItems[0].responseTime
             }])
             setStratgyHierarchyKeyValue([{
-                "label": location.selectedTemplateItems[0].itemHeaderModel.itemProductHierarchy,
-                "value": location.selectedTemplateItems[0].itemHeaderModel.itemProductHierarchy
+                "label": location.selectedTemplateItems[0].productHierarchy,
+                "value": location.selectedTemplateItems[0].productHierarchy
             }])
 
             setStratgyGeographicKeyValue([{
-                "label": location.selectedTemplateItems[0].itemHeaderModel.itemHeaderGeographic,
-                "value": location.selectedTemplateItems[0].itemHeaderModel.itemHeaderGeographic
+                "label": location.selectedTemplateItems[0].geographic,
+                "value": location.selectedTemplateItems[0].geographic
             }])
 
             // setPriceMethodKeyValue([{
@@ -3062,7 +3156,7 @@ export function PortfolioTemplatesResult(props) {
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid ">
                     <div className="d-flex align-items-center justify-content-between mt-2">
-                        <h5 className="font-weight-600 mb-0">Custom Portfolio</h5>
+                        <h5 className="font-weight-600 mb-0">Custom Portfolio Template</h5>
                         <div className="d-flex justify-content-center align-items-center">
                             <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
                             <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
@@ -3132,19 +3226,40 @@ export function PortfolioTemplatesResult(props) {
                                                 {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponentData.portfolioName} onChange={handleGeneralInputChange} /> */}
                                             </div>
                                         </div>
+                                        {/* {console.log("error are : ", location.autocreatedcustomPortfolioData.customPortfolioId)} */}
                                         <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
                                                     {prefilgabelGeneral} ID
                                                 </label>
+                                                {/* {location.solutionValueIs == 1 ? <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    placeholder="(Auto-generated11)"
+                                                     {location.solutionValueIs }
+                                                    comment this value={location.autocreatedcustomPortfolioData.customPortfolioId}
+                                                   omment this onChange={handleGeneralInputChange}
+                                                   omment this disabled={true}
+                                                /> :  */}
                                                 <input
                                                     type="text"
                                                     className="form-control border-radius-10"
                                                     placeholder="(Auto-generated)"
-                                                    value={location.autocreatedcustomPortfolioData.customPortfolioId}
+                                                    // {location.solutionValueIs }
+                                                    // value={location?.autocreatedcustomPortfolioData?.customPortfolioId}
                                                     // onChange={handleGeneralInputChange}
                                                     disabled={true}
                                                 />
+                                                {/* } */}
+                                                {/* <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    placeholder="(Auto-generated)"
+                                                    // {location.solutionValueIs }
+                                                    value={location.autocreatedcustomPortfolioData.customPortfolioId}
+                                                    // onChange={handleGeneralInputChange}
+                                                    disabled={true}
+                                                /> */}
                                             </div>
                                         </div>
                                         <div className="col-md-3 col-sm-3">

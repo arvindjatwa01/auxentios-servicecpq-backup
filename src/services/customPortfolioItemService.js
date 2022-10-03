@@ -1,6 +1,6 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { CREATE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID, CREATE_CUSTOM_PRICE } from "./CONSTANTS";
+import { CREATE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID, CREATE_CUSTOM_PRICE, CUSTOM_PORTFOLIO_SEARCH_QUERY } from "./CONSTANTS";
 
 export const customitemCreation = (payLoad) => {
     console.log("customPortfolioItemService > customitemCreation called...");
@@ -21,6 +21,30 @@ export const customitemCreation = (payLoad) => {
             reject(SYSTEM_ERROR);
         }
     });
+};
+
+export const getSearchCustomPortfolio = (searchStr) => {
+  console.log("Query customPortfolio > getSearchCustomPortfolio called...");
+  console.log("new search str is :",searchStr);
+  console.log("padth : ", CUSTOM_PORTFOLIO_SEARCH_QUERY);
+
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(CUSTOM_PORTFOLIO_SEARCH_QUERY+searchStr)
+        .then((res) => {
+          console.log("getSearchCustomPortfolio > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("getSearchCustomPortfolio > axios err=", err);
+          reject("Error in getSearchCustomPortfolio axios!");
+        });
+    } catch (error) {
+      console.error("in Query customPortfolio > getSearchCustomPortfolio, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
 };
 
 export const getcustomItemPrice = (payLoad) => {

@@ -23,7 +23,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import FormControl from '@mui/material/FormControl';
 import Checkbox from '@mui/material/Checkbox';
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { FileUploader } from "react-drag-drop-files";
 // import MuiMenuComponent from "../Operational/MuiMenuComponent";
@@ -93,8 +93,6 @@ import {
     getSearchCoverageForFamily,
     itemCreation,
     createCoverage,
-    customitemCreation,
-    createCutomCoverage,
     getItemPrice
 } from "../../services/index";
 import {
@@ -126,6 +124,7 @@ const customStyles = {
             paddingLeft: "8px", // override the cell padding for head cells
             paddingRight: "8px",
             backgroundColor: "#7571f9",
+            // backgroundColor: "#872ff7",
             color: "#fff",
         },
     },
@@ -137,7 +136,10 @@ const customStyles = {
     },
 };
 
-export function CustomizedPortfolio(props) {
+export function SolutionTemplateResult(props) {
+
+    const location = useLocation();
+
     const [makeKeyValue, setMakeKeyValue] = useState([]);
     const [modelKeyValue, setModelKeyValue] = useState([]);
     const [prefixKeyValue, setPrefixKeyValue] = useState([]);
@@ -198,6 +200,16 @@ export function CustomizedPortfolio(props) {
     const [openedModelBoxData, setOpenedModelBoxData] = useState([]);
     const [modelIncludedData, setModelIncludedData] = useState([]);
 
+    // const [selectePortfolioTempItemsData, setSelectedPortfolioTempItemsData] = useState([]);
+    const [selectedCustomItems, setSelectedCustomItems] = useState([]);
+
+    const [viewOnlyTab, setViewOnlyTab] = useState({
+        generalViewOnly: true,
+        strategyViewOnly: true,
+        // generalViewOnly: false,
+        // estViewOnly: false,
+    });
+
     const [coverageData, setCoverageData] = useState({
         make: "",
         modal: "",
@@ -241,16 +253,15 @@ export function CustomizedPortfolio(props) {
     const [generalComponentData, setGeneralComponentData] = useState({
         name: "",
         description: "",
-        // serviceDescription: "",
+        serviceDescription: "",
         externalReference: "",
         customerSegment: null,
-        customItems: [{customItemId: 123}],
         items: [],
-        customCoverages: [],
+        coverages: [],
     });
 
     const [newBundle, setNewBundle] = useState({
-        // serviceDescription: "",
+        serviceDescription: "",
         bundleFlag: "",
         reference: "",
         customerSegment: null,
@@ -337,14 +348,21 @@ export function CustomizedPortfolio(props) {
     const [bundleServiceShow, setBundleServiceShow] = useState(false);
 
 
+    const makeHeaderEditable = () => {
+        
+        if (value === "1" && viewOnlyTab.generalViewOnly)
+            setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: false });
+        else if (value === "3" && viewOnlyTab.strategyViewOnly) {
+            setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: false });
+        }
+    }
+
     const handleCustomerSegmentChange = (e) => {
         setGeneralComponentData({
             ...generalComponentData,
             customerSegment: e,
         });
     };
-
-
 
     const handleRemove = (index) => {
         var temp = priceAgreementRows.slice();
@@ -422,10 +440,10 @@ export function CustomizedPortfolio(props) {
         setLoadingItem(true);
         try {
             let reqObj = {
-                customItemId: 0,
+                itemId: 0,
                 itemName: "",
-                customItemHeaderModel: {
-                    customItemHeaderId: 0,
+                itemHeaderModel: {
+                    itemHeaderId: 0,
                     // itemHeaderId: parseInt(generalComponentData.portfolioId),
                     itemHeaderDescription: generalComponentData.description,
                     bundleFlag: "PORTFOLIO",
@@ -449,7 +467,7 @@ export function CustomizedPortfolio(props) {
                     status: "NEW",
                 },
                 itemBodyModel: {
-                    customItemBodyId: parseInt(addPortFolioItem.id),
+                    itemBodyId: parseInt(addPortFolioItem.id),
                     itemBodyDescription: addPortFolioItem.description,
                     quantity: parseInt(addPortFolioItem.quantity),
                     startUsage: priceCalculator.startUsage,
@@ -489,8 +507,8 @@ export function CustomizedPortfolio(props) {
                     totalPrice: 0,
                 },
             };
-            const itemRes = await customitemCreation(reqObj);
-            console.log("customitemCreation res:", itemRes);
+            const itemRes = await itemCreation(reqObj);
+            console.log("itemCreation res:", itemRes);
             if (itemRes.status !== 200) {
                 alert("something went wrong");
                 return;
@@ -522,7 +540,7 @@ export function CustomizedPortfolio(props) {
             console.log("itemPriceRes", itemPriceRes)
 
             const _generalComponentData = { ...generalComponentData };
-            _generalComponentData.items?.push({ customItemId: itemRes.data.customItemId });
+            _generalComponentData.items?.push({ itemId: itemRes.data.itemId });
             setGeneralComponentData(_generalComponentData);
             // put API for porfolio update Item id
             // call here
@@ -583,11 +601,10 @@ export function CustomizedPortfolio(props) {
                 portfolioPrice: {},
                 additionalPrice: {},
                 escalationPrice: {},
-                customCoverages: generalComponentData.coverages
+                coverages: generalComponentData.coverages
                     ? generalComponentData.coverages
                     : [],
-                // customItems: _generalComponentData.items,
-                customeItems: [],
+                items: _generalComponentData.items,
                 usageCategory: categoryUsageKeyValue1.value,
                 taskType: stratgyTaskTypeKeyValue.value,
                 strategyTask: stratgyTaskUsageKeyValue.value,
@@ -595,7 +612,6 @@ export function CustomizedPortfolio(props) {
                 productHierarchy: stratgyHierarchyKeyValue.value,
                 geographic: stratgyGeographicKeyValue.value,
             };
-            console.log("new objects data is : ", obj);
             if (generalComponentData.portfolioId) {
                 const updatePortfolioRes = await updateCustomPortfolio(
                     generalComponentData.portfolioId,
@@ -691,7 +707,7 @@ export function CustomizedPortfolio(props) {
             };
             setOpen2(false); //Hide Price Calculator Screen
 
-            const res = await customitemCreation(reqObj);
+            const res = await itemCreation(reqObj);
             console.log("service or bundle res:", res);
             if (res.status == 200) {
                 toast(`👏 ${serviceOrBundlePrefix} created`, {
@@ -772,12 +788,10 @@ export function CustomizedPortfolio(props) {
                     portfolioPrice: {},
                     additionalPrice: {},
                     escalationPrice: {},
-                    customCoverages: generalComponentData.coverages
+                    coverages: generalComponentData.coverages
                         ? generalComponentData.coverages
                         : [],
-                        items: [],
-                    // customItems: [...generalComponentData.items, { customItemId: res.data.customItemId }],
-                    customeItems: [],
+                    items: [...generalComponentData.items, { itemId: res.data.itemId }],
                     usageCategory: categoryUsageKeyValue1.value,
                     taskType: stratgyTaskTypeKeyValue.value,
                     strategyTask: stratgyTaskUsageKeyValue.value,
@@ -802,7 +816,7 @@ export function CustomizedPortfolio(props) {
                 throw `${res.status}: ${serviceOrBundlePrefix} not created`;
             }
         } catch (error) {
-            console.log("customitemCreation err:", error);
+            console.log("itemCreation err:", error);
             toast("😐" + error, {
                 position: "top-right",
                 autoClose: 5000,
@@ -927,33 +941,127 @@ export function CustomizedPortfolio(props) {
 
         if (e.target.id == "general") {
 
-            let reqData = {
-                type: prefilgabelGeneral,
-                name: generalComponentData.name,
-                description: generalComponentData.description,
-                externalReference: generalComponentData.externalReference,
-                customerSegment: generalComponentData.customerSegment
-                    ? generalComponentData.customerSegment.value
-                    : "",
 
-                strategyTask: "PREVENTIVE_MAINTENANCE",
-                taskType: "PM1",
-                usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-                productHierarchy: "END_PRODUCT",
-                geographic: "ONSITE",
-                availability: "AVAILABILITY_GREATER_95",
-                responseTime: "PROACTIVE",
-                type: "MACHINE",
-                application: "HILL",
-                contractOrSupport: "LEVEL_I",
-                lifeStageOfMachine: "NEW_BREAKIN",
-                supportLevel: "PREMIUM",
-                serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
-            };
+            // let reqData = {
+            //     type: prefilgabelGeneral,
+            //     name: generalComponentData.name,
+            //     description: generalComponentData.description,
+            //     externalReference: generalComponentData.externalReference,
 
-            const portfolioRes = await createCustomPortfolio(reqData);
+            //     strategyTask: "PREVENTIVE_MAINTENANCE",
+            //     taskType: "PM1",
+            //     usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+            //     productHierarchy: "END_PRODUCT",
+            //     geographic: "ONSITE",
+            //     availability: "AVAILABILITY_GREATER_95",
+            //     responseTime: "PROACTIVE",
+            //     type: "MACHINE",
+            //     application: "HILL",
+            //     contractOrSupport: "LEVEL_I",
+            //     lifeStageOfMachine: "NEW_BREAKIN",
+            //     supportLevel: "PREMIUM",
+            //     serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
+
+
+
+            //     visibleInCommerce: true,
+            //     customerId: 0,
+            //     lubricant: true,
+            //     customerSegment: generalComponentData.customerSegment.value
+            //         ? generalComponentData.customerSegment.value
+            //         : "EMPTY",
+            //     machineType: generalComponentData.machineType
+            //         ? generalComponentData.machineType
+            //         : "EMPTY",
+            //     status: generalComponentData.status
+            //         ? generalComponentData.status
+            //         : "EMPTY",
+            //     // strategyTask: generalComponentData.strategyTask
+            //     //     ? generalComponentData.strategyTask
+            //     //     : "EMPTY",
+            //     // taskType: generalComponentData.taskType
+            //     //     ? generalComponentData.taskType
+            //     //     : "EMPTY",
+            //     usageCategory: generalComponentData.usageCategory
+            //         ? generalComponentData.usageCategory
+            //         : "EMPTY",
+            //     // productHierarchy: generalComponentData.productHierarchy
+            //     //     ? generalComponentData.productHierarchy
+            //     //     : "EMPTY",
+            //     // geographic: generalComponentData.geographic
+            //     //     ? generalComponentData.geographic
+            //     //     : "EMPTY",
+            //     availability: generalComponentData.availability
+            //         ? generalComponentData.availability
+            //         : "EMPTY",
+            //     // responseTime: generalComponentData.responseTime
+            //     //     ? generalComponentData.responseTime
+            //     //     : "EMPTY",
+            //     type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+            //     application: generalComponentData.application
+            //         ? generalComponentData.application
+            //         : "EMPTY",
+            //     contractOrSupport: generalComponentData.contractOrSupport
+            //         ? generalComponentData.contractOrSupport
+            //         : "EMPTY",
+            //     lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+            //         ? generalComponentData.lifeStageOfMachine
+            //         : "EMPTY",
+            //     supportLevel: generalComponentData.supportLevel
+            //         ? generalComponentData.supportLevel
+            //         : "EMPTY",
+            //     items: [],
+            //     coverages: [],
+            //     customerGroup: generalComponentData.customerGroup
+            //         ? generalComponentData.customerGroup
+            //         : "EMPTY",
+            //     searchTerm: "EMPTY",
+            //     supportLevel: "EMPTY",
+            //     portfolioPrice: {},
+            //     additionalPrice: {},
+            //     escalationPrice: {},
+
+            //     // usageCategory: categoryUsageKeyValue1.value,
+            //     // taskType: stratgyTaskTypeKeyValue.value,
+            //     // strategyTask: stratgyTaskUsageKeyValue.value,
+            //     // responseTime: stratgyResponseTimeKeyValue.value,
+            //     // productHierarchy: stratgyHierarchyKeyValue.value,
+            //     // geographic: stratgyGeographicKeyValue.value,
+            //     customItems: selectedCustomItems,
+
+            // };
+
+            setGeneralComponentData({
+                ...generalComponentData,
+                usageCategory: categoryUsageKeyValue1.value,
+                taskType: stratgyTaskTypeKeyValue.value,
+                strategyTask: stratgyTaskUsageKeyValue.value,
+                optionals: stratgyOptionalsKeyValue.value,
+                responseTime: stratgyResponseTimeKeyValue.value,
+                productHierarchy: stratgyHierarchyKeyValue.value,
+                geographic: stratgyGeographicKeyValue.value,
+            });
+
+            // console.log("reqData is : ", reqData);
+            if (location.solutionValueIs == 1) {
+                // var portfolioRes = await createCustomPortfolio(reqData);
+                // var portfolioRes = {
+                //     status: 2000
+                // };
+                setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
+            } else {
+                // var portfolioRes = await updateCustomPortfolio(
+                //     location.autocreatedcustomPortfolioData.customPortfolioId,
+                //     reqData
+                // )
+                var portfolioRes = {
+                    status: 2000
+                };
+
+            }
+
             if (portfolioRes.status === 200) {
-                toast("👏 Portfolio Created", {
+                toast("👏 Portfolio Update Successfully", {
                     position: "top-right",
                     autoClose: 5000,
                     hideProgressBar: false,
@@ -971,10 +1079,7 @@ export function CustomizedPortfolio(props) {
             } else {
                 throw `${portfolioRes.status}:error in portfolio creation`;
             }
-            // console.log("req data : ", reqData)
 
-            // setValue("2");
-            // console.log("general Data => ", generalData)
         } else if (e.target.id == "validity") {
             setValue("3");
             let reqData;
@@ -1000,13 +1105,14 @@ export function CustomizedPortfolio(props) {
                 usageCategory: categoryUsageKeyValue1.value,
                 taskType: stratgyTaskTypeKeyValue.value,
                 strategyTask: stratgyTaskUsageKeyValue.value,
-                // optionals: stratgyOptionalsKeyValue.value,
+                optionals: stratgyOptionalsKeyValue.value,
                 responseTime: stratgyResponseTimeKeyValue.value,
                 productHierarchy: stratgyHierarchyKeyValue.value,
                 geographic: stratgyGeographicKeyValue.value,
             });
 
             const { portfolioId, ...res } = generalComponentData;
+
             let obj = {
                 ...res,
                 visibleInCommerce: true,
@@ -1055,9 +1161,8 @@ export function CustomizedPortfolio(props) {
                 supportLevel: generalComponentData.supportLevel
                     ? generalComponentData.supportLevel
                     : "EMPTY",
-                customItems: [],
                 items: [],
-                customCoverages: [],
+                coverages: [],
                 customerGroup: generalComponentData.customerGroup
                     ? generalComponentData.customerGroup
                     : "EMPTY",
@@ -1073,22 +1178,10 @@ export function CustomizedPortfolio(props) {
                 responseTime: stratgyResponseTimeKeyValue.value,
                 productHierarchy: stratgyHierarchyKeyValue.value,
                 geographic: stratgyGeographicKeyValue.value,
-                numberOfEvents: 0,
-                rating: "",
-                startUsage: "",
-                endUsage: "",
-                unit: "HOURS",
-                additionals: "",
-                preparedBy: "",
-                approvedB: "",
-                preparedOn: "",
-                revisedBy: "",
-                revisedOn: "",
-                salesOffice: "",
-                offerValidity: "",
+                customItems: selectedCustomItems,
             };
-
-            console.log("Obje data is : ", obj);
+            // console.log(" res is : ", res);
+            // console.log("obj", obj);
 
             const strategyRes = await updateCustomPortfolio(
                 generalComponentData.portfolioId,
@@ -1120,7 +1213,7 @@ export function CustomizedPortfolio(props) {
             setValue("6");
             for (let i = 0; i < selectedMasterData.length; i++) {
                 let reqObj = {
-                    customCoverageId: 0,
+                    coverageId: 0,
                     serviceId: 0,
                     modelNo: selectedMasterData[i].model,
                     serialNumber: "",
@@ -1137,13 +1230,13 @@ export function CustomizedPortfolio(props) {
                     actions: "",
                     createdAt: "",
                 };
-                const res = await createCutomCoverage(reqObj);
-                // console.log("createCoverage res:", res);
-                cvgIds.push({ coverageId: res.customCoverageId });
+                const res = await createCoverage(reqObj);
+                console.log("createCoverage res:", res);
+                cvgIds.push({ coverageId: res.coverageId });
             }
             setGeneralComponentData({
                 ...generalComponentData,
-                customCoverages: cvgIds,
+                coverages: cvgIds,
             });
             const { portfolioId, ...res } = generalComponentData;
             let obj = {
@@ -1202,9 +1295,8 @@ export function CustomizedPortfolio(props) {
                 portfolioPrice: {},
                 additionalPrice: {},
                 escalationPrice: {},
-                customeItems: [],
                 items: [],
-                customCoverages: cvgIds,
+                coverages: cvgIds,
                 usageCategory: categoryUsageKeyValue1.value,
                 taskType: stratgyTaskTypeKeyValue.value,
                 strategyTask: stratgyTaskUsageKeyValue.value,
@@ -1542,7 +1634,66 @@ export function CustomizedPortfolio(props) {
         getPortfolioDetails(portfolioId);
         initFetch();
         dispatch(taskActions.fetchTaskList());
+
+
+
     }, [dispatch]);
+
+    useEffect(() => {
+
+
+        console.log("data are here ", location.selectedTemplateItems)
+        setGeneralComponentData({
+            name: location.selectedTemplateItems[0].name,
+            description: location.selectedTemplateItems[0].description,
+            serviceDescription: "",
+            externalReference: location.selectedTemplateItems[0].externalReference,
+            customerSegment: null,
+            items: [],
+            coverages: [],
+        });
+        setValidityData({
+            ...validityData,
+            fromDate: location.selectedTemplateItems[0].validFrom,
+            toDate: location.selectedTemplateItems[0].validTo,
+            from: null,
+            to: null,
+            fromInput: "",
+            toInput: "",
+        })
+        // stratgyTaskTypeKeyValue({value: location.selectedTemplateItems[0].itemBodyModel.taskType})
+        setStratgyResponseTimeKeyValue([{
+            "label": location.selectedTemplateItems[0].responseTime,
+            "value": location.selectedTemplateItems[0].responseTime
+        }])
+        setStratgyHierarchyKeyValue([{
+            "label": location.selectedTemplateItems[0].productHierarchy,
+            "value": location.selectedTemplateItems[0].productHierarchy
+        }])
+
+        setStratgyGeographicKeyValue([{
+            "label": location.selectedTemplateItems[0].geographic,
+            "value": location.selectedTemplateItems[0].geographic
+        }])
+
+        console.log("location.selectedTemplateItems : ", location.selectedTemplateItems)
+
+        let itemIdData = []
+        let priceDataId = []
+        // itemIdData.push({ "itemId": location.selectedTemplateItems[0].itemId })
+
+        const customItemsId = location.selectedTemplateItems.map((data, i) => {
+
+            console.log("my map data is :=> ", data);
+            console.log("itemHeaderId is :=>  ", data.customItemHeaderModel?.itemHeaderId);
+            console.log("itemHeaderModel is => :  ", data.customItemHeaderModel);
+            itemIdData.push({ "customItemId": parseInt(data.customItemId) })
+        })
+        setSelectedCustomItems(itemIdData)
+
+    }, [])
+
+
 
     const categoryList = useAppSelector(
         selectStrategyTaskOption(selectCategoryList)
@@ -2544,6 +2695,97 @@ export function CustomizedPortfolio(props) {
         },
     ];
 
+    const selectedportfolioTempItemsColumn = [
+        {
+            name: (
+                <>
+                    <div>ID</div>
+                </>
+            ),
+            selector: (row) => row.customPortfolioId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customPortfolioId,
+        },
+        {
+            name: (
+                <>
+                    <div>Name</div>
+                </>
+            ),
+            selector: (row) => row.name,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.name,
+        },
+        {
+            name: (
+                <>
+                    <div>Description</div>
+                </>
+            ),
+            selector: (row) => row.description,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.description,
+        },
+        {
+            name: (
+                <>
+                    <div>Reference</div>
+                </>
+            ),
+            selector: (row) => row.externalReference,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.externalReference,
+        },
+        {
+            name: (
+                <>
+                    <div>Response Time</div>
+                </>
+            ),
+            selector: (row) => row.responseTime,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.responseTime,
+        },
+        {
+            name: (
+                <>
+                    <div>Support Level</div>
+                </>
+            ),
+            selector: (row) => row.supportLevel,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.supportLevel,
+        },
+        {
+            name: (
+                <>
+                    <div>Geographic</div>
+                </>
+            ),
+            selector: (row) => row.geographic,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.geographic,
+        },
+        {
+            name: (
+                <>
+                    <div>Total Events</div>
+                </>
+            ),
+            selector: (row) => row.numberOfEvents,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.numberOfEvents,
+        },
+    ];
+
     const handleServiceItemOpen = () => {
         setServiceOrBundlePrefix("SERVICE");
         // setServiceOrBundleShow(true);
@@ -2835,7 +3077,7 @@ export function CustomizedPortfolio(props) {
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid ">
                     <div className="d-flex align-items-center justify-content-between mt-2">
-                        <h5 className="font-weight-600 mb-0">Custom Portfolio</h5>
+                        <h5 className="font-weight-600 mb-0">Custom Solution Template</h5>
                         <div className="d-flex justify-content-center align-items-center">
                             <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
                             <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
@@ -2849,8 +3091,8 @@ export function CustomizedPortfolio(props) {
                     </div>
                     <div className="card p-4 mt-5">
                         <h5 className="d-flex align-items-center mb-0">
-                            <div className="" style={{ display: 'contents' }}><span className="mr-3">Header</span><a href="#" className="btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                <a href="#" className="btn-sm"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a>
+                            <div className="" style={{ display: 'contents' }}><span className="mr-3">Header</span><a href={undefined} className="btn-sm" style={{ cursor: "pointer" }}><i class="fa fa-pencil" aria-hidden="true" onClick={makeHeaderEditable}></i></a>
+                                <a href={undefined} className="btn-sm" style={{ cursor: "pointer" }}><i class="fa fa-bookmark-o" aria-hidden="true" ></i></a>
                                 <a href="#" className="btn-sm"><img style={{ width: '14px' }} src={folderaddIcon}></img></a></div>
                             <div class="input-group icons border-radius-10 border">
                                 <div class="input-group-prepend">
@@ -2874,23 +3116,25 @@ export function CustomizedPortfolio(props) {
                                     </TabList>
                                 </Box>
                                 <TabPanel value="1">
-                                    <div className="row mt-4">
-                                        <div className="col-md-3 col-sm-3">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500">
-                                                    SELECT TYPE
-                                                </label>
-                                                <Select
-                                                    placeholder="Select"
-                                                    options={headerTypeKeyValue}
-                                                    value={headerType}
-                                                    onChange={handleHeaderTypeChange}
-                                                    isClearable={true}
-                                                    isLoading={
-                                                        headerTypeKeyValue.length > 0 ? false : true
-                                                    }
-                                                />
-                                                {/* <div>
+                                    {!viewOnlyTab.generalViewOnly ? (
+                                        <>
+                                            <div className="row mt-4">
+                                                <div className="col-md-3 col-sm-3">
+                                                    <div className="form-group">
+                                                        <label className="text-light-dark font-size-12 font-weight-500">
+                                                            SELECT TYPE
+                                                        </label>
+                                                        <Select
+                                                            placeholder="Select"
+                                                            options={headerTypeKeyValue}
+                                                            value={headerType}
+                                                            onChange={handleHeaderTypeChange}
+                                                            isClearable={true}
+                                                            isLoading={
+                                                                headerTypeKeyValue.length > 0 ? false : true
+                                                            }
+                                                        />
+                                                        {/* <div>
                                                     <ToggleButtonGroup
                                                         color="primary"
                                                         value={alignment}
@@ -2902,93 +3146,143 @@ export function CustomizedPortfolio(props) {
                                                     </ToggleButtonGroup>
                                                 </div> */}
 
-                                                {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponentData.portfolioName} onChange={handleGeneralInputChange} /> */}
+                                                        {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponentData.portfolioName} onChange={handleGeneralInputChange} /> */}
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-3 col-sm-3">
+                                                    <div className="form-group">
+                                                        <label className="text-light-dark font-size-12 font-weight-500">
+                                                            {prefilgabelGeneral} ID
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control border-radius-10"
+                                                            placeholder="(Auto-generated)"
+                                                            // {location.solutionValueIs }
+                                                            value={location.selectedTemplateItems[0].customPortfolioId}
+                                                            // onChange={handleGeneralInputChange}
+                                                            disabled={true}
+                                                        />
+
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-3 col-sm-3">
+                                                    <div className="form-group">
+                                                        <label className="text-light-dark font-size-12 font-weight-500">
+                                                            {prefilgabelGeneral} NAME
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control border-radius-10"
+                                                            name="name"
+                                                            placeholder="Name"
+                                                            value={generalComponentData.name}
+                                                            onChange={handleGeneralInputChange}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-3 col-sm-3">
+                                                    <div className="form-group">
+                                                        <label className="text-light-dark font-size-12 font-weight-500">
+                                                            SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY)
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control border-radius-10"
+                                                            name="description"
+                                                            placeholder="Description"
+                                                            value={generalComponentData.description}
+                                                            onChange={handleGeneralInputChange}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-3 col-sm-3">
+                                                    <div className="form-group">
+                                                        <label className="text-light-dark font-size-12 font-weight-500">
+                                                            REFERENCE
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control border-radius-10"
+                                                            name="externalReference"
+                                                            placeholder="Reference"
+                                                            value={generalComponentData.externalReference}
+                                                            onChange={handleGeneralInputChange}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-3 col-sm-3">
+                                                    <div className="form-group">
+                                                        <label className="text-light-dark font-size-12 font-weight-500">
+                                                            CUSTOMER SEGMENT
+                                                        </label>
+                                                        <Select
+                                                            onChange={handleCustomerSegmentChange}
+                                                            value={generalComponentData.customerSegment}
+                                                            options={customerSegmentKeyValue}
+                                                            defa
+                                                        // options={strategyList}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="row" style={{ justifyContent: "right" }}>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleNextClick}
+                                                    className="btn btn-light"
+                                                    id="general"
+                                                >
+                                                    Save & Next
+                                                </button>
+                                            </div>
+                                        </>
+                                    ) : (<div className="row mt-4">
+                                        <div className="col-md-4 col-sm-3">
+                                            <div className="form-group">
+                                                <p className="font-size-12 font-weight-500 mb-2">
+                                                    PORTFOLIO ID
+                                                </p>
+                                                <h6 className="font-weight-500">
+                                                    {location.selectedTemplateItems[0].customPortfolioId}
+                                                </h6>
                                             </div>
                                         </div>
-                                        <div className="col-md-3 col-sm-3">
+                                        <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500">
-                                                    {prefilgabelGeneral} ID
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    placeholder="(Auto-generated)"
-                                                    // value={portfolioId}
-                                                    // onChange={handleGeneralInputChange}
-                                                    disabled={true}
-                                                />
+                                                <p className="font-size-12 font-weight-500 mb-2">
+                                                    PORTFOLIO NAME
+                                                </p>
+                                                <h6 className="font-weight-500">
+                                                    {location.selectedTemplateItems[0].name}
+                                                </h6>
                                             </div>
                                         </div>
-                                        <div className="col-md-3 col-sm-3">
+                                        <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500">
-                                                    {prefilgabelGeneral} NAME
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    name="name"
-                                                    placeholder="Name"
-                                                    value={generalComponentData.name}
-                                                    onChange={handleGeneralInputChange}
-                                                />
+                                                <p className="font-size-12 font-weight-500 mb-2">
+                                                    SERVICE PROGRAM DESCRIPTION (IF ANY)
+                                                </p>
+                                                <h6 className="font-weight-500">{location.selectedTemplateItems[0].description.length !== 0 ? location.selectedTemplateItems[0].description : "NA"}</h6>
                                             </div>
                                         </div>
-                                        <div className="col-md-3 col-sm-3">
+                                        <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500">
-                                                    SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY)
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    name="description"
-                                                    placeholder="Description"
-                                                    value={generalComponentData.description}
-                                                    onChange={handleGeneralInputChange}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col-md-3 col-sm-3">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500">
+                                                <p className="font-size-12 font-weight-500 mb-2">
                                                     REFERENCE
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    name="externalReference"
-                                                    placeholder="Reference"
-                                                    value={generalComponentData.externalReference}
-                                                    onChange={handleGeneralInputChange}
-                                                />
+                                                </p>
+                                                <h6 className="font-weight-500">{location.selectedTemplateItems[0].externalReference}</h6>
                                             </div>
                                         </div>
-                                        <div className="col-md-3 col-sm-3">
+                                        <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500">
+                                                <p className="font-size-12 font-weight-500 mb-2">
                                                     CUSTOMER SEGMENT
-                                                </label>
-                                                <Select
-                                                    onChange={handleCustomerSegmentChange}
-                                                    value={generalComponentData.customerSegment}
-                                                    options={customerSegmentKeyValue}
-                                                // options={strategyList}
-                                                />
+                                                </p>
+                                                <h6 className="font-weight-500">{location.selectedTemplateItems[0].customerSegment}</h6>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="row" style={{ justifyContent: "right" }}>
-                                        <button
-                                            type="button"
-                                            onClick={handleNextClick}
-                                            className="btn btn-light"
-                                            id="general"
-                                        >
-                                            Save & Next
-                                        </button>
-                                    </div>
+                                    </div>)}
                                     {isView ? (
                                         <div className="row mt-4">
                                             <div className="col-md-4 col-sm-3">
@@ -2997,17 +3291,17 @@ export function CustomizedPortfolio(props) {
                                                         PORTFOLIO ID
                                                     </p>
                                                     <h6 className="font-weight-500">
-                                                        CVA - Premium plan
+                                                        {location.selectedTemplateItems[0].customPortfolioId}
                                                     </h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-3">
                                                 <div className="form-group">
                                                     <p className="font-size-12 font-weight-500 mb-2">
-                                                        PORTFOLIO DESCRIPTION
+                                                        PORTFOLIO NAME
                                                     </p>
                                                     <h6 className="font-weight-500">
-                                                        Premium Customer Value Agreement D8T and D6T
+                                                        {location.selectedTemplateItems[0].name}
                                                     </h6>
                                                 </div>
                                             </div>
@@ -3016,7 +3310,7 @@ export function CustomizedPortfolio(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         SERVICE PROGRAM DESCRIPTION (IF ANY)
                                                     </p>
-                                                    <h6 className="font-weight-500">NA</h6>
+                                                    <h6 className="font-weight-500">{location.selectedTemplateItems[0].description.length !== 0 ? location.selectedTemplateItems[0].description : "NA"}</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-3">
@@ -3024,7 +3318,7 @@ export function CustomizedPortfolio(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         REFERENCE
                                                     </p>
-                                                    <h6 className="font-weight-500">NA</h6>
+                                                    <h6 className="font-weight-500">{location.selectedTemplateItems[0].externalReference}</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-3">
@@ -3032,7 +3326,7 @@ export function CustomizedPortfolio(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         CUSTOMER SEGMENT
                                                     </p>
-                                                    <h6 className="font-weight-500">Construction</h6>
+                                                    <h6 className="font-weight-500">{location.selectedTemplateItems[0].customerSegment}</h6>
                                                 </div>
                                             </div>
                                         </div>
@@ -3229,7 +3523,7 @@ export function CustomizedPortfolio(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="3">
-                                    <div className="row">
+                                    {!viewOnlyTab.strategyViewOnly ? (<><div className="row">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -3412,15 +3706,14 @@ export function CustomizedPortfolio(props) {
                                                 {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
-                                    </div>
-                                    {isView ? (
-                                        <div className="row">
+                                    </div></>) :
+                                        (<div className="row">
                                             <div className="col-md-4 col-sm-4">
                                                 <div className="form-group">
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         STRATEGY TASK
                                                     </p>
-                                                    <h6 className="font-weight-500">PM</h6>
+                                                    <h6 className="font-weight-500">{location.selectedTemplateItems[0].strategyTask}</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-4">
@@ -3428,7 +3721,7 @@ export function CustomizedPortfolio(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         CATEGORY USAGE
                                                     </p>
-                                                    <h6 className="font-weight-500">Contract</h6>
+                                                    <h6 className="font-weight-500">{location.selectedTemplateItems[0].usageCategory}</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-4">
@@ -3445,8 +3738,7 @@ export function CustomizedPortfolio(props) {
                                                         RESPONSE TIME
                                                     </p>
                                                     <h6 className="font-weight-500">
-                                                        Fast - 24x7 available,response within 4 hours of
-                                                        call
+                                                        {location.selectedTemplateItems[0].responseTime}
                                                     </h6>
                                                 </div>
                                             </div>
@@ -3455,7 +3747,7 @@ export function CustomizedPortfolio(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         PRODUCT HIERARCHY
                                                     </p>
-                                                    <h6 className="font-weight-500">End Product</h6>
+                                                    <h6 className="font-weight-500">{location.selectedTemplateItems[0].productHierarchy}</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-4">
@@ -3463,7 +3755,62 @@ export function CustomizedPortfolio(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         GEOGRAPHIC
                                                     </p>
-                                                    <h6 className="font-weight-500">Field Support</h6>
+                                                    <h6 className="font-weight-500">{location.selectedTemplateItems[0].geographic}</h6>
+                                                </div>
+                                            </div>
+                                        </div>)
+                                    }
+
+                                    {isView ? (
+                                        <div className="row">
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        STRATEGY TASK
+                                                    </p>
+                                                    <h6 className="font-weight-500">{location.selectedTemplateItems[0].strategyTask}</h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        CATEGORY USAGE
+                                                    </p>
+                                                    <h6 className="font-weight-500">{location.selectedTemplateItems[0].usageCategory}</h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        OPTIONALS
+                                                    </p>
+                                                    <h6 className="font-weight-500">Misc</h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        RESPONSE TIME
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        {location.selectedTemplateItems[0].responseTime}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        PRODUCT HIERARCHY
+                                                    </p>
+                                                    <h6 className="font-weight-500">{location.selectedTemplateItems[0].productHierarchy}</h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        GEOGRAPHIC
+                                                    </p>
+                                                    <h6 className="font-weight-500">{location.selectedTemplateItems[0].geographic}</h6>
                                                 </div>
                                             </div>
                                         </div>
@@ -4256,174 +4603,12 @@ export function CustomizedPortfolio(props) {
                     </div>
                     {/* hide portfolio item querySearch */}
                     <div className="card mt-4 px-4">
-                        {/* <div className="row align-items-center mt-3">
-                        <div className="col-11 mx-1">
-                            <div className="d-flex align-items-center w-100">
-                            <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
-                                <h5 className="mb-0 text-black">
-                                <span>Portfolio Items</span>
-                                </h5>
-                                <p className="ml-2 mb-0">
-                                <a href="#" className="ml-3">
-                                    <FontAwesomeIcon icon={faPen} />
-                                </a>
-                                </p>
-                            </div>
-                            <QuerySearchComp
-                                compoFlag="itemSearch"
-                                options={[
-                                { label: "Make", value: "make" },
-                                { label: "Model", value: "model" },
-                                { label: "Prefix", value: "prefix" },
-                                { label: "Family", value: "family" },
-                                ]}
-                                setBundleItems={setBundleItems}
-                                setLoadingItem={setLoadingItem}
-                                setOpenedModelBoxData={setOpenedModelBoxData}
-                            />
-                            </div>
-                        </div>
-                        <div className="">
-                            <h6
-                            className="font-weight-600 text-light mb-0 cursor"
-                            onClick={handleAddSolutionPress}
-                            >
-                            <span className="mr-2">+</span>Add Solution
-                            </h6>
-                        </div>
-                        </div> */}
-                        {bundleItems.length > 0 ? (
-                            <div>
-                                <div
-                                    className="custom-table  card"
-                                    style={{ height: 400, width: "100%" }}
-                                >
-                                    <DataTable
-                                        title=""
-                                        columns={bundleItemColumns}
-                                        data={bundleItems}
-                                        customStyles={customStyles}
-                                        expandableRows
-                                        expandableRowsComponent={ExpandedComponent}
-                                        pagination
-                                    />
-                                </div>
-                            </div>
-                        ) : loadingItem ? (
-                            <div className="d-flex align-items-center justify-content-center">
-                                {/* <Loader
-                  type="spinner-default"
-                  bgColor={"#7571f9"}
-                  title={"spinner-default"}
-                  color={"#FFFFFF"}
-                  size={35}
-                /> */}
-                                "loading"
-                            </div>
-                        ) : (
-                            <div className="p-4  row">
-                                <div
-                                    className="col-md-6 col-sm-6"
-                                    onClick={handleNewBundleItem}
-                                >
-                                    <Link to="#" className="add-new-recod">
-                                        <div>
-                                            <FontAwesomeIcon icon={faPlus} />
-                                            <p className="font-weight-600">Add Portfolio Item</p>
-                                        </div>
-                                    </Link>
-                                </div>
-                                <div className="col-md-6 col-sm-6">
-                                    <div className="add-new-recod">
-                                        <div>
-                                            <FontAwesomeIcon
-                                                className="cloudupload"
-                                                icon={faCloudUploadAlt}
-                                            />
-                                            <h6 className="font-weight-500 mt-3">
-                                                Drag and drop files to upload <br /> or
-                                            </h6>
-                                            <a
-                                                onClick={() => setOpen(true)}
-                                                style={{ cursor: "pointer" }}
-                                                className="btn text-light border-light font-weight-500 border-radius-10 mt-3"
-                                            >
-                                                <span className="mr-2">
-                                                    <FontAwesomeIcon icon={faPlus} />
-                                                </span>
-                                                Select files to upload
-                                            </a>
-                                            <p className="mt-3">
-                                                Single upload file should not be more than <br />
-                                                10MB. Only the .lgs, .lgsx file types are allowed
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                    {/* <div className="card px-4 pb-4 mt-5 pt-0">
-                        <div className="row align-items-center">
-                            <div className="col-3">
-                                <div className="d-flex ">
-                                    <h5 className="mr-4 mb-0"><span>Bundle Item</span></h5>
-                                    <p className="ml-4 mb-0">
-                                        <a href="#" className="ml-3 "><img src={editIcon}></img></a>
-                                        <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="col-6">
-                                <div className="d-flex align-items-center" style={{ background: '#F9F9F9', padding: '10px 15px', borderRadius: '10px' }}>
-                                    <div className="search-icon mr-2" style={{ lineHeight: '24px' }}>
-                                        <img src={searchstatusIcon}></img>
-                                    </div>
-                                    <div className="w-100 mx-2">
-                                        <div className="machine-drop d-flex align-items-center">
 
-                                            <FormControl className="" sx={{ m: 1, }}>
-                                                <Select
-                                                    placeholder="Search By"
-                                                    id="demo-simple-select-autowidth"
-                                                    value={age}
-                                                    onChange={handleChangedrop}
-                                                    autoWidth
-                                                >
-                                                    <MenuItem value="5">
-                                                        <em>Engine</em>
-                                                    </MenuItem>
-                                                    <MenuItem value={10}>Twenty</MenuItem>
-                                                    <MenuItem value={21}>Twenty one</MenuItem>
-                                                    <MenuItem value={22}>Twenty one and a half</MenuItem>
-                                                </Select>
-                                            </FormControl>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                            </div>
-                            <div className="col-3">
-                                <div className="d-flex align-items-center">
-                                    <div className="col-8 text-center">
-                                        <a href="#" className="p-1 more-btn">+ 3 more
-                                            <span className="c-btn">C</span>
-                                            <span className="b-btn">B</span>
-                                            <span className="a-btn">A</span>
-                                        </a>
-                                    </div>
-                                    <div className="col-4 text-center border-left py-4">
-                                        <a href="#" className="p-1 ">+ Add Part</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
-                            <DataGrid
+                            {/* <DataGrid
                                 sx={{
                                     '& .MuiDataGrid-columnHeaders': {
-                                        backgroundColor: '#872ff7', color: '#fff'
+                                        backgroundColor: '#7380E4', color: '#fff'
                                     }
                                 }}
                                 rows={rows}
@@ -4431,21 +4616,19 @@ export function CustomizedPortfolio(props) {
                                 pageSize={5}
                                 rowsPerPageOptions={[5]}
                                 checkboxSelection
+                                // onCellClick={(e) => handleRowClick(e)}
+                            /> */}
 
-
+                            <DataTable
+                                className=""
+                                title=""
+                                columns={selectedportfolioTempItemsColumn}
+                                data={location.selectedTemplateItems}
+                                customStyles={customStyles}
+                                pagination
                             />
                         </div>
-                    </div> */}
-                    {/* <QuerySearchComp
-                        options={[
-                            { label: "Make", value: "make" },
-                            { label: "Model", value: "model" },
-                            { label: "Prefix", value: "prefix" },
-                            { label: "Family", value: "family" },
-                        ]}
-                        compoFlag="coverage"
-
-                    /> */}
+                    </div>
                     <Modal show={open1} onHide={handleClose1} size="lg"
                         aria-labelledby="contained-modal-title-vcenter"
                         centered>
@@ -4664,444 +4847,6 @@ export function CustomizedPortfolio(props) {
                     </Modal>
                 </div>
             </div>
-            <Modal
-                show={showRelatedModel}
-                onHide={() => setShowRelatedModel(false)}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header className="align-items-center">
-                    <div>
-                        <Modal.Title>Included Serial No</Modal.Title>
-                    </div>
-                    <div>
-                        <Link
-                            to="#"
-                            className=" btn bg-primary text-white"
-                            onClick={() => AddNewRowData(openModelBoxDataId)}
-                        >
-                            Add New
-                        </Link>
-                    </div>
-                </Modal.Header>
-                <Modal.Body>
-                    <DataTable
-                        className=""
-                        title=""
-                        columns={columns4}
-                        data={modelIncludedData}
-                        customStyles={customStyles}
-                    // pagination
-                    />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="primary" onClick={() => setShowRelatedModel(false)}>
-                        Close
-                    </Button>
-                    <Button variant="primary">Save changes</Button>
-                </Modal.Footer>
-            </Modal>
-
-
-            <Modal
-                size="xl"
-                show={itemModelShow}
-                onHide={() => setItemModelShow(false)}
-            >
-                <Modal.Body>
-                    <Box sx={{ typography: "body1" }}>
-                        <TabContext value={tabs}>
-                            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                                <TabList
-                                    onChange={(e, newValue) => setTabs(newValue)}
-                                    aria-label="lab API tabs example"
-                                >
-                                    <Tab label="Portfolio Item" value="1" />
-                                    <Tab label="Price Calculator" value="2" />
-                                    <Tab label="Component Data" value="3" />
-                                </TabList>
-                            </Box>
-                            <TabPanel value="1">
-                                <AddPortfolioItem
-                                    // openAddBundleItemHeader={openAddBundleItemHeader}
-                                    categoryList={categoryList}
-                                    updatedTaskList={updatedTaskList}
-                                    setTabs={setTabs}
-                                    getAddportfolioItemDataFun={getAddportfolioItemDataFun}
-                                    compoFlag="ITEM"
-                                    handleBundleItemSaveAndContinue={handleBundleItemSaveAndContinue}
-                                />
-                            </TabPanel>
-
-                            <TabPanel value="2">
-                                <PriceCalculator
-                                    generalComponentData={generalComponentData}
-                                    setGeneralComponentData={setGeneralComponentData}
-
-                                    setBundleItems={setBundleItems}
-                                    bundleItems={bundleItems}
-                                    tempBundleItems={tempBundleItems}
-                                    setTempBundleItems={setTempBundleItems}
-                                    setOpenAddBundleItem={setOpenAddBundleItem}
-                                    setOpenSearchSolution={setOpenSearchSolution}
-                                    createServiceOrBundle={createServiceOrBundle}
-                                    addPortFolioItem={addPortFolioItem}
-                                    serviceOrBundlePrefix={serviceOrBundlePrefix}
-                                    setLoadingItem={setLoadingItem}
-                                    setTabs={setTabs}
-
-                                    priceCalculator={priceCalculator}
-
-                                />
-                            </TabPanel>
-
-                            <TabPanel value="3">
-                                {loadingItem ? (
-                                    <div className="d-flex align-items-center justify-content-center">
-                                        <Loader
-                                            type="spinner-default"
-                                            bgColor={"#7571f9"}
-                                            title={"spinner-default"}
-                                            color={"#FFFFFF"}
-                                            size={35}
-                                        />
-                                    </div>
-                                ) : (
-                                    <div
-                                        className="custom-table  card"
-                                        style={{ height: 400, width: "100%" }}
-                                    >
-                                        <DataTable
-                                            title=""
-                                            columns={tempBundleItemColumns}
-                                            data={tempBundleItems}
-                                            customStyles={customStyles}
-                                            pagination
-                                        />
-                                    </div>
-                                )}
-                            </TabPanel>
-
-                        </TabContext>
-                    </Box>
-                </Modal.Body>
-                <Modal.Footer>
-                    {tabs === "3" && (
-                        <Button variant="primary" onClick={addTempItemIntobundleItem}>
-                            Add Selected
-                        </Button>
-                    )}
-                </Modal.Footer>
-            </Modal>
-
-            <Modal
-                size="xl"
-                show={bundleServiceShow}
-                onHide={() => setBundleServiceShow(false)}
-            >
-                <Modal.Body>
-                    <Box sx={{ typography: "body1" }}>
-                        <TabContext value={bundleTabs}>
-                            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                                <TabList
-                                    onChange={(e, newValue) => setBundleTabs(newValue)}
-                                    aria-label="lab API tabs example"
-                                >
-                                    <Tab label={`${serviceOrBundlePrefix} HEADER`} value="1" />
-                                    {serviceOrBundlePrefix === "BUNDLE" && <Tab label={`${serviceOrBundlePrefix} BODY`} value="2" />}
-                                    <Tab label="PRICE CALCULATOR" value="3" />
-                                </TabList>
-                            </Box>
-                            <TabPanel value="1">
-                                <div className="container-fluid ">
-                                    <div className="d-flex align-items-center justify-content-between mt-2">
-                                        <h5 className="font-weight-600 mb-0">
-                                            ADD {serviceOrBundlePrefix}
-                                        </h5>
-                                        <div className="d-flex justify-content-center align-items-center">
-                                            <a href="#" className="ml-3 font-size-14">
-                                                <img src={shareIcon}></img>
-                                            </a>
-                                            <a href="#" className="ml-3 font-size-14">
-                                                <img src={folderaddIcon}></img>
-                                            </a>
-                                            <a href="#" className="ml-3 font-size-14">
-                                                <img src={uploadIcon}></img>
-                                            </a>
-                                            <a href="#" className="ml-3 font-size-14">
-                                                <img src={cpqIcon}></img>
-                                            </a>
-                                            <a href="#" className="ml-3 font-size-14">
-                                                <img src={deleteIcon}></img>
-                                            </a>
-                                            <a href="#" className="ml-3 font-size-14">
-                                                <img src={copyIcon}></img>
-                                            </a>
-                                            <a href="#" className="ml-2">
-                                                <MuiMenuComponent
-                                                    onClick={() => alert()}
-                                                    options={activityOptions}
-                                                />
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div className="card p-4 mt-5">
-                                        <h5 className="d-flex align-items-center mb-0">
-                                            <div className="" style={{ display: "contents" }}>
-                                                <span className="mr-3">Header</span>
-                                                <a href="#" className="btn-sm">
-                                                    <i className="fa fa-pencil" aria-hidden="true"></i>
-                                                </a>
-                                                <a href="#" className="btn-sm">
-                                                    <i
-                                                        className="fa fa-bookmark-o"
-                                                        aria-hidden="true"
-                                                    ></i>
-                                                </a>
-                                                <a href="#" className="btn-sm">
-                                                    <img
-                                                        style={{ width: "14px" }}
-                                                        src={folderaddIcon}
-                                                    ></img>
-                                                </a>
-                                            </div>
-                                            <div className="input-group icons border-radius-10 border">
-                                                <div className="input-group-prepend">
-                                                    <span
-                                                        className="input-group-text bg-transparent border-0 pr-0 "
-                                                        id="basic-addon1"
-                                                    >
-                                                        <img src={shearchIcon} />
-                                                    </span>
-                                                </div>
-                                                <input
-                                                    type="search"
-                                                    className="form-control search-form-control"
-                                                    aria-label="Search Dashboard"
-                                                />
-                                            </div>
-                                        </h5>
-                                        <div className="row mt-4">
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label className="text-light-dark font-size-12 font-weight-500">
-                                                        {serviceOrBundlePrefix} ID
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10"
-                                                        disabled
-                                                        name="id"
-                                                        placeholder="ID(AUTO)"
-                                                        value={
-                                                            createServiceOrBundle.id
-                                                                ? createServiceOrBundle.id
-                                                                : ""
-                                                        }
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label className="text-light-dark font-size-12 font-weight-500">
-                                                        {serviceOrBundlePrefix} DESCRIPTION
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10"
-                                                        name="description"
-                                                        placeholder="Description"
-                                                        value={createServiceOrBundle.description}
-                                                        onChange={handleAddServiceBundleChange}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label className="text-light-dark font-size-12 font-weight-500">
-                                                        BUNDLE FLAG
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10"
-                                                        name="bundleFlag"
-                                                        placeholder="Bundle Flag"
-                                                        value={
-                                                            serviceOrBundlePrefix === "SERVICE"
-                                                                ? "SERVICE"
-                                                                : "BUNDLE_ITEM"
-                                                        }
-                                                        onChange={handleAddServiceBundleChange}
-                                                        disabled
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label
-                                                        className="text-light-dark font-size-12 font-weight-500"
-                                                        for="exampleInputEmail1"
-                                                    >
-                                                        REFERENCE
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10"
-                                                        name="reference"
-                                                        placeholder="Reference"
-                                                        value={createServiceOrBundle.reference}
-                                                        onChange={handleAddServiceBundleChange}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label className="text-light-dark font-size-12 font-weight-500">
-                                                        CUSTOMER SEGMENT
-                                                    </label>
-                                                    <Select
-                                                        onChange={(e) =>
-                                                            setCreateServiceOrBundle({
-                                                                ...createServiceOrBundle,
-                                                                customerSegment: e,
-                                                            })
-                                                        }
-                                                        value={createServiceOrBundle.customerSegment}
-                                                        options={options}
-                                                        placeholder="Customer Segment"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label className="text-light-dark font-size-12 font-weight-500">
-                                                        MAKE
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10"
-                                                        name="make"
-                                                        placeholder="Make"
-                                                        value={createServiceOrBundle.make}
-                                                        onChange={handleAddServiceBundleChange}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label className="text-light-dark font-size-12 font-weight-500">
-                                                        MODEL(S)
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10"
-                                                        name="models"
-                                                        placeholder="Model(S)"
-                                                        value={createServiceOrBundle.models}
-                                                        onChange={handleAddServiceBundleChange}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label className="text-light-dark font-size-12 font-weight-500">
-                                                        PREFIX(S)
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10"
-                                                        name="prefix"
-                                                        placeholder="Prefix(S)"
-                                                        value={createServiceOrBundle.prefix}
-                                                        onChange={handleAddServiceBundleChange}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label
-                                                        className="text-light-dark font-size-12 font-weight-500"
-                                                        for="exampleInputEmail1"
-                                                    >
-                                                        MACHINE/COMPONENT
-                                                    </label>
-                                                    <Select
-                                                        isClearable={true}
-                                                        onChange={(e) =>
-                                                            setCreateServiceOrBundle({
-                                                                ...createServiceOrBundle,
-                                                                machineComponent: e,
-                                                            })
-                                                        }
-                                                        value={newBundle.machineComponent}
-                                                        isLoading={typeKeyValue.length > 0 ? false : true}
-                                                        options={typeKeyValue}
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <label
-                                                        className="text-light-dark font-size-12 font-weight-500"
-                                                        for="exampleInputEmail1"
-                                                    >
-                                                        ADDITIONALS
-                                                    </label>
-                                                    <Select
-                                                        onChange={(e) =>
-                                                            setCreateServiceOrBundle({
-                                                                ...createServiceOrBundle,
-                                                                additional: e,
-                                                            })
-                                                        }
-                                                        value={createServiceOrBundle.additional}
-                                                        options={options}
-                                                        placeholder="Preventive Maintenance"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="row" style={{ justifyContent: "right" }}>
-                                            <button
-                                                type="button"
-                                                onClick={handleAddNewServiceOrBundle}
-                                                className="btn btn-light"
-                                            >
-                                                Save
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </TabPanel>
-                            <TabPanel value="2">
-                                <AddPortfolioItem
-                                    setBundleTabs={setBundleTabs}
-                                    compoFlag="BUNDLE"
-                                    saveAddNewServiceOrBundle={saveAddNewServiceOrBundle}
-
-                                />
-
-                            </TabPanel>
-                            <TabPanel value="3">
-                                <PriceCalculator
-                                    serviceOrBundlePrefix={serviceOrBundlePrefix}
-                                    generalComponentData={generalComponentData}
-                                    setGeneralComponentData={setGeneralComponentData}
-                                    createServiceOrBundle={createServiceOrBundle}
-                                    addPortFolioItem={addPortFolioItem}
-                                    bundleItems={bundleItems}
-                                    setBundleItems={setBundleItems}
-                                    setLoadingItem={setLoadingItem}
-                                    setBundleServiceShow={setBundleServiceShow}
-
-                                />
-                            </TabPanel>
-
-                        </TabContext>
-                    </Box>
-                </Modal.Body>
-            </Modal>
         </>
     )
 }
