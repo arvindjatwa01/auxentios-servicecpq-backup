@@ -99,14 +99,14 @@ const  QuoteRepairSearch=()=>{
       <div class="container-fluid ">
           <div className="card p-4 mt-5">
           <div className="d-flex align-items-center mb-0">
-              <div className="" style={{ display:'contents'}}><h5 className="mr-3 mb-0" style={{whiteSpace:'pre'}}>Search Templates</h5></div>
+              <div className="" style={{ display:'contents'}}><h5 className="mr-3 mb-0" style={{whiteSpace:'pre'}}>Search Quotes</h5></div>
               <div class="input-group icons border-radius-10 border overflow-hidden">
             <div class="input-group-prepend">
               <span class="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
               <SearchIcon/></span>
               </div>
               <input type="search" class="form-control search-form-control"  aria-label="Search Dashboard"/>
-              <div class="input-group-prepend align-items-center">
+              {/* <div class="input-group-prepend align-items-center">
               <div className="w-100 mx-2">
               <div className="machine-drop d-flex align-items-center bg-white">
              <div><lable className="label-div" style={{whiteSpace:'pre'}} >Quote Type</lable></div>
@@ -127,18 +127,18 @@ const  QuoteRepairSearch=()=>{
             </FormControl>
           </div>
               </div>
-              </div>
+              </div> */}
             </div>
             <div className="ml-2">
               <Link to="/QuoteRepairConfiguration" className="btn bg-primary text-white">Create New <ChevronRightIcon className=""/></Link>
             </div>
               </div>
               </div>
-           <div className="bg-primary px-3 mb-3">
+           <div className="bg-primary px-3 mb-3 py-3">
            <div className="row align-items-center">
           <div className="col-3">
           <div className="d-flex ">
-          <h5 className="mr-4 mb-0 text-white"><span>Templates</span></h5>
+          <h5 className="mr-4 mb-0 text-white"><span>Quotes</span></h5>
           <p className="ml-4 mb-0">
             <a href="#" className="ml-3 text-white"><EditOutlinedIcon/></a>
             <a href="#" className="ml-3 text-white"><ShareOutlinedIcon/></a>
@@ -218,7 +218,7 @@ const  QuoteRepairSearch=()=>{
             </div>
          
           </div>
-          <div className="col-3">
+          {/* <div className="col-3">
             <div className="d-flex align-items-center">
               <div className="col-8 text-center">
               <a href="#" className="p-1 more-btn text-white">+ 3 more
@@ -231,7 +231,7 @@ const  QuoteRepairSearch=()=>{
               <Link to="/QuoteRepairOption" className="p-1 text-white">+ Add Part</Link>
               </div>
             </div>
-          </div>
+          </div> */}
           </div>
              </div>   
         <div className="card">
