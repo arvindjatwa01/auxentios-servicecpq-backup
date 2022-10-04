@@ -213,6 +213,7 @@ export function SolutionTemplateResult(props) {
     const [viewOnlyTab, setViewOnlyTab] = useState({
         generalViewOnly: true,
         strategyViewOnly: true,
+        administryViewOnly: true,
         // generalViewOnly: false,
         // estViewOnly: false,
     });
@@ -241,10 +242,10 @@ export function SolutionTemplateResult(props) {
     const [administrative, setAdministrative] = useState({
         preparedBy: null,
         approvedBy: null,
-        preparedOn: null,
+        preparedOn: new Date(),
         revisedBy: null,
-        revisedOn: null,
-        branch: null,
+        revisedOn: new Date(),
+        salesOffice: null,
         offerValidity: null,
     });
 
@@ -361,6 +362,9 @@ export function SolutionTemplateResult(props) {
             setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: false });
         else if (value === "3" && viewOnlyTab.strategyViewOnly) {
             setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: false });
+        }
+        else if (value === "administrative" && viewOnlyTab.administryViewOnly) {
+            setViewOnlyTab({ ...viewOnlyTab, administryViewOnly: false });
         }
     }
 
@@ -594,9 +598,10 @@ export function SolutionTemplateResult(props) {
                 contractOrSupport: generalComponentData.contractOrSupport
                     ? generalComponentData.contractOrSupport
                     : "EMPTY",
-                lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                    ? generalComponentData.lifeStageOfMachine
-                    : "EMPTY",
+                // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                //     ? generalComponentData.lifeStageOfMachine
+                //     : "EMPTY",
+                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
                 supportLevel: generalComponentData.supportLevel
                     ? generalComponentData.supportLevel
                     : "EMPTY",
@@ -781,9 +786,10 @@ export function SolutionTemplateResult(props) {
                     contractOrSupport: generalComponentData.contractOrSupport
                         ? generalComponentData.contractOrSupport
                         : "EMPTY",
-                    lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                        ? generalComponentData.lifeStageOfMachine
-                        : "EMPTY",
+                    // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                    //     ? generalComponentData.lifeStageOfMachine
+                    //     : "EMPTY",
+                    lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
                     supportLevel: generalComponentData.supportLevel
                         ? generalComponentData.supportLevel
                         : "EMPTY",
@@ -969,7 +975,7 @@ export function SolutionTemplateResult(props) {
                 lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
                 supportLevel: "PREMIUM",
                 serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
-                
+
                 machineType: machineTypeKeyValue.value,
                 searchTerm: "EMPTY",
                 lubricant: true,
@@ -984,10 +990,17 @@ export function SolutionTemplateResult(props) {
                 status: generalComponentData.status
                     ? generalComponentData.status
                     : "EMPTY",
-                
+
                 items: [],
                 customCoverages: [],
                 customItems: [],
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                salesOffice: administrative.salesOffice,
+                offerValidity: administrative.offerValidity,
                 // portfolioPrice: {},
                 // additionalPrice: {},
                 // escalationPrice: {},
@@ -1006,7 +1019,14 @@ export function SolutionTemplateResult(props) {
                 productHierarchy: stratgyHierarchyKeyValue.value,
                 geographic: stratgyGeographicKeyValue.value,
                 machineType: machineTypeKeyValue.value,
-                lifeStageOfMachine:lifeStageOfMachineKeyValue.value,
+                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                salesOffice: administrative.salesOffice,
+                offerValidity: administrative.offerValidity,
             });
 
             // const portfolioRes = await createCustomPortfolio(reqData);
@@ -1083,7 +1103,7 @@ export function SolutionTemplateResult(props) {
                 productHierarchy: stratgyHierarchyKeyValue.value,
                 geographic: stratgyGeographicKeyValue.value,
                 machineType: machineTypeKeyValue.value,
-                lifeStageOfMachine:lifeStageOfMachineKeyValue.value,
+                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
             });
 
             const { portfolioId, ...res } = generalComponentData;
@@ -1096,9 +1116,10 @@ export function SolutionTemplateResult(props) {
                 customerSegment: generalComponentData.customerSegment.value
                     ? generalComponentData.customerSegment.value
                     : "EMPTY",
-                machineType: generalComponentData.machineType
-                    ? generalComponentData.machineType
-                    : "EMPTY",
+                // machineType: generalComponentData.machineType
+                //     ? generalComponentData.machineType
+                //     : "EMPTY",
+                machineType: machineTypeKeyValue.value,
                 status: generalComponentData.status
                     ? generalComponentData.status
                     : "EMPTY",
@@ -1130,9 +1151,10 @@ export function SolutionTemplateResult(props) {
                 contractOrSupport: generalComponentData.contractOrSupport
                     ? generalComponentData.contractOrSupport
                     : "EMPTY",
-                lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                    ? generalComponentData.lifeStageOfMachine
-                    : "EMPTY",
+                // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                //     ? generalComponentData.lifeStageOfMachine
+                //     : "EMPTY",
+                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
                 supportLevel: generalComponentData.supportLevel
                     ? generalComponentData.supportLevel
                     : "EMPTY",
@@ -1154,6 +1176,14 @@ export function SolutionTemplateResult(props) {
                 productHierarchy: stratgyHierarchyKeyValue.value,
                 geographic: stratgyGeographicKeyValue.value,
                 customItems: selectedCustomItems,
+
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                salesOffice: administrative.salesOffice,
+                offerValidity: administrative.offerValidity,
             };
             console.log(" res is : ", res);
             // console.log("obj", obj);
@@ -1197,7 +1227,125 @@ export function SolutionTemplateResult(props) {
                 throw `${strategyRes.status}:error in update portfolio`;
             };
         } else if (e.target.id == "administrative") {
-            setValue("4");
+            setGeneralComponentData({
+                ...generalComponentData,
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                salesOffice: administrative.salesOffice,
+                offerValidity: administrative.offerValidity,
+            });
+
+            const { portfolioId, ...res } = generalComponentData;
+
+            let Administryobj = {
+                ...res,
+                visibleInCommerce: true,
+                customerId: 0,
+                lubricant: true,
+                customerSegment: generalComponentData.customerSegment.value
+                    ? generalComponentData.customerSegment.value
+                    : "EMPTY",
+                machineType: generalComponentData.machineType
+                    ? generalComponentData.machineType
+                    : "EMPTY",
+                status: generalComponentData.status
+                    ? generalComponentData.status
+                    : "EMPTY",
+                strategyTask: generalComponentData.strategyTask
+                    ? generalComponentData.strategyTask
+                    : "EMPTY",
+                taskType: generalComponentData.taskType
+                    ? generalComponentData.taskType
+                    : "EMPTY",
+                usageCategory: generalComponentData.usageCategory
+                    ? generalComponentData.usageCategory
+                    : "EMPTY",
+                productHierarchy: generalComponentData.productHierarchy
+                    ? generalComponentData.productHierarchy
+                    : "EMPTY",
+                geographic: generalComponentData.geographic
+                    ? generalComponentData.geographic
+                    : "EMPTY",
+                availability: generalComponentData.availability
+                    ? generalComponentData.availability
+                    : "EMPTY",
+                responseTime: generalComponentData.responseTime
+                    ? generalComponentData.responseTime
+                    : "EMPTY",
+                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                application: generalComponentData.application
+                    ? generalComponentData.application
+                    : "EMPTY",
+                contractOrSupport: generalComponentData.contractOrSupport
+                    ? generalComponentData.contractOrSupport
+                    : "EMPTY",
+                // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                //     ? generalComponentData.lifeStageOfMachine
+                //     : "EMPTY",
+                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                supportLevel: generalComponentData.supportLevel
+                    ? generalComponentData.supportLevel
+                    : "EMPTY",
+                customItems: [],
+                items: [],
+                customCoverages: [],
+                customerGroup: generalComponentData.customerGroup
+                    ? generalComponentData.customerGroup
+                    : "EMPTY",
+                searchTerm: "EMPTY",
+                supportLevel: "EMPTY",
+                // portfolioPrice: {},
+                // additionalPrice: {},
+                // escalationPrice: {},
+
+                usageCategory: categoryUsageKeyValue1.value,
+                taskType: stratgyTaskTypeKeyValue.value,
+                strategyTask: stratgyTaskUsageKeyValue.value,
+                responseTime: stratgyResponseTimeKeyValue.value,
+                productHierarchy: stratgyHierarchyKeyValue.value,
+                geographic: stratgyGeographicKeyValue.value,
+                numberOfEvents: 0,
+                rating: "",
+                startUsage: "",
+                endUsage: "",
+                unit: "HOURS",
+                additionals: "",
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                salesOffice: administrative.salesOffice,
+                offerValidity: administrative.offerValidity,
+
+            };
+
+            const administryRes = await updateCustomPortfolio(
+                portfolioId,
+                Administryobj
+            );
+            if (administryRes.status === 200) {
+                toast("👏 Portfolio updated", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                // setValue("administrative");
+                setValue("4");
+                setViewOnlyTab({ ...viewOnlyTab, administryViewOnly: true });
+                console.log("administryRes updating", administryRes.data);
+            } else {
+                throw `${administryRes.status}:error in update portfolio`;
+            };
+
+            // setValue("4");
 
         } else if (e.target.id == "coverage") {
 
@@ -1274,9 +1422,10 @@ export function SolutionTemplateResult(props) {
                 contractOrSupport: generalComponentData.contractOrSupport
                     ? generalComponentData.contractOrSupport
                     : "EMPTY",
-                lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                    ? generalComponentData.lifeStageOfMachine
-                    : "EMPTY",
+                // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                //     ? generalComponentData.lifeStageOfMachine
+                //     : "EMPTY",
+                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
                 supportLevel: generalComponentData.supportLevel
                     ? generalComponentData.supportLevel
                     : "EMPTY",
@@ -1289,7 +1438,7 @@ export function SolutionTemplateResult(props) {
                 // additionalPrice: {},
                 // escalationPrice: {},
                 items: [],
-                customItems:[],
+                customItems: [],
                 customCoverages: cvgIds,
                 usageCategory: categoryUsageKeyValue1.value,
                 taskType: stratgyTaskTypeKeyValue.value,
@@ -1297,6 +1446,14 @@ export function SolutionTemplateResult(props) {
                 responseTime: stratgyResponseTimeKeyValue.value,
                 productHierarchy: stratgyHierarchyKeyValue.value,
                 geographic: stratgyGeographicKeyValue.value,
+
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                salesOffice: administrative.salesOffice,
+                offerValidity: administrative.offerValidity,
             };
             if (generalComponentData.portfolioId) {
                 const updatePortfolioRes = await updateCustomPortfolio(
@@ -1642,7 +1799,7 @@ export function SolutionTemplateResult(props) {
             description: location.selectedTemplateItems[0].description,
             serviceDescription: "",
             externalReference: location.selectedTemplateItems[0].externalReference,
-            customerSegment: null,
+            customerSegment: location.selectedTemplateItems[0].customerSegment,
             items: [],
             customCoverages: [],
         });
@@ -1657,6 +1814,17 @@ export function SolutionTemplateResult(props) {
             fromInput: "",
             toInput: "",
         })
+
+        setAdministrative({
+            preparedBy: location.selectedTemplateItems[0].preparedBy,
+            approvedBy: location.selectedTemplateItems[0].approvedBy,
+            preparedOn: location.selectedTemplateItems[0].preparedOn,
+            revisedBy: location.selectedTemplateItems[0].revisedBy,
+            revisedOn: location.selectedTemplateItems[0].revisedOn,
+            salesOffice: location.selectedTemplateItems[0].salesOffice,
+            offerValidity: location.selectedTemplateItems[0].offerValidity
+        })
+
 
         setCategoryUsageKeyValue1({
             "label": location.selectedTemplateItems[0].usageCategory,
@@ -3289,7 +3457,7 @@ export function SolutionTemplateResult(props) {
                                                 <h6 className="font-weight-500">
                                                     {(generalComponentData.description)}
                                                     {/* {generalComponentData.description !== "" ? (generalComponentData.description) : (location.selectedTemplateItems[0].description)} */}
-                                                    </h6>
+                                                </h6>
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-3">
@@ -3300,7 +3468,7 @@ export function SolutionTemplateResult(props) {
                                                 <h6 className="font-weight-500">
                                                     {(generalComponentData.externalReference)}
                                                     {/* {generalComponentData.externalReference !== "" ? (generalComponentData.externalReference) : (location.selectedTemplateItems[0].externalReference)} */}
-                                                    </h6>
+                                                </h6>
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-3">
@@ -3309,9 +3477,11 @@ export function SolutionTemplateResult(props) {
                                                     CUSTOMER SEGMENT
                                                 </p>
                                                 <h6 className="font-weight-500">
-                                                    customer segment
+                                                    Customer Segment
+                                                    {/* {console.log("generalComponentData.customerSegment ", generalComponentData.customerSegment)} */}
+                                                    {/* {generalComponentData.customerSegment} */}
                                                     {/* {location.selectedTemplateItems[0].customerSegment} */}
-                                                    </h6>
+                                                </h6>
                                             </div>
                                         </div>
                                     </div>)}
@@ -3697,7 +3867,7 @@ export function SolutionTemplateResult(props) {
                                                     // isClearable={true}
                                                     // value={coverageData.machineType}
                                                     isLoading={
-                                                        machineTypeKeyValue.length > 0 ? false : true
+                                                        machineTypeKeyValueList.length > 0 ? false : true
                                                     }
                                                 />
                                                 {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
@@ -3749,7 +3919,7 @@ export function SolutionTemplateResult(props) {
                                                         {(console.log("categoryUsageKeyValue1 : ", categoryUsageKeyValue1))}
                                                         {(categoryUsageKeyValue1.label)}
                                                         {/* {Object.keys(categoryUsageKeyValue1).length > 0 ? (categoryUsageKeyValue1.label) : (location.selectedTemplateItems[0].usageCategory)} */}
-                                                        </h6>
+                                                    </h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-4">
@@ -3760,7 +3930,7 @@ export function SolutionTemplateResult(props) {
                                                     <h6 className="font-weight-500">
                                                         {(stratgyTaskUsageKeyValue.label)}
                                                         {/* {Object.keys(stratgyTaskUsageKeyValue).length > 0 ? (stratgyTaskUsageKeyValue.label) : (location.selectedTemplateItems[0].strategyTask)} */}
-                                                        </h6>
+                                                    </h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-4">
@@ -3771,7 +3941,7 @@ export function SolutionTemplateResult(props) {
                                                     <h6 className="font-weight-500">
                                                         {(stratgyTaskTypeKeyValue.label)}
                                                         {/* {Object.keys(stratgyTaskTypeKeyValue).length > 0 ? (stratgyTaskTypeKeyValue.label) : (location.selectedTemplateItems[0].taskType)} */}
-                                                        </h6>
+                                                    </h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-4">
@@ -3801,7 +3971,7 @@ export function SolutionTemplateResult(props) {
                                                     <h6 className="font-weight-500">
                                                         {(stratgyHierarchyKeyValue.label)}
                                                         {/* {Object.keys(stratgyHierarchyKeyValue).length > 0 ? (stratgyHierarchyKeyValue.label) : (location.selectedTemplateItems[0].productHierarchy)} */}
-                                                        </h6>
+                                                    </h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-4">
@@ -3812,7 +3982,7 @@ export function SolutionTemplateResult(props) {
                                                     <h6 className="font-weight-500">
                                                         {(stratgyGeographicKeyValue.label)}
                                                         {/* {Object.keys(stratgyGeographicKeyValue).length > 0 ? (stratgyGeographicKeyValue.label) : (location.selectedTemplateItems[0].geographic)} */}
-                                                        </h6>
+                                                    </h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-4">
@@ -3823,7 +3993,7 @@ export function SolutionTemplateResult(props) {
                                                     <h6 className="font-weight-500">
                                                         {/* {Object.keys(machineTypeKeyValue).length > 0 ? (machineTypeKeyValue.label) : (location.selectedTemplateItems[0].machineType)} */}
                                                         {(machineTypeKeyValue.label)}
-                                                        
+
                                                     </h6>
                                                 </div>
                                             </div>
@@ -3901,44 +4071,46 @@ export function SolutionTemplateResult(props) {
 
                                 </TabPanel>
                                 <TabPanel value={"administrative"}>
-                                    <div className="row">
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
-                                                    htmlFor="exampleInputEmail1"
-                                                >
-                                                    PREPARED BY
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    name="preparedBy"
-                                                    value={administrative.preparedBy}
-                                                    onChange={handleAdministrativreChange}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
-                                                    htmlFor="exampleInputEmail1"
-                                                >
-                                                    APPROVED BY
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    placeholder="Optional"
-                                                    name="approvedBy"
-                                                    value={administrative.approvedBy}
-                                                    onChange={handleAdministrativreChange}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
+                                    {!viewOnlyTab.administryViewOnly ?
+                                        <>
+                                            <div className="row">
+                                                <div className="col-md-4 col-sm-4">
+                                                    <div className="form-group">
+                                                        <label
+                                                            className="text-light-dark font-size-14 font-weight-500"
+                                                            htmlFor="exampleInputEmail1"
+                                                        >
+                                                            PREPARED BY
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control border-radius-10"
+                                                            name="preparedBy"
+                                                            value={administrative.preparedBy}
+                                                            onChange={handleAdministrativreChange}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-4 col-sm-4">
+                                                    <div className="form-group">
+                                                        <label
+                                                            className="text-light-dark font-size-14 font-weight-500"
+                                                            htmlFor="exampleInputEmail1"
+                                                        >
+                                                            APPROVED BY
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control border-radius-10"
+                                                            placeholder="Optional"
+                                                            name="approvedBy"
+                                                            value={administrative.approvedBy}
+                                                            onChange={handleAdministrativreChange}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-4 col-sm-4">
+                                                    {/* <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-14 font-weight-500"
                                                     htmlFor="exampleInputEmail1"
@@ -3953,31 +4125,60 @@ export function SolutionTemplateResult(props) {
                                                     value={administrative.preparedOn}
                                                     onChange={handleAdministrativreChange}
                                                 />
+                                            </div> */}
+                                                    <div className="form-group">
+                                                        <div className=" date-box w-100">
+                                                            <label
+                                                                className="text-light-dark font-size-14 font-weight-500"
+                                                                htmlFor="exampleInputEmail1"
+                                                            >
+                                                                <span className=" mr-2">PREPARED ON</span>
+                                                            </label>
+
+                                                            <div className="form-group w-100">
+                                                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                                    <DatePicker
+                                                                        variant="inline"
+                                                                        format="dd/MM/yyyy"
+                                                                        className="form-controldate border-radius-10"
+                                                                        label=""
+                                                                        name="preparedOn"
+                                                                        value={administrative.preparedOn}
+                                                                        onChange={(e) =>
+                                                                            setAdministrative({
+                                                                                ...administrative,
+                                                                                preparedOn: e,
+                                                                            })
+                                                                        }
+                                                                    />
+                                                                </MuiPickersUtilsProvider>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
-                                                    htmlFor="exampleInputEmail1"
-                                                >
-                                                    REVISED BY
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    placeholder="Optional"
-                                                    name="revisedBy"
-                                                    value={administrative.revisedBy}
-                                                    onChange={handleAdministrativreChange}
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label
+                                            <div className="row">
+                                                <div className="col-md-4 col-sm-4">
+                                                    <div className="form-group">
+                                                        <label
+                                                            className="text-light-dark font-size-14 font-weight-500"
+                                                            htmlFor="exampleInputEmail1"
+                                                        >
+                                                            REVISED BY
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control border-radius-10"
+                                                            placeholder="Optional"
+                                                            name="revisedBy"
+                                                            value={administrative.revisedBy}
+                                                            onChange={handleAdministrativreChange}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-4 col-sm-4">
+                                                    <div className="form-group">
+                                                        {/* <label
                                                     className="text-light-dark font-size-14 font-weight-500"
                                                     htmlFor="exampleInputEmail1"
                                                 >
@@ -3990,57 +4191,161 @@ export function SolutionTemplateResult(props) {
                                                     name="revisedOn"
                                                     value={administrative.revisedOn}
                                                     onChange={handleAdministrativreChange}
-                                                />
+                                                /> */}
+                                                        <div className=" date-box w-100">
+                                                            <label
+                                                                className="text-light-dark font-size-14 font-weight-500"
+                                                                htmlFor="exampleInputEmail1"
+                                                            >
+                                                                <span className=" mr-2">REVISED ON</span>
+                                                            </label>
+
+                                                            <div className="form-group w-100">
+                                                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                                    <DatePicker
+                                                                        variant="inline"
+                                                                        format="dd/MM/yyyy"
+                                                                        className="form-controldate border-radius-10"
+                                                                        label=""
+                                                                        name="revisedOn"
+                                                                        value={administrative.revisedOn}
+                                                                        onChange={(e) =>
+                                                                            setAdministrative({
+                                                                                ...administrative,
+                                                                                revisedOn: e,
+                                                                            })
+                                                                        }
+                                                                    />
+                                                                </MuiPickersUtilsProvider>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-4 col-sm-4">
+                                                    <div className="form-group">
+                                                        <label
+                                                            className="text-light-dark font-size-14 font-weight-500"
+                                                            htmlFor="exampleInputEmail1"
+                                                        >
+                                                            SALSE OFFICE/BRANCH
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control border-radius-10"
+                                                            name="salesOffice"
+                                                            value={administrative.salesOffice}
+                                                            onChange={handleAdministrativreChange}
+                                                        />
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
-                                                    htmlFor="exampleInputEmail1"
+                                            <div className="row">
+                                                <div className="col-md-4 col-sm-4">
+                                                    <div className="form-group">
+                                                        <label
+                                                            className="text-light-dark font-size-14 font-weight-500"
+                                                            htmlFor="exampleInputEmail1"
+                                                        >
+                                                            OFFER VALIDITY
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control border-radius-10"
+                                                            placeholder="Optional"
+                                                            name="offerValidity"
+                                                            value={administrative.offerValidity}
+                                                            onChange={handleAdministrativreChange}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="row" style={{ justifyContent: "right" }}>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleNextClick}
+                                                    className="btn btn-light"
+                                                    id="administrative"
                                                 >
-                                                    SALSE OFFICE/BRANCH
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    name="branch"
-                                                    value={administrative.branch}
-                                                    onChange={handleAdministrativreChange}
-                                                />
+                                                    Save & Next
+                                                </button>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
-                                                    htmlFor="exampleInputEmail1"
-                                                >
-                                                    OFFER VALIDITY
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    placeholder="Optional"
-                                                    name="offerValidity"
-                                                    value={administrative.offerValidity}
-                                                    onChange={handleAdministrativreChange}
-                                                />
+                                        </> : (<div className="row">
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        PREPARED BY
+                                                        {/* {console.log("new dataa : ", coverageData.machineType)} */}
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        {(administrative.preparedBy)}
+                                                    </h6>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div className="row" style={{ justifyContent: "right" }}>
-                                        <button
-                                            type="button"
-                                            onClick={handleNextClick}
-                                            className="btn btn-light"
-                                            id="administrative"
-                                        >
-                                            Save & Next
-                                        </button>
-                                    </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        APPROVED BY
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        {(administrative.approvedBy)}
+                                                        {/* {Object.keys(stratgyTaskUsageKeyValue).length > 0 ? (stratgyTaskUsageKeyValue.label) : (location.selectedTemplateItems[0].strategyTask)} */}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        PREPARED ON
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        {(administrative.preparedOn)}
+                                                        {/* {Object.keys(stratgyTaskTypeKeyValue).length > 0 ? (stratgyTaskTypeKeyValue.label) : (location.selectedTemplateItems[0].taskType)} */}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        REVISED BY
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        {administrative.revisedBy}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        REVISED  ON
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        {administrative.revisedOn}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        SALSE OFFICE/BRANCH
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        {administrative.salesOffice}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        OFFER VALIDITY
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        {administrative.offerValidity}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        </div>)}
+
+
                                 </TabPanel>
                                 <TabPanel value="4">
                                     <div className="row">

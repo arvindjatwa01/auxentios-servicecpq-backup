@@ -133,21 +133,27 @@ const QuerySearchComp = (props) => {
     props.compoFlag === "coverage" && props?.setSelectedMasterData([]);
     props.compoFlag === "itemSearch" && props?.setBundleItems([]);
     props.compoFlag === "coverage" && props?.setOpenedModelBoxData([]);
+
     props.compoFlag === "portfolioTempItemSearch" && props?.setPortfolioTempMasterData([]);
     props.compoFlag === "portfolioTempItemSearch" && props?.setSelectedPortfolioTempMasterData([]);
+    props.compoFlag === "portfolioTempItemSearch" && props?.setPortfolioTempFilterMasterData([]);
+    
     props.compoFlag === "solutionTempItemSearch" && props?.setSolutionTempMasterData([]);
     props.compoFlag === "solutionTempItemSearch" && props?.setSelectedSolutionTempMasterData([]);
 
-
+    
     props.setTempBundleService1([])
 
   };
 
   const handleQuerySearchClick = async () => {
+    // let searchStr;
     try {
+
       if (props.compoFlag === "portfolioTempItemSearch") {
         props.setLoadingStatus("01")
       }
+
       if (props.compoFlag === "solutionTempItemSearch") {
         props.setSolutionLoadingStatus("01")
       }
@@ -162,18 +168,22 @@ const QuerySearchComp = (props) => {
       ) {
         throw "Please fill data properly"
       }
+
+      // console.log("Try here1 ", querySearchSelector[0].selectFamily.value);
+      // var  searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
       // var searchStr =
       //   querySearchSelector[0]?.selectFamily?.value +
       //   "~" +
       //   querySearchSelector[0]?.inputSearch;
+
       if (props.compoFlag === "solutionTempItemSearch") {
         var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:${querySearchSelector[0]?.inputSearch}`;
 
       } else {
-        var searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
+        var searchStr = `bundleFlag:${querySearchSelector[0]?.itemType?.value} ${querySearchSelector[0]?.itemTypeOperator?.value} ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
 
       }
-
+      console.log("searchStr  try : ", searchStr);
       // var searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
 
       for (let i = 1; i < querySearchSelector.length; i++) {
@@ -239,15 +249,12 @@ const QuerySearchComp = (props) => {
         // props.setLoadingStatus("")
       } else if (props.compoFlag === "solutionTempItemSearch") {
         const res4 = await getSearchCustomPortfolio(searchStr)
-        // console.log("res4 is  : ", res3)
         if (!res4.length > 0) {
           props.setSolutionLoadingStatus("")
           props.setSolutionTempMasterData([])
-          // props.ItemSearchResponseFun([], querySearchSelector)
           throw "No record found"
         } else {
           props.setSolutionTempMasterData(res4)
-          // props.ItemSearchResponseFun(res4, querySearchSelector)
           props.setSolutionLoadingStatus("")
 
         }
@@ -255,9 +262,11 @@ const QuerySearchComp = (props) => {
       } else {
         // for other cases or default case
         const res = await getSearchQueryCoverage(searchStr)
+        console.log("else search str is : ", searchStr)
       }
 
     } catch (error) {
+      // console.log("searchStr catch : ", searchStr);
       console.log("error in getSearchQueryCoverage", error);
       toast("😐" + error, {
         position: "top-right",

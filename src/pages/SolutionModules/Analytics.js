@@ -1004,6 +1004,8 @@ export const Analytics = () => {
    };
 
    const handlePortfolioTempCheckboxData = (e, row) => {
+      console.log("row is : ", row)
+      // console.log("event is  : ", e)
       if (e.target.checked) {
          var _searchedPortfolioTempData = [...portfolioTempMasterData];
 
@@ -1012,6 +1014,8 @@ export const Analytics = () => {
                return { ...currentItem, ["check1"]: e.target.checked };
             } else return currentItem;
          });
+
+         // console.log("Updated data is : ", updated)
 
          setPortfolioTempMasterData([...updated]);
 
@@ -1033,6 +1037,7 @@ export const Analytics = () => {
             setPortfolioTempFilterMasterData(updatedItems);
             // setFilterMasterData([...filterMasterData, { ...row }])
          }
+         console.log("Portfolio Template Filter master data : ", portfolioTempFilterMasterData);
       } else {
          var _portfolioTempMasterData = [...portfolioTempMasterData];
          const updated1 = _portfolioTempMasterData.map((currentItem, i) => {
@@ -1817,7 +1822,7 @@ export const Analytics = () => {
          cell: (row) => (
             <Checkbox
                className="text-black"
-               checked={row.check1}
+               checked={row.check1 === true}
                onChange={(e) => handlePortfolioTempCheckboxData(e, row)}
             />
          ),
@@ -2977,6 +2982,7 @@ export const Analytics = () => {
                            setPortfolioTempMasterData={setPortfolioTempMasterData}
                            setSelectedPortfolioTempMasterData={setSelectedPortfolioTempMasterData}
                            setLoadingStatus={setLoadingStatus}
+                           setPortfolioTempFilterMasterData={setPortfolioTempFilterMasterData}
                         />
                      </>
 

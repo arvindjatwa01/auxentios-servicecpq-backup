@@ -161,6 +161,10 @@ export function CustomizedPortfolio(props) {
     const [productHierarchyKeyValue, setProductHierarchyKeyValue] = useState([]);
     const [geographicKeyValue, setGeographicKeyValue] = useState([]);
     const [typeKeyValue, setTypeKeyValue] = useState([]);
+
+    const [machineTypeKeyValueList, setMachineTypeKeyValueList] = useState([])
+    const [lifeStageOfMachineKeyValueList, setLifeStageOfMachineKeyValueList] = useState([])
+
     const [machineTypeKeyValue, setMachineTypeKeyValue] = useState([]);
     const [lifeStageOfMachineKeyValue, setLifeStageOfMachineKeyValue] = useState([]);
     const [isView, setIsView] = useState(false);
@@ -219,13 +223,14 @@ export function CustomizedPortfolio(props) {
         machineDate: "",
     })
 
+
     const [administrative, setAdministrative] = useState({
         preparedBy: null,
         approvedBy: null,
-        preparedOn: null,
+        preparedOn: new Date(),
         revisedBy: null,
-        revisedOn: null,
-        branch: null,
+        revisedOn: new Date(),
+        salesOffice: null,
         offerValidity: null,
     });
 
@@ -237,6 +242,7 @@ export function CustomizedPortfolio(props) {
         fromInput: "",
         toInput: "",
     });
+
 
     const [generalComponentData, setGeneralComponentData] = useState({
         name: "",
@@ -775,7 +781,7 @@ export function CustomizedPortfolio(props) {
                     customCoverages: generalComponentData.coverages
                         ? generalComponentData.coverages
                         : [],
-                        items: [],
+                    items: [],
                     // customItems: [...generalComponentData.items, { customItemId: res.data.customItemId }],
                     customeItems: [],
                     usageCategory: categoryUsageKeyValue1.value,
@@ -924,7 +930,7 @@ export function CustomizedPortfolio(props) {
     };
 
     /*  =============== Save & Next Button click Function ================== */
-    
+
     const handleNextClick = async (e) => {
 
         if (e.target.id == "general") {
@@ -1008,7 +1014,10 @@ export function CustomizedPortfolio(props) {
                 geographic: stratgyGeographicKeyValue.value,
             });
 
+
+
             const { portfolioId, ...res } = generalComponentData;
+
             let obj = {
                 ...res,
                 visibleInCommerce: true,
@@ -1017,9 +1026,9 @@ export function CustomizedPortfolio(props) {
                 customerSegment: generalComponentData.customerSegment.value
                     ? generalComponentData.customerSegment.value
                     : "EMPTY",
-                machineType: generalComponentData.machineType
-                    ? generalComponentData.machineType
-                    : "EMPTY",
+                // machineType: generalComponentData.machineType
+                //     ? generalComponentData.machineType
+                //     : "EMPTY",
                 status: generalComponentData.status
                     ? generalComponentData.status
                     : "EMPTY",
@@ -1051,9 +1060,11 @@ export function CustomizedPortfolio(props) {
                 contractOrSupport: generalComponentData.contractOrSupport
                     ? generalComponentData.contractOrSupport
                     : "EMPTY",
-                lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                    ? generalComponentData.lifeStageOfMachine
-                    : "EMPTY",
+                // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                //     ? generalComponentData.lifeStageOfMachine
+                //     : "EMPTY",
+                machineType: machineTypeKeyValue.value,
+                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
                 supportLevel: generalComponentData.supportLevel
                     ? generalComponentData.supportLevel
                     : "EMPTY",
@@ -1113,7 +1124,149 @@ export function CustomizedPortfolio(props) {
                 throw `${strategyRes.status}:error in update portfolio`;
             };
         } else if (e.target.id == "administrative") {
-            setValue("4");
+            setGeneralComponentData({
+                ...generalComponentData,
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                salesOffice: administrative.salesOffice,
+                offerValidity: administrative.offerValidity,
+            });
+            // console.log("data update new : ", administrative.preparedBy)
+            const { portfolioId, ...res } = generalComponentData;
+
+            console.log("NEw Updated data is : ", generalComponentData);
+
+            let Administryobj = {
+                ...res,
+                visibleInCommerce: true,
+                customerId: 0,
+                lubricant: true,
+                customerSegment: generalComponentData.customerSegment.value
+                    ? generalComponentData.customerSegment.value
+                    : "EMPTY",
+                // machineType: generalComponentData.machineType
+                //     ? generalComponentData.machineType
+                //     : "EMPTY",
+                status: generalComponentData.status
+                    ? generalComponentData.status
+                    : "EMPTY",
+                strategyTask: generalComponentData.strategyTask
+                    ? generalComponentData.strategyTask
+                    : "EMPTY",
+                taskType: generalComponentData.taskType
+                    ? generalComponentData.taskType
+                    : "EMPTY",
+                usageCategory: generalComponentData.usageCategory
+                    ? generalComponentData.usageCategory
+                    : "EMPTY",
+                productHierarchy: generalComponentData.productHierarchy
+                    ? generalComponentData.productHierarchy
+                    : "EMPTY",
+                geographic: generalComponentData.geographic
+                    ? generalComponentData.geographic
+                    : "EMPTY",
+                availability: generalComponentData.availability
+                    ? generalComponentData.availability
+                    : "EMPTY",
+                responseTime: generalComponentData.responseTime
+                    ? generalComponentData.responseTime
+                    : "EMPTY",
+                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                application: generalComponentData.application
+                    ? generalComponentData.application
+                    : "EMPTY",
+                contractOrSupport: generalComponentData.contractOrSupport
+                    ? generalComponentData.contractOrSupport
+                    : "EMPTY",
+                // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                //     ? generalComponentData.lifeStageOfMachine
+                //     : "EMPTY",
+                machineType: machineTypeKeyValue.value,
+                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                supportLevel: generalComponentData.supportLevel
+                    ? generalComponentData.supportLevel
+                    : "EMPTY",
+                customItems: [],
+                items: [],
+                customCoverages: [],
+                customerGroup: generalComponentData.customerGroup
+                    ? generalComponentData.customerGroup
+                    : "EMPTY",
+                searchTerm: "EMPTY",
+                supportLevel: "EMPTY",
+                // portfolioPrice: {},
+                // additionalPrice: {},
+                // escalationPrice: {},
+
+                usageCategory: categoryUsageKeyValue1.value,
+                taskType: stratgyTaskTypeKeyValue.value,
+                strategyTask: stratgyTaskUsageKeyValue.value,
+                responseTime: stratgyResponseTimeKeyValue.value,
+                productHierarchy: stratgyHierarchyKeyValue.value,
+                geographic: stratgyGeographicKeyValue.value,
+                numberOfEvents: 0,
+                rating: "",
+                startUsage: "",
+                endUsage: "",
+                unit: "HOURS",
+                additionals: "",
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                salesOffice: administrative.salesOffice,
+                offerValidity: administrative.offerValidity,
+
+                // preparedBy: generalComponentData.preparedBy
+                // ? generalComponentData.preparedBy
+                // : "",
+                // approvedBy: generalComponentData.approvedBy
+                // ? generalComponentData.approvedBy
+                // : "",
+                // preparedOn: generalComponentData.preparedOn
+                // ? generalComponentData.preparedOn
+                // : "",
+                // revisedBy: generalComponentData.revisedBy
+                // ? generalComponentData.revisedBy
+                // : "",
+                // revisedOn: generalComponentData.revisedOn
+                // ? generalComponentData.revisedOn
+                // : "",
+                // salesOffice: generalComponentData.salesOffice
+                // ? generalComponentData.salesOffice
+                // : "",
+                // offerValidity: generalComponentData.offerValidity
+                // ? generalComponentData.offerValidity
+                // : "",
+            };
+            console.log("Administrative Objects is : ", Administryobj)
+
+            const administryRes = await updateCustomPortfolio(
+                generalComponentData.portfolioId,
+                Administryobj
+            );
+            if (administryRes.status === 200) {
+                toast("👏 Portfolio updated", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                // setValue("administrative");
+                setValue("4");
+                console.log("administryRes updating", administryRes.data);
+            } else {
+                throw `${administryRes.status}:error in update portfolio`;
+            };
+
+            // setValue("4");
 
         } else if (e.target.id == "coverage") {
 
@@ -1156,9 +1309,9 @@ export function CustomizedPortfolio(props) {
                 customerSegment: generalComponentData.customerSegment
                     ? generalComponentData.customerSegment.value
                     : "EMPTY",
-                machineType: generalComponentData.machineType
-                    ? generalComponentData.machineType
-                    : "EMPTY",
+                // machineType: generalComponentData.machineType
+                //     ? generalComponentData.machineType
+                //     : "EMPTY",
                 status: generalComponentData.status
                     ? generalComponentData.status
                     : "EMPTY",
@@ -1190,9 +1343,11 @@ export function CustomizedPortfolio(props) {
                 contractOrSupport: generalComponentData.contractOrSupport
                     ? generalComponentData.contractOrSupport
                     : "EMPTY",
-                lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                    ? generalComponentData.lifeStageOfMachine
-                    : "EMPTY",
+                // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                //     ? generalComponentData.lifeStageOfMachine
+                //     : "EMPTY",
+                machineType: machineTypeKeyValue.value,
+                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
                 supportLevel: generalComponentData.supportLevel
                     ? generalComponentData.supportLevel
                     : "EMPTY",
@@ -1213,6 +1368,13 @@ export function CustomizedPortfolio(props) {
                 responseTime: stratgyResponseTimeKeyValue.value,
                 productHierarchy: stratgyHierarchyKeyValue.value,
                 geographic: stratgyGeographicKeyValue.value,
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                salesOffice: administrative.salesOffice,
+                offerValidity: administrative.offerValidity,
             };
             if (generalComponentData.portfolioId) {
                 const updatePortfolioRes = await updateCustomPortfolio(
@@ -1277,9 +1439,12 @@ export function CustomizedPortfolio(props) {
 
     const handleAdministrativreChange = (e) => {
         console.log("handleAdministrativreChange", administrative);
+        console.log("Event is ", e)
         var value = e.target.value;
         var name = e.target.name;
         setAdministrative({ ...administrative, [name]: value });
+
+        console.log("handleAdministrativreChange after : ", administrative)
     };
 
     const handleCoverageInputChange = (e) => {
@@ -1484,7 +1649,7 @@ export function CustomizedPortfolio(props) {
                     value: d.key,
                     label: d.value,
                 }));
-                setMachineTypeKeyValue(options);
+                setMachineTypeKeyValueList(options);
             })
             .catch((err) => {
                 alert(err);
@@ -1496,7 +1661,7 @@ export function CustomizedPortfolio(props) {
                     value: d.key,
                     label: d.value,
                 }));
-                setLifeStageOfMachineKeyValue(options);
+                setLifeStageOfMachineKeyValueList(options);
             })
             .catch((err) => {
                 alert(err);
@@ -3372,15 +3537,17 @@ export function CustomizedPortfolio(props) {
                                                     // // onChange={setSelectedOption}
                                                     // options={options}
                                                     // placeholder="Machine Type"
-                                                    onChange={(e) =>
-                                                        handleDropdownChange(ENUM.MACHINE_TYPE, e)
-                                                    }
-                                                    isClearable={true}
-                                                    value={coverageData.machineType}
+                                                    options={machineTypeKeyValueList}
+                                                    value={machineTypeKeyValue}
+                                                    onChange={(e) => setMachineTypeKeyValue(e)}
+                                                    // onChange={(e) =>
+                                                    //     handleDropdownChange(ENUM.MACHINE_TYPE, e)
+                                                    // }
+                                                    // isClearable={true}
+                                                    // value={coverageData.machineType}
                                                     isLoading={
-                                                        machineTypeKeyValue.length > 0 ? false : true
+                                                        machineTypeKeyValueList.length > 0 ? false : true
                                                     }
-                                                    options={machineTypeKeyValue}
                                                 />
                                                 {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
@@ -3401,15 +3568,17 @@ export function CustomizedPortfolio(props) {
                                                     // onChange={setSelectedOption}
                                                     // options={options}
                                                     // placeholder="Life Stage"
-                                                    onChange={(e) =>
-                                                        handleDropdownChange(ENUM.LIFE_STAGE_OF_MACHINE, e)
-                                                    }
-                                                    isClearable={true}
-                                                    value={coverageData.lifeStageOfMachine}
+                                                    options={lifeStageOfMachineKeyValueList}
+                                                    value={lifeStageOfMachineKeyValue}
+                                                    onChange={(e) => setLifeStageOfMachineKeyValue(e)}
+                                                    // onChange={(e) =>
+                                                    //     handleDropdownChange(ENUM.LIFE_STAGE_OF_MACHINE, e)
+                                                    // }
+                                                    // isClearable={true}
+                                                    // value={coverageData.lifeStageOfMachine}
                                                     isLoading={
-                                                        lifeStageOfMachineKeyValue.length > 0 ? false : true
+                                                        lifeStageOfMachineKeyValueList.length > 0 ? false : true
                                                     }
-                                                    options={lifeStageOfMachineKeyValue}
                                                 />
                                                 {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
@@ -3521,22 +3690,42 @@ export function CustomizedPortfolio(props) {
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
-                                                    htmlFor="exampleInputEmail1"
-                                                >
-                                                    PREPARED ON
-                                                </label>
-                                                <input
+                                            {/* <div className="form-group "> */}
+                                            <label
+                                                className="text-light-dark font-size-14 font-weight-500"
+                                                htmlFor="exampleInputEmail1"
+                                            >
+                                                PREPARED ON
+                                            </label>
+                                            {/* <input
                                                     type="text"
                                                     className="form-control border-radius-10"
                                                     placeholder="Optional"
                                                     name="preparedOn"
                                                     value={administrative.preparedOn}
                                                     onChange={handleAdministrativreChange}
-                                                />
+                                                /> */}
+                                            <div className="d-flex align-items-center date-box w-100">
+                                                <div className="form-group w-100">
+                                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                        <DatePicker
+                                                            variant="inline"
+                                                            format="dd/MM/yyyy"
+                                                            className="form-controldate border-radius-10"
+                                                            label=""
+                                                            name="preparedOn"
+                                                            value={administrative.preparedOn}
+                                                            onChange={(e) =>
+                                                                setAdministrative({
+                                                                    ...administrative,
+                                                                    preparedOn: e,
+                                                                })
+                                                            }
+                                                        />
+                                                    </MuiPickersUtilsProvider>
+                                                </div>
                                             </div>
+                                            {/* </div> */}
                                         </div>
                                     </div>
                                     <div className="row">
@@ -3566,14 +3755,34 @@ export function CustomizedPortfolio(props) {
                                                 >
                                                     REVISED ON
                                                 </label>
-                                                <input
+                                                {/* <input
                                                     type="text"
                                                     className="form-control border-radius-10"
                                                     placeholder="Optional"
                                                     name="revisedOn"
                                                     value={administrative.revisedOn}
                                                     onChange={handleAdministrativreChange}
-                                                />
+                                                /> */}
+                                                <div className="d-flex align-items-center date-box w-100">
+                                                    <div className="form-group w-100">
+                                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                            <DatePicker
+                                                                variant="inline"
+                                                                format="dd/MM/yyyy"
+                                                                className="form-controldate border-radius-10"
+                                                                label=""
+                                                                name="revisedOn"
+                                                                value={administrative.revisedOn}
+                                                                onChange={(e) =>
+                                                                    setAdministrative({
+                                                                        ...administrative,
+                                                                        revisedOn: e,
+                                                                    })
+                                                                }
+                                                            />
+                                                        </MuiPickersUtilsProvider>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -3587,8 +3796,8 @@ export function CustomizedPortfolio(props) {
                                                 <input
                                                     type="text"
                                                     className="form-control border-radius-10"
-                                                    name="branch"
-                                                    value={administrative.branch}
+                                                    name="salesOffice"
+                                                    value={administrative.salesOffice}
                                                     onChange={handleAdministrativreChange}
                                                 />
                                             </div>
