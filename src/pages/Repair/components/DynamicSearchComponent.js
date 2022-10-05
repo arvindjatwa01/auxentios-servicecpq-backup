@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import SelectFilter from "react-select";
-import { sparePartSearch } from "services/searchServices";
 import SearchIcon from "@mui/icons-material/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
 import $ from "jquery";
 
 const DynamicSearchComponent = (props) => {
   const [count, setCount] = useState(1);
+  const iconColor = props.color;
 
   const handleDeletQuerySearch = () => {
     props.setQuerySearchSelector([]);
@@ -69,8 +69,12 @@ const DynamicSearchComponent = (props) => {
   const handleInputSearch = (e, id) => {
     let tempArray = [...props.querySearchSelector];
     let obj = tempArray[id];
+    let searchString = tempArray[id].selectCategory.value + "~" + e.target.value;
     if (tempArray[id].selectCategory.value && e.target.value) {
-      sparePartSearch(tempArray[id].selectCategory.value + "~" + e.target.value)
+      if(props.builderType){
+        searchString = `builderType:${props.builderType}&${searchString}`;
+      } 
+      props.searchAPI(searchString)
         .then((res) => {
           obj.selectOptions = res;
           tempArray[id] = obj;
@@ -80,12 +84,11 @@ const DynamicSearchComponent = (props) => {
         .catch((err) => {
           props.handleSnack(
             "error",
-            true,
             "Error occurred while searching spare parts!"
           );
         });      
     } else {
-      props.handleSnack("info", true, "Please fill search category");
+      props.handleSnack("info", "Please fill search category");
     }
     obj.inputSearch = e.target.value;
   };
@@ -120,30 +123,7 @@ const DynamicSearchComponent = (props) => {
                 <div>
                   <SelectFilter
                     // isClearable={true}
-                    options={[
-                      {
-                        label: "Part No",
-                        value: "partNumber",
-                        id: i,
-                      },
-                      {
-                        label: "Description",
-                        value: "partDescription",
-                        id: i,
-                      },
-                      { label: "Model", value: "model", id: i },
-                      {
-                        label: "Group No",
-                        value: "groupNumber",
-                        id: i,
-                      },
-                      {
-                        label: "Bec Code",
-                        value: "becCode",
-                        id: i,
-                      },
-                      { label: "Type", value: "partType", id: i },
-                    ]}
+                    options={props.options}
                     onChange={(e) => handleSearchCategory(e, i)}
                     value={obj.selectCategory}
                   />
@@ -161,7 +141,7 @@ const DynamicSearchComponent = (props) => {
 
                   {obj.selectOptions && obj.selectOptions.length > 0 && (
                     <ul
-                      className={`list-group customselectsearch-list scrollbar scrollbar-${i}`}
+                      className={`list-group customselectsearch-list scrollbar-repair-autocomplete scrollbar-${i} style`}
                       id="style"
                     >
                       {obj.selectOptions.map((currentItem, j) => (
@@ -187,22 +167,21 @@ const DynamicSearchComponent = (props) => {
             className="btn-sm text-black border mr-2"
             style={{ border: "1px solid #872FF7" }}
           >
-            +
+            <span style={{color: iconColor}}>+</span>
           </Link>
         </div>
         
         <div onClick={handleDeletQuerySearch}>
           <Link to="#" className="btn-sm border mr-2">
-            <i class="fa fa-trash fa-lg" ></i>         
+            <i class="fa fa-trash fa-lg"  style={{color: iconColor}}></i>         
           </Link>
         </div>
         <div onClick={props.searchClick}>
-          <Link
-            to="#"
-            className="btn-sm border mr-2"
+          <span
+            className="btn-sm border mr-2" style={{cursor: 'pointer'}}
           >
-            <SearchIcon sx={{color: 'grey', "&:hover": { color: "blue" }, fontSize: 17}}/>
-          </Link>
+            <SearchIcon sx={{color: iconColor? iconColor : 'grey', "&:hover": { color: "blue" }, fontSize: 17}}/>
+          </span>
         </div>
       </div>
     </div>

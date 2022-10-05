@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Select from "react-select";
 import SelectBox from "@mui/material/Select";
-import { Modal } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import Checkbox from "@mui/material/Checkbox";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -11,13 +11,10 @@ import TabPanel from "@mui/lab/TabPanel";
 import EditIcon from "@mui/icons-material/EditTwoTone";
 import LabelIcon from "@mui/icons-material/LabelTwoTone";
 import DeleteIcon from "@mui/icons-material/DeleteTwoTone";
-import { MuiMenuComponent } from "./components/MuiMenuRepair";
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton'
-import SearchIcon from '@mui/icons-material/Search';
-import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
-// import logoIcon from '../assets/icons/svg/menu.png'
-// import { MuiMenuComponent } from "pages/Operational";
+// import { MuiMenuComponent } from "./components/MuiMenuRepair";
+import SearchIcon from "@mui/icons-material/Search";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
+import { MuiMenuComponent } from "pages/Operational";
 import {
   DataGrid,
   getGridStringOperators,
@@ -78,10 +75,15 @@ import {
   Rating,
   TextareaAutosize,
 } from "@mui/material";
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
+// import logoIcon from '../assets/icons/svg/menu.png'
 import {
+  ERROR_MAX_VERSIONS,
   INITIAL_PAGE_NO,
   INITIAL_PAGE_SIZE,
   PARTS_TAG_OPTIONS,
+  SPAREPART_SEARCH_Q_OPTIONS,
 } from "./CONSTANTS";
 import { RenderConfirmDialog } from "./components/ConfirmationBox";
 import { Typography } from "@material-ui/core";
@@ -90,6 +92,8 @@ import {
   machineSearch,
   sparePartSearch,
 } from "services/searchServices";
+import ModalCreateVersion from "./components/ModalCreateVersion";
+import ModalShare from "./components/ModalShare";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -186,11 +190,17 @@ function PartList(props) {
   const [rating, setRating] = useState(null);
   const [pageSize, setPageSize] = useState(5);
   const [page, setPage] = useState(0);
-  const [versionDesc, setVersionDesc] = useState("");
   const [tagClicked, setTagClicked] = useState("");
   const [totalPartsCount, setTotalPartsCount] = useState(0);
   const [filterQuery, setFilterQuery] = useState("");
-
+  const [versionDescription, setVersionDescription] = useState("");
+  const [noOptionsCust, setNoOptionsCust] = useState(false);
+  const [noOptionsModel, setNoOptionsModel] = useState(false);
+  const [noOptionsSerial, setNoOptionsSerial] = useState(false);
+  const activityOptions = ["New Versions", "Show Errors", "Review"];
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [versionOpen, setVersionOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [viewOnlyTab, setViewOnlyTab] = useState({
     custViewOnly: false,
     machineViewOnly: false,
@@ -296,44 +306,67 @@ function PartList(props) {
 
   const handleVersion = (e) => {
     setSelectedVersion(e);
-    fetchBuilderVersionDet(builderId, e.value).then((result) => {
-      populateHeader(result);
-      fetchPartlist(result.id);
-    });
+    fetchAllDetails(builderId, e.value);
+    // fetchBuilderVersionDet(builderId, e.value).then((result) => {
+    //   populateHeader(result);
+    //   fetchPartlist(result.id);
+    // });
   };
 
   useEffect(() => {
     populatePricingMethods();
     if (state && state.type === "new") {
+      console.log(state);
       setBuilderId(state.builderId);
       setBId(state.bId);
       setPartListNo(state.partListNo);
       setPartListId(state.partListId);
       setGeneralData({ ...generalData, estimationNo: state.partListId });
       if (state.type === "new") {
+        // fetchAllDetails(state.bId, state.partListNo);
         console.log("Created a new builder");
       }
     } else if (state) {
+      setHeaderLoading(true);
       setBuilderId(state.builderId);
       setBId(state.bId);
-      setPartListNo(state.partListNo);
+      // setPartListNo(state.partListNo);
       setPartListId(state.partListId);
-      fetchAllDetails(state.bId, state.partListNo);
+      fetchAllDetails(state.builderId, state.versionNumber);
     }
   }, []);
 
-  const fetchAllDetails = async (builderId, partlistId) => {
-    if (builderId && partlistId) {
+  // const fetchAllDetails = async (builderId, partlistId) => {
+  //   if (builderId && partlistId) {
+  //     setHeaderLoading(true);
+  //     await fetchBuilderDetails(builderId)
+  //       .then((result) => {
+  //         populateHeader(result);
+  //       })
+  //       .catch((err) => {
+  //         handleSnack("error", "Error occured while fetching header details");
+  //       });
+  //     setHeaderLoading(false);
+  //     fetchPartsOfPartlist(partlistId, INITIAL_PAGE_NO, INITIAL_PAGE_SIZE);
+  //   }
+  // };
+
+  const fetchAllDetails = (builderId, versionNumber) => {
+    if (builderId && versionNumber) {
       setHeaderLoading(true);
-      await fetchBuilderDetails(builderId)
+      fetchBuilderVersionDet(builderId, versionNumber)
         .then((result) => {
           populateHeader(result);
+          setHeaderLoading(false);
+          fetchPartlist(result.id);
         })
         .catch((err) => {
-          handleSnack("error", "Error occured while fetching header details");
+          setHeaderLoading(false);
+          handleSnack(
+            "error",
+            "Error occurred while fetching the version details"
+          );
         });
-      setHeaderLoading(false);
-      fetchPartsOfPartlist(partlistId, INITIAL_PAGE_NO, INITIAL_PAGE_SIZE);
     }
   };
 
@@ -370,6 +403,12 @@ function PartList(props) {
   }, [sortDetail, filterQuery]);
 
   const populateHeader = (result) => {
+    setViewOnlyTab({
+      custViewOnly: result.customerId ? true : false,
+      machineViewOnly: result.serialNo ? true : false,
+      generalViewOnly: result.estimationNumber ? true : false,
+      estViewOnly: result.preparedBy ? true : false,
+    });
     setRating(result.rating);
     setSelBuilderStatus(
       builderStatusOptions.filter((x) => x.value === result.status)[0]
@@ -423,27 +462,33 @@ function PartList(props) {
         (element) => element.value === result.salesOffice
       ),
     });
-    setViewOnlyTab({
-      custViewOnly: true,
-      machineViewOnly: true,
-      generalViewOnly: true,
-      estViewOnly: true,
-    });
   };
 
-  const createVersion = async () => {
+  const createVersion = async (versionDesc) => {
     await createBuilderVersion(bId, versionDesc)
       .then((result) => {
+        setVersionOpen(false);
         setBId(result.id);
         setSelectedVersion({
-          label: "Version " + result.version,
-          value: result.version,
+          label: "Version " + result.versionNumber,
+          value: result.versionNumber,
         });
         populateHeader(result);
         fetchPartlist(result.id);
+        setVersionDescription("");
+        handleSnack(
+          "success",
+          `Version ${result.versionNumber} has been created`
+        );
       })
       .catch((err) => {
-        handleSnack("error", "Error occurred while creating builder version");
+        setVersionOpen(false);
+
+        if (err.message === "Not Allowed")
+          handleSnack("warning", ERROR_MAX_VERSIONS);
+        else
+          handleSnack("error", "Error occurred while creating builder version");
+        setVersionDescription("");
       });
   };
 
@@ -486,7 +531,12 @@ function PartList(props) {
         "customerId~" + searchText + " OR fullName~" + searchText
       )
         .then((result) => {
-          setSearchCustResults(result);
+          if (result && result.length > 0) {
+            setSearchCustResults(result);
+            setNoOptionsCust(false);
+          } else {
+            setNoOptionsCust(true);
+          }
         })
         .catch((e) => {
           handleSnack("error", "Error occurred while searching the customer!");
@@ -543,9 +593,19 @@ function PartList(props) {
         .then((result) => {
           if (result) {
             if (searchMachinefieldName === "model") {
-              setSearchModelResults(result);
+              if (result && result.length > 0) {
+                setSearchModelResults(result);
+                setNoOptionsModel(false);
+              } else {
+                setNoOptionsModel(true);
+              }
             } else if (searchMachinefieldName === "serialNo") {
-              setSearchSerialResults(result);
+              if (result && result.length > 0) {
+                setSearchSerialResults(result);
+                setNoOptionsSerial(false);
+              } else {
+                setNoOptionsSerial(true);
+              }
             }
           }
         })
@@ -794,18 +854,6 @@ function PartList(props) {
     setSelectedMasterData([]);
   };
 
-
-  const activityOptions = ["New Versions", "Show Errors", "Review"];
-  const [confirmationOpen, setConfirmationOpen] = useState(false)
-
-  const headerMenuClick = (selectedOption) => {
-    if (selectedOption === "Create Versions") {
-      //   setConfirmationOpen(true);
-      // }
-      createVersion();
-    }
-  };
-
   // Search table column for spareparts
   const columnsPartListSearch = [
     { headerName: "GroupNumber", field: "groupNumber", flex: 1, width: 70 },
@@ -827,29 +875,53 @@ function PartList(props) {
     { headerName: "GroupNumber", field: "groupNumber", flex: 1 },
     { headerName: "Type", field: "partType", flex: 1 },
     { headerName: "PartNumber", field: "partNumber", flex: 1 },
-    { headerName: "Qty", field: "quantity", flex: 1, editable: true },
-    { headerName: "Unit Of Measures", field: "unitOfMeasure", flex: 1 },
-    { headerName: "Unit Price", field: "unitPrice", flex: 1 },
+    {
+      headerName: "Qty",
+      field: "quantity",
+      flex: 1,
+      editable: true,
+      filterable: false,
+    },
+    {
+      headerName: "Unit Of Measures",
+      field: "unitOfMeasure",
+      flex: 1,
+      filterable: false,
+    },
+    {
+      headerName: "Unit Price",
+      field: "unitPrice",
+      flex: 1,
+      filterable: false,
+    },
     {
       headerName: "Extended Price",
       field: "extendedPrice",
       flex: 1,
       editable: true,
+      filterable: false,
     },
-    { headerName: "Currency", field: "currency", flex: 1 },
+    { headerName: "Currency", field: "currency", flex: 1, filterable: false },
     {
       headerName: "% Usage",
       field: "usagePercentage",
       flex: 1,
       editable: true,
+      filterable: false,
     },
-    { headerName: "Total Price", field: "totalPrice", flex: 1 },
+    {
+      headerName: "Total Price",
+      field: "totalPrice",
+      flex: 1,
+      filterable: false,
+    },
     {
       headerName: "Comment",
       field: "comment",
       flex: 1,
       editable: true,
       renderEditCell: CommentEditInputCell,
+      filterable: false,
     },
     // {
     //   headerName: "Tag",
@@ -1169,7 +1241,20 @@ function PartList(props) {
         handleNo={() => setConfirmationOpen(false)}
         handleYes={bulkUpdateParts}
       />
-
+      <ModalCreateVersion
+        versionOpen={versionOpen}
+        handleCloseVersion={() => setVersionOpen(false)}
+        handleCreateVersion={createVersion}
+        description={versionDescription}
+        setDescription={setVersionDescription}
+      />
+      <ModalShare
+        shareOpen={shareOpen}
+        handleCloseShare={() => setShareOpen(false)}
+        // handleCreateVersion={createVersion}
+        // description={versionDescription}
+        // setDescription={setVersionDescription}
+      />
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
@@ -1274,9 +1359,13 @@ function PartList(props) {
                 </React.Fragment>
               </div>
               <div className="d-flex justify-content-center align-items-center">
-                <a href="#" className="ml-3 font-size-14" title="Share" data-toggle="modal" data-target="#exampleModalCenter2">
+                <button
+                  className="ml-3 btn-no-border font-size-14"
+                  title="Share"
+                  onClick={() => setShareOpen(true)}
+                >
                   <img src={shareIcon}></img>
-                </a>
+                </button>
                 <a
                   href="#"
                   className="ml-3 font-size-14"
@@ -1294,18 +1383,20 @@ function PartList(props) {
                 <a href="#" className="ml-3 font-size-14" title="Duplicate">
                   <img src={copyIcon}></img>
                 </a>
-                {/* <a href={undefined} className="ml-2">
-                  <MuiMenuComponent
-                    options={activityOptions}
-                    onClick={headerMenuClick}
-                  />
-                </a> */}
-                <DropdownButton className="customDropdown ml-2" id="dropdown-item-button">
-                {/* <Dropdown.ItemText>New Versions</Dropdown.ItemText> */}
-                <Dropdown.Item as="button" data-toggle="modal" data-target="#exampleModalCenter">New Versions</Dropdown.Item>
-                <Dropdown.Item as="button">Show Errors</Dropdown.Item>
-                <Dropdown.Item as="button">Review</Dropdown.Item>
-              </DropdownButton>
+
+                <DropdownButton
+                  className="customDropdown ml-2"
+                  id="dropdown-item-button"
+                >
+                  <Dropdown.Item
+                    as="button"
+                    onClick={() => setVersionOpen(true)}
+                  >
+                    New Versions
+                  </Dropdown.Item>
+                  <Dropdown.Item as="button">Show Errors</Dropdown.Item>
+                  <Dropdown.Item as="button">Review</Dropdown.Item>
+                </DropdownButton>
               </div>
             </div>
           </div>
@@ -1392,6 +1483,7 @@ function PartList(props) {
                                 type="customerId"
                                 result={searchCustResults}
                                 onSelect={handleCustSelect}
+                                noOptions={noOptionsCust}
                               />
                             </div>
                           </div>
@@ -1484,10 +1576,12 @@ function PartList(props) {
                             type="button"
                             className="btn btn-light bg-primary text-white"
                             disabled={
-                              !customerData.source ||
-                              !customerData.contactEmail ||
-                              !customerData.customerGroup ||
-                              !customerData.contactName
+                              !(
+                                customerData.source &&
+                                customerData.contactEmail &&
+                                customerData.customerGroup &&
+                                customerData.contactName
+                              ) || noOptionsCust
                             }
                             onClick={updateCustomerData}
                           >
@@ -1611,6 +1705,7 @@ function PartList(props) {
                                 type="model"
                                 result={searchModelResults}
                                 onSelect={handleModelSelect}
+                                noOptions={noOptionsModel}
                               />
                             </div>
                           </div>
@@ -1630,6 +1725,7 @@ function PartList(props) {
                                 type="equipmentNumber"
                                 result={searchSerialResults}
                                 onSelect={handleModelSelect}
+                                noOptions={noOptionsSerial}
                               />
                             </div>
                           </div>
@@ -1706,7 +1802,9 @@ function PartList(props) {
                             type="button"
                             className="btn btn-light bg-primary text-white"
                             disabled={
-                              !machineData.model || !machineData.serialNo
+                              !(machineData.model && machineData.serialNo) ||
+                              noOptionsModel ||
+                              noOptionsSerial
                             }
                             onClick={updateMachineData}
                           >
@@ -2390,6 +2488,7 @@ function PartList(props) {
                     handleSnack={handleSnack}
                     searchAPI={sparePartSearch}
                     searchClick={handleQuerySearchClick}
+                    options={SPAREPART_SEARCH_Q_OPTIONS}
                   />
                 </div>
               </div>
@@ -2444,6 +2543,10 @@ function PartList(props) {
                 "&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell": {
                   py: "22px",
                 },
+                "&.MuiDataGrid-root--densityStandard .MuiTablePagination-select, &.MuiDataGrid-root--densityStandard .MuiSelect-icon":
+                  {
+                    marginTop: -1,
+                  },
               }}
               rows={spareparts}
               columns={columnsPartList.map((column) => ({
@@ -3087,41 +3190,7 @@ function PartList(props) {
             </div>
           </Modal.Body>
         </Modal>
-        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-              <div class="modal-header border-none">
-                <h5 class="modal-title" id="exampleModalLongTitle">New Version</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <p className="mx-3 mt-0">Description, product experts convert the repair option to a standard job or template.</p>
-              <div className="hr"></div>
-              <div class="modal-body">
-               <h6>NAME</h6>
-               <div className="card w-100 border" >
-                <p className="mx-3" style={{marginTop: "1rem"}}>Copy of Quote</p>
-               </div>
-              </div>
-              <div class="modal-footer">
-          
-              <button className="btn  btn-primary w-100">Create</button>
-                  <button
-                    type="button"
-                    className="btn btn-primary w-100"
-                    data-dismiss="modal"
-                  >
-                    Cancel
-                  </button>
-                {/* <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button> */}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal fade" id="exampleModalCenter2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        {/* <div class="modal fade" id="exampleModalCenter2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
               <div class="modal-header">
@@ -3199,13 +3268,10 @@ function PartList(props) {
                     Cancel
               </button>
               <button className="btn  btn-primary w-100"><span className="mr-2"><ShareOutlinedIcon /></span>Share</button>
-                  
-                {/* <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button> */}
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </>
   );

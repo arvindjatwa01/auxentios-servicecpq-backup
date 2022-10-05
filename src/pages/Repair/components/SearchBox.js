@@ -11,7 +11,7 @@ const SearchBox = (props) => {
       />
       {props.result && props.result.length > 0 && (
         <ul
-          className={`list-group customselectsearch-list scrollbar`}
+          className={`list-group customselectsearch-list scrollbar-repair-autocomplete`}
           id="style"
         >
           {props.result.map((currentItem, index) => (
@@ -27,6 +27,7 @@ const SearchBox = (props) => {
           ))}
         </ul>
       )}
+      <span style={{color: 'red', fontSize: 12, height: 2}}>{props.noOptions ? "No Options Found!": ''}</span>
     </div>
   );
 };

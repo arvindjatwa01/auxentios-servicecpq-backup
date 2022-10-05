@@ -1,244 +1,145 @@
-import { faFileAlt, faFolderPlus, faPlus, faShareAlt, faUpload } from "@fortawesome/free-solid-svg-icons";
+import {
+  faFileAlt,
+  faFolderPlus,
+  faPlus,
+  faShareAlt,
+  faUpload,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormGroup from "@mui/material/FormGroup";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
-import React, { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
-import SelectFilter from "react-select";
-import { MuiMenuComponent } from "../Operational/index";
-
-import SearchIcon from "@mui/icons-material/Search";
+import { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import Loader from "react-js-loader";
+import { Typography } from "@material-ui/core";
+import EditIcon from "@mui/icons-material/EditTwoTone";
 import $ from "jquery";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-import { createBuilder } from "services/repairBuilderServices";
-import {
-  getSearchCoverageForFamily, getSearchQueryCoverage
-} from "../../services/index";
+import Moment from "react-moment";
+import { builderSearch, createBuilder } from "services/repairBuilderServices";
+import DynamicSearchComponent from "./components/DynamicSearchComponent";
+import { BUILDER_SEARCH_Q_OPTIONS } from "./CONSTANTS";
 
 export const RepairWithoutSpareParts = () => {
-  const [showExplore, setShowExplore] = useState(false);
-  const [show, setShow] = React.useState(false);
-  const handleRowClick = (e) => {
-    setShow(true);
-  };
+  const [recentBuilders, setRecentBuilders] = useState([]);
+  const [recentBuildersLoading, setRecentBuildersLoading] = useState(false);
 
-  const rows = [
-    {
-      id: 1,
-      GroupNumber: "Snow",
-      Type: "Jon",
-      Partnumber: 35,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Inconsistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Created: "Created On",
-      Total: "25",
-      Status: "Status",
-      Actions: "Action",
-    },
-    {
-      id: 2,
-      GroupNumber: "Lannister",
-      Type: "Cersei",
-      Partnumber: 42,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Consistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Created: "Created On",
-      Total: "25",
-      Status: "Status",
-      Actions: "Action",
-    },
-    {
-      id: 3,
-      GroupNumber: "Lannister",
-      Type: "Jaime",
-      Partnumber: 45,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Consistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Created: "Created On",
-      Total: "25",
-      Status: "Status",
-      Actions: "Action",
-    },
-    // { id: 4, DocumentType: 'Stark', PrimaruQuote: 'Arya', Groupid: 16, progress: 'pending',},
-    // { id: 5, DocumentType: 'Targaryen', PrimaruQuote: 'Daenerys', Groupid: null, progress: 35, },
-    // { id: 6, DocumentType: 'Melisandre', PrimaruQuote: null, Groupid: 150, progress: 35, },
-    // { id: 7, DocumentType: 'Clifford', PrimaruQuote: 'Ferrara', Groupid: 44, progress: 35, },
-    // { id: 8, DocumentType: 'Frances', PrimaruQuote: 'Rossini', Groupid: 36, progress: 35, },
-    // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
-  ];
+  useEffect(() => {
+    fetchRecentBuilders(
+      `builderType:BUILDER_WITHOUT_SPAREPART&pageSize=10&sortColumn=updatedAt&orderBY=DESC`
+    );
+  }, []);
 
-  const columns = [
-    { field: "GroupNumber", headerName: "ID#", flex: 1, width: 70 },
-    { field: "Type", headerName: "Description", flex: 1, width: 130 },
-    { field: "Partnumber", headerName: "Customer#", flex: 1, width: 130 },
-    { field: "PriceExtended", headerName: "Make", flex: 1, width: 130 },
-    { field: "Pricecurrency", headerName: "Model", flex: 1, width: 130 },
-    { field: "Usage", headerName: "Family", flex: 1, width: 130 },
-    { field: "TotalPrice", headerName: "Serial#", flex: 1, width: 130 },
-    { field: "Comments", headerName: "Created by", flex: 1, width: 130 },
-    { field: "Created", headerName: "Created On", flex: 1, width: 130 },
-    { field: "Total", headerName: "Total $", flex: 1, width: 130 },
-    { field: "Status", headerName: "Status", flex: 1, width: 130 },
-    { field: "Actions", headerName: "Actions", flex: 1, width: 130 },
-    // { field: 'Actions', headerName: 'Total $',  flex:1, width: 130 },
-    // { field: 'Actions', headerName: 'Status',  flex:1, width: 130 },
-    // {field: 'age',headerName: 'Age',type: 'number', width: 90,},
-    // {field: 'fullName',headerName: 'Full name',description: 'This column has a value getter and is not sortable.',sortable: false,width: 160,valueGetter: (params) =>
-    //   `${params.getValue(params.id, 'firstName') || ''} ${
-    //       params.getValue(params.id, 'DocumentType') || ''
-    //     }`,
-  ];
-  const columns2 = [
-    { field: "GroupNumber", headerName: "ID#", flex: 1, width: 70 },
-    { field: "Type", headerName: "Description", flex: 1, width: 130 },
-    { field: "Partnumber", headerName: "Customer#", flex: 1, width: 130 },
-    { field: "PriceExtended", headerName: "Make", flex: 1, width: 130 },
-    { field: "Pricecurrency", headerName: "Model", flex: 1, width: 130 },
-    { field: "Usage", headerName: "Family", flex: 1, width: 130 },
-    { field: "TotalPrice", headerName: "Serial#", flex: 1, width: 130 },
-    { field: "Comments", headerName: "Created by", flex: 1, width: 130 },
-    { field: "Created", headerName: "Created On", flex: 1, width: 130 },
-    { field: "Total", headerName: "Total $", flex: 1, width: 130 },
-    { field: "Status", headerName: "Status", flex: 1, width: 130 },
-    // { field: 'Actions', headerName: 'Actions',  flex:1, width: 130 },
-    // { field: 'Actions', headerName: 'Total $',  flex:1, width: 130 },
-    // { field: 'Actions', headerName: 'Status',  flex:1, width: 130 },
-    // {field: 'age',headerName: 'Age',type: 'number', width: 90,},
-    // {field: 'fullName',headerName: 'Full name',description: 'This column has a value getter and is not sortable.',sortable: false,width: 160,valueGetter: (params) =>
-    //   `${params.getValue(params.id, 'firstName') || ''} ${
-    //       params.getValue(params.id, 'DocumentType') || ''
-    //     }`,
-  ];
-
-  const handleCloseExplore = () => {
-    setShowExplore(false);
-  };
-
-
-
-  const activityOptions = ["None", "Atria", "Callisto"];
-
-
-  const handleOperator = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.selectOperator = e;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-  };
-  const handleInputSearch = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
-      .then((res) => {
-        obj.selectOptions = res;
-        tempArray[id] = obj;
-        setQuerySearchSelector([...tempArray]);
-        $(`.scrollbar-${id}`).css("display", "block");
+  const fetchRecentBuilders = async (searchQuery) => {
+    setRecentBuildersLoading(true);
+    await builderSearch(searchQuery)
+      .then((result) => {
+        setRecentBuilders(result);
       })
       .catch((err) => {
-        console.log("err in api call", err);
+        handleSnack("error", "Error occurred while fetching builders");
       });
-    obj.inputSearch = e.target.value;
+    setRecentBuildersLoading(false);
   };
-  const handleQuerySearchClick = () => {
-    $(".scrollbar").css("display", "none");
-    console.log("handleQuerySearchClick", querySearchSelector);
-    var searchStr =
-      querySearchSelector[0].selectFamily.value +
-      "~" +
-      querySearchSelector[0].inputSearch;
 
-    for (let i = 1; i < querySearchSelector.length; i++) {
-      searchStr =
-        searchStr +
-        " " +
-        querySearchSelector[i].selectOperator.value +
-        " " +
-        querySearchSelector[i].selectFamily.value +
-        "~" +
-        querySearchSelector[i].inputSearch;
-    }
-
-    console.log("searchStr", searchStr);
-    getSearchQueryCoverage(searchStr)
-      .then((res) => {
-        console.log("search Query Result :", res);
-        setMasterData(res);
-      })
-      .catch((err) => {
-        console.log("error in getSearchQueryCoverage", err);
-      });
-  };
-  const addSearchQuerryHtml = () => {
-    setQuerySearchSelector([
-      ...querySearchSelector,
-      {
-        id: count,
-        selectOperator: "",
-        selectFamily: "",
-        inputSearch: "",
-        selectOptions: [],
-        selectedOption: "",
+  const searchBuilderColumns = [
+    { field: "builderId", headerName: "ID#", flex: 1, width: 70 },
+    { field: "description", headerName: "Description", flex: 1, width: 130 },
+    { field: "customerId", headerName: "Customer#", flex: 1, width: 130 },
+    { field: "make", headerName: "Make", flex: 1, width: 130 },
+    { field: "model", headerName: "Model", flex: 1, width: 130 },
+    { field: "family", headerName: "Family", flex: 1, width: 130 },
+    { field: "serialNo", headerName: "Serial#", flex: 1, width: 130 },
+    { field: "createdBy", headerName: "Created by", flex: 1, width: 130 },
+    {
+      field: "createdAt",
+      headerName: "Created On",
+      flex: 1,
+      width: 130,
+      renderCell: (params) => (
+        <Moment format="DD MMM YY HH:MM a" style={{ fontSize: 12 }}>
+          {params.value}
+        </Moment>
+      ),
+    },
+    { field: "totalPrice", headerName: "Total $", flex: 1, width: 130 },
+    { field: "status", headerName: "Status", flex: 1, width: 130 },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 100,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={<EditIcon />}
+            label="Edit"
+            className="textPrimary"
+            onClick={() => makeBuilderEditable(params.row)}
+            color="inherit"
+          />,
+        ];
       },
-    ]);
-    setCount(count + 1);
+    },
+  ];
+
+  const handleQuerySearchClick = async () => {
+    $(".scrollbar").css("display", "none");
+    // console.log("handleQuerySearchClick", querySearchSelector);
+    var searchStr = "";
+    querySearchSelector.map(function (item, i) {
+      if (i === 0 && item.selectCategory.value && item.inputSearch) {
+        searchStr = item.selectCategory.value + ":" + item.inputSearch;
+      } else if (
+        item.selectCategory.value &&
+        item.inputSearch &&
+        item.selectOperator.value
+      ) {
+        searchStr =
+          searchStr +
+          " " +
+          item.selectOperator.value +
+          " " +
+          item.selectCategory.value +
+          ":" +
+          item.inputSearch;
+      }
+      return searchStr;
+    });
+
+    try {
+      if (searchStr) {
+        const res = await builderSearch(
+          `builderType:BUILDER_WITHOUT_SPAREPART&${searchStr}`
+        );
+        setMasterData(res);
+      } else {
+        handleSnack("info", "Please fill the search criteria!");
+      }
+    } catch (err) {
+      handleSnack("error", "Error occurred while fetching spare parts!");
+    }
   };
-  const handleFamily = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    console.log("handleFamily e:", e);
-    let obj = tempArray[id];
-    obj.selectFamily = e;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
+
+  // Once opetion has been selected clear the search results
+  const clearFilteredData = () => {
+    setMasterData([]);
   };
+
   const [querySearchSelector, setQuerySearchSelector] = useState([
     {
       id: 0,
-      selectFamily: "",
+      selectCategory: "",
       selectOperator: "",
       inputSearch: "",
       selectOptions: [],
       selectedOption: "",
     },
   ]);
-  const handleDeletQuerySearch = () => {
-    setQuerySearchSelector([]);
-    setCount(0);
-    setMasterData([]);
-    setFilterMasterData([]);
-    setSelectedMasterData([]);
-  };
-  const handleSearchListClick = (e, currentItem, obj1, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.inputSearch = currentItem;
-    obj.selectedOption = currentItem;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-    $(`.scrollbar-${id}`).css("display", "none");
-  };
-  
-  const [filterMasterData, setFilterMasterData] = useState([]);
-  const [selectedMasterData, setSelectedMasterData] = useState([]);
+
   const [masterData, setMasterData] = useState([]);
-  const [count, setCount] = useState(1);
- 
 
   const history = useHistory();
 
@@ -253,10 +154,10 @@ export const RepairWithoutSpareParts = () => {
     setOpenSnack(false);
   };
 
-  const handleSnack = (snackSeverity, snackStatus, snackMessage) => {
+  const handleSnack = (snackSeverity, snackMessage) => {
     setSnackMessage(snackMessage);
     setSeverity(snackSeverity);
-    setOpenSnack(snackStatus);
+    setOpenSnack(true);
   };
   const createNewBuilder = () => {
     let builderDetails = {
@@ -265,7 +166,7 @@ export const RepairWithoutSpareParts = () => {
       type: "new",
     };
     createBuilder({
-      builderType: "BUIDER_WITHOUT_SPAREPART",
+      builderType: "BUILDER_WITHOUT_SPAREPART",
       activeVersion: true,
       versionNumber: 1,
       status: "DRAFT",
@@ -281,18 +182,18 @@ export const RepairWithoutSpareParts = () => {
       })
       .catch((err) => {
         console.log("Error Occurred", err);
-        handleSnack("error", true, "Error occurred while creating builder!");
+        handleSnack("error", "Error occurred while creating builder!");
       });
   };
 
-  const makeBuilderEditable = () => {
+  const makeBuilderEditable = (builder) => {
     let builderDetails = {
       builderId: "",
       bId: "",
       type: "fetch",
     };
-    builderDetails.builderId = "RB000003";
-    builderDetails.bId = "3";
+    builderDetails.builderId = builder.builderId;
+    builderDetails.bId = builder.id;
     history.push({
       pathname: "/RepairWithoutSpareParts/BuilderDetails",
       state: builderDetails,
@@ -330,419 +231,118 @@ export const RepairWithoutSpareParts = () => {
               <div className="recent-div p-3">
                 <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
                 <div className="row">
-                  <div className="col-md-4">
-                    <div className="recent-items mt-3">
-                      <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 ">
-                          <FontAwesomeIcon
-                            className=" font-size-14"
-                            icon={faFileAlt}
-                          />
-                          <span className="font-weight-500 ml-2">
-                            Repair Without Spare Parts
-                          </span>
-                        </p>
-                        <div className="d-flex align-items-center">
-                          <a
-                              href={undefined}
-                              className="btn-sm"
-                              style={{ cursor: "pointer" }}
-                            >
-                            <i
-                              className="fa fa-pencil"
-                              aria-hidden="true"
-                              onClick={makeBuilderEditable}
-                            ></i>
-                          </a>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faShareAlt} />
-                          </a>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faFolderPlus} />
-                          </a>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faUpload} />
-                          </a>
-                          <a href="#" className="ml-2">
-                            <MuiMenuComponent options={activityOptions} />
-                          </a>
-                        </div>
-                      </div>
+                  {recentBuildersLoading ? (
+                    <div className="d-flex align-items-center justify-content-center">
+                      <Loader
+                        type="spinner-default"
+                        bgColor={"#872ff7"}
+                        title={"spinner-default"}
+                        color={"#FFFFFF"}
+                        size={35}
+                      />
                     </div>
-                    <div className="d-flex justify-content-between align-items-center mt-2">
-                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Without Spare Parts</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="recent-items mt-3">
-                      <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 ">
-                          <FontAwesomeIcon
-                            className=" font-size-14"
-                            icon={faFileAlt}
-                          />
-                          <span className="font-weight-500 ml-2">
-                            Repair Without Spare Parts
-                          </span>
-                        </p>
-                        <div className="d-flex align-items-center">
-                          <div className="white-space custom-checkbox">
-                            <FormGroup>
-                              <FormControlLabel
-                                control={<Checkbox />}
-                                label=""
+                  ) : recentBuilders.length > 0 ? (
+                    recentBuilders.map((indBuilder) => (
+                      <div className="col-md-4">
+                        <div className="recent-items mt-3">
+                          <div className="d-flex justify-content-between align-items-center ">
+                            <p className="mb-0 ">
+                              <FontAwesomeIcon
+                                className=" font-size-14"
+                                icon={faFileAlt}
                               />
-                            </FormGroup>
+                              <span className="font-weight-500 ml-2">
+                                {indBuilder.builderId}
+                              </span>
+                              <span className="ml-2" style={{ fontSize: 10 }}>
+                                V{" "}
+                                {parseFloat(indBuilder.versionNumber).toFixed(
+                                  1
+                                )}
+                              </span>
+                            </p>
+                            <div className="d-flex align-items-center">
+                              <a
+                                href={undefined}
+                                className="btn-sm"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <i
+                                  className="fa fa-pencil"
+                                  aria-hidden="true"
+                                  onClick={() =>
+                                    makeBuilderEditable(indBuilder)
+                                  }
+                                ></i>
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faShareAlt} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faFolderPlus} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faUpload} />
+                              </a>
+                            </div>
                           </div>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faShareAlt} />
-                          </a>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faFolderPlus} />
-                          </a>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faUpload} />
-                          </a>
-                          <a href="#" className="ml-2">
-                            <MuiMenuComponent options={activityOptions} />
-                          </a>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center mt-2">
+                          <p className="font-size-12 mb-0">
+                            <Moment format="HH:MM a">
+                              {indBuilder.updatedAt}
+                            </Moment>
+                            ,{" "}
+                            <Moment format="DD MMM YY">
+                              {indBuilder.updatedAt}
+                            </Moment>
+                          </p>
+                          <p className="font-size-12 mb-0">
+                            Without Spare Parts
+                          </p>
                         </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="ml-3 mt-4">
+                      <Typography>No Builders Found</Typography>
                     </div>
-                    <div className="d-flex justify-content-between align-items-center mt-2">
-                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Without Spare Parts</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="recent-items mt-3">
-                      <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 ">
-                          <FontAwesomeIcon
-                            className=" font-size-14"
-                            icon={faFileAlt}
-                          />
-                          <span className="font-weight-500 ml-2">
-                            Repair Without Spare Parts
-                          </span>
-                        </p>
-                        <div className="d-flex align-items-center">
-                          <div className="white-space custom-checkbox">
-                            <FormGroup>
-                              <FormControlLabel
-                                control={<Checkbox />}
-                                label=""
-                              />
-                            </FormGroup>
-                          </div>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faShareAlt} />
-                          </a>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faFolderPlus} />
-                          </a>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faUpload} />
-                          </a>
-                          <a href="#" className="ml-2">
-                            <MuiMenuComponent options={activityOptions} />
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center mt-2">
-                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Without Spare Parts</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="recent-items mt-3">
-                      <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 ">
-                          <FontAwesomeIcon
-                            className=" font-size-14"
-                            icon={faFileAlt}
-                          />
-                          <span className="font-weight-500 ml-2">
-                            Repair Without Spare Parts
-                          </span>
-                        </p>
-                        <div className="d-flex align-items-center">
-                          <div className="white-space custom-checkbox">
-                            <FormGroup>
-                              <FormControlLabel
-                                control={<Checkbox />}
-                                label=""
-                              />
-                            </FormGroup>
-                          </div>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faShareAlt} />
-                          </a>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faFolderPlus} />
-                          </a>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faUpload} />
-                          </a>
-                          <a href="#" className="ml-2">
-                            <MuiMenuComponent options={activityOptions} />
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center mt-2">
-                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Without Spare Parts</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="recent-items mt-3">
-                      <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 ">
-                          <FontAwesomeIcon
-                            className=" font-size-14"
-                            icon={faFileAlt}
-                          />
-                          <span className="font-weight-500 ml-2">
-                            Repair Without Spare Parts
-                          </span>
-                        </p>
-                        <div className="d-flex align-items-center">
-                          <div className="white-space custom-checkbox">
-                            <FormGroup>
-                              <FormControlLabel
-                                control={<Checkbox />}
-                                label=""
-                              />
-                            </FormGroup>
-                          </div>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faShareAlt} />
-                          </a>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faFolderPlus} />
-                          </a>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faUpload} />
-                          </a>
-                          <a href="#" className="ml-2">
-                            <MuiMenuComponent options={activityOptions} />
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center mt-2">
-                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Without Spare Parts</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="recent-items mt-3">
-                      <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 ">
-                          <FontAwesomeIcon
-                            className=" font-size-14"
-                            icon={faFileAlt}
-                          />
-                          <span className="font-weight-500 ml-2">
-                            Repair Without Spare Parts
-                          </span>
-                        </p>
-                        <div className="d-flex align-items-center">
-                          <div className="white-space custom-checkbox">
-                            <FormGroup>
-                              <FormControlLabel
-                                control={<Checkbox />}
-                                label=""
-                              />
-                            </FormGroup>
-                          </div>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faShareAlt} />
-                          </a>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faFolderPlus} />
-                          </a>
-                          <a href="#" className="ml-3 font-size-14">
-                            <FontAwesomeIcon icon={faUpload} />
-                          </a>
-                          <a href="#" className="ml-2">
-                            <MuiMenuComponent options={activityOptions} />
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center mt-2">
-                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Without Spare Parts</p>
-                    </div>
-                  </div>
+                  )}
                 </div>
-              </div>              
+              </div>
             </div>
           </div>
           <div className="bg-primary px-3 mb-3">
             <div className="row align-items-center">
               <div className="col-11 mx-2">
                 <div className="d-flex align-items-center bg-primary w-100">
-                  <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
+                  <div
+                    className="d-flex mr-3 py-3"
+                    style={{ whiteSpace: "pre" }}
+                  >
                     <h5 className="mr-2 mb-0 text-white">
                       <span>Search</span>
                     </h5>
-                    <p className="ml-4 mb-0">
-                      <a href="#" className="ml-3 text-white">
-                        <EditOutlinedIcon />
-                      </a>
-                      <a href="#" className="ml-3 text-white">
-                        <ShareOutlinedIcon />
-                      </a>
-                    </p>
                   </div>
-                  <div className="d-flex justify-content-between align-items-center w-100 ">
-                    <div className="row align-items-center m-0">
-                      {querySearchSelector.map((obj, i) => {
-                        return (
-                          <>
-                            <div className="customselect d-flex align-items-center mr-3 my-2">
-                              {i > 0 ? (
-                                <SelectFilter
-                                  isClearable={true}
-                                  defaultValue={{ label: "And", value: "AND" }}
-                                  options={[
-                                    { label: "And", value: "AND", id: i },
-                                    { label: "Or", value: "OR", id: i },
-                                  ]}
-                                  placeholder="&amp;"
-                                  onChange={(e) => handleOperator(e, i)}
-                                  // value={querySearchOperator[i]}
-                                  value={obj.selectOperator}
-                                />
-                              ) : (
-                                <></>
-                              )}
-
-                              <div>
-                                <SelectFilter
-                                  // isClearable={true}
-                                  options={[
-                                    { label: "Make", value: "make", id: i },
-                                    { label: "Family", value: "family", id: i },
-                                    { label: "Model", value: "model", id: i },
-                                    { label: "Prefix", value: "prefix", id: i },
-                                  ]}
-                                  onChange={(e) => handleFamily(e, i)}
-                                  value={obj.selectFamily}
-                                />
-                              </div>
-                              <div className="customselectsearch">
-                                <input
-                                  className="custom-input-sleact"
-                                  type="text"
-                                  placeholder="Search string"
-                                  value={obj.inputSearch}
-                                  onChange={(e) => handleInputSearch(e, i)}
-                                  id={"inputSearch-" + i}
-                                  autoComplete="off"
-                                />
-
-                                {
-                                  <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}>
-                                    {obj.selectOptions.map((currentItem, j) => (
-                                      <li
-                                        className="list-group-item"
-                                        key={j}
-                                        onClick={(e) =>
-                                          handleSearchListClick(
-                                            e,
-                                            currentItem,
-                                            obj,
-                                            i
-                                          )
-                                        }
-                                      >
-                                        {currentItem}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                }
-                              </div>
-                            </div>
-                          </>
-                        );
-                      })}
-                      <div onClick={(e) => addSearchQuerryHtml(e)}>
-                        <Link
-                          to="#"
-                          className="btn-sm text-white border mr-2"
-                          style={{ border: "1px solid #872FF7" }}
-                        >
-                          +
-                        </Link>
-                      </div>
-                      <div onClick={handleDeletQuerySearch}>
-                        <Link to="#" className="btn-sm border">
-                          <svg
-                            data-name="Layer 41"
-                            id="Layer_41"
-                            fill="white"
-                            viewBox="0 0 50 50"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <title />
-                            <path
-                              className="cls-1"
-                              d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                            />
-                            <path
-                              className="cls-1"
-                              d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                            />
-                            <path
-                              className="cls-1"
-                              d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                            />
-                          </svg>
-                          {/* <DeleteIcon className="font-size-16" /> */}
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                  {/* <div className="px-3">
-                           <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
-                             <SearchIcon /><span className="ml-1">Search</span>
-                           </Link>
-                         </div> */}
+                  <DynamicSearchComponent
+                    querySearchSelector={querySearchSelector}
+                    setQuerySearchSelector={setQuerySearchSelector}
+                    clearFilteredData={clearFilteredData}
+                    handleSnack={handleSnack}
+                    searchAPI={builderSearch}
+                    searchClick={handleQuerySearchClick}
+                    options={BUILDER_SEARCH_Q_OPTIONS}
+                    color="white"
+                    builderType="BUILDER_WITHOUT_SPAREPART"
+                  />
                 </div>
               </div>
-              <div className="">
-                <div className="text-center border-left pl-3 py-3">
-                  <Link
-                    to="#"
-                    className="p-1 text-white"
-                    data-toggle="modal"
-                    data-target="#Datatable"
-                  >
-                    <SearchIcon />
-                    <span className="ml-1">Search</span>
-                  </Link>
-                </div>
-              </div>
-              {/* <div className="col-auto">
-           <div className="d-flex align-items-center justify-content-center">
-             <div className="text-center border-left pl-3 py-3">
-             <Link to="/repairOptions" className="p-1 text-white">+ Add Part</Link>
-             
-             </div>
-           </div>
-         </div> */}
             </div>
           </div>
           <div className="card">
             <div
               className=""
-              style={{ height: 400, width: "100%", backgroundColor: "#fff" }}
+              style={{ width: "100%", backgroundColor: "#fff" }}
             >
               <DataGrid
                 sx={{
@@ -750,68 +350,16 @@ export const RepairWithoutSpareParts = () => {
                     backgroundColor: "#872ff7",
                     color: "#fff",
                   },
+                  "& .MuiDataGrid-cellContent": {
+                    fontSize: 12,
+                  },
                 }}
-                rows={rows}
-                columns={columns}
+                rows={masterData}
+                columns={searchBuilderColumns}
                 pageSize={5}
                 rowsPerPageOptions={[5]}
-                checkboxSelection
-                onCellClick={(e) => handleRowClick(e)}
+                autoHeight
               />
-            </div>
-          </div>
-        </div>
-        <div
-          className="modal fade"
-          id="Datatable"
-          tabindex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-          style={{ zIndex: "1200" }}
-        >
-          <div
-            className="modal-dialog modal-dialog-centered modal-xl"
-            role="document"
-          >
-            <div className="modal-content">
-              <div className="modal-header p-3">
-                <div className="d-flex">
-                  <h5>Search Result</h5>
-                </div>
-              </div>
-              <div>
-                <div className="card w-100 p-2">
-                  <div
-                    className=""
-                    style={{
-                      height: 400,
-                      width: "100%",
-                      backgroundColor: "#fff",
-                    }}
-                  >
-                    <DataGrid
-                      sx={{
-                        "& .MuiDataGrid-columnHeaders": {
-                          backgroundColor: "#872ff7",
-                          color: "#fff",
-                        },
-                      }}
-                      rows={rows}
-                      columns={columns2}
-                      pageSize={5}
-                      rowsPerPageOptions={[5]}
-                      checkboxSelection
-                      onCellClick={(e) => handleRowClick(e)}
-                    />
-                  </div>
-                </div>
-                <div className="m-2 text-right">
-                  <a href="#" className="btn text-white bg-primary">
-                    + Add Selected
-                  </a>
-                </div>
-              </div>
             </div>
           </div>
         </div>

@@ -877,8 +877,7 @@ export const RepairKits = () => {
 
                                 {
                                   <ul
-                                    className={`list-group customselectsearch-list scrollbar scrollbar-${i}`}
-                                    id="style"
+                                    className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
                                   >
                                     {obj.selectOptions.map((currentItem, j) => (
                                       <li

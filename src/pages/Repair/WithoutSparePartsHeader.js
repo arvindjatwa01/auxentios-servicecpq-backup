@@ -20,6 +20,7 @@ import Moment from "react-moment";
 import { Link, useHistory } from "react-router-dom";
 import Select from "react-select";
 import {
+  createBuilderVersion,
   fetchBuilderDetails,
   fetchBuilderPricingMethods,
   fetchBuilderVersionDet,
@@ -40,6 +41,10 @@ import WithoutRepairOption01 from "./WithoutRepairOption01";
 import WithoutSpareParts from "./WithoutSpareParts";
 import { Rating } from "@mui/material";
 import { customerSearch, machineSearch } from "services/searchServices";
+import RepairServiceEstimate from "./RepairServiceEstimate";
+import ModalCreateVersion from "./components/ModalCreateVersion";
+import { Dropdown, DropdownButton } from "react-bootstrap";
+import { ERROR_MAX_VERSIONS } from "./CONSTANTS";
 
 function WithoutSparePartsHeader(props) {
   const history = useHistory();
@@ -49,7 +54,17 @@ function WithoutSparePartsHeader(props) {
   const [searchSerialResults, setSearchSerialResults] = useState([]);
   const [builderId, setBuilderId] = useState("");
   const [bId, setBId] = useState("");
-  const [activeElement, setActiveElement] = useState("header");
+  const [versionOpen, setVersionOpen] = useState(false);
+  const [versionDescription, setVersionDescription] = useState("");
+  const [noOptionsCust, setNoOptionsCust] = useState(false);
+  const [noOptionsModel, setNoOptionsModel] = useState(false);
+  const [noOptionsSerial, setNoOptionsSerial] = useState(false);
+  const [activeElement, setActiveElement] = useState({
+    name: "header",
+    bId: "",
+    sId: "",
+    oId: "",
+  });
   const [selBuilderStatus, setSelBuilderStatus] = useState({
     value: "DRAFT",
     label: "Draft",
@@ -203,8 +218,21 @@ function WithoutSparePartsHeader(props) {
     fetchBuilderVersionDet(builderId, e.value).then((result) => {
       populateHeader(result);
     });
+    setActiveElement({
+      name: "header",
+      bId,
+      sId: "",
+      oId: "",
+    })
   };
   const populateHeader = (result) => {
+    setViewOnlyTab({
+      custViewOnly: result.customerId ? true : false,
+      machineViewOnly: result.serialNo ? true : false,
+      generalViewOnly: result.estimationNumber ? true : false,
+      estViewOnly: result.preparedBy ? true : false,
+    });
+    setBId(result.id);
     setRating(result.rating);
     setSelBuilderStatus(
       builderStatusOptions.filter((x) => x.value === result.status)[0]
@@ -258,12 +286,6 @@ function WithoutSparePartsHeader(props) {
         (element) => element.value === result.salesOffice
       ),
     });
-    setViewOnlyTab({
-      custViewOnly: true,
-      machineViewOnly: true,
-      generalViewOnly: true,
-      estViewOnly: true,
-    });
   };
 
   const [severity, setSeverity] = useState("");
@@ -284,7 +306,12 @@ function WithoutSparePartsHeader(props) {
     if (searchText) {
       await customerSearch(searchCustfieldName + "~" + searchText)
         .then((result) => {
-          setSearchCustResults(result);
+          if (result && result.length > 0) {
+            setSearchCustResults(result);
+            setNoOptionsCust(false);
+          } else {
+            setNoOptionsCust(true);
+          }
         })
         .catch((e) => {
           handleSnack("error", "Error occurred while searching the customer!");
@@ -341,9 +368,19 @@ function WithoutSparePartsHeader(props) {
         .then((result) => {
           if (result) {
             if (searchMachinefieldName === "model") {
-              setSearchModelResults(result);
+              if (result && result.length > 0) {
+                setSearchModelResults(result);
+                setNoOptionsModel(false);
+              } else {
+                setNoOptionsModel(true);
+              }
             } else if (searchMachinefieldName === "serialNo") {
-              setSearchSerialResults(result);
+              if (result && result.length > 0) {
+                setSearchSerialResults(result);
+                setNoOptionsSerial(false);
+              } else {
+                setNoOptionsSerial(true);
+              }
             }
           }
         })
@@ -530,7 +567,6 @@ function WithoutSparePartsHeader(props) {
   const handleCreate = () => {
     history.push("/quoteTemplate");
   };
-  const activityOptions = ["Create Versions", "Show Errors", "Review"];
   const options = [
     { value: "Archived", label: "Archived" },
     { value: "Draft", label: "Draft" },
@@ -555,6 +591,31 @@ function WithoutSparePartsHeader(props) {
       });
   };
 
+  const createVersion = async (versionDesc) => {
+    // await createBuilderVersion(bId, versionDesc)
+    //   .then((result) => {
+    //     setVersionOpen(false);
+    //     setBId(result.id);
+    //     setSelectedVersion({
+    //       label: "Version " + result.versionNumber,
+    //       value: result.versionNumber,
+    //     });
+    //     populateHeader(result);
+    //     setVersionDescription('')
+    //     handleSnack("success", `Version ${result.versionNumber} has been created`);
+    //   })
+    //   .catch((err) => {
+    //     setVersionOpen(false);
+        
+    //     if(err.message === "Not Allowed")
+    //       handleSnack("warning", ERROR_MAX_VERSIONS )
+    //     else
+    //       handleSnack("error", "Error occurred while creating builder version");
+    //     setVersionDescription('');
+    //   });
+    handleSnack("info", "Create Version API needs to be finalized for Without Spare Parts");
+  };
+
   return (
     <React.Fragment>
       <CustomizedSnackbar
@@ -562,6 +623,13 @@ function WithoutSparePartsHeader(props) {
         open={openSnack}
         severity={severity}
         message={snackMessage}
+      />
+      <ModalCreateVersion
+        versionOpen={versionOpen}
+        handleCloseVersion={() => setVersionOpen(false)}
+        handleCreateVersion={createVersion}
+        description = {versionDescription}
+        setDescription = {setVersionDescription}
       />
       <div className="content-body">
         <div className="container-fluid ">
@@ -683,13 +751,15 @@ function WithoutSparePartsHeader(props) {
                 <a href="#" className="ml-3 font-size-14" title="Copy">
                   <img src={copyIcon}></img>
                 </a>
-                <a href="#" className="ml-2">
-                  <MuiMenuComponent options={activityOptions} />
-                </a>
+                <DropdownButton className="customDropdown ml-2" id="dropdown-item-button">
+                <Dropdown.Item as="button" onClick={() => setVersionOpen(true)}>New Versions</Dropdown.Item>
+                <Dropdown.Item as="button">Show Errors</Dropdown.Item>
+                <Dropdown.Item as="button">Review</Dropdown.Item>
+              </DropdownButton>  
               </div>
             </div>
           </div>
-          {activeElement === "header" && (
+          {activeElement.name === "header" && (
             <React.Fragment>
               <div className="card p-4 mt-5">
                 <h5 className="d-flex align-items-center mb-0">
@@ -775,6 +845,7 @@ function WithoutSparePartsHeader(props) {
                                     type="customerId"
                                     result={searchCustResults}
                                     onSelect={handleCustSelect}
+                                    noOptions={noOptionsCust}
                                   />
                                 </div>
                               </div>
@@ -867,10 +938,10 @@ function WithoutSparePartsHeader(props) {
                                 type="button"
                                 className="btn btn-light bg-primary text-white"
                                 disabled={
-                                  !customerData.source ||
-                                  !customerData.contactEmail ||
-                                  !customerData.customerGroup ||
-                                  !customerData.contactName
+                                !(customerData.source &&
+                                  customerData.contactEmail &&
+                                  customerData.customerGroup &&
+                                  customerData.contactName) || noOptionsCust
                                 }
                                 onClick={updateCustomerData}
                               >
@@ -997,6 +1068,7 @@ function WithoutSparePartsHeader(props) {
                                     type="model"
                                     result={searchModelResults}
                                     onSelect={handleModelSelect}
+                                    noOptions={noOptionsModel}
                                   />
                                 </div>
                               </div>
@@ -1016,6 +1088,7 @@ function WithoutSparePartsHeader(props) {
                                     type="equipmentNumber"
                                     result={searchSerialResults}
                                     onSelect={handleModelSelect}
+                                    noOptions={noOptionsSerial}
                                   />
                                 </div>
                               </div>
@@ -1092,7 +1165,7 @@ function WithoutSparePartsHeader(props) {
                                 type="button"
                                 className="btn btn-light bg-primary text-white"
                                 disabled={
-                                  !machineData.model || !machineData.serialNo
+                                  !(machineData.model && machineData.serialNo) || noOptionsModel || noOptionsSerial
                                 }
                                 onClick={updateMachineData}
                               >
@@ -1773,7 +1846,7 @@ function WithoutSparePartsHeader(props) {
               Add New Segment
             </Link> */}
                 <button
-                  onClick={() => setActiveElement("segment")}
+                  onClick={() => setActiveElement({ name: "segment", bId })}
                   className="btn bg-primary text-white"
                 >
                   <span className="mr-2">
@@ -1784,14 +1857,19 @@ function WithoutSparePartsHeader(props) {
               </div>
             </React.Fragment>
           )}
-          {activeElement === "segment" && (
+          {activeElement.name === "segment" && (
             <WithoutSpareParts
-              builderDetails={{ bId, builderId, setActiveElement }}
+              builderDetails={{ activeElement, setActiveElement }}
             />
           )}
-          {activeElement === "operation" && (
+          {activeElement.name === "operation" && (
             <WithoutRepairOption01
-              builderDetails={{ bId, builderId, setActiveElement }}
+              builderDetails={{ activeElement, setActiveElement }}
+            />
+          )}
+          {activeElement.name === "service" && (
+            <RepairServiceEstimate
+              builderDetails={{ activeElement, setActiveElement }}
             />
           )}
         </div>

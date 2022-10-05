@@ -5,7 +5,7 @@ import $ from "jquery";
 import SearchIcon from "@mui/icons-material/Search";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getSearchCoverageForFamily, getSearchQueryCoverage, itemSearch, itemSearchSuggestion } from "../../services/index"
+import { getSearchCoverageForFamily, getSearchQueryCoverage, itemSearch, itemSearchSuggestion, getSearchCustomPortfolio } from "../../services/index"
 import { useEffect } from 'react';
 
 
@@ -64,7 +64,7 @@ const QuerySearchComp = (props) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
 
-    if (props.compoFlag === "coverage") {
+    if (props.compoFlag === "coverage" || props.compoFlag === "solutionTempItemSearch") {
       getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
         .then((res) => {
           obj.selectOptions = res;
@@ -76,7 +76,7 @@ const QuerySearchComp = (props) => {
           console.log("err in api call", err);
         });
       obj.inputSearch = e.target.value;
-    } else if (props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "portfolioTempItemSearch" || props.compoFlag === "solutionTempItemSearch") {
+    } else if (props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "portfolioTempItemSearch") {
       // itemSearchSuggestion(tempArray[id].selectFamily.value, e.target.value)
       //   .then((res) => {
       //     // obj.selectOptions = [...res];
@@ -162,8 +162,15 @@ const QuerySearchComp = (props) => {
       //   querySearchSelector[0]?.selectFamily?.value +
       //   "~" +
       //   querySearchSelector[0]?.inputSearch;
+      if(props.compoFlag === "solutionTempItemSearch"){
+        var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:${querySearchSelector[0]?.inputSearch}`;
 
-      var searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
+      }else{
+        var searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
+
+      }
+
+      // var searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
 
       for (let i = 1; i < querySearchSelector.length; i++) {
         if (
@@ -227,7 +234,7 @@ const QuerySearchComp = (props) => {
         // temArray[0].associatedServiceOrBundle = res2
         // props.setLoadingStatus("")
       } else if (props.compoFlag === "solutionTempItemSearch") {
-        const res4 = await itemSearch(searchStr)
+        const res4 = await getSearchCustomPortfolio(searchStr)
         // console.log("res4 is  : ", res3)
         if (!res4.length > 0) {
           props.setSolutionLoadingStatus("")
@@ -346,7 +353,7 @@ const QuerySearchComp = (props) => {
                         <>
                           <Select
                             placeholder="Bundle Flag"
-                            options={(props.compoFlag === "bundleSearch" || props.compoFlag === "solutionTempItemSearch") ? ([
+                            options={(props.compoFlag === "bundleSearch") ? ([
                               { label: "Bundle", value: "BUNDLE_ITEM" },
                               { label: "Service", value: "SERVICE" },
                             ]) : ([
@@ -372,14 +379,11 @@ const QuerySearchComp = (props) => {
                         </>
                       }
 
-                      {(props.compoFlag === "portfolioTempItemSearch" || props.compoFlag === "solutionTempItemSearch") &&
+                      {(props.compoFlag === "portfolioTempItemSearch") &&
                         <>
                           <Select
                             placeholder="Bundle Flag"
-                            options={(props.compoFlag === "solutionTempItemSearch") ? ([
-                              { label: "Bundle", value: "BUNDLE_ITEM" },
-                              { label: "Service", value: "SERVICE" },
-                            ]) : ([
+                            options={([
                               // { label: "Bundle", value: "bundle" },
                               // { label: "Service", value: "service" },
                               // { label: "Portfolio Item", value: "portfolioItem" },
