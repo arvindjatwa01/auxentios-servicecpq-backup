@@ -2618,4 +2618,10 @@ cursor: pointer;
 .MuiMenu-list{}  
 .MuiMenu-list li{display: block;
   padding: 8px;}
+.custom-pricing-table .rdt_TableHeadRow{background: #872ff7!important;color: #fff;}
+.custom-pricing-table{
+  width: 80%;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
 

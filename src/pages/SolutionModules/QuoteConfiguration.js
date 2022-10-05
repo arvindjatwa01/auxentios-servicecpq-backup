@@ -129,38 +129,48 @@ const  QuoteConfiguration=()=>{
                 <TabContext value={value}>
                   <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <TabList onChange={handleChange} aria-label="lab API tabs example">
-                      <Tab label="Use Repair Builder " value="1" />
-                      <Tab label="Use Repair Templates " value="2" />
+                      <Tab label="Use Part List " value="1" />
+                      <Tab label="Use Kits " value="2" />
                       <Tab label="Import From Excel" value="3" />
                     </TabList>
                   </Box>
                   <TabPanel value="1">
                   <div className="row">
-                    <div className="col-md-4">
-                      <Link to="/QuoteSearchQuote" className="card p-3">
-                      <div class="d-flex">
-                        <div class="mr-2"><VerifiedOutlinedIcon className="font-size-65 text-light mr-2"/></div>
-                        <div>
-                            <h5 class="text-light">Without Evalution</h5>
-                            <p><b>You configuration solutions by answering a set of questions</b></p>
-                            <p>Exampies, You answer questions releted to your requlreemnts for a maintenance plan.Sytem picks up a pre-configured template based on your answers</p>
-                           
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">CUSTOMER ID</p>
+                          <h6 class="font-weight-500">267839 - CHINALCO Beijing</h6>
                         </div>
-                      </div>
-                      </Link>
                     </div>
-                    <div className="col-md-4">
-                      <Link to='/QuoteRepairOption' className="card p-3">
-                      <div class="d-flex">
-                        <div class="mr-2"><VerifiedOutlinedIcon className="font-size-65 text-light mr-2"/></div>
-                        <div>
-                            <h5 class="text-light">With evaluation</h5>
-                            <p><b>You configuration solutions by answering a set of questions</b></p>
-                            <p>Exampies, You answer questions releted to your requlreemnts for a maintenance plan.Sytem picks up a pre-configured template based on your answers</p>
-                           
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
+                          <h6 class="font-weight-500">PO9036</h6>
                         </div>
-                      </div>
-                      </Link>
+                    </div>
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">SERIAL #</p>
+                          <h6 class="font-weight-500">LKB8906</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">CREATED BY</p>
+                          <h6 class="font-weight-500">Danial Ham</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">REQUESTED BY</p>
+                          <h6 class="font-weight-500">Jody Bilinco</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                          <p class="font-size-12 font-weight-500 mb-2">DESCRIPTION</p>
+                          <h6 class="font-weight-500">Part list for contacts</h6>
+                        </div>
                     </div>
                   </div>
             </TabPanel>

@@ -13,6 +13,7 @@ export const PAGE1 = "/page1";
 export const AUTH_PAGE1 = "/authorized1";
 export const PROFILE = "/profile";
 export const ACCOUNT = "/account";
+export const LANDING_PAGE_LOGIN = "/LandingPageLogin";
 export const RIPAIR_SEGMENT01_TRANSMISSION = "/Segment01Transmission";
 export const RIPAIR_SEGMENT01_DISASSEMBLE = "/Segment01Disassemble";
 export const RIPAIR_OPTION01 = "/RepairOption01";
@@ -36,7 +37,10 @@ export const QUOTE_CONFIGURATION ="/QuoteConfiguration";
 export const QUOTE_REPAIR_OPTION ="/QuoteRepairOption";
 export const QUOTE_REPAIR_QUOTE ="/QuoteRepairQuote";
 export const QUOTE_REPAIR_SEARCH ="/QuoteRepairSearch";
+export const SPARE_PARTS_QUOTE_TEMPLATE ="/SparePartsQuoteTemplate";
+export const SPARE_PARTS_QUOTE_REVIEWED ="/SparePartsQuoteReviewed";
 export const QUOTE_REPAIR_CONFIGURATION ="/QuoteRepairConfiguration";
+export const TERMS_CONDITIONS ="/TermsConditions";
 
 export const VERIFY_EMAIL = "/verify-email/:id";
 

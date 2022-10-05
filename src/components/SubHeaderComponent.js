@@ -727,7 +727,7 @@ export function SubHeaderComponent(props) {
               </div>
               <div className="modal-footer mr-auto">
                 <button type="button" className="btn border bg-white" data-dismiss="modal">Cancel</button>
-                <button type="button" className="btn btn-primary">Save</button>
+                <a href="/TermsConditions" className="btn btn-primary">Save</a>
               </div>
               {/* <h6 className="  font-size-14">NOTE</h6> */}
               {/* <div style={{borderBottom: '1px solid #cfcece'}}> */}

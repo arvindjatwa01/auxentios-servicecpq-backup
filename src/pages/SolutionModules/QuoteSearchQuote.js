@@ -138,7 +138,7 @@ const  QuoteSearchQuote=()=>{
            <div className="row align-items-center">
           <div className="col-3">
           <div className="d-flex ">
-          <h5 className="mr-4 mb-0 text-white"><span>Quotes</span></h5>
+          <h5 className="mr-4 mb-0 text-white"><span>Spare Parts Quotes</span></h5>
           <p className="ml-4 mb-0">
             <a href="#" className="ml-3 text-white"><EditOutlinedIcon/></a>
             <a href="#" className="ml-3 text-white"><ShareOutlinedIcon/></a>
@@ -293,7 +293,7 @@ const  QuoteSearchQuote=()=>{
         <b className="text-white">$50,000</b>
          </div>
          <div>
-         <a href="#" className="text-white">Select <ArrowRightAltOutlinedIcon className=""/></a>
+         <a href="/SparePartsQuoteTemplate" className="text-white">Select <ArrowRightAltOutlinedIcon className=""/></a>
          </div>
         </div>
                 </Modal.Body>
