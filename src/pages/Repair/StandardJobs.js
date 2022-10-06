@@ -796,7 +796,7 @@ const history=useHistory()
           </div>
           </div>
           <div className="d-flex">
-          <div>
+          {/* <div>
           <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
       
@@ -862,7 +862,7 @@ const history=useHistory()
 
       </Menu>
     </React.Fragment>
-          </div>
+          </div> */}
           <div className="d-flex justify-content-center align-items-center">
           <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
             <a href="#" className="ml-3 font-size-14" title="Items to Review"><img src={folderaddIcon}></img></a>

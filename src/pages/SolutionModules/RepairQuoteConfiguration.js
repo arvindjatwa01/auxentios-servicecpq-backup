@@ -41,8 +41,9 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import ArrowRightAltOutlinedIcon from '@mui/icons-material/ArrowRightAltOutlined';
 import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined';
+import AddIcon from '@mui/icons-material/Add';
 
-const  QuoteConfiguration=()=>{
+const  RepairQuoteConfiguration=()=>{
 
   const [age, setAge] = React.useState('5');
   const [age1, setAge1] = React.useState('5');
@@ -142,78 +143,237 @@ const  QuoteConfiguration=()=>{
                 <TabContext value={value}>
                   <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <TabList onChange={handleChange} aria-label="lab API tabs example">
-                      <Tab label="Use Part List " value="1" />
-                      <Tab label="Use Kits " value="2" />
+                      <Tab label="Use Repair Builder " value="1" />
+                      <Tab label="Use Repair Templates " value="2" />
                       <Tab label="Import From Excel" value="3" />
                     </TabList>
                   </Box>
                   <TabPanel value="1">
-                  <div className="row">
-                    <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">CUSTOMER ID</p>
-                          <h6 class="font-weight-500">267839 - CHINALCO Beijing</h6>
+                  <div className="mt-2">
+                  <div className="my-2">
+              <Link to="/QuoteRepairOption" className="btn bg-primary text-white"><AddIcon className="mr-2"/>Create New </Link>
+            </div>
+              <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6>
+              <div className="recent-div p-3">
+                <h6 className="font-weight-600 text-grey mb-0">RECENT REPAIR QUOTE</h6>
+                <div className="row">
+                  <div className="col-md-4">
+                    <div className="recent-items mt-3">
+                      <div className="d-flex justify-content-between align-items-center ">
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Quote</span></p>
+                        <div className="d-flex align-items-center">
+                          <div className="white-space custom-checkbox">
+                            <FormGroup>
+                              <FormControlLabel control={<Checkbox defaultChecked />} label="" />
+                            </FormGroup>
+                          </div>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                          <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
                         </div>
+                      </div>
+
                     </div>
-                    <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
-                          <h6 class="font-weight-500">PO9036</h6>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">SERIAL #</p>
-                          <h6 class="font-weight-500">LKB8906</h6>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">CREATED BY</p>
-                          <h6 class="font-weight-500">Danial Ham</h6>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">REQUESTED BY</p>
-                          <h6 class="font-weight-500">Jody Bilinco</h6>
-                        </div>
-                    </div>
-                    <div class="col-md-4 col-sm-4">
-                        <div class="form-group">
-                          <p class="font-size-12 font-weight-500 mb-2">DESCRIPTION</p>
-                          <h6 class="font-weight-500">Part list for contacts</h6>
-                        </div>
+                    <div className="d-flex justify-content-between align-items-center mt-2">
+                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                      <p className="font-size-12 mb-0">Repair Option</p>
                     </div>
                   </div>
-                        <div className="fileheader border-bottom d-flex align-items-center justify-content-between">
-                            <h6 className="font-weight-600 text-light mb-0 ml-1">Table Name<span> <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faPen} /></a></span></h6>
-                            <div>
-                                <a href="#" className="btn">+Add</a>
-                            </div>
+                  <div className="col-md-4">
+                    <div className="recent-items mt-3">
+                      <div className="d-flex justify-content-between align-items-center ">
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Quote</span></p>
+                        <div className="d-flex align-items-center">
+                          <div className="white-space custom-checkbox">
+                            <FormGroup>
+                              <FormControlLabel control={<Checkbox />} label="" />
+                            </FormGroup>
+                          </div>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                          <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
                         </div>
-                        <div className="p-2 row">
-                            <div className="col-md-6 col-sm-6">
-                                <a href="/RepairPartlist/PartList" className="add-new-recod">
-                                    <div>
-                                        <FontAwesomeIcon icon={faPlus} />
-                                        <p className="font-weight-600">Add new record</p>
-                                    </div>
-                                </a>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                                <div className="add-new-recod">
+                      </div>
 
-                                    <div>
-                                        <FontAwesomeIcon className="cloudupload" icon={faCloudUploadAlt} />
-                                        <h6 className="font-weight-500 mt-3">Drag and drop files to upload <br /> or</h6>
-                                        <a onClick={() => setOpen(true)} style={{ cursor: 'pointer' }} className="btn text-light border-light font-weight-500 border-radius-10 mt-3"><span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Select files to upload</a>
-                                        <p className="mt-3">Single upload file should not be more than <br />10MB. Only the  .xls, .xlsx file types are allowed</p>
-                                    </div>
-                                </div>
-                            </div>
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center mt-2">
+                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                      <p className="font-size-12 mb-0">Repair Option</p>
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="recent-items mt-3">
+                      <div className="d-flex justify-content-between align-items-center ">
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Quote</span></p>
+                        <div className="d-flex align-items-center">
+                          <div className="white-space custom-checkbox">
+                            <FormGroup>
+                              <FormControlLabel control={<Checkbox />} label="" />
+                            </FormGroup>
+                          </div>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                          <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
                         </div>
-                    
+                      </div>
+
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center mt-2">
+                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                      <p className="font-size-12 mb-0">Repair Option</p>
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="recent-items mt-3">
+                      <div className="d-flex justify-content-between align-items-center ">
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Quote</span></p>
+                        <div className="d-flex align-items-center">
+                          <div className="white-space custom-checkbox">
+                            <FormGroup>
+                              <FormControlLabel control={<Checkbox />} label="" />
+                            </FormGroup>
+                          </div>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                          <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                        </div>
+                      </div>
+
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center mt-2">
+                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                      <p className="font-size-12 mb-0">Repair Option</p>
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="recent-items mt-3">
+                      <div className="d-flex justify-content-between align-items-center ">
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Quote</span></p>
+                        <div className="d-flex align-items-center">
+                          <div className="white-space custom-checkbox">
+                            <FormGroup>
+                              <FormControlLabel control={<Checkbox />} label="" />
+                            </FormGroup>
+                          </div>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                          <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                        </div>
+                      </div>
+
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center mt-2">
+                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                      <p className="font-size-12 mb-0">Repair Option </p>
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="recent-items mt-3">
+                      <div className="d-flex justify-content-between align-items-center ">
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Quote</span></p>
+                        <div className="d-flex align-items-center">
+                          <div className="white-space custom-checkbox">
+                            <FormGroup>
+                              <FormControlLabel control={<Checkbox />} label="" />
+                            </FormGroup>
+                          </div>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                          <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                        </div>
+                      </div>
+
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center mt-2">
+                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                      <p className="font-size-12 mb-0">Repair Option </p>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+              <div className="recent-div p-3">
+                <h6 className="font-weight-600 text-grey mb-0">SERVICE BUNDLES</h6>
+                <div className="row">
+                  <div className="col-md-4">
+                    <div className="recent-items mt-3">
+                      <div className="d-flex justify-content-between align-items-center ">
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Quote</span></p>
+                        <div className="d-flex align-items-center">
+                          <div className="white-space custom-checkbox">
+                            <FormGroup>
+                              <FormControlLabel control={<Checkbox defaultChecked />} label="" />
+                            </FormGroup>
+                          </div>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                          <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                        </div>
+                      </div>
+
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center mt-2">
+                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                      <p className="font-size-12 mb-0">Repair Option </p>
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="recent-items mt-3">
+                      <div className="d-flex justify-content-between align-items-center ">
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Quote</span></p>
+                        <div className="d-flex align-items-center">
+                          <div className="white-space custom-checkbox">
+                            <FormGroup>
+                              <FormControlLabel control={<Checkbox />} label="" />
+                            </FormGroup>
+                          </div>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                          <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                        </div>
+                      </div>
+
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center mt-2">
+                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                      <p className="font-size-12 mb-0">Repair Option </p>
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="recent-items mt-3">
+                      <div className="d-flex justify-content-between align-items-center ">
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Quote</span></p>
+                        <div className="d-flex align-items-center">
+                          <div className="white-space custom-checkbox">
+                            <FormGroup>
+                              <FormControlLabel control={<Checkbox />} label="" />
+                            </FormGroup>
+                          </div>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                          <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                        </div>
+                      </div>
+
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center mt-2">
+                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                      <p className="font-size-12 mb-0">Repair Option</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             </TabPanel>
             <TabPanel value="2">
             <div className="card p-2 mt-2">
@@ -342,7 +502,7 @@ const  QuoteConfiguration=()=>{
                     <div>
                   <FontAwesomeIcon className="cloudupload" icon={faCloudUploadAlt} />
                   <h6 className="font-weight-500 mt-3">Drag and drop files to upload <br/> or</h6>
-                  <a href="/solutionBuilder/analytics" className="btn text-light border-light font-weight-500 border-radius-10 mt-3"><span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Select files to upload</a>
+                  <a href="/QuoteRepairOption" className="btn text-light border-light font-weight-500 border-radius-10 mt-3"><span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Select files to upload</a>
                     <p className="mt-3">Single upload file should not be more than <br/>10MB. Only the  .xls, .xlsx file types are allowed</p>
                     </div>
                     </div>
@@ -475,4 +635,4 @@ const  QuoteConfiguration=()=>{
     )
 }
 
-export default QuoteConfiguration
+export default RepairQuoteConfiguration

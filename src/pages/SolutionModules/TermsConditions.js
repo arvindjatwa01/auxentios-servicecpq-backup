@@ -57,7 +57,7 @@ import { Link } from "react-router-dom";
 import SearchIcon from '@mui/icons-material/Search';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import searchLogo from '../../assets/icons/svg/search.svg';
-
+import Select2 from 'react-select';
 
 const TermsConditions = () => {
   const [age, setAge] = React.useState('');
@@ -413,14 +413,53 @@ const handleChangedrop2 = (event) => {
     },
     
   ];
+  const handleOption2 = (e) => {
+    setValue2(e)
+  }
+  const handleOption3 = (e) => {
+    setValue3(e)
+  }
+
+  const [value2, setValue2] = useState({ value: 'Archived', label: 'Archived' });
+  const [value3, setValue3] = useState({ value: 'Gold', label: 'Gold' });
+
+  const options2 = [
+    { value: "chocolate", label: "Archived" },
+    { value: "strawberry", label: "Draft" },
+    { value: "vanilla", label: "Active" },
+    { value: "Construction", label: "Revised" },
+  ];
+  const options3 = [
+    { value: "chocolate", label: "Gold" },
+    { value: "strawberry", label: "1" },
+    { value: "vanilla", label: "2" },
+    { value: "Construction", label: "3" },
+  ];
 
   return (
     <>
       <CommanComponents/>
       <div className="content-body" style={{ minHeight: '884px' }}>
         <div className="container-fluid mt-4">
-          <div className="d-flex align-items-center justify-content-between mt-2">
-          <h5 className="font-weight-600 mb-0">Quote templates</h5>
+        <div className="d-flex align-items-center justify-content-between mt-2">
+          <div className="d-flex justify-content-center align-items-center">
+          <h5 className="font-weight-600 mb-0">Quote Templates</h5>
+          <div className="d-flex justify-content-center align-items-center">
+            <div className="ml-3">
+                <Select2 className="customselectbtn1" onChange={(e) => handleOption3(e)} options={options3} value={value3} />
+              </div>
+              <div className="ml-3">
+                <Select2 className="customselectbtn" onChange={(e) => handleOption2(e)} options={options2} value={value2} />
+              </div>
+            <div className="rating-star">
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star checked"></span>
+              <span class="fa fa-star"></span>
+              <span class="fa fa-star"></span>
+              </div>
+          </div>
+          </div>
           <div className="d-flex justify-content-center align-items-center">
           <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
                             <a href="#" className="ml-3 font-size-14" title="Items to review"><img src={folderaddIcon}></img></a>

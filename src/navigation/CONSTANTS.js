@@ -41,6 +41,11 @@ export const SPARE_PARTS_QUOTE_TEMPLATE ="/SparePartsQuoteTemplate";
 export const SPARE_PARTS_QUOTE_REVIEWED ="/SparePartsQuoteReviewed";
 export const QUOTE_REPAIR_CONFIGURATION ="/QuoteRepairConfiguration";
 export const TERMS_CONDITIONS ="/TermsConditions";
+export const REPAIR_QUOTE_CONFIGURATION ="/RepairQuoteConfiguration";
+export const SOLUTION_QUOTE ="/SolutionQuote";
+export const SOLUTION_QUOTE_SEARCH ="/SolutionQuoteSearch";
+export const SOLUTION_QUOTE_CONFIG ="/SolutionQuoteConfiguration";
+export const SOLUTION_SERVICE_PORTFOLIO ="/SolutionServicePortfolio";
 
 export const VERIFY_EMAIL = "/verify-email/:id";
 

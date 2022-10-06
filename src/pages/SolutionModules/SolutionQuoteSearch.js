@@ -23,7 +23,7 @@ import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import ArrowRightAltOutlinedIcon from '@mui/icons-material/ArrowRightAltOutlined';
 import $ from 'jquery';
 
-const  QuoteSearchQuote=()=>{
+const  SolutionQuoteSearch=()=>{
 
   const [age, setAge] = React.useState('5');
   const [age1, setAge1] = React.useState('5');
@@ -99,24 +99,46 @@ const  QuoteSearchQuote=()=>{
       <div class="container-fluid ">
           <div className="card p-4 mt-5">
           <div className="d-flex align-items-center mb-0">
-              <div className="" style={{ display:'contents'}}><h5 className="mr-3 mb-0" style={{whiteSpace:'pre'}}>Search Quote</h5></div>
+              <div className="" style={{ display:'contents'}}><h5 className="mr-3 mb-0" style={{whiteSpace:'pre'}}>Search Quotes</h5></div>
               <div class="input-group icons border-radius-10 border overflow-hidden">
             <div class="input-group-prepend">
               <span class="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
               <SearchIcon/></span>
               </div>
               <input type="search" class="form-control search-form-control"  aria-label="Search Dashboard"/>
+              {/* <div class="input-group-prepend align-items-center">
+              <div className="w-100 mx-2">
+              <div className="machine-drop d-flex align-items-center bg-white">
+             <div><lable className="label-div" style={{whiteSpace:'pre'}} >Quote Type</lable></div>
+            <FormControl className="" sx={{ m: 1,}}>
+              <Select 
+                id="demo-simple-select-autowidth"
+                value={age}
+                onChange={handleChangedrop}
+                autoWidth
+              >
+                <MenuItem value="5">
+                  <em>Repair Quote</em>
+                </MenuItem>
+                <MenuItem value={10}>Repair Quote</MenuItem>
+                <MenuItem value={21}>Twenty one</MenuItem>
+                <MenuItem value={22}>Twenty one and a half</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+              </div>
+              </div> */}
             </div>
             <div className="ml-2">
-              <Link to="/QuoteConfiguration" className="btn bg-primary text-white">Create New <ChevronRightIcon className=""/></Link>
+              <Link to="/SolutionQuoteConfiguration" className="btn bg-primary text-white">Create New <ChevronRightIcon className=""/></Link>
             </div>
               </div>
               </div>
-           <div className="bg-primary px-3 py-3 mb-3">
+           <div className="bg-primary px-3 mb-3 py-3">
            <div className="row align-items-center">
           <div className="col-3">
           <div className="d-flex ">
-          <h5 className="mr-4 mb-0 text-white"><span>Spare Parts Quotes</span></h5>
+          <h5 className="mr-4 mb-0 text-white"><span>Quotes</span></h5>
           <p className="ml-4 mb-0">
             <a href="#" className="ml-3 text-white"><EditOutlinedIcon/></a>
             <a href="#" className="ml-3 text-white"><ShareOutlinedIcon/></a>
@@ -252,14 +274,14 @@ const  QuoteSearchQuote=()=>{
             <a href="#" className="btn bg-primary text-white">Template</a>
           </div>
           <h4 className="text-light mt-3">SJ671</h4>
-          {/* <p>Your current session will expire in 5 minutes. Please Save your changes to continue your session, otherwise you
-             will lose all unsaved data and your session will time out.</p> */}
-             <h4 className=" mt-3">SUMMARY</h4>
+          <p>Your current session will expire in 5 minutes. Please Save your changes to continue your session, otherwise you
+             will lose all unsaved data and your session will time out.</p>
+             <h4 className=" mt-3">INCLUDES</h4>
              <ul>
-               <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>Spare Parts New (# 31)</li>
-               <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>Spare Parts Remain (# 7)</li>
-               <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>Number of Parts #38.</li>
-               <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>Total Price $4,100.00</li>
+               <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>Spare Parts</li>
+               <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>Labor Hours</li>
+               <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>Miscellaenous</li>
+               <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>External Work</li>
              
              </ul>
              <div>
@@ -284,4 +306,4 @@ const  QuoteSearchQuote=()=>{
     )
 }
 
-export default QuoteSearchQuote
+export default SolutionQuoteSearch
