@@ -49,6 +49,8 @@ export const USER_SERVICE_SIGNIN_URL = () => USER_SERVICE_URI + "root-login";
 //Service Portfolio
 
 export const PORTFOLIO_URL = () => SOLUTION_BUILDER_URI + "portfolio";
+export const PORTFOLIO_SEARCH_URL = SOLUTION_BUILDER_URI + "portfolio/search?search=";
+
 export const Common_SOLUTION_BUILDER_URL = () =>
   SOLUTION_BUILDER_URI + "common-config";
 export const COVERAGE_REST = () => SOLUTION_BUILDER_URI + "coverage";

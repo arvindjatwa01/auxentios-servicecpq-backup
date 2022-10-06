@@ -24,7 +24,8 @@ import TabPanel from '@mui/lab/TabPanel';
 import FormControl from '@mui/material/FormControl';
 import Checkbox from '@mui/material/Checkbox';
 import { Link } from 'react-router-dom'
-import FormControlLabel from '@mui/material/FormControlLabel';
+// import FormControlLabel from '@mui/material/FormControlLabel';
+import { FormControlLabel, Switch } from "@material-ui/core";
 import { FileUploader } from "react-drag-drop-files";
 // import MuiMenuComponent from "../Operational/MuiMenuComponent";
 import Tooltip from "@mui/material/Tooltip";
@@ -201,6 +202,9 @@ export function CustomizedPortfolio(props) {
     const [openModelRowData, setOpenModelRowData] = useState({});
     const [openedModelBoxData, setOpenedModelBoxData] = useState([]);
     const [modelIncludedData, setModelIncludedData] = useState([]);
+
+    const [flagTemplate, setFlagTemplate] = useState(false);
+    const [flagCommerce, setFlagCommerce]= useState(false);
 
     const [coverageData, setCoverageData] = useState({
         make: "",
@@ -3002,7 +3006,10 @@ export function CustomizedPortfolio(props) {
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid ">
                     <div className="d-flex align-items-center justify-content-between mt-2">
-                        <h5 className="font-weight-600 mb-0">Custom Portfolio</h5>
+                        <h5 className="font-weight-600 mb-0"> 
+                        {/* Custom Portfolio */}
+                        Solution Configurator
+                        </h5>
                         <div className="d-flex justify-content-center align-items-center">
                             <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
                             <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
@@ -3036,13 +3043,14 @@ export function CustomizedPortfolio(props) {
                                         <Tab label="Strategy" value="3" />
                                         <Tab label="Administrative" value={"administrative"} />
                                         <Tab label="Price" value="4" />
-                                        <Tab label="Price Agreement" disabled={!priceAgreementOption} value="5" />
+                                        {/* <Tab label="Price Agreement" disabled={!priceAgreementOption} value="5" /> */}
+                                        <Tab label="Price Agreement" value="5" />
                                         <Tab label="Coverage" value="6" />
                                     </TabList>
                                 </Box>
                                 <TabPanel value="1">
                                     <div className="row mt-4">
-                                        <div className="col-md-3 col-sm-3">
+                                        {/* <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
                                                     SELECT TYPE
@@ -3057,25 +3065,13 @@ export function CustomizedPortfolio(props) {
                                                         headerTypeKeyValue.length > 0 ? false : true
                                                     }
                                                 />
-                                                {/* <div>
-                                                    <ToggleButtonGroup
-                                                        color="primary"
-                                                        value={alignment}
-                                                        exclusive
-                                                        onChange={handleChangeToggle}
-                                                    >
-                                                        <ToggleButton value="Portfolio">Portfolio</ToggleButton>
-                                                        <ToggleButton value="Program">Program</ToggleButton>
-                                                    </ToggleButtonGroup>
-                                                </div> */}
-
-                                                {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponentData.portfolioName} onChange={handleGeneralInputChange} /> */}
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
-                                                    {prefilgabelGeneral} ID
+                                                    {/* {prefilgabelGeneral} ID */}
+                                                    SOLUTION ID
                                                 </label>
                                                 <input
                                                     type="text"
@@ -3090,7 +3086,7 @@ export function CustomizedPortfolio(props) {
                                         <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
-                                                    {prefilgabelGeneral} NAME
+                                                    SOLUTION CODE
                                                 </label>
                                                 <input
                                                     type="text"
@@ -3102,10 +3098,26 @@ export function CustomizedPortfolio(props) {
                                                 />
                                             </div>
                                         </div>
+                                        {/* <div className="col-md-3 col-sm-3">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-12 font-weight-500">
+                                                    {prefilgabelGeneral} NAME
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    name="name"
+                                                    placeholder="Name"
+                                                    value={generalComponentData.name}
+                                                    onChange={handleGeneralInputChange}
+                                                />
+                                            </div>
+                                        </div> */}
                                         <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
-                                                    SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY)
+                                                    {/* SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY) */}
+                                                    SOLUTION DESCRIPTION
                                                 </label>
                                                 <input
                                                     type="text"
@@ -3135,7 +3147,7 @@ export function CustomizedPortfolio(props) {
                                         <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
-                                                    CUSTOMER SEGMENT
+                                                    CUSTOMER
                                                 </label>
                                                 <Select
                                                     onChange={handleCustomerSegmentChange}
@@ -3143,6 +3155,57 @@ export function CustomizedPortfolio(props) {
                                                     options={customerSegmentKeyValue}
                                                 // options={strategyList}
                                                 />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-3 col-sm-3 d-flex justify-content-between align-items-center">
+                                            {/* <div className="form-group">
+                                                <label className="text-light-dark font-size-12 font-weight-500">
+                                                    FLAG FOR TEMPLATE
+                                                </label>
+                                                <Select
+                                                    onChange={handleCustomerSegmentChange}
+                                                    value={generalComponentData.customerSegment}
+                                                    options={customerSegmentKeyValue}
+                                                // options={strategyList}
+                                                />
+                                            </div> */}
+                                            <div className=" d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <FormGroup>
+                                                        <FormControlLabel
+                                                            control={<Switch />}
+                                                            label=" FLAG FOR TEMPLATE"
+                                                            value={flagTemplate}
+                                                            
+                                                            
+                                                        />
+                                                    </FormGroup>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-3 col-sm-3 d-flex justify-content-between align-items-center">
+                                            {/* <div className="form-group">
+                                                <label className="text-light-dark font-size-12 font-weight-500">
+                                                    FLAG FOR COMMERCE
+                                                </label>
+                                                <Select
+                                                    onChange={handleCustomerSegmentChange}
+                                                    value={generalComponentData.customerSegment}
+                                                    options={customerSegmentKeyValue}
+                                                // options={strategyList}
+                                                />
+                                                
+                                            </div> */}
+                                            <div className=" d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <FormGroup>
+                                                        <FormControlLabel
+                                                            control={<Switch />}
+                                                            label=" FLAG FOR COMMERCE"
+                                                            value={flagCommerce}
+                                                        />
+                                                    </FormGroup>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -3397,7 +3460,7 @@ export function CustomizedPortfolio(props) {
                                 </TabPanel>
                                 <TabPanel value="3">
                                     <div className="row">
-                                        <div className="col-md-4 col-sm-4">
+                                        {/* <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
@@ -3410,7 +3473,6 @@ export function CustomizedPortfolio(props) {
                                                     value={categoryUsageKeyValue1}
                                                     onChange={(e) => HandleCatUsage(e)}
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -3445,16 +3507,8 @@ export function CustomizedPortfolio(props) {
                                                         )
                                                     }
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
-                                        {/* <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CATEGORY USAGE</label>
-                                                <Select options={categoryList} />
-                                                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" />
-                                            </div>
-                                        </div> */}
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -3467,11 +3521,9 @@ export function CustomizedPortfolio(props) {
                                                     options={strategyOptionals}
                                                     value={stratgyOptionalsKeyValue}
                                                     onChange={(e) => setStratgyOptionalsKeyValue(e)}
-                                                // options={rTimeList}
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Optionais" /> */}
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -3521,7 +3573,7 @@ export function CustomizedPortfolio(props) {
                                                 {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
-                                        <div className="col-md-4 col-sm-4">
+                                        {/* <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
@@ -3530,26 +3582,13 @@ export function CustomizedPortfolio(props) {
                                                     MACHINE TYPE
                                                 </label>
                                                 <Select
-                                                    // // options={geographicList}
-                                                    // // value={stratgyGeographicKeyValue}
-                                                    // // onChange={(e) => setStratgyGeographicKeyValue(e)}
-                                                    // defaultValue={selectedOption}
-                                                    // // onChange={setSelectedOption}
-                                                    // options={options}
-                                                    // placeholder="Machine Type"
                                                     options={machineTypeKeyValueList}
                                                     value={machineTypeKeyValue}
                                                     onChange={(e) => setMachineTypeKeyValue(e)}
-                                                    // onChange={(e) =>
-                                                    //     handleDropdownChange(ENUM.MACHINE_TYPE, e)
-                                                    // }
-                                                    // isClearable={true}
-                                                    // value={coverageData.machineType}
                                                     isLoading={
                                                         machineTypeKeyValueList.length > 0 ? false : true
                                                     }
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -3561,26 +3600,46 @@ export function CustomizedPortfolio(props) {
                                                     LIFE STAGE
                                                 </label>
                                                 <Select
-                                                    // options={geographicList}
-                                                    // value={stratgyGeographicKeyValue}
-                                                    // onChange={(e) => setStratgyGeographicKeyValue(e)}
-                                                    // defaultValue={selectedOption}
-                                                    // onChange={setSelectedOption}
-                                                    // options={options}
-                                                    // placeholder="Life Stage"
                                                     options={lifeStageOfMachineKeyValueList}
                                                     value={lifeStageOfMachineKeyValue}
                                                     onChange={(e) => setLifeStageOfMachineKeyValue(e)}
-                                                    // onChange={(e) =>
-                                                    //     handleDropdownChange(ENUM.LIFE_STAGE_OF_MACHINE, e)
-                                                    // }
-                                                    // isClearable={true}
-                                                    // value={coverageData.lifeStageOfMachine}
                                                     isLoading={
                                                         lifeStageOfMachineKeyValueList.length > 0 ? false : true
                                                     }
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
+                                            </div>
+                                        </div> */}
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    SOLUTION TYPE
+                                                </label>
+                                                <Select
+                                                    options={options}
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                // isLoading={
+                                                //     lifeStageOfMachineKeyValueList.length > 0 ? false : true
+                                                // }
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    SOLUTION LEVEL
+                                                </label>
+                                                <Select
+                                                    options={options}
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                />
                                             </div>
                                         </div>
                                     </div>
@@ -3886,8 +3945,8 @@ export function CustomizedPortfolio(props) {
                                             </div>
                                         </div>
                                     </div>
-                                    <hr />
-                                    <h6>PRICES</h6>
+                                    {/* <hr />
+                                    <h6>PRICES</h6> */}
                                     <div className="row">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
@@ -3985,7 +4044,7 @@ export function CustomizedPortfolio(props) {
                                             </div>
                                         </div>
                                     </div>
-                                    <hr />
+                                    {/* <hr /> */}
                                     <div className="row">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
