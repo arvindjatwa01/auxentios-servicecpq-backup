@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, PORTFOLIO_URL,PRICING_COMMON_CONFIG } from "./CONSTANTS";
+import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, PORTFOLIO_URL,PRICING_COMMON_CONFIG,PORTFOLIO_SEARCH_URL } from "./CONSTANTS";
 
 /**
  * Function to create the Portfolios.
@@ -50,6 +50,30 @@ export const updatePortfolio = (portfolioId, data) => {
     }
   });
 };
+
+
+export const portfolioSearch = (searchStr) => {
+  console.log("portfolioService > portfolioSearch called...");
+  console.log("PAth is : ", PORTFOLIO_SEARCH_URL+searchStr);
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(PORTFOLIO_SEARCH_URL+searchStr)
+        .then((res) => {
+          console.log("portfolioSearch > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("portfolioSearch > axios err=", err);
+          reject("Error in portfolioSearch axios!");
+        });
+    } catch (error) {
+      console.error("in portfolioService > portfolioSearch, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 /**
  * Function to fetch the Portfolio by portfolioId.
  */

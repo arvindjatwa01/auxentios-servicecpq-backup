@@ -11,8 +11,15 @@ export function MuiMenuComponent(props) {
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
-    const handleClose = () => {
+    const handleClose = (optionVal) => {
         setAnchorEl(null);
+        if(optionVal === "Show Errors"){
+            console.log("Open error model");
+            // toggleDrawer(["right"], false, false)
+        }
+        else if(optionVal === "Create Versions"){
+            console.log("Open Versions model")
+        }
     };
     return (
         <div>
@@ -43,7 +50,7 @@ export function MuiMenuComponent(props) {
                 }}
             >
                 {options.map((option) => (
-                    <MenuItem key={option} selected={option === 'Pyxis'} onClick={handleClose}>
+                    <MenuItem key={option} selected={option === 'Pyxis'} onClick={() => handleClose(option)}>
                         {option}
                     </MenuItem>
                 ))}

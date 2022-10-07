@@ -79,6 +79,7 @@ export function SubHeaderComponent(props) {
     }
     setIsShareSideBar(type)
     console.log("====")
+    console.log(anchor)
     setState({ ...state, [anchor]: open });
   };
   const activityOptions = [

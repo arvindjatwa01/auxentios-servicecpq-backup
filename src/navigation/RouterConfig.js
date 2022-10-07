@@ -61,7 +61,7 @@ export const RouterConfig = () => {
   return (
     <div id="main-wrapper" className="show">
       {(location.pathname === LOGIN) ? <></> : (location.pathname === RESET) ? <></> : <><CommanComponents /></>}
-      {console.log("Location is : ", location.pathname)}
+      {/* {console.log("Location is : ", location.pathname)} */}
       {/* <CommanComponents /> */}
       <Switch>
         {/* List all public routes here */}
