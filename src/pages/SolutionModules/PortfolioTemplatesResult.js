@@ -95,7 +95,10 @@ import {
     itemCreation,
     createCoverage,
     createCutomCoverage,
-    getItemPrice
+    getItemPrice,
+    getCustomItemData,
+    getcustomItemPriceById,
+    updateCustomPriceData,
 } from "../../services/index";
 import {
     selectCategoryList,
@@ -1563,14 +1566,27 @@ export function PortfolioTemplatesResult(props) {
         setMiscRequired(e.target.checked)
     }
 
-    const UpdateCustomPriceInclusion = () => {
+    const UpdateCustomPriceInclusion = async () => {
         console.log("hello");
-        // if(editAbleCustomPriceData.length > 0){
-        //     // console.log("hello")
-        //     for(let y=0; y < editAbleCustomPriceData.length; y++){
-        //         var getCustomPriceData = 20;
-        //     }
-        // }
+        if (editAbleCustomPriceData.length > 0) {
+            // console.log("hello")
+            for (let y = 0; y < editAbleCustomPriceData.length; y++) {
+                var getCustomPriceData = await getcustomItemPriceById(editAbleCustomPriceData[y].customItemPriceDataId);
+                console.log("y is : ", getCustomPriceData);
+
+                getCustomPriceData.partsRequired = partsRequired;
+                getCustomPriceData.labourRequired = labourRequired;
+                getCustomPriceData.serviceRequired = serviceRequired;
+                getCustomPriceData.miscRequired = miscRequired;
+
+                // console.log("updated y is : ", getCustomPriceData)
+
+                var UpdateCustomPriceInclusion = updateCustomPriceData(editAbleCustomPriceData[y].customItemPriceDataId, getCustomPriceData)
+
+            }
+        } else {
+            console.log("empty");
+        }
     }
 
     const getPortfolioDetails = (portfolioId) => {
@@ -4951,20 +4967,22 @@ export function PortfolioTemplatesResult(props) {
                                     <div className="bg-white p-3">
                                         <FormGroup>
                                             <FormControlLabel
-                                                control={<Switch defaultChecked />}
+                                                control={<Switch />}
                                                 // label="With Spare Parts"
                                                 label="With Parts"
                                                 onChange={(e) => handleWithSparePartsCheckBox(e)}
-                                                value={partsRequired}
-                                            />
-                                            {/* <FormControlLabel
-                                                control={<Switch />}
-                                                label="I have Spare Parts"
+                                                // value={partsRequired}
+                                                checked={partsRequired}
                                             />
                                             <FormControlLabel
-                                                control={<Switch />}
+                                                control={<Switch disabled />}
+                                                label="I have Spare Parts"
+                                                
+                                            />
+                                            <FormControlLabel
+                                                control={<Switch disabled />}
                                                 label="I need only Spare Parts"
-                                            /> */}
+                                            />
                                         </FormGroup>
                                     </div>
                                     <div className="bg-light-blue p-3">
@@ -4977,14 +4995,15 @@ export function PortfolioTemplatesResult(props) {
                                             <div>
                                                 <FormGroup>
                                                     <FormControlLabel
-                                                        control={<Switch defaultChecked />}
+                                                        control={<Switch />}
                                                         label="With Labor"
                                                         onChange={(e) => handleWithLabourCheckBox(e)}
+                                                        checked={labourRequired}
                                                     />
-                                                    {/* <FormControlLabel
-                                                        control={<Switch />}
+                                                    <FormControlLabel
+                                                        control={<Switch disabled />}
                                                         label="Without Labor"
-                                                    /> */}
+                                                    />
                                                 </FormGroup>
                                             </div>
                                             {/* <div>
@@ -5001,25 +5020,26 @@ export function PortfolioTemplatesResult(props) {
                                     </div>
                                     <div className="bg-white p-3">
                                         <FormGroup>
-                                            {/* <FormControlLabel control={<Switch />} label=" Lubricants" /> */}
                                             <FormControlLabel
                                                 control={<Switch />}
                                                 // label="Travel Expenses"
                                                 label="Misc Required"
                                                 onChange={(e) => handleWithMiscCheckBox(e)}
+                                                checked={miscRequired}
                                             />
-                                            {/* <FormControlLabel control={<Switch />} label="Tools" />
+                                            <FormControlLabel control={<Switch disabled />} label=" Lubricants" />
+                                            <FormControlLabel control={<Switch disabled />} label="Tools" />
                                             <FormControlLabel
-                                                control={<Switch />}
+                                                control={<Switch disabled />}
                                                 label="External Work"
-                                            /> */}
+                                            />
                                         </FormGroup>
-                                        {/* <h5 className="d-flex align-items-center mb-0">
+                                        <h5 className="d-flex align-items-center mb-0">
                                             <div className="" style={{ display: "contents" }}>
                                                 <span className="mr-3 white-space">Includes</span>
                                             </div>
                                             <div className="hr"></div>
-                                        </h5> */}
+                                        </h5>
                                     </div>
                                     <div className="bg-light-blue p-3">
                                         <h5 className="font-weight-normal text-violet mb-0">
@@ -5031,10 +5051,11 @@ export function PortfolioTemplatesResult(props) {
                                             <div>
                                                 <FormGroup>
                                                     <FormControlLabel
-                                                        control={<Switch defaultChecked />}
+                                                        control={<Switch />}
                                                         // label=" Changee Oil and Filter"
                                                         label=" Service Required"
                                                         onChange={(e) => handleWithServiceCheckBox(e)}
+                                                        checked={serviceRequired}
                                                     />
                                                 </FormGroup>
                                             </div>
@@ -5044,7 +5065,7 @@ export function PortfolioTemplatesResult(props) {
                                                 </a>
                                             </div> */}
                                         </div>
-                                        {/* <h5 className="d-flex align-items-center mb-0">
+                                        <h5 className="d-flex align-items-center mb-0">
                                             <div className="" style={{ display: "contents" }}>
                                                 <span className="mr-3 white-space">Optianal services</span>
                                             </div>
@@ -5052,14 +5073,14 @@ export function PortfolioTemplatesResult(props) {
                                         </h5>
                                         <FormGroup>
                                             <FormControlLabel
-                                                control={<Switch />}
+                                                control={<Switch disabled />}
                                                 label="Air Filter Replacement"
                                             />
                                             <FormControlLabel
-                                                control={<Switch />}
+                                                control={<Switch disabled />}
                                                 label="Cabin Air Filter"
                                             />
-                                            <FormControlLabel control={<Switch />} label="Rotete Tires" />
+                                            <FormControlLabel control={<Switch disabled />} label="Rotete Tires" />
                                         </FormGroup>
                                         <h5 className="d-flex align-items-center mb-0">
                                             <div className="" style={{ display: "contents" }}>
@@ -5070,9 +5091,9 @@ export function PortfolioTemplatesResult(props) {
                                         <div className="mt-3">
                                             <h6>
                                                 <a
-                                                    href="#"
+                                                    // href="#"
                                                     className="btn-sm text-white mr-2"
-                                                    style={{ background: "#79CBA2" }}
+                                                    style={{ background: "#79CBA2", cursor: "pointer" }}
                                                 >
                                                     Free
                                                 </a>{" "}
@@ -5080,15 +5101,15 @@ export function PortfolioTemplatesResult(props) {
                                             </h6>
                                             <h6 className="mt-3">
                                                 <a
-                                                    href="#"
+                                                    // href="#"
                                                     className="btn-sm text-white mr-2 "
-                                                    style={{ background: "#79CBA2" }}
+                                                    style={{ background: "#79CBA2", cursor: "pointer" }}
                                                 >
                                                     Free
                                                 </a>{" "}
                                                 50 Point Inspection
                                             </h6>
-                                        </div> */}
+                                        </div>
                                         <div className=" d-flex justify-content-between mt-4">
                                             {/* <div>
                                                 <a href="#" className="btn text-violet bg-light-blue">

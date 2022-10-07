@@ -235,7 +235,7 @@ export const DashboardContainer = () => {
                 <div className="card overflow-hidden border p-2">
                   <div className="span4 collapse-group">
                     <div>
-                      <a href="#" data-toggle="collapse" data-target="#bysoluction"><span><i className="fa fa-angle-down f-s-16 mr-2" aria-hidden="true"></i></span><span className="font-weight-500">By Soluction</span></a>
+                      <a href="#" data-toggle="collapse" data-target="#bysoluction"><span><i className="fa fa-angle-down f-s-16 mr-2" aria-hidden="true"></i></span><span className="font-weight-500">By Solution</span></a>
                       <div className="collapse show" id="bysoluction">
                         <p > Bars represent solutions</p>
                         <Chart1 />

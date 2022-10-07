@@ -4277,7 +4277,7 @@ export function CreatePortfolio() {
   }
 
   const handleContinueOfServiceOrBundle = async () => {
-    setTempBundleService3([])
+    // setTempBundleService3([])
     if (categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE") {
       setTabs("4")//navigate to component data tab
     } else {

@@ -207,6 +207,8 @@ export function SolutionTemplateResult(props) {
     const [openedModelBoxData, setOpenedModelBoxData] = useState([]);
     const [modelIncludedData, setModelIncludedData] = useState([]);
 
+    const[selectedSolutionItems, setSelecteSolutionItems] = useState(location.selectedTemplateItems[0].customItems);
+
     // const [selectePortfolioTempItemsData, setSelectedPortfolioTempItemsData] = useState([]);
     const [selectedCustomItems, setSelectedCustomItems] = useState([]);
 
@@ -2041,6 +2043,10 @@ export function SolutionTemplateResult(props) {
         }
     }, [masterData]);
 
+    // useEffect(() => {
+    //     location.selectedTemplateItems.customItems
+    // })
+
     const handleDeleteIncludeSerialNo = (e, row) => {
         const updated = selectedMasterData.filter((obj) => {
             if (obj.id !== row.id) return obj;
@@ -2422,6 +2428,8 @@ export function SolutionTemplateResult(props) {
             ),
         },
     ];
+
+    // const selectedCustomItemsColumn = 
 
     const bundleItemColumns = [
         {
@@ -2976,6 +2984,100 @@ export function SolutionTemplateResult(props) {
             format: (row) => row.numberOfEvents,
         },
     ];
+
+    const selectedCustomItemsColumn = [
+        {
+            name: (
+                <>
+                    <div>ID</div>
+                </>
+            ),
+            selector: (row) => row.customItemId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemId,
+        },
+        {
+            name: (
+                <>
+                    <div>Description</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel.itemHeaderDescription,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel.itemHeaderDescription,
+        },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Strategy</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.description,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.description,
+        // },
+        
+        {
+            name: (
+                <>
+                    <div>Geographic</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel.itemHeaderGeographic,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel.itemHeaderGeographic,
+        },
+        {
+            name: (
+                <>
+                    <div>Task Type</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel.taskType,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel.taskType,
+        },
+        {
+            name: (
+                <>
+                    <div>Response Time</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel.responseTime,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel.responseTime,
+        },
+        {
+            name: (
+                <>
+                    <div>Type</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel.type,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel.type,
+        },
+        {
+            name: (
+                <>
+                    <div>Net Price</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel.netPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel.netPrice,
+        },
+    ];
+
+
 
     const handleServiceItemOpen = () => {
         setServiceOrBundlePrefix("SERVICE");
@@ -4996,14 +5098,23 @@ export function SolutionTemplateResult(props) {
                                 // onCellClick={(e) => handleRowClick(e)}
                             /> */}
 
-                            <DataTable
+                            {/* <DataTable
                                 className=""
                                 title=""
                                 columns={selectedportfolioTempItemsColumn}
                                 data={location.selectedTemplateItems}
                                 customStyles={customStyles}
                                 pagination
+                            /> */}
+                            <DataTable
+                                className=""
+                                title=""
+                                columns={selectedCustomItemsColumn}
+                                data={selectedSolutionItems}
+                                customStyles={customStyles}
+                                pagination
                             />
+                            {console.log("selectedSolutionItems data : ", selectedSolutionItems)}
                         </div>
                     </div>
                     <Modal show={open1} onHide={handleClose1} size="lg"
