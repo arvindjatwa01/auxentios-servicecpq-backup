@@ -470,7 +470,7 @@ const QuoteRepairOption = () => {
               </div>
               <div class="modal-footer"style={{display:'unset'}}>
                 <div>
-                  <a href="#" onClick={()=>handleCreate()} data-dismiss="modal" className="btn bg-primary d-block text-white">Done</a>
+                  <a href="/SparePartsQuoteTemplate" className="btn bg-primary d-block text-white">Done</a>
                 </div>
                 <div>
                 <button class="btn  btn-primary">Create</button>

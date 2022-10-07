@@ -31,7 +31,7 @@ import { CommanComponents } from "components";
 import { SolutionBuilderModal, SolutionSelector } from "pages/SolutionModules";
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
-const  QuoteSpareParts=()=>{
+const  SolutionQuote=()=>{
 
   const [value, setValue] = React.useState('1');
   const [openSolutionSelector, setOpenSolutionSelector] = useState(false)
@@ -196,7 +196,7 @@ const  QuoteSpareParts=()=>{
           <div className="d-flex align-items-center justify-content-between mt-2">
             <h5 className="font-weight-600 mb-0">Quote</h5>
             <div>
-              <Link to="/QuoteSearchQuote"  style={{ cursor: 'pointer' }} className="btn bg-primary text-white pull-right">
+              <Link to="/SolutionQuoteSearch"  style={{ cursor: 'pointer' }} className="btn bg-primary text-white pull-right">
         Search Quote<ChevronRightIcon className=""/>
               </Link>
             </div>
@@ -206,12 +206,12 @@ const  QuoteSpareParts=()=>{
             <div className="mt-5">
               <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6>
               <div className="recent-div p-3">
-                <h6 className="font-weight-600 text-grey mb-0">RECENT SPARE PARTS QUOTE</h6>
+                <h6 className="font-weight-600 text-grey mb-0">RECENT SOLUTION QUOTE</h6>
                 <div className="row">
                   <div className="col-md-4">
                     <div className="recent-items mt-3">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Spare Parts Quote </span></p>
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -228,13 +228,13 @@ const  QuoteSpareParts=()=>{
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Spare Parts Option </p>
+                      <p className="font-size-12 mb-0">Solution Option</p>
                     </div>
                   </div>
                   <div className="col-md-4">
                     <div className="recent-items mt-3">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Spare Parts Quote</span></p>
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -251,13 +251,13 @@ const  QuoteSpareParts=()=>{
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Spare Parts Option </p>
+                      <p className="font-size-12 mb-0">Solution Option</p>
                     </div>
                   </div>
                   <div className="col-md-4">
                     <div className="recent-items mt-3">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Spare Parts Quote</span></p>
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -274,13 +274,13 @@ const  QuoteSpareParts=()=>{
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Spare Parts Option  </p>
+                      <p className="font-size-12 mb-0">Solution Option</p>
                     </div>
                   </div>
                   <div className="col-md-4">
                     <div className="recent-items mt-3">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Spare Parts Quote </span></p>
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -297,13 +297,13 @@ const  QuoteSpareParts=()=>{
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Spare Parts Option </p>
+                      <p className="font-size-12 mb-0">Solution Option</p>
                     </div>
                   </div>
                   <div className="col-md-4">
                     <div className="recent-items mt-3">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Spare Parts Quote</span></p>
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -320,13 +320,13 @@ const  QuoteSpareParts=()=>{
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Spare Parts Option </p>
+                      <p className="font-size-12 mb-0">Solution Option </p>
                     </div>
                   </div>
                   <div className="col-md-4">
                     <div className="recent-items mt-3">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Spare Parts Quote</span></p>
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -343,7 +343,7 @@ const  QuoteSpareParts=()=>{
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Spare Parts Option</p>
+                      <p className="font-size-12 mb-0">Solution Option </p>
                     </div>
                   </div>
 
@@ -356,7 +356,7 @@ const  QuoteSpareParts=()=>{
                   <div className="col-md-4">
                     <div className="recent-items mt-3">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Spare Parts Quote</span></p>
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -373,13 +373,13 @@ const  QuoteSpareParts=()=>{
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Spare Parts Option</p>
+                      <p className="font-size-12 mb-0">Solution Option </p>
                     </div>
                   </div>
                   <div className="col-md-4">
                     <div className="recent-items mt-3">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Spare Parts Quote</span></p>
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -396,13 +396,13 @@ const  QuoteSpareParts=()=>{
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Spare Parts Option</p>
+                      <p className="font-size-12 mb-0">Solution Option </p>
                     </div>
                   </div>
                   <div className="col-md-4">
                     <div className="recent-items mt-3">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Spare Parts Quote</span></p>
+                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -419,7 +419,7 @@ const  QuoteSpareParts=()=>{
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-2">
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Spare Parts Option</p>
+                      <p className="font-size-12 mb-0">Solution Option</p>
                     </div>
                   </div>
                 </div>
@@ -625,4 +625,4 @@ const  QuoteSpareParts=()=>{
     )
 }
 
-export default QuoteSpareParts
+export default SolutionQuote

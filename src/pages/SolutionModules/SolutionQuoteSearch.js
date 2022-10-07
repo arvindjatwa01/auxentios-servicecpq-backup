@@ -23,7 +23,7 @@ import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import ArrowRightAltOutlinedIcon from '@mui/icons-material/ArrowRightAltOutlined';
 import $ from 'jquery';
 
-const  QuoteRepairSearch=()=>{
+const  SolutionQuoteSearch=()=>{
 
   const [age, setAge] = React.useState('5');
   const [age1, setAge1] = React.useState('5');
@@ -130,7 +130,7 @@ const  QuoteRepairSearch=()=>{
               </div> */}
             </div>
             <div className="ml-2">
-              <Link to="/QuoteRepairConfiguration" className="btn bg-primary text-white">Create New <ChevronRightIcon className=""/></Link>
+              <Link to="/SolutionQuoteConfiguration" className="btn bg-primary text-white">Create New <ChevronRightIcon className=""/></Link>
             </div>
               </div>
               </div>
@@ -293,7 +293,7 @@ const  QuoteRepairSearch=()=>{
         <b className="text-white">$50,000</b>
          </div>
          <div>
-         <a href="#" className="text-white">Select <ArrowRightAltOutlinedIcon className=""/></a>
+         <a href="/SparePartsQuoteTemplate" className="text-white">Select <ArrowRightAltOutlinedIcon className=""/></a>
          </div>
         </div>
                 </Modal.Body>
@@ -306,4 +306,4 @@ const  QuoteRepairSearch=()=>{
     )
 }
 
-export default QuoteRepairSearch
+export default SolutionQuoteSearch

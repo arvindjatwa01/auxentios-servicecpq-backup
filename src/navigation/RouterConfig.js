@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Switch, Route, useLocation } from "react-router-dom";
 import Dashboard from "pages/Dashboard";
 import { NotFound } from "navigation/NotFound";
-import { ROOT, RESET, VERIFY_EMAIL, WORK_LIST_NEW, SOLUTION_BUILDER_NEW, PERMISSION, PERMISSION_SETTING, SERVICE_NEW, WITHOUT_REPAIR_OPTION01, LOGIN, PORTFOLIO_SUMMARY, ANALYTICS, WORK_LIST, REPORTS, PROFILE, DASHBOARD, PAGE1, AUTH_PAGE1, TEST_REACT_TABLE_NESTED, GUIDED_SOLUTION_BUILDER, SOLUTION_TEMPLATES, PORTFOLIO_AND_BUILDER_NEW, SOLUTION_BUILDER_ANALYTICS, SOLUTION_BUILDER_SERVICE_PORTFOLIO, SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO, SOLUTION_BUILDER_PORRTFOLIO_TEMP,SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT, ACCOUNT, BULID_REPAIR_OPTION, RIPAIR_SEGMENT01_TRANSMISSION, RIPAIR_SEGMENT01_DISASSEMBLE, RIPAIR_OPTION01, RIPAIR_SERVICE_ESTIMATE, WITHOUTSPARE_REPAIR_OPTION, PART_LIST, REPAIR_PARTLIST, REPAIR_WITH_SPARE_PARTS, REPAIR_WITHOUT_SPARE_PARTS, WITH_SPARE_PARTS, REPAIR_STANDARD_JOBS, REPAIR_KITS, ADD_PARTLIST, STANDARD_JOBS, WITHOUT_SPARE_PARTS_DETAILS, QUOTE_SPARE_PARTS, QUOTE_SEARCH_QUOTE, QUOTE_CONFIGURATION, QUOTE_REPAIR_OPTION, QUOTE_REPAIR_QUOTE, QUOTE_REPAIR_SEARCH, QUOTE_REPAIR_CONFIGURATION, KITS, } from "navigation/CONSTANTS";
+import { ROOT, RESET, VERIFY_EMAIL, WORK_LIST_NEW, SOLUTION_BUILDER_NEW, PERMISSION, PERMISSION_SETTING, SERVICE_NEW, WITHOUT_REPAIR_OPTION01, LANDING_PAGE_LOGIN, LOGIN, PORTFOLIO_SUMMARY, ANALYTICS, WORK_LIST, REPORTS, PROFILE, DASHBOARD, PAGE1, AUTH_PAGE1, TEST_REACT_TABLE_NESTED, GUIDED_SOLUTION_BUILDER, SOLUTION_TEMPLATES, PORTFOLIO_AND_BUILDER_NEW, SOLUTION_BUILDER_ANALYTICS, SOLUTION_BUILDER_SERVICE_PORTFOLIO, SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO, SOLUTION_BUILDER_PORRTFOLIO_TEMP,SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT, ACCOUNT, BULID_REPAIR_OPTION, RIPAIR_SEGMENT01_TRANSMISSION, RIPAIR_SEGMENT01_DISASSEMBLE, RIPAIR_OPTION01, RIPAIR_SERVICE_ESTIMATE, WITHOUTSPARE_REPAIR_OPTION, PART_LIST, REPAIR_PARTLIST, REPAIR_WITH_SPARE_PARTS, REPAIR_WITHOUT_SPARE_PARTS, WITH_SPARE_PARTS, REPAIR_STANDARD_JOBS, REPAIR_KITS, ADD_PARTLIST, STANDARD_JOBS, WITHOUT_SPARE_PARTS_DETAILS, QUOTE_SPARE_PARTS, QUOTE_SEARCH_QUOTE, QUOTE_CONFIGURATION, QUOTE_REPAIR_OPTION, SPARE_PARTS_QUOTE_TEMPLATE, QUOTE_REPAIR_QUOTE, QUOTE_REPAIR_SEARCH, QUOTE_REPAIR_CONFIGURATION, SPARE_PARTS_QUOTE_REVIEWED, TERMS_CONDITIONS, REPAIR_QUOTE_CONFIGURATION, SOLUTION_QUOTE, SOLUTION_QUOTE_SEARCH, SOLUTION_QUOTE_CONFIG, SOLUTION_SERVICE_PORTFOLIO, KITS, } from "navigation/CONSTANTS";
 import { Analytics, ServicePortfolio, SolutionBuilderCreate, CustomizedPortfolio, PortfolioTemplatesResult, SolutionTemplateResult } from "../pages/SolutionModules/index"
 import { Profile } from '../pages/User/index'
 import { CreatePortfolio, WorkList, CreateWorkList, PortfolioSummary } from "../pages/PortfolioAndBundle/index"
@@ -42,6 +42,16 @@ import QuoteRepairOption from "pages/SolutionModules/QuoteRepairOption";
 import QuoteRepairQuote from "pages/SolutionModules/QuoteRepairQuote";
 import QuoteRepairSearch from "pages/SolutionModules/QuoteRepairSearch";
 import QuoteRepairConfiguration from "pages/SolutionModules/QuoteRepairConfiguration";
+import { LandingPageLogin } from "pages/Dashboard/LandingPageLogin";
+import SparePartsQuoteTemplate from "pages/SolutionModules/SparePartsQuoteTemplate";
+import SparePartsQuoteReviewed from "pages/SolutionModules/SparePartsQuoteReviewed";
+import TermsConditions from "pages/SolutionModules/TermsConditions";
+import RepairQuoteConfiguration from "pages/SolutionModules/RepairQuoteConfiguration";
+import SolutionQuote from "pages/SolutionModules/SolutionQuote";
+import SolutionQuoteSearch from "pages/SolutionModules/SolutionQuoteSearch";
+import SolutionQuoteConfiguration from "pages/SolutionModules/SolutionQuoteConfiguration";
+import { SolutionServicePortfolio } from "pages/SolutionModules/SolutionServicePortfolio";
+
 
 // alert(window.location.pathname)
 export const RouterConfig = () => {
@@ -64,6 +74,7 @@ export const RouterConfig = () => {
         <Route exact path={WORK_LIST_NEW} component={CreateWorkList} />
         <Route exact path={RESET} component={ResetPassword} />
         <Route exact path={ANALYTICS} component={AnalyticsDashboard} />
+        <Route exact path={LANDING_PAGE_LOGIN} component={LandingPageLogin} />
         <Route exact path={REPORTS} component={ReportDashboard} />
         <Route exact path={SOLUTION_BUILDER_ANALYTICS} component={Analytics} />
         <Route exact path={SOLUTION_BUILDER_NEW} component={SolutionBuilderCreate} />
@@ -102,7 +113,15 @@ export const RouterConfig = () => {
         <Route exact path={QUOTE_REPAIR_OPTION} component={QuoteRepairOption} />
         <Route exact path={QUOTE_REPAIR_QUOTE} component={QuoteRepairQuote} />
         <Route exact path={QUOTE_REPAIR_SEARCH} component={QuoteRepairSearch} />
+        <Route exact path={SPARE_PARTS_QUOTE_TEMPLATE} component={SparePartsQuoteTemplate} />
+        <Route exact path={SPARE_PARTS_QUOTE_REVIEWED} component={SparePartsQuoteReviewed} />
         <Route exact path={QUOTE_REPAIR_CONFIGURATION} component={QuoteRepairConfiguration} />
+        <Route exact path={TERMS_CONDITIONS} component={TermsConditions} />
+        <Route exact path={REPAIR_QUOTE_CONFIGURATION} component={RepairQuoteConfiguration} />
+        <Route exact path={SOLUTION_QUOTE} component={SolutionQuote} />
+        <Route exact path={SOLUTION_QUOTE_SEARCH} component={SolutionQuoteSearch} />
+        <Route exact path={SOLUTION_QUOTE_CONFIG} component={SolutionQuoteConfiguration} />
+        <Route exact path={SOLUTION_SERVICE_PORTFOLIO} component={SolutionServicePortfolio} />
         <Route exact path="/indexing" component={CommanComponents} />
 
         {/* <Route exact path={PAGE1} component={Page1} /> */}

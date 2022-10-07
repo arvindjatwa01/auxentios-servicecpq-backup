@@ -1203,7 +1203,7 @@ export function SideBarComponent(props) {
             </a>
             <ul aria-expanded="false">
               <li>
-                <Link to="solutionBuilder/guide">
+                <Link to="/SolutionQuote">
                   <span className="span-icon">
                     <svg
                       id="uuid-e1f64c88-ce49-4df1-a848-c28d42dd73fb"

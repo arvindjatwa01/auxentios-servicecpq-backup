@@ -282,8 +282,6 @@ const  QuoteRepairConfiguration=()=>{
           <button className="btn btn-primary w-100" onClick={() => setOpenCoveragetable(true)} style={{cursor: 'pointer'}}><FontAwesomeIcon className="mr-2" icon={faCloudUploadAlt} />Upload</button>
           </div>
           </div>
-
-       
       </Modal>
         </div>
       </div>
