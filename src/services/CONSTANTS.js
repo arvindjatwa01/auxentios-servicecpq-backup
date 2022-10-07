@@ -49,6 +49,8 @@ export const USER_SERVICE_SIGNIN_URL = () => USER_SERVICE_URI + "root-login";
 //Service Portfolio
 
 export const PORTFOLIO_URL = () => SOLUTION_BUILDER_URI + "portfolio";
+export const PORTFOLIO_SEARCH_URL = SOLUTION_BUILDER_URI + "portfolio/search?search=";
+
 export const Common_SOLUTION_BUILDER_URL = () =>
   SOLUTION_BUILDER_URI + "common-config";
 export const COVERAGE_REST = () => SOLUTION_BUILDER_URI + "coverage";
@@ -83,6 +85,7 @@ export const CREATE_CUSTOM_PORTFOLIO_ITEM = () => SOLUTION_BUILDER_URI + "item/c
 export const CUSTOM_PORTFOLIO_ITEM_PRICE_RKID = () => CREATE_CUSTOM_PORTFOLIO_ITEM() + "/get-RB-price-update-item-rkid";
 export const CUSTOM_PORTFOLIO_ITEM_PRICE_SJID = () => CREATE_CUSTOM_PORTFOLIO_ITEM() + "/get-RB-price-update-item-sjid";
 export const CREATE_CUSTOM_PRICE = () => CREATE_CUSTOM_PORTFOLIO_ITEM() + "/price";
+export const SEARCH_CUSTOM_PORTFOLIO_SOLUTION_DATA = SOLUTION_BUILDER_URI + "item/custom";
 
 
 

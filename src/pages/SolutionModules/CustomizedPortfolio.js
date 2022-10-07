@@ -24,7 +24,8 @@ import TabPanel from '@mui/lab/TabPanel';
 import FormControl from '@mui/material/FormControl';
 import Checkbox from '@mui/material/Checkbox';
 import { Link } from 'react-router-dom'
-import FormControlLabel from '@mui/material/FormControlLabel';
+// import FormControlLabel from '@mui/material/FormControlLabel';
+import { FormControlLabel, Switch } from "@material-ui/core";
 import { FileUploader } from "react-drag-drop-files";
 // import MuiMenuComponent from "../Operational/MuiMenuComponent";
 import Tooltip from "@mui/material/Tooltip";
@@ -161,6 +162,10 @@ export function CustomizedPortfolio(props) {
     const [productHierarchyKeyValue, setProductHierarchyKeyValue] = useState([]);
     const [geographicKeyValue, setGeographicKeyValue] = useState([]);
     const [typeKeyValue, setTypeKeyValue] = useState([]);
+
+    const [machineTypeKeyValueList, setMachineTypeKeyValueList] = useState([])
+    const [lifeStageOfMachineKeyValueList, setLifeStageOfMachineKeyValueList] = useState([])
+
     const [machineTypeKeyValue, setMachineTypeKeyValue] = useState([]);
     const [lifeStageOfMachineKeyValue, setLifeStageOfMachineKeyValue] = useState([]);
     const [isView, setIsView] = useState(false);
@@ -198,6 +203,9 @@ export function CustomizedPortfolio(props) {
     const [openedModelBoxData, setOpenedModelBoxData] = useState([]);
     const [modelIncludedData, setModelIncludedData] = useState([]);
 
+    const [flagTemplate, setFlagTemplate] = useState(false);
+    const [flagCommerce, setFlagCommerce]= useState(false);
+
     const [coverageData, setCoverageData] = useState({
         make: "",
         modal: "",
@@ -219,13 +227,14 @@ export function CustomizedPortfolio(props) {
         machineDate: "",
     })
 
+
     const [administrative, setAdministrative] = useState({
         preparedBy: null,
         approvedBy: null,
-        preparedOn: null,
+        preparedOn: new Date(),
         revisedBy: null,
-        revisedOn: null,
-        branch: null,
+        revisedOn: new Date(),
+        salesOffice: null,
         offerValidity: null,
     });
 
@@ -238,13 +247,14 @@ export function CustomizedPortfolio(props) {
         toInput: "",
     });
 
+
     const [generalComponentData, setGeneralComponentData] = useState({
         name: "",
         description: "",
         // serviceDescription: "",
         externalReference: "",
         customerSegment: null,
-        customItems: [{customItemId: 123}],
+        customItems: [],
         items: [],
         customCoverages: [],
     });
@@ -580,9 +590,9 @@ export function CustomizedPortfolio(props) {
                     : "EMPTY",
                 searchTerm: "EMPTY",
                 supportLevel: "EMPTY",
-                portfolioPrice: {},
-                additionalPrice: {},
-                escalationPrice: {},
+                // portfolioPrice: {},
+                // additionalPrice: {},
+                // escalationPrice: {},
                 customCoverages: generalComponentData.coverages
                     ? generalComponentData.coverages
                     : [],
@@ -769,13 +779,13 @@ export function CustomizedPortfolio(props) {
                         : "EMPTY",
                     searchTerm: "EMPTY",
                     supportLevel: "EMPTY",
-                    portfolioPrice: {},
-                    additionalPrice: {},
-                    escalationPrice: {},
+                    // portfolioPrice: {},
+                    // additionalPrice: {},
+                    // escalationPrice: {},
                     customCoverages: generalComponentData.coverages
                         ? generalComponentData.coverages
                         : [],
-                        items: [],
+                    items: [],
                     // customItems: [...generalComponentData.items, { customItemId: res.data.customItemId }],
                     customeItems: [],
                     usageCategory: categoryUsageKeyValue1.value,
@@ -923,6 +933,8 @@ export function CustomizedPortfolio(props) {
         }
     };
 
+    /*  =============== Save & Next Button click Function ================== */
+
     const handleNextClick = async (e) => {
 
         if (e.target.id == "general") {
@@ -1006,7 +1018,10 @@ export function CustomizedPortfolio(props) {
                 geographic: stratgyGeographicKeyValue.value,
             });
 
+
+
             const { portfolioId, ...res } = generalComponentData;
+
             let obj = {
                 ...res,
                 visibleInCommerce: true,
@@ -1015,9 +1030,9 @@ export function CustomizedPortfolio(props) {
                 customerSegment: generalComponentData.customerSegment.value
                     ? generalComponentData.customerSegment.value
                     : "EMPTY",
-                machineType: generalComponentData.machineType
-                    ? generalComponentData.machineType
-                    : "EMPTY",
+                // machineType: generalComponentData.machineType
+                //     ? generalComponentData.machineType
+                //     : "EMPTY",
                 status: generalComponentData.status
                     ? generalComponentData.status
                     : "EMPTY",
@@ -1049,9 +1064,11 @@ export function CustomizedPortfolio(props) {
                 contractOrSupport: generalComponentData.contractOrSupport
                     ? generalComponentData.contractOrSupport
                     : "EMPTY",
-                lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                    ? generalComponentData.lifeStageOfMachine
-                    : "EMPTY",
+                // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                //     ? generalComponentData.lifeStageOfMachine
+                //     : "EMPTY",
+                machineType: machineTypeKeyValue.value,
+                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
                 supportLevel: generalComponentData.supportLevel
                     ? generalComponentData.supportLevel
                     : "EMPTY",
@@ -1063,9 +1080,9 @@ export function CustomizedPortfolio(props) {
                     : "EMPTY",
                 searchTerm: "EMPTY",
                 supportLevel: "EMPTY",
-                portfolioPrice: {},
-                additionalPrice: {},
-                escalationPrice: {},
+                // portfolioPrice: {},
+                // additionalPrice: {},
+                // escalationPrice: {},
 
                 usageCategory: categoryUsageKeyValue1.value,
                 taskType: stratgyTaskTypeKeyValue.value,
@@ -1111,7 +1128,149 @@ export function CustomizedPortfolio(props) {
                 throw `${strategyRes.status}:error in update portfolio`;
             };
         } else if (e.target.id == "administrative") {
-            setValue("4");
+            setGeneralComponentData({
+                ...generalComponentData,
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                salesOffice: administrative.salesOffice,
+                offerValidity: administrative.offerValidity,
+            });
+            // console.log("data update new : ", administrative.preparedBy)
+            const { portfolioId, ...res } = generalComponentData;
+
+            console.log("NEw Updated data is : ", generalComponentData);
+
+            let Administryobj = {
+                ...res,
+                visibleInCommerce: true,
+                customerId: 0,
+                lubricant: true,
+                customerSegment: generalComponentData.customerSegment.value
+                    ? generalComponentData.customerSegment.value
+                    : "EMPTY",
+                // machineType: generalComponentData.machineType
+                //     ? generalComponentData.machineType
+                //     : "EMPTY",
+                status: generalComponentData.status
+                    ? generalComponentData.status
+                    : "EMPTY",
+                strategyTask: generalComponentData.strategyTask
+                    ? generalComponentData.strategyTask
+                    : "EMPTY",
+                taskType: generalComponentData.taskType
+                    ? generalComponentData.taskType
+                    : "EMPTY",
+                usageCategory: generalComponentData.usageCategory
+                    ? generalComponentData.usageCategory
+                    : "EMPTY",
+                productHierarchy: generalComponentData.productHierarchy
+                    ? generalComponentData.productHierarchy
+                    : "EMPTY",
+                geographic: generalComponentData.geographic
+                    ? generalComponentData.geographic
+                    : "EMPTY",
+                availability: generalComponentData.availability
+                    ? generalComponentData.availability
+                    : "EMPTY",
+                responseTime: generalComponentData.responseTime
+                    ? generalComponentData.responseTime
+                    : "EMPTY",
+                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                application: generalComponentData.application
+                    ? generalComponentData.application
+                    : "EMPTY",
+                contractOrSupport: generalComponentData.contractOrSupport
+                    ? generalComponentData.contractOrSupport
+                    : "EMPTY",
+                // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                //     ? generalComponentData.lifeStageOfMachine
+                //     : "EMPTY",
+                machineType: machineTypeKeyValue.value,
+                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                supportLevel: generalComponentData.supportLevel
+                    ? generalComponentData.supportLevel
+                    : "EMPTY",
+                customItems: [],
+                items: [],
+                customCoverages: [],
+                customerGroup: generalComponentData.customerGroup
+                    ? generalComponentData.customerGroup
+                    : "EMPTY",
+                searchTerm: "EMPTY",
+                supportLevel: "EMPTY",
+                // portfolioPrice: {},
+                // additionalPrice: {},
+                // escalationPrice: {},
+
+                usageCategory: categoryUsageKeyValue1.value,
+                taskType: stratgyTaskTypeKeyValue.value,
+                strategyTask: stratgyTaskUsageKeyValue.value,
+                responseTime: stratgyResponseTimeKeyValue.value,
+                productHierarchy: stratgyHierarchyKeyValue.value,
+                geographic: stratgyGeographicKeyValue.value,
+                numberOfEvents: 0,
+                rating: "",
+                startUsage: "",
+                endUsage: "",
+                unit: "HOURS",
+                additionals: "",
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                salesOffice: administrative.salesOffice,
+                offerValidity: administrative.offerValidity,
+
+                // preparedBy: generalComponentData.preparedBy
+                // ? generalComponentData.preparedBy
+                // : "",
+                // approvedBy: generalComponentData.approvedBy
+                // ? generalComponentData.approvedBy
+                // : "",
+                // preparedOn: generalComponentData.preparedOn
+                // ? generalComponentData.preparedOn
+                // : "",
+                // revisedBy: generalComponentData.revisedBy
+                // ? generalComponentData.revisedBy
+                // : "",
+                // revisedOn: generalComponentData.revisedOn
+                // ? generalComponentData.revisedOn
+                // : "",
+                // salesOffice: generalComponentData.salesOffice
+                // ? generalComponentData.salesOffice
+                // : "",
+                // offerValidity: generalComponentData.offerValidity
+                // ? generalComponentData.offerValidity
+                // : "",
+            };
+            console.log("Administrative Objects is : ", Administryobj)
+
+            const administryRes = await updateCustomPortfolio(
+                generalComponentData.portfolioId,
+                Administryobj
+            );
+            if (administryRes.status === 200) {
+                toast("👏 Portfolio updated", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+                // setValue("administrative");
+                setValue("4");
+                console.log("administryRes updating", administryRes.data);
+            } else {
+                throw `${administryRes.status}:error in update portfolio`;
+            };
+
+            // setValue("4");
 
         } else if (e.target.id == "coverage") {
 
@@ -1154,9 +1313,9 @@ export function CustomizedPortfolio(props) {
                 customerSegment: generalComponentData.customerSegment
                     ? generalComponentData.customerSegment.value
                     : "EMPTY",
-                machineType: generalComponentData.machineType
-                    ? generalComponentData.machineType
-                    : "EMPTY",
+                // machineType: generalComponentData.machineType
+                //     ? generalComponentData.machineType
+                //     : "EMPTY",
                 status: generalComponentData.status
                     ? generalComponentData.status
                     : "EMPTY",
@@ -1188,9 +1347,11 @@ export function CustomizedPortfolio(props) {
                 contractOrSupport: generalComponentData.contractOrSupport
                     ? generalComponentData.contractOrSupport
                     : "EMPTY",
-                lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                    ? generalComponentData.lifeStageOfMachine
-                    : "EMPTY",
+                // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                //     ? generalComponentData.lifeStageOfMachine
+                //     : "EMPTY",
+                machineType: machineTypeKeyValue.value,
+                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
                 supportLevel: generalComponentData.supportLevel
                     ? generalComponentData.supportLevel
                     : "EMPTY",
@@ -1199,9 +1360,9 @@ export function CustomizedPortfolio(props) {
                     : "EMPTY",
                 searchTerm: "EMPTY",
                 supportLevel: "EMPTY",
-                portfolioPrice: {},
-                additionalPrice: {},
-                escalationPrice: {},
+                // portfolioPrice: {},
+                // additionalPrice: {},
+                // escalationPrice: {},
                 customeItems: [],
                 items: [],
                 customCoverages: cvgIds,
@@ -1211,6 +1372,13 @@ export function CustomizedPortfolio(props) {
                 responseTime: stratgyResponseTimeKeyValue.value,
                 productHierarchy: stratgyHierarchyKeyValue.value,
                 geographic: stratgyGeographicKeyValue.value,
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                salesOffice: administrative.salesOffice,
+                offerValidity: administrative.offerValidity,
             };
             if (generalComponentData.portfolioId) {
                 const updatePortfolioRes = await updateCustomPortfolio(
@@ -1275,9 +1443,12 @@ export function CustomizedPortfolio(props) {
 
     const handleAdministrativreChange = (e) => {
         console.log("handleAdministrativreChange", administrative);
+        console.log("Event is ", e)
         var value = e.target.value;
         var name = e.target.name;
         setAdministrative({ ...administrative, [name]: value });
+
+        console.log("handleAdministrativreChange after : ", administrative)
     };
 
     const handleCoverageInputChange = (e) => {
@@ -1482,7 +1653,7 @@ export function CustomizedPortfolio(props) {
                     value: d.key,
                     label: d.value,
                 }));
-                setMachineTypeKeyValue(options);
+                setMachineTypeKeyValueList(options);
             })
             .catch((err) => {
                 alert(err);
@@ -1494,7 +1665,7 @@ export function CustomizedPortfolio(props) {
                     value: d.key,
                     label: d.value,
                 }));
-                setLifeStageOfMachineKeyValue(options);
+                setLifeStageOfMachineKeyValueList(options);
             })
             .catch((err) => {
                 alert(err);
@@ -2835,7 +3006,10 @@ export function CustomizedPortfolio(props) {
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid ">
                     <div className="d-flex align-items-center justify-content-between mt-2">
-                        <h5 className="font-weight-600 mb-0">Custom Portfolio</h5>
+                        <h5 className="font-weight-600 mb-0"> 
+                        {/* Custom Portfolio */}
+                        Solution Configurator
+                        </h5>
                         <div className="d-flex justify-content-center align-items-center">
                             <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
                             <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
@@ -2869,13 +3043,14 @@ export function CustomizedPortfolio(props) {
                                         <Tab label="Strategy" value="3" />
                                         <Tab label="Administrative" value={"administrative"} />
                                         <Tab label="Price" value="4" />
-                                        <Tab label="Price Agreement" disabled={!priceAgreementOption} value="5" />
+                                        {/* <Tab label="Price Agreement" disabled={!priceAgreementOption} value="5" /> */}
+                                        <Tab label="Price Agreement" value="5" />
                                         <Tab label="Coverage" value="6" />
                                     </TabList>
                                 </Box>
                                 <TabPanel value="1">
                                     <div className="row mt-4">
-                                        <div className="col-md-3 col-sm-3">
+                                        {/* <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
                                                     SELECT TYPE
@@ -2890,25 +3065,13 @@ export function CustomizedPortfolio(props) {
                                                         headerTypeKeyValue.length > 0 ? false : true
                                                     }
                                                 />
-                                                {/* <div>
-                                                    <ToggleButtonGroup
-                                                        color="primary"
-                                                        value={alignment}
-                                                        exclusive
-                                                        onChange={handleChangeToggle}
-                                                    >
-                                                        <ToggleButton value="Portfolio">Portfolio</ToggleButton>
-                                                        <ToggleButton value="Program">Program</ToggleButton>
-                                                    </ToggleButtonGroup>
-                                                </div> */}
-
-                                                {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponentData.portfolioName} onChange={handleGeneralInputChange} /> */}
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
-                                                    {prefilgabelGeneral} ID
+                                                    {/* {prefilgabelGeneral} ID */}
+                                                    SOLUTION ID
                                                 </label>
                                                 <input
                                                     type="text"
@@ -2923,7 +3086,7 @@ export function CustomizedPortfolio(props) {
                                         <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
-                                                    {prefilgabelGeneral} NAME
+                                                    SOLUTION CODE
                                                 </label>
                                                 <input
                                                     type="text"
@@ -2935,10 +3098,26 @@ export function CustomizedPortfolio(props) {
                                                 />
                                             </div>
                                         </div>
+                                        {/* <div className="col-md-3 col-sm-3">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-12 font-weight-500">
+                                                    {prefilgabelGeneral} NAME
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    name="name"
+                                                    placeholder="Name"
+                                                    value={generalComponentData.name}
+                                                    onChange={handleGeneralInputChange}
+                                                />
+                                            </div>
+                                        </div> */}
                                         <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
-                                                    SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY)
+                                                    {/* SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY) */}
+                                                    SOLUTION DESCRIPTION
                                                 </label>
                                                 <input
                                                     type="text"
@@ -2968,7 +3147,7 @@ export function CustomizedPortfolio(props) {
                                         <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
-                                                    CUSTOMER SEGMENT
+                                                    CUSTOMER
                                                 </label>
                                                 <Select
                                                     onChange={handleCustomerSegmentChange}
@@ -2976,6 +3155,57 @@ export function CustomizedPortfolio(props) {
                                                     options={customerSegmentKeyValue}
                                                 // options={strategyList}
                                                 />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-3 col-sm-3 d-flex justify-content-between align-items-center">
+                                            {/* <div className="form-group">
+                                                <label className="text-light-dark font-size-12 font-weight-500">
+                                                    FLAG FOR TEMPLATE
+                                                </label>
+                                                <Select
+                                                    onChange={handleCustomerSegmentChange}
+                                                    value={generalComponentData.customerSegment}
+                                                    options={customerSegmentKeyValue}
+                                                // options={strategyList}
+                                                />
+                                            </div> */}
+                                            <div className=" d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <FormGroup>
+                                                        <FormControlLabel
+                                                            control={<Switch />}
+                                                            label=" FLAG FOR TEMPLATE"
+                                                            value={flagTemplate}
+                                                            
+                                                            
+                                                        />
+                                                    </FormGroup>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-3 col-sm-3 d-flex justify-content-between align-items-center">
+                                            {/* <div className="form-group">
+                                                <label className="text-light-dark font-size-12 font-weight-500">
+                                                    FLAG FOR COMMERCE
+                                                </label>
+                                                <Select
+                                                    onChange={handleCustomerSegmentChange}
+                                                    value={generalComponentData.customerSegment}
+                                                    options={customerSegmentKeyValue}
+                                                // options={strategyList}
+                                                />
+                                                
+                                            </div> */}
+                                            <div className=" d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <FormGroup>
+                                                        <FormControlLabel
+                                                            control={<Switch />}
+                                                            label=" FLAG FOR COMMERCE"
+                                                            value={flagCommerce}
+                                                        />
+                                                    </FormGroup>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -3230,7 +3460,7 @@ export function CustomizedPortfolio(props) {
                                 </TabPanel>
                                 <TabPanel value="3">
                                     <div className="row">
-                                        <div className="col-md-4 col-sm-4">
+                                        {/* <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
@@ -3243,7 +3473,6 @@ export function CustomizedPortfolio(props) {
                                                     value={categoryUsageKeyValue1}
                                                     onChange={(e) => HandleCatUsage(e)}
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -3278,16 +3507,8 @@ export function CustomizedPortfolio(props) {
                                                         )
                                                     }
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
-                                        {/* <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CATEGORY USAGE</label>
-                                                <Select options={categoryList} />
-                                                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" />
-                                            </div>
-                                        </div> */}
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -3300,11 +3521,9 @@ export function CustomizedPortfolio(props) {
                                                     options={strategyOptionals}
                                                     value={stratgyOptionalsKeyValue}
                                                     onChange={(e) => setStratgyOptionalsKeyValue(e)}
-                                                // options={rTimeList}
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Optionais" /> */}
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -3354,7 +3573,7 @@ export function CustomizedPortfolio(props) {
                                                 {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
-                                        <div className="col-md-4 col-sm-4">
+                                        {/* <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
@@ -3363,24 +3582,13 @@ export function CustomizedPortfolio(props) {
                                                     MACHINE TYPE
                                                 </label>
                                                 <Select
-                                                    // // options={geographicList}
-                                                    // // value={stratgyGeographicKeyValue}
-                                                    // // onChange={(e) => setStratgyGeographicKeyValue(e)}
-                                                    // defaultValue={selectedOption}
-                                                    // // onChange={setSelectedOption}
-                                                    // options={options}
-                                                    // placeholder="Machine Type"
-                                                    onChange={(e) =>
-                                                        handleDropdownChange(ENUM.MACHINE_TYPE, e)
-                                                    }
-                                                    isClearable={true}
-                                                    value={coverageData.machineType}
+                                                    options={machineTypeKeyValueList}
+                                                    value={machineTypeKeyValue}
+                                                    onChange={(e) => setMachineTypeKeyValue(e)}
                                                     isLoading={
-                                                        machineTypeKeyValue.length > 0 ? false : true
+                                                        machineTypeKeyValueList.length > 0 ? false : true
                                                     }
-                                                    options={machineTypeKeyValue}
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -3392,24 +3600,46 @@ export function CustomizedPortfolio(props) {
                                                     LIFE STAGE
                                                 </label>
                                                 <Select
-                                                    // options={geographicList}
-                                                    // value={stratgyGeographicKeyValue}
-                                                    // onChange={(e) => setStratgyGeographicKeyValue(e)}
-                                                    // defaultValue={selectedOption}
-                                                    // onChange={setSelectedOption}
-                                                    // options={options}
-                                                    // placeholder="Life Stage"
-                                                    onChange={(e) =>
-                                                        handleDropdownChange(ENUM.LIFE_STAGE_OF_MACHINE, e)
-                                                    }
-                                                    isClearable={true}
-                                                    value={coverageData.lifeStageOfMachine}
+                                                    options={lifeStageOfMachineKeyValueList}
+                                                    value={lifeStageOfMachineKeyValue}
+                                                    onChange={(e) => setLifeStageOfMachineKeyValue(e)}
                                                     isLoading={
-                                                        lifeStageOfMachineKeyValue.length > 0 ? false : true
+                                                        lifeStageOfMachineKeyValueList.length > 0 ? false : true
                                                     }
-                                                    options={lifeStageOfMachineKeyValue}
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
+                                            </div>
+                                        </div> */}
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    SOLUTION TYPE
+                                                </label>
+                                                <Select
+                                                    options={options}
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                // isLoading={
+                                                //     lifeStageOfMachineKeyValueList.length > 0 ? false : true
+                                                // }
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    SOLUTION LEVEL
+                                                </label>
+                                                <Select
+                                                    options={options}
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                />
                                             </div>
                                         </div>
                                     </div>
@@ -3519,22 +3749,42 @@ export function CustomizedPortfolio(props) {
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label
-                                                    className="text-light-dark font-size-14 font-weight-500"
-                                                    htmlFor="exampleInputEmail1"
-                                                >
-                                                    PREPARED ON
-                                                </label>
-                                                <input
+                                            {/* <div className="form-group "> */}
+                                            <label
+                                                className="text-light-dark font-size-14 font-weight-500"
+                                                htmlFor="exampleInputEmail1"
+                                            >
+                                                PREPARED ON
+                                            </label>
+                                            {/* <input
                                                     type="text"
                                                     className="form-control border-radius-10"
                                                     placeholder="Optional"
                                                     name="preparedOn"
                                                     value={administrative.preparedOn}
                                                     onChange={handleAdministrativreChange}
-                                                />
+                                                /> */}
+                                            <div className="d-flex align-items-center date-box w-100">
+                                                <div className="form-group w-100">
+                                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                        <DatePicker
+                                                            variant="inline"
+                                                            format="dd/MM/yyyy"
+                                                            className="form-controldate border-radius-10"
+                                                            label=""
+                                                            name="preparedOn"
+                                                            value={administrative.preparedOn}
+                                                            onChange={(e) =>
+                                                                setAdministrative({
+                                                                    ...administrative,
+                                                                    preparedOn: e,
+                                                                })
+                                                            }
+                                                        />
+                                                    </MuiPickersUtilsProvider>
+                                                </div>
                                             </div>
+                                            {/* </div> */}
                                         </div>
                                     </div>
                                     <div className="row">
@@ -3564,14 +3814,34 @@ export function CustomizedPortfolio(props) {
                                                 >
                                                     REVISED ON
                                                 </label>
-                                                <input
+                                                {/* <input
                                                     type="text"
                                                     className="form-control border-radius-10"
                                                     placeholder="Optional"
                                                     name="revisedOn"
                                                     value={administrative.revisedOn}
                                                     onChange={handleAdministrativreChange}
-                                                />
+                                                /> */}
+                                                <div className="d-flex align-items-center date-box w-100">
+                                                    <div className="form-group w-100">
+                                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                            <DatePicker
+                                                                variant="inline"
+                                                                format="dd/MM/yyyy"
+                                                                className="form-controldate border-radius-10"
+                                                                label=""
+                                                                name="revisedOn"
+                                                                value={administrative.revisedOn}
+                                                                onChange={(e) =>
+                                                                    setAdministrative({
+                                                                        ...administrative,
+                                                                        revisedOn: e,
+                                                                    })
+                                                                }
+                                                            />
+                                                        </MuiPickersUtilsProvider>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -3585,8 +3855,8 @@ export function CustomizedPortfolio(props) {
                                                 <input
                                                     type="text"
                                                     className="form-control border-radius-10"
-                                                    name="branch"
-                                                    value={administrative.branch}
+                                                    name="salesOffice"
+                                                    value={administrative.salesOffice}
                                                     onChange={handleAdministrativreChange}
                                                 />
                                             </div>
@@ -3675,8 +3945,8 @@ export function CustomizedPortfolio(props) {
                                             </div>
                                         </div>
                                     </div>
-                                    <hr />
-                                    <h6>PRICES</h6>
+                                    {/* <hr />
+                                    <h6>PRICES</h6> */}
                                     <div className="row">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
@@ -3774,7 +4044,7 @@ export function CustomizedPortfolio(props) {
                                             </div>
                                         </div>
                                     </div>
-                                    <hr />
+                                    {/* <hr /> */}
                                     <div className="row">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">

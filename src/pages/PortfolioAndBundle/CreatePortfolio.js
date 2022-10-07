@@ -1639,9 +1639,9 @@ export function CreatePortfolio() {
             : "EMPTY",
           searchTerm: "EMPTY",
           supportLevel: "EMPTY",
-          portfolioPrice: {},
-          additionalPrice: {},
-          escalationPrice: {},
+          portfolioPrice: {"portfolioPriceId": 92},
+          additionalPrice: {"additionalPriceId": 1},
+          escalationPrice: { "escalationPriceId": 1},
 
           usageCategory: categoryUsageKeyValue1.value,
           taskType: stratgyTaskTypeKeyValue.value,
@@ -1767,9 +1767,12 @@ export function CreatePortfolio() {
             : "EMPTY",
           searchTerm: "EMPTY",
           supportLevel: "EMPTY",
-          portfolioPrice: {},
-          additionalPrice: {},
-          escalationPrice: {},
+          // portfolioPrice: {},
+          // additionalPrice: {},
+          // escalationPrice: {},
+          portfolioPrice: {"portfolioPriceId": 92},
+          additionalPrice: {"additionalPriceId": 1},
+          escalationPrice: { "escalationPriceId": 1},
           items: [],
           coverages: cvgIds,
           usageCategory: categoryUsageKeyValue1.value,
@@ -2767,7 +2770,7 @@ export function CreatePortfolio() {
           </Link>
           <Link
             to="#"
-            className="btn-svg text-white cursor "
+            className="btn-svg text-white cursor"
             onClick={() => ShowRelatedIncludeModelBox(row)}
           >
             <svg
@@ -2954,7 +2957,7 @@ export function CreatePortfolio() {
               </Link>
             </Tooltip>
           </div>
-          <div className=" cursor" data-toggle="modal" data-target="#myModal2">
+          <div className=" cursor" data-toggle="modal" data-target="#myModal12">
             <Tooltip title="Inclusion">
               <Link to="#" className="px-1">
                 <img src={cpqIcon}></img>
@@ -5543,7 +5546,7 @@ export function CreatePortfolio() {
                         ]}
                       />
                       <div className=" ml-3">
-                        <Link to="#" className="btn bg-primary text-white">
+                        <Link to="#" onClick={() => setOpen3(true)} className="btn bg-primary text-white">
                           <FileUploadOutlinedIcon />{" "}
                           <span className="ml-1">Upload</span>
                         </Link>
@@ -8521,7 +8524,7 @@ export function CreatePortfolio() {
 
       <div
         className="modal right fade"
-        id="myModal2"
+        id="myModal12"
         tabIndex="-1"
         role="dialog"
         aria-labelledby="myModalLabel2"
