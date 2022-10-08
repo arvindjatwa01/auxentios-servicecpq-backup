@@ -23,6 +23,27 @@ export const customitemCreation = (payLoad) => {
     });
 };
 
+export const getCustomItemData = (id) => {
+  console.log("customportfolioItemService > getcustomItemData called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(`${CREATE_CUSTOM_PORTFOLIO_ITEM()}/${id}`)
+        .then((res) => {
+          console.log("getcustomItemData > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("getcustomItemData > axios err=", err);
+          reject("Error in getcustomItemData axios!");
+        });
+    } catch (error) {
+      console.error("in customportfolioItemService > getcustomItemData, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 export const getSearchCustomPortfolio = (searchStr) => {
   console.log("Query customPortfolio > getSearchCustomPortfolio called...");
   console.log("new search str is :",searchStr);
@@ -44,6 +65,27 @@ export const getSearchCustomPortfolio = (searchStr) => {
       console.error("in Query customPortfolio > getSearchCustomPortfolio, Err===", error);
       reject(SYSTEM_ERROR);
     }
+  });
+};
+
+export const getcustomItemPriceById = (id) => {
+  console.log("customportfolioItemService > getcustomItemPriceById called...");
+  return new Promise((resolve, reject) => {
+      try {
+          axios
+              .get(`${CREATE_CUSTOM_PRICE()}/${id}`)
+              .then((res) => {
+                  console.log("getcustomItemPriceById > axios res=", res);
+                  resolve(res.data);
+              })
+              .catch((err) => {
+                  console.log("getcustomItemPriceById > axios err=", err);
+                  reject("Error in getcustomItemPriceById axios!");
+              });
+      } catch (error) {
+          console.error("in customportfolioItemService > getcustomItemPriceById, Err===", error);
+          reject(SYSTEM_ERROR);
+      }
   });
 };
 
@@ -129,4 +171,25 @@ export const updateCustomItemData = (id,payLoad) => {
             reject(SYSTEM_ERROR);
         }
     });
+};
+
+export const updateCustomPriceData = (id,payLoad) => {
+  console.log("customportfolioItemService > updateCustomPriceData called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(`${CREATE_CUSTOM_PRICE()}/${id}`,payLoad)
+        .then((res) => {
+          console.log("updateCustomPriceData > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("updateCustomPriceData > axios err=", err);
+          reject("Error in updateCustomPriceData axios!");
+        });
+    } catch (error) {
+      console.error("in customportfolioItemService > updateCustomPriceData, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
 };

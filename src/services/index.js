@@ -18,4 +18,4 @@ export { getUsageCategoryKeyValue, getStrategyTaskKeyValue, getTaskTypeKeyValue,
 export {getSearchQueryCoverage,getSearchCoverageForFamily} from "./searchQueryService"
 export { itemCreation,itemSearchSuggestion,itemSearch,getItemPrice,updateItemData,deleteItem, itemPriceDataId } from './portFolioItemService';
 export { getComponentCodeSuggetions } from './masterComponentCode';
-export { customitemCreation,getcustomItemPrice,updateCustomItemData,deleteCustomItem,customPriceCreation,getSearchCustomPortfolio } from './customPortfolioItemService'
+export { customitemCreation,getcustomItemPrice,updateCustomItemData,deleteCustomItem,customPriceCreation,getSearchCustomPortfolio,getCustomItemData,getcustomItemPriceById,updateCustomPriceData } from './customPortfolioItemService'

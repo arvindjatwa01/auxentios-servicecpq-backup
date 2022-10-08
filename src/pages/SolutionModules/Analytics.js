@@ -2755,7 +2755,7 @@ export const Analytics = () => {
 
                                                    {
 
-                                                      <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i}`} id="style">
+                                                      <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`} id="style">
                                                          {obj.selectOptions.map((currentItem, j) => (
                                                             <li className="list-group-item" key={j} onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}>{currentItem}</li>
                                                          ))}
@@ -3323,43 +3323,46 @@ export const Analytics = () => {
                   </div>
                </div>
                <div className="col-md-12">
-                  <div className="row">
-                     <div className="col-md-6 border-right border-dark">
-                        <div className="maintableheader bg-white mt-2 border-radius-10">
-                           <RadioGroup className='my-2'
-                              row
-                              aria-labelledby="demo-form-control-label-placement"
-                              name="position"
-                              defaultValue="top"
-                              value={selectTypeOfSolution}
-                              onChange={handleTypeOfSolution}
-                           >
+                  <div className="card mt-2">
+                     <div className="row">
+                        <div className="col-md-6" style={{ borderRight: '1px solid #cfcece' }}>
 
-                              <FormControlLabel
-                                 className="col-md-12 m-0 align-itemsstart"
-                                 value="0"
-                                 control={<Radio className="mx-1" checked={solutionValue == 0} />}
-                                 label="Portfolio Template"
-                                 labelPlacement="end"
-                              />
-                              <FormControlLabel
-                                 className="col-md-12 m-0 mt-3 align-itemsstart"
-                                 value="1"
-                                 control={<Radio className="mx-1" />}
-                                 label="Solution Template"
-                                 labelPlacement="end"
-                              />
-                           </RadioGroup>
+                           <div className="maintableheader bg-white mt-2 border-radius-10">
+                              <RadioGroup className='my-2 '
+                                 row
+                                 aria-labelledby="demo-form-control-label-placement"
+                                 name="position"
+                                 defaultValue="top"
+                                 value={selectTypeOfSolution}
+                                 onChange={handleTypeOfSolution}
+                              >
+
+                                 <FormControlLabel
+                                    className="col-md-12 align-items-center m-0 "
+                                    value="0"
+                                    control={<Radio className="mx-1" checked={solutionValue == 0} />}
+                                    label="Portfolio Template"
+                                    labelPlacement="end"
+                                 />
+                                 <FormControlLabel
+                                    className="col-md-12 align-items-center m-0 mt-3 "
+                                    value="1"
+                                    control={<Radio className="mx-1" />}
+                                    label="Solution Template"
+                                    labelPlacement="end"
+                                 />
+                              </RadioGroup>
+                           </div>
                         </div>
-                     </div>
-                     <div className="col-md-6">
-                        <div className="mx-0 mt-4 text-center">
-                           <Button className="btn text-white bg-primary px-3 text-capitalize" onClick={() => history.push('/solutionBuilder/guide')}>Guided Solution</Button>
+                        <div className="col-md-6">
+                           <div className="mx-0 mt-4 text-right">
+                              <Button className="btn text-white bg-primary px-3 text-capitalize mr-3" onClick={() => history.push('/solutionBuilder/guide')}>Guided Solution</Button>
+                           </div>
                         </div>
                      </div>
                   </div>
                </div>
-               {solutionValue == 0 || solutionValue == 1 ? <hr /> : <></>}
+
                {/* <hr /> */}
                <div className="maintableheader bg-white mt-2 border-radius-10">
                   {/* <RadioGroup className='my-2'
@@ -3437,7 +3440,7 @@ export const Analytics = () => {
                            {portfolioTempMasterData.length > 0 ?
                               <>
                                  <div className="tableheader">
-                                    <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
+                                    <ul class="submenu templateResultheading accordion mt-2" style={{ display: 'block' }}>
                                        <li><a className="cursor result" >PORTFOLIO TEMPLATE RESULT</a></li>
                                     </ul>
                                     <DataTable
@@ -3481,7 +3484,7 @@ export const Analytics = () => {
                      {selectedPortfolioTempMasterData.length > 0 ? (
                         <>
                            <div className="tableheader">
-                              <ul class="submenu accordion mt-0" style={{ display: 'block' }}>
+                              <ul class="submenu templateResultheading accordion mt-2" style={{ display: 'block' }}>
                                  <li><a className="cursor result">INCLUDED PORTFOLIO TEMPLATE</a></li>
                               </ul>
                               <DataTable
@@ -3492,6 +3495,16 @@ export const Analytics = () => {
                                  customStyles={customStyles}
                                  pagination
                               />
+                              <div className="m-2 text-right">
+                                 {/* <div> */}
+                                 {/* <button className="btn btn-primary w-100" onClick={handleTemplateItemSaveAndContinue}>Save & Continue</button> */}
+                                 {/* </div> */}
+                                 <input
+                                    onClick={handleTemplateItemSaveAndContinue}
+                                    className="btn text-white bg-primary"
+                                    value="Save & Continue"
+                                 />
+                              </div>
                            </div>
                         </>
                      ) : (
@@ -3499,6 +3512,7 @@ export const Analytics = () => {
                      )}
 
                   </> : <></>}
+
 
                   {/* Solution Templates Search Result Master & Selected Data Starting */}
 
@@ -3542,7 +3556,7 @@ export const Analytics = () => {
 
                </div>
             </Modal.Body>
-            {solutionValue == 0 || solutionValue == 1 ? <>
+            {/* {solutionValue == 0 || solutionValue == 1 ? <>
                <Modal.Footer>
                   {(selectedPortfolioTempMasterData.length > 0 && solutionValue == 0) ?
                      <div>
@@ -3550,7 +3564,7 @@ export const Analytics = () => {
                      </div>
                      : <></>}
                </Modal.Footer>
-            </> : <></>}
+            </> : <></>} */}
 
          </Modal>
 

@@ -56,9 +56,16 @@ import { useAppSelector } from "../../app/hooks";
 
 import AddPortfolioItem from "../PortfolioAndBundle/AddPortfolioItem";
 
+import AddCustomPortfolioItem from "./AddCustomPortfolioItem";
+import CustomSolution from "./CustomSolution";
+
+import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined"
+import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
+import AccessAlarmOutlinedIcon from "@mui/icons-material/AccessAlarmOutlined";
+import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 
 import { MuiMenuComponent } from "../Operational/index";
-
+import $ from "jquery";
 
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import DateFnsUtils from "@date-io/date-fns";
@@ -69,6 +76,8 @@ import PriceCalculator from "../PortfolioAndBundle/PriceCalculator";
 import penIcon from "../../assets/images/pen.png";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import Loader from "react-js-loader";
+
+import Solution from "pages/PortfolioAndBundle/Solution";
 
 
 import {
@@ -94,9 +103,12 @@ import {
     getSearchCoverageForFamily,
     itemCreation,
     createCoverage,
+    updateItemData,
     customitemCreation,
     createCutomCoverage,
-    getItemPrice
+    getItemPrice,
+    getcustomItemPrice,
+    getComponentCodeSuggetions
 } from "../../services/index";
 import {
     selectCategoryList,
@@ -139,6 +151,8 @@ const customStyles = {
 };
 
 export function CustomizedPortfolio(props) {
+
+    const [disable, setDisable] = useState(true);
     const [makeKeyValue, setMakeKeyValue] = useState([]);
     const [modelKeyValue, setModelKeyValue] = useState([]);
     const [prefixKeyValue, setPrefixKeyValue] = useState([]);
@@ -204,7 +218,7 @@ export function CustomizedPortfolio(props) {
     const [modelIncludedData, setModelIncludedData] = useState([]);
 
     const [flagTemplate, setFlagTemplate] = useState(false);
-    const [flagCommerce, setFlagCommerce]= useState(false);
+    const [flagCommerce, setFlagCommerce] = useState(false);
 
     const [coverageData, setCoverageData] = useState({
         make: "",
@@ -268,6 +282,7 @@ export function CustomizedPortfolio(props) {
     });
 
     const [portfolioId, setPortfolioId] = useState();
+    const [currentItemId, setCurrentItemId] = useState();
     const [prefilgabelGeneral, setPrefilgabelGeneral] = useState("PORTFOLIO");
     const [priceAgreementOption, setPriceAgreementOption] = useState(false);
     const [open2, setOpen2] = useState(false);
@@ -322,6 +337,25 @@ export function CustomizedPortfolio(props) {
         totalPrice: 1200,
     });
 
+    const [expandedPriceCalculator, setExpandedPriceCalculator] = useState({
+        itemId: "",
+        description: "",
+        startUsage: "",
+        endUsage: "",
+        frequency: "",
+        recommendedValue: "",
+        numberOfEvents: "",
+        priceMethod: "",
+        priceAdditionalSelect: "",
+        priceAdditionalInput: "",
+        priceEscalationSelect: "",
+        priceEscalationInput: "",
+        calculatedPrice: "",
+        flatPrice: "",
+        discountTypeSelect: "",
+        discountTypeInput: "",
+    });
+
     const [serviceOrBundlePrefix, setServiceOrBundlePrefix] = useState("");
 
     const [createServiceOrBundle, setCreateServiceOrBundle] = useState({
@@ -345,6 +379,35 @@ export function CustomizedPortfolio(props) {
     const [tempBundleItemCheckList, setTempBundleItemCheckList] = useState({});
     const [bundleTabs, setBundleTabs] = useState("1");
     const [bundleServiceShow, setBundleServiceShow] = useState(false);
+
+
+    const [tempBundleService1, setTempBundleService1] = useState([]);
+    const [tempBundleService2, setTempBundleService2] = useState([]);
+    const [tempBundleService3, setTempBundleService3] = useState([]);
+
+    const [componentData, setComponentData] = useState({
+        componentCode: "",
+        codeSuggestions: [],
+        description: "",
+        model: "",
+        modelSuggestions: [],
+        make: "",
+        makeSuggestions: [],
+        serialNo: "",
+        serialNoSuggestions: [],
+        priceMethod: "",
+        priceAdditionalSelect: "",
+        priceEscalationSelect: "",
+        discountTypeSelect: ""
+    });
+
+    const [itemPriceCalculator, setItemPriceCalculator] = useState({
+        netParts: "",
+        netService: "",
+        priceType: "",
+        netPrice: "",
+        netAdditionals: "",
+    });
 
 
     const handleCustomerSegmentChange = (e) => {
@@ -458,7 +521,7 @@ export function CustomizedPortfolio(props) {
                     servicePrice: 0,
                     status: "NEW",
                 },
-                itemBodyModel: {
+                customItemBodyModel: {
                     customItemBodyId: parseInt(addPortFolioItem.id),
                     itemBodyDescription: addPortFolioItem.description,
                     quantity: parseInt(addPortFolioItem.quantity),
@@ -505,17 +568,17 @@ export function CustomizedPortfolio(props) {
                 alert("something went wrong");
                 return;
             }
-            const itemPriceRes = await getItemPrice({
-                standardJobId: itemRes.data.itemBodyModel.standardJobId,
-                repairKitId: itemRes.data.itemBodyModel.repairKitId,
-                itemId: itemRes.data.itemId
+            const itemPriceRes = await getcustomItemPrice({
+                standardJobId: itemRes.data.customItemBodyModel.standardJobId,
+                repairKitId: itemRes.data.customItemBodyModel.repairKitId,
+                itemId: itemRes.data.customItemId
             })
             const { priceMethod, listPrice,
                 priceEscalation, additional,
                 calculatedPrice, flatPrice,
                 discountType, year,
                 totalPrice,
-            } = itemRes.data.itemBodyModel
+            } = itemRes.data.customItemBodyModel
 
             setPriceCalculator({
                 ...priceCalculator,
@@ -2597,6 +2660,120 @@ export function CustomizedPortfolio(props) {
         },
     ];
 
+    const tempBundleItemColumns1 = [
+
+        {
+            name: (
+                <>
+                    <div>Id3</div>
+                </>
+            ),
+            selector: (row) => row.itemId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemId,
+        },
+        {
+            name: (
+                <>
+                    <div>Description</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.itemBodyDescription,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.itemBodyDescription,
+        },
+        {
+            name: (
+                <>
+                    <div>Strategy</div>
+                </>
+            ),
+            selector: (row) => row.itemHeaderModel.strategy,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemHeaderModel.strategy,
+        },
+        {
+            name: (
+                <>
+                    <div>Standard Job Id</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.standardJobId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.standardJobId,
+        },
+        {
+            name: (
+                <>
+                    <div>Repair Options</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.repairOption,
+            sortable: true,
+            maxWidth: "300px",
+            format: (row) => row.itemBodyModel.repairOption,
+        },
+        {
+            name: (
+                <>
+                    <div>Frequency</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.frequency,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.frequency,
+        },
+        {
+            name: (
+                <>
+                    <div>Quantity</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.quantity,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.quantity,
+        },
+        {
+            name: (
+                <>
+                    <div>Parts $</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.sparePartsPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.sparePartsPrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Service $</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.servicePrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.servicePrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Total $</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.totalPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.totalPrice,
+        },
+    ];
+
     const columns4 = [
         {
             name: (
@@ -2827,6 +3004,71 @@ export function CustomizedPortfolio(props) {
 
     const getAddportfolioItemDataFun = (data) => {
         setAddportFolioItem(data)
+        handleBundleItemSaveAndContinue();
+    }
+
+    const handleExpandRowForPriceCalculator = (bool, row) => {
+        setExpandedPriceCalculator({
+            ...expandedPriceCalculator,
+            itemId: row.itemId,
+            description: row.itemBodyModel.itemBodyDescription,
+            recommendedValue: row.itemBodyModel.recommendedValue,
+            frequency: row.itemBodyModel.frequency
+        })
+
+    }
+
+    const handleExpandePriceChange = (e) => {
+        // setExpandedPriceCalculator({ ...expandedPriceCalculator, [e.target.name]: e.target.value })
+    }
+
+    const handleExpandedPriceSave = async (e, rowData) => {
+        try {
+            const { itemId, itemName, itemHeaderModel, itemBodyModel } = rowData
+            let reqObj1 = {
+                itemId,
+                itemName,
+                itemHeaderModel,
+                itemBodyModel: {
+                    ...itemBodyModel,
+                    itemBodyDescription: $("#description").val(),
+                    startUsage: $("#startUsage").val(),
+                    endUsage: $("#endUsage").val(),
+                    frequency: $("#frequency").val(),
+                    recommendedValue: parseInt($("#recommendedValue").val()),
+                    numberOfEvents: parseInt($("#numberOfEvents").val()),
+                    priceMethod: expandedPriceCalculator.priceMethod.value,
+                    additional: $("#priceAdditionalInput").val(),
+                    priceEscalation: $("#priceEscalationInput").val(),
+                    calculatedPrice: parseInt($("#calculatedPrice").val()),
+                    flatPrice: parseInt($("#flatPrice").val()),
+                    discountType: $("#discountTypeInput").val(),
+                }
+            }
+            const res = await updateItemData(itemId, reqObj1)
+            if (res.status == 200) {
+                toast(`😎 ${itemId}: price updated`, {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            }
+        } catch (error) {
+            toast("😐" + error, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
+
     }
 
     const ExpandedComponent = ({ data }) => (
@@ -2999,6 +3241,496 @@ export function CustomizedPortfolio(props) {
         </div>
     );
 
+    const ExpandedPriceCalculator = ({ data }) => (<>
+        <div className="row mt-3">
+            <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                    <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                    >
+                        ID
+                    </label>
+                    <input
+                        className="form-control border-radius-10"
+                        type="text"
+                        defaultValue={data.itemId}
+                        // value={expandedPriceCalculator.itemId}
+                        placeholder="Service/Bundle ID"
+                        disabled
+                    />
+                </div>
+            </div>
+            <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                    <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                    >
+                        Description
+                    </label>
+                    <input
+                        className="form-control border-radius-10"
+                        type="text"
+                        placeholder="Description"
+                        name="description"
+                        id="description"
+                        defaultValue={data.itemBodyModel.itemBodyDescription}
+                        // value={expandedPriceCalculator.description}
+                        // onChange={handleExpandePriceChange}
+                        autoComplete="off"
+                    />
+                </div>
+            </div>
+            <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                    <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                    >
+                        Frequency
+                    </label>
+                    <input
+                        className="form-control border-radius-10"
+                        type="text"
+                        id="frequency"
+                        defaultValue={data.itemBodyModel.frequency}
+                        // value={expandedPriceCalculator.frequency}
+                        // onChange={handleExpandePriceChange}
+                        autoComplete="off"
+                    />
+                </div>
+            </div>
+            <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                    <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                    >
+                        Recommonded Value
+                    </label>
+                    <input
+                        type="number"
+                        className="form-control border-radius-10"
+                        id="recommendedValue"
+                        defaultValue={data.itemBodyModel.recommendedValue}
+                        // value={expandedPriceCalculator.recommendedValue}
+                        // onChange={handleExpandePriceChange}
+                        autoComplete="off"
+                    />
+                </div>
+            </div>
+            <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                    <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                    >
+                        Start Usage
+                    </label>
+                    <input
+                        className="form-control border-radius-10"
+                        type="text"
+                        id="startUsage"
+                    // value={expandedPriceCalculator.startUsage}
+                    // onChange={handleExpandePriceChange}
+                    />
+                </div>
+            </div>
+            <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                    <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                    >
+                        End Usage
+                    </label>
+                    <input
+                        className="form-control border-radius-10"
+                        type="text"
+                        id="endUsage"
+                    // value={expandedPriceCalculator.endUsage}
+                    // onChange={handleExpandePriceChange}
+                    />
+                </div>
+            </div>
+
+            <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                    <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                    >
+                        No. of Events
+                    </label>
+                    <input
+                        className="form-control border-radius-10"
+                        type="text"
+                        // placeholder="Description"
+                        id="numberOfEvents"
+                    // value={expandedPriceCalculator.numberOfEvents}
+                    // onChange={handleExpandePriceChange}
+                    />
+                </div>
+            </div>
+        </div>
+        <div className="row mb-3 ">
+            <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                    <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                    >
+                        PRICE METHOD
+                    </label>
+                    <Select
+                        options={priceMethodKeyValue}
+                        id="priceMethod"
+                        value={expandedPriceCalculator.priceMethod}
+                        onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceMethod: e })}
+                    />
+                </div>
+            </div>
+            <div className="col-md-6 col-sm-6">
+                <div className="form-group date-box">
+                    <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                        for="exampleInputEmail1"
+                    >
+                        ADDITIONAL
+                    </label>
+                    <div className=" d-flex form-control-date">
+                        <div className="">
+                            <Select
+                                isClearable={true}
+                                id="priceAdditionalSelect"
+                                options={options}
+                                placeholder="Select"
+                            // value={expandedPriceCalculator.priceAdditionalSelect}
+                            // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceAdditionalSelect: e })}
+                            />
+                        </div>
+                        <input
+                            type="text"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            placeholder="10%"
+                            value={expandedPriceCalculator.priceAdditionalInput}
+                            id="priceAdditionalInput"
+                            onChange={handleExpandePriceChange}
+                        />
+                    </div>
+                </div>
+            </div>
+            <div className="col-md-6 col-sm-6">
+                <div className="form-group date-box">
+                    <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                        for="exampleInputEmail1"
+                    >
+                        PRICE ESCALATON
+                    </label>
+                    <div className=" d-flex align-items-center form-control-date">
+                        <Select
+                            className="select-input"
+                            id="priceEscalationSelect"
+                            options={options}
+                            placeholder="placeholder "
+                        // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceEscalationSelect: e })}
+                        // value={expandedPriceCalculator.priceEscalationSelect}
+                        />
+                        <input
+                            type="text"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            placeholder="20%"
+                            id="priceEscalationInput"
+                        // defaultValue={data.itemBodyModel.priceEscalation}
+                        // value={expandedPriceCalculator.priceEscalationInput}
+                        // onChange={handleExpandePriceChange}
+                        />
+                    </div>
+                </div>
+            </div>
+            <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                    <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                        for="exampleInputEmail1"
+                    >
+                        CALCULATED PRICE
+                    </label>
+                    <input
+                        type="text"
+                        className="form-control border-radius-10"
+                        id="calculatedPrice"
+                        placeholder="$100"
+                    // value={expandedPriceCalculator.calculatedPrice}
+                    // onChange={handleExpandePriceChange}
+                    />
+                </div>
+            </div>
+            <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                    <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                        for="exampleInputEmail1"
+                    >
+                        FLAT PRICE / ADJUSTED PRICE
+                    </label>
+                    <input
+                        type="text"
+                        className="form-control border-radius-10"
+                        id="flatPrice"
+                        placeholder="$100"
+                    // value={expandedPriceCalculator.flatPrice}
+                    // onChange={handleExpandePriceChange}
+                    />
+                </div>
+            </div>
+            <div className="col-md-6 col-sm-6">
+                <div className="form-group date-box">
+                    <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                        for="exampleInputEmail1"
+                    >
+                        DISCOUNT TYPE
+                    </label>
+                    <div className=" d-flex form-control-date">
+                        <div className="">
+                            <Select
+                                id="discountTypeSelect"
+                                isClearable={true}
+                                options={options}
+                                placeholder="Select"
+                            // defaultValue={data.itemBodyModel.startUsage}
+                            // value={expandedPriceCalculator.discountTypeSelect}
+                            // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, discountTypeSelect: e })}
+                            />
+                        </div>
+                        <input
+                            type="text"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            id="discountTypeInput"
+                            placeholder="10%"
+                        // defaultValue={data.itemBodyModel.discountType}
+                        // value={expandedPriceCalculator.discountTypeInput}
+                        // onChange={handleExpandePriceChange}
+                        />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div className="text-right">
+            <button type="button" className="btn btn-light" onClick={(e) => handleExpandedPriceSave(e, data)}>Save</button>
+        </div>
+    </>)
+
+    const handleComponentChange = async (e) => {
+
+        try {
+            setComponentData({
+                ...componentData,
+                [e.target.name]: e.target.value
+            })
+            if (e.target.name === 'componentCode') {
+                const res = await getComponentCodeSuggetions(`componentCode~${e.target.value}`)
+                $(`.scrollbar`).css("display", "block");
+                setComponentData({
+                    ...componentData,
+                    [e.target.name]: e.target.value,
+                    codeSuggestions: res
+                })
+            }
+            if (e.target.name === 'make') {
+                const res = await getSearchQueryCoverage(`make~${e.target.value}`)
+                $(`#scrollbarMake`).css("display", "block");
+                setComponentData({ ...componentData, [e.target.name]: e.target.value, makeSuggestions: res })
+            }
+            if (e.target.name === 'model') {
+                if (componentData.make == "") {
+                    throw "Please select make"
+                }
+                const res = await getSearchQueryCoverage(`make:\"${componentData.make}\" AND model~${e.target.value}`)
+                $(`#scrollbarModel`).css("display", "block");
+                setComponentData({ ...componentData, [e.target.name]: e.target.value, modelSuggestions: res })
+            }
+            if (e.target.name === 'serialNo') {
+                // if(componentData.make=="" || componentData.model==""){
+                //   throw "Please select make/model"
+                // }
+                const res = await getSearchQueryCoverage(`family~${e.target.value}`)
+                // const res = await getSearchQueryCoverage(`make:\"${componentData.make}\" AND model:\"${componentData.model}\" AND family~${e.target.value}`)
+                $(`#scrolbarSerialNo`).css("display", "block");
+                setComponentData({ ...componentData, [e.target.name]: e.target.value, serialNoSuggestions: res })
+            }
+
+        } catch (error) {
+            console.log("err")
+            toast("😐" + error, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
+
+
+    }
+
+    const handleComponentDataSave = async () => {
+        try {
+            // call put API for portfolio item to get price calculator data
+            let reqObj = {}
+            for (let i = 0; i < tempBundleItems.length; i++) {
+                if (tempBundleItems[i].itemId === currentItemId) {
+                    reqObj = {
+                        itemId: tempBundleItems[i].itemId,
+                        standardJobId: tempBundleItems[i].itemBodyModel.standardJobId,
+                        repairKitId: tempBundleItems[i].itemBodyModel.repairKitId,
+                    }
+                    break;
+                }
+            }
+            const itemPriceRes = await getcustomItemPrice(reqObj)
+            setItemPriceCalculator({
+                netParts: "11",
+                netService: "11",
+                priceType: "11",
+                netPrice: itemPriceRes.itemHeaderModel.netPrice,
+                netAdditionals: "11",
+            })
+            setTabs("5")
+
+
+        } catch (error) {
+            toast("😐" + error, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
+
+    }
+
+    const handleComponentCodeSuggetionsClick = (e, j) => {
+        $(`.scrollbar`).css("display", "none");
+        let { description, componentCode } = componentData.codeSuggestions[j]
+        setComponentData({ ...componentData, description, componentCode })
+    }
+    const handleComponentMakeSuggetionsClick = (e, j) => {
+        $(`#scrollbarMake`).css("display", "none");
+        let { make } = componentData.makeSuggestions[j]
+        setComponentData({ ...componentData, make: make })
+    }
+
+    const handleComponentModelSuggetionsClick = (e, j) => {
+        $(`#scrollbarModel`).css("display", "none");
+        let { model } = componentData.modelSuggestions[j]
+        setComponentData({ ...componentData, model })
+    }
+
+    const handleComponentSerialNoSuggetionsClick = (e, j) => {
+        $(`#scrolbarSerialNo`).css("display", "none");
+        let obj = componentData.serialNoSuggestions[j]
+        if ((obj.make !== componentData.make && componentData.make !== "") || (componentData.model !== obj.model && componentData.model !== "")) {
+            if (window.confirm("Make/Model did not matched with selected serial number.\nDo you want to reset them?")) {
+                setComponentData({ ...componentData, serialNo: obj.family, model: obj.model, make: obj.make })
+            } else {
+                return
+            }
+        } else {
+            setComponentData({ ...componentData, serialNo: obj.family })
+            throw "Please fill make/model"
+        }
+
+    }
+
+    const handleItemPriceCalculatorChange = (e) => {
+        setItemPriceCalculator({ ...itemPriceCalculator, [e.target.name]: e.target.value })
+    }
+
+    const handleItemPriceCalculatorSave = () => {
+        setLoadingItem("02")
+        setTabs("6")
+        const _tempBundleItems = [...tempBundleItems]
+        for (let i = 0; i < _tempBundleItems.length; i++) {
+            if (currentItemId === _tempBundleItems[i].itemId) {
+                if (_tempBundleItems[i].associatedServiceOrBundle) {
+                    for (let j = 0; j < _tempBundleItems[i].associatedServiceOrBundle.length; j++) {
+                        console.log("tempBundleService2", tempBundleService2)
+                        for (let k = 0; k < tempBundleService2.length; k++) {
+                            if (_tempBundleItems[i].associatedServiceOrBundle[j].itemId == tempBundleService2[k].itemId) {
+                                tempBundleService2.splice(k, 1)//remove object if already exist
+                                break;
+                            }
+                        }
+                    }
+                    _tempBundleItems[i].associatedServiceOrBundle = [..._tempBundleItems[i].associatedServiceOrBundle, ...tempBundleService2]
+                } else {
+                    _tempBundleItems[i] = { ..._tempBundleItems[i], associatedServiceOrBundle: [...tempBundleService2] }
+                }
+            }
+            setTempBundleItems(_tempBundleItems)
+            setLoadingItem("22")
+        }
+    }
+
+    const handleContinueOfServiceOrBundle = async () => {
+        // setTempBundleService3([])
+        if (categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE") {
+            setTabs("4")//navigate to component data tab
+        } else {
+            // let find that id and get reqData for API
+            let reqObj = {}
+            console.log("tempBundleItems : ", tempBundleItems)
+            for (let i = 0; i < tempBundleItems.length; i++) {
+                if (tempBundleItems[i].itemId === currentItemId) {
+                    reqObj = {
+                        itemId: tempBundleItems[i].itemId,
+                        standardJobId: tempBundleItems[i].itemBodyModel.standardJobId,
+                        repairKitId: tempBundleItems[i].itemBodyModel.repairKitId,
+                    }
+                    break;
+                }
+            }
+            const itemPriceRes = await getItemPrice(reqObj)
+            setItemPriceCalculator({
+                netParts: "11",
+                netService: "11",
+                priceType: "11",
+                netPrice: itemPriceRes.itemHeaderModel.netPrice,
+                netAdditionals: "11",
+            })
+
+            // call put  rkid API to get price and populate it in tab 5
+            // const itemPriceRes = await getItemPrice({
+            //   standardJobId: itemRes.data.itemBodyModel.standardJobId,
+            //   repairKitId: itemRes.data.itemBodyModel.repairKitId,
+            //   itemId: itemRes.data.itemId,
+            // });
+            // const {priceMethod,listPrice,priceEscalation,additional,calculatedPrice,flatPrice,discountType,year,totalPrice,usage,avgUsage,frequency,} = itemPriceRes.itemBodyModel;
+            // setPriceCalculator({
+            //   ...priceCalculator,
+            //   priceMethod: { label: priceMethod, value: priceMethod },
+            //   listPrice,
+            //   priceEscalationInput: priceEscalation,
+            //   priceAdditionalInput: additional,
+            //   calculatedPrice,
+            //   flatPrice,
+            //   discountTypeInput: discountType,
+            //   priceYear: { label: year, value: year },
+            //   totalPrice,
+            //   frequency: { label: frequency, value: frequency },
+            //   usageType: { label: usage, value: usage },
+            //   startUsage: avgUsage,
+            //   endUsage: avgUsage,
+            // });
+
+
+            setTabs("5")
+
+
+        }
+    }
 
     return (
         <>
@@ -3006,9 +3738,9 @@ export function CustomizedPortfolio(props) {
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid ">
                     <div className="d-flex align-items-center justify-content-between mt-2">
-                        <h5 className="font-weight-600 mb-0"> 
-                        {/* Custom Portfolio */}
-                        Solution Configurator
+                        <h5 className="font-weight-600 mb-0">
+                            {/* Custom Portfolio */}
+                            Solution Configurator
                         </h5>
                         <div className="d-flex justify-content-center align-items-center">
                             <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
@@ -3176,8 +3908,8 @@ export function CustomizedPortfolio(props) {
                                                             control={<Switch />}
                                                             label=" FLAG FOR TEMPLATE"
                                                             value={flagTemplate}
-                                                            
-                                                            
+
+
                                                         />
                                                     </FormGroup>
                                                 </div>
@@ -4980,7 +5712,7 @@ export function CustomizedPortfolio(props) {
                 onHide={() => setItemModelShow(false)}
             >
                 <Modal.Body>
-                    <Box sx={{ typography: "body1" }}>
+                    {/* <Box sx={{ typography: "body1" }}>
                         <TabContext value={tabs}>
                             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                                 <TabList
@@ -5053,6 +5785,564 @@ export function CustomizedPortfolio(props) {
                                 )}
                             </TabPanel>
 
+                        </TabContext>
+                    </Box> */}
+                    <Box sx={{ typography: "body1" }}>
+                        <TabContext value={tabs}>
+                            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                                <TabList
+                                    onChange={(e, newValue) => setTabs(newValue)}
+                                    aria-label="lab API tabs example"
+                                >
+                                    <Tab label="Portfolio Item" value="1" />
+                                    <Tab label="Service/Bundle" value="2" />
+                                    {/* <Tab label="Solution" value="3" /> */}
+                                    {/*use it in useCase-4 */}
+                                    {categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE" && <Tab label="Component Data" value="4" />}
+                                    <Tab label="Price Calculator" value="5" />
+                                    <Tab label="Review" value="6" />
+                                </TabList>
+                            </Box>
+                            <TabPanel value="1">
+                                <AddCustomPortfolioItem
+                                    stratgyTaskTypeKeyValue={stratgyTaskTypeKeyValue}
+                                    setTabs={setTabs}
+                                    getAddportfolioItemDataFun={getAddportfolioItemDataFun}
+                                    compoFlag="ITEM"
+                                />
+                            </TabPanel>
+                            <TabPanel value="2">
+                                <QuerySearchComp
+                                    compoFlag="bundleSearch"
+                                    options={[
+                                        { label: "Make", value: "itemHeaderMake" },
+                                        { label: "Family", value: "itemHeaderFamily" },
+                                        { label: "Model", value: "model" },
+                                        { label: "Prefix", value: "prefix" },
+                                    ]}
+                                    setTempBundleService1={setTempBundleService1}
+                                    setLoadingItem={setLoadingItem}
+                                />
+                                {loadingItem === "01" ? ("loading") :
+                                    <>
+                                        {tempBundleService1.length > 0 && (<>
+                                            <DataTable
+                                                title=""
+                                                columns={tempBundleItemColumns1}
+                                                data={tempBundleService1}
+                                                customStyles={customStyles}
+                                                selectableRows
+                                                onSelectedRowsChange={(state) => setTempBundleService2(state.selectedRows)}
+                                                pagination
+                                            />{tempBundleService2.length > 0 && (<div className="row mt-5" style={{ justifyContent: "right" }}>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-light"
+                                                    onClick={() => {
+                                                        setTempBundleService3(tempBundleService2)
+                                                        setTempBundleService1([])
+                                                    }}
+                                                >
+                                                    Add Selected
+                                                </button>
+                                            </div>)}
+                                        </>)}
+                                    </>
+
+                                }
+                                {tempBundleService3.length > 0 && <>
+                                    <DataTable
+                                        title=""
+                                        columns={tempBundleItemColumns1}
+                                        data={tempBundleService3}
+                                        customStyles={customStyles}
+                                        expandableRows
+                                        expandableRowsComponent={ExpandedPriceCalculator}
+                                        onRowExpandToggled={handleExpandRowForPriceCalculator}
+                                        pagination
+                                    />
+                                    <div className="row mt-5" style={{ justifyContent: "right" }}>
+                                        <button type="button" className="btn btn-light"
+                                            onClick={handleContinueOfServiceOrBundle}>Continue</button>
+                                    </div>
+                                </>}
+
+                            </TabPanel>
+                            <TabPanel value="3">
+                                <CustomSolution setTabs={setTabs} />
+                            </TabPanel>
+                            <TabPanel value="4">
+                                <>
+                                    <div className="ligt-greey-bg p-3 mb-5">
+                                        <div>
+                                            <span className="mr-3">
+                                                <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                                                <span className="ml-2">Related part list(s)</span>
+                                            </span>
+                                            <span className="mr-3">
+                                                <AccessAlarmOutlinedIcon className=" font-size-16" />
+                                                <span className="ml-2">Related template(s)</span>
+                                            </span>
+                                            <span>
+                                                <SellOutlinedIcon className=" font-size-16" />
+                                                <span className="ml-2">Related repair option</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-14 font-weight-500">
+                                                    Component Code
+                                                </label>
+
+                                                <div className="customselectsearch">
+                                                    <input
+                                                        type="text"
+                                                        className="form-control border-radius-10"
+                                                        name="componentCode"
+                                                        value={componentData.componentCode}
+                                                        onChange={handleComponentChange}
+                                                        autoComplete="off"
+                                                    />
+
+                                                    {<ul className={`list-group customselectsearch-list scrollbar scrolbarCode style`}>
+                                                        {componentData.codeSuggestions.map(
+                                                            (currentItem, j) => (
+                                                                <li className="list-group-item" key={j} onClick={(e) => handleComponentCodeSuggetionsClick(e, j)}
+                                                                >
+                                                                    {currentItem.componentCode}
+                                                                </li>
+                                                            )
+                                                        )}
+                                                    </ul>}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-14 font-weight-500">
+                                                    Component Description
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    name="description"
+                                                    value={componentData.description}
+                                                    onChange={handleComponentChange}
+                                                    placeholder="Optional"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-14 font-weight-500">
+                                                    Make
+                                                </label>
+                                                <div className="customselectsearch">
+                                                    <input
+                                                        type="text"
+                                                        className="form-control border-radius-10"
+                                                        name="make"
+                                                        value={componentData.make}
+                                                        onChange={handleComponentChange}
+                                                        autoComplete="off"
+                                                    />
+                                                    {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrollbarMake">
+                                                        {componentData.makeSuggestions.map(
+                                                            (currentItem, j) => (
+                                                                <li className="list-group-item" key={j} onClick={(e) => handleComponentMakeSuggetionsClick(e, j)}>
+                                                                    {currentItem.make}
+                                                                </li>
+                                                            )
+                                                        )}
+                                                    </ul>}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-14 font-weight-500">
+                                                    Model
+                                                </label>
+                                                <div className="customselectsearch">
+                                                    <input
+                                                        type="text"
+                                                        className="form-control border-radius-10"
+                                                        name="model"
+                                                        value={componentData.model}
+                                                        onChange={handleComponentChange}
+                                                        autoComplete="off"
+                                                    />
+                                                    {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrollbarModel">
+                                                        {componentData.modelSuggestions.map(
+                                                            (currentItem, j) => (
+                                                                <li className="list-group-item" key={j} onClick={(e) => handleComponentModelSuggetionsClick(e, j)}>
+                                                                    {currentItem.model}
+                                                                </li>
+                                                            )
+                                                        )}
+                                                    </ul>}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-14 font-weight-500">
+                                                    Serial No.
+                                                </label>
+                                                <div className="customselectsearch">
+                                                    <input
+                                                        type="text"
+                                                        className="form-control border-radius-10"
+                                                        name="serialNo"
+                                                        value={componentData.serialNo}
+                                                        onChange={handleComponentChange}
+                                                        autoComplete="off"
+                                                    />
+
+                                                    {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrolbarSerialNo">
+                                                        {componentData.serialNoSuggestions.map(
+                                                            (currentItem, j) => (
+                                                                <li className="list-group-item" key={j} onClick={(e) => handleComponentSerialNoSuggetionsClick(e, j)}>
+                                                                    {currentItem.family}
+                                                                </li>
+                                                            )
+                                                        )}
+                                                    </ul>}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row mt-3">
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    PRICE METHOD
+                                                </label>
+                                                <Select
+                                                    options={priceMethodKeyValue}
+                                                    value={componentData.priceMethod}
+                                                    name="priceMethod"
+                                                    onChange={(e) => setComponentData({ ...componentData, priceMethod: e })}
+                                                    placeholder="placeholder (Optional)"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group date-box">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    ADDITIONAL
+                                                </label>
+                                                <div className=" d-flex form-control-date">
+                                                    <div className="">
+                                                        <Select
+                                                            isClearable={true}
+                                                            value={componentData.priceAdditionalSelect}
+                                                            name="priceAdditionalSelect"
+                                                            onChange={(e) => setComponentData({ ...componentData, priceAdditionalSelect: e })}
+                                                            options={options}
+                                                            placeholder="Select"
+                                                        />
+                                                    </div>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                        placeholder="10%"
+                                                        // defaultValue={props?.priceCalculator?.priceAdditionalInput}
+                                                        value={componentData.priceAdditionalInput}
+                                                        name="priceAdditionalInput"
+                                                        onChange={handleComponentChange}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group date-box">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    PRICE ESCALATON
+                                                </label>
+                                                <div className=" d-flex align-items-center form-control-date">
+                                                    <Select
+                                                        className="select-input"
+                                                        value={componentData.priceEscalationSelect}
+                                                        name="priceEscalationSelect"
+                                                        onChange={(e) => setComponentData({ ...componentData, priceEscalationSelect: e })}
+                                                        options={options}
+                                                        placeholder="placeholder "
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                        placeholder="20%"
+                                                        // defaultValue={props?.priceCalculator?.priceEscalationInput}
+                                                        value={componentData.priceEscalationInput}
+                                                        name="priceEscalationInput"
+                                                        onChange={handleComponentChange}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    CALCULATED PRICE
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    // defaultValue={props?.priceCalculator?.calculatedPrice}
+                                                    value={componentData.calculatedPrice}
+                                                    name="calculatedPrice"
+                                                    onChange={handleComponentChange}
+                                                    placeholder="$100"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    FLAT PRICE / ADJUSTED PRICE
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    value={componentData.flatPrice}
+                                                    name="flatPrice"
+                                                    onChange={handleComponentChange}
+                                                    placeholder="$100"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group date-box">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    DISCOUNT TYPE
+                                                </label>
+                                                <div className=" d-flex form-control-date">
+                                                    <div className="">
+                                                        <Select
+                                                            value={componentData.discountTypeSelect}
+                                                            name="discountTypeSelect"
+                                                            onChange={(e) => setComponentData({ ...componentData, discountTypeSelect: e })}
+                                                            isClearable={true}
+                                                            options={options}
+                                                            placeholder="Select"
+                                                        />
+                                                    </div>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                        value={componentData.discountTypeInput}
+                                                        name="discountTypeInput"
+                                                        onChange={handleComponentChange}
+                                                        placeholder="10%"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row mt-5" style={{ justifyContent: "right" }}>
+                                        <button
+                                            type="button"
+                                            onClick={handleComponentDataSave}
+                                            className="btn btn-light"
+                                        >
+                                            Save and Continue
+                                        </button>
+                                    </div>
+                                </>
+                            </TabPanel>
+                            <TabPanel value="5">
+                                {/* <PriceCalculator
+                  setTabs={setTabs}
+                  priceCalculator={priceCalculator}
+                  serviceOrBundlePrefix={serviceOrBundlePrefix}
+                  getPriceCalculatorDataFun={getPriceCalculatorDataFun}
+                  // handleSavePrices={handleSavePrices}
+                /> */}
+
+                                <div className="ligt-greey-bg p-3">
+                                    <div>
+                                        <span className="mr-3 cursor" onClick={() => setDisable(!disable)}>
+                                            <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                                            <span className="ml-2">Edit</span>
+                                        </span>
+                                        <span className="mr-3">
+                                            <MonetizationOnOutlinedIcon className=" font-size-16" />
+                                            <span className="ml-2"> Adjust price</span>
+                                        </span>
+                                        <span className="mr-3">
+                                            <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                                            <span className="ml-2">Related part list(s)</span>
+                                        </span>
+                                        <span className="mr-3">
+                                            <AccessAlarmOutlinedIcon className=" font-size-16" />
+                                            <span className="ml-2">Related service estimate(s)</span>
+                                        </span>
+                                        <span>
+                                            <SellOutlinedIcon className=" font-size-16" />
+                                            <span className="ml-2">Split price</span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="mt-3">
+                                    <div className="row">
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    Net Parts $
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    name="netParts"
+                                                    disabled={disable}
+                                                    value={itemPriceCalculator.netParts}
+                                                    onChange={handleItemPriceCalculatorChange}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    Net Service $
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    name="netService"
+                                                    disabled={disable}
+                                                    value={itemPriceCalculator.netService}
+                                                    onChange={handleItemPriceCalculatorChange}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    Price type
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    placeholder="Optional"
+                                                    name="priceType"
+                                                    disabled={disable}
+                                                    value={itemPriceCalculator.priceType}
+                                                    onChange={handleItemPriceCalculatorChange}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    Net Price
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    name="netPrice"
+                                                    disabled={disable}
+                                                    value={itemPriceCalculator.netPrice}
+                                                    onChange={handleItemPriceCalculatorChange}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-14 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    Net Additionals $
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10"
+                                                    name="netAdditionals"
+                                                    disabled={disable}
+                                                    value={itemPriceCalculator.netAdditionals}
+                                                    onChange={handleItemPriceCalculatorChange}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="m-3 text-right">
+                                        <a
+                                            href="#"
+                                            className="btn text-white bg-primary"
+                                            onClick={handleItemPriceCalculatorSave}
+                                        >
+                                            Save
+                                        </a>
+                                    </div>
+                                </div>
+                            </TabPanel>
+
+
+                            <TabPanel value="6">
+                                {loadingItem === "02" ? (
+                                    <div className="d-flex align-items-center justify-content-center">
+                                        <Loader
+                                            type="spinner-default"
+                                            bgColor={"#872ff7"}
+                                            title={"spinner-default"}
+                                            color={"#FFFFFF"}
+                                            size={35}
+                                        />
+                                    </div>
+                                ) : (
+                                    <div
+                                        className="custom-table  card"
+                                        style={{ height: 400, width: "100%" }}
+                                    >
+                                        <DataTable
+                                            title=""
+                                            columns={tempBundleItemColumns}
+                                            data={tempBundleItems}
+                                            customStyles={customStyles}
+                                            expandableRows
+                                            expandableRowsComponent={ExpandedComponent}
+                                            pagination
+                                        />
+                                    </div>
+                                )}
+                            </TabPanel>
                         </TabContext>
                     </Box>
                 </Modal.Body>
@@ -5345,7 +6635,7 @@ export function CustomizedPortfolio(props) {
                                 </div>
                             </TabPanel>
                             <TabPanel value="2">
-                                <AddPortfolioItem
+                                <AddCustomPortfolioItem
                                     setBundleTabs={setBundleTabs}
                                     compoFlag="BUNDLE"
                                     saveAddNewServiceOrBundle={saveAddNewServiceOrBundle}

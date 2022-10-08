@@ -1389,7 +1389,7 @@ nav.main-menu li.active>a,
   border-radius: 8px;
   color: #4D4D4D !important;
   font-size: 12px !important;
-  z-index: 2;
+  /* z-index: 2; */
 }
 
 .customselectPortfolio {
@@ -2938,16 +2938,28 @@ nav.main-menu li.active>a,
   color: #fff !important
 }
 
-.custommenu{display: block !important;
-  padding: 8px !important;}
-.MuiMenu-list{}  
-.MuiMenu-list li{display: block;
-  padding: 8px;}
-.custom-pricing-table .rdt_TableHeadRow{background: #872ff7!important;color: #fff;}
-.custom-pricing-table{
+.custommenu {
+  display: block !important;
+  padding: 8px !important;
+}
+
+.MuiMenu-list {}
+
+.MuiMenu-list li {
+  display: block;
+  padding: 8px;
+}
+
+.custom-pricing-table .rdt_TableHeadRow {
+  background: #872ff7 !important;
+  color: #fff;
+}
+
+.custom-pricing-table {
   width: 80%;
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
+}
 
 .customselect1 .css-6j8wv5-Input {
   color: #fff !important;
@@ -2980,4 +2992,21 @@ nav.main-menu li.active>a,
 .MuiMenu-list li {
   display: block;
   padding: 8px;
+}
+
+.maintableheader .css-ahj2mt-MuiTypography-root {
+  font-size: 12px;
+}
+
+.tableheader .templateResultheading {
+  width: 100%;
+  margin: 30px auto 20px;
+  border-radius: 10px 10px 10px 10px !important;
+  overflow: hidden;
+}
+a.bg-primary:focus, button.bg-primary:focus {
+  background-color: #872ff7 !important;
+}
+a.bg-primary:hover, button.bg-primary:hover{
+  background-color: #4540f7 !important;
 }
