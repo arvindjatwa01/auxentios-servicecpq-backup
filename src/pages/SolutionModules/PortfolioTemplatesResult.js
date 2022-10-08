@@ -5119,7 +5119,7 @@ export function PortfolioTemplatesResult(props) {
                                                 </a>
                                             </div> */}
                                             <div>
-                                                <button className="btn text-violet" onClick={UpdateCustomPriceInclusion} ><b>Save</b></button>
+                                                <button className="btn text-violet" onClick={UpdateCustomPriceInclusion} data-dismiss="modal" ><b>Save</b></button>
                                                 {/* <div className="btn text-violet" style={{cusrsor: "pointer"}}>
                                                     <b>Save</b>
                                                 </div> */}

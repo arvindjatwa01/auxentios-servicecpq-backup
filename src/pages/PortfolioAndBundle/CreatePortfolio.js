@@ -105,7 +105,9 @@ import {
   getItemPrice,
   updateItemData,
   deleteItem,
-  getComponentCodeSuggetions
+  getComponentCodeSuggetions,
+  itemPriceDataId,
+  updateItemPriceData
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -250,6 +252,13 @@ export function CreatePortfolio() {
   const [openedModelBoxData, setOpenedModelBoxData] = useState([]);
   const [modelIncludedData, setModelIncludedData] = useState([]);
 
+  const [editAblePriceData, setEditAblePriceData] = useState([]);
+
+  const [partsRequired, setPartsRequired] = useState(true);
+  const [labourRequired, setlabourRequired] = useState(true);
+  const [serviceRequired, setServiceRequired] = useState(true);
+  const [miscRequired, setMiscRequired] = useState(true);
+
   const [coverageData, setCoverageData] = useState({
     make: "",
     modal: "",
@@ -274,9 +283,9 @@ export function CreatePortfolio() {
   const [administrative, setAdministrative] = useState({
     preparedBy: null,
     approvedBy: null,
-    preparedOn: null,
+    preparedOn: new Date(),
     revisedBy: null,
-    revisedOn: null,
+    revisedOn: new Date(),
     branch: null,
     offerValidity: null,
   });
@@ -289,6 +298,7 @@ export function CreatePortfolio() {
   const handleOption3 = (e) => {
     setValue3(e);
   };
+
   const [validityData, setValidityData] = useState({
     fromDate: new Date(),
     toDate: new Date(),
@@ -299,6 +309,7 @@ export function CreatePortfolio() {
     dateFlag: false,
     inputFlag: false,
   });
+
   const [generalComponentData, setGeneralComponentData] = useState({
     name: "",
     description: "",
@@ -308,6 +319,7 @@ export function CreatePortfolio() {
     items: [],
     coverages: [],
   });
+
   const [newBundle, setNewBundle] = useState({
     serviceDescription: "",
     bundleFlag: "",
@@ -315,6 +327,7 @@ export function CreatePortfolio() {
     customerSegment: null,
     machineComponent: null,
   });
+
   const [portfolioId, setPortfolioId] = useState();
   const [currentItemId, setCurrentItemId] = useState();
   const [alignment, setAlignment] = useState("Portfolio");
@@ -1639,9 +1652,9 @@ export function CreatePortfolio() {
             : "EMPTY",
           searchTerm: "EMPTY",
           supportLevel: "EMPTY",
-          portfolioPrice: {"portfolioPriceId": 92},
-          additionalPrice: {"additionalPriceId": 1},
-          escalationPrice: { "escalationPriceId": 1},
+          portfolioPrice: { "portfolioPriceId": 92 },
+          additionalPrice: { "additionalPriceId": 1 },
+          escalationPrice: { "escalationPriceId": 1 },
 
           usageCategory: categoryUsageKeyValue1.value,
           taskType: stratgyTaskTypeKeyValue.value,
@@ -1670,8 +1683,124 @@ export function CreatePortfolio() {
           throw `${strategyRes.status}:error in update portfolio`;
         }
       } else if (e.target.id == "administrative") {
+        setGeneralComponentData({
+          ...generalComponentData,
+          preparedBy: administrative.preparedBy,
+          approvedBy: administrative.approvedBy,
+          preparedOn: administrative.preparedOn,
+          revisedBy: administrative.revisedBy,
+          revisedOn: administrative.revisedOn,
+          salesOffice: administrative.salesOffice,
+          offerValidity: administrative.offerValidity,
+        });
+
+        const { portfolioId, ...res } = generalComponentData;
+
+        let Administryobj = {
+          ...res,
+          visibleInCommerce: true,
+          customerId: 0,
+          lubricant: true,
+          customerSegment: generalComponentData.customerSegment.value
+            ? generalComponentData.customerSegment.value
+            : "EMPTY",
+          // machineType: generalComponentData.machineType
+          //     ? generalComponentData.machineType
+          //     : "EMPTY",
+          status: generalComponentData.status
+            ? generalComponentData.status
+            : "EMPTY",
+          strategyTask: generalComponentData.strategyTask
+            ? generalComponentData.strategyTask
+            : "EMPTY",
+          taskType: generalComponentData.taskType
+            ? generalComponentData.taskType
+            : "EMPTY",
+          usageCategory: generalComponentData.usageCategory
+            ? generalComponentData.usageCategory
+            : "EMPTY",
+          productHierarchy: generalComponentData.productHierarchy
+            ? generalComponentData.productHierarchy
+            : "EMPTY",
+          geographic: generalComponentData.geographic
+            ? generalComponentData.geographic
+            : "EMPTY",
+          availability: generalComponentData.availability
+            ? generalComponentData.availability
+            : "EMPTY",
+          responseTime: generalComponentData.responseTime
+            ? generalComponentData.responseTime
+            : "EMPTY",
+          type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+          application: generalComponentData.application
+            ? generalComponentData.application
+            : "EMPTY",
+          contractOrSupport: generalComponentData.contractOrSupport
+            ? generalComponentData.contractOrSupport
+            : "EMPTY",
+          // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+          //     ? generalComponentData.lifeStageOfMachine
+          //     : "EMPTY",
+          supportLevel: generalComponentData.supportLevel
+            ? generalComponentData.supportLevel
+            : "EMPTY",
+          customItems: [],
+          items: [],
+          customCoverages: [],
+          customerGroup: generalComponentData.customerGroup
+            ? generalComponentData.customerGroup
+            : "EMPTY",
+          searchTerm: "EMPTY",
+          supportLevel: "EMPTY",
+          // portfolioPrice: {},
+          // additionalPrice: {},
+          // escalationPrice: {},
+
+          usageCategory: categoryUsageKeyValue1.value,
+          taskType: stratgyTaskTypeKeyValue.value,
+          strategyTask: stratgyTaskUsageKeyValue.value,
+          responseTime: stratgyResponseTimeKeyValue.value,
+          productHierarchy: stratgyHierarchyKeyValue.value,
+          geographic: stratgyGeographicKeyValue.value,
+          numberOfEvents: 0,
+          rating: "",
+          startUsage: "",
+          endUsage: "",
+          unit: "HOURS",
+          additionals: "",
+          preparedBy: administrative.preparedBy,
+          approvedBy: administrative.approvedBy,
+          preparedOn: administrative.preparedOn,
+          revisedBy: administrative.revisedBy,
+          revisedOn: administrative.revisedOn,
+          salesOffice: administrative.salesOffice,
+          offerValidity: administrative.offerValidity,
+        };
+
+        const administryRes = await updatePortfolio(
+          generalComponentData.portfolioId,
+          Administryobj
+        );
+        if (administryRes.status === 200) {
+          toast("👏 Portfolio updated", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          // setValue("administrative");
+          setValue("price");
+          console.log("administryRes updating", administryRes.data);
+        } else {
+          throw `${administryRes.status}:error in update portfolio`;
+        };
+
+
         console.log("administrative", administrative);
-        setValue("price");
+        // setValue("price");
       } else if (e.target.id == "price") {
         priceAgreementOption
           ? setValue("priceAgreement")
@@ -1770,9 +1899,9 @@ export function CreatePortfolio() {
           // portfolioPrice: {},
           // additionalPrice: {},
           // escalationPrice: {},
-          portfolioPrice: {"portfolioPriceId": 92},
-          additionalPrice: {"additionalPriceId": 1},
-          escalationPrice: { "escalationPriceId": 1},
+          portfolioPrice: { "portfolioPriceId": 92 },
+          additionalPrice: { "additionalPriceId": 1 },
+          escalationPrice: { "escalationPriceId": 1 },
           items: [],
           coverages: cvgIds,
           usageCategory: categoryUsageKeyValue1.value,
@@ -1781,6 +1910,13 @@ export function CreatePortfolio() {
           responseTime: stratgyResponseTimeKeyValue.value,
           productHierarchy: stratgyHierarchyKeyValue.value,
           geographic: stratgyGeographicKeyValue.value,
+          preparedBy: administrative.preparedBy,
+          approvedBy: administrative.approvedBy,
+          preparedOn: administrative.preparedOn,
+          revisedBy: administrative.revisedBy,
+          revisedOn: administrative.revisedOn,
+          salesOffice: administrative.salesOffice,
+          offerValidity: administrative.offerValidity,
         };
         if (generalComponentData.portfolioId) {
           const updatePortfolioRes = await updatePortfolio(
@@ -1848,6 +1984,59 @@ export function CreatePortfolio() {
       [name]: value,
     });
   };
+
+  const Inclusion_Exclusion = (e, data) => {
+    console.log("event is : ", e);
+    console.log("itemData : ", data);
+    if (data.itemBodyModel.itemPrices.length > 0) {
+      setEditAblePriceData(data.itemBodyModel.itemPrices)
+    } else {
+      setEditAblePriceData([])
+    }
+
+    console.log("editable Custom Price data : ", editAblePriceData);
+
+  }
+
+
+  const handleWithSparePartsCheckBox = (e) => {
+    setPartsRequired(e.target.checked)
+  }
+
+  const handleWithLabourCheckBox = (e) => {
+    setlabourRequired(e.target.checked)
+  }
+
+  const handleWithServiceCheckBox = (e) => {
+    setServiceRequired(e.target.checked)
+  }
+
+  const handleWithMiscCheckBox = (e) => {
+    setMiscRequired(e.target.checked)
+  }
+
+  const UpdatePriceInclusionExclusion = async () => {
+    console.log("hello");
+    if (editAblePriceData.length > 0) {
+      // console.log("hello")
+      for (let y = 0; y < editAblePriceData.length; y++) {
+        var getCustomPriceData = await itemPriceDataId(editAblePriceData[y].itemPriceDataId);
+        console.log("y is : ", getCustomPriceData);
+
+        getCustomPriceData.partsRequired = partsRequired;
+        getCustomPriceData.labourRequired = labourRequired;
+        getCustomPriceData.serviceRequired = serviceRequired;
+        getCustomPriceData.miscRequired = miscRequired;
+
+        // console.log("updated y is : ", getCustomPriceData)
+
+        var UpdateCustomPriceInclusion = updateItemPriceData(editAblePriceData[y].itemPriceDataId, getCustomPriceData)
+
+      }
+    } else {
+      console.log("empty");
+    }
+  }
 
   const getPortfolioDetails = (portfolioId) => {
     // getAllUsers()
@@ -2959,7 +3148,7 @@ export function CreatePortfolio() {
           </div>
           <div className=" cursor" data-toggle="modal" data-target="#myModal12">
             <Tooltip title="Inclusion">
-              <Link to="#" className="px-1">
+              <Link to="#" className="px-1" onClick={(e) => Inclusion_Exclusion(e, row)} >
                 <img src={cpqIcon}></img>
               </Link>
             </Tooltip>
@@ -3768,7 +3957,7 @@ export function CreatePortfolio() {
               {bundleAndService.itemBodyModel.totalPrice}
             </div>
           </div>
-          {bundleItems.length>0&&(<div
+          {bundleItems.length > 0 && (<div
             id="cell-11-undefined"
             data-column-id="11"
             role="gridcell"
@@ -3826,7 +4015,7 @@ export function CreatePortfolio() {
               </Tooltip>
             </div>
           </div>)}
-          
+
         </div>
       ))}
     </div>
@@ -4174,7 +4363,7 @@ export function CreatePortfolio() {
   }
 
 
-  
+
   const handleComponentDataSave = async () => {
     try {
       // call put API for portfolio item to get price calculator data
@@ -4467,9 +4656,9 @@ export function CreatePortfolio() {
                   <img src={copyIcon}></img>
                 </a>
                 <a href="#" className="ml-2">
-                  <MuiMenuComponent  options={activityOptions} />
+                  <MuiMenuComponent options={activityOptions} />
                 </a>
-                
+
               </div>
             </div>
           </div>
@@ -5138,22 +5327,42 @@ export function CreatePortfolio() {
                       </div>
                     </div>
                     <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          PREPARED ON
-                        </label>
-                        <input
+                      {/* <div className="form-group"> */}
+                      <label
+                        className="text-light-dark font-size-14 font-weight-500"
+                        htmlFor="exampleInputEmail1"
+                      >
+                        PREPARED ON
+                      </label>
+                      {/* <input
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
                           name="preparedOn"
                           value={administrative.preparedOn}
                           onChange={handleAdministrativreChange}
-                        />
+                        /> */}
+                      <div className="d-flex align-items-center date-box w-100">
+                        <div className="form-group w-100">
+                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <DatePicker
+                              variant="inline"
+                              format="dd/MM/yyyy"
+                              className="form-controldate border-radius-10"
+                              label=""
+                              name="preparedOn"
+                              value={administrative.preparedOn}
+                              onChange={(e) =>
+                                setAdministrative({
+                                  ...administrative,
+                                  preparedOn: e,
+                                })
+                              }
+                            />
+                          </MuiPickersUtilsProvider>
+                        </div>
                       </div>
+                      {/* </div> */}
                     </div>
                   </div>
                   <div className="row">
@@ -5183,14 +5392,34 @@ export function CreatePortfolio() {
                         >
                           REVISED ON
                         </label>
-                        <input
+                        {/* <input
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
                           name="revisedOn"
                           value={administrative.revisedOn}
                           onChange={handleAdministrativreChange}
-                        />
+                        /> */}
+                        <div className="d-flex align-items-center date-box w-100">
+                          <div className="form-group w-100">
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                              <DatePicker
+                                variant="inline"
+                                format="dd/MM/yyyy"
+                                className="form-controldate border-radius-10"
+                                label=""
+                                name="revisedOn"
+                                value={administrative.revisedOn}
+                                onChange={(e) =>
+                                  setAdministrative({
+                                    ...administrative,
+                                    revisedOn: e,
+                                  })
+                                }
+                              />
+                            </MuiPickersUtilsProvider>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="col-md-4 col-sm-4">
@@ -5230,6 +5459,16 @@ export function CreatePortfolio() {
                         />
                       </div>
                     </div>
+                  </div>
+                  <div className="row" style={{ justifyContent: "right" }}>
+                    <button
+                      type="button"
+                      onClick={handleNextClick}
+                      className="btn btn-light"
+                      id="administrative"
+                    >
+                      Save & Next
+                    </button>
                   </div>
                 </TabPanel>
                 <TabPanel value={"price"}>
@@ -8553,15 +8792,18 @@ export function CreatePortfolio() {
               <div className="bg-white p-3">
                 <FormGroup>
                   <FormControlLabel
-                    control={<Switch defaultChecked />}
+                    control={<Switch />}
                     label="With Spare Parts"
+                    onChange={(e) => handleWithSparePartsCheckBox(e)}
+                    checked={partsRequired}
+
                   />
                   <FormControlLabel
-                    control={<Switch />}
+                    control={<Switch disabled />}
                     label="I have Spare Parts"
                   />
                   <FormControlLabel
-                    control={<Switch />}
+                    control={<Switch disabled />}
                     label="I need only Spare Parts"
                   />
                 </FormGroup>
@@ -8576,11 +8818,14 @@ export function CreatePortfolio() {
                   <div>
                     <FormGroup>
                       <FormControlLabel
-                        control={<Switch defaultChecked />}
+                        control={<Switch />}
                         label="With Labor"
+                        onChange={(e) => handleWithLabourCheckBox(e)}
+                        checked={labourRequired}
+
                       />
                       <FormControlLabel
-                        control={<Switch />}
+                        control={<Switch disabled />}
                         label="Without Labor"
                       />
                     </FormGroup>
@@ -8599,15 +8844,17 @@ export function CreatePortfolio() {
               </div>
               <div className="bg-white p-3">
                 <FormGroup>
-                  <FormControlLabel control={<Switch />} label=" Lubricants" />
+                  <FormControlLabel control={<Switch disabled />} label=" Lubricants" />
                   <FormControlLabel
-                    control={<Switch />}
+                    control={<Switch disabled />}
                     label="Travel Expenses"
                   />
-                  <FormControlLabel control={<Switch />} label="Tools" />
+                  <FormControlLabel control={<Switch disabled />} label="Tools" />
                   <FormControlLabel
                     control={<Switch />}
                     label="External Work"
+                    onChange={(e) => handleWithMiscCheckBox(e)}
+                    checked={miscRequired}
                   />
                 </FormGroup>
                 <h5 className="d-flex align-items-center mb-0">
@@ -8629,6 +8876,8 @@ export function CreatePortfolio() {
                       <FormControlLabel
                         control={<Switch />}
                         label=" Changee Oil and Filter"
+                        onChange={(e) => handleWithServiceCheckBox(e)}
+                        checked={serviceRequired}
                       />
                     </FormGroup>
                   </div>
@@ -8646,14 +8895,14 @@ export function CreatePortfolio() {
                 </h5>
                 <FormGroup>
                   <FormControlLabel
-                    control={<Switch />}
+                    control={<Switch disabled />}
                     label="Air Filter Replacement"
                   />
                   <FormControlLabel
-                    control={<Switch />}
+                    control={<Switch disabled />}
                     label="Cabin Air Filter"
                   />
-                  <FormControlLabel control={<Switch />} label="Rotete Tires" />
+                  <FormControlLabel control={<Switch disabled />} label="Rotete Tires" />
                 </FormGroup>
                 <h5 className="d-flex align-items-center mb-0">
                   <div className="" style={{ display: "contents" }}>
@@ -8696,6 +8945,9 @@ export function CreatePortfolio() {
                       <b>I Have Parts</b>
                     </a>
                   </div>
+                </div>
+                <div>
+                  <button className="btn text-violet mt-2" onClick={UpdatePriceInclusionExclusion} data-dismiss="modal" ><b>Save Changes</b></button>
                 </div>
               </div>
             </div>
@@ -9746,60 +9998,60 @@ export function CreatePortfolio() {
               </div>
             </div>
             <div class="modal right fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
 
-            <div class="modal-header">
-              <h4 class="modal-title" id="myModalLabel2"><ErrorOutlineIcon className="mr-2" style={{ fontSize: '32px' }} />Errors</h4>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
+                  <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel2"><ErrorOutlineIcon className="mr-2" style={{ fontSize: '32px' }} />Errors</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
 
-            <div class="modal-body">
-              <div className='d-flex justify-content-between align-items-center px-3 border-bottom'>
-                <h6 className='mb-0'>3 errors found in line items</h6>
-                <div>
-                  <a href='#' className='btn'><ClearIcon className="mr-2" style={{ color: '#000' }} />Clear All</a>
-                </div>
-              </div>
-              <div className=' mt-2'>
-                <h6 className="px-3">FILTER</h6>
-                <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
-                  <TabContext value={value}>
-                    <Box className="custom-tabs" sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                      <TabList onChange={handleChange} aria-label="lab API tabs example">
-                        <Tab label="Part list" value="1" />
-                        <Tab label="Service Estimates" value="2" />
-                        <Tab label="Form" value="3" />
-
-                      </TabList>
-                    </Box>
-                    <TabPanel className="px-3" value="1">
-                      <div className="card border p-3 mb-0">
-                        <div className="d-flex justify-content-between align-items-center">
-                          <p className="mb-0">Invalid data</p>
-                          <h6 className="mb-0">2 min ago</h6>
-                        </div>
-                        <h6 className="mb-0"> Part list header component code</h6>
-                        <p className="mb-0">Fix <a href="#" className="btn">Go to field</a></p>
+                  <div class="modal-body">
+                    <div className='d-flex justify-content-between align-items-center px-3 border-bottom'>
+                      <h6 className='mb-0'>3 errors found in line items</h6>
+                      <div>
+                        <a href='#' className='btn'><ClearIcon className="mr-2" style={{ color: '#000' }} />Clear All</a>
                       </div>
-                    </TabPanel>
-                    <TabPanel value="2">Item Two</TabPanel>
-                    <TabPanel value="3">Item Three</TabPanel>
-                  </TabContext>
-                </Box>
-                <hr className="mb-0" />
-                <div className="p-3">
-                  <a href='#' className='btn text-light border-light px-2'>Go Back to Solution</a>
-                  <a href='#' className='btn btn-primary float-right px-2'>Choose the correct portfolio</a>
+                    </div>
+                    <div className=' mt-2'>
+                      <h6 className="px-3">FILTER</h6>
+                      <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
+                        <TabContext value={value}>
+                          <Box className="custom-tabs" sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                            <TabList onChange={handleChange} aria-label="lab API tabs example">
+                              <Tab label="Part list" value="1" />
+                              <Tab label="Service Estimates" value="2" />
+                              <Tab label="Form" value="3" />
+
+                            </TabList>
+                          </Box>
+                          <TabPanel className="px-3" value="1">
+                            <div className="card border p-3 mb-0">
+                              <div className="d-flex justify-content-between align-items-center">
+                                <p className="mb-0">Invalid data</p>
+                                <h6 className="mb-0">2 min ago</h6>
+                              </div>
+                              <h6 className="mb-0"> Part list header component code</h6>
+                              <p className="mb-0">Fix <a href="#" className="btn">Go to field</a></p>
+                            </div>
+                          </TabPanel>
+                          <TabPanel value="2">Item Two</TabPanel>
+                          <TabPanel value="3">Item Three</TabPanel>
+                        </TabContext>
+                      </Box>
+                      <hr className="mb-0" />
+                      <div className="p-3">
+                        <a href='#' className='btn text-light border-light px-2'>Go Back to Solution</a>
+                        <a href='#' className='btn btn-primary float-right px-2'>Choose the correct portfolio</a>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </div>
-
-          </div>
-        </div>
-      </div>
           </div>
         </div>
       </div>
