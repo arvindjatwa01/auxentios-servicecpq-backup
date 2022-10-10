@@ -24,7 +24,8 @@ import TabPanel from '@mui/lab/TabPanel';
 import FormControl from '@mui/material/FormControl';
 import Checkbox from '@mui/material/Checkbox';
 import { Link, useLocation } from 'react-router-dom'
-import FormControlLabel from '@mui/material/FormControlLabel';
+// import FormControlLabel from '@mui/material/FormControlLabel';
+import { FormControlLabel, Switch } from "@material-ui/core";
 import { FileUploader } from "react-drag-drop-files";
 // import MuiMenuComponent from "../Operational/MuiMenuComponent";
 import Tooltip from "@mui/material/Tooltip";
@@ -94,7 +95,9 @@ import {
     itemCreation,
     createCoverage,
     createCutomCoverage,
-    getItemPrice
+    getItemPrice,
+    getcustomItemPriceById,
+    updateCustomPriceData,
 } from "../../services/index";
 import {
     selectCategoryList,
@@ -207,7 +210,13 @@ export function SolutionTemplateResult(props) {
     const [openedModelBoxData, setOpenedModelBoxData] = useState([]);
     const [modelIncludedData, setModelIncludedData] = useState([]);
 
-    const[selectedSolutionItems, setSelecteSolutionItems] = useState(location.selectedTemplateItems[0].customItems);
+    const [selectedSolutionItems, setSelecteSolutionItems] = useState([]);
+    const [editAbleCustomPriceData, setEditAbleCustomPriceData] = useState([]);
+
+    const [partsRequired, setPartsRequired] = useState(true);
+    const [labourRequired, setlabourRequired] = useState(true);
+    const [serviceRequired, setServiceRequired] = useState(true);
+    const [miscRequired, setMiscRequired] = useState(true);
 
     // const [selectePortfolioTempItemsData, setSelectedPortfolioTempItemsData] = useState([]);
     const [selectedCustomItems, setSelectedCustomItems] = useState([]);
@@ -1534,6 +1543,64 @@ export function SolutionTemplateResult(props) {
         });
     };
 
+    const Inclusive_Exclusive = (e, data) => {
+        console.log("event is : ", e);
+        console.log("itemData : ", data);
+        if (data.customItemBodyModel.customItemPrices.length > 0) {
+            setEditAbleCustomPriceData(data.customItemBodyModel.customItemPrices)
+        } else {
+            setEditAbleCustomPriceData([])
+        }
+
+        console.log("editable Custom Price data : ", editAbleCustomPriceData);
+
+    }
+
+    const handleWithSparePartsCheckBox = (e) => {
+        setPartsRequired(e.target.checked)
+        // // if(e.target.checked){
+
+        // // }
+        // console.log("event is : ", e.target.checked)
+        // console.log("event : ",e);
+    }
+
+    const handleWithLabourCheckBox = (e) => {
+        setlabourRequired(e.target.checked)
+    }
+
+    const handleWithServiceCheckBox = (e) => {
+        setServiceRequired(e.target.checked)
+    }
+
+    const handleWithMiscCheckBox = (e) => {
+        setMiscRequired(e.target.checked)
+    }
+
+    const UpdateCustomPriceInclusion = async () => {
+        console.log("hello");
+        console.log("editAbleCustomPriceData : ", editAbleCustomPriceData);
+        if (editAbleCustomPriceData.length > 0) {
+            // console.log("hello")
+            for (let y = 0; y < editAbleCustomPriceData.length; y++) {
+                var getCustomPriceData = await getcustomItemPriceById(editAbleCustomPriceData[y].customItemPriceDataId);
+                console.log("y is : ", getCustomPriceData);
+
+                getCustomPriceData.partsRequired = partsRequired;
+                getCustomPriceData.labourRequired = labourRequired;
+                getCustomPriceData.serviceRequired = serviceRequired;
+                getCustomPriceData.miscRequired = miscRequired;
+
+                // console.log("updated y is : ", getCustomPriceData)
+
+                var UpdateCustomPriceInclusion = updateCustomPriceData(editAbleCustomPriceData[y].customItemPriceDataId, getCustomPriceData)
+
+            }
+        } else {
+            console.log("empty");
+        }
+    }
+
     const getPortfolioDetails = (portfolioId) => {
         // getAllUsers()
         //     .then((res) => {
@@ -1801,7 +1868,7 @@ export function SolutionTemplateResult(props) {
             description: location.selectedTemplateItems[0].description,
             serviceDescription: "",
             externalReference: location.selectedTemplateItems[0].externalReference,
-            customerSegment: location.selectedTemplateItems[0].customerSegment,
+            customerSegment: {value: location.selectedTemplateItems[0].customerSegment, label: "Energy"},
             items: [],
             customCoverages: [],
         });
@@ -1867,6 +1934,8 @@ export function SolutionTemplateResult(props) {
             "label": location.selectedTemplateItems[0].lifeStageOfMachine,
             "value": location.selectedTemplateItems[0].lifeStageOfMachine
         });
+
+        setSelecteSolutionItems(location.selectedTemplateItems[0].customItems);
 
         console.log("location.selectedTemplateItems : ", location.selectedTemplateItems)
         console.log("New Life stage value is : ", lifeStageOfMachineKeyValue)
@@ -3019,7 +3088,7 @@ export function SolutionTemplateResult(props) {
         //     sortable: true,
         //     format: (row) => row.description,
         // },
-        
+
         {
             name: (
                 <>
@@ -3074,6 +3143,35 @@ export function SolutionTemplateResult(props) {
             wrap: true,
             sortable: true,
             format: (row) => row.customItemHeaderModel.netPrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Actions</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel.type,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel.type,
+            cell: (row) => (
+                <div
+                    className="d-flex justify-content-center align-items-center row-svg-div"
+                    style={{ minWidth: "180px !important" }}
+                >
+
+                    <div className=" cursor" data-toggle="modal" data-target="#myModal12">
+                        <Tooltip title="Inclusion" onClick={(e) => Inclusive_Exclusive(e, row)}>
+                            <div className="px-1">
+                                <img src={cpqIcon}></img>
+                            </div>
+                            {/* <Link to="#" className="px-1">
+                                <img src={cpqIcon}></img>
+                            </Link> */}
+                        </Tooltip>
+                    </div>
+                </div>
+            ),
         },
     ];
 
@@ -5117,6 +5215,206 @@ export function SolutionTemplateResult(props) {
                             {console.log("selectedSolutionItems data : ", selectedSolutionItems)}
                         </div>
                     </div>
+
+                    <div
+                        className="modal right fade"
+                        id="myModal12"
+                        tabIndex="-1"
+                        role="dialog"
+                        aria-labelledby="myModalLabel2"
+                    >
+                        <div className="modal-dialog" role="document">
+                            <div className="modal-content">
+                                <div className="modal-header d-block">
+                                    <button
+                                        type="button"
+                                        className="close"
+                                        data-dismiss="modal"
+                                        aria-label="Close"
+                                    >
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    <h4 className="modal-title" id="myModalLabel2">
+                                        Inclusion/Exclusion
+                                    </h4>
+                                </div>
+                                <div className="modal-body p-0">
+                                    <div className="bg-light-blue p-3">
+                                        <h5 className="font-weight-normal text-violet mb-0">
+                                            {/* CHOICE OF SPARE PARTS */}
+                                            CHOICE OF PARTS
+                                        </h5>
+                                    </div>
+                                    <div className="bg-white p-3">
+                                        <FormGroup>
+                                            <FormControlLabel
+                                                control={<Switch />}
+                                                // label="With Spare Parts"
+                                                label="With Parts"
+                                                onChange={(e) => handleWithSparePartsCheckBox(e)}
+                                                // value={partsRequired}
+                                                checked={partsRequired}
+                                            />
+                                            <FormControlLabel
+                                                control={<Switch disabled />}
+                                                label="I have Spare Parts"
+
+                                            />
+                                            <FormControlLabel
+                                                control={<Switch disabled />}
+                                                label="I need only Spare Parts"
+                                            />
+                                        </FormGroup>
+                                    </div>
+                                    <div className="bg-light-blue p-3">
+                                        <h5 className="font-weight-normal text-violet mb-0">
+                                            CHOICE OF LABOR
+                                        </h5>
+                                    </div>
+                                    <div className="bg-white p-3">
+                                        <div className=" d-flex justify-content-between ">
+                                            <div>
+                                                <FormGroup>
+                                                    <FormControlLabel
+                                                        control={<Switch />}
+                                                        label="With Labor"
+                                                        onChange={(e) => handleWithLabourCheckBox(e)}
+                                                        checked={labourRequired}
+                                                    />
+                                                    <FormControlLabel
+                                                        control={<Switch disabled />}
+                                                        label="Without Labor"
+                                                    />
+                                                </FormGroup>
+                                            </div>
+                                            {/* <div>
+                                                <a href="#" className="ml-3 font-size-14">
+                                                    <img src={deleteIcon}></img>
+                                                </a>
+                                            </div> */}
+                                        </div>
+                                    </div>
+                                    <div className="bg-light-blue p-3">
+                                        <h5 className="font-weight-normal text-violet mb-0">
+                                            CHOICE MISC.
+                                        </h5>
+                                    </div>
+                                    <div className="bg-white p-3">
+                                        <FormGroup>
+                                            <FormControlLabel
+                                                control={<Switch />}
+                                                // label="Travel Expenses"
+                                                label="Misc Required"
+                                                onChange={(e) => handleWithMiscCheckBox(e)}
+                                                checked={miscRequired}
+                                            />
+                                            <FormControlLabel control={<Switch disabled />} label=" Lubricants" />
+                                            <FormControlLabel control={<Switch disabled />} label="Tools" />
+                                            <FormControlLabel
+                                                control={<Switch disabled />}
+                                                label="External Work"
+                                            />
+                                        </FormGroup>
+                                        <h5 className="d-flex align-items-center mb-0">
+                                            <div className="" style={{ display: "contents" }}>
+                                                <span className="mr-3 white-space">Includes</span>
+                                            </div>
+                                            <div className="hr"></div>
+                                        </h5>
+                                    </div>
+                                    <div className="bg-light-blue p-3">
+                                        <h5 className="font-weight-normal text-violet mb-0">
+                                            SERVICES
+                                        </h5>
+                                    </div>
+                                    <div className="bg-white p-3">
+                                        <div className=" d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <FormGroup>
+                                                    <FormControlLabel
+                                                        control={<Switch />}
+                                                        // label=" Changee Oil and Filter"
+                                                        label=" Service Required"
+                                                        onChange={(e) => handleWithServiceCheckBox(e)}
+                                                        checked={serviceRequired}
+                                                    />
+                                                </FormGroup>
+                                            </div>
+                                            {/* <div>
+                                                <a href="#" className="ml-3 font-size-14">
+                                                    <img src={deleteIcon}></img>
+                                                </a>
+                                            </div> */}
+                                        </div>
+                                        <h5 className="d-flex align-items-center mb-0">
+                                            <div className="" style={{ display: "contents" }}>
+                                                <span className="mr-3 white-space">Optianal services</span>
+                                            </div>
+                                            <div className="hr"></div>
+                                        </h5>
+                                        <FormGroup>
+                                            <FormControlLabel
+                                                control={<Switch disabled />}
+                                                label="Air Filter Replacement"
+                                            />
+                                            <FormControlLabel
+                                                control={<Switch disabled />}
+                                                label="Cabin Air Filter"
+                                            />
+                                            <FormControlLabel control={<Switch disabled />} label="Rotete Tires" />
+                                        </FormGroup>
+                                        <h5 className="d-flex align-items-center mb-0">
+                                            <div className="" style={{ display: "contents" }}>
+                                                <span className="mr-3 white-space">Includes</span>
+                                            </div>
+                                            <div className="hr"></div>
+                                        </h5>
+                                        <div className="mt-3">
+                                            <h6>
+                                                <a
+                                                    // href="#"
+                                                    className="btn-sm text-white mr-2"
+                                                    style={{ background: "#79CBA2", cursor: "pointer" }}
+                                                >
+                                                    Free
+                                                </a>{" "}
+                                                50 Point Inspection
+                                            </h6>
+                                            <h6 className="mt-3">
+                                                <a
+                                                    // href="#"
+                                                    className="btn-sm text-white mr-2 "
+                                                    style={{ background: "#79CBA2", cursor: "pointer" }}
+                                                >
+                                                    Free
+                                                </a>{" "}
+                                                50 Point Inspection
+                                            </h6>
+                                        </div>
+                                        <div className=" d-flex justify-content-between mt-4">
+                                            {/* <div>
+                                                <a href="#" className="btn text-violet bg-light-blue">
+                                                    <b>
+                                                        <span className="mr-2">+</span>Add more services
+                                                    </b>
+                                                </a>
+                                            </div> */}
+                                            <div>
+                                                <button className="btn text-violet" onClick={UpdateCustomPriceInclusion} data-dismiss="modal" ><b>Save</b></button>
+                                                {/* <div className="btn text-violet" style={{cusrsor: "pointer"}}>
+                                                    <b>Save</b>
+                                                </div> */}
+                                                {/* <a href="#" className="btn text-violet">
+                                                    <b>I Have Parts</b>
+                                                </a> */}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <Modal show={open1} onHide={handleClose1} size="lg"
                         aria-labelledby="contained-modal-title-vcenter"
                         centered>

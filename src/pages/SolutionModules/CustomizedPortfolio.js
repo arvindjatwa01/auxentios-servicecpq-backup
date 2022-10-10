@@ -107,7 +107,10 @@ import {
     customitemCreation,
     createCutomCoverage,
     getItemPrice,
+    itemPriceDataId,
+    customPriceCreation,
     getcustomItemPrice,
+    updateCustomItemData,
     getComponentCodeSuggetions
 } from "../../services/index";
 import {
@@ -491,8 +494,8 @@ export function CustomizedPortfolio(props) {
     };
 
     const handleBundleItemSaveAndContinue = async () => {
-        setTabs(`${parseInt(tabs) + 1}`);
-        setLoadingItem(true);
+        // setTabs(`${parseInt(tabs) + 1}`);
+        // setLoadingItem(true);
         try {
             let reqObj = {
                 customItemId: 0,
@@ -562,37 +565,47 @@ export function CustomizedPortfolio(props) {
                     totalPrice: 0,
                 },
             };
+
+            console.log("my req object is : ", reqObj)
             const itemRes = await customitemCreation(reqObj);
             console.log("customitemCreation res:", itemRes);
             if (itemRes.status !== 200) {
-                alert("something went wrong");
-                return;
+                // alert("something went wrong");
+                // return;
+                throw "Something went wrong/Item not created"
             }
-            const itemPriceRes = await getcustomItemPrice({
-                standardJobId: itemRes.data.customItemBodyModel.standardJobId,
-                repairKitId: itemRes.data.customItemBodyModel.repairKitId,
-                itemId: itemRes.data.customItemId
-            })
-            const { priceMethod, listPrice,
-                priceEscalation, additional,
-                calculatedPrice, flatPrice,
-                discountType, year,
-                totalPrice,
-            } = itemRes.data.customItemBodyModel
 
-            setPriceCalculator({
-                ...priceCalculator,
-                priceMethod, listPrice,
-                priceEscalationInput: priceEscalation,
-                priceAdditionalInput: additional,
-                calculatedPrice, flatPrice,
-                discountTypeInput: discountType,
-                year,
-                totalPrice,
+            setCurrentItemId(itemRes.data.customItemId);
 
-            })
+            console.log("custom itemRes : ", itemRes);
 
-            console.log("itemPriceRes", itemPriceRes)
+            // const itemPriceRes = await getcustomItemPrice({
+            //     standardJobId: itemRes.data.customItemBodyModel.standardJobId,
+            //     repairKitId: itemRes.data.customItemBodyModel.repairKitId,
+            //     itemId: itemRes.data.customItemId
+            // })
+
+
+            // const { priceMethod, listPrice,
+            //     priceEscalation, additional,
+            //     calculatedPrice, flatPrice,
+            //     discountType, year,
+            //     totalPrice,
+            // } = itemRes.data.customItemBodyModel
+
+            // setPriceCalculator({
+            //     ...priceCalculator,
+            //     priceMethod, listPrice,
+            //     priceEscalationInput: priceEscalation,
+            //     priceAdditionalInput: additional,
+            //     calculatedPrice, flatPrice,
+            //     discountTypeInput: discountType,
+            //     year,
+            //     totalPrice,
+
+            // })
+
+            // console.log("itemPriceRes", itemPriceRes)
 
             const _generalComponentData = { ...generalComponentData };
             _generalComponentData.items?.push({ customItemId: itemRes.data.customItemId });
@@ -667,7 +680,15 @@ export function CustomizedPortfolio(props) {
                 responseTime: stratgyResponseTimeKeyValue.value,
                 productHierarchy: stratgyHierarchyKeyValue.value,
                 geographic: stratgyGeographicKeyValue.value,
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                salesOffice: administrative.salesOffice,
+                offerValidity: administrative.offerValidity
             };
+
             console.log("new objects data is : ", obj);
             if (generalComponentData.portfolioId) {
                 const updatePortfolioRes = await updateCustomPortfolio(
@@ -2007,6 +2028,153 @@ export function CustomizedPortfolio(props) {
         setTabs("1");
     };
 
+    const handleCreateCustomItem_SearchResult = async () => {
+        // setTempBundleService3(tempBundleService2)
+        // setTempBundleService1([])
+        // alert("hello");
+        console.log("tempBundleService2 is : ", tempBundleService2)
+        for (let i = 0; i < tempBundleService2.length; i++) {
+            console.log("i is :", i);
+            var customItemsIdData = [];
+            var customPriceIdArr = [];
+
+            for (let j = 0; j < tempBundleService2[i].itemBodyModel.itemPrices.length; j++) {
+
+
+
+                /* =============== Search Custom Price Using selected Item PriceDataId ============== */
+
+                var itemsPrice = await itemPriceDataId(tempBundleService2[i].itemBodyModel.itemPrices[j].itemPriceDataId);
+                console.log("item price is before : ", itemsPrice)
+
+                let itemPriceObj = {
+
+                    customItemPriceDataId: 0,
+                    quantity: parseInt(itemsPrice.quantity),
+                    startUsage: itemsPrice.startUsage,
+                    endUsage: itemsPrice.endUsage,
+                    standardJobId: itemsPrice.standardJobId,
+                    repairKitId: itemsPrice.repairKitId,
+                    templateDescription: itemsPrice.templateDescription,
+                    repairOption: itemsPrice.repairOption,
+                    frequency: itemsPrice.frequency,
+                    additional: itemsPrice.additional,
+                    recommendedValue: parseInt(itemsPrice.recommendedValue),
+                    partListId: itemsPrice.partListId,
+                    serviceEstimateId: itemsPrice.serviceEstimateId,
+                    numberOfEvents: parseInt(itemsPrice.numberOfEvents),
+                    priceMethod: itemsPrice.priceMethod,
+                    priceType: itemsPrice.priceType,
+                    listPrice: itemsPrice.listPrice,
+                    priceEscalation: itemsPrice.priceEscalation,
+                    calculatedPrice: itemsPrice.calculatedPrice,
+                    flatPrice: itemsPrice.flatPrice,
+                    discountType: itemsPrice.discountType,
+                    year: itemsPrice.year,
+                    noOfYear: itemsPrice.noOfYear,
+                    sparePartsPrice: itemsPrice.sparePartsPrice,
+                    sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
+                    servicePrice: itemsPrice.servicePrice,
+                    labourPrice: itemsPrice.labourPrice,
+                    labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                    miscPrice: itemsPrice.miscPrice,
+                    miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
+                    totalPrice: itemsPrice.totalPrice,
+                    netService: itemsPrice.netService,
+                    customPortfolio: {
+                        portfolioId: 26
+                    },
+                    tenantId: itemsPrice.tenantId,
+                    partsRequired: itemsPrice.partsRequired,
+                    labourRequired: itemsPrice.labourRequired,
+                    serviceRequired: itemsPrice.serviceRequired,
+                    miscRequired: itemsPrice.miscRequired
+                }
+
+                customItemsIdData.push(itemPriceObj)
+
+            }
+
+            for (let p = 0; p < customItemsIdData.length; p++) {
+                var customPriceDataCreate = await customPriceCreation(customItemsIdData[p])
+                console.log("customPriceDataCreate REponse is ", customPriceDataCreate);
+
+                customPriceIdArr.push({
+                    customItemPriceDataId: parseInt(customPriceDataCreate.data.customItemPriceDataId),
+                })
+            }
+
+
+            let customItemObj = {
+                customItemId: 0,
+                itemName: tempBundleService2[i].itemName,
+                customItemHeaderModel: {
+                    customItemHeaderId: 0,
+                    itemHeaderDescription: tempBundleService2[i].itemHeaderModel.itemHeaderDescription,
+                    bundleFlag: tempBundleService2[i].itemHeaderModel.bundleFlag,
+                    portfolioItemId: tempBundleService2[i].itemHeaderModel.portfolioItemId,
+                    reference: tempBundleService2[i].itemHeaderModel.reference,
+                    itemHeaderMake: tempBundleService2[i].itemHeaderModel.itemHeaderMake,
+                    itemHeaderFamily: tempBundleService2[i].itemHeaderModel.itemHeaderFamily,
+                    model: tempBundleService2[i].itemHeaderModel.model,
+                    prefix: tempBundleService2[i].itemHeaderModel.prefix,
+                    type: tempBundleService2[i].itemHeaderModel.type,
+                    additional: tempBundleService2[i].itemHeaderModel.additional,
+                    currency: tempBundleService2[i].itemHeaderModel.currency,
+                    netPrice: tempBundleService2[i].itemHeaderModel.netPrice,
+                    itemProductHierarchy: tempBundleService2[i].itemHeaderModel.itemProductHierarchy,
+                    itemHeaderGeographic: tempBundleService2[i].itemHeaderModel.itemHeaderGeographic,
+                    responseTime: tempBundleService2[i].itemHeaderModel.responseTime,
+                    usage: tempBundleService2[i].itemHeaderModel.usage,
+                    validFrom: tempBundleService2[i].itemHeaderModel.validFrom,
+                    validTo: tempBundleService2[i].itemHeaderModel.validTo,
+                    estimatedTime: tempBundleService2[i].itemHeaderModel.estimatedTime,
+                    servicePrice: tempBundleService2[i].itemHeaderModel.servicePrice,
+                    status: tempBundleService2[i].itemHeaderModel.status,
+                    componentCode: tempBundleService2[i].itemHeaderModel.componentCode,
+                    componentDescription: tempBundleService2[i].itemHeaderModel.componentDescription,
+                    serialNumber: tempBundleService2[i].itemHeaderModel.serialNumber,
+                    itemHeaderStrategy: tempBundleService2[i].itemHeaderModel.itemHeaderStrategy,
+                    variant: tempBundleService2[i].itemHeaderModel.variant,
+                    itemHeaderCustomerSegment: tempBundleService2[i].itemHeaderModel.itemHeaderCustomerSegment,
+                    jobCode: tempBundleService2[i].itemHeaderModel.jobCode,
+                    preparedBy: tempBundleService2[i].itemHeaderModel.preparedBy,
+                    approvedBy: tempBundleService2[i].itemHeaderModel.approvedBy,
+                    preparedOn: tempBundleService2[i].itemHeaderModel.preparedOn,
+                    revisedBy: tempBundleService2[i].itemHeaderModel.revisedBy,
+                    revisedOn: tempBundleService2[i].itemHeaderModel.revisedOn,
+                    salesOffice: tempBundleService2[i].itemHeaderModel.salesOffice,
+                    offerValidity: tempBundleService2[i].itemHeaderModel.offerValidity
+                },
+                customItemBodyModel: {
+                    customItemBodyId: 0,
+                    itemBodyDescription: tempBundleService2[i].itemBodyModel.itemBodyDescription,
+                    spareParts: tempBundleService2[i].itemBodyModel.spareParts,
+                    labours: tempBundleService2[i].itemBodyModel.labours,
+                    miscellaneous: tempBundleService2[i].itemBodyModel.miscellaneous,
+                    taskType: tempBundleService2[i].itemBodyModel.taskType,
+                    solutionCode: tempBundleService2[i].itemBodyModel.solutionCode,
+                    usageIn: tempBundleService2[i].itemBodyModel.usageIn,
+                    usage: tempBundleService2[i].itemBodyModel.usage,
+                    year: tempBundleService2[i].itemBodyModel.year,
+                    avgUsage: tempBundleService2[i].itemBodyModel.avgUsage,
+                    unit: tempBundleService2[i].itemBodyModel.unit,
+                    customItemPrices: customPriceIdArr,
+                }
+            }
+
+            const itemRes = await customitemCreation(customItemObj)
+
+            console.log(" Response is : ", itemRes.data)
+
+            // createdCustomItems.push(itemRes.data)
+            tempBundleService3.push(itemRes.data)
+        }
+
+        setTempBundleService1([])
+
+    }
+
     const columns = [
         { field: 'GroupNumber', headerName: 'Group Number', flex: 1, width: 70 },
         { field: 'Type', headerName: 'Type', flex: 1, width: 130 },
@@ -2660,6 +2828,152 @@ export function CustomizedPortfolio(props) {
         },
     ];
 
+    const tempBundleCustomItemColumns = [
+        {
+            name: (
+                <>
+                    <div>Select</div>
+                </>
+            ),
+            selector: (row) => row.check1,
+            wrap: true,
+            sortable: true,
+            maxWidth: "300px",
+            cell: (row) => (
+                <>
+                    {valueOfUseCase == 3 ? (
+                        <input
+                            type="radio"
+                            name="selectedId"
+                            value={row.itemId}
+                            onChange={(e) => handleTempbundleItemSelection(e, row.id)}
+                            style={{ border: "1px solid #000" }}
+                        />
+                    ) : (
+                        <input
+                            type="checkbox"
+                            name={row.customItemId}
+                            value={tempBundleItemCheckList[row.customItemId]}
+                            checked={tempBundleItemCheckList[row.customItemId]}
+                            onChange={(e) => handleTempbundleItemSelection(e, row)}
+                            style={{ border: "1px solid #000" }}
+                        />
+                    )}
+                </>
+            ),
+        },
+        {
+            name: (
+                <>
+                    <div>Id</div>
+                </>
+            ),
+            selector: (row) => row.customItemId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemId,
+        },
+        {
+            name: (
+                <>
+                    <div>Description</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel.itemBodyDescription,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel.itemBodyDescription,
+        },
+        {
+            name: (
+                <>
+                    <div>Strategy</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.strategy,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.strategy,
+        },
+        {
+            name: (
+                <>
+                    <div>Standard Job Id</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel?.standardJobId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel?.standardJobId,
+        },
+        {
+            name: (
+                <>
+                    <div>Repair Options</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel?.repairOption,
+            sortable: true,
+            maxWidth: "300px",
+            format: (row) => row.customItemBodyModel?.repairOption,
+        },
+        {
+            name: (
+                <>
+                    <div>Frequency</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel?.frequency,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel?.frequency,
+        },
+        {
+            name: (
+                <>
+                    <div>Quantity</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel?.quantity,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel?.quantity,
+        },
+        {
+            name: (
+                <>
+                    <div>Parts $</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel?.sparePartsPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel?.sparePartsPrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Service $</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel?.servicePrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel?.servicePrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Total $</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel?.totalPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel?.totalPrice,
+        },
+    ];
+
     const tempBundleItemColumns1 = [
 
         {
@@ -2771,6 +3085,120 @@ export function CustomizedPortfolio(props) {
             wrap: true,
             sortable: true,
             format: (row) => row.itemBodyModel.totalPrice,
+        },
+    ];
+
+    const tempBundleItemColumns1New = [
+
+        {
+            name: (
+                <>
+                    <div>Id3</div>
+                </>
+            ),
+            selector: (row) => row.customItemId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemId,
+        },
+        {
+            name: (
+                <>
+                    <div>Description</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel.itemBodyDescription,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel.itemBodyDescription,
+        },
+        {
+            name: (
+                <>
+                    <div>Strategy</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel.strategy,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel.strategy,
+        },
+        {
+            name: (
+                <>
+                    <div>Standard Job Id</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel.standardJobId,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel.standardJobId,
+        },
+        {
+            name: (
+                <>
+                    <div>Repair Options</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel.repairOption,
+            sortable: true,
+            maxWidth: "300px",
+            format: (row) => row.customItemBodyModel.repairOption,
+        },
+        {
+            name: (
+                <>
+                    <div>Frequency</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel.frequency,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel.frequency,
+        },
+        {
+            name: (
+                <>
+                    <div>Quantity</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel.quantity,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel.quantity,
+        },
+        {
+            name: (
+                <>
+                    <div>Parts $</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel.sparePartsPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel.sparePartsPrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Service $</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel.servicePrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel.servicePrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Total $</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel.totalPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel.totalPrice,
         },
     ];
 
@@ -3024,13 +3452,13 @@ export function CustomizedPortfolio(props) {
 
     const handleExpandedPriceSave = async (e, rowData) => {
         try {
-            const { itemId, itemName, itemHeaderModel, itemBodyModel } = rowData
+            const { customItemId, itemName, customItemHeaderModel, customItemBodyModel } = rowData
             let reqObj1 = {
-                itemId,
+                customItemId,
                 itemName,
-                itemHeaderModel,
-                itemBodyModel: {
-                    ...itemBodyModel,
+                customItemHeaderModel,
+                customItemBodyModel: {
+                    ...customItemBodyModel,
                     itemBodyDescription: $("#description").val(),
                     startUsage: $("#startUsage").val(),
                     endUsage: $("#endUsage").val(),
@@ -3045,9 +3473,9 @@ export function CustomizedPortfolio(props) {
                     discountType: $("#discountTypeInput").val(),
                 }
             }
-            const res = await updateItemData(itemId, reqObj1)
+            const res = await updateCustomItemData(customItemId, reqObj1)
             if (res.status == 200) {
-                toast(`😎 ${itemId}: price updated`, {
+                toast(`😎 ${customItemId}: price updated`, {
                     position: "top-right",
                     autoClose: 3000,
                     hideProgressBar: false,
@@ -3072,7 +3500,9 @@ export function CustomizedPortfolio(props) {
     }
 
     const ExpandedComponent = ({ data }) => (
+
         <div className="scrollbar" id="style">
+            {console.log("data is : ", data)}
             {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
                 <div
                     key={i}
@@ -3099,7 +3529,7 @@ export function CustomizedPortfolio(props) {
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
-                            {bundleAndService.itemBodyModel.itemBodyDescription}
+                            {bundleAndService.itemBodyModel?.itemBodyDescription}
                         </div>
                     </div>
                     <div
@@ -3253,7 +3683,7 @@ export function CustomizedPortfolio(props) {
                     <input
                         className="form-control border-radius-10"
                         type="text"
-                        defaultValue={data.itemId}
+                        defaultValue={data.customItemId}
                         // value={expandedPriceCalculator.itemId}
                         placeholder="Service/Bundle ID"
                         disabled
@@ -3273,7 +3703,7 @@ export function CustomizedPortfolio(props) {
                         placeholder="Description"
                         name="description"
                         id="description"
-                        defaultValue={data.itemBodyModel.itemBodyDescription}
+                        defaultValue={data.customItemBodyModel.itemBodyDescription}
                         // value={expandedPriceCalculator.description}
                         // onChange={handleExpandePriceChange}
                         autoComplete="off"
@@ -3291,7 +3721,7 @@ export function CustomizedPortfolio(props) {
                         className="form-control border-radius-10"
                         type="text"
                         id="frequency"
-                        defaultValue={data.itemBodyModel.frequency}
+                        defaultValue={data.customItemBodyModel.frequency}
                         // value={expandedPriceCalculator.frequency}
                         // onChange={handleExpandePriceChange}
                         autoComplete="off"
@@ -3309,7 +3739,7 @@ export function CustomizedPortfolio(props) {
                         type="number"
                         className="form-control border-radius-10"
                         id="recommendedValue"
-                        defaultValue={data.itemBodyModel.recommendedValue}
+                        defaultValue={data.customItemBodyModel.recommendedValue}
                         // value={expandedPriceCalculator.recommendedValue}
                         // onChange={handleExpandePriceChange}
                         autoComplete="off"
@@ -3653,12 +4083,12 @@ export function CustomizedPortfolio(props) {
         setTabs("6")
         const _tempBundleItems = [...tempBundleItems]
         for (let i = 0; i < _tempBundleItems.length; i++) {
-            if (currentItemId === _tempBundleItems[i].itemId) {
+            if (currentItemId === _tempBundleItems[i].customItemId) {
                 if (_tempBundleItems[i].associatedServiceOrBundle) {
                     for (let j = 0; j < _tempBundleItems[i].associatedServiceOrBundle.length; j++) {
                         console.log("tempBundleService2", tempBundleService2)
                         for (let k = 0; k < tempBundleService2.length; k++) {
-                            if (_tempBundleItems[i].associatedServiceOrBundle[j].itemId == tempBundleService2[k].itemId) {
+                            if (_tempBundleItems[i].associatedServiceOrBundle[j].customItemId == tempBundleService2[k].customItemId) {
                                 tempBundleService2.splice(k, 1)//remove object if already exist
                                 break;
                             }
@@ -3682,22 +4112,26 @@ export function CustomizedPortfolio(props) {
             // let find that id and get reqData for API
             let reqObj = {}
             console.log("tempBundleItems : ", tempBundleItems)
+            console.log("my tempBundleItems is : ", tempBundleItems)
+            console.log("current item Id : ", currentItemId)
             for (let i = 0; i < tempBundleItems.length; i++) {
-                if (tempBundleItems[i].itemId === currentItemId) {
+                if (tempBundleItems[i].customItemId === currentItemId) {
                     reqObj = {
-                        itemId: tempBundleItems[i].itemId,
-                        standardJobId: tempBundleItems[i].itemBodyModel.standardJobId,
-                        repairKitId: tempBundleItems[i].itemBodyModel.repairKitId,
+                        itemId: tempBundleItems[i].customItemId,
+                        standardJobId: tempBundleItems[i].customItemBodyModel.standardJobId,
+                        repairKitId: tempBundleItems[i].customItemBodyModel.repairKitId,
                     }
                     break;
                 }
             }
-            const itemPriceRes = await getItemPrice(reqObj)
+
+            console.log("my reqObj is : ", reqObj);
+            const itemPriceRes = await getcustomItemPrice(reqObj)
             setItemPriceCalculator({
                 netParts: "11",
                 netService: "11",
                 priceType: "11",
-                netPrice: itemPriceRes.itemHeaderModel.netPrice,
+                netPrice: itemPriceRes.customItemHeaderModel.netPrice,
                 netAdditionals: "11",
             })
 
@@ -5838,12 +6272,14 @@ export function CustomizedPortfolio(props) {
                                                 <button
                                                     type="button"
                                                     className="btn btn-light"
-                                                    onClick={() => {
-                                                        setTempBundleService3(tempBundleService2)
-                                                        setTempBundleService1([])
-                                                    }}
+                                                    // onClick={() => {
+                                                    //     setTempBundleService3(tempBundleService2)
+                                                    //     setTempBundleService1([])
+
+                                                    // }}
+                                                    onClick={handleCreateCustomItem_SearchResult}
                                                 >
-                                                    Add Selected
+                                                    Add Selected 11
                                                 </button>
                                             </div>)}
                                         </>)}
@@ -5853,7 +6289,8 @@ export function CustomizedPortfolio(props) {
                                 {tempBundleService3.length > 0 && <>
                                     <DataTable
                                         title=""
-                                        columns={tempBundleItemColumns1}
+                                        // columns={tempBundleItemColumns1}
+                                        columns={tempBundleItemColumns1New}
                                         data={tempBundleService3}
                                         customStyles={customStyles}
                                         expandableRows
@@ -6333,7 +6770,8 @@ export function CustomizedPortfolio(props) {
                                     >
                                         <DataTable
                                             title=""
-                                            columns={tempBundleItemColumns}
+                                            // columns={tempBundleItemColumns}
+                                            columns={tempBundleCustomItemColumns}
                                             data={tempBundleItems}
                                             customStyles={customStyles}
                                             expandableRows

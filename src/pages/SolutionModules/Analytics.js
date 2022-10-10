@@ -3322,12 +3322,12 @@ export const Analytics = () => {
                      </div> */}
                   </div>
                </div>
-               <div className="col-md-12">
-                  <div className="card mt-2">
+             
+                  <div className="bg-light-dark w-100 border-radius-10 p-3 mt-3">
                      <div className="row">
-                        <div className="col-md-6" style={{ borderRight: '1px solid #cfcece' }}>
-
-                           <div className="maintableheader bg-white mt-2 border-radius-10">
+                        <div className="col-md-6">
+                             
+                           <div className="maintableheader bg-white border-radius-10 p-2 h-100">
                               <RadioGroup className='my-2 '
                                  row
                                  aria-labelledby="demo-form-control-label-placement"
@@ -3355,13 +3355,13 @@ export const Analytics = () => {
                            </div>
                         </div>
                         <div className="col-md-6">
-                           <div className="mx-0 mt-4 text-right">
-                              <Button className="btn text-white bg-primary px-3 text-capitalize mr-3" onClick={() => history.push('/solutionBuilder/guide')}>Guided Solution</Button>
+                           <div className="maintableheader bg-white border-radius-10 p-2 h-100 d-flex align-items-center justify-content-center">
+                              <a href="/solutionBuilder/guide" className="btn text-white bg-primary " onClick={() => history.push('/solutionBuilder/guide')}>Guided Solution</a>
                            </div>
                         </div>
                      </div>
                   </div>
-               </div>
+             
 
                {/* <hr /> */}
                <div className="maintableheader bg-white mt-2 border-radius-10">
