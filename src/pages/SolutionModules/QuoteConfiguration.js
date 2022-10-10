@@ -342,7 +342,7 @@ const  QuoteConfiguration=()=>{
                     <div>
                   <FontAwesomeIcon className="cloudupload" icon={faCloudUploadAlt} />
                   <h6 className="font-weight-500 mt-3">Drag and drop files to upload <br/> or</h6>
-                  <a href="/solutionBuilder/analytics" className="btn text-light border-light font-weight-500 border-radius-10 mt-3"><span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Select files to upload</a>
+                  <a href="/QuoteSolutionBuilder" className="btn text-light border-light font-weight-500 border-radius-10 mt-3"><span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Select files to upload</a>
                     <p className="mt-3">Single upload file should not be more than <br/>10MB. Only the  .xls, .xlsx file types are allowed</p>
                     </div>
                     </div>

@@ -46,6 +46,11 @@ export const SOLUTION_QUOTE ="/SolutionQuote";
 export const SOLUTION_QUOTE_SEARCH ="/SolutionQuoteSearch";
 export const SOLUTION_QUOTE_CONFIG ="/SolutionQuoteConfiguration";
 export const SOLUTION_SERVICE_PORTFOLIO ="/SolutionServicePortfolio";
+export const QUOTE_SOLUTION_BUILDER ="/QuoteSolutionBuilder";
+export const QUOTE_WITH_EVALUATION ="/QuoteWithEvaluation";
+export const REPAIR_BUILDER_REPAIR_OPTION ="/RepairBuilderRepairOption";
+export const SOLUTION_SEARCH_TEMPLATE ="/SolutionSearchTemplate";
+
 
 export const VERIFY_EMAIL = "/verify-email/:id";
 
