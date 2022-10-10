@@ -39,7 +39,7 @@ import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 
 import { SolutionBuilderModal } from "../../pages/SolutionModules/index"
-import { SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO } from '../../navigation/CONSTANTS'
+import { SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO, SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE } from '../../navigation/CONSTANTS'
 import { SOLUTION_BUILDER_PORRTFOLIO_TEMP } from "../../navigation/CONSTANTS";
 import { SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT } from "../../navigation/CONSTANTS";
 
@@ -3239,7 +3239,8 @@ export const Analytics = () => {
                                  Examples of pre-built template are Level I contracts like subscriptions or Level IV contract for Total Maintenance and Repair.
                               </p>
                               <div className=''>
-                                 <a onClick={() => history.push(SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO)} className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></a>
+                                 {/* <a onClick={() => history.push(SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO)} className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></a> */}
+                                 <a onClick={() => history.push(SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE)} className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></a>
                               </div>
 
                            </div>
@@ -3322,46 +3323,46 @@ export const Analytics = () => {
                      </div> */}
                   </div>
                </div>
-             
-                  <div className="bg-light-dark w-100 border-radius-10 p-3 mt-3">
-                     <div className="row">
-                        <div className="col-md-6">
-                             
-                           <div className="maintableheader bg-white border-radius-10 p-2 h-100">
-                              <RadioGroup className='my-2 '
-                                 row
-                                 aria-labelledby="demo-form-control-label-placement"
-                                 name="position"
-                                 defaultValue="top"
-                                 value={selectTypeOfSolution}
-                                 onChange={handleTypeOfSolution}
-                              >
 
-                                 <FormControlLabel
-                                    className="col-md-12 align-items-center m-0 "
-                                    value="0"
-                                    control={<Radio className="mx-1" checked={solutionValue == 0} />}
-                                    label="Portfolio Template"
-                                    labelPlacement="end"
-                                 />
-                                 <FormControlLabel
-                                    className="col-md-12 align-items-center m-0 mt-3 "
-                                    value="1"
-                                    control={<Radio className="mx-1" />}
-                                    label="Solution Template"
-                                    labelPlacement="end"
-                                 />
-                              </RadioGroup>
-                           </div>
+               <div className="bg-light-dark w-100 border-radius-10 p-3 mt-3">
+                  <div className="row">
+                     <div className="col-md-6">
+
+                        <div className="maintableheader bg-white border-radius-10 p-2 h-100">
+                           <RadioGroup className='my-2 '
+                              row
+                              aria-labelledby="demo-form-control-label-placement"
+                              name="position"
+                              defaultValue="top"
+                              value={selectTypeOfSolution}
+                              onChange={handleTypeOfSolution}
+                           >
+
+                              <FormControlLabel
+                                 className="col-md-12 align-items-center m-0 "
+                                 value="0"
+                                 control={<Radio className="mx-1" checked={solutionValue == 0} />}
+                                 label="Portfolio Template"
+                                 labelPlacement="end"
+                              />
+                              <FormControlLabel
+                                 className="col-md-12 align-items-center m-0 mt-3 "
+                                 value="1"
+                                 control={<Radio className="mx-1" />}
+                                 label="Solution Template"
+                                 labelPlacement="end"
+                              />
+                           </RadioGroup>
                         </div>
-                        <div className="col-md-6">
-                           <div className="maintableheader bg-white border-radius-10 p-2 h-100 d-flex align-items-center justify-content-center">
-                              <a href="/solutionBuilder/guide" className="btn text-white bg-primary " onClick={() => history.push('/solutionBuilder/guide')}>Guided Solution</a>
-                           </div>
+                     </div>
+                     <div className="col-md-6">
+                        <div className="maintableheader bg-white border-radius-10 p-2 h-100 d-flex align-items-center justify-content-center">
+                           <a href="/solutionBuilder/guide" className="btn text-white bg-primary " onClick={() => history.push('/solutionBuilder/guide')}>Guided Solution</a>
                         </div>
                      </div>
                   </div>
-             
+               </div>
+
 
                {/* <hr /> */}
                <div className="maintableheader bg-white mt-2 border-radius-10">

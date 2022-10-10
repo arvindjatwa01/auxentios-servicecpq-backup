@@ -68,10 +68,10 @@ const AddCustomPortfolioItem = (props) => {
         numberOfEvents,
         templateDescription,
         repairOption,
-      } = props.passItemEditRowData.itemBodyModel;
+      } = props.passItemEditRowData.customItemBodyModel;
       setAddportFolioItem({
         ...addPortFolioItem,
-        id: props.passItemEditRowData.itemId,
+        id: props.passItemEditRowData.customItemId,
         description: itemBodyDescription,
         usageIn: { label: usageIn, value: usageIn },
         taskType: { label: taskType, value: taskType },
