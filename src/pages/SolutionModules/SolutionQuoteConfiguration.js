@@ -379,7 +379,7 @@ const  SolutionQuoteConfiguration=()=>{
                       </Link>
                     </div>
                     <div className="col-md-4">
-                      <Link to='/QuoteRepairOption' className="card p-3">
+                      <Link to='/SolutionSearchTemplate' className="card p-3">
                       <div class="d-flex">
                         <div class="mr-2"><VerifiedOutlinedIcon className="font-size-65 text-light mr-2"/></div>
                         <div>
@@ -398,7 +398,7 @@ const  SolutionQuoteConfiguration=()=>{
                     <div>
                   <FontAwesomeIcon className="cloudupload" icon={faCloudUploadAlt} />
                   <h6 className="font-weight-500 mt-3">Drag and drop files to upload <br/> or</h6>
-                  <a onClick={() => setOpen(true)} style={{cursor: 'pointer'}} className="btn text-light border-light font-weight-500 border-radius-10 mt-3"><span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Select files to upload</a>
+                  <a href="/QuoteSolutionBuilder" className="btn text-light border-light font-weight-500 border-radius-10 mt-3"><span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Select files to upload</a>
                     <p className="mt-3">Single upload file should not be more than <br/>10MB. Only the  .xls, .xlsx file types are allowed</p>
                     </div>
                     </div>
