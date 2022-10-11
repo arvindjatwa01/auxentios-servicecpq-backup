@@ -215,6 +215,7 @@ const  SolutionSearchTemplate=()=>{
               
             />
           </div> 
+          
         </div>
         </div>
         <Modal className="tablerowmodal" show={show} onHide={() => handleClose()} size="md"

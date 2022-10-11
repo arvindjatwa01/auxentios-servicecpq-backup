@@ -108,6 +108,9 @@ const  QuoteSearchQuote=()=>{
               <input type="search" class="form-control search-form-control"  aria-label="Search Dashboard"/>
             </div>
             <div className="ml-2">
+              <Link className="btn bg-primary text-white">Search</Link>
+            </div>
+            <div className="ml-2">
               <Link to="/QuoteConfiguration" className="btn bg-primary text-white">Create New <ChevronRightIcon className=""/></Link>
             </div>
               </div>

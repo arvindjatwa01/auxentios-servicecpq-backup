@@ -132,11 +132,7 @@ export function QuoteSolutionBuilder(props) {
                             <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
                             <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
                             {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
-
-                        </div>
-                      
-                    </div>
-                    <div className="mt-5">
+                            <div className="ml-3">
                             <Button className="btn bg-primary text-white font-size-12"
                                 id="fade-button"
                                 aria-controls={open2 ? 'fade-menu' : undefined}
@@ -161,6 +157,9 @@ export function QuoteSolutionBuilder(props) {
                                 <MenuItem data-toggle="modal" data-target="#quotecreat" onClick={handleClose2}>Quote</MenuItem>
                             </Menu>
                             </div>
+                        </div>
+                      
+                    </div>
                     <div className="card p-4 mt-5">
                         <h5 className="d-flex align-items-center mb-0">
                             <div className="" style={{ display: 'contents' }}><span className="mr-3">Header</span><a href="#" className="btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i></a>

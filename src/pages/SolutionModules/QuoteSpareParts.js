@@ -194,7 +194,7 @@ const  QuoteSpareParts=()=>{
       <div className="content-body" style={{ minHeight: '884px' }}>
         <div class="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0">Quote</h5>
+            <h5 className="font-weight-600 mb-0">Spare Parts Quote</h5>
             <div>
               <Link to="/QuoteSearchQuote"  style={{ cursor: 'pointer' }} className="btn bg-primary text-white pull-right">
         Search Quote<ChevronRightIcon className=""/>
