@@ -14,6 +14,9 @@ import {selectUpdateTaskList,selectStrategyTaskOption,selectCategoryList} from "
 
 
 const AddCustomPortfolioItem = (props) => {
+
+
+  console.log("props for AddCustomPortfolioItem is : ", props)
   const [tabs, setTabs] = useState("1");
   const [editable, setEditable] = useState(
     props?.compoFlag === "itemEdit" ? true : false

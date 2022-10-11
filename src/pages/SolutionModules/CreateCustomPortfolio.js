@@ -149,6 +149,8 @@ import { PortfolioContext } from "../PortfolioAndBundle/ProtfolioContext";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import CustomSolution from "./CustomSolution";
 
+import Validator from "../../utils/validator";
+
 import Solution from "pages/PortfolioAndBundle/Solution";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
@@ -814,7 +816,7 @@ export function CreateCustomPortfolio() {
                 preparedOn: administrative.preparedOn,
                 revisedBy: administrative.revisedBy,
                 revisedOn: administrative.revisedOn,
-                salesOffice: administrative.salesOffice,
+                salesOffice: administrative.branch,
                 offerValidity: administrative.offerValidity
             };
             if (generalComponentData.portfolioId) {
@@ -1154,7 +1156,7 @@ export function CreateCustomPortfolio() {
                     totalPrice: 0,
                 },
             };
-            const { data, status } = await updateItemData(currentItemId, reqObj);
+            const { data, status } = await updateCustomItemData(currentItemId, reqObj);
         } catch (error) {
             console.log("error in handleSavePrices", error);
             toast("😐" + error, {
@@ -1240,7 +1242,7 @@ export function CreateCustomPortfolio() {
                     totalPrice: 0,
                 },
             };
-            const { data, status } = await updateItemData(
+            const { data, status } = await updateCustomItemData(
                 addPortFolioItem.id,
                 reqObj
             );
@@ -1259,7 +1261,7 @@ export function CreateCustomPortfolio() {
             // to check if itemEdit or bundle/service edit
             if (!(editItemShow && passItemEditRowData._bundleId)) {
                 for (let i = 0; i < _bundleItems.length; i++) {
-                    if (_bundleItems[i].itemId == passItemEditRowData._itemId) {
+                    if (_bundleItems[i].customItemId == passItemEditRowData._itemId) {
                         let obj = {
                             ...data,
                             associatedServiceOrBundle:
@@ -1272,14 +1274,14 @@ export function CreateCustomPortfolio() {
                 setBundleItems(_bundleItems);
             } else {
                 for (let i = 0; i < _bundleItems.length; i++) {
-                    if (_bundleItems[i].itemId == passItemEditRowData._itemId) {
+                    if (_bundleItems[i].customItemId == passItemEditRowData._itemId) {
                         for (
                             let j = 0;
                             j < _bundleItems[i].associatedServiceOrBundle.length;
                             j++
                         ) {
                             if (
-                                _bundleItems[i].associatedServiceOrBundle[j].itemId ==
+                                _bundleItems[i].associatedServiceOrBundle[j].customItemId ==
                                 passItemEditRowData._bundleId
                             ) {
                                 _bundleItems[i].associatedServiceOrBundle[j] = data;
@@ -1354,41 +1356,51 @@ export function CreateCustomPortfolio() {
         setPassItemEditRowData({ ...row, _itemId: row.customtemId });
     };
     const handleServiceItemDelete = async (e, row) => {
-        try {
-            const delRes = await deleteItem(row.customItemId);
-            if (delRes.status == 200) {
-                toast("😎 Item Deletion Successfull", {
-                    position: "top-right",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
+        // try {
+        //     const delRes = await deleteCustomItem(row.customItemId);
+        //     if (delRes.status == 200) {
+        //         toast("😎 Item Deletion Successfull", {
+        //             position: "top-right",
+        //             autoClose: 3000,
+        //             hideProgressBar: false,
+        //             closeOnClick: true,
+        //             pauseOnHover: true,
+        //             draggable: true,
+        //             progress: undefined,
+        //         });
 
-                const _bundleItems = [...bundleItems];
-                const updated = _bundleItems.filter((currentItem) => {
-                    if (currentItem.id !== row.id) {
-                        return currentItem;
-                    }
-                });
-                setBundleItems(updated);
-                setServiceOrBundlePrefix("");
-            }
-        } catch (error) {
-            console.log("error", error);
-            toast("😐" + error, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-            return;
-        }
+        //         const _bundleItems = [...bundleItems];
+        //         const updated = _bundleItems.filter((currentItem) => {
+        //             if (currentItem.id !== row.id) {
+        //                 return currentItem;
+        //             }
+        //         });
+        //         setBundleItems(updated);
+        //         setServiceOrBundlePrefix("");
+        //     }
+        // } catch (error) {
+        //     console.log("error", error);
+        //     toast("😐" + error, {
+        //         position: "top-right",
+        //         autoClose: 3000,
+        //         hideProgressBar: false,
+        //         closeOnClick: true,
+        //         pauseOnHover: true,
+        //         draggable: true,
+        //         progress: undefined,
+        //     });
+        //     return;
+        // }
+
+        toast("😐" + "Something went wrong !!", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
     };
 
     const handleServiceItemSave = async (e, row) => {
@@ -1707,7 +1719,7 @@ export function CreateCustomPortfolio() {
                     preparedOn: administrative.preparedOn,
                     revisedBy: administrative.revisedBy,
                     revisedOn: administrative.revisedOn,
-                    salesOffice: administrative.salesOffice,
+                    salesOffice: administrative.branch,
                     offerValidity: administrative.offerValidity,
                 };
                 const strategyRes = await updateCustomPortfolio(
@@ -1730,6 +1742,43 @@ export function CreateCustomPortfolio() {
                     throw `${strategyRes.status}:error in update portfolio`;
                 }
             } else if (e.target.id == "administrative") {
+                const validator = new Validator();
+
+                if ((!validator.emailValidation(administrative.preparedBy) ||
+                    administrative.preparedBy == "" ||
+                    administrative.preparedBy == undefined) ||
+                    (administrative.approvedBy != "" &&
+                        administrative.approvedBy != undefined &&
+                        !validator.emailValidation(administrative.approvedBy)) ||
+                    (administrative.revisedBy != "" &&
+                        administrative.revisedBy != undefined &&
+                        !validator.emailValidation(administrative.revisedBy)) ||
+                    (administrative.branch == "" ||
+                        administrative.branch == undefined) ||
+                    (administrative.offerValidity == "" ||
+                        administrative.offerValidity == undefined)
+                ) {
+                    throw "Please fill manditory fields with valid data";
+                }
+                // if (administrative.approvedBy != "" &&
+                //     administrative.approvedBy != undefined &&
+                //     !validator.emailValidation(administrative.approvedBy)) {
+                //     throw "Please fill manditory fields with valid data 11";
+                // }
+                // if (administrative.revisedBy != "" &&
+                //     administrative.revisedBy != undefined &&
+                //     !validator.emailValidation(administrative.revisedBy)) {
+                //     throw "Please fill manditory fields with valid data 22";
+                // }
+
+                // if (administrative.branch == "" || administrative.branch == undefined) {
+                //     throw "Please fill manditory fields with valid data 33";
+                // }
+
+                // if (administrative.offerValidity == "" || administrative.offerValidity == undefined) {
+                //     throw "Please fill manditory fields with valid data 44";
+                // }
+
                 setGeneralComponentData({
                     ...generalComponentData,
                     preparedBy: administrative.preparedBy,
@@ -1737,7 +1786,7 @@ export function CreateCustomPortfolio() {
                     preparedOn: administrative.preparedOn,
                     revisedBy: administrative.revisedBy,
                     revisedOn: administrative.revisedOn,
-                    salesOffice: administrative.salesOffice,
+                    salesOffice: administrative.branch,
                     offerValidity: administrative.offerValidity,
                 });
 
@@ -1820,7 +1869,7 @@ export function CreateCustomPortfolio() {
                     preparedOn: administrative.preparedOn,
                     revisedBy: administrative.revisedBy,
                     revisedOn: administrative.revisedOn,
-                    salesOffice: administrative.salesOffice,
+                    salesOffice: administrative.branch,
                     offerValidity: administrative.offerValidity,
                 };
 
@@ -1965,7 +2014,7 @@ export function CreateCustomPortfolio() {
                     preparedOn: administrative.preparedOn,
                     revisedBy: administrative.revisedBy,
                     revisedOn: administrative.revisedOn,
-                    salesOffice: administrative.salesOffice,
+                    salesOffice: administrative.branch,
                     offerValidity: administrative.offerValidity,
                 };
                 if (generalComponentData.portfolioId) {
@@ -2066,7 +2115,7 @@ export function CreateCustomPortfolio() {
     }
 
     const UpdatePriceInclusionExclusion = async () => {
-        console.log("hello");
+
         if (editAblePriceData.length > 0) {
             // console.log("hello")
             for (let y = 0; y < editAblePriceData.length; y++) {
@@ -3554,7 +3603,7 @@ export function CreateCustomPortfolio() {
                             </Link>
                         </Tooltip>
                     </div>
-                    <div className=" cursor" data-toggle="modal" data-target="#myModal2">
+                    <div className=" cursor" data-toggle="modal" data-target="#myModal12">
                         <Tooltip title="Inclusion">
                             <Link to="#" className="px-1">
                                 <img src={cpqIcon}></img>
@@ -4376,51 +4425,63 @@ export function CreateCustomPortfolio() {
     };
 
     const handleExpandedRowDelete = async (e, itemId, bundleId) => {
-        try {
-            const delRes = await deleteCustomItem(bundleId);
-            if (delRes.status == 200) {
-                toast("😎 Deletion Successfull", {
-                    position: "top-right",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-                const _bundleItems = [...bundleItems];
-                for (let i = 0; i < _bundleItems.length; i++) {
-                    if (_bundleItems[i].customItemId == itemId) {
-                        for (
-                            let j = 0;
-                            j < _bundleItems[i].associatedServiceOrBundle.length;
-                            j++
-                        ) {
-                            if (
-                                _bundleItems[i].associatedServiceOrBundle[j].customItemId == bundleId
-                            ) {
-                                _bundleItems[i].associatedServiceOrBundle.splice(j, 1);
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-                setBundleItems(_bundleItems);
-            }
-        } catch (error) {
-            console.log("error", error);
-            toast("😐" + error, {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-            return;
-        }
+        // try {
+        //     console.log(" event is : ", e)
+        //     console.log(" itemId is : ", itemId)
+        //     console.log(" bundleId is : ", bundleId)
+        //     const delRes = await deleteCustomItem(bundleId);
+        //     if (delRes.status == 200) {
+        //         toast("😎 Deletion Successfull", {
+        //             position: "top-right",
+        //             autoClose: 3000,
+        //             hideProgressBar: false,
+        //             closeOnClick: true,
+        //             pauseOnHover: true,
+        //             draggable: true,
+        //             progress: undefined,
+        //         });
+        //         const _bundleItems = [...bundleItems];
+        //         for (let i = 0; i < _bundleItems.length; i++) {
+        //             if (_bundleItems[i].customItemId == itemId) {
+        //                 for (
+        //                     let j = 0;
+        //                     j < _bundleItems[i].associatedServiceOrBundle.length;
+        //                     j++
+        //                 ) {
+        //                     if (
+        //                         _bundleItems[i].associatedServiceOrBundle[j].customItemId == bundleId
+        //                     ) {
+        //                         _bundleItems[i].associatedServiceOrBundle.splice(j, 1);
+        //                         break;
+        //                     }
+        //                 }
+        //                 break;
+        //             }
+        //         }
+        //         setBundleItems(_bundleItems);
+        //     }
+        // } catch (error) {
+        //     console.log("error", error);
+        //     toast("😐" + error, {
+        //         position: "top-right",
+        //         autoClose: 3000,
+        //         hideProgressBar: false,
+        //         closeOnClick: true,
+        //         pauseOnHover: true,
+        //         draggable: true,
+        //         progress: undefined,
+        //     });
+        //     return;
+        // }
+        toast("😐" + "Something went wrong !!", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
     };
 
     const handleExpandedRowEdit = (e, itemId, rowData) => {
@@ -5373,7 +5434,7 @@ export function CreateCustomPortfolio() {
                                         <Tab label="Price" value={"price"} />
                                         <Tab
                                             label="Price Agreement"
-                                            disabled={!priceAgreementOption}
+                                            // disabled={!priceAgreementOption}
                                             value={"priceAgreement"}
                                         />
                                         <Tab label="Coverage" value={"coverage"} />
@@ -9745,7 +9806,8 @@ export function CreateCustomPortfolio() {
                                     <Tab label="Service/Bundle" value="2" />
                                     {/* <Tab label="Solution" value="3" /> */}
                                     {/*use it in useCase-4 */}
-                                    {categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE" && <Tab label="Component Data" value="4" />}
+                                    {/* {categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE" && <Tab label="Component Data" value="4" />} */}
+                                    <Tab label="Component Data" value="4" />
                                     <Tab label="Price Calculator" value="5" />
                                     <Tab label="Review" value="6" />
                                 </TabList>
@@ -9963,7 +10025,8 @@ export function CreateCustomPortfolio() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="row mt-3">
+                                    <hr />
+                                    <div className="row mt-2">
                                         <div className="col-md-6 col-sm-6">
                                             <div className="form-group">
                                                 <label
