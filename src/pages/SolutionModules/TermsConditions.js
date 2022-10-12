@@ -58,6 +58,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import searchLogo from '../../assets/icons/svg/search.svg';
 import Select2 from 'react-select';
+import ModeCommentOutlinedIcon from '@mui/icons-material/ModeCommentOutlined';
+import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 
 const TermsConditions = () => {
   const [age, setAge] = React.useState('');
@@ -195,9 +197,9 @@ const handleChangedrop2 = (event) => {
 
   
   const activityOptions = [
-    'None',
-    'Atria',
-    'Callisto'
+    'Create Versions',
+    'Show Errors',
+    'Review'
   ];
   const data = [
     {
@@ -467,6 +469,7 @@ const handleChangedrop2 = (event) => {
                             {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
                             <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
                             <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14" title="Comments" data-toggle="modal" data-target="#messegespopup2"><ModeCommentOutlinedIcon /></a>
                             <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
            
           </div>
@@ -510,6 +513,224 @@ const handleChangedrop2 = (event) => {
         </div>              
       </div>
         </div>
+        <div
+        className="modal right fade"
+        id="messegespopup2"
+        tabIndex="-1"
+        role="dialog"
+        aria-labelledby="myModalLabel2"
+      >
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header ">
+              <h4 className="modal-title" id="myModalLabel2">
+                Comments
+              </h4>
+              <div className="d-flex">
+                <button
+                  type="button"
+                  className="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            </div>
+            <div className="modal-body" style={{ background: "white" }}>
+              {/* <div style={{borderBottom: '1px solid #cfcece'}}> */}
+              <ul className="nav internalexternaltabs intexttab">
+                <li className="active">
+                  <a
+                    data-toggle="tab"
+                    href="#internal1"
+                    className="btn active show"
+                  >
+                    Internal
+                  </a>
+                </li>
+                <li>
+                  <a data-toggle="tab" href="#external1" className="btn">
+                    External
+                  </a>
+                </li>
+              </ul>
+              {/* </div> */}
+
+              <div className="tab-content">
+                <div id="internal1" className="tab-pane fade in active show">
+                  <div className="mt-4">
+                    <a
+                      href="#"
+                      className="bg-light p-3 d-block text-left font-size-15 text-violet"
+                    >
+                      <span className="font-size-20 mr-2">+</span>Comment
+                    </a>
+                  </div>
+                  <div className="hr"></div>
+
+                  <div className=" p-2 card-list mt-5 border">
+                    <div className="d-flex justify-content-between">
+                      <div className="d-flex  align-items-center">
+                        <div
+                          className="d-flex justify-content-center align-items-center bg-primary rounded-circle text-white mr-2"
+                          style={{ width: "35px", height: "35px" }}
+                        >
+                          <span>J</span>
+                        </div>
+                        <div>
+                          <h6 className="mb-0">
+                            <b>Jane Doe</b>
+                          </h6>
+                        </div>
+                      </div>
+                      <div>
+                        <MoreHorizIcon className="mr-2" />
+                        <CheckCircleOutlinedIcon />
+                      </div>
+                    </div>
+                      <p className="mt-2">
+                        Amet minim mollit non deserunt ullamco est sit minim mollit non deserunt ullamco est sit
+                      </p>
+                   
+                    <div className="mt-3">
+                      <textarea
+                        name="comments"
+                        className="w-100 p-2 border"
+                        id="comments"
+                        placeholder="Reply"
+                      ></textarea>
+                    </div>
+                  </div>
+                  <p className="text-grey  mb-0 font-size-12">
+                      <b>2:38pm, 19 Aug 21</b>
+                    </p>
+                    <div className=" p-2 card-list mt-5 border">
+                    <div className="d-flex justify-content-between">
+                      <div className="d-flex  align-items-center">
+                        <div
+                          className="d-flex justify-content-center align-items-center bg-primary rounded-circle text-white mr-2"
+                          style={{ width: "35px", height: "35px" }}
+                        >
+                          <span>J</span>
+                        </div>
+                        <div>
+                          <h6 className="mb-0">
+                            <b>Jane Doe</b>
+                          </h6>
+                        </div>
+                      </div>
+                      <div>
+                        <MoreHorizIcon className="mr-2" />
+                        <CheckCircleOutlinedIcon />
+                      </div>
+                    </div>
+                      <p className="mt-2">
+                        Amet minim mollit non deserunt ullamco est sit minim mollit non deserunt ullamco est sit
+                      </p>
+                   
+                    <div className="mt-3">
+                      <textarea
+                        name="comments"
+                        className="w-100 p-2 border"
+                        id="comments"
+                        placeholder="Reply"
+                      ></textarea>
+                    </div>
+                  </div>
+                  <p className="text-grey  mb-0 font-size-12">
+                      <b>2:38pm, 19 Aug 21</b>
+                    </p>
+                </div>
+                <div id="external1" className="tab-pane fade">
+                  <div className="mt-4">
+                    <a
+                      href="#"
+                      className="bg-light p-3 d-block text-left font-size-15 text-violet"
+                    >
+                      <span className="font-size-20 mr-2">+</span>Comments
+                    </a>
+                  </div>
+                  <div className="hr"></div>
+
+                  <div className=" p-2 card-list mt-5 border">
+                    <div className="d-flex justify-content-between">
+                      <div className="d-flex  align-items-center">
+                        <div
+                          className="d-flex justify-content-center align-items-center bg-primary rounded-circle text-white mr-2"
+                          style={{ width: "35px", height: "35px" }}
+                        >
+                          <span>J</span>
+                        </div>
+                        <div>
+                          <h6 className="mb-0">
+                            <b>Jane Doe</b>
+                          </h6>
+                        </div>
+                      </div>
+                      <div>
+                        <MoreHorizIcon className="mr-2" />
+                        <CheckCircleOutlinedIcon />
+                      </div>
+                    </div>
+                      <p className="mt-2">
+                        Amet minim mollit non deserunt ullamco est sit minim mollit non deserunt ullamco est sit
+                      </p>
+                   
+                    <div className="mt-3">
+                      <textarea
+                        name="comments"
+                        className="w-100 p-2 border"
+                        id="comments"
+                        placeholder="Reply"
+                      ></textarea>
+                    </div>
+                  </div>
+                  <p className="text-grey  mb-0 font-size-12">
+                      <b>2:38pm, 19 Aug 21</b>
+                    </p>
+                    <div className=" p-2 card-list mt-5 border">
+                    <div className="d-flex justify-content-between">
+                      <div className="d-flex  align-items-center">
+                        <div
+                          className="d-flex justify-content-center align-items-center bg-primary rounded-circle text-white mr-2"
+                          style={{ width: "35px", height: "35px" }}
+                        >
+                          <span>J</span>
+                        </div>
+                        <div>
+                          <h6 className="mb-0">
+                            <b>Jane Doe</b>
+                          </h6>
+                        </div>
+                      </div>
+                      <div>
+                        <MoreHorizIcon className="mr-2" />
+                        <CheckCircleOutlinedIcon />
+                      </div>
+                    </div>
+                      <p className="mt-2">
+                        Amet minim mollit non deserunt ullamco est sit minim mollit non deserunt ullamco est sit
+                      </p>
+                   
+                    <div className="mt-3">
+                      <textarea
+                        name="comments"
+                        className="w-100 p-2 border"
+                        id="comments"
+                        placeholder="Reply"
+                      ></textarea>
+                    </div>
+                  </div>
+                  <p className="text-grey  mb-0 font-size-12">
+                      <b>2:38pm, 19 Aug 21</b>
+                    </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       </div>
 
     </>

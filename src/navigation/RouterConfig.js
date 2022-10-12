@@ -51,6 +51,10 @@ import SolutionQuote from "pages/SolutionModules/SolutionQuote";
 import SolutionQuoteSearch from "pages/SolutionModules/SolutionQuoteSearch";
 import SolutionQuoteConfiguration from "pages/SolutionModules/SolutionQuoteConfiguration";
 import { SolutionServicePortfolio } from "pages/SolutionModules/SolutionServicePortfolio";
+import { QuoteSolutionBuilder } from "pages/SolutionModules/QuoteSolutionBuilder";
+import QuoteWithEvaluation from "pages/SolutionModules/QuoteWithEvaluation";
+import RepairBuilderRepairOption from "pages/SolutionModules/RepairBuilderRepairOption";
+import SolutionSearchTemplate from "pages/SolutionModules/SolutionSearchTemplate";
 
 
 // alert(window.location.pathname)
@@ -123,6 +127,10 @@ export const RouterConfig = () => {
         <Route exact path={SOLUTION_QUOTE_SEARCH} component={SolutionQuoteSearch} />
         <Route exact path={SOLUTION_QUOTE_CONFIG} component={SolutionQuoteConfiguration} />
         <Route exact path={SOLUTION_SERVICE_PORTFOLIO} component={SolutionServicePortfolio} />
+        <Route exact path={QUOTE_SOLUTION_BUILDER} component={QuoteSolutionBuilder} />
+        <Route exact path={QUOTE_WITH_EVALUATION} component={QuoteWithEvaluation} />
+        <Route exact path={REPAIR_BUILDER_REPAIR_OPTION} component={RepairBuilderRepairOption} />
+        <Route exact path={SOLUTION_SEARCH_TEMPLATE} component={SolutionSearchTemplate} />
         <Route exact path="/indexing" component={CommanComponents} />
 
         {/* <Route exact path={PAGE1} component={Page1} /> */}

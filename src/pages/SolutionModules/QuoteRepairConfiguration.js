@@ -125,17 +125,8 @@ const  QuoteRepairConfiguration=()=>{
           </div>
           </div>
           <div className="card p-4 mt-5">
-              <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
-                <TabContext value={value}>
-                  <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <TabList onChange={handleChange} aria-label="lab API tabs example">
-                      <Tab label="Use Repair Builder " value="1" />
-                      <Tab label="Use Repair Templates " value="2" />
-                      <Tab label="Import From Excel" value="3" />
-                    </TabList>
-                  </Box>
-                  <TabPanel value="1">
-                  <div className="row">
+          <p className="my-2"><b>Choose what solution you want to configure</b></p>
+          <div className="row">
                     <div className="col-md-4">
                       <Link to="solutionBuilder/guide" className="card p-3">
                       <div class="d-flex">
@@ -150,7 +141,7 @@ const  QuoteRepairConfiguration=()=>{
                       </Link>
                     </div>
                     <div className="col-md-4">
-                      <Link to='/QuoteRepairOption' className="card p-3">
+                      <Link to='/QuoteWithEvaluation' className="card p-3">
                       <div class="d-flex">
                         <div class="mr-2"><VerifiedOutlinedIcon className="font-size-65 text-light mr-2"/></div>
                         <div>
@@ -163,51 +154,7 @@ const  QuoteRepairConfiguration=()=>{
                       </Link>
                     </div>
                   </div>
-            </TabPanel>
-            <TabPanel value="2">
-            <div className="row">
-                    <div className="col-md-4">
-                      <Link to="solutionBuilder/guide" className="card p-3">
-                      <div class="d-flex">
-                        <div class="mr-2"><VerifiedOutlinedIcon className="font-size-65 text-light mr-2"/></div>
-                        <div>
-                            <h5 class="text-light">Without Evalution</h5>
-                            <p><b>You configuration solutions by answering a set of questions</b></p>
-                            <p>Exampies, You answer questions releted to your requlreemnts for a maintenance plan.Sytem picks up a pre-configured template based on your answers</p>
-                           
-                        </div>
-                      </div>
-                      </Link>
-                    </div>
-                    <div className="col-md-4">
-                      <Link to='/QuoteRepairOption' className="card p-3">
-                      <div class="d-flex">
-                        <div class="mr-2"><VerifiedOutlinedIcon className="font-size-65 text-light mr-2"/></div>
-                        <div>
-                            <h5 class="text-light">With evaluation</h5>
-                            <p><b>You configuration solutions by answering a set of questions</b></p>
-                            <p>Exampies, You answer questions releted to your requlreemnts for a maintenance plan.Sytem picks up a pre-configured template based on your answers</p>
-                           
-                        </div>
-                      </div>
-                      </Link>
-                    </div>
-                  </div>
-            </TabPanel>
-            <TabPanel value="3">
-            <div className="add-new-recod">
-                    <div>
-                  <FontAwesomeIcon className="cloudupload" icon={faCloudUploadAlt} />
-                  <h6 className="font-weight-500 mt-3">Drag and drop files to upload <br/> or</h6>
-                  <a onClick={() => setOpen(true)} style={{cursor: 'pointer'}} className="btn text-light border-light font-weight-500 border-radius-10 mt-3"><span className="mr-2"><FontAwesomeIcon icon={faPlus} /></span>Select files to upload</a>
-                    <p className="mt-3">Single upload file should not be more than <br/>10MB. Only the  .xls, .xlsx file types are allowed</p>
-                    </div>
-                    </div>
-            </TabPanel>
-          </TabContext>
-        </Box>
-  
-        </div>
+          </div>
   
     <Modal show={open} onHide={handleClose} size="md"
   aria-labelledby="contained-modal-title-vcenter"

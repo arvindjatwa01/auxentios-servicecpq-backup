@@ -57,7 +57,37 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Link } from "react-router-dom";
 import SearchIcon from '@mui/icons-material/Search';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
-
+import { Switch } from "@material-ui/core";
+import {
+  createPortfolio,
+  getPortfolio,
+  getPortfolioSchema,
+  getMakeKeyValue,
+  getModelKeyValue,
+  getPrefixKeyValue,
+  updatePortfolio,
+  getUsageCategoryKeyValue,
+  getTaskTypeKeyValue,
+  getResponseTimeTaskKeyValue,
+  getValidityKeyValue,
+  getStrategyTaskKeyValue,
+  getProductHierarchyKeyValue,
+  getGergraphicKeyValue,
+  getMachineTypeKeyValue,
+  getTypeKeyValue,
+  getPortfolioCommonConfig,
+  getSearchQueryCoverage,
+  getSearchCoverageForFamily,
+  itemCreation,
+  createCoverage,
+  getItemPrice,
+  updateItemData,
+  deleteItem,
+  getComponentCodeSuggetions,
+  itemPriceDataId,
+  updateItemPriceData
+} from "../../services/index";
+import RemoveRedEyeOutlinedIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 
 const SparePartsQuoteTemplate = () => {
   const [age, setAge] = React.useState('');
@@ -335,8 +365,13 @@ const handleChangedrop2 = (event) => {
       minWidth: '200px',
       cell: (row) =>
       <div className="d-flex align-items-center">
-        <div className="">
-          <Link><span className="mr-2"><MoreVertIcon className="font-size-18"/></span>More Actions</Link>
+        <div className="d-flex">
+        <Link to="#" className="px-1"><span><RemoveRedEyeOutlinedIcon className="ml-2"/></span>
+        </Link>
+        <Link to="#" className="px-1" data-toggle="modal" data-target="#myModal12" ><span><img className="ml-2" src={cpqIcon}></img></span>
+        </Link>
+        <Link to="#" className="px-1"><span><MoreVertIcon className="ml-2"/></span>
+        </Link>
 
         </div>
       
@@ -435,7 +470,57 @@ const handleChangedrop2 = (event) => {
     { value: "vanilla", label: "2" },
     { value: "Construction", label: "3" },
   ];
+  const Inclusion_Exclusion = (e, data) => {
+    console.log("event is : ", e);
+    console.log("itemData : ", data);
+    if (data.itemBodyModel.itemPrices.length > 0) {
+      setEditAblePriceData(data.itemBodyModel.itemPrices)
+    } else {
+      setEditAblePriceData([])
+    }
 
+    console.log("editable Custom Price data : ", editAblePriceData);
+
+  }
+  const UpdatePriceInclusionExclusion = async () => {
+    console.log("hello");
+    if (editAblePriceData.length > 0) {
+      // console.log("hello")
+      for (let y = 0; y < editAblePriceData.length; y++) {
+        var getCustomPriceData = await itemPriceDataId(editAblePriceData[y].itemPriceDataId);
+        console.log("y is : ", getCustomPriceData);
+
+        getCustomPriceData.partsRequired = partsRequired;
+        getCustomPriceData.labourRequired = labourRequired;
+        getCustomPriceData.serviceRequired = serviceRequired;
+        getCustomPriceData.miscRequired = miscRequired;
+
+        // console.log("updated y is : ", getCustomPriceData)
+
+        var UpdateCustomPriceInclusion = updateItemPriceData(editAblePriceData[y].itemPriceDataId, getCustomPriceData)
+
+      }
+    } else {
+      console.log("empty");
+    }
+  }
+  const [miscRequired, setMiscRequired] = useState(true);
+  const handleWithMiscCheckBox = (e) => {
+    setMiscRequired(e.target.checked)
+  }
+  const [editAblePriceData, setEditAblePriceData] = useState([]);
+  const handleWithSparePartsCheckBox = (e) => {
+    setPartsRequired(e.target.checked)
+  }
+  const [serviceRequired, setServiceRequired] = useState(true);
+  const [partsRequired, setPartsRequired] = useState(true);
+  const [labourRequired, setlabourRequired] = useState(true);
+  const handleWithLabourCheckBox = (e) => {
+    setlabourRequired(e.target.checked)
+  }
+  const handleWithServiceCheckBox = (e) => {
+    setServiceRequired(e.target.checked)
+  }
   return (
     <>
       <CommanComponents/>
@@ -510,6 +595,7 @@ const handleChangedrop2 = (event) => {
                       <Tab label="Estimation Team" value="3" />
                       <Tab label="Estimate" value="4" />
                       <Tab label="Pricing/Billing" value="5" />
+                      <Tab label="Review" value="6" />
                     </TabList>
                   </Box>
                   <TabPanel value="1">
@@ -643,7 +729,6 @@ const handleChangedrop2 = (event) => {
             <TabPanel value="4">
             <p>Data Not Found</p>
             </TabPanel>
-           
             <TabPanel value="5">
             <div class="row mt-4">
             <div class="col-md-3 col-sm-3">
@@ -659,7 +744,7 @@ const handleChangedrop2 = (event) => {
                     input={<OutlinedInput />}
                     renderValue={(selected) => {
                       if (selected.length === 0) {
-                        return <em>30dayes</em>;
+                        return <em>30days</em>;
                       }
 
                       return selected.join(', ');
@@ -668,7 +753,7 @@ const handleChangedrop2 = (event) => {
                     inputProps={{ 'aria-label': 'Without label' }}
                   >
                     <MenuItem disabled value="">
-                      <em>30dayes</em>
+                      <em>30days</em>
                     </MenuItem>
                     {names.map((name) => (
                       <MenuItem
@@ -697,7 +782,7 @@ const handleChangedrop2 = (event) => {
                     input={<OutlinedInput />}
                     renderValue={(selected) => {
                       if (selected.length === 0) {
-                        return <em>30dayes</em>;
+                        return <em>30days</em>;
                       }
 
                       return selected.join(', ');
@@ -706,7 +791,7 @@ const handleChangedrop2 = (event) => {
                     inputProps={{ 'aria-label': 'Without label' }}
                   >
                     <MenuItem disabled value="">
-                      <em>30dayes</em>
+                      <em>30days</em>
                     </MenuItem>
                     {names.map((name) => (
                       <MenuItem
@@ -735,7 +820,7 @@ const handleChangedrop2 = (event) => {
                     input={<OutlinedInput />}
                     renderValue={(selected) => {
                       if (selected.length === 0) {
-                        return <em>30dayes</em>;
+                        return <em>30days</em>;
                       }
 
                       return selected.join(', ');
@@ -744,7 +829,7 @@ const handleChangedrop2 = (event) => {
                     inputProps={{ 'aria-label': 'Without label' }}
                   >
                     <MenuItem disabled value="">
-                      <em>30dayes</em>
+                      <em>30days</em>
                     </MenuItem>
                     {names.map((name) => (
                       <MenuItem
@@ -797,7 +882,7 @@ const handleChangedrop2 = (event) => {
                     input={<OutlinedInput />}
                     renderValue={(selected) => {
                       if (selected.length === 0) {
-                        return <em>30dayes</em>;
+                        return <em>30days</em>;
                       }
 
                       return selected.join(', ');
@@ -806,7 +891,7 @@ const handleChangedrop2 = (event) => {
                     inputProps={{ 'aria-label': 'Without label' }}
                   >
                     <MenuItem disabled value="">
-                      <em>30dayes</em>
+                      <em>30days</em>
                     </MenuItem>
                     {names.map((name) => (
                       <MenuItem
@@ -837,6 +922,76 @@ const handleChangedrop2 = (event) => {
             </div>
             </div>
 
+            </TabPanel>
+            <TabPanel value="6">
+                <div className="card p-2 mt-2">
+                    <div className="d-block">
+                       <div className="d-flex align-items-center justify-content-between bg-light py-3 px-4">
+                          <p className="mb-0 "><span>Service Organization</span></p>
+                          <h6 className="mb-0 "><span>ESPERENCE (SV71)</span></h6>
+                       </div>
+                       <div className="d-flex align-items-center justify-content-between py-3 px-4">
+                          <p className="mb-0 "><span>Serial Number #</span></p>
+                          <h6 className="mb-0 "><span>LBK3490</span></h6>
+                       </div>
+                       <div className="d-flex align-items-center justify-content-between bg-light py-3 px-4">
+                          <p className="mb-0 "><span>Customer</span></p>
+                            <p className="mb-0 "><span>207039 CHINALCO BEJING</span></p>
+                       </div>
+                       <div className="d-flex align-items-center justify-content-between py-3 px-4">
+                          <p className="mb-0 "><span>Model</span></p>
+                          <h6 className="mb-0 "><span>797</span></h6>
+                       </div>
+                       <div className="d-flex align-items-center justify-content-between bg-light py-3 px-4">
+                          <p className="mb-0 "><span>Manufacturer</span></p>
+                          <h6 className="mb-0 "><span>Caterpillar</span></h6>
+                       </div>
+                       <div className="d-flex align-items-center justify-content-between py-3 px-4">
+                          <p className="mb-0 "><span>Price Method</span></p>
+                          <h6 className="mb-0 "><span>Sale Price</span></h6>
+                       </div>
+                       <div className="d-flex align-items-center justify-content-between bg-light py-3 px-4">
+                          <p className="mb-0 "><span>Price Type</span></p>
+                          <h6 className="mb-0 "><span>List Price</span></h6>
+                       </div>
+                       <div className="d-flex align-items-center justify-content-between py-3 px-4">
+                          <p className="mb-0 "><span>Net Price</span></p>
+                          <h6 className="mb-0 "><span>$4218</span></h6>
+                       </div>
+                       <div className="d-flex align-items-center justify-content-between bg-light py-3 px-4">
+                          <p className="mb-0 "><span>Price Type</span></p>
+                          <h6 className="mb-0 "><span>List Price</span></h6>
+                       </div>
+                       <div className="d-flex align-items-center justify-content-between py-3 px-4">
+                          <p className="mb-0 "><span>Net Price</span></p>
+                          <h6 className="mb-0 "><span>$4218</span></h6>
+                       </div>
+                       <div className="d-flex align-items-center justify-content-between bg-light py-3 px-4">
+                          <p className="mb-0 "><span>Estimated External Service Purchase $</span></p>
+                          <h6 className="mb-0 "><span>$100</span></h6>
+                       </div>
+                       <div className="d-flex align-items-center justify-content-between py-3 px-4">
+                          <p className="mb-0 "><span>Estimated Labour</span></p>
+                          <h6 className="mb-0 "><span>$0</span></h6>
+                       </div>
+                       <div className="d-flex align-items-center justify-content-between bg-light py-3 px-4">
+                          <p className="mb-0 "><span>Estimated Parts</span></p>
+                          <h6 className="mb-0 "><span>$4210</span></h6>
+                       </div>
+                       <div className="d-flex align-items-center justify-content-between py-3 px-4">
+                          <p className="mb-0 "><span>Adjusted price</span></p>
+                          <h6 className="mb-0 "><span>$0</span></h6>
+                       </div>
+                       <div className="d-flex align-items-center justify-content-between bg-light py-3 px-4">
+                          <p className="mb-0 "><span>Discounts</span></p>
+                          <h6 className="mb-0 "><span>$90</span></h6>
+                       </div>
+                       <div className="d-flex align-items-center justify-content-between py-3 px-4">
+                          <p className="mb-0 "><span>Margin</span></p>
+                          <h6 className="mb-0 "><span>22%</span></h6>
+                       </div>
+                    </div>
+                </div>
             </TabPanel>
             
           </TabContext>
@@ -1022,6 +1177,199 @@ const handleChangedrop2 = (event) => {
        
         </Modal.Body>
       </Modal>
+      <div
+        className="modal right fade"
+        id="myModal12"
+        tabIndex="-1"
+        role="dialog"
+        aria-labelledby="myModalLabel2"
+      >
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header d-block">
+              <button
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <h4 className="modal-title" id="myModalLabel2">
+                Inclusion/Exclusion
+              </h4>
+            </div>
+            <div className="modal-body p-0">
+              <div className="bg-light-blue p-3">
+                <h5 className="font-weight-normal text-violet mb-0">
+                  CHOICE OF SPARE PARTS
+                </h5>
+              </div>
+              <div className="bg-white p-3">
+                <FormGroup>
+                  <FormControlLabel
+                    control={<Switch />}
+                    label="With Spare Parts"
+                    onChange={(e) => handleWithSparePartsCheckBox(e)}
+                    checked={partsRequired}
+
+                  />
+                  <FormControlLabel
+                    control={<Switch disabled />}
+                    label="I have Spare Parts"
+                  />
+                  <FormControlLabel
+                    control={<Switch disabled />}
+                    label="I need only Spare Parts"
+                  />
+                </FormGroup>
+              </div>
+              <div className="bg-light-blue p-3">
+                <h5 className="font-weight-normal text-violet mb-0">
+                  CHOICE OF LABOR
+                </h5>
+              </div>
+              <div className="bg-white p-3">
+                <div className=" d-flex justify-content-between ">
+                  <div>
+                    <FormGroup>
+                      <FormControlLabel
+                        control={<Switch />}
+                        label="With Labor"
+                        onChange={(e) => handleWithLabourCheckBox(e)}
+                        checked={labourRequired}
+
+                      />
+                      <FormControlLabel
+                        control={<Switch disabled />}
+                        label="Without Labor"
+                      />
+                    </FormGroup>
+                  </div>
+                  <div>
+                    <a href="#" className="ml-3 font-size-14">
+                      <img src={deleteIcon}></img>
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-light-blue p-3">
+                <h5 className="font-weight-normal text-violet mb-0">
+                  CHOICE MISC.
+                </h5>
+              </div>
+              <div className="bg-white p-3">
+                <FormGroup>
+                  <FormControlLabel control={<Switch disabled />} label=" Lubricants" />
+                  <FormControlLabel
+                    control={<Switch disabled />}
+                    label="Travel Expenses"
+                  />
+                  <FormControlLabel control={<Switch disabled />} label="Tools" />
+                  <FormControlLabel
+                    control={<Switch />}
+                    label="External Work"
+                    onChange={(e) => handleWithMiscCheckBox(e)}
+                    checked={miscRequired}
+                  />
+                </FormGroup>
+                <h5 className="d-flex align-items-center mb-0">
+                  <div className="" style={{ display: "contents" }}>
+                    <span className="mr-3 white-space">Includes</span>
+                  </div>
+                  <div className="hr"></div>
+                </h5>
+              </div>
+              <div className="bg-light-blue p-3">
+                <h5 className="font-weight-normal text-violet mb-0">
+                  SERVICES
+                </h5>
+              </div>
+              <div className="bg-white p-3">
+                <div className=" d-flex justify-content-between align-items-center">
+                  <div>
+                    <FormGroup>
+                      <FormControlLabel
+                        control={<Switch />}
+                        label=" Changee Oil and Filter"
+                        onChange={(e) => handleWithServiceCheckBox(e)}
+                        checked={serviceRequired}
+                      />
+                    </FormGroup>
+                  </div>
+                  <div>
+                    <a href="#" className="ml-3 font-size-14">
+                      <img src={deleteIcon}></img>
+                    </a>
+                  </div>
+                </div>
+                <h5 className="d-flex align-items-center mb-0">
+                  <div className="" style={{ display: "contents" }}>
+                    <span className="mr-3 white-space">Optianal services</span>
+                  </div>
+                  <div className="hr"></div>
+                </h5>
+                <FormGroup>
+                  <FormControlLabel
+                    control={<Switch disabled />}
+                    label="Air Filter Replacement"
+                  />
+                  <FormControlLabel
+                    control={<Switch disabled />}
+                    label="Cabin Air Filter"
+                  />
+                  <FormControlLabel control={<Switch disabled />} label="Rotete Tires" />
+                </FormGroup>
+                <h5 className="d-flex align-items-center mb-0">
+                  <div className="" style={{ display: "contents" }}>
+                    <span className="mr-3 white-space">Includes</span>
+                  </div>
+                  <div className="hr"></div>
+                </h5>
+                <div className="mt-3">
+                  <h6>
+                    <a
+                      href="#"
+                      className="btn-sm text-white mr-2"
+                      style={{ background: "#79CBA2" }}
+                    >
+                      Free
+                    </a>{" "}
+                    50 Point Inspection
+                  </h6>
+                  <h6 className="mt-3">
+                    <a
+                      href="#"
+                      className="btn-sm text-white mr-2 "
+                      style={{ background: "#79CBA2" }}
+                    >
+                      Free
+                    </a>{" "}
+                    50 Point Inspection
+                  </h6>
+                </div>
+                <div className=" d-flex justify-content-between mt-4">
+                  <div>
+                    <a href="#" className="btn text-violet bg-light-blue">
+                      <b>
+                        <span className="mr-2">+</span>Add more services
+                      </b>
+                    </a>
+                  </div>
+                  <div>
+                    <a href="#" className="btn text-violet">
+                      <b>I Have Parts</b>
+                    </a>
+                  </div>
+                </div>
+                <div>
+                  <button className="btn text-violet mt-2" onClick={UpdatePriceInclusionExclusion} data-dismiss="modal" ><b>Save Changes</b></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       </div>
 
     </>

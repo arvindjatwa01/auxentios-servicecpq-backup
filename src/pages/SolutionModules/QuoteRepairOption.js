@@ -469,7 +469,7 @@ const QuoteRepairOption = () => {
              </div>
               </div>
               <div class="modal-footer"style={{display:'unset'}}>
-                <div>
+                <div className="my-2">
                   <a href="/SparePartsQuoteTemplate" className="btn bg-primary d-block text-white">Done</a>
                 </div>
                 <div>

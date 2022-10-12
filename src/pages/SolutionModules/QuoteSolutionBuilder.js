@@ -6,17 +6,19 @@ import FormGroup from '@mui/material/FormGroup';
 import Select from 'react-select';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
-import TabContext from '@mui/lab/TabContext';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import Fade from '@mui/material/Fade';
+import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { Link, useHistory} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import Checkbox from '@mui/material/Checkbox';
 import { FileUploader } from "react-drag-drop-files";
+import IconButton from '@mui/material/IconButton';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 // import MuiMenuComponent from "../Operational/MuiMenuComponent";
 import MenuItem from '@mui/material/MenuItem';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -36,8 +38,7 @@ import editIcon from '../../assets/icons/svg/edit.svg'
 import searchstatusIcon from '../../assets/icons/svg/search-status.svg'
 import searchLogo from '../../assets/icons/svg/search.svg';
 
-export function SolutionServicePortfolio(props) {
-    const history=useHistory()
+export function QuoteSolutionBuilder(props) {
     const [age, setAge] = React.useState('5');
     const [age1, setAge1] = React.useState('5');
     const [age2, setAge2] = React.useState('5');
@@ -49,9 +50,6 @@ export function SolutionServicePortfolio(props) {
     const handleClose2 = () => {
       setAnchorEl(null);
     };
-    const handleCreate=()=>{
-        history.push('/quoteTemplate')
-      }
     const handleChangedrop = (event) => {
         setAge(event.target.value);
     };
@@ -125,10 +123,16 @@ export function SolutionServicePortfolio(props) {
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid ">
                     <div className="d-flex align-items-center justify-content-between mt-2">
-                        <h5 className="font-weight-600 mb-0">Service Portfolio</h5>
-                        <div className="d-flex">
-                          
-                            <div>
+                        <h5 className="font-weight-600 mb-0">Solution Builder</h5>
+                        <div className="d-flex justify-content-center align-items-center">
+                            <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14" title="Items to review"><img src={folderaddIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14" title="Upload"><img src={uploadIcon}></img></a>
+                            {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
+                            <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
+                            <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
+                            {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
+                            <div className="ml-3">
                             <Button className="btn bg-primary text-white font-size-12"
                                 id="fade-button"
                                 aria-controls={open2 ? 'fade-menu' : undefined}
@@ -153,18 +157,8 @@ export function SolutionServicePortfolio(props) {
                                 <MenuItem data-toggle="modal" data-target="#quotecreat" onClick={handleClose2}>Quote</MenuItem>
                             </Menu>
                             </div>
-                            
-                        <div className="d-flex justify-content-center align-items-center">
-                            <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
-                            <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
-                            {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
-
                         </div>
-                        </div>
+                      
                     </div>
                     <div className="card p-4 mt-5">
                         <h5 className="d-flex align-items-center mb-0">
@@ -179,16 +173,15 @@ export function SolutionServicePortfolio(props) {
                                 <input type="search" class="form-control search-form-control" aria-label="Search Dashboard" />
                             </div>
                         </h5>
+                        
                         <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
                             <TabContext value={value}>
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                                     <TabList onChange={handleChange} aria-label="lab API tabs example">
                                         <Tab label="General" value="1" />
                                         <Tab label="Validity " value="2" />
-                                        <Tab label="Strategy" value="3" />
-                                        <Tab label="Price" value="4" />
-                                        <Tab label="Price Agreement" value="5" />
-                                        <Tab label="Coverage" value="6" />
+                                        <Tab label="Price" value="3" />
+                                        <Tab label="Coverage" value="4" />
                                     </TabList>
                                 </Box>
                                 <TabPanel value="1">
@@ -252,54 +245,6 @@ export function SolutionServicePortfolio(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="3">
-                                    <div className="row">
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">PRICE LIST</label>
-                                                <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="placeholder (Optional)"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">PRICE METHOD</label>
-                                                <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="placeholder (Optional)"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">PRICE DATE</label>
-                                                <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="placeholder (Optional)"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
-                                                <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="placeholder (Optional)"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </TabPanel>
-                                <TabPanel value="4">
                                     <div className="row">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
@@ -370,8 +315,7 @@ export function SolutionServicePortfolio(props) {
                                         </div>
                                     </div>
                                 </TabPanel>
-                                <TabPanel value="5"></TabPanel>
-                                <TabPanel value="6">
+                                <TabPanel value="4">
                                     <div class="row mt-4">
                                         <div class="col-md-4 col-sm-4">
                                             <div class="form-group">
@@ -489,10 +433,6 @@ export function SolutionServicePortfolio(props) {
 
                             />
                         </div>
-                        <div className="my-2">
-              <Link to="/QuoteSolutionBuilder"  style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
-       Next</Link>
-            </div>
                     </div>
                     <Modal show={open1} onHide={handleClose1} size="lg"
                         aria-labelledby="contained-modal-title-vcenter"
@@ -502,12 +442,12 @@ export function SolutionServicePortfolio(props) {
                             <div className="d-flex align-items-center justify-content-between mt-2">
                                 <h5 className="font-weight-600 mb-0">Coverage</h5>
                                 <div className="d-flex justify-content-center align-items-center">
-                                    <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
+                                    <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
+                                    <a href="#" className="ml-3 font-size-14" title="Items to review"><img src={folderaddIcon}></img></a>
+                                    <a href="#" className="ml-3 font-size-14" title="Upload"><img src={uploadIcon}></img></a>
+                                    {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
+                                    <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
+                                    <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
                                     {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
 
                                 </div>
@@ -627,12 +567,12 @@ export function SolutionServicePortfolio(props) {
                             <div className="d-flex align-items-center justify-content-between mt-2">
                                 <h5 className="font-weight-600 mb-0">Coverage</h5>
                                 <div className="d-flex justify-content-center align-items-center">
-                                    <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
-                                    <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
+                                    <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
+                                    <a href="#" className="ml-3 font-size-14" title="Items to review"><img src={folderaddIcon}></img></a>
+                                    <a href="#" className="ml-3 font-size-14" title="Upload"><img src={uploadIcon}></img></a>
+                                    {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
+                                    <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
+                                    <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
                                     {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
 
                                 </div>
@@ -710,8 +650,7 @@ export function SolutionServicePortfolio(props) {
                             </div>
                         </Modal.Body>
                     </Modal>
-                </div>
-                <div class="modal fade" id="quotecreat" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal fade" id="quotecreat" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
             <div class="modal-content bg-white border-none">
               <div class="modal-header border-none">
@@ -744,7 +683,7 @@ export function SolutionServicePortfolio(props) {
               </div>
               <div className="col-md-12 col-sm-12">
               <div class="form-group">
-              <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">Description</label>
+              <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">Descriptions</label>
               <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
             </div>
               </div>
@@ -785,7 +724,7 @@ export function SolutionServicePortfolio(props) {
              </div>
               </div>
               <div class="modal-footer"style={{display:'unset'}}>
-                <div>
+                <div className="my-2">
                   <a href="/SparePartsQuoteTemplate" className="btn bg-primary d-block text-white">Done</a>
                 </div>
                 <div>
@@ -796,6 +735,7 @@ export function SolutionServicePortfolio(props) {
             </div>
           </div>
         </div>
+                </div>
             </div>
         </>
     )
