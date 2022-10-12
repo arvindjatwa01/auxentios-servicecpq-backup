@@ -1334,7 +1334,7 @@ const [priceCalculator,setPriceCalculator]=useState({})
 
                                 {
                                   <ul
-                                    className={`list-group customselectsearch-list scrollbar scrollbar-${i}`}
+                                    className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
                                     id="style"
                                   >
                                     {obj.selectOptions.map((currentItem, j) => (

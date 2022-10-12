@@ -14,6 +14,9 @@ import {selectUpdateTaskList,selectStrategyTaskOption,selectCategoryList} from "
 
 
 const AddCustomPortfolioItem = (props) => {
+
+
+  console.log("props for AddCustomPortfolioItem is : ", props)
   const [tabs, setTabs] = useState("1");
   const [editable, setEditable] = useState(
     props?.compoFlag === "itemEdit" ? true : false
@@ -68,10 +71,10 @@ const AddCustomPortfolioItem = (props) => {
         numberOfEvents,
         templateDescription,
         repairOption,
-      } = props.passItemEditRowData.itemBodyModel;
+      } = props.passItemEditRowData.customItemBodyModel;
       setAddportFolioItem({
         ...addPortFolioItem,
-        id: props.passItemEditRowData.itemId,
+        id: props.passItemEditRowData.customItemId,
         description: itemBodyDescription,
         usageIn: { label: usageIn, value: usageIn },
         taskType: { label: taskType, value: taskType },

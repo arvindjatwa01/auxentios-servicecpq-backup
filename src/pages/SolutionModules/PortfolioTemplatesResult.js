@@ -219,6 +219,7 @@ export function PortfolioTemplatesResult(props) {
 
     // const [selectePortfolioTempItemsData, setSelectedPortfolioTempItemsData] = useState([]);
     const [selectedCustomItems, setSelectedCustomItems] = useState([]);
+    const [createdCustomPortfolioItems, setCreatedCustomPortfolioItems] = useState([]);
 
     const [coverageData, setCoverageData] = useState({
         make: "",
@@ -1182,6 +1183,19 @@ export function PortfolioTemplatesResult(props) {
                 productHierarchy: stratgyHierarchyKeyValue.value,
                 geographic: stratgyGeographicKeyValue.value,
                 customItems: selectedCustomItems,
+                numberOfEvents: 0,
+                rating: "",
+                startUsage: "",
+                endUsage: "",
+                unit: "HOURS",
+                additionals: "",
+                preparedBy: administrative.preparedBy,
+                approvedBy: administrative.approvedBy,
+                preparedOn: administrative.preparedOn,
+                revisedBy: administrative.revisedBy,
+                revisedOn: administrative.revisedOn,
+                salesOffice: administrative.salesOffice,
+                offerValidity: administrative.offerValidity,
             };
             // console.log(" res is : ", res);
             // console.log("obj", obj);
@@ -1270,7 +1284,7 @@ export function PortfolioTemplatesResult(props) {
                 supportLevel: generalComponentData.supportLevel
                     ? generalComponentData.supportLevel
                     : "EMPTY",
-                customItems: [],
+                customItems: selectedCustomItems,
                 items: [],
                 customCoverages: [],
                 customerGroup: generalComponentData.customerGroup
@@ -1439,7 +1453,7 @@ export function PortfolioTemplatesResult(props) {
                 portfolioPrice: {},
                 additionalPrice: {},
                 escalationPrice: {},
-                customItems: [],
+                customItems: selectedCustomItems,
                 customCoverages: cvgIds,
                 usageCategory: categoryUsageKeyValue1.value,
                 taskType: stratgyTaskTypeKeyValue.value,
@@ -1906,6 +1920,8 @@ export function PortfolioTemplatesResult(props) {
 
 
         }
+
+        setCreatedCustomPortfolioItems(location.selectedTemplateItems);
 
         console.log("location.selectedTemplateItems : ", location.selectedTemplateItems)
 
@@ -4928,10 +4944,11 @@ export function PortfolioTemplatesResult(props) {
                                 className=""
                                 title=""
                                 columns={selectedportfolioTempItemsColumn}
-                                data={location.selectedTemplateItems}
+                                data={createdCustomPortfolioItems}
                                 customStyles={customStyles}
                                 pagination
                             />
+                            {console.log("createdCustomPortfolioItems : ", createdCustomPortfolioItems)}
                         </div>
                     </div>
 
@@ -4977,7 +4994,7 @@ export function PortfolioTemplatesResult(props) {
                                             <FormControlLabel
                                                 control={<Switch disabled />}
                                                 label="I have Spare Parts"
-                                                
+
                                             />
                                             <FormControlLabel
                                                 control={<Switch disabled />}
