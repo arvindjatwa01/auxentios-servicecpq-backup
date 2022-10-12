@@ -130,6 +130,9 @@ const  QuoteRepairSearch=()=>{
               </div> */}
             </div>
             <div className="ml-2">
+              <Link className="btn bg-primary text-white">Search</Link>
+            </div>
+            <div className="ml-2">
               <Link to="/QuoteRepairConfiguration" className="btn bg-primary text-white">Create New <ChevronRightIcon className=""/></Link>
             </div>
               </div>

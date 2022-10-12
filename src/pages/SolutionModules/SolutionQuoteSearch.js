@@ -51,9 +51,9 @@ const  SolutionQuoteSearch=()=>{
     setValue(newValue);
   };
   const activityOptions = [
-    'None',
-    'Atria',
-    'Callisto'
+    'Create Versions',
+    'Show Errors',
+    'Review'
   ];
 
   
@@ -104,7 +104,7 @@ const  SolutionQuoteSearch=()=>{
             <div class="input-group-prepend">
               <span class="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
               <SearchIcon/></span>
-              </div>
+            </div>
               <input type="search" class="form-control search-form-control"  aria-label="Search Dashboard"/>
               {/* <div class="input-group-prepend align-items-center">
               <div className="w-100 mx-2">
@@ -128,6 +128,9 @@ const  SolutionQuoteSearch=()=>{
           </div>
               </div>
               </div> */}
+            </div>
+            <div className="ml-2">
+              <Link className="btn bg-primary text-white">Search</Link>
             </div>
             <div className="ml-2">
               <Link to="/SolutionQuoteConfiguration" className="btn bg-primary text-white">Create New <ChevronRightIcon className=""/></Link>
