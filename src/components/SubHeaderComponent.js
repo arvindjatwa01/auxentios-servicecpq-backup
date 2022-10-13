@@ -20,6 +20,7 @@ import Select from 'react-select';
 import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
+
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -33,6 +34,9 @@ import AttachmentOutlinedIcon from '@mui/icons-material/AttachmentOutlined';
 import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useSelector, useDispatch } from 'react-redux'
+// import { signUpActions } from "../../src/features/auth/authSlice";
+import { authActions } from "../../src/features/auth/authSlice";
+
 import Clock from 'react-live-clock';
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
@@ -41,8 +45,16 @@ import Tab from '@mui/material/Tab';
 import TabPanel from '@mui/lab/TabPanel';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
+import { signup } from './../services/userServices';
 
 export function SubHeaderComponent(props) {
+
+  // const dispatch = useDispatch();
+  const result = useSelector((state) => state.loginSuccess);
+  // console.log("result is : ", result)
+  const [loginUserId, setLoginUserId] = useState(null);
+  const [loginStatus, setLoginStatus] = useState(false);
+  // console.log("result of user subheader component : ", result.currentUser)
 
   const [selectedOption, setSelectedOption] = useState(null);
   const handleChange = (event, newValue) => {
@@ -441,7 +453,7 @@ export function SubHeaderComponent(props) {
   //
   //
   // }, [reduxState.user]);
-  useEffect(()=>{
+  useEffect(() => {
     var now = new Date();
     var day = new Date().getDate();
     var monthArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -452,7 +464,22 @@ export function SubHeaderComponent(props) {
       month: month,
       year: year
     })
-  },[])
+    // if (result.isLoggedIn) {
+    //   setLoginUserId(result.currentUser.userId)
+    // }
+    var userLoginStatus = localStorage.getItem('user_logIn_Status');
+    // var currentUserId = 
+    if (userLoginStatus) {
+      setLoginStatus(true)
+      setLoginUserId(localStorage.getItem('user_tenantId'))
+      // console.log("localStorage.getItem('user_tenantId') : ", localStorage.getItem('user_tenantId'))
+      // setLoginUserId(result.currentUser.userId)
+    } else {
+      setLoginStatus(false)
+    }
+    // setLoginStatus(result.isLoggedIn)
+    // setLoginUserId(result.currentUser.userId)
+  }, [])
   return (
     <>
 
@@ -482,7 +509,10 @@ export function SubHeaderComponent(props) {
                       <li>Time:<Clock
                         format={'h:mm:ssa'}
                         ticking={true} /></li>
-                      <li>User ID:{"loginData?.userId"}</li>
+                      {/* {LoginStatus ? <></>} */}
+                      <li>{loginStatus ? <>User ID: {loginUserId}</> : <>Login</>}</li>
+                      {/* <li>User ID:{"loginData?.userId"}</li> */}
+                      {/* <li>User ID:{loginUserId}</li> */}
                       {/* <li>User ROLE:{"loginData?.role"}</li>
                       <li>User SUB-ROLE:{"loginData?.userSubRole"}</li> */}
 
@@ -830,18 +860,18 @@ export function SubHeaderComponent(props) {
           </div>
         </div>
       </div>
-      <div class="modal right fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
+      <div className="modal right fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
 
-            <div class="modal-header">
-              <h4 class="modal-title" id="myModalLabel2"><ErrorOutlineIcon className="mr-2" style={{ fontSize: '32px' }} />Errors</h4>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <div className="modal-header">
+              <h4 className="modal-title" id="myModalLabel2"><ErrorOutlineIcon className="mr-2" style={{ fontSize: '32px' }} />Errors</h4>
+              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
 
-            <div class="modal-body">
+            <div className="modal-body">
               <div className='d-flex justify-content-between align-items-center px-3 border-bottom'>
                 <h6 className='mb-0'>3 errors found in line items</h6>
                 <div>

@@ -1,4 +1,4 @@
-import { User } from '../../models/user';
+import { User, NewUserInfo } from '../../models/user';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -10,7 +10,7 @@ export interface LoginPayload {
 export interface AuthState {
   isLoggedIn: boolean;
   logging?: boolean;
-  currentUser?: User;
+  currentUser?: NewUserInfo;
 }
 
 const initialState: AuthState = {
@@ -26,10 +26,12 @@ const authSlice = createSlice({
     login(state, action: PayloadAction<LoginPayload>) {
       state.logging = true;
     },
-    loginSuccess(state, action: PayloadAction<User>) {
+    loginSuccess(state, action: PayloadAction<NewUserInfo>) {
       state.isLoggedIn = true;
       state.logging = false;
       state.currentUser = action.payload;
+      // console.log("login Response success  is : ", action);
+      // console.log("state.currentUser is : ",state.currentUser)
     },
     loginFailed(state, action: PayloadAction<string>) {
       state.logging = false;

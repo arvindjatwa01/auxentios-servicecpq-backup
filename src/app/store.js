@@ -11,6 +11,7 @@ import portfolioItemReducer from "../pages/PortfolioAndBundle/createItem/portfol
 import { appReducer } from "../redux/reducers/appReducer";
 import { userReducer } from "../redux/reducers/userReducer";
 import { guidedSoltionReducer } from "../redux/reducers/guidedSolutionReducer"
+import { VerifyEmail } from './../pages/LoginSignUp/VerifyEmail';
 
 
 
@@ -21,6 +22,8 @@ const rootReducer = combineReducers({
     auth: authReducer,
     signUp: signUpReducer,
     task:taskReducer,
+    VerifyEmail:signUpReducer,
+    loginSuccess:authReducer,
     portfolioItem:portfolioItemReducer,
     
     app: appReducer,

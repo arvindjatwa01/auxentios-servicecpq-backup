@@ -10,7 +10,7 @@ import { signIn } from "../../services/index";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch, useSelector } from "react-redux";
 import { signUpActions } from "../../features/auth/signUpSlice";
-import type { SignUpPayload } from "../../features/auth/signUpSlice";
+import type { SignUpPayload, EmailVerifyPayLoad } from "../../features/auth/signUpSlice";
 import { ToastMessageHandler } from "../../components/Common/ToastMessageHandler";
 import { SignUp } from "./SignUp";
 import { authActions } from "../../features/auth/authSlice";
@@ -95,8 +95,12 @@ export const Startup = () => {
 
         // console.log("result.isLoggedIn in useEffect", result.isLoggedIn)
         // const uuid = result.isLoggedIn
+        let dictObject: EmailVerifyPayLoad = {
+            uuid: uuid,
+            newPassword: "1234"
+        }
         if (uuid) {
-            dispatch(signUpActions.verifyEmail());
+            dispatch(signUpActions.verifyEmail(dictObject));
         }
     }, []);
 

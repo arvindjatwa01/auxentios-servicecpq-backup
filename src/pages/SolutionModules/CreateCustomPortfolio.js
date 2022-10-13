@@ -5095,11 +5095,11 @@ export function CreateCustomPortfolio() {
             // call put API for portfolio item to get price calculator data
             let reqObj = {}
             for (let i = 0; i < tempBundleItems.length; i++) {
-                if (tempBundleItems[i].itemId === currentItemId) {
+                if (tempBundleItems[i].customItemId === currentItemId) {
                     reqObj = {
-                        itemId: tempBundleItems[i].itemId,
-                        standardJobId: tempBundleItems[i].itemBodyModel.standardJobId,
-                        repairKitId: tempBundleItems[i].itemBodyModel.repairKitId,
+                        itemId: tempBundleItems[i].customItemId,
+                        standardJobId: tempBundleItems[i].customItemBodyModel.standardJobId,
+                        repairKitId: tempBundleItems[i].customItemBodyModel.repairKitId,
                     }
                     break;
                 }
@@ -5109,7 +5109,7 @@ export function CreateCustomPortfolio() {
                 netParts: "11",
                 netService: "11",
                 priceType: "11",
-                netPrice: itemPriceRes.itemHeaderModel.netPrice,
+                netPrice: itemPriceRes.customItemHeaderModel.netPrice,
                 netAdditionals: "11",
             })
             setTabs("5")
@@ -5191,61 +5191,64 @@ export function CreateCustomPortfolio() {
         }
     }
 
+    // const handleContinueOfServiceOrBundle = async () => {
+    //     // setTempBundleService3([])
+    //     if (categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE") {
+    //         setTabs("4")//navigate to component data tab
+    //     } else {
+    //         // let find that id and get reqData for API
+    //         let reqObj = {}
+    //         for (let i = 0; i < tempBundleItems.length; i++) {
+    //             if (tempBundleItems[i].customItemId === currentItemId) {
+    //                 reqObj = {
+    //                     itemId: tempBundleItems[i].customItemId,
+    //                     standardJobId: tempBundleItems[i].customItemBodyModel.standardJobId,
+    //                     repairKitId: tempBundleItems[i].customItemBodyModel.repairKitId,
+    //                 }
+    //                 break;
+    //             }
+    //         }
+    //         const itemPriceRes = await getcustomItemPrice(reqObj)
+    //         setItemPriceCalculator({
+    //             netParts: "11",
+    //             netService: "11",
+    //             priceType: "11",
+    //             netPrice: itemPriceRes.customItemHeaderModel.netPrice,
+    //             netAdditionals: "11",
+    //         })
+
+    //         // call put  rkid API to get price and populate it in tab 5
+    //         // const itemPriceRes = await getItemPrice({
+    //         //   standardJobId: itemRes.data.itemBodyModel.standardJobId,
+    //         //   repairKitId: itemRes.data.itemBodyModel.repairKitId,
+    //         //   itemId: itemRes.data.itemId,
+    //         // });
+    //         // const {priceMethod,listPrice,priceEscalation,additional,calculatedPrice,flatPrice,discountType,year,totalPrice,usage,avgUsage,frequency,} = itemPriceRes.itemBodyModel;
+    //         // setPriceCalculator({
+    //         //   ...priceCalculator,
+    //         //   priceMethod: { label: priceMethod, value: priceMethod },
+    //         //   listPrice,
+    //         //   priceEscalationInput: priceEscalation,
+    //         //   priceAdditionalInput: additional,
+    //         //   calculatedPrice,
+    //         //   flatPrice,
+    //         //   discountTypeInput: discountType,
+    //         //   priceYear: { label: year, value: year },
+    //         //   totalPrice,
+    //         //   frequency: { label: frequency, value: frequency },
+    //         //   usageType: { label: usage, value: usage },
+    //         //   startUsage: avgUsage,
+    //         //   endUsage: avgUsage,
+    //         // });
+
+
+    //         setTabs("5")
+
+
+    //     }
+    // }
     const handleContinueOfServiceOrBundle = async () => {
-        // setTempBundleService3([])
-        if (categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE") {
-            setTabs("4")//navigate to component data tab
-        } else {
-            // let find that id and get reqData for API
-            let reqObj = {}
-            for (let i = 0; i < tempBundleItems.length; i++) {
-                if (tempBundleItems[i].customItemId === currentItemId) {
-                    reqObj = {
-                        itemId: tempBundleItems[i].customItemId,
-                        standardJobId: tempBundleItems[i].customItemBodyModel.standardJobId,
-                        repairKitId: tempBundleItems[i].customItemBodyModel.repairKitId,
-                    }
-                    break;
-                }
-            }
-            const itemPriceRes = await getcustomItemPrice(reqObj)
-            setItemPriceCalculator({
-                netParts: "11",
-                netService: "11",
-                priceType: "11",
-                netPrice: itemPriceRes.customItemHeaderModel.netPrice,
-                netAdditionals: "11",
-            })
-
-            // call put  rkid API to get price and populate it in tab 5
-            // const itemPriceRes = await getItemPrice({
-            //   standardJobId: itemRes.data.itemBodyModel.standardJobId,
-            //   repairKitId: itemRes.data.itemBodyModel.repairKitId,
-            //   itemId: itemRes.data.itemId,
-            // });
-            // const {priceMethod,listPrice,priceEscalation,additional,calculatedPrice,flatPrice,discountType,year,totalPrice,usage,avgUsage,frequency,} = itemPriceRes.itemBodyModel;
-            // setPriceCalculator({
-            //   ...priceCalculator,
-            //   priceMethod: { label: priceMethod, value: priceMethod },
-            //   listPrice,
-            //   priceEscalationInput: priceEscalation,
-            //   priceAdditionalInput: additional,
-            //   calculatedPrice,
-            //   flatPrice,
-            //   discountTypeInput: discountType,
-            //   priceYear: { label: year, value: year },
-            //   totalPrice,
-            //   frequency: { label: frequency, value: frequency },
-            //   usageType: { label: usage, value: usage },
-            //   startUsage: avgUsage,
-            //   endUsage: avgUsage,
-            // });
-
-
-            setTabs("5")
-
-
-        }
+        setTabs("4")
     }
 
     return (
