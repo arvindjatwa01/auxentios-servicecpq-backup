@@ -50,7 +50,7 @@ export const QUOTE_SOLUTION_BUILDER ="/QuoteSolutionBuilder";
 export const QUOTE_WITH_EVALUATION ="/QuoteWithEvaluation";
 export const REPAIR_BUILDER_REPAIR_OPTION ="/RepairBuilderRepairOption";
 export const SOLUTION_SEARCH_TEMPLATE ="/SolutionSearchTemplate";
-
+export const COMMERCE_LANDING_PAGE ="/CommerceLandingPage";
 
 export const VERIFY_EMAIL = "/verify-email/:id";
 
