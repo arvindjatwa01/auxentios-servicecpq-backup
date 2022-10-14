@@ -372,6 +372,8 @@ function RepairServiceEstimate() {
 
   return (
     <>
+     <div className="content-body" style={{ minHeight: '884px' }}>
+                <div class="container-fluid">
       <div className="card p-4 mt-5">
         <h5 className="d-flex align-items-center mb-0">
           <div className="" style={{ display: "contents" }}>
@@ -2355,6 +2357,8 @@ function RepairServiceEstimate() {
           </div>
         </Modal.Body>
       </Modal>
+      </div>
+      </div>
     </>
   );
 }

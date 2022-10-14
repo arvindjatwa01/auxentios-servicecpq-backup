@@ -10,6 +10,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import FormGroup from "@mui/material/FormGroup";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import DropdownButton from "react-bootstrap/DropdownButton";
 import Select from "react-select";
 import RemoveRedEyeOutlinedIcon from "@mui/icons-material/RemoveRedEyeOutlined";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
@@ -5384,9 +5385,19 @@ export function CreateCustomPortfolio() {
                                 <a href="#" className="ml-3 font-size-14" title="Copy">
                                     <img src={copyIcon}></img>
                                 </a>
-                                <a href="#" className="ml-2">
-                                    <MuiMenuComponent options={activityOptions} />
-                                </a>
+                                <DropdownButton
+                                    className="customDropdown ml-2"
+                                    id="dropdown-item-button"
+                                    >
+                                    <Dropdown.Item
+                                        as="button" data-toggle="modal" data-target="#versionpopup2"
+                                        
+                                    >
+                                        New Versions
+                                    </Dropdown.Item>
+                                    <Dropdown.Item as="button" data-toggle="modal" data-target="#myModal2">Show Errors</Dropdown.Item>
+                                    <Dropdown.Item as="button">Review</Dropdown.Item>
+                                    </DropdownButton>
 
                             </div>
                         </div>
@@ -10892,9 +10903,95 @@ export function CreateCustomPortfolio() {
                                 </div>
                             </div>
                         </div>
+                    
+          <div class="modal right fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+
+            <div class="modal-header">
+              <h4 class="modal-title" id="myModalLabel2"><ErrorOutlineIcon className="mr-2" style={{ fontSize: '32px' }} />Errors</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+
+            <div class="modal-body">
+              <div className='d-flex justify-content-between align-items-center px-3 border-bottom'>
+                <h6 className='mb-0'>3 errors found in line items</h6>
+                <div>
+                  <a href='#' className='btn'><ClearIcon className="mr-2" style={{ color: '#000' }} />Clear All</a>
+                </div>
+              </div>
+              <div className=' mt-2'>
+                <h6 className="px-3">FILTER</h6>
+                <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
+                  <TabContext value={value}>
+                    <Box className="custom-tabs" sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                      <TabList onChange={handleChange} aria-label="lab API tabs example">
+                        <Tab label="Part list" value="1" />
+                        <Tab label="Service Estimates" value="2" />
+                        <Tab label="Form" value="3" />
+
+                      </TabList>
+                    </Box>
+                    <TabPanel className="px-3" value="1">
+                      <div className="card border p-3 mb-0">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <p className="mb-0">Invalid data</p>
+                          <h6 className="mb-0">2 min ago</h6>
+                        </div>
+                        <h6 className="mb-0"> Part list header component code</h6>
+                        <p className="mb-0">Fix <a href="#" className="btn">Go to field</a></p>
+                      </div>
+                    </TabPanel>
+                    <TabPanel value="2">Item Two</TabPanel>
+                    <TabPanel value="3">Item Three</TabPanel>
+                  </TabContext>
+                </Box>
+                <hr className="mb-0" />
+                <div className="p-3">
+                  <a href='#' className='btn text-light border-light px-2'>Go Back to Solution</a>
+                  <a href='#' className='btn btn-primary float-right px-2'>Choose the correct portfolio</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
                     </div>
                 </div>
             </div>
+            <div class="modal fade" id="versionpopup2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                <div class="modal-header border-none">
+                                <h5 class="modal-title" id="exampleModalLongTitle">
+                                New Version
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                            </div>
+
+                            <p className="mx-3 mt-0">
+                                Description, Product experts convert the repair option to a standard job or template.
+                            </p>
+                            <div className="hr"></div>
+                                    <div class="modal-body">
+                                    <div class="form-group">
+                                    <label for="usr">Name</label>
+                                    <input type="text" class="form-control" id="usr" placeholder="Copy of Quote"></input>
+                                    </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" className="btn  btn-primary w-100">Create </button>
+                                    <button type="button" className="btn btn-primary w-100" data-dismiss="modal">Cancel</button>
+                                    
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
         </PortfolioContext.Provider>
     );
 }
