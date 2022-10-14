@@ -4,17 +4,17 @@ import { SignUpPayload, signUpActions } from './signUpSlice';
 import {HttpService} from "../../apiService/HTTPService";
 import Cookies from 'js-cookie';
 
-function* handleSignUp(payload: SignUpPayload) {
+function* handleVerify(payload: SignUpPayload) {
   try {
     yield delay(500);
-    const res =  yield call(HttpService, 'post',"http://35.200.157.237/user-svc/v1/user/signup",payload.payload);
-    
+    const res =  yield call(HttpService, 'post',"http://35.200.157.237/user-svc/v1/user/validate-user",payload.payload);
+    console.log("response for verification is : ", res)
     Cookies.set('access_token', res.config.headers.Authorization,{ expires: 1, path: '/' });
 
-    console.log("response for ssignup is : ", res)
+    
     // localStorage.setItem('access_token',res.config.headers.Authorization);
     yield put(
-        signUpActions.signUpSuccess(res)
+        signUpActions.getStarted(res)
     );
     // Redirect to Admin page
     // yield put(push('/admin/dashboard'));
@@ -23,6 +23,6 @@ function* handleSignUp(payload: SignUpPayload) {
   }
 }
 
-export function* signUpSaga() {
-  yield takeLatest(signUpActions.signUp,handleSignUp);
+export function* verificationSaga() {
+  yield takeLatest(signUpActions.verifyEmail,handleVerify);
 }

@@ -8,6 +8,10 @@ export interface SignUpPayload {
   workEmail: string,
   password: string
 }
+export interface EmailVerifyPayLoad {
+  uuid: string,
+  newPassword: string
+}
 
 export interface SignUpState {
   isLoggedIn: boolean;
@@ -28,6 +32,7 @@ const signUpSlice = createSlice({
   initialState,
   reducers: {
     signUp(state, action: PayloadAction<SignUpPayload>) {
+      console.log("Sign up Actions is : ", action);
       state.logging = true;
     },
     signUpSuccess(state, action: PayloadAction<AxiosResponse>) {
@@ -37,7 +42,8 @@ const signUpSlice = createSlice({
       state.currentUser = action.payload;
       // state.activeStep = 1;
     },
-    verifyEmail(state, action: PayloadAction<AxiosResponse>) {
+    verifyEmail(state, action: PayloadAction<EmailVerifyPayLoad>) {
+      console.log("verify Email action : ", action);
       state.activeStep = 1;
       
     },

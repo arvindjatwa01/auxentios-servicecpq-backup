@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Modal } from 'react-bootstrap';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
 import { ToastContainer, toast } from 'react-toastify';
 import Select from '@mui/material/Select';
@@ -198,6 +199,32 @@ export const Analytics = () => {
          setSelectedPortfolioTempMasterData([])
          setPortfolioTempFilterMasterData([])
 
+      } else if (e.target.value === "0") {
+         setSolutionValue(0)
+         setSelectedTemplateLabel("Portfolio Template");
+         setSolutionTempMasterData([])
+         setSelectedSolutionTempMasterData([])
+         setSolutionRadioCheck("")
+         setSolutionTempFlagIs(false)
+      } else if(e.target.value === "2") {
+         history.push('/solutionBuilder/guide')
+         setSolutionValue(2)
+
+      }
+   }
+
+   const handleTypeOfTemplateSolutionBtn = (e, btnValue) => {
+      console.log("SolutionValue : ", btnValue)
+      setSelectTypeOfSolution(btnValue)
+
+
+      if (btnValue === 1) {
+         setSolutionValue(1)
+         setSelectedTemplateLabel("Solution Template");
+         setPortfolioTempMasterData([])
+         setSelectedPortfolioTempMasterData([])
+         setPortfolioTempFilterMasterData([])
+
       } else {
          setSolutionValue(0)
          setSelectedTemplateLabel("Portfolio Template");
@@ -206,6 +233,7 @@ export const Analytics = () => {
          setSolutionRadioCheck("")
          setSolutionTempFlagIs(false)
       }
+
    }
 
 
@@ -3315,7 +3343,7 @@ export const Analytics = () => {
             <Modal.Body className="">
                <div className="col-md-12">
                   <div className="row">
-                     <div className="col-md-9">Search Template</div>
+                     <div className="col-md-9">Pre-Configure Solution</div>
                      {/* <div className="col-md-3">
                         <div className="mx-0 text-right">
                            <Button className="btn text-white bg-primary px-3 text-capitalize" onClick={() => history.push('/solutionBuilder/guide')}>Guided Solution</Button>
@@ -3323,11 +3351,88 @@ export const Analytics = () => {
                      </div> */}
                   </div>
                </div>
-
                <div className="bg-light-dark w-100 border-radius-10 p-3 mt-3">
-                  <div className="row">
-                     <div className="col-md-6">
+                  <div className="d-flex">
+                     <div className="w-100">
+                        <div className="maintableheader bg-white border-radius-10 p-2 h-100">
+                           <RadioGroup className='my-2'
+                              row
+                              aria-labelledby="demo-form-control-label-placement"
+                              name="position"
+                              defaultValue="top"
+                              value={selectTypeOfSolution}
+                              onChange={handleTypeOfSolution}
+                           >
+                              <div className="w-50 customFormControlLabel ">
+                                 <div className=" m-0 mb-3  p-2 card py-4 align-itemsstart">
+                                    <FormControlLabel
+                                       className=" "
+                                       value="0"
+                                       control={<Radio className="mx-1" checked={solutionValue == 0} />}
+                                       label="Portfolio"
+                                       labelPlacement="bottom"
+                                    />
+                                    <FormHelperText
+                                       className="pl-5"
+                                       children="Portfolio is a service offering by your company or your department. Portfolio can contain service bundles or unique services or both."
+                                    />
+                                 </div>
+                              </div>
+                              <div className="w-50 customFormControlLabel">
+                                 <div className=" m-0 mb-3  p-2 card py-4 align-itemsstart ">
+                                    <FormControlLabel
+                                       className=""
+                                       value="1"
+                                       control={<Radio className="mx-1" />}
+                                       label="Solution"
+                                       labelPlacement="bottom"
+                                    />
+                                    <FormHelperText
+                                       className="pl-5"
+                                       children="A Service Program is initiated by your markting deparrtment as compaigns or product team for improvement and safety programs."
+                                    />
+                                 </div>
+                              </div>
+                           </RadioGroup>
+                        </div>
+                     </div>
+                     <div className="align-items-center d-flex px-2">
+                        <p>OR</p>
+                     </div>
+                     <div className="w-50">
+                        <div className="maintableheader bg-white border-radius-10 p-2 h-100">
+                           <RadioGroup className='my-2'
+                              row
+                              aria-labelledby="demo-form-control-label-placement"
+                              name="position"
+                              defaultValue="top"
+                              value={selectTypeOfSolution}
+                              onChange={handleTypeOfSolution}
+                           >
+                              <div className="customFormControlLabel ">
+                                 <div className="w-100 m-0 mb-3  p-2 card py-4 align-itemsstart">
+                                    <FormControlLabel
+                                       className=" "
+                                       value="2"
+                                       control={<Radio className="mr-5" checked={solutionValue == 2} />}
+                                       label="Guided Solution"
+                                       labelPlacement="bottom"
+                                    />
+                                    <FormHelperText
+                                       className="pl-5"
+                                       children="Portfolio is a service offering by your company or your department. Portfolio can contain service bundles or unique services or both."
+                                    />
+                                 </div>
+                              </div>
+                           </RadioGroup>
+                        </div>
+                     </div>
+                  </div>
+               </div>
 
+               {/* <div className="bg-light-dark w-100 border-radius-10 p-3 mt-3">
+                  <div className="row">
+                     <div className="col-md-8">
                         <div className="maintableheader bg-white border-radius-10 p-2 h-100">
                            <RadioGroup className='my-2 '
                               row
@@ -3337,31 +3442,100 @@ export const Analytics = () => {
                               value={selectTypeOfSolution}
                               onChange={handleTypeOfSolution}
                            >
-
-                              <FormControlLabel
-                                 className="col-md-12 align-items-center m-0 "
-                                 value="0"
-                                 control={<Radio className="mx-1" checked={solutionValue == 0} />}
-                                 label="Portfolio Template"
-                                 labelPlacement="end"
-                              />
-                              <FormControlLabel
-                                 className="col-md-12 align-items-center m-0 mt-3 "
-                                 value="1"
-                                 control={<Radio className="mx-1" />}
-                                 label="Solution Template"
-                                 labelPlacement="end"
-                              />
+                              <div className="col-md-6 customFormControlLabel ">
+                                 <div className="w-100 m-0 mb-3  p-2 card py-4 align-itemsstart">
+                                    <FormControlLabel
+                                       className=" "
+                                       value="0"
+                                       control={<Radio className="mx-1" checked={solutionValue == 0} />}
+                                       label="Portfolio"
+                                       labelPlacement="bottom"
+                                    />
+                                    <FormHelperText
+                                       className="pl-5"
+                                       children="Portfolio is a service offering by your company or your department. Portfolio can contain service bundles or unique services or both."
+                                    />
+                                 </div>
+                              </div>
+                              <div className="col-md-6 customFormControlLabel">
+                                 <div className="w-100 m-0 mb-3  p-2 card py-4 align-itemsstart ">
+                                    <FormControlLabel
+                                       className=""
+                                       value="1"
+                                       control={<Radio className="mx-1" />}
+                                       label="Solution"
+                                       labelPlacement="bottom"
+                                    />
+                                    <FormHelperText
+                                       className="pl-5"
+                                       children="A Service Program is initiated by your markting deparrtment as compaigns or product team for improvement and safety programs."
+                                    />
+                                 </div>
+                              </div>
                            </RadioGroup>
                         </div>
                      </div>
-                     <div className="col-md-6">
-                        <div className="maintableheader bg-white border-radius-10 p-2 h-100 d-flex align-items-center justify-content-center">
-                           <a href="/solutionBuilder/guide" className="btn text-white bg-primary " onClick={() => history.push('/solutionBuilder/guide')}>Guided Solution</a>
+
+                     <div className="col-md-4">
+                        <div className="maintableheader bg-white border-radius-10 py-4 h-100 d-flex align-items-center justify-content-center">
+                           For Button
+                           <div className="w-100 m-0 mb-3  p-2 card p-2 h-100 align-items-center justify-content-center">
+                              <a href="/solutionBuilder/guide" className="btn text-white bg-primary " onClick={() => history.push('/solutionBuilder/guide')}>Guided Solution</a>
+                           </div>
+                           For Radio  button
+                           <RadioGroup className='my-2 '
+                              row
+                              aria-labelledby="demo-form-control-label-placement"
+                              name="position"
+                              defaultValue="top"
+                              value={selectTypeOfSolution}
+                              onChange={handleTypeOfSolution}
+                           >
+                              <div className="customFormControlLabel ">
+                                 <div className="w-100 m-0 mb-3  p-2 card py-4 align-itemsstart">
+                                    <FormControlLabel
+                                       className=" "
+                                       value="2"
+                                       control={<Radio className="mr-5" checked={solutionValue == 0} />}
+                                       label="Guided Solution"
+                                       labelPlacement="bottom"
+                                    />
+                                    <FormHelperText
+                                       className="pl-5"
+                                       children="Portfolio is a service offering by your company or your department. Portfolio can contain service bundles or unique services or both."
+                                    />
+                                 </div>
+                              </div>
+
+                           </RadioGroup>
                         </div>
                      </div>
                   </div>
-               </div>
+
+               </div> */}
+
+               {/* <div className="bg-light-dark w-100 border-radius-10 p-3 mt-3">
+                  <div className="d-flex">
+                     <div className="w-100">
+                        <div className="maintableheader bg-white border-radius-10 p-2 h-100">
+                           <p>Search Existing Templates</p>
+                           <div className="existing-template-div d-flex justify-content-end">
+                              <a href="#" className={solutionValue == 0 ? "btn text-white mr-2 active" : "btn text-white bg-primary mr-2"} onClick={(e) => handleTypeOfTemplateSolutionBtn(e, 0)}>Portfolio</a>
+                              <a href="#" className={solutionValue == 1 ? "btn text-white ml-0 active" : "btn text-white bg-primary ml-0"} onClick={(e) => handleTypeOfTemplateSolutionBtn(e, 1)}>Solution</a>
+                           </div>
+                        </div>
+                     </div>
+                     <div className="align-items-center d-flex px-2">
+                        <p>OR</p>
+                     </div>
+                     <div className="w-100">
+                        <div className="maintableheader bg-white border-radius-10 p-2 h-100  ">
+                           <p>Create using Guided Flow</p>
+                           <a href="/solutionBuilder/guide" className="btn text-white bg-primary pull-right" onClick={() => history.push('/solutionBuilder/guide')}>Create Solution</a>
+                        </div>
+                     </div>
+                  </div>
+               </div> */}
 
 
                {/* <hr /> */}

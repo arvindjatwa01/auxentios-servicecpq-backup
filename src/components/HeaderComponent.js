@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import logoIcon from "../assets/icons/png/logo.png";
 import shearchIcon from "../assets/icons/svg/search.svg";
 import notificationIcon from "../assets/icons/svg/notification-bing.svg";
@@ -12,12 +12,22 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+
+import { useSelector, useDispatch } from 'react-redux'
+
 import { history } from 'utils';
-import { WITH_SPARE_PARTS, WITHOUT_SPARE_PARTS_DETAILS,PART_LIST,STANDARD_JOBS,KITS,PORTFOLIO_SUMMARY,SOLUTION_BUILDER_ANALYTICS,SOLUTION_QUOTE } from "../navigation/CONSTANTS"
+import { WITH_SPARE_PARTS, WITHOUT_SPARE_PARTS_DETAILS, PART_LIST, STANDARD_JOBS, KITS, PORTFOLIO_SUMMARY, SOLUTION_BUILDER_ANALYTICS, SOLUTION_QUOTE } from "../navigation/CONSTANTS"
 
 export function HeaderComponent(props) {
   let history = useHistory();
   const [age, setAge] = React.useState("5");
+
+  const result = useSelector((state) => state.loginSuccess);
+  // console.log("result is : ", result)
+  // const [loginUserId, setLoginUserId] = useState(null);
+  const [loginStatus, setLoginStatus] = useState(false);
+
+  // console.log("login status Header component : ", result)
 
   const handleChangedrop = (event) => {
     setAge(event.target.value);
@@ -28,6 +38,15 @@ export function HeaderComponent(props) {
     history.push("/login");
     // window.location.href = "/login";
   };
+  useEffect(() => {
+    var userLoginStatus = localStorage.getItem('user_logIn_Status');
+    if (userLoginStatus) {
+      setLoginStatus(true)
+    } else {
+      setLoginStatus(false)
+    }
+    // setLoginStatus(result.isLoggedIn)
+  }, []);
   return (
     <>
       <div className="header">
@@ -352,7 +371,7 @@ export function HeaderComponent(props) {
                       className="dropdown-menu search-drop-div search-dropdown-list"
                       aria-labelledby="dropdownMenuLink"
                     >
-                      <li className="dropdown-item d-flex align-items-center" onClick={() => history.push("/RepairWithSpareParts")} style={{cursor: "pointer"}} >
+                      <li className="dropdown-item d-flex align-items-center" onClick={() => history.push("/RepairWithSpareParts")} style={{ cursor: "pointer" }} >
                         <span className="span-icon">
                           <svg
                             id="uuid-7dbd4a75-0a07-4ebd-ae99-a9c37850cf3f"
@@ -398,7 +417,7 @@ export function HeaderComponent(props) {
                           </svg>
                         </span>
                         <span className="ml-2">Repair With Spare Parts</span></li>
-                      <li className="dropdown-item d-flex align-items-center cursor-pointer" onClick={() => history.push("/RepairWithoutSpareParts")} style={{cursor: "pointer"}}>
+                      <li className="dropdown-item d-flex align-items-center cursor-pointer" onClick={() => history.push("/RepairWithoutSpareParts")} style={{ cursor: "pointer" }}>
                         <span className="span-icon">
                           <svg
                             id="uuid-f3f687df-4645-4e7f-87f1-5ccb3e8264e2"
@@ -445,7 +464,7 @@ export function HeaderComponent(props) {
                         </span>
                         <span className="ml-2">Repair Without Spare Parts</span>
                       </li>
-                      <li className="dropdown-item d-flex align-items-center cursor-pointer" onClick={() => history.push("/RepairPartList")} style={{cursor: "pointer"}}>
+                      <li className="dropdown-item d-flex align-items-center cursor-pointer" onClick={() => history.push("/RepairPartList")} style={{ cursor: "pointer" }}>
                         <span className="span-icon">
                           <svg
                             id="uuid-ae0f5633-9fa9-459c-9052-9dfe57b47331"
@@ -484,7 +503,7 @@ export function HeaderComponent(props) {
                         </span>
                         <span className="ml-2">Part List</span>
                       </li>
-                      <li className="dropdown-item d-flex align-items-center cursor-pointer" onClick={() => history.push("/RepairStandardJobs")} style={{cursor: "pointer"}}>
+                      <li className="dropdown-item d-flex align-items-center cursor-pointer" onClick={() => history.push("/RepairStandardJobs")} style={{ cursor: "pointer" }}>
                         <span className="span-icon">
                           <svg
                             id="uuid-71879914-eb74-479f-b04a-3a9b28cfee15"
@@ -503,7 +522,7 @@ export function HeaderComponent(props) {
                         </span>
                         <span className="ml-2">Standard Job</span>
                       </li>
-                      <li className="dropdown-item d-flex align-items-center cursor-pointer" onClick={() => history.push("/RepairKits")} style={{cursor: "pointer"}}>
+                      <li className="dropdown-item d-flex align-items-center cursor-pointer" onClick={() => history.push("/RepairKits")} style={{ cursor: "pointer" }}>
                         <span className="span-icon">
                           <svg
                             id="uuid-8b9cd8c2-8c40-4465-a1fa-23edb937326d"
@@ -530,7 +549,7 @@ export function HeaderComponent(props) {
                         </span>
                         <span className="ml-2">Kit</span>
                       </li>
-                      <li className="dropdown-item d-flex align-items-center cursor-pointer" onClick={() => history.push("/portfolio/summary")} style={{cursor: "pointer"}}>
+                      <li className="dropdown-item d-flex align-items-center cursor-pointer" onClick={() => history.push("/portfolio/summary")} style={{ cursor: "pointer" }}>
                         <span className="span-icon">
                           <svg
                             id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
@@ -545,7 +564,7 @@ export function HeaderComponent(props) {
                         </span>
                         <span className="ml-2">Portfolio and bundle</span>
                       </li>
-                      <li className="dropdown-item d-flex align-items-center cursor-pointer" onClick={() => history.push("/solutionBuilder/analytics")} style={{cursor: "pointer"}}>
+                      <li className="dropdown-item d-flex align-items-center cursor-pointer" onClick={() => history.push("/solutionBuilder/analytics")} style={{ cursor: "pointer" }}>
                         <span className="span-icon">
                           <svg
                             id="uuid-adbb1b3a-fca6-467b-8c3d-db09204755c3"
@@ -564,7 +583,7 @@ export function HeaderComponent(props) {
                         </span>
                         <span className="ml-2">Solution builder</span>
                       </li>
-                      <li className="dropdown-item dropdown-last-item d-flex align-items-center cursor-pointer" onClick={() => history.push("/SolutionQuote")} style={{cursor: "pointer"}}>
+                      <li className="dropdown-item dropdown-last-item d-flex align-items-center cursor-pointer" onClick={() => history.push("/SolutionQuote")} style={{ cursor: "pointer" }}>
                         <span className="span-icon">
                           <svg
                             id="uuid-44f21729-ee7f-4ae1-a13f-50d052182172"
@@ -601,12 +620,12 @@ export function HeaderComponent(props) {
                     <div className="w-100 mx-2">
                       <div className="machine-droped d-flex align-items-center bg-white">
                         <div>
-                          <lable
+                          <label
                             className="label-div"
                             style={{ whiteSpace: "pre" }}
                           >
                             Quote Type
-                          </lable>
+                          </label>
                         </div>
                         <FormControl className="" sx={{ m: 1 }}>
                           <Select
@@ -1028,7 +1047,7 @@ export function HeaderComponent(props) {
                       </li> */}
                       <li>
                         <a className="cursor" onClick={handleLogout}>
-                          <i className="icon-key"></i> <span>Logout</span>
+                          <i className="icon-key"></i> <span>{loginStatus ? "Logout" : "Login"}</span>
                         </a>
                       </li>
                     </ul>

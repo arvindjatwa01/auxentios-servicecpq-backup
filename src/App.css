@@ -3021,7 +3021,7 @@ button.bg-primary:hover {
   border-bottom: 1px solid #edebeb78;
 }
 
-.search-dropdown-list .dropdown-last-item{
+.search-dropdown-list .dropdown-last-item {
   padding: 7px 10px;
   border-bottom: none !important;
 }
@@ -3040,6 +3040,12 @@ button.bg-primary:hover {
   width: 20px;
   fill: #872ff7;
 }
+
+
+.existing-template-div .active {
+  background-color: #4540f7 !important;
+}
+
 .css-3e2aqh-MuiDataGrid-root .MuiDataGrid-columnHeaders {
   background-color: #872ff7 !important;
   color: #fff;
@@ -3078,3 +3084,4 @@ button.bg-primary:hover {
     bottom: 4px;
     right: 6px;
     }
+

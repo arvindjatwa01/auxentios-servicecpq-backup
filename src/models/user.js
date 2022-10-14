@@ -5,3 +5,12 @@ export interface User {
   workEmail: string,
   password: string
 }
+
+export interface NewUserInfo {
+  tenantId: number | string;
+  userId: number | string;
+  userEmail: string,
+  accessToken: string,
+  roles: Array,
+  planId:  number | string;
+}
