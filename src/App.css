@@ -3040,3 +3040,41 @@ button.bg-primary:hover {
   width: 20px;
   fill: #872ff7;
 }
+.css-3e2aqh-MuiDataGrid-root .MuiDataGrid-columnHeaders {
+  background-color: #872ff7 !important;
+  color: #fff;
+}
+.item2 {
+  background-color: #fff;
+  color: #000;
+  height: 600px;
+  border: 1px solid #872ff7;
+  padding: 0;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.Choose-btn2{position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;}
+  .card-bg {
+    background: transparent;
+    border: none;
+    background-image: url(../src/assets/icons/svg/jcb.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100%;
+    position: relative;
+    height: 120px;
+  }
+  .custom-green-btn{position: absolute;
+    background-color: #59CE9F !important;
+    border-radius: 50px;
+    bottom: 4px;
+    right: 6px;
+    }
