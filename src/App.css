@@ -3085,3 +3085,37 @@ button.bg-primary:hover {
     right: 6px;
     }
 
+    .item3 {
+      background-color: #fff;
+      color: #000;
+      height: 450px;
+      border: 1px solid #872ff7;
+      padding: 0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .Choose-btn3 {
+      position: absolute;
+      left: 0;
+      right: 0;
+      border-bottom-left-radius: 10px;
+      bottom: 0;
+      border-bottom-right-radius: 10px;
+  }
+  .searchtext .MuiInputBase-inputMultiline {
+    height: 29px !important;
+    resize: none;
+    padding: 5px 5px 5px 29px !important;
+}
+.searchtext .modal-content { border: 1px solid #4540f7 !important;
+}
+.searchtext .MuiFormControl-root {
+  width: 100% !important;
+}
+.searchtext .icon-search{position: absolute;
+  left: 3px;
+  top: 12px;}
+  .searchtext .css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root{
+    padding: 0 0 0 29px !important;
+  }
+.searchtext .MuiInputBase-root {line-height: 1.9em; padding-left: 29px;}
