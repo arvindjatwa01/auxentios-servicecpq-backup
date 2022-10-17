@@ -1,52 +1,41 @@
-import {
-    faFileAlt,
-    faFolderPlus,
-    faPlus,
-    faShareAlt,
-    faUpload,
-  } from "@fortawesome/free-solid-svg-icons";
-  import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-  import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-  import SearchIcon from "@mui/icons-material/Search";
-  import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
-  import Checkbox from "@mui/material/Checkbox";
-  import FormControlLabel from "@mui/material/FormControlLabel";
-  import FormGroup from "@mui/material/FormGroup";
   import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
   import EastIcon from '@mui/icons-material/East';
   import $ from "jquery";
+  import BuildCircleOutlinedIcon from '@mui/icons-material/BuildCircleOutlined';
   import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
-  import CallOutlinedIcon from '@mui/icons-material/CallOutlined';
   import OwlCarousel from 'react-owl-carousel';
   import CabinIcon from '@mui/icons-material/Cabin';
-  import CoronavirusOutlinedIcon from '@mui/icons-material/CoronavirusOutlined';
   import "owl.carousel/dist/assets/owl.carousel.css";
   import "owl.carousel/dist/assets/owl.theme.default.css";
   import React, { useEffect, useState } from "react";
   import { Link, useHistory } from "react-router-dom";
   import EditIcon from "@mui/icons-material/EditTwoTone";
   import Portfoliosicon from '../../assets/icons/svg/Portfolios-icon.svg'
-  import SelectFilter from "react-select";
   import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
   import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-  import Buttonarrow from '../../assets/icons/svg/Button-arrow.svg'
   import contract from '../../assets/icons/svg/contract.svg'
   import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined';
+  import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+  import TextField from '@mui/material/TextField';
   import DesignServicesOutlinedIcon from '@mui/icons-material/DesignServicesOutlined';
+  import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+  import Tab from '@mui/material/Tab';
+  import TabPanel from '@mui/lab/TabPanel';
+  import TabContext from '@mui/lab/TabContext';
+  import TabList from '@mui/lab/TabList';
+  import Box from '@mui/material/Box';
   import {
     addPartlist,
     builderSearch,
     createBuilder,
   } from "services/repairBuilderServices";
-  import moment from "moment-timezone";
   import Moment from "react-moment";
-  import { Typography } from "@mui/material";
-  import Loader from "react-js-loader";
   
   export const CommerceLandingPage = () => {
     const [show, setShow] = React.useState(false);
     const [recentPartlists, setRecentPartlists] = useState([]);
     // Snack Bar State
+    const [value, setValue] = React.useState('1');
     const [severity, setSeverity] = useState("");
     const [openSnack, setOpenSnack] = useState(false);
     const [snackMessage, setSnackMessage] = useState("");
@@ -83,162 +72,23 @@ import {
       setOpenSnack(true);
     };
   
-    const searchBuilderColumns = [
-      { field: "builderId", headerName: "ID#", flex: 1, width: 70 },
-      { field: "description", headerName: "Description", flex: 1, width: 130 },
-      { field: "customerId", headerName: "Customer#", flex: 1, width: 130 },
-      { field: "make", headerName: "Make", flex: 1, width: 130 },
-      { field: "model", headerName: "Model", flex: 1, width: 130 },
-      { field: "family", headerName: "Family", flex: 1, width: 130 },
-      { field: "serialNo", headerName: "Serial#", flex: 1, width: 130 },
-      { field: "createdBy", headerName: "Created by", flex: 1, width: 130 },
-      {
-        field: "createdAt",
-        headerName: "Created On",
-        flex: 1,
-        width: 130,
-        renderCell: (params) => (
-          <Moment format="DD MMM YY HH:MM a" style={{ fontSize: 12 }}>
-            {params.value}
-          </Moment>
-        ),
-      },
-      { field: "totalPrice", headerName: "Total $", flex: 1, width: 130 },
-      { field: "status", headerName: "Status", flex: 1, width: 130 },
-      {
-        field: "actions",
-        type: "actions",
-        headerName: "Actions",
-        width: 100,
-        cellClassName: "actions",
-        getActions: (params) => {
-          return [
-            <GridActionsCellItem
-              icon={<EditIcon />}
-              label="Edit"
-              className="textPrimary"
-              onClick={() => makePartlistEditable(params.row)}
-              color="inherit"
-            />,
-          ];
-        },
-      },
-    ];
-  
-    const handleQuerySearchClick = async () => {
-      $(".scrollbar").css("display", "none");
-      // console.log("handleQuerySearchClick", querySearchSelector);
-      var searchStr = "";
-      querySearchSelector.map(function (item, i) {
-        if (i === 0 && item.selectCategory.value && item.inputSearch) {
-          searchStr = item.selectCategory.value + ":" + item.inputSearch;
-        } else if (
-          item.selectCategory.value &&
-          item.inputSearch &&
-          item.selectOperator.value
-        ) {
-          searchStr =
-            searchStr +
-            " " +
-            item.selectOperator.value +
-            " " +
-            item.selectCategory.value +
-            ":" +
-            item.inputSearch;
-        }
-        return searchStr;
-      });
-  
-      try {
-        if (searchStr) {
-          const res = await builderSearch(`builderType:PARTLIST&${searchStr}`);
-          setMasterData(res);
-        } else {
-          handleSnack("info", "Please fill the search criteria!");
-        }
-      } catch (err) {
-        handleSnack("error", "Error occurred while fetching spare parts!");
-      }
-    };
-  
-    const [querySearchSelector, setQuerySearchSelector] = useState([
-      {
-        id: 0,
-        selectCategory: "",
-        selectOperator: "",
-        inputSearch: "",
-        selectOptions: [],
-        selectedOption: "",
-      },
-    ]);
-  
     const [masterData, setMasterData] = useState([]);
-  
+    const handleChange = (event, newValue) => {
+      setValue(newValue);
+    };
     const history = useHistory();
-    const createNewBuilder = () => {
-      let builderDetails = {
-        builderId: "",
-        bId: "",
-        partListNo: "",
-        partListId: "",
-        type: "new",
-      };
-      createBuilder({
-        builderType: "PARTLIST",
-        activeVersion: true,
-        versionNumber: 1,
-        status: "DRAFT",
-      })
-        .then((result) => {
-          builderDetails.builderId = result.builderId;
-          builderDetails.bId = result.id;
-  
-          addPartlist(result.id, {
-            activeVersion: true,
-            versionNumber: 1,
-          })
-            .then((partlistResult) => {
-              builderDetails.partListNo = partlistResult.id;
-              builderDetails.partListId = partlistResult.partlistId;
-              history.push({
-                pathname: "/RepairPartList/PartList",
-                state: builderDetails,
-              });
-            })
-            .catch((err) => {
-              console.log("Error Occurred", err);
-              handleSnack("error", "Error occurred while creating partlist!");
-            });
-        })
-        .catch((err) => {
-          console.log("Error Occurred", err);
-          handleSnack("error", "Error occurred while creating builder!");
-        });
-    };
-  
-    const makePartlistEditable = (selectedBuilder) => {
-      let builderDetails = {
-        builderId: "",
-        bId: "",
-        partListNo: "",
-        partListId: "",
-        type: "fetch",
-      };
-      builderDetails.builderId = selectedBuilder.builderId;
-      builderDetails.bId = selectedBuilder.id;
-      // builderDetails.partListNo = builderDetails.;
-      builderDetails.partListId = selectedBuilder.estimationNumber;
-      builderDetails.versionNumber = selectedBuilder.versionNumber;
-      history.push({
-        pathname: "/RepairPartList/PartList",
-        state: builderDetails,
-      });
-    };
-  
-    // Once opetion has been selected clear the search results
-    const clearFilteredData = () => {
-      setMasterData([]);
-    };
+    const rows = [
+      { id: 1, GroupNumber: 'Lannister Cersei', ID: 'strong-aegis-342806', },
+      { id: 2, GroupNumber: 'Lannister Jaime', ID: 'strong-aegis-342806', },
+    ];
+    const columns = [
+      { field: 'GroupNumber', headerName: 'Name', flex:1, width: 70 },
+      { field: 'ID', headerName: 'ID',  flex:1, width: 130 },
+      
+    ];
+    const handleRowClick=(e)=>{
+      setShow(true)
+    }
     return (
       <>
         <CustomizedSnackbar
@@ -397,7 +247,7 @@ import {
                                     <div className='mr-2'><img src={Portfoliosicon}></img></div>
                                     <div>
                                         <h5 className='text-light'>Portfolios</h5>
-                                        <Link className='btn bg-primary text-white py-2'>Explore</Link>
+                                        <Link className='btn bg-primary text-white py-2' data-toggle="modal" data-target="#selectproject">Explore</Link>
                                         <p className="py-2">Our self-service option helps your customers browse products, aftermarket services and solution online.</p>
                                        
                                     </div>
@@ -408,7 +258,7 @@ import {
                                     <div className='mr-2'><img src={contract}></img></div>
                                     <div>
                                         <h5 className='text-light'> Solutions</h5>
-                                        <Link className='btn bg-primary text-white py-2'>Explore</Link>
+                                        <Link className='btn bg-primary text-white py-2' data-toggle="modal" data-target="#selectproject">Explore</Link>
                                         <p className="py-2">Our platform is built to create templates and kits. It has twin builder functionality.</p>
                                        
                                     </div>
@@ -419,7 +269,7 @@ import {
                                     <div className='mr-2'><DesignServicesOutlinedIcon style={{fontSize: "66px"}}/></div>
                                     <div>
                                         <h5 className='text-light'> Services</h5>
-                                        <Link className='btn bg-primary text-white py-2'>Explore</Link>
+                                        <Link className='btn bg-primary text-white py-2' data-toggle="modal" data-target="#selectproject">Explore</Link>
                                         <p className="py-2">Our inbuilt price engine helps you price spare parts, labor, miscellaneous, and consumables.</p>
                                        
                                     </div>
@@ -430,7 +280,7 @@ import {
                                     <div className='mr-2'><DesignServicesOutlinedIcon style={{fontSize: "66px"}}/></div>
                                     <div>
                                         <h5 className='text-light'> Bundles</h5>
-                                        <Link className='btn bg-primary text-white py-2'>Explore</Link>
+                                        <Link className='btn bg-primary text-white py-2' data-toggle="modal" data-target="#selectproject">Explore</Link>
                                         <p className="py-2">The quotes and follow up orders that your sales reps build using our preconfigured solution.</p>
                                        
                                     </div>
@@ -448,52 +298,60 @@ import {
             </div>
             <div class="contain-slider my-3">
                     <OwlCarousel items={4} className='owl-theme' loop margin={10} nav>
-                        <div class='item border-none'>
-                            <a href='#' className='bg-primary text-white btn'><CabinIcon className=" font-size-16 mr-2"></CabinIcon>For Cabin</a>
-                            <h4 className='text-red mt-3'><b>$4,000</b></h4>
-                            <ul className='mt-3' style={{ paddingLeft: '20px' }}>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Fitted with AC</li>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Fitted with...</li>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Fitted with...</li>
-                            </ul>
-                            <a href="#" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                        <div class='item3 border-none'>
+                           <div className="w-100" style={{height: "225px"}}>
+                               <img src="./assets/images/tool1.png"></img>
+                           </div>
+                           <div className="p-4">
+                               <h4 className="text-light mt-3">PS7890</h4>
+                               <h4 className='text-red mt-3'><b>$20,000</b></h4>
+                               <p className="mb-0 mt-2">This service contract covers the service of the core parts of the machine.</p>
+                           </div>
+                           <a href="#" class="btn bg-primary text-white Choose-btn3"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div>
-                        <div class='item border-none'>
-                            <a href='#' className=' bg-yellow  text-white btn'> <CallOutlinedIcon className=" font-size-16 mr-2"></CallOutlinedIcon>For Frame</a>
-                            <h4 className='text-red mt-3'><b>$6,000</b></h4>
-                            <ul className='mt-3' style={{ paddingLeft: '20px' }}>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Outside chroming</li>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Ladder</li>
-                            </ul>
-                            <a href="#" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                        <div class='item3 border-none'>
+                           <div className="w-100" style={{height: "225px"}}>
+                               <img src="./assets/images/tool2.png"></img>
+                           </div>
+                           <div className="p-4">
+                               <h4 className="text-light mt-3">PS7890</h4>
+                               <h4 className='text-red mt-3'><b>$20,000</b></h4>
+                               <p className="mb-0 mt-2">This service contract covers the service of the core parts of the machine.</p>
+                           </div>
+                           <a href="#" class="btn bg-primary text-white Choose-btn3"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div>
-                        <div class='item border-none'>
-                            <a href='#' className='bg-green-light text-white btn'><CoronavirusOutlinedIcon className=" font-size-16 mr-2"></CoronavirusOutlinedIcon>For Safety</a>
-                            <h4 className='text-red mt-3'><b>$20,000</b></h4>
-                            <ul className='mt-3' style={{ paddingLeft: '20px' }}>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Two rear view cameras</li>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Two fog lamps</li>
-                            </ul>
-                            <a href="#" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                        <div class='item3 border-none'>
+                           <div className="w-100" style={{height: "225px"}}>
+                               <img src="./assets/images/tool3.png"></img>
+                           </div>
+                           <div className="p-4">
+                               <h4 className="text-light mt-3">PS7890</h4>
+                               <h4 className='text-red mt-3'><b>$20,000</b></h4>
+                               <p className="mb-0 mt-2">This service contract covers the service of the core parts of the machine.</p>
+                           </div>
+                           <a href="#" class="btn bg-primary text-white Choose-btn3"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div>
-                        <div class='item border-none'>
-                            {/* <a href='#' className='bg-yellow text-white btn'>CV agreement</a> */}
-                            <a href='#' className='bg-green-light text-white btn'><CoronavirusOutlinedIcon className=" font-size-16 mr-2"></CoronavirusOutlinedIcon>For Comprehensive</a>
-                            <h4 className='text-red mt-3'><b>$20,000</b></h4>
-                            <ul className='mt-3' style={{ paddingLeft: '20px' }}>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Covers solution for cabin,<br />safety and frame</li>
-
-                            </ul>
-                            <a href="#" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                        <div class='item3 border-none'>
+                           <div className="w-100" style={{height: "225px"}}>
+                               <img src="./assets/images/tool4.png"></img>
+                           </div>
+                           <div className="p-4">
+                               <h4 className="text-light mt-3">PS7890</h4>
+                               <h4 className='text-red mt-3'><b>$20,000</b></h4>
+                               <p className="mb-0 mt-2">This service contract covers the service of the core parts of the machine.</p>
+                           </div>
+                           <a href="#" class="btn bg-primary text-white Choose-btn3"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div>
-                        <div class='item border-none'>
-                            <a href='#' className=' bg-yellow  text-white btn'> <CallOutlinedIcon className=" font-size-16 mr-2"></CallOutlinedIcon>For Frame</a>
-                            <h4 className='text-red mt-3'><b>$6,000</b></h4>
-                            <ul className='mt-3' style={{ paddingLeft: '20px' }}>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Outside chroming</li>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Ladder</li>
-                            </ul>
-                            <a href="#" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                        <div class='item3 border-none'>
+                           <div className="w-100" style={{height: "225px"}}>
+                               <img src="./assets/images/tool1.png"></img>
+                           </div>
+                           <div className="p-4">
+                               <h4 className="text-light mt-3">PS7890</h4>
+                               <h4 className='text-red mt-3'><b>$20,000</b></h4>
+                               <p className="mb-0 mt-2">This service contract covers the service of the core parts of the machine.</p>
+                           </div>
+                           <a href="#" class="btn bg-primary text-white Choose-btn3"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div>
 
                     </OwlCarousel>
@@ -502,59 +360,114 @@ import {
             <h4 className="font-weight-600 mb-0">Services</h4>
             <p className="mb-0"><b>Amet minim molit non deserunt ullamco est sit alique dolor do amet sint. Velit officia consequat duis enim velit molit. Exercitation</b></p>
             </div>
-            <div class="contain-slider my-3">
+            <div class="contain-slider my-4">
                     <OwlCarousel items={4} className='owl-theme' loop margin={10} nav>
-                        <div class='item border-none'>
-                            <a href='#' className='bg-primary text-white btn'><CabinIcon className=" font-size-16 mr-2"></CabinIcon>For Cabin</a>
-                            <h4 className='text-red mt-3'><b>$4,000</b></h4>
-                            <ul className='mt-3' style={{ paddingLeft: '20px' }}>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Fitted with AC</li>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Fitted with...</li>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Fitted with...</li>
-                            </ul>
-                            <a href="#" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
-                        </div>
-                        <div class='item border-none'>
-                            <a href='#' className=' bg-yellow  text-white btn'> <CallOutlinedIcon className=" font-size-16 mr-2"></CallOutlinedIcon>For Frame</a>
-                            <h4 className='text-red mt-3'><b>$6,000</b></h4>
-                            <ul className='mt-3' style={{ paddingLeft: '20px' }}>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Outside chroming</li>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Ladder</li>
-                            </ul>
-                            <a href="#" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
-                        </div>
-                        <div class='item border-none'>
-                            <a href='#' className='bg-green-light text-white btn'><CoronavirusOutlinedIcon className=" font-size-16 mr-2"></CoronavirusOutlinedIcon>For Safety</a>
+                        <div class='item border-none' style={{height:"350px"}}>
+                            <a href='#' className='bg-primary text-white btn'><CabinIcon className=" font-size-16 mr-2"></CabinIcon>Repair Services</a>
                             <h4 className='text-red mt-3'><b>$20,000</b></h4>
                             <ul className='mt-3' style={{ paddingLeft: '20px' }}>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Two rear view cameras</li>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Two fog lamps</li>
+                                <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
+                                <li className='mt-3' style={{ listStyle: 'disc' }}>Periodic maintenance triggered every 3 months</li>
                             </ul>
                             <a href="#" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div>
-                        <div class='item border-none'>
-                            {/* <a href='#' className='bg-yellow text-white btn'>CV agreement</a> */}
-                            <a href='#' className='bg-green-light text-white btn'><CoronavirusOutlinedIcon className=" font-size-16 mr-2"></CoronavirusOutlinedIcon>For Comprehensive</a>
+                        <div class='item border-none' style={{height:"350px"}}>
+                            <a href='#' className='bg-yellow text-white btn'><CabinIcon className=" font-size-16 mr-2"></CabinIcon>CV agreement</a>
                             <h4 className='text-red mt-3'><b>$20,000</b></h4>
                             <ul className='mt-3' style={{ paddingLeft: '20px' }}>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Covers solution for cabin,<br />safety and frame</li>
-
+                                <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
+                                <li className='mt-3' style={{ listStyle: 'disc' }}>Periodic maintenance triggered every 3 months</li>
                             </ul>
                             <a href="#" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div>
-                        <div class='item border-none'>
-                            <a href='#' className=' bg-yellow  text-white btn'> <CallOutlinedIcon className=" font-size-16 mr-2"></CallOutlinedIcon>For Frame</a>
-                            <h4 className='text-red mt-3'><b>$6,000</b></h4>
+                        <div class='item border-none' style={{height:"350px"}}>
+                            <a href='#' className='bg-green text-white btn'><CabinIcon className=" font-size-16 mr-2"></CabinIcon>Maintenance Service</a>
+                            <h4 className='text-red mt-3'><b>$20,000</b></h4>
                             <ul className='mt-3' style={{ paddingLeft: '20px' }}>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Outside chroming</li>
-                                <li className='mt-3' style={{ listStyle: 'disc' }}>Ladder</li>
+                                <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
+                                <li className='mt-3' style={{ listStyle: 'disc' }}>Periodic maintenance triggered every 3 months</li>
                             </ul>
                             <a href="#" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div>
+                        <div class='item border-none' style={{height:"350px"}}>
+                            <BuildCircleOutlinedIcon style={{fontSize:"90px"}}/>
+                            <h4 className='text-primary mt-3'><b>Repair Service</b></h4>
+                            <h4 className='text-red mt-3'><b>$20,000</b></h4>
+                            <ul className='mt-3' style={{ paddingLeft: '20px' }}>
+                                <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
+                                <li className='mt-3' style={{ listStyle: 'disc' }}>Periodic maintenance triggered every 3 months</li>
+                            </ul>
+                            <a href="#" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                        </div>
+                        <div class='item border-none' style={{height:"350px"}}>
+                            <a href='#' className='bg-primary text-white btn'><CabinIcon className=" font-size-16 mr-2"></CabinIcon>Repair Services</a>
+                            <h4 className='text-red mt-3'><b>$20,000</b></h4>
+                            <ul className='mt-3' style={{ paddingLeft: '20px' }}>
+                                <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
+                                <li className='mt-3' style={{ listStyle: 'disc' }}>Periodic maintenance triggered every 3 months</li>
+                            </ul>
+                            <a href="#" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                        </div> 
 
                     </OwlCarousel>
             </div>
           </div>
+          <div className="modal fade" id="selectproject" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel2" aria-hidden="true">
+              <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div className="modal-content">
+                  <div className="modal-header border-none">
+                    <h4 className="modal-title" id="myModalLabel2">Select a project</h4>
+                        <div className="d-flex">
+                          <h5 className="mb-0"><span><CreateNewFolderIcon className="mr-3" style={{fontSize: "37px"}}/></span>NEW PROJECT</h5>
+                        </div>
+                  </div>
+                  <div className="modal-body" style={{ background: 'white', padding: "1rem 0" }}>
+                      <div className="mx-3 my-2 searchtext" style={{position: "relative"}}>
+                        <TextField id="outlined-textarea" label="Search projects and folders" placeholder="" multiline />
+                        <span className="icon-search"><SearchOutlinedIcon style={{fontSize:"40px"}}/></span>
+                      </div>
+                      <div className="my-3">
+                      <TabContext value={value}>
+                            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                              <TabList onChange={handleChange} aria-label="lab API tabs example">
+                                <Tab label="RECENT" value="1" />
+                                <Tab label="STARRED" value="2" />
+                                <Tab label="ALL" value="3" />
+                              </TabList>
+                            </Box>
+                            <TabPanel value="1">
+                            <div className="" style={{ height: 400, width: '100%', backgroundColor:'#fff' }}>
+                                    <DataGrid
+                                    sx={{
+                                      '& .MuiDataGrid-columnHeaders': {
+                                        backgroundColor: '#7380E4', color:'#fff'
+                                      }
+                                    }}
+                                      rows={rows}
+                                      columns={columns}
+                                      pageSize={5}
+                                      rowsPerPageOptions={[5]}
+                                      checkboxSelection
+                                      onCellClick={(e)=>handleRowClick(e)}
+                                      
+                                      
+                                    />
+                              </div> 
+                            </TabPanel>
+                            <TabPanel value="2">Item Two</TabPanel>
+                            <TabPanel value="3">Item Three</TabPanel>
+                          </TabContext>
+                      </div>
+                    
+                    
+                      <div className="modal-footer border-none mr-auto">
+                        <button type="button" className="btn bg-white" data-dismiss="modal"><b>CANCEL</b></button>
+                        <a href="#" className="btn bg-white">OPEN</a>
+                      </div>
+                  </div>
+                </div>
+              </div>
+            </div>
         </div>
       </>
     );
