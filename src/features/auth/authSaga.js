@@ -10,37 +10,61 @@ function* handleLogin(payload: LoginPayload) {
     const res = yield call(HttpService, 'post', USER_SERVICE_SIGNIN_URL(), payload.payload);
     console.log("login Response is : ", res);
     localStorage.setItem('access_token', 'fake_token');
-    yield put(
-      authActions.loginSuccess({
-        // Dispatch action
-        // id: 1,
-        // name: 'Zendy',
-        tenantId: res.data.tenantId,
-        userId: res.data.userId,
-        userEmail: res.data.userEmail,
-        accessToken: res.data.accessToken,
-        roles: res.data.roles,
-        planId: res.data.planId,
-      })
-    );
+    // yield put(
+    //   authActions.loginSuccess({
+    //     // Dispatch action
+    //     // id: 1,
+    //     // name: 'Zendy',
+    //     tenantId: res.data.tenantId,
+    //     userId: res.data.userId,
+    //     userEmail: res.data.userEmail,
+    //     accessToken: res.data.accessToken,
+    //     roles: res.data.roles,
+    //     planId: res.data.planId,
+    //   })
+    // );
 
-    localStorage.setItem('user_tenantId', res.data.tenantId);
-    localStorage.setItem('user_userId', res.data.userId);
-    localStorage.setItem('user_userEmail', res.data.userEmail);
-    localStorage.setItem('user_accessToken', res.data.accessToken);
-    localStorage.setItem('user_roles', res.data.roles);
-    localStorage.setItem('user_planId', res.data.planId);
-    localStorage.setItem('user_logIn_Status', true);
+    // Redirect to Admin page
+    if (res.status == 200) {
+      localStorage.setItem('user_tenantId', res.data.tenantId);
+      localStorage.setItem('user_userId', res.data.userId);
+      localStorage.setItem('user_userEmail', res.data.userEmail);
+      localStorage.setItem('user_accessToken', res.data.accessToken);
+      localStorage.setItem('user_roles', res.data.roles);
+      localStorage.setItem('user_planId', res.data.planId);
+      localStorage.setItem('user_logIn_Status', true);
+      if (res.data.planId == null || res.data.planId == "FREE") {
+        // yield put(push('/LandingPageLogin'));
+        // window.location.reload();
+        window.location.href = "/LandingPageLogin";
+      } else {
+        // yield put(push('/'));
+        window.location.href = "/";
+      }
+      // console.log("Login Success");
+    } else {
+      yield put(
+        authActions.loginSuccess(res)
+      );
+    }
+    // if (res.data.planId == null || res.data.planId == "FREE") {	
+    //   yield put(push('/LandingPageLogin'));	
+    //   window.location.reload();	
+    // } else {	
+    //   yield put(push('/'));	
+    // }
+
+
 
 
 
     // Redirect to Admin page
-    if (res.data.planId == null || res.data.planId == "FREE") {
-      yield put(push('/LandingPageLogin'));
-      window.location.reload();
-    } else {
-      yield put(push('/'));
-    }
+    // if (res.data.planId == null || res.data.planId == "FREE") {
+    //   yield put(push('/LandingPageLogin'));
+    //   window.location.reload();
+    // } else {
+    //   yield put(push('/'));
+    // }
     // yield put(push('/'));
   } catch (error) {
     yield put(authActions.loginFailed(error.message)); // Dispatch action

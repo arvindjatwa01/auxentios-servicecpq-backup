@@ -44,6 +44,7 @@ export function HeaderComponent(props) {
       setLoginStatus(true)
     } else {
       setLoginStatus(false)
+      history.push("/login");
     }
     // setLoginStatus(result.isLoggedIn)
   }, []);

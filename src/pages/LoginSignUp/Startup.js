@@ -5,6 +5,7 @@ import Step from "@mui/material/Step";
 import StepButton from "@mui/material/StepButton";
 import auxentionlogo from "../../assets/icons/png/auxentionlogo.png";
 import logoIcon from '../../assets/icons/svg/Logo.svg';
+import newLogoIcon from '../../assets/icons/svg/NewLogoIcon.svg';
 import erroricon from "../../assets/icons/png/error.png";
 import { signIn } from "../../services/index";
 import "react-toastify/dist/ReactToastify.css";
@@ -25,9 +26,23 @@ export const Startup = () => {
     // let auth = useAuth();
     const steps = ["Register", "Verification", "Get Started"];
 
+    const [loginErr, setLoginErr] = useState({
+        isLoggedIn: false,
+        logging: false,
+        currentUser: undefined,
+    });
+
+
+
     const dispatch = useDispatch();
     const result = useSelector((state) => state.signUp);
     console.log("result of user ", result.activeStep)
+
+    const LoginRes = useSelector((state) => state.loginSuccess);
+
+    console.log("result of login failed/success : ", LoginRes)
+
+
     // console.log("result signup ", result)
 
     // console.log("dispatch : ", dispatch);
@@ -50,16 +65,21 @@ export const Startup = () => {
     };
 
     const handleLoginInput = (e) => {
-
         const name = e.target.name;
         const value = e.target.value;
         setSignInInputData({
             ...signInInputData,
             [name]: value
         })
+        setLoginErr({
+            isLoggedIn: false,
+            logging: false,
+            currentUser: undefined,
+        });
+
     }
 
-    console.log("object : ", signInInputData);
+    // console.log("object : ", signInInputData);
     const handleLogin = () => {
         var dict = {
             emailId: signInInputData.emailId,
@@ -73,11 +93,19 @@ export const Startup = () => {
         } else if (!validator.passwordValidation(signInInputData.password)) {
             alert("Please enter the password");
         } else {
-            dispatch(authActions.login(dict));
+            const dispa = dispatch(authActions.login(dict));
+
+            console.log("object ", dispa);
+
             // dispatch(authActions.login(dict));
             // alert("login error ?")
         }
 
+        setLoginErr({
+            isLoggedIn: LoginRes.isLoggedIn,
+            logging: LoginRes.logging,
+            currentUser: LoginRes.currentUser,
+        });
         console.log("signInResponse");
 
         console.log("dict is : ", dict);
@@ -104,6 +132,8 @@ export const Startup = () => {
         }
     }, []);
 
+    console.log("LoginErr : ", loginErr)
+
     return (
         <div className="content-body" style={{ minHeight: "884px" }}>
             <div className="container mt-4">
@@ -126,7 +156,7 @@ export const Startup = () => {
                             <div className="col-md-4 col-sm-4">
                                 <div className="bg-violet py-4 px-4 h-100">
                                     <div className="text-center">
-                                        <img src={logoIcon}></img>
+                                        <img src={newLogoIcon}></img>
                                     </div>
                                     <div className="mt-4">
                                         <p className="text-white mt-2">
@@ -239,7 +269,7 @@ export const Startup = () => {
                             <div className="col-md-4 col-sm-4">
                                 <div className="bg-violet py-4 px-4 h-100">
                                     <div className="text-center">
-                                        <img className="w-100" src={logoIcon}></img>
+                                        <img className="w-100" src={newLogoIcon}></img>
                                     </div>
                                     <div className="mt-4">
                                         <p className="text-white mt-2">
@@ -331,7 +361,7 @@ export const Startup = () => {
                             <div className="col-md-4 col-sm-4">
                                 <div className="bg-violet py-4 px-4 h-100">
                                     <div className="text-center">
-                                        <img src={logoIcon}></img>
+                                        <img src={newLogoIcon}></img>
                                     </div>
                                     {/* <div className="mt-4">
                                         <div>
@@ -451,6 +481,12 @@ export const Startup = () => {
                 <ToastMessageHandler
                     status={400}
                     message={"Error While Registering User"}
+                />
+            )}
+            {LoginRes.currentUser && LoginRes.currentUser.status === 500 && (
+                <ToastMessageHandler
+                    status={400}
+                    message={"Invalid email or password.!!! \n Please try Again"}
                 />
             )}
             {/*<ToastContainer />*/}
