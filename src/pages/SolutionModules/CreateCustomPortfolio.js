@@ -116,7 +116,12 @@ import {
     updateCustomItemData,
     deleteCustomItem,
     customPriceCreation,
-    getcustomItemPrice
+    getcustomItemPrice,
+    quoteCreation,
+    getQuoteMasterData,
+    getSearchQuoteData,
+    updateMasterQuoteData,
+    deleteMasterQuote
 } from "../../services/index";
 import {
     selectCategoryList,
@@ -366,6 +371,8 @@ export function CreateCustomPortfolio() {
         value: "",
         suggestions: [],
     });
+
+    const [portfolioCoverage, setPortfolioCoverage] = useState([]);
 
     const [addPortFolioItem, setAddportFolioItem] = useState({
         id: 0,
@@ -1693,7 +1700,7 @@ export function CreateCustomPortfolio() {
                         : "EMPTY",
                     items: [],
                     customItems: [],
-                    coverages: [],
+                    customCoverages: [],
                     customerGroup: generalComponentData.customerGroup
                         ? generalComponentData.customerGroup
                         : "EMPTY",
@@ -1935,6 +1942,10 @@ export function CreateCustomPortfolio() {
                     console.log("createCoverage res:", cvgRes);
                     cvgIds.push({ coverageId: cvgRes.customCoverageId });
                 }
+                console.log("cvgIds : ", cvgIds);
+                setPortfolioCoverage(cvgIds);
+
+
                 setGeneralComponentData({
                     ...generalComponentData,
                     customCoverageId: cvgIds,
@@ -2003,7 +2014,7 @@ export function CreateCustomPortfolio() {
                     escalationPrice: { "escalationPriceId": 1 },
                     customeItems: [],
                     items: [],
-                    coverages: cvgIds,
+                    customCoverages: cvgIds,
                     usageCategory: categoryUsageKeyValue1.value,
                     taskType: stratgyTaskTypeKeyValue.value,
                     strategyTask: stratgyTaskUsageKeyValue.value,
@@ -2018,6 +2029,8 @@ export function CreateCustomPortfolio() {
                     salesOffice: administrative.branch,
                     offerValidity: administrative.offerValidity,
                 };
+
+                console.log("Update able obj : ", obj);
                 if (generalComponentData.portfolioId) {
                     const updatePortfolioRes = await updateCustomPortfolio(
                         generalComponentData.portfolioId,
@@ -2054,6 +2067,8 @@ export function CreateCustomPortfolio() {
             return;
         }
     };
+
+    // console.log("portfolioCoverage 1111 : ", portfolioCoverage);
     const handleGeneralInputChange = (e) => {
         var value = e.target.value;
         var name = e.target.name;
@@ -2670,10 +2685,11 @@ export function CreateCustomPortfolio() {
         setTempBundleItemCheckList(_tempBundleItemCheckList);
     };
 
-    const addTempItemIntobundleItem = () => {
+    const addTempItemIntobundleItem = async () => {
         setLoadingItem(true);
         setItemModelShow(false);
         let temp = [];
+        let customItems = [];
         for (let key1 in tempBundleItemCheckList) {
             for (let i = 0; i < tempBundleItems.length; i++) {
                 if (
@@ -2682,19 +2698,125 @@ export function CreateCustomPortfolio() {
                     tempBundleItems[i].customItemId == tempBundleItemCheckList.selectedId
                 ) {
                     temp.push(tempBundleItems[i]);
+                    customItems.push({ customItemId: tempBundleItems[i].customItemId })
                     break;
                 }
             }
         }
-        setBundleItems(temp);
-        setLoadingItem(false);
-        setTabs("1");
+
+        console.log("customItems : ", customItems);
+        const { portfolioId, ...res } = generalComponentData;
+        let newUpdatedPortfolio = {
+            ...res,
+            visibleInCommerce: true,
+            customerId: 0,
+            lubricant: true,
+            customerSegment: generalComponentData.customerSegment
+                ? generalComponentData.customerSegment.value
+                : "EMPTY",
+            // machineType: generalComponentData.machineType
+            //     ? generalComponentData.machineType
+            //     : "EMPTY",
+            status: generalComponentData.status
+                ? generalComponentData.status
+                : "EMPTY",
+            strategyTask: generalComponentData.strategyTask
+                ? generalComponentData.strategyTask
+                : "EMPTY",
+            taskType: generalComponentData.taskType
+                ? generalComponentData.taskType
+                : "EMPTY",
+            usageCategory: generalComponentData.usageCategory
+                ? generalComponentData.usageCategory
+                : "EMPTY",
+            productHierarchy: generalComponentData.productHierarchy
+                ? generalComponentData.productHierarchy
+                : "EMPTY",
+            geographic: generalComponentData.geographic
+                ? generalComponentData.geographic
+                : "EMPTY",
+            availability: generalComponentData.availability
+                ? generalComponentData.availability
+                : "EMPTY",
+            responseTime: generalComponentData.responseTime
+                ? generalComponentData.responseTime
+                : "EMPTY",
+            type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+            application: generalComponentData.application
+                ? generalComponentData.application
+                : "EMPTY",
+            contractOrSupport: generalComponentData.contractOrSupport
+                ? generalComponentData.contractOrSupport
+                : "EMPTY",
+            // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+            //     ? generalComponentData.lifeStageOfMachine
+            //     : "EMPTY",
+            machineType: machineTypeKeyValue.value,
+            lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+            supportLevel: generalComponentData.supportLevel
+                ? generalComponentData.supportLevel
+                : "EMPTY",
+            customerGroup: generalComponentData.customerGroup
+                ? generalComponentData.customerGroup
+                : "EMPTY",
+            searchTerm: "EMPTY",
+            supportLevel: "EMPTY",
+            // portfolioPrice: {},
+            // additionalPrice: {},
+            // escalationPrice: {},
+            portfolioPrice: { "portfolioPriceId": 92 },
+            additionalPrice: { "additionalPriceId": 1 },
+            escalationPrice: { "escalationPriceId": 1 },
+            customItems: customItems,
+            customCoverages: portfolioCoverage,
+            usageCategory: categoryUsageKeyValue1.value,
+            taskType: stratgyTaskTypeKeyValue.value,
+            strategyTask: stratgyTaskUsageKeyValue.value,
+            responseTime: stratgyResponseTimeKeyValue.value,
+            productHierarchy: stratgyHierarchyKeyValue.value,
+            geographic: stratgyGeographicKeyValue.value,
+            preparedBy: administrative.preparedBy,
+            approvedBy: administrative.approvedBy,
+            preparedOn: administrative.preparedOn,
+            revisedBy: administrative.revisedBy,
+            revisedOn: administrative.revisedOn,
+            salesOffice: administrative.branch,
+            offerValidity: administrative.offerValidity,
+        };
+        const portfolioUpdateWithItems = await updateCustomPortfolio(
+            generalComponentData.portfolioId,
+            newUpdatedPortfolio
+        );
+        // const portfolioUpdateWithItems = await createCutomCoverage(newUpdatedPortfolio);
+        console.log("final Update portfolioUpdateWithItems : ", portfolioUpdateWithItems);
+        // setBundleItems(temp);
+        // setLoadingItem(false);
+        // setTabs("1");
     };
 
     const handleCreateCustomItem_SearchResult = async () => {
         // setTempBundleService3(tempBundleService2)
         // setTempBundleService1([])
         // alert("hello");
+        var createdItemId;
+        // for (let key1 in tempBundleItemCheckList) {
+        // console.log("key1 : ", key1);
+        for (let i = 0; i < tempBundleItems.length; i++) {
+            console.log("tempBundleItems[i].customItemId : ", tempBundleItems[i].customItemId)
+            // if (
+            //     (tempBundleItems[i].customItemId == key1 &&
+            //         tempBundleItemCheckList[key1]) ||
+            //     tempBundleItems[i].customItemId == tempBundleItemCheckList.selectedId
+            // ) {
+            //     console.log("tempBundleItems[i].customItemId :", tempBundleItems[i].customItemId)
+            createdItemId = tempBundleItems[i].customItemId;
+            // break;
+            // }
+        }
+        // }
+
+        console.log("CreatedItemId : ", createdItemId);
+
         var createdNewCustomItems = [];
         console.log("tempBundleService2 is : ", tempBundleService2)
         for (let i = 0; i < tempBundleService2.length; i++) {
@@ -2776,7 +2898,8 @@ export function CreateCustomPortfolio() {
                     customItemHeaderId: 0,
                     itemHeaderDescription: tempBundleService2[i].itemHeaderModel.itemHeaderDescription,
                     bundleFlag: tempBundleService2[i].itemHeaderModel.bundleFlag,
-                    portfolioItemId: tempBundleService2[i].itemHeaderModel.portfolioItemId,
+                    portfolioItemId: createdItemId,
+                    // portfolioItemId: tempBundleService2[i].itemHeaderModel.portfolioItemId,
                     reference: tempBundleService2[i].itemHeaderModel.reference,
                     itemHeaderMake: tempBundleService2[i].itemHeaderModel.itemHeaderMake,
                     itemHeaderFamily: tempBundleService2[i].itemHeaderModel.itemHeaderFamily,
@@ -5032,6 +5155,56 @@ export function CreateCustomPortfolio() {
     const handleCreate = () => {
         history.push("/quoteTemplate");
     };
+
+    const handleCreateQuote = async () => {
+        // alert("hello");
+        let quoteObj = {
+            quoteType: "SOLUTION",
+            customerId: 0,
+            equipmentId: 0,
+            netValue: 0,
+            currency: "string",
+            grossValue: 0,
+            discount: 0,
+            margin: 0,
+            tax: 0,
+            status: "string",
+            validFrom: "2022-10-18",
+            validTo: "2022-10-18",
+            quantity: 0,
+            customPortfolioModels: [
+                { customPortfolioId: portfolioId }
+            ],
+            quoteBodyModel: {
+                quoteBodyId: 0,
+                quoteBodyDescription: "string",
+                payerId: 0,
+                shortText: "string",
+                longText: "string",
+                terms: "string",
+                conditions: "string",
+                contact: "string",
+                serialNumber: "string",
+                statusNumber: "string",
+                billingType: "PAY_SUPPORT",
+                promisedDeliveryDate: "2022-10-18",
+                salesOpportunity: "string",
+                componentSerialNumber: "string",
+                versionNumber: "string",
+                serviceRecipientModel: {
+                    serviceRecipientId: 0,
+                    serviceRecipientName: "string",
+                    serviceRecipientemail: "string",
+                    serviceRecipientaddress: "string"
+                }
+            }
+        }
+
+        console.log("Quote Object is : ", quoteObj)
+
+        const quoteRes = await quoteCreation(quoteObj);
+        console.log("quoteRes : ", quoteRes);
+    }
     const history = useHistory();
 
     const handleComponentChange = async (e) => {
@@ -5388,16 +5561,16 @@ export function CreateCustomPortfolio() {
                                 <DropdownButton
                                     className="customDropdown ml-2"
                                     id="dropdown-item-button"
-                                    >
+                                >
                                     <Dropdown.Item
                                         as="button" data-toggle="modal" data-target="#versionpopup2"
-                                        
+
                                     >
                                         New Versions
                                     </Dropdown.Item>
                                     <Dropdown.Item as="button" data-toggle="modal" data-target="#myModal2">Show Errors</Dropdown.Item>
                                     <Dropdown.Item as="button">Review</Dropdown.Item>
-                                    </DropdownButton>
+                                </DropdownButton>
 
                             </div>
                         </div>
@@ -10838,7 +11011,7 @@ export function CreateCustomPortfolio() {
                                 </a>
                             </div>
                             <div>
-                                <button class="btn  btn-primary">Create</button>
+                                <button class="btn  btn-primary" data-dismiss="modal" onClick={() => handleCreateQuote()}>Create</button>
                                 <button
                                     type="button"
                                     class="btn pull-right border"
@@ -10903,95 +11076,95 @@ export function CreateCustomPortfolio() {
                                 </div>
                             </div>
                         </div>
-                    
-          <div class="modal right fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
 
-            <div class="modal-header">
-              <h4 class="modal-title" id="myModalLabel2"><ErrorOutlineIcon className="mr-2" style={{ fontSize: '32px' }} />Errors</h4>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
+                        <div class="modal right fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
 
-            <div class="modal-body">
-              <div className='d-flex justify-content-between align-items-center px-3 border-bottom'>
-                <h6 className='mb-0'>3 errors found in line items</h6>
-                <div>
-                  <a href='#' className='btn'><ClearIcon className="mr-2" style={{ color: '#000' }} />Clear All</a>
-                </div>
-              </div>
-              <div className=' mt-2'>
-                <h6 className="px-3">FILTER</h6>
-                <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
-                  <TabContext value={value}>
-                    <Box className="custom-tabs" sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                      <TabList onChange={handleChange} aria-label="lab API tabs example">
-                        <Tab label="Part list" value="1" />
-                        <Tab label="Service Estimates" value="2" />
-                        <Tab label="Form" value="3" />
+                                    <div class="modal-header">
+                                        <h4 class="modal-title" id="myModalLabel2"><ErrorOutlineIcon className="mr-2" style={{ fontSize: '32px' }} />Errors</h4>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
 
-                      </TabList>
-                    </Box>
-                    <TabPanel className="px-3" value="1">
-                      <div className="card border p-3 mb-0">
-                        <div className="d-flex justify-content-between align-items-center">
-                          <p className="mb-0">Invalid data</p>
-                          <h6 className="mb-0">2 min ago</h6>
+                                    <div class="modal-body">
+                                        <div className='d-flex justify-content-between align-items-center px-3 border-bottom'>
+                                            <h6 className='mb-0'>3 errors found in line items</h6>
+                                            <div>
+                                                <a href='#' className='btn'><ClearIcon className="mr-2" style={{ color: '#000' }} />Clear All</a>
+                                            </div>
+                                        </div>
+                                        <div className=' mt-2'>
+                                            <h6 className="px-3">FILTER</h6>
+                                            <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
+                                                <TabContext value={value}>
+                                                    <Box className="custom-tabs" sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                                                        <TabList onChange={handleChange} aria-label="lab API tabs example">
+                                                            <Tab label="Part list" value="1" />
+                                                            <Tab label="Service Estimates" value="2" />
+                                                            <Tab label="Form" value="3" />
+
+                                                        </TabList>
+                                                    </Box>
+                                                    <TabPanel className="px-3" value="1">
+                                                        <div className="card border p-3 mb-0">
+                                                            <div className="d-flex justify-content-between align-items-center">
+                                                                <p className="mb-0">Invalid data</p>
+                                                                <h6 className="mb-0">2 min ago</h6>
+                                                            </div>
+                                                            <h6 className="mb-0"> Part list header component code</h6>
+                                                            <p className="mb-0">Fix <a href="#" className="btn">Go to field</a></p>
+                                                        </div>
+                                                    </TabPanel>
+                                                    <TabPanel value="2">Item Two</TabPanel>
+                                                    <TabPanel value="3">Item Three</TabPanel>
+                                                </TabContext>
+                                            </Box>
+                                            <hr className="mb-0" />
+                                            <div className="p-3">
+                                                <a href='#' className='btn text-light border-light px-2'>Go Back to Solution</a>
+                                                <a href='#' className='btn btn-primary float-right px-2'>Choose the correct portfolio</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
-                        <h6 className="mb-0"> Part list header component code</h6>
-                        <p className="mb-0">Fix <a href="#" className="btn">Go to field</a></p>
-                      </div>
-                    </TabPanel>
-                    <TabPanel value="2">Item Two</TabPanel>
-                    <TabPanel value="3">Item Three</TabPanel>
-                  </TabContext>
-                </Box>
-                <hr className="mb-0" />
-                <div className="p-3">
-                  <a href='#' className='btn text-light border-light px-2'>Go Back to Solution</a>
-                  <a href='#' className='btn btn-primary float-right px-2'>Choose the correct portfolio</a>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
                     </div>
                 </div>
             </div>
             <div class="modal fade" id="versionpopup2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                <div class="modal-content">
-                                <div class="modal-header border-none">
-                                <h5 class="modal-title" id="exampleModalLongTitle">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header border-none">
+                            <h5 class="modal-title" id="exampleModalLongTitle">
                                 New Version
-                                </h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
                             </button>
-                            </div>
+                        </div>
 
-                            <p className="mx-3 mt-0">
-                                Description, Product experts convert the repair option to a standard job or template.
-                            </p>
-                            <div className="hr"></div>
-                                    <div class="modal-body">
-                                    <div class="form-group">
-                                    <label for="usr">Name</label>
-                                    <input type="text" class="form-control" id="usr" placeholder="Copy of Quote"></input>
-                                    </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                    <button type="button" className="btn  btn-primary w-100">Create </button>
-                                    <button type="button" className="btn btn-primary w-100" data-dismiss="modal">Cancel</button>
-                                    
-                                    </div>
-                                </div>
-                                </div>
+                        <p className="mx-3 mt-0">
+                            Description, Product experts convert the repair option to a standard job or template.
+                        </p>
+                        <div className="hr"></div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="usr">Name</label>
+                                <input type="text" class="form-control" id="usr" placeholder="Copy of Quote"></input>
                             </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" className="btn  btn-primary w-100">Create </button>
+                            <button type="button" className="btn btn-primary w-100" data-dismiss="modal">Cancel</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
         </PortfolioContext.Provider>
     );
 }

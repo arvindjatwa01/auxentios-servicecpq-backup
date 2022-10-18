@@ -240,6 +240,11 @@ export const Startup = () => {
                                                     value={signInInputData.password}
                                                     onChange={handleLoginInput}
                                                 />
+                                                {LoginRes.currentUser && LoginRes.currentUser.status === 500 && (
+                                                    <div class="invlaid-email-password">
+                                                        Please enter a valid email or password.
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                         <div className="col-md-12 col-sm-12">
@@ -483,12 +488,12 @@ export const Startup = () => {
                     message={"Error While Registering User"}
                 />
             )}
-            {LoginRes.currentUser && LoginRes.currentUser.status === 500 && (
+            {/* {LoginRes.currentUser && LoginRes.currentUser.status === 500 && (
                 <ToastMessageHandler
                     status={400}
                     message={"Invalid email or password.!!! \n Please try Again"}
                 />
-            )}
+            )} */}
             {/*<ToastContainer />*/}
         </div>
     );

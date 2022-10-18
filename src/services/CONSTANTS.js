@@ -122,3 +122,9 @@ export const SEARCH_SPAREPART = (query) => DATA_SERVICE_URI + `sparepart/search?
 export const SEARCH_COMPONENT_CODE = (query) => DATA_SERVICE_URI + `component-code/search?search=${query}`;
 export const SEARCH_JOB_CODE = (query) => DATA_SERVICE_URI + `job-code/search?search=${query}`;
 export const SEARCH_Builder = (query) => REPAIR_BUILDER_URI + `builder/search?search=${query}`;
+
+
+/* ===================== Quote Service ============================= */
+
+export const QUOTE_CREATION = () => SOLUTION_BUILDER_URI + "/quote";
+export const  SEARCH_QUOTE_URL = () => SOLUTION_BUILDER_URI + "/quote/search?search=";

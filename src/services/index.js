@@ -19,3 +19,5 @@ export {getSearchQueryCoverage,getSearchCoverageForFamily} from "./searchQuerySe
 export { itemCreation,itemSearchSuggestion,itemSearch,getItemPrice,updateItemData,deleteItem, itemPriceDataId, updateItemPriceData } from './portFolioItemService';
 export { getComponentCodeSuggetions } from './masterComponentCode';
 export { customitemCreation,getcustomItemPrice,updateCustomItemData,deleteCustomItem,customPriceCreation,getSearchCustomPortfolio,getCustomItemData,getcustomItemPriceById,updateCustomPriceData } from './customPortfolioItemService'
+export { quoteCreation,getQuoteMasterData,getSearchQuoteData,updateMasterQuoteData,deleteMasterQuote } from "./quoteService";
+
