@@ -318,7 +318,7 @@
                                <h4 className='text-red mt-3'><b>$20,000</b></h4>
                                <p className="mb-0 mt-2">This service contract covers the service of the core parts of the machine.</p>
                            </div>
-                           <a href="#" class="btn bg-primary text-white Choose-btn3"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                           <a href="/AddToCart" class="btn bg-primary text-white Choose-btn3"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div>
                         <div class='item3 border-none'>
                            <div className="w-100" style={{height: "225px"}}>
@@ -462,7 +462,7 @@
                     
                       <div className="modal-footer border-none mr-auto">
                         <button type="button" className="btn bg-white" data-dismiss="modal"><b>CANCEL</b></button>
-                        <a href="#" className="btn bg-white">OPEN</a>
+                        <a href="/CommercePageQuestion" className="btn bg-white">OPEN</a>
                       </div>
                   </div>
                 </div>
