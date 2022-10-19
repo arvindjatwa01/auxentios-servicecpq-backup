@@ -167,55 +167,125 @@ export function SolutionServicePortfolio(props) {
                         </div>
                     </div>
                     <div className="card p-4 mt-5">
-                        <h5 className="d-flex align-items-center mb-0">
-                            <div className="" style={{ display: 'contents' }}><span className="mr-3">Header</span><a href="#" className="btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                <a href="#" className="btn-sm"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a>
-                                <a href="#" className="btn-sm"><img style={{ width: '14px' }} src={folderaddIcon}></img></a></div>
-                            <div class="input-group icons border-radius-10 border">
+                        <h5 className="d-flex align-items-center mb-0 bg-primary px-3 py-2" style={{borderRadius: "5px"}}>
+                            <div className="" style={{ display: 'contents' }}><span className="mr-3 text-white">Header</span>
+                                <a href="#" className="btn-sm text-white"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                <a href="#" className="btn-sm text-white"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a>
+                                {/* <a href="#" className="btn-sm text-white"><img style={{ width: '14px' }} src={folderaddIcon}></img></a> */}
+                                </div>
+                                <div className="hr"></div>
+                            {/* <div class="input-group icons border-radius-10 border">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
                                         <img src={searchLogo} /></span>
                                 </div>
                                 <input type="search" class="form-control search-form-control" aria-label="Search Dashboard" />
-                            </div>
+                            </div> */}
                         </h5>
                         <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
                             <TabContext value={value}>
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                                     <TabList onChange={handleChange} aria-label="lab API tabs example">
-                                        <Tab label="General" value="1" />
-                                        <Tab label="Validity " value="2" />
-                                        <Tab label="Strategy" value="3" />
-                                        <Tab label="Price" value="4" />
-                                        <Tab label="Price Agreement" value="5" />
-                                        <Tab label="Coverage" value="6" />
+                                        <Tab label="CUSTOMER" value="1" />
+                                        <Tab label="MACHINE " value="2" />
+                                        <Tab label="ESTIMATION DETAILS" value="3" />
+                                        <Tab label="GENERAL DETAILS" value="4" />
+                                        <Tab label="PRICE" value="5" />
+                                        <Tab label="SHIPPING / BILLING" value="6" />
                                     </TabList>
                                 </Box>
                                 <TabPanel value="1">
                                     <div class="row mt-4">
                                         <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">SOLUTION CODE</p>
-                                                <h6 class="font-weight-600">X1234</h6>
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOURCE</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">SOLUTION DESCRIPTION</p>
-                                                <h6 class="font-weight-600">solution for customer x</h6>
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER ID</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">REFERENE</p>
-                                                <h6 class="font-weight-600">RFQ123 </h6>
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER NAME</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
+                                        <div class="col-md-4 col-sm-4">
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONTACT EMAIL</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONTACT PHONE</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER GROUP</label>
+                                                <Select
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                    options={options}
+                                                    placeholder="placeholder (Optional)"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <Link className="btn bg-primary text-white pull-right">
+                                                    Next
+                                                </Link>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="2">
                                     <div className="row">
-                                        <div className="col-md-6 col-sm-6">
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MODEL</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SERIAL #</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SMU</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT NO / FLEET NO</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REGISTRATION NO</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CHASIS NO</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        {/* <div className="col-md-6 col-sm-6">
                                             <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">DATE</label>
                                             <div className="d-flex align-items-center">
                                                 <div class="form-group w-100">
@@ -226,11 +296,8 @@ export function SolutionServicePortfolio(props) {
                                                     <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="col-md-6 col-sm-6">
-
-                                        </div>
-                                        <div className="col-md-6 col-sm-6">
+                                        </div> */}
+                                        {/* <div className="col-md-6 col-sm-6">
                                             <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">HOUR</label>
                                             <div className="d-flex align-items-center">
                                                 <div class="form-group w-100">
@@ -241,10 +308,10 @@ export function SolutionServicePortfolio(props) {
                                                     <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className="col-md-12 col-sm-12">
                                             <div class="form-group">
-                                                <Link to={"/repairOption"} className="btn bg-primary text-white">
+                                                <Link className="btn bg-primary text-white pull-right">
                                                     Next
                                                 </Link>
                                             </div>
@@ -253,9 +320,39 @@ export function SolutionServicePortfolio(props) {
                                 </TabPanel>
                                 <TabPanel value="3">
                                     <div className="row">
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED BY </label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">APPROVED BY</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED ON</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REVISED BY</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REVISED ON</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">PRICE LIST</label>
+                                                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SALES OFFICE / BRANCH</label>
                                                 <Select
                                                     defaultValue={selectedOption}
                                                     onChange={setSelectedOption}
@@ -264,155 +361,168 @@ export function SolutionServicePortfolio(props) {
                                                 />
                                             </div>
                                         </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">PRICE METHOD</label>
-                                                <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="placeholder (Optional)"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">PRICE DATE</label>
-                                                <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="placeholder (Optional)"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
-                                                <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="placeholder (Optional)"
-                                                />
+                                        <div className="col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <Link className="btn bg-primary text-white pull-right">
+                                                    Next
+                                                </Link>
                                             </div>
                                         </div>
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="4">
                                     <div className="row">
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">MAKE</label>
-                                                <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="placeholder (Optional)"
-                                                />
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE DATE</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE #</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE DESCRIPTION</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REFERENCE</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">MODEL(S)</label>
+                                                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VALIDITY</label>
                                                 <Select
                                                     defaultValue={selectedOption}
                                                     onChange={setSelectedOption}
                                                     options={options}
                                                     placeholder="placeholder (Optional)"
                                                 />
+                                            </div>
+                                            {/* <a href="#" className="btn btn-primary w-100" onClick={() => setOpen1(true)}> Create New</a> */}
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VERSION</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">PREFIX(S)</label>
-                                                <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="placeholder (Optional)"
-                                                />
+                                        <div className="col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <Link className="btn bg-primary text-white pull-right">
+                                                    Next
+                                                </Link>
                                             </div>
-                                        </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">MACHINE/COMPONENT</label>
-                                                <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="placeholder (Optional)"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">MACHINE TYPE</label>
-                                                <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="placeholder (Optional)"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">MACHINE DATE</label>
-                                                <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="placeholder (Optional)"
-                                                />
-                                            </div>
-                                            <a href="#" className="btn btn-primary w-100" onClick={() => setOpen1(true)}> Create New</a>
                                         </div>
                                     </div>
                                 </TabPanel>
-                                <TabPanel value="5"></TabPanel>
+                                <TabPanel value="5">
+                                    <div class="row mt-4">
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PRICE</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PRICE DATE</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COST PRICE</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PRICE METHOD</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ADJUSTED PRICE</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MARGIN</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <Link className="btn bg-primary text-white pull-right">
+                                                    Next
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </TabPanel>
                                 <TabPanel value="6">
-                                    <div class="row mt-4">
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">MAKE</p>
-                                                <h6 class="font-weight-600">Caterpillar</h6>
+                                    <div className="row mt-5">
+                                       <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DELIVERY TYPE</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">MODEL(S)</p>
-                                                <h6 class="font-weight-600">D8T, D6T</h6>
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DELIVERY PRIORITY</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">PREFIX(S)</p>
-                                                <h6 class="font-weight-600">MB8</h6>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-4">
-                                        <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">MACHINE/COMPONENT</p>
-                                                <h6 class="font-weight-600">Machine</h6>
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PAYMENT TERMS</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">MACHINE TYPE</p>
-                                                <h6 class="font-weight-600">New</h6>
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">BILLING FREQUENCY</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
-                                            <div class="form-group">
-                                                <p class="font-size-12 font-weight-500 mb-2">COVERAGE DATA</p>
-                                                <h6 class="font-weight-600">Coverage123</h6>
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PAYER (s)</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">% SPLIT</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PAYABLE BY PAYER</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                     </div>
                                 </TabPanel>
+                                
                             </TabContext>
                         </Box>
 

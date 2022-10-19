@@ -11,8 +11,13 @@ import deleteIcon from '../../assets/icons/svg/delete.svg'
 import copyIcon from '../../assets/icons/svg/Copy.svg'
 import { CommanComponents } from "../../components/index"
 import { MuiMenuComponent } from "pages/Operational";
+import Box from '@mui/material/Box';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import { Link, useHistory } from "react-router-dom";
 
-const  AddToCart=()=>{
+const  ReviewOrder=()=>{
 
   const [age, setAge] = React.useState('5');
   const [age1, setAge1] = React.useState('5');
@@ -50,7 +55,14 @@ const  AddToCart=()=>{
   };
   const fileTypes = ["JPG", "PNG", "GIF"];
 
-
+  const steps = [
+    'Login',
+    'Find solutions',
+    'Add to cart',
+    'Review',
+    'Order',
+    
+  ];
   const activityOptions = [
     'None',
     'Atria',
@@ -90,8 +102,17 @@ const  AddToCart=()=>{
       {/* <CommanComponents /> */}
       <div className="content-body" style={{ minHeight: '884px' }}>
       <div class="container-fluid ">
-          <div className="d-flex align-items-center justify-content-between mt-2">
-          <h5 className="font-weight-600 mb-0">Account</h5>
+            <Box className="mt-5" sx={{ width: '100%' }}>
+            <Stepper activeStep={1} alternativeLabel>
+              {steps.map((label) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Box>
+          <div className="d-flex align-items-center justify-content-between mt-5">
+          <h5 className="font-weight-600 mb-0">Review Order</h5>
           <div className="d-flex justify-content-center align-items-center">
           <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
                             <a href="#" className="ml-3 font-size-14" title="Items to review"><img src={folderaddIcon}></img></a>
@@ -108,117 +129,51 @@ const  AddToCart=()=>{
                   <div className="col-md-8 col-sm-8">
                       <div className="card p-4">
                           <h5 className="mb-0">Shopping Cart</h5>
-                          <div className="row mt-5">
-                             <div className="col-md-4 col-sm-4">
-                                <p className="mb-0">ITEM</p>
-                                <h6 className="my-2"><b>ABCDUMPMTO 1234</b></h6>
+                          <div className="row mt-5 mb-5">
+                             <div className="col-md-7 col-sm-7">
+                                  <div className="row">
+                                      <div className="col-md-4 col-sm-4">
+                                           <p className="mb-0">ITEM</p>
+                                           <h6 className="my-2">PF12345</h6>
+                                      </div>
+                                      <div className="col-md-8 col-sm-8">
+                                           <div className="row">
+                                               <div className="col-md-6 col-sm-6">
+                                                   <p className="mb-0">DESCRIPTION</p>
+                                                   <h6 className="my-2">premium maintenance plan</h6>
+                                               </div>
+                                               <div className="col-md-6 col-sm-6">
+                                                   <p className="mb-0">PRICE</p>
+                                                   <h6 className="my-2">$2023.00</h6>
+                                               </div>
+                                           </div>
+                                      </div>
+                                  </div>
+                                
                              </div>
-                             <div className="col-md-8 col-sm-8">
+                             <div className="col-md-5 col-sm-5">
                                  <div className="row">
-                                    <div className="col-md-7 col-sm-7">
-                                        <p className="mb-0">PRICE</p>
-                                        <h6 className="my-2"><b>Solution for customer ABC for 3 dumper trucks with additionals</b></h6>
-                                    </div>
-                                    <div className="col-md-5 col-sm-5">
+                                    <div className="col-md-6 col-sm-6">
                                         <p className="mb-0">QUANTITY</p>
+                                        <h6 className="my-2">1</h6>
+                                    </div>
+                                    <div className="col-md-6 col-sm-6">
+                                        <p className="mb-0">ADD EQUIPMENT</p>
                                         <h6 className="my-2"><b>RFQABC 345</b></h6>
                                     </div>
                                  </div>
                              </div>
-
                           </div>
-                          <div className="row mt-5" style={{alignItems: "center"}}>
-                               <div className="col-md-5">
-                                   <div className="row" style={{alignItems: "center"}}>
-                                    <div className="col-md-4">
-                                        <img src="./assets/images/jcb-sm.png" className="w-100"></img>
-                                    </div>
-                                    <div className="col-md-8">
-                                        <h5 className="mb-0">Copper Winding Electric Mini Crane Machine</h5>
-                                        <p className="mb-0 mt-2">Model ABC1233</p>
-                                    </div>
-                                    </div>
-                               </div>
-                               <div className="col-md-7">
-                               <div className="row">
-                                    <div className="col-md-4">
-                                        <h5 className="mb-0">$11500.00</h5>
-                                    </div>
-                                    <div className="col-md-4"></div>
-                                    <div className="col-md-4">
-                                        <div className="row">
-                                            <div className="col-md-6">
-                                                <a href="#" className="border-bottom">Edit</a>
-                                            </div>
-                                            <div className="col-md-6">
-                                                <a href="#" className="border-bottom">Remove</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>    
-                               </div>
+                          <div className="mt-5">
+                          <a href="#" className="ml-3 bg-pink p-3 text-white" style={{borderRadius: "50px"}}>Apply portfolio discount (4%)</a>
                           </div>
-                          <div className="row mt-5" style={{alignItems: "center"}}>
-                               <div className="col-md-5">
-                                   <div className="row" style={{alignItems: "center"}}>
-                                    <div className="col-md-4">
-                                        <img src="./assets/images/jcb-sm.png" className="w-100"></img>
-                                    </div>
-                                    <div className="col-md-8">
-                                        <h5 className="mb-0">Copper Winding Electric Mini Crane Machine</h5>
-                                        <p className="mb-0 mt-2">Model ABC1233</p>
-                                    </div>
-                                    </div>
-                               </div>
-                               <div className="col-md-7">
-                               <div className="row">
-                                    <div className="col-md-4">
-                                        <h5 className="mb-0">$11500.00</h5>
-                                    </div>
-                                    <div className="col-md-4"></div>
-                                    <div className="col-md-4">
-                                        <div className="row">
-                                            <div className="col-md-6">
-                                                <a href="#" className="border-bottom">Edit</a>
-                                            </div>
-                                            <div className="col-md-6">
-                                                <a href="#" className="border-bottom">Remove</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>    
-                               </div>
-                          </div>
-                          <div className="row mt-5" style={{alignItems: "center"}}>
-                               <div className="col-md-5">
-                                   <div className="row" style={{alignItems: "center"}}>
-                                    <div className="col-md-4">
-                                        <img src="./assets/images/jcb-sm.png" className="w-100"></img>
-                                    </div>
-                                    <div className="col-md-8">
-                                        <h5 className="mb-0">Copper Winding Electric Mini Crane Machine</h5>
-                                        <p className="mb-0 mt-2">Model ABC1233</p>
-                                    </div>
-                                    </div>
-                               </div>
-                               <div className="col-md-7">
-                               <div className="row">
-                                    <div className="col-md-4">
-                                        <h5 className="mb-0">$11500.00</h5>
-                                    </div>
-                                    <div className="col-md-4"></div>
-                                    <div className="col-md-4">
-                                        <div className="row">
-                                            <div className="col-md-6">
-                                                <a href="#" className="border-bottom">Edit</a>
-                                            </div>
-                                            <div className="col-md-6">
-                                                <a href="#" className="border-bottom">Remove</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>    
-                               </div>
+                          <div className="Add-new-segment-div p-3 border-radius-10 mb-3 mt-5">
+                            <Link className="btn bg-primary text-white mr-3">
+                              ORDER
+                            </Link>
+                            <Link className="btn bg-light ">
+                              CANCEL
+                            </Link>
                           </div>
                       </div>
                   </div>
@@ -297,9 +252,6 @@ const  AddToCart=()=>{
                       </div>
                   </div>
               </div>
-              <div>
-              <a href="/ReviewOrder" class="btn bg-primary text-white pull-right">Review</a>
-              </div>
           </div>
         </div>
       </div>
@@ -307,4 +259,4 @@ const  AddToCart=()=>{
     )
 }
 
-export default AddToCart
+export default ReviewOrder
