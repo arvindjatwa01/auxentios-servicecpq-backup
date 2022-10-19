@@ -342,6 +342,9 @@ export function CreatePortfolio() {
     suggestions: [],
   });
 
+  const [portfolioCoverage, setPortfolioCoverage] = useState([]);
+  const [portfolioItems, setPortfolioItems] = useState([]);
+
   const [addPortFolioItem, setAddportFolioItem] = useState({
     id: 0,
     description: "",
@@ -1838,6 +1841,9 @@ export function CreatePortfolio() {
           console.log("createCoverage res:", cvgRes);
           cvgIds.push({ coverageId: cvgRes.coverageId });
         }
+
+        setPortfolioCoverage(cvgIds);
+
         setGeneralComponentData({
           ...generalComponentData,
           coverages: cvgIds,
@@ -1902,7 +1908,7 @@ export function CreatePortfolio() {
           portfolioPrice: { "portfolioPriceId": 92 },
           additionalPrice: { "additionalPriceId": 1 },
           escalationPrice: { "escalationPriceId": 1 },
-          items: [],
+          items: portfolioItems,
           coverages: cvgIds,
           usageCategory: categoryUsageKeyValue1.value,
           taskType: stratgyTaskTypeKeyValue.value,
@@ -2570,10 +2576,11 @@ export function CreatePortfolio() {
     setTempBundleItemCheckList(_tempBundleItemCheckList);
   };
 
-  const addTempItemIntobundleItem = () => {
-    setLoadingItem(true);
-    setItemModelShow(false);
+  const addTempItemIntobundleItem = async () => {
+    // setLoadingItem(true);
+    // setItemModelShow(false);
     let temp = [];
+    let itemsData = [];
     for (let key1 in tempBundleItemCheckList) {
       for (let i = 0; i < tempBundleItems.length; i++) {
         if (
@@ -2581,14 +2588,101 @@ export function CreatePortfolio() {
             tempBundleItemCheckList[key1]) ||
           tempBundleItems[i].itemId == tempBundleItemCheckList.selectedId
         ) {
+          itemsData.push({ itemId: tempBundleItems[i].itemId });
+          for (let k = 0; k < tempBundleItems[i].associatedServiceOrBundle.length; k++) {
+            itemsData.push({ itemId: tempBundleItems[i].associatedServiceOrBundle[k].itemId })
+          }
           temp.push(tempBundleItems[i]);
           break;
         }
       }
     }
-    setBundleItems(temp);
-    setLoadingItem(false);
-    setTabs("1");
+    console.log("temp record is : ", temp);
+    console.log("itemsData is : ", itemsData);
+    setPortfolioItems(itemsData);
+
+    const { portfolioId, ...res } = generalComponentData;
+    let obj = {
+      ...res,
+      visibleInCommerce: true,
+      customerId: 0,
+      lubricant: true,
+      customerSegment: generalComponentData.customerSegment
+        ? generalComponentData.customerSegment.value
+        : "EMPTY",
+      machineType: generalComponentData.machineType
+        ? generalComponentData.machineType
+        : "EMPTY",
+      status: generalComponentData.status
+        ? generalComponentData.status
+        : "EMPTY",
+      strategyTask: generalComponentData.strategyTask
+        ? generalComponentData.strategyTask
+        : "EMPTY",
+      taskType: generalComponentData.taskType
+        ? generalComponentData.taskType
+        : "EMPTY",
+      usageCategory: generalComponentData.usageCategory
+        ? generalComponentData.usageCategory
+        : "EMPTY",
+      productHierarchy: generalComponentData.productHierarchy
+        ? generalComponentData.productHierarchy
+        : "EMPTY",
+      geographic: generalComponentData.geographic
+        ? generalComponentData.geographic
+        : "EMPTY",
+      availability: generalComponentData.availability
+        ? generalComponentData.availability
+        : "EMPTY",
+      responseTime: generalComponentData.responseTime
+        ? generalComponentData.responseTime
+        : "EMPTY",
+      type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+      application: generalComponentData.application
+        ? generalComponentData.application
+        : "EMPTY",
+      contractOrSupport: generalComponentData.contractOrSupport
+        ? generalComponentData.contractOrSupport
+        : "EMPTY",
+      lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+        ? generalComponentData.lifeStageOfMachine
+        : "EMPTY",
+      supportLevel: generalComponentData.supportLevel
+        ? generalComponentData.supportLevel
+        : "EMPTY",
+      customerGroup: generalComponentData.customerGroup
+        ? generalComponentData.customerGroup
+        : "EMPTY",
+      searchTerm: "EMPTY",
+      supportLevel: "EMPTY",
+      // portfolioPrice: {},
+      // additionalPrice: {},
+      // escalationPrice: {},
+      items: itemsData,
+      coverages: portfolioCoverage,
+      usageCategory: categoryUsageKeyValue1.value,
+      taskType: stratgyTaskTypeKeyValue.value,
+      strategyTask: stratgyTaskUsageKeyValue.value,
+      responseTime: stratgyResponseTimeKeyValue.value,
+      productHierarchy: stratgyHierarchyKeyValue.value,
+      geographic: stratgyGeographicKeyValue.value,
+      preparedBy: administrative.preparedBy,
+      approvedBy: administrative.approvedBy,
+      preparedOn: administrative.preparedOn,
+      revisedBy: administrative.revisedBy,
+      revisedOn: administrative.revisedOn,
+      salesOffice: administrative.salesOffice,
+      offerValidity: administrative.offerValidity,
+    };
+    if (generalComponentData.portfolioId) {
+      const updatePortfolioRes = await updatePortfolio(
+        generalComponentData.portfolioId,
+        obj
+      );
+    }
+    // setBundleItems(temp);
+    // setLoadingItem(false);
+    // setTabs("1");
   };
 
   const columns = [
@@ -4661,7 +4755,7 @@ export function CreatePortfolio() {
                 >
                   <Dropdown.Item
                     as="button" data-toggle="modal" data-target="#versionpopup"
-                    
+
                   >
                     New Versions
                   </Dropdown.Item>
@@ -10066,36 +10160,36 @@ export function CreatePortfolio() {
         </div>
       </div>
       <div class="modal fade" id="versionpopup" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-              <div class="modal-content">
-              <div class="modal-header border-none">
-            <h5 class="modal-title" id="exampleModalLongTitle">
-              New Version
-            </h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-          </div>
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header border-none">
+              <h5 class="modal-title" id="exampleModalLongTitle">
+                New Version
+              </h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
 
-          <p className="mx-3 mt-0">
-            Description, Product experts convert the repair option to a standard job or template.
-          </p>
-          <div className="hr"></div>
-                <div class="modal-body">
-                <div class="form-group">
-                  <label for="usr">Name</label>
-                  <input type="text" class="form-control" id="usr" placeholder="Copy of Quote"></input>
-                </div>
-                </div>
-                <div class="modal-footer">
-                <button type="button" className="btn  btn-primary w-100">Create </button>
-                  <button type="button" className="btn btn-primary w-100" data-dismiss="modal">Cancel</button>
-                  
-                </div>
+            <p className="mx-3 mt-0">
+              Description, Product experts convert the repair option to a standard job or template.
+            </p>
+            <div className="hr"></div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="usr">Name</label>
+                <input type="text" class="form-control" id="usr" placeholder="Copy of Quote"></input>
               </div>
             </div>
+            <div class="modal-footer">
+              <button type="button" className="btn  btn-primary w-100">Create </button>
+              <button type="button" className="btn btn-primary w-100" data-dismiss="modal">Cancel</button>
+
+            </div>
           </div>
-          <div class="modal right fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
+        </div>
+      </div>
+      <div class="modal right fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
 

@@ -185,6 +185,7 @@ const customStyles = {
 export function CreateCustomPortfolio() {
 
     const [disable, setDisable] = useState(true);
+    const [quoteDataShow, setQuoteDataShow] = useState(false)
     const [makeKeyValue, setMakeKeyValue] = useState([]);
     const [modelKeyValue, setModelKeyValue] = useState([]);
     const [prefixKeyValue, setPrefixKeyValue] = useState([]);
@@ -329,6 +330,12 @@ export function CreateCustomPortfolio() {
         setValue3(e);
     };
 
+    const [quoteData, setQuoteData] = useState({
+        contact: "",
+        description: "",
+        reference: "",
+    });
+
     const [validityData, setValidityData] = useState({
         fromDate: new Date(),
         toDate: new Date(),
@@ -373,6 +380,7 @@ export function CreateCustomPortfolio() {
     });
 
     const [portfolioCoverage, setPortfolioCoverage] = useState([]);
+    const [portfolioCustomItems, setPortfolioCustomItems] = useState([]);
 
     const [addPortFolioItem, setAddportFolioItem] = useState({
         id: 0,
@@ -1706,9 +1714,9 @@ export function CreateCustomPortfolio() {
                         : "EMPTY",
                     searchTerm: "EMPTY",
                     supportLevel: "EMPTY",
-                    portfolioPrice: { "portfolioPriceId": 92 },
-                    additionalPrice: { "additionalPriceId": 1 },
-                    escalationPrice: { "escalationPriceId": 1 },
+                    // portfolioPrice: { "portfolioPriceId": 92 },
+                    // additionalPrice: { "additionalPriceId": 1 },
+                    // escalationPrice: { "escalationPriceId": 1 },
 
                     usageCategory: categoryUsageKeyValue1.value,
                     taskType: stratgyTaskTypeKeyValue.value,
@@ -2009,10 +2017,10 @@ export function CreateCustomPortfolio() {
                     // portfolioPrice: {},
                     // additionalPrice: {},
                     // escalationPrice: {},
-                    portfolioPrice: { "portfolioPriceId": 92 },
-                    additionalPrice: { "additionalPriceId": 1 },
-                    escalationPrice: { "escalationPriceId": 1 },
-                    customeItems: [],
+                    // portfolioPrice: { "portfolioPriceId": 92 },
+                    // additionalPrice: { "additionalPriceId": 1 },
+                    // escalationPrice: { "escalationPriceId": 1 },
+                    customeItems: portfolioCustomItems,
                     items: [],
                     customCoverages: cvgIds,
                     usageCategory: categoryUsageKeyValue1.value,
@@ -2461,6 +2469,14 @@ export function CreateCustomPortfolio() {
         };
     };
 
+    const handleQuoteInputChange = (e) => {
+        const { name, value } = e.target;
+        setQuoteData({
+            ...quoteData,
+            [name]: value,
+        });
+    }
+
     window.onload = function () {
         // initBeforeUnLoad(showExitPrompt)
     };
@@ -2689,58 +2705,139 @@ export function CreateCustomPortfolio() {
         setLoadingItem(true);
         setItemModelShow(false);
         let temp = [];
-        let customItems = [];
+        let customItemsData = [];
         for (let key1 in tempBundleItemCheckList) {
             for (let i = 0; i < tempBundleItems.length; i++) {
+                customItemsData.push({ customItemId: tempBundleItems[i].customItemId })
+                for (let k = 0; k < tempBundleItems[i].associatedServiceOrBundle.length; k++) {
+                    customItemsData.push({ customItemId: tempBundleItems[i].associatedServiceOrBundle[k].customItemId })
+                }
                 if (
                     (tempBundleItems[i].customItemId == key1 &&
                         tempBundleItemCheckList[key1]) ||
                     tempBundleItems[i].customItemId == tempBundleItemCheckList.selectedId
                 ) {
                     temp.push(tempBundleItems[i]);
-                    customItems.push({ customItemId: tempBundleItems[i].customItemId })
+                    console.log("tempBundleItems[i] : ", tempBundleItems[i]);
+
                     break;
                 }
             }
         }
 
-        console.log("customItems : ", customItems);
-        const { portfolioId, ...res } = generalComponentData;
-        let newUpdatedPortfolio = {
-            ...res,
-            visibleInCommerce: true,
-            customerId: 0,
+        console.log("customItemsData : ", customItemsData);
+        setPortfolioCustomItems(customItemsData);
+
+        // const { portfolioId, ...res } = generalComponentData;
+
+        // console.log("response is : ", res);
+
+        // let newUpdatedPortfolio = {
+        //     ...res,
+        //     visibleInCommerce: true,
+        //     customerId: 0,
+        //     lubricant: true,
+        //     customerSegment: generalComponentData.customerSegment
+        //         ? generalComponentData.customerSegment.value
+        //         : "EMPTY",
+        //     // machineType: generalComponentData.machineType
+        //     //     ? generalComponentData.machineType
+        //     //     : "EMPTY",
+        //     status: generalComponentData.status
+        //         ? generalComponentData.status
+        //         : "EMPTY",
+        //     strategyTask: generalComponentData.strategyTask
+        //         ? generalComponentData.strategyTask
+        //         : "EMPTY",
+        //     taskType: generalComponentData.taskType
+        //         ? generalComponentData.taskType
+        //         : "EMPTY",
+        //     usageCategory: generalComponentData.usageCategory
+        //         ? generalComponentData.usageCategory
+        //         : "EMPTY",
+        //     productHierarchy: generalComponentData.productHierarchy
+        //         ? generalComponentData.productHierarchy
+        //         : "EMPTY",
+        //     geographic: generalComponentData.geographic
+        //         ? generalComponentData.geographic
+        //         : "EMPTY",
+        //     availability: generalComponentData.availability
+        //         ? generalComponentData.availability
+        //         : "EMPTY",
+        //     responseTime: generalComponentData.responseTime
+        //         ? generalComponentData.responseTime
+        //         : "EMPTY",
+        //     type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+        //     application: generalComponentData.application
+        //         ? generalComponentData.application
+        //         : "EMPTY",
+        //     contractOrSupport: generalComponentData.contractOrSupport
+        //         ? generalComponentData.contractOrSupport
+        //         : "EMPTY",
+        //     // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+        //     //     ? generalComponentData.lifeStageOfMachine
+        //     //     : "EMPTY",
+        //     machineType: machineTypeKeyValue.value,
+        //     lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+        //     supportLevel: generalComponentData.supportLevel
+        //         ? generalComponentData.supportLevel
+        //         : "EMPTY",
+        //     customerGroup: generalComponentData.customerGroup
+        //         ? generalComponentData.customerGroup
+        //         : "EMPTY",
+        //     searchTerm: "EMPTY",
+        //     supportLevel: "EMPTY",
+        //     // portfolioPrice: {},
+        //     // additionalPrice: {},
+        //     // escalationPrice: {},
+        //     portfolioPrice: { "portfolioPriceId": 92 },
+        //     additionalPrice: { "additionalPriceId": 1 },
+        //     escalationPrice: { "escalationPriceId": 1 },
+        //     customItems: customItemsData,
+        //     customCoverages: portfolioCoverage,
+        //     usageCategory: categoryUsageKeyValue1.value,
+        //     taskType: stratgyTaskTypeKeyValue.value,
+        //     strategyTask: stratgyTaskUsageKeyValue.value,
+        //     responseTime: stratgyResponseTimeKeyValue.value,
+        //     productHierarchy: stratgyHierarchyKeyValue.value,
+        //     geographic: stratgyGeographicKeyValue.value,
+        //     preparedBy: administrative.preparedBy,
+        //     approvedBy: administrative.approvedBy,
+        //     preparedOn: administrative.preparedOn,
+        //     revisedBy: administrative.revisedBy,
+        //     revisedOn: administrative.revisedOn,
+        //     salesOffice: administrative.branch,
+        //     offerValidity: administrative.offerValidity,
+        // };
+
+        let myObjData = {
+            name: generalComponentData.name,
+            description: generalComponentData.description,
+            machineType: "NEW",
+            searchTerm: "EMPTY",
             lubricant: true,
+            customerId: 0,
+            customerGroup: generalComponentData.customerGroup
+                ? generalComponentData.customerGroup
+                : "EMPTY",
             customerSegment: generalComponentData.customerSegment
                 ? generalComponentData.customerSegment.value
                 : "EMPTY",
-            // machineType: generalComponentData.machineType
-            //     ? generalComponentData.machineType
-            //     : "EMPTY",
+            externalReference: generalComponentData.externalReference,
             status: generalComponentData.status
                 ? generalComponentData.status
                 : "EMPTY",
-            strategyTask: generalComponentData.strategyTask
-                ? generalComponentData.strategyTask
-                : "EMPTY",
-            taskType: generalComponentData.taskType
-                ? generalComponentData.taskType
-                : "EMPTY",
-            usageCategory: generalComponentData.usageCategory
-                ? generalComponentData.usageCategory
-                : "EMPTY",
-            productHierarchy: generalComponentData.productHierarchy
-                ? generalComponentData.productHierarchy
-                : "EMPTY",
-            geographic: generalComponentData.geographic
-                ? generalComponentData.geographic
-                : "EMPTY",
+            validFrom: generalComponentData.validFrom,
+            validTo: generalComponentData.validTo,
+            strategyTask: stratgyTaskUsageKeyValue.value ? stratgyTaskUsageKeyValue.value : "EMPTY",
+            taskType: stratgyTaskTypeKeyValue.value ? stratgyTaskTypeKeyValue.value : "EMPTY",
+            usageCategory: categoryUsageKeyValue1.value ? categoryUsageKeyValue1.value : "EMPTY",
+            productHierarchy: stratgyHierarchyKeyValue.value,
+            geographic: stratgyGeographicKeyValue.value,
             availability: generalComponentData.availability
                 ? generalComponentData.availability
                 : "EMPTY",
-            responseTime: generalComponentData.responseTime
-                ? generalComponentData.responseTime
-                : "EMPTY",
+            responseTime: stratgyResponseTimeKeyValue.value,
             type: generalComponentData.type ? generalComponentData.type : "EMPTY",
             application: generalComponentData.application
                 ? generalComponentData.application
@@ -2748,33 +2845,14 @@ export function CreateCustomPortfolio() {
             contractOrSupport: generalComponentData.contractOrSupport
                 ? generalComponentData.contractOrSupport
                 : "EMPTY",
-            // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-            //     ? generalComponentData.lifeStageOfMachine
-            //     : "EMPTY",
-            machineType: machineTypeKeyValue.value,
-            lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-            supportLevel: generalComponentData.supportLevel
-                ? generalComponentData.supportLevel
-                : "EMPTY",
-            customerGroup: generalComponentData.customerGroup
-                ? generalComponentData.customerGroup
-                : "EMPTY",
-            searchTerm: "EMPTY",
+            lifeStageOfMachine: lifeStageOfMachineKeyValue.value ? lifeStageOfMachineKeyValue.value : "EMPTY",
             supportLevel: "EMPTY",
-            // portfolioPrice: {},
-            // additionalPrice: {},
-            // escalationPrice: {},
-            portfolioPrice: { "portfolioPriceId": 92 },
-            additionalPrice: { "additionalPriceId": 1 },
-            escalationPrice: { "escalationPriceId": 1 },
-            customItems: customItems,
-            customCoverages: portfolioCoverage,
-            usageCategory: categoryUsageKeyValue1.value,
-            taskType: stratgyTaskTypeKeyValue.value,
-            strategyTask: stratgyTaskUsageKeyValue.value,
-            responseTime: stratgyResponseTimeKeyValue.value,
-            productHierarchy: stratgyHierarchyKeyValue.value,
-            geographic: stratgyGeographicKeyValue.value,
+            numberOfEvents: 0,
+            rating: "string",
+            startUsage: 0,
+            endUsage: 0,
+            unit: "HOURS",
+            additionals: "string",
             preparedBy: administrative.preparedBy,
             approvedBy: administrative.approvedBy,
             preparedOn: administrative.preparedOn,
@@ -2782,23 +2860,32 @@ export function CreateCustomPortfolio() {
             revisedOn: administrative.revisedOn,
             salesOffice: administrative.branch,
             offerValidity: administrative.offerValidity,
-        };
+            customItems: customItemsData,
+            customCoverages: portfolioCoverage,
+            portfolioPrice: {},
+            additionalPrice: {},
+            escalationPrice: {},
+            visibleInCommerce: true,
+            template: true
+        }
+
+        console.log("newUpdatedPortfolio : ", myObjData);
         const portfolioUpdateWithItems = await updateCustomPortfolio(
-            generalComponentData.portfolioId,
-            newUpdatedPortfolio
+            portfolioId,
+            myObjData
         );
         // const portfolioUpdateWithItems = await createCutomCoverage(newUpdatedPortfolio);
         console.log("final Update portfolioUpdateWithItems : ", portfolioUpdateWithItems);
-        // setBundleItems(temp);
-        // setLoadingItem(false);
-        // setTabs("1");
+        setBundleItems(temp);
+        setLoadingItem(false);
+        setTabs("1");
     };
 
     const handleCreateCustomItem_SearchResult = async () => {
         // setTempBundleService3(tempBundleService2)
         // setTempBundleService1([])
         // alert("hello");
-        var createdItemId;
+        var createdItemId = 0;
         // for (let key1 in tempBundleItemCheckList) {
         // console.log("key1 : ", key1);
         for (let i = 0; i < tempBundleItems.length; i++) {
@@ -2868,7 +2955,7 @@ export function CreateCustomPortfolio() {
                     totalPrice: itemsPrice.totalPrice,
                     netService: itemsPrice.netService,
                     customPortfolio: {
-                        portfolioId: 26
+                        portfolioId: portfolioId
                     },
                     tenantId: itemsPrice.tenantId,
                     partsRequired: itemsPrice.partsRequired,
@@ -5153,7 +5240,16 @@ export function CreateCustomPortfolio() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [open3, setOpen3] = React.useState(false);
     const handleCreate = () => {
-        history.push("/quoteTemplate");
+
+        console.log("quote Data 1 : ", quoteData)
+        setQuoteDataShow(false)
+        setQuoteData({
+            contact: "",
+            description: "",
+            reference: ""
+        });
+        console.log("quote Data 2 : ", quoteData)
+        // history.push("/quoteTemplate");
     };
 
     const handleCreateQuote = async () => {
@@ -5172,9 +5268,9 @@ export function CreateCustomPortfolio() {
             validFrom: "2022-10-18",
             validTo: "2022-10-18",
             quantity: 0,
-            customPortfolioModels: [
+            customPortfolioModels: portfolioId ? [
                 { customPortfolioId: portfolioId }
-            ],
+            ] : [],
             quoteBodyModel: {
                 quoteBodyId: 0,
                 quoteBodyDescription: "string",
@@ -5204,6 +5300,9 @@ export function CreateCustomPortfolio() {
 
         const quoteRes = await quoteCreation(quoteObj);
         console.log("quoteRes : ", quoteRes);
+
+        console.log("quoteData : ", quoteData);
+        setQuoteDataShow(true);
     }
     const history = useHistory();
 
@@ -10931,6 +11030,9 @@ export function CreateCustomPortfolio() {
                                             id="exampleInputEmail1"
                                             aria-describedby="emailHelp"
                                             placeholder="Enter email"
+                                            name="contact"
+                                            value={quoteData.contact}
+                                            onChange={handleQuoteInputChange}
                                         />
                                     </div>
                                 </div>
@@ -10946,6 +11048,9 @@ export function CreateCustomPortfolio() {
                                             class="form-control"
                                             id="exampleFormControlTextarea1"
                                             rows="3"
+                                            name="description"
+                                            value={quoteData.description}
+                                            onChange={handleQuoteInputChange}
                                         ></textarea>
                                     </div>
                                 </div>
@@ -10963,41 +11068,48 @@ export function CreateCustomPortfolio() {
                                             id="exampleInputEmail1"
                                             aria-describedby="emailHelp"
                                             placeholder="Enter email"
+                                            name="reference"
+                                            value={quoteData.reference}
+                                            onChange={handleQuoteInputChange}
                                         />
                                     </div>
                                 </div>
                             </div>
+                            {quoteDataShow ? <>
+                                <div className="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <div class="form-group mt-3">
+                                            <p class="font-size-12 font-weight-500 mb-2">QUOTE TYPE </p>
+                                            <h6 class="font-weight-500">
+                                                {/* Repair Quote with Spare Parts */}SOLUTION
+                                            </h6>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-sm-12">
+                                        <div class="form-group mt-3">
+                                            <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
+                                            {/* <h6 class="font-weight-500">SB12345</h6> */}
+                                            <h6 class="font-weight-500">{quoteData.contact}</h6>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-sm-12">
+                                        <div class="form-group mt-3">
+                                            <p class="font-size-12 font-weight-500 mb-2">
+                                                QUOTE DESCRIPTION
+                                            </p>
+                                            {/* <h6 class="font-weight-500">Holder text</h6> */}
+                                            <h6 class="font-weight-500">{quoteData.description}</h6>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-sm-12">
+                                        <div class="form-group mt-3">
+                                            <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
+                                            {/* <h6 class="font-weight-500">Holder text</h6> */}
+                                            <h6 class="font-weight-500">{quoteData.reference}</h6>
+                                        </div>
+                                    </div>
+                                </div></> : <></>}
 
-                            <div className="row">
-                                <div class="col-md-12 col-sm-12">
-                                    <div class="form-group mt-3">
-                                        <p class="font-size-12 font-weight-500 mb-2">QUOTE TYPE </p>
-                                        <h6 class="font-weight-500">
-                                            Repair Quote with Spare Parts
-                                        </h6>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 col-sm-12">
-                                    <div class="form-group mt-3">
-                                        <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
-                                        <h6 class="font-weight-500">SB12345</h6>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 col-sm-12">
-                                    <div class="form-group mt-3">
-                                        <p class="font-size-12 font-weight-500 mb-2">
-                                            QUOTE DESCRIPTION
-                                        </p>
-                                        <h6 class="font-weight-500">Holder text</h6>
-                                    </div>
-                                </div>
-                                <div class="col-md-12 col-sm-12">
-                                    <div class="form-group mt-3">
-                                        <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
-                                        <h6 class="font-weight-500">Holder text</h6>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                         <div class="modal-footer" style={{ display: "unset" }}>
                             <div className="mb-2">
@@ -11009,9 +11121,17 @@ export function CreateCustomPortfolio() {
                                 >
                                     Done
                                 </a>
+                                {/* <a
+                                    href="#"
+                                    data-dismiss="modal"
+                                    onClick={() => setQuoteDataShow(false)}
+                                    className="btn bg-primary d-block text-white"
+                                >
+                                    Done
+                                </a> */}
                             </div>
                             <div>
-                                <button class="btn  btn-primary" data-dismiss="modal" onClick={() => handleCreateQuote()}>Create</button>
+                                <button class="btn  btn-primary" onClick={() => handleCreateQuote()}>Create</button>
                                 <button
                                     type="button"
                                     class="btn pull-right border"
