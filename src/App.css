@@ -3119,3 +3119,5 @@ button.bg-primary:hover {
     padding: 0 0 0 29px !important;
   }
 .searchtext .MuiInputBase-root {line-height: 1.9em; padding-left: 29px;}
+.bg-gray{background-color: #9E9E9E;}
+.bg-pink{background-color: #FF6493 !important;}

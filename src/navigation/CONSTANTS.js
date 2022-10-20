@@ -51,6 +51,9 @@ export const QUOTE_WITH_EVALUATION ="/QuoteWithEvaluation";
 export const REPAIR_BUILDER_REPAIR_OPTION ="/RepairBuilderRepairOption";
 export const SOLUTION_SEARCH_TEMPLATE ="/SolutionSearchTemplate";
 export const COMMERCE_LANDING_PAGE ="/CommerceLandingPage";
+export const COMMERCE_PAGE_OPEN ="/CommercePageQuestion";
+export const ADD_TO_CART ="/AddToCart";
+export const REVIEW_ORDER ="/ReviewOrder";
 
 export const VERIFY_EMAIL = "/verify-email/:id";
 
