@@ -3150,3 +3150,7 @@ button.bg-primary:hover {
   color: #ff5e5e;
   font-weight: 500
 }
+
+.bg-gray{background-color: #9E9E9E;}
+.bg-pink{background-color: #FF6493 !important;}
+
