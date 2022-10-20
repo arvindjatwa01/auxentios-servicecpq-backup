@@ -3153,4 +3153,19 @@ button.bg-primary:hover {
 
 .bg-gray{background-color: #9E9E9E;}
 .bg-pink{background-color: #FF6493 !important;}
-
+.tab2 .css-1h9z7r5-MuiButtonBase-root-MuiTab-root {
+  text-transform: capitalize !important;
+  border: 1px solid #9E9E9E !important;
+  margin-right: 17px !important;
+  border-radius: 9px !important;
+}
+.tab2 .css-1ujnqem-MuiTabs-root {
+  min-height: 59px !important;
+}
+.tab2 .css-1h9z7r5-MuiButtonBase-root-MuiTab-root.Mui-selected {
+  color: #872ff7 !important;
+  border: 1px solid #673ab7 !important;
+}
+.tab2 .css-1aquho2-MuiTabs-indicator {
+  background-color: transparent !important;
+}

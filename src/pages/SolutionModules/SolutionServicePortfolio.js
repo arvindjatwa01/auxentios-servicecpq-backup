@@ -168,7 +168,7 @@ export function SolutionServicePortfolio(props) {
                     </div>
                     <div className="card p-4 mt-5">
                         <h5 className="d-flex align-items-center mb-0 bg-primary px-3 py-2" style={{borderRadius: "5px"}}>
-                            <div className="" style={{ display: 'contents' }}><span className="mr-3 text-white">Header</span>
+                            <div className="" style={{ display: 'contents' }}><span className="mr-3 text-white" style={{fontSize:"20px", fontWeight: "500"}}>Header</span>
                                 <a href="#" className="btn-sm text-white"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                                 <a href="#" className="btn-sm text-white"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a>
                                 {/* <a href="#" className="btn-sm text-white"><img style={{ width: '14px' }} src={folderaddIcon}></img></a> */}
@@ -182,16 +182,16 @@ export function SolutionServicePortfolio(props) {
                                 <input type="search" class="form-control search-form-control" aria-label="Search Dashboard" />
                             </div> */}
                         </h5>
-                        <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
+                        <Box className="mt-4 tab2" sx={{ width: '100%', typography: 'body1' }}>
                             <TabContext value={value}>
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                                     <TabList onChange={handleChange} aria-label="lab API tabs example">
-                                        <Tab label="CUSTOMER" value="1" />
-                                        <Tab label="MACHINE " value="2" />
-                                        <Tab label="ESTIMATION DETAILS" value="3" />
-                                        <Tab label="GENERAL DETAILS" value="4" />
-                                        <Tab label="PRICE" value="5" />
-                                        <Tab label="SHIPPING / BILLING" value="6" />
+                                        <Tab label="Customer" value="1" />
+                                        <Tab label="Machine " value="2" />
+                                        <Tab label="Estimation Details" value="3" />
+                                        <Tab label="General Details" value="4" />
+                                        <Tab label="Price" value="5" />
+                                        <Tab label="Shipping / Billing" value="6" />
                                     </TabList>
                                 </Box>
                                 <TabPanel value="1">
@@ -199,7 +199,7 @@ export function SolutionServicePortfolio(props) {
                                         <div class="col-md-4 col-sm-4">
                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOURCE</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">

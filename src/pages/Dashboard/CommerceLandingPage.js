@@ -289,7 +289,7 @@
                         </div>
             </div>
             <div>
-            <Link className='btn bg-primary text-white py-2'>Guided Solution</Link>
+            <a href="/CommerceGuided" className='btn bg-primary text-white py-2'>Guided Solution</a>
             </div>
             </div>
             <div className="p-4 mt-2">
