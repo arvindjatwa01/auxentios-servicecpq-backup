@@ -3169,3 +3169,19 @@ button.bg-primary:hover {
 .tab2 .css-1aquho2-MuiTabs-indicator {
   background-color: transparent !important;
 }
+/* .checkbox-custom2 .css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.Mui-checked, .css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.MuiCheckbox-indeterminate {
+  color: #fff !important;
+  border: 1px solid #00B8B0;
+  border-radius: 8px !important;
+  padding: 1px 1px 1px 1px;
+  margin-right: 12px;
+} */
+.footer-bottom{position: fixed;
+bottom: 0;
+left: 57px;
+right: 0;}
+.padding-custom{padding: 15px 30px 100px 30px !important;
+}
+.search-absolute{position: absolute;
+right: 10px;
+top: 9px;}

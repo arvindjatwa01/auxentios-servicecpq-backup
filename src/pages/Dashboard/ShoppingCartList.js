@@ -9,7 +9,11 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-
+import Checkbox from '@mui/material/Checkbox';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import DragHandleIcon from '@mui/icons-material/DragHandle';
 const  ShoppingCartList=()=>{
 
   const [age, setAge] = React.useState('5');
@@ -28,17 +32,19 @@ const  ShoppingCartList=()=>{
 
 
   const steps = [
-    'Register',
-    'Shop/Configure',
+    'Login',
+    'Find solutions',
     'Add to cart',
-    'Payment',
+    'Review',
+    'Order',
     
   ];
     return(
       <>
       {/* <CommanComponents /> */}
       <div className="content-body" style={{ minHeight: '884px' }}>
-      <div class="container-fluid ">
+      <div class="container-fluid">
+      <div className="padding-custom">
       <Box className="mt-5" sx={{ width: '100%' }}>
             <Stepper activeStep={1} alternativeLabel>
               {steps.map((label) => (
@@ -185,91 +191,132 @@ const  ShoppingCartList=()=>{
                   </div>
                   <div className="col-md-4 col-sm-4">
                       <div className="card" style={{overflow:"hidden"}}>
-                         <p className="p-4 bg-primary text-white" >Your Total Price</p>
-                         <div className="px-4 py-2 d-flex justify-content-between" >
+                        <div className="d-flex align-items-center p-4 bg-primary">
+                         <h6 className=" text-white mb-0 mr-3" >Your Total Price</h6>
+                         <h6 className="mb-0 text-white" style={{fontSize:"25px"}}>$138</h6>
+                         </div>
+                         <div className="p-4">
+                         <div className="d-flex justify-content-between" >
                              <p className="mb-0">Currency</p>
-                             <h6 className="mb-0">USD</h6>
+                             <h6 className="mb-0"><b>USD</b></h6>
+                         </div>
+                         <div className="hr"></div>
+                         <div className="d-flex justify-content-between" >
+                             <p className="mb-0">Price</p>
+                             <h6 className="mb-0"><b>$2023.00</b></h6>
+                         </div>
+                         <div className="hr"></div>
+                         <div className="py-2 d-flex justify-content-between" >
+                             <p className="mb-0">Tax</p>
+                             <h6 className="mb-0"><b>$360</b></h6>
+                         </div>
+                         <div className="py-2 d-flex align-items-center" >
+                             <p className="mb-0 mr-3">Redeem Promo Code</p>
+                             <a className="btn-sm border"><b>DWIJVWDOQW</b></a>
+                         </div>
                          </div>
                       </div>
-                      <div className="card p-4">
-                            <h5 className="mb-0">Summary</h5>
-                            <div className="mt-5 card p-4 bg-primary">
-                                <div className="row">
-                                    <div className="col-md-5">
-                                        <h6 className="mb-0 text-white">Your total price</h6>
-                                        <h3 className="mb-0 mt-3 text-white">$400.80</h3>
-                                        <p className="mb-0 text-white mt-5">Redeem promo code</p>
-                                    </div>
-                                    <div className="col-md-7">
-                                        <div className="row">
-                                            <div className="col-md-6">
-                                                 <p className="text-white mb-0">Currency</p>
-                                                 <p className="text-white mt-2 mb-0">Price</p>
-                                                 <p className="text-white mt-2 mb-0">Margin</p>
-                                            </div>
-                                            <div className="col-md-6">
-                                                 <p className="text-white mb-0">USD</p>
-                                                 <p className="text-white mt-2 mb-0">$300</p>
-                                                 <p className="text-white mt-2 mb-0">$30</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="bg-light-blue p-3">
-                            <h5 className="font-weight-normal text-violet mb-0">CHOICE OF SPARE PARTS</h5>
+                      <div className="card" style={{overflow:"hidden"}}>
+                         <h6 className="bg-green p-4 text-white mb-0" >Choice of Spare Parts</h6>
+                        <div className="p-4 checkbox-custom2">
+                        <FormGroup>
+                          <FormControlLabel control={<Checkbox defaultChecked />} label="With Spare Parts" />
+                          <FormControlLabel control={<Checkbox defaultUnchecked />} label="Without Spare Parts" />
+                          <FormControlLabel control={<Checkbox defaultUnchecked />} label="Only Spare Parts" />
+                        </FormGroup>
+                        </div>
+                      </div>
+                      <div className="card" style={{overflow:"hidden"}}>
+                         <h6 className="bg-green p-4 text-white mb-0" >Services</h6>
+                        <div className="p-4 checkbox-custom2">
+                        <FormGroup>
+                          <FormControlLabel control={<Checkbox defaultChecked />} label="Change Oil & Filter" />
+                        </FormGroup>
+                        </div>
+                      </div>
+                      <h5 className="mb-2">Optional Services</h5>
+                      <FormGroup>
+                          <FormControlLabel control={<Checkbox defaultChecked />} label="Air Filter Replacement" />
+                        </FormGroup>
+                        <div className="row">
+                          <div className="col-md-6">
+                             <FormGroup>
+                                <FormControlLabel control={<Checkbox defaultChecked />} label="Cabin Air Filter" />
+                             </FormGroup>
                           </div>
-                          <div className="bg-white p-3">
-                            <FormGroup>
-                              <FormControlLabel control={<Switch defaultChecked />} label="With Spare Parts" />
-                              <FormControlLabel control={<Switch />} label="Without Spare Parts" />
-                              <FormControlLabel control={<Switch />} label="Only Spare Parts" />
-                            </FormGroup>
+                          <div className="col-md-6">
+                             <FormGroup>
+                                <FormControlLabel control={<Checkbox defaultChecked />} label="Rotate Tires" />
+                             </FormGroup>
                           </div>
-                          <div className="bg-light-blue p-3">
-                            <h5 className="font-weight-normal text-violet mb-0">SERVICES</h5>
-                          </div>
-                          <div className="bg-white p-3">
-                            <div className=" d-flex justify-content-between align-items-center">
-                              <div>
-                                <FormGroup>
-                                  <FormControlLabel control={<Switch />} label=" Changee Oil and Filter" />
-                                </FormGroup>
-                              </div>
-                              <div>
-                                <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
-                              </div>
-                            </div>
-                            <h5 className="d-flex align-items-center mb-0"><div className="" style={{ display: 'contents' }}><span className="mr-3 white-space">Optianal services</span></div><div className="hr"></div></h5>
-                            <FormGroup>
-                              <FormControlLabel control={<Switch />} label="Air Filter Replacement" />
-                              <FormControlLabel control={<Switch />} label="Cabin Air Filter" />
-                              <FormControlLabel control={<Switch />} label="Rotete Tires" />
-                            </FormGroup>
-                            <h5 className="d-flex align-items-center mb-0"><div className="" style={{ display: 'contents' }}><span className="mr-3 white-space">Includes</span></div><div className="hr"></div></h5>
-                            <div className="mt-3">
-                              <h6><a href="#" className="btn-sm text-white mr-2" style={{ background: '#79CBA2' }}>Free</a> 50 Point Inspection</h6>
-                              <h6 className="mt-3"><a href="#" className="btn-sm text-white mr-2 " style={{ background: '#79CBA2' }}>Free</a> Service Report</h6>
+                        </div>
+                        <h5 className="mb-0">Includes</h5>
+                            <div className="d-flex mt-3">
+                              <h6><a href="#" className="btn-sm bg-gray border text-white mr-2">FREE</a> 50 Point Inspection</h6>
+                              <h6 className="ml-3"><a href="#" className="btn-sm bg-gray border text-white mr-2">Free</a> Service Report</h6>
                             </div>
                             <div className=" d-flex justify-content-between mt-4">
                               <div>
-                                <a href="#" className="btn text-violet bg-light-blue"><b><span className="mr-2">+</span>Add more services</b></a>
+                                <a href="#" className="btn text-violet " style={{border:"1px solid #872ff7"}}><b><span className="mr-2">+</span>Add more services</b></a>
                               </div>
                               <div>
-                                <a href="#" className="btn text-violet"><b>I Have Parts</b></a>
+                                <a href="#" className="btn text-violet" style={{border:"1px solid #872ff7"}}><b>I Have Parts</b></a>
                               </div>
                             </div>
-                          </div>
-                    
-                         
-                      </div>
+                            <a href="/AddToCart" className="my-3 w-100 btn bg-primary text-white">Review</a>
+                      
                   </div>
               </div>
-              <div>
+              {/* <div>
               <a href="/ReviewOrder" class="btn bg-primary text-white pull-right">Review</a>
-              </div>
+              </div> */}
           </div>
+          </div>
+          <footer className="footer-bottom">
+          <div className="card py-2 px-4 mb-0" style={{borderRadius:"0"}}>
+            <div className="d-flex justify-content-between align-items-center">
+                 <div className="d-flex">
+                    <h4 className="mb-0"><ErrorOutlineIcon className="mr-3" />Information</h4>
+                 </div>
+                 <div className="d-flex justify-content-center align-items-center">
+                  <div className="d-block" style={{marginRight:"30px"}}>
+                    <p className="mb-0">SPARE PARTS</p>
+                    <h6 className="mb-0"><b>$1400</b></h6>
+                  </div>
+                  <div className="d-flex" style={{marginRight:"30px"}}>
+                  <AddIcon />
+                  </div>
+                  <div className="d-block" style={{marginRight:"30px"}}>
+                    <p className="mb-0">LABOR CHARGE</p>
+                    <h6 className="mb-0"><b>$600</b></h6>
+                  </div>
+                  <div className="d-flex" style={{marginRight:"30px"}}>
+                  <AddIcon />
+                  </div>
+                  <div className="d-block" style={{marginRight:"30px"}}>
+                    <p className="mb-0">MISC.</p>
+                    <h6 className="mb-0"><b>$23</b></h6>
+                  </div>
+                  <div className="d-flex" style={{marginRight:"30px"}}>
+                  <RemoveIcon />
+                  </div>
+                  <div className="d-block" style={{marginRight:"30px"}}>
+                    <p className="mb-0">DISCOUNT</p>
+                    <h6 className="mb-0"><b>$80.00</b></h6>
+                  </div>
+                  <div className="d-flex" style={{marginRight:"30px"}}>
+                  <DragHandleIcon />
+                  </div>
+                  <div className="d-block">
+                    <p className="mb-0">TOTAL</p>
+                    <h6 className="mb-0 text-primary" style={{fontSize:"25px"}}><b>$1400</b></h6>
+                  </div>
+                 </div>
+            </div>
+          </div>
+        </footer>
         </div>
+        
       </div>
     </>
     )

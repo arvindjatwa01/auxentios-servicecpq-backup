@@ -1,6 +1,9 @@
   import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
   import EastIcon from '@mui/icons-material/East';
   import $ from "jquery";
+  import FormGroup from '@mui/material/FormGroup';
+  import FormControlLabel from '@mui/material/FormControlLabel';
+  import Checkbox from '@mui/material/Checkbox';
   import BuildCircleOutlinedIcon from '@mui/icons-material/BuildCircleOutlined';
   import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
   import OwlCarousel from 'react-owl-carousel';
@@ -14,6 +17,7 @@
   import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
   import CustomizedSnackbar from "pages/Common/CustomSnackBar";
   import contract from '../../assets/icons/svg/contract.svg'
+  import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
   import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined';
   import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
   import TextField from '@mui/material/TextField';
@@ -128,7 +132,7 @@
                                   </div>
                                   <div className="Choose-btn2 bg-primary px-2">
                                      <h6 className="mb-0 text-white">$20,000</h6>
-                                     <a href="#" class="btn text-white ">Add to Cart<EastIcon className="ml-3 font-size-16"/></a>
+                                     <a href="/ShoppingCartList" class="btn text-white ">Add to Cart<EastIcon className="ml-3 font-size-16"/></a>
                                   </div>
                                  </div>
                         </div>
@@ -154,7 +158,7 @@
                                   </div>
                                   <div className="Choose-btn2 bg-primary px-2">
                                      <h6 className="mb-0 text-white">$20,000</h6>
-                                     <a href="#" class="btn text-white ">Add to Cart<EastIcon className="ml-3 font-size-16"/></a>
+                                     <a href="/ShoppingCartList" class="btn text-white ">Add to Cart<EastIcon className="ml-3 font-size-16"/></a>
                                   </div>
                                  </div>
                         </div>
@@ -182,7 +186,7 @@
                                      <h6 className="mb-0 text-white">$20,000</h6>
                                      <div className="Choose-btn2 bg-primary px-2">
                                      <h6 className="mb-0 text-white">$20,000</h6>
-                                     <a href="#" class="btn text-white ">Add to Cart<EastIcon className="ml-3 font-size-16"/></a>
+                                     <a href="/ShoppingCartList" class="btn text-white ">Add to Cart<EastIcon className="ml-3 font-size-16"/></a>
                                   </div>
                                   </div>
                                  </div>
@@ -207,7 +211,7 @@
                                   <div>
                                     <a href="#" style={{textDecoration:'underline'}}>View Details</a>
                                   </div>
-                                  <a href="#" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                                  <a href="/ShoppingCartList" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                                  </div>
                         </div>
                         <div class='item2 border-none'>
@@ -232,7 +236,7 @@
                                   </div>
                                   <div className="Choose-btn2 bg-primary px-2">
                                      <h6 className="mb-0 text-white">$20,000</h6>
-                                     <a href="#" class="btn text-white ">Add to Cart<EastIcon className="ml-3 font-size-16"/></a>
+                                     <a href="/ShoppingCartList" class="btn text-white ">Add to Cart<EastIcon className="ml-3 font-size-16"/></a>
                                   </div>
                                  </div>
                         </div>
@@ -242,48 +246,37 @@
             <h5 className="font-weight-600 mb-0">Select the solutions you want to search</h5>
             <div className='card mt-4 p-4'>
                         <div className='row'>
-                            <div className='col-md-6 my-3 '>
-                                <div className='d-flex'>
+                            <div className='col-md-6 my-3'>
+                              <div className="px-4">
                                     <div className='mr-2'><img src={Portfoliosicon}></img></div>
-                                    <div>
-                                        <h5 className='text-light'>Portfolios</h5>
-                                        <Link className='btn bg-primary text-white py-2' data-toggle="modal" data-target="#selectproject">Explore</Link>
-                                        <p className="py-2">Our self-service option helps your customers browse products, aftermarket services and solution online.</p>
-                                       
-                                    </div>
-                                </div>
+                                    <h5 className='text-light mt-3'>Maintenance Solutions</h5>
+                                    <p className="mt-2">Our self-service option helps your customers browse products, aftermarket services and solution online.</p>
+                                    <Link className='btn bg-primary text-white py-2' data-toggle="modal" data-target="#selectproject">Continue <ArrowForwardIosIcon className="ml-2"/></Link>
+                              </div>
                             </div>
                             <div className='col-md-6 my-3 '>
-                                <div className='d-flex'>
+                                  <div className="px-4">
                                     <div className='mr-2'><img src={contract}></img></div>
-                                    <div>
-                                        <h5 className='text-light'> Solutions</h5>
-                                        <Link className='btn bg-primary text-white py-2' data-toggle="modal" data-target="#selectproject">Explore</Link>
-                                        <p className="py-2">Our platform is built to create templates and kits. It has twin builder functionality.</p>
-                                       
-                                    </div>
-                                </div>
+                                        <h5 className='text-light mt-3'>Repair Solutions</h5>
+                                        <p className="mt-2">Our platform is built to create templates and kits. It has twin builder functionality.</p>
+                                        <Link className='btn bg-primary text-white py-2' data-toggle="modal" data-target="#selectproject">Continue <ArrowForwardIosIcon className="ml-2"/></Link>
+                                  </div>
                             </div>
                             <div className='col-md-6 my-3 '>
-                                <div className='d-flex'>
+                                  <div className="px-4">
                                     <div className='mr-2'><DesignServicesOutlinedIcon style={{fontSize: "66px"}}/></div>
-                                    <div>
-                                        <h5 className='text-light'> Services</h5>
-                                        <Link className='btn bg-primary text-white py-2' data-toggle="modal" data-target="#selectproject">Explore</Link>
-                                        <p className="py-2">Our inbuilt price engine helps you price spare parts, labor, miscellaneous, and consumables.</p>
-                                       
-                                    </div>
-                                </div>
+                                        <h5 className='text-light mt-3'> Routine Maintenance Tasks</h5>
+                                        <p className="mt-2">Our inbuilt price engine helps you price spare parts, labor, miscellaneous, and consumables.</p>
+                                        <Link className='btn bg-primary text-white py-2' data-toggle="modal" data-target="#selectproject">Continue <ArrowForwardIosIcon className="ml-2"/></Link>
+                                 </div>
                             </div>
                             <div className='col-md-6 my-3 '>
-                                <div className='d-flex'>
+                            <div className="px-4">
                                     <div className='mr-2'><DesignServicesOutlinedIcon style={{fontSize: "66px"}}/></div>
-                                    <div>
-                                        <h5 className='text-light'> Bundles</h5>
-                                        <Link className='btn bg-primary text-white py-2' data-toggle="modal" data-target="#selectproject">Explore</Link>
-                                        <p className="py-2">The quotes and follow up orders that your sales reps build using our preconfigured solution.</p>
+                                        <h5 className='text-light mt-3'>For New Equipment Customisation</h5>
+                                        <p className="mt-2">The quotes and follow up orders that your sales reps build using our preconfigured solution.</p>
+                                        <Link className='btn bg-primary text-white py-2' data-toggle="modal" data-target="#selectproject">Continue <ArrowForwardIosIcon className="ml-2"/></Link>
                                        
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -307,7 +300,7 @@
                                <h4 className='text-red mt-3'><b>$20,000</b></h4>
                                <p className="mb-0 mt-2">This service contract covers the service of the core parts of the machine.</p>
                            </div>
-                           <a href="#" class="btn bg-primary text-white Choose-btn3"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                           <a href="/ShoppingCartList" class="btn bg-primary text-white Choose-btn3"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div>
                         <div class='item3 border-none'>
                            <div className="w-100" style={{height: "225px"}}>
@@ -318,7 +311,7 @@
                                <h4 className='text-red mt-3'><b>$20,000</b></h4>
                                <p className="mb-0 mt-2">This service contract covers the service of the core parts of the machine.</p>
                            </div>
-                           <a href="/AddToCart" class="btn bg-primary text-white Choose-btn3"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                           <a href="/ShoppingCartList" class="btn bg-primary text-white Choose-btn3"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div>
                         <div class='item3 border-none'>
                            <div className="w-100" style={{height: "225px"}}>
@@ -329,7 +322,7 @@
                                <h4 className='text-red mt-3'><b>$20,000</b></h4>
                                <p className="mb-0 mt-2">This service contract covers the service of the core parts of the machine.</p>
                            </div>
-                           <a href="#" class="btn bg-primary text-white Choose-btn3"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                           <a href="/ShoppingCartList" class="btn bg-primary text-white Choose-btn3"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div>
                         <div class='item3 border-none'>
                            <div className="w-100" style={{height: "225px"}}>
@@ -340,7 +333,7 @@
                                <h4 className='text-red mt-3'><b>$20,000</b></h4>
                                <p className="mb-0 mt-2">This service contract covers the service of the core parts of the machine.</p>
                            </div>
-                           <a href="#" class="btn bg-primary text-white Choose-btn3"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                           <a href="/ShoppingCartList" class="btn bg-primary text-white Choose-btn3"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div>
                         <div class='item3 border-none'>
                            <div className="w-100" style={{height: "225px"}}>
@@ -351,7 +344,7 @@
                                <h4 className='text-red mt-3'><b>$20,000</b></h4>
                                <p className="mb-0 mt-2">This service contract covers the service of the core parts of the machine.</p>
                            </div>
-                           <a href="#" class="btn bg-primary text-white Choose-btn3"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                           <a href="/ShoppingCartList" class="btn bg-primary text-white Choose-btn3"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div>
 
                     </OwlCarousel>
@@ -415,13 +408,35 @@
           <div className="modal fade" id="selectproject" tabIndex="-1" role="dialog" aria-labelledby="myModalLabel2" aria-hidden="true">
               <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div className="modal-content">
-                  <div className="modal-header border-none">
-                    <h4 className="modal-title" id="myModalLabel2">Select a project</h4>
-                        <div className="d-flex">
-                          <h5 className="mb-0"><span><CreateNewFolderIcon className="mr-3" style={{fontSize: "37px"}}/></span>NEW PROJECT</h5>
-                        </div>
+                  <div className="modal-header ">
+                    <h4 className="modal-title" id="myModalLabel2">Search Portfolio Template</h4>
+                    <a href="#" className='btn bg-primary text-white py-2'>Guided Solution</a>
                   </div>
-                  <div className="modal-body" style={{ background: 'white', padding: "1rem 0" }}>
+                  <div className="modal-body p-4" style={{ background: 'white'}}>
+                    <div className="row">
+                    <div className="col-md-6 col-sm-6">
+                       <div className="card bg-light p-4">
+                       <FormGroup>
+                          <FormControlLabel control={<Checkbox defaultChecked />} label="" />
+                        </FormGroup>
+                        <h5 className="mb-0">Portfolio Template</h5>
+                       </div>
+                       </div>
+                       <div className="col-md-6 col-sm-6">
+                       <div className="card bg-light p-4">
+                       <FormGroup>
+                          <FormControlLabel control={<Checkbox defaultUnchecked />} label="" />
+                        </FormGroup>
+                        <h5 className="mb-0">Solution Template</h5>
+                       </div>
+                       </div>
+                    </div>
+                  </div>
+                  <div className="modal-footer">
+                        <a href="/CommercePageQuestion" className="btn bg-primary text-white">Search</a>
+                  </div>
+                   
+                  {/* <div className="modal-body" style={{ background: 'white', padding: "1rem 0" }}>
                       <div className="mx-3 my-2 searchtext" style={{position: "relative"}}>
                         <TextField id="outlined-textarea" label="Search projects and folders" placeholder="" multiline />
                         <span className="icon-search"><SearchOutlinedIcon style={{fontSize:"40px"}}/></span>
@@ -464,7 +479,7 @@
                         <button type="button" className="btn bg-white" data-dismiss="modal"><b>CANCEL</b></button>
                         <a href="/CommercePageQuestion" className="btn bg-white">OPEN</a>
                       </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

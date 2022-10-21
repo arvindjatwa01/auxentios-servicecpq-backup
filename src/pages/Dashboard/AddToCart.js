@@ -103,7 +103,7 @@ const  AddToCart=()=>{
            
           </div>
           </div>
-          <div className="mt-4">
+          <div className="my-4">
               <div className="row">
                   <div className="col-md-8 col-sm-8">
                       <div className="card p-4">
@@ -248,10 +248,58 @@ const  AddToCart=()=>{
                                     </div>
                                 </div>
                             </div>
+                            <div className="hr"></div>
+                            <h5 className="my-3">Price breakdown of your quote</h5>
                             <div className="bg-light-blue p-3">
-                            <h5 className="font-weight-normal text-violet mb-0">CHOICE OF SPARE PARTS</h5>
+                            <h5 className="font-weight-normal text-violet mb-0">LABOR</h5>
                           </div>
-                          <div className="bg-white p-3">
+                          <h5 className="my-3"><b>Change Oil and Filter</b></h5>
+                          <div className="ml-2 d-flex justify-content-between align-items-center">
+                            <p className="mb-0">Air Filter Replacement</p>
+                            <p className="mb-0">$300</p>
+                          </div>
+                          <div className="ml-2 d-flex justify-content-between align-items-center">
+                            <p className="mb-0">Rotate Tires</p>
+                            <p className="mb-0">$300</p>
+                          </div>
+                          <h5 className="my-3"><b>Change Oil and Filter</b></h5>
+                          <div className="ml-2 d-flex justify-content-between align-items-center">
+                            <p className="mb-0">Air Filter Replacement</p>
+                            <p className="mb-0">$300</p>
+                          </div>
+                          <div className="bg-light-blue p-3">
+                            <h5 className="font-weight-normal text-violet mb-0">PARTS INCLUDED</h5>
+                          </div>
+                          <div className="mt-2 d-flex justify-content-between align-items-center">
+                            <p className="mb-0"><del>Air Filter Replacement</del></p>
+                            <p className="mb-0"><del>New, Aftermarket</del></p>
+                          </div>
+                          <div className="mt-2 d-flex justify-content-between align-items-center">
+                            <p className="mb-0"><del>Air Filter Replacement</del></p>
+                            <p className="mb-0"><del>New, Aftermarket</del></p>
+                          </div>
+                          <div className="mt-2 d-flex justify-content-between align-items-center">
+                            <p className="mb-0"><del>Air Filter Replacement</del></p>
+                            <p className="mb-0"><del>New, Aftermarket</del></p>
+                          </div>
+                          <div className="mt-2 d-flex justify-content-between align-items-center">
+                            <p className="mb-0"><del>Air Filter Replacement</del></p>
+                            <p className="mb-0"><del>New, Aftermarket</del></p>
+                          </div>
+                          <div className="mt-2 d-flex justify-content-between align-items-center">
+                            <p className="mb-0"><del>Air Filter Replacement</del></p>
+                            <p className="mb-0"><del>New, Aftermarket</del></p>
+                          </div>
+                          <div className="mt-2 d-flex justify-content-between align-items-center">
+                            <p className="mb-0">Total cost of parts</p>
+                            <p className="mb-0">$0.00</p>
+                          </div>
+                          <div className="mt-2 d-flex justify-content-between align-items-center">
+                            <p className="mb-0">Tax</p>
+                            <p className="mb-0">$0.00</p>
+                          </div>
+                          <div className="hr"></div>
+                          {/* <div className="bg-white p-3">
                             <FormGroup>
                               <FormControlLabel control={<Switch defaultChecked />} label="With Spare Parts" />
                               <FormControlLabel control={<Switch />} label="Without Spare Parts" />
@@ -291,14 +339,14 @@ const  AddToCart=()=>{
                                 <a href="#" className="btn text-violet"><b>I Have Parts</b></a>
                               </div>
                             </div>
-                          </div>
+                          </div> */}
                     
                          
                       </div>
                   </div>
               </div>
               <div>
-              <a href="/ReviewOrder" class="btn bg-primary text-white pull-right">Review</a>
+              <a href="/ReviewOrder" class="btn bg-primary text-white pull-right">Next</a>
               </div>
           </div>
         </div>

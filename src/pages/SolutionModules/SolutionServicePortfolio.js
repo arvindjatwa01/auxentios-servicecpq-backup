@@ -12,6 +12,7 @@ import Menu from '@mui/material/Menu';
 import Fade from '@mui/material/Fade';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
+import SearchIcon from '@mui/icons-material/Search';
 import { Link, useHistory} from 'react-router-dom'
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
@@ -204,8 +205,9 @@ export function SolutionServicePortfolio(props) {
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER ID</label>
-                                            <div class="form-group w-100">
+                                            <div class="form-group w-100" style={{position:"relative"}}>
                                                 <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <span className="search-absolute"><SearchIcon /></span>
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
@@ -248,7 +250,7 @@ export function SolutionServicePortfolio(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="2">
-                                    <div className="row">
+                                    <div className="row mt-4">
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MODEL</label>
                                             <div class="form-group w-100">
@@ -319,7 +321,7 @@ export function SolutionServicePortfolio(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="3">
-                                    <div className="row">
+                                    <div className="row mt-4">
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED BY </label>
                                             <div class="form-group w-100">
@@ -371,7 +373,7 @@ export function SolutionServicePortfolio(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="4">
-                                    <div className="row">
+                                    <div className="row mt-4">
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE DATE</label>
                                             <div class="form-group w-100">
@@ -477,7 +479,7 @@ export function SolutionServicePortfolio(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="6">
-                                    <div className="row mt-5">
+                                    <div className="row mt-4">
                                        <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DELIVERY TYPE</label>
                                             <div class="form-group w-100">
