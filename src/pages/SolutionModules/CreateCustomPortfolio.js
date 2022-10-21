@@ -5301,6 +5301,9 @@ export function CreateCustomPortfolio() {
         const quoteRes = await quoteCreation(quoteObj);
         console.log("quoteRes : ", quoteRes);
 
+        console.log("quote Response data is : ", quoteRes.data)	
+        setQuoteData({ ...quoteData, contact: quoteRes.data.quoteMasterId })
+
         console.log("quoteData : ", quoteData);
         setQuoteDataShow(true);
     }
@@ -11029,10 +11032,12 @@ export function CreateCustomPortfolio() {
                                             class="form-control"
                                             id="exampleInputEmail1"
                                             aria-describedby="emailHelp"
-                                            placeholder="Enter email"
+                                            // placeholder="Enter email"
                                             name="contact"
                                             value={quoteData.contact}
-                                            onChange={handleQuoteInputChange}
+                                            // onChange={handleQuoteInputChange}
+                                            placeholder="(Auto-generated)"
+                                            disabled={true}
                                         />
                                     </div>
                                 </div>
@@ -11112,16 +11117,17 @@ export function CreateCustomPortfolio() {
 
                         </div>
                         <div class="modal-footer" style={{ display: "unset" }}>
-                            <div className="mb-2">
-                                <a
-                                    href="#"
-                                    onClick={() => handleCreate()}
-                                    data-dismiss="modal"
-                                    className="btn bg-primary d-block text-white"
-                                >
-                                    Done
-                                </a>
-                                {/* <a
+                            {quoteDataShow ? <>
+                                <div className="mb-2">
+                                    <a
+                                        href="#"
+                                        onClick={() => handleCreate()}
+                                        data-dismiss="modal"
+                                        className="btn bg-primary d-block text-white"
+                                    >
+                                        Done
+                                    </a>
+                                    {/* <a
                                     href="#"
                                     data-dismiss="modal"
                                     onClick={() => setQuoteDataShow(false)}
@@ -11129,7 +11135,8 @@ export function CreateCustomPortfolio() {
                                 >
                                     Done
                                 </a> */}
-                            </div>
+                                </div>
+                            </> : <></>}
                             <div>
                                 <button class="btn  btn-primary" onClick={() => handleCreateQuote()}>Create</button>
                                 <button
