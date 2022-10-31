@@ -57,6 +57,7 @@ export const REVIEW_ORDER ="/ReviewOrder";
 export const COMMERCE_GUIDED ="/CommerceGuided";
 export const COMMERCE_GUIDED_QUESTIONS ="/CommerceGuidedQuestions";
 export const SHOPPING_CART_LIST ="/ShoppingCartList";
+export const COMMERCE_PROFILE ="/CommerceProfile";
 
 export const VERIFY_EMAIL = "/verify-email/:id";
 

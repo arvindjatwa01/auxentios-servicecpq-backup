@@ -3185,3 +3185,7 @@ right: 0;}
 .search-absolute{position: absolute;
 right: 10px;
 top: 9px;}
+.profile-img{width: 100%;
+border: 1px solid #76838f;
+border-radius: 50%;
+}
