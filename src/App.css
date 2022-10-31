@@ -3189,3 +3189,10 @@ top: 9px;}
 border: 1px solid #76838f;
 border-radius: 50%;
 }
+.input-fields ::-webkit-input-placeholder {
+  color: #872ff7 !important;
+  font-size: 17px !important;
+}
+.input-fields .form-control {
+  font-size: 17px !important;
+}

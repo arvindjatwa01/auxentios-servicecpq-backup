@@ -9,6 +9,7 @@ import TabPanel from '@mui/lab/TabPanel';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import Box from '@mui/material/Box';
+import AddIcon from '@mui/icons-material/Add';
 import {
   addPartlist,
   builderSearch,
@@ -81,64 +82,99 @@ export const CommerceProfile = () => {
                             <TabPanel value="1">
                              <div className="card p-4">
                                 <div className="d-flex align-items-center">
-                                    <div className="" style={{width:"10%", height:"auto", marginRight:"80px"}}>
+                                    <div className="" style={{width:"10%", height:"auto", marginRight:"200px"}}>
                                         <img className="profile-img" src="./assets/images/user_profile.png"></img>
                                     </div>
-                                    <div style={{marginRight:"30px"}}>
+                                    <div style={{marginRight:"200px"}}>
                                         <div class="form-group">
                                             <p class="font-size-12 font-weight-500 mb-2">USER NAME</p>
                                             <h6 class="font-weight-600 text-primary" style={{fontSize:"20px"}}>Jane Doe</h6>
                                         </div>
                                     </div>
-                                    <div style={{marginRight:"30px"}}>
+                                    <div style={{marginRight:"200px"}}>
                                         <div class="form-group">
-                                            <p class="font-size-12 font-weight-500 mb-2">USER NAME</p>
+                                            <p class="font-size-12 font-weight-500 mb-2">EMAIL</p>
                                             <h6 class="font-weight-600 text-primary" style={{fontSize:"20px"}}>Jane Doe</h6>
                                         </div>
                                     </div>
-                                    <div style={{marginRight:"30px"}}>
+                                    <div style={{marginRight:"300px"}}>
                                         <div class="form-group">
-                                            <p class="font-size-12 font-weight-500 mb-2">USER NAME</p>
-                                            <h6 class="font-weight-600 text-primary" style={{fontSize:"20px"}}>Jane Doe</h6>
+                                            <p class="font-size-12 font-weight-500 mb-2">PASSWORD</p>
+                                            <h6 class="font-weight-600 text-primary" style={{fontSize:"20px"}}>********</h6>
                                         </div>
+                                    </div>
+                                    <div style={{marginRight:"30px"}}>
+                                      <div className="btn bg-primary text-white">Edit</div>
                                     </div>
                                 </div>
 
-                                {/* <div className="row">
-                                    <div className="col-md-3 col-sm-3">
-                                        <div className="w-100 d-flex justify-content-center align-items-center">
-                                            <img className="profile-img" src="./assets/images/user_profile.png"></img>
-                                        </div>
-                                    </div>
-                                    <div className="col-md-6 col-sm-6">
-                                        <div className="row">
-                                            <div className="col-md-4 col-sm-4">
-                                                <div class="form-group">
-                                                    <p class="font-size-12 font-weight-500 mb-2">USER NAME</p>
-                                                    <h6 class="font-weight-600 text-primary" style={{fontSize:"20px"}}>Jane Doe</h6>
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-4">
-                                                <div class="form-group">
-                                                    <p class="font-size-12 font-weight-500 mb-2">EMAIL</p>
-                                                    <h6 class="font-weight-600 text-primary" style={{fontSize:"20px"}}>Jane Doe</h6>
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-4">
-                                                <div class="form-group">
-                                                    <p class="font-size-12 font-weight-500 mb-2">PASSWORD</p>
-                                                    <h6 class="font-weight-600 text-primary" style={{fontSize:"20px"}}>********</h6>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="col-md-2 col-sm-2"></div>
-                                </div> */}
                              </div>
+                             <div className="card" style={{overflow: "hidden"}}>
+                                 <div className="bg-primary p-4">
+                                      <h5 class="font-weight-500 mb-0 text-white">Account Settings</h5>
+                                 </div>
+                                 <div className="row p-4">
+                                    <div className="col-md-3">
+                                        <div class="form-group">
+                                            <p class="font-size-12 font-weight-500 mb-2">ACCOUNT NO</p>
+                                            <h6 class="font-weight-600 text-primary" style={{fontSize:"20px"}}>203045</h6>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-3">
+                                        <div class="form-group">
+                                            <p class="font-size-12 font-weight-500 mb-2">ACCOUNT NAME</p>
+                                            <h6 class="font-weight-600 text-primary" style={{fontSize:"20px"}}>L & T Construction</h6>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-3">
+                                        <div class="form-group">
+                                            <p class="font-size-12 font-weight-500 mb-2">CONTACT NO</p>
+                                            <h6 class="font-weight-600 text-primary" style={{fontSize:"20px"}}>91-XXXXXXXXXX</h6>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-3">
+                                        <div class="form-group">
+                                            <p class="font-size-12 font-weight-500 mb-2">ALTERNATE CONTACT</p>
+                                            <h6 class="font-weight-600 text-primary" style={{fontSize:"20px"}}>91-XXXXXXXXXX</h6>
+                                        </div>
+                                    </div>
+                                 </div>
+                             </div>
+                             <div className="card" style={{overflow: "hidden"}}>
+                                 <div className="bg-primary p-4">
+                                      <h5 class="font-weight-500 mb-0 text-white">Account Details</h5>
+                                 </div>
+                                 <div className="row p-4">
+                                    <div className="col-md-4">
+                                        <div class="form-group">
+                                            <p class="font-size-12 font-weight-500 mb-2">CUSTOMER TYPE</p>
+                                            <h6 class="font-weight-600 text-primary" style={{fontSize:"20px"}}>Large</h6>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4">
+                                        <div class="form-group">
+                                            <p class="font-size-12 font-weight-500 mb-2">INDUSTRY</p>
+                                            <h6 class="font-weight-600 text-primary" style={{fontSize:"20px"}}>Construction</h6>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-4">
+                                        <div class="form-group">
+                                            <p class="font-size-12 font-weight-500 mb-2">FLEET SIZE</p>
+                                            <h6 class="font-weight-600 text-primary" style={{fontSize:"20px"}}> 50 equipment</h6>
+                                        </div>
+                                    </div>
+                                 </div>
+                             </div>
+                             <div className="Add-new-segment-div p-3 border-radius-10 mb-3 mt-3">
+                            <Link className="btn bg-primary text-white mr-3">
+                              <span className="mr-2"><AddIcon /></span>Enroll Equipment
+                            </Link>
+                          </div>
                             </TabPanel>
                             <TabPanel value="2">Item Two</TabPanel>
                           </TabContext>
                       </div>
+                      
         </div>
         
       </div>
