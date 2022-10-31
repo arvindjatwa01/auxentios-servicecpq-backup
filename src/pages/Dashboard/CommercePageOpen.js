@@ -159,7 +159,7 @@ const handleChangedrop2 = (event) => {
                                 <li className='mt-3' style={{ listStyle: 'disc' }}>Rebuilding at our specialised component rebuilding center</li>
                                 <li className='mt-3' style={{ listStyle: 'disc' }}>Built by experienced engineers</li>
                             </ul>
-                            <a href="#" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                            <a href="/ShoppingCartList" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div>
                         <div class='item border-none' style={{height:"400px"}}>
                             <a href='#' className='bg-yellow text-white btn'><CabinIcon className=" font-size-16 mr-2"></CabinIcon>Repair Solution - Bronze</a>
@@ -171,7 +171,7 @@ const handleChangedrop2 = (event) => {
                                 <li className='mt-3' style={{ listStyle: 'disc' }}>Rebuilding at our specialised component rebuilding center</li>
                                 <li className='mt-3' style={{ listStyle: 'disc' }}>Built by experienced engineers</li>
                             </ul>
-                            <a href="#" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                            <a href="/ShoppingCartList" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div>
                         <div class='item border-none' style={{height:"400px"}}>
                             <BuildCircleOutlinedIcon style={{fontSize:"90px"}}/>
@@ -181,7 +181,7 @@ const handleChangedrop2 = (event) => {
                                 <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
                                 <li className='mt-3' style={{ listStyle: 'disc' }}>Periodic maintenance triggered every 3 months</li>
                             </ul>
-                            <a href="#" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                            <a href="/ShoppingCartList" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div>
                         <div class='item border-none' style={{height:"400px"}}>
                             <a href='#' className='bg-primary text-white btn'><CabinIcon className=" font-size-16 mr-2"></CabinIcon>Repair Services</a>
@@ -190,7 +190,7 @@ const handleChangedrop2 = (event) => {
                                 <li className='mt-3' style={{ listStyle: 'disc' }}>Cover for all models of the fleet starting from the base model</li>
                                 <li className='mt-3' style={{ listStyle: 'disc' }}>Periodic maintenance triggered every 3 months</li>
                             </ul>
-                            <a href="#" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
+                            <a href="/ShoppingCartList" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
                         </div> 
 
                     </OwlCarousel>
