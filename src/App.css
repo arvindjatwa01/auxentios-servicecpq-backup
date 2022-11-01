@@ -3169,6 +3169,11 @@ button.bg-primary:hover {
 .tab2 .css-1aquho2-MuiTabs-indicator {
   background-color: transparent !important;
 }
+
+.hUvRIg {
+  border-right: 1px solid rgba(0,0,0,.12);
+}
+.WMXoO{border-right: 1px solid rgba(0,0,0,.12);}
 /* .checkbox-custom2 .css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.Mui-checked, .css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.MuiCheckbox-indeterminate {
   color: #fff !important;
   border: 1px solid #00B8B0;
@@ -3188,4 +3193,11 @@ top: 9px;}
 .profile-img{width: 100%;
 border: 1px solid #76838f;
 border-radius: 50%;
+}
+.input-fields ::-webkit-input-placeholder {
+  color: #872ff7 !important;
+  font-size: 17px !important;
+}
+.input-fields .form-control {
+  font-size: 17px !important;
 }

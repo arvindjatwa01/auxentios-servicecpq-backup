@@ -17,6 +17,7 @@ import { Link, useHistory} from 'react-router-dom'
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import Checkbox from '@mui/material/Checkbox';
+import DataTable from "react-data-table-component";
 import { FileUploader } from "react-drag-drop-files";
 // import MuiMenuComponent from "../Operational/MuiMenuComponent";
 import MenuItem from '@mui/material/MenuItem';
@@ -50,6 +51,146 @@ export function SolutionServicePortfolio(props) {
     const handleClose2 = () => {
       setAnchorEl(null);
     };
+    const customStyles = {
+        rows: {
+            style: {
+                minHeight: "72px", // override the row height
+            },
+        },
+        headCells: {
+            style: {
+                paddingLeft: "8px", // override the cell padding for head cells
+                paddingRight: "8px",
+                backgroundColor: "#872ff7",
+                color: "#fff",
+            },
+        },
+        cells: {
+            style: {
+                paddingLeft: "8px", // override the cell padding for data cells
+                paddingRight: "8px",
+            },
+        },
+    };
+    const masterColumns = [
+        {
+            name: (
+                <>
+                    <div>Select</div>
+                </>
+            ),
+            // selector: (row) => row.check1,
+            wrap: true,
+            sortable: true,
+            maxWidth: "300px",
+            cell: (row) => (
+                <Checkbox
+                    className="text-black"
+                // checked={row.check1}
+                // onChange={(e) => handleCheckboxData(e, row)}
+                />
+            ),
+        },
+        {
+            name: (
+                <>
+                    <div>Group Number</div>
+                </>
+            ),
+            selector: (row) => row.GroupNumber,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.GroupNumber,
+        },
+        {
+            name: (
+                <>
+                    <div>Type</div>
+                </>
+            ),
+            selector: (row) => row.Type,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.Type,
+        },
+        {
+            name: (
+                <>
+                    <div>Part number</div>
+                </>
+            ),
+            selector: (row) => row.Partnumber,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.Partnumber,
+        },
+        {
+            name: (
+                <>
+                    <div>Price Extended</div>
+                </>
+            ),
+            selector: (row) => row.PriceExtended,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.PriceExtended,
+        },
+        {
+            name: (
+                <>
+                    <div>Price currency</div>
+                </>
+            ),
+            selector: (row) => row.Pricecurrency,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.Pricecurrency,
+        },
+        {
+            name: (
+                <>
+                    <div>Usage</div>
+                </>
+            ),
+            selector: (row) => row.Usage,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.Usage,
+        },
+        {
+            name: (
+                <>
+                    <div>Total Price</div>
+                </>
+            ),
+            selector: (row) => row.TotalPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.TotalPrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Comments</div>
+                </>
+            ),
+            selector: (row) => row.Comments,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.Comments,
+        },
+        {
+            name: (
+                <>
+                    <div>Actions</div>
+                </>
+            ),
+            selector: (row) => row.Actions,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.Actions,
+        },
+    ];
     const handleCreate=()=>{
         history.push('/quoteTemplate')
       }
@@ -126,7 +267,7 @@ export function SolutionServicePortfolio(props) {
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid ">
                     <div className="d-flex align-items-center justify-content-between mt-2">
-                        <h5 className="font-weight-600 mb-0">Service Portfolio</h5>
+                        <h5 className="font-weight-600 mb-0" style={{fontSize:"20px"}}>Solution Quote</h5>
                         <div className="d-flex">
                           
                             <div>
@@ -169,12 +310,12 @@ export function SolutionServicePortfolio(props) {
                     </div>
                     <div className="card p-4 mt-5">
                         <h5 className="d-flex align-items-center mb-0 bg-primary px-3 py-2" style={{borderRadius: "5px"}}>
-                            <div className="" style={{ display: 'contents' }}><span className="mr-3 text-white" style={{fontSize:"20px", fontWeight: "500"}}>Header</span>
+                            <div className="" style={{ display: 'contents' }}><span className="mr-3 text-white" style={{fontSize:"20px", fontWeight: "500", whiteSpace: "pre"}}>Quote Header</span>
                                 <a href="#" className="btn-sm text-white"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                                 <a href="#" className="btn-sm text-white"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a>
                                 {/* <a href="#" className="btn-sm text-white"><img style={{ width: '14px' }} src={folderaddIcon}></img></a> */}
                                 </div>
-                                <div className="hr"></div>
+                                {/* <div className="hr" style={{backgroundColor:"#fff"}}></div> */}
                             {/* <div class="input-group icons border-radius-10 border">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
@@ -196,7 +337,7 @@ export function SolutionServicePortfolio(props) {
                                     </TabList>
                                 </Box>
                                 <TabPanel value="1">
-                                    <div class="row mt-4">
+                                    <div class="row mt-4 input-fields">
                                         <div class="col-md-4 col-sm-4">
                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOURCE</label>
                                             <div class="form-group w-100">
@@ -206,39 +347,35 @@ export function SolutionServicePortfolio(props) {
                                         <div class="col-md-4 col-sm-4">
                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER ID</label>
                                             <div class="form-group w-100" style={{position:"relative"}}>
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                 <span className="search-absolute"><SearchIcon /></span>
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER NAME</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
-                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONTACT EMAIL</label>
+                                        <label className="text-light-dark font-size-12 font-weight-500 " for="exampleInputEmail1">CONTACT EMAIL</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                         <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONTACT PHONE</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER GROUP</label>
-                                                <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="placeholder (Optional)"
-                                                />
+                                        <div class="col-md-4 col-sm-4">
+                                        <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER GROUP</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
+                                       
                                         <div className="col-md-12 col-sm-12">
                                             <div class="form-group">
                                                 <Link className="btn bg-primary text-white pull-right">
@@ -250,41 +387,41 @@ export function SolutionServicePortfolio(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="2">
-                                    <div className="row mt-4">
+                                    <div className="row mt-4 input-fields">
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MODEL</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SERIAL #</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SMU</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT NO / FLEET NO</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REGISTRATION NO</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CHASIS NO</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         {/* <div className="col-md-6 col-sm-6">
@@ -321,46 +458,41 @@ export function SolutionServicePortfolio(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="3">
-                                    <div className="row mt-4">
+                                    <div className="row mt-4 input-fields">
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED BY </label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">APPROVED BY</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED ON</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REVISED BY</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REVISED ON</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SALES OFFICE / BRANCH</label>
-                                                <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="placeholder (Optional)"
-                                                />
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SALES OFFICE / BRANCH</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div className="col-md-12 col-sm-12">
@@ -373,47 +505,41 @@ export function SolutionServicePortfolio(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="4">
-                                    <div className="row mt-4">
+                                    <div className="row mt-4 input-fields">
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE DATE</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE #</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">QUOTE DESCRIPTION</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REFERENCE</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
-                                        <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VALIDITY</label>
-                                                <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    placeholder="placeholder (Optional)"
-                                                />
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VALIDITY</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
-                                            {/* <a href="#" className="btn btn-primary w-100" onClick={() => setOpen1(true)}> Create New</a> */}
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VERSION</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div className="col-md-12 col-sm-12">
@@ -426,47 +552,47 @@ export function SolutionServicePortfolio(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="5">
-                                    <div class="row mt-4">
+                                    <div class="row mt-4 input-fields">
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PRICE</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PRICE DATE</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COST PRICE</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PRICE METHOD</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ADJUSTED PRICE</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MARGIN</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CURRENCY</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div className="col-md-12 col-sm-12">
@@ -479,47 +605,47 @@ export function SolutionServicePortfolio(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="6">
-                                    <div className="row mt-4">
+                                    <div className="row mt-4 input-fields">
                                        <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DELIVERY TYPE</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DELIVERY PRIORITY</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PAYMENT TERMS</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">BILLING FREQUENCY</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PAYER (s)</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">% SPLIT</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PAYABLE BY PAYER</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                     </div>
@@ -533,7 +659,7 @@ export function SolutionServicePortfolio(props) {
                         <div className="row align-items-center">
                             <div className="col-3">
                                 <div className="d-flex ">
-                                    <h5 className="mr-4 mb-0"><span>Bundle Item</span></h5>
+                                    <h5 className="mr-4 mb-0"><span style={{fontSize: "18px"}}>Quote Item</span></h5>
                                     <p className="ml-4 mb-0">
                                         <a href="#" className="ml-3 "><img src={editIcon}></img></a>
                                         <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
@@ -586,19 +712,13 @@ export function SolutionServicePortfolio(props) {
                             </div>
                         </div>
                         <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
-                            <DataGrid
-                                sx={{
-                                    '& .MuiDataGrid-columnHeaders': {
-                                        backgroundColor: '#7380E4', color: '#fff'
-                                    }
-                                }}
-                                rows={rows}
-                                columns={columns}
-                                pageSize={5}
-                                rowsPerPageOptions={[5]}
-                                checkboxSelection
-
-
+                        <DataTable
+                                className=""
+                                title=""
+                                columns={masterColumns}
+                                data={rows}
+                                customStyles={customStyles}
+                                pagination
                             />
                         </div>
                         <div className="my-2">
