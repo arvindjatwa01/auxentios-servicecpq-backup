@@ -3201,3 +3201,10 @@ border-radius: 50%;
 .input-fields .form-control {
   font-size: 17px !important;
 }
+.search-icon-postn{position: absolute;
+top: 11px;
+left: 3px;
+z-index: 1;}
+.customize .custom-input-sleact {
+  padding-left: 21px !important;
+}
