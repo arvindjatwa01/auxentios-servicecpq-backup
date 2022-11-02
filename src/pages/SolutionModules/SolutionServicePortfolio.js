@@ -4,6 +4,8 @@ import { DataGrid } from '@mui/x-data-grid';
 import { CommanComponents } from "../../components/index"
 import FormGroup from '@mui/material/FormGroup';
 import Select from 'react-select';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ClearIcon from '@mui/icons-material/Clear';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
@@ -871,7 +873,7 @@ export function SolutionServicePortfolio(props) {
                                             <span className="a-btn">A</span>
                                         </a>
                                     </div> */}
-                                        <a href="#" className="btn bg-primary text-white">+ Upload</a>
+                                        <a href="#" data-toggle="modal" data-target="#myModal12" className=" btn bg-primary text-white">+ Upload</a>
                                     
                                 </div>
                             </div>
@@ -1193,6 +1195,99 @@ export function SolutionServicePortfolio(props) {
             </div>
           </div>
         </div>
+        <div class="modal right fade" id="myModal12" tabindex="-1" role="dialog" aria-labelledby="myModal12">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                  <div class="modal-header" style={{borderBottom: "1px solid #872ff7"}}>
+                    <h4 class="modal-title text-primary" id="myModal12">Order Details</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true" className="text-primary">&times;</span>
+                    </button>
+                  </div>
+
+                  <div class="modal-body">
+                    <div className="p-2">
+                    <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Description</span></p>
+                            <h6 className="mb-0 "><b>REPLACE ENGINE 797</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Service Organisation</span></p>
+                            <h6 className="mb-0 "><b>ESPERENCE (SV71)</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>SERIAL NUMBER#</span></p>
+                            <h6 className="mb-0 "><b>LAJ00632</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Customer</span></p>
+                            <h6 className="mb-0 "><b>207039 CHINALCO BEJING</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Model</span></p>
+                            <h6 className="mb-0 "><b>797</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Manufacturer</span></p>
+                            <h6 className="mb-0 "><b>Caterpillar</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Price Method</span></p>
+                            <h6 className="mb-0 "><b>Sale Price</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Price Type</span></p>
+                            <h6 className="mb-0 "><b>List Price</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Net Price</span></p>
+                            <h6 className="mb-0 "><b>$50000</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Estimated External Service Purchase $</span></p>
+                            <h6 className="mb-0 "><b>$5000</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Estimated Labour</span></p>
+                            <h6 className="mb-0 "><b>$10000</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Estimated Parts</span></p>
+                            <h6 className="mb-0 "><b>$35000</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Adjusted Price</span></p>
+                            <h6 className="mb-0 "><b>$48000</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Discounts</span></p>
+                            <h6 className="mb-0 "><b>$2000</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Margin</span></p>
+                            <h6 className="mb-0 "><b>32%</b></h6>
+                        </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
             </div>
         </>
     )
