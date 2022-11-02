@@ -210,11 +210,11 @@ const handleCreate=()=>{
               <div className="" style={{ display:'contents'}}><span className="mr-3 white-space">Segment 01- Transmission</span></div>
               <div className="hr"></div>
               </h5>
-              <div className="row mt-4">
+              <div className="row mt-4 input-fields">
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SEGMENT #</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
@@ -232,7 +232,7 @@ const handleCreate=()=>{
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">TITLE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
@@ -250,7 +250,7 @@ const handleCreate=()=>{
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COMPONENT CODE DESCRIPTION</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                

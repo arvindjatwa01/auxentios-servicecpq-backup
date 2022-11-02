@@ -141,7 +141,7 @@ const  SolutionQuoteConfiguration=()=>{
         Create New</Link>
             </div>
                   <div className="mt-5">
-              <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6>
+              {/* <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6> */}
               <div className="recent-div p-3">
                 <h6 className="font-weight-600 text-grey mb-0">RECENT SOLUTION QUOTE</h6>
                 <div className="row">
@@ -287,7 +287,7 @@ const  SolutionQuoteConfiguration=()=>{
                 </div>
 
               </div>
-              <div className="recent-div p-3">
+              {/* <div className="recent-div p-3">
                 <h6 className="font-weight-600 text-grey mb-0">SERVICE BUNDLES</h6>
                 <div className="row">
                   <div className="col-md-4">
@@ -360,7 +360,7 @@ const  SolutionQuoteConfiguration=()=>{
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
             </TabPanel>
             <TabPanel value="2">

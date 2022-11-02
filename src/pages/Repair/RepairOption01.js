@@ -204,48 +204,48 @@ const handleCreate=()=>{
               <div className="" style={{ display:'contents'}}><span className="mr-3 white-space">Operation 01</span></div>
               <div className="hr"></div>
               </h5>
-              <div className="row mt-4">
+              <div className="row mt-4 input-fields">
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">OPERATION #</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">COMPONENT CODE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">JOB CODE DESCRIPTION</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholdEr="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholdEr="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">COMPONENT CODE DESCRIPTION</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">JOB CODE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">MODIFIER</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-600" for="exampleInputEmail1">DESCRIPTION</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 

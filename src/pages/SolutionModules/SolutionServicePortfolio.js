@@ -4,6 +4,8 @@ import { DataGrid } from '@mui/x-data-grid';
 import { CommanComponents } from "../../components/index"
 import FormGroup from '@mui/material/FormGroup';
 import Select from 'react-select';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ClearIcon from '@mui/icons-material/Clear';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
@@ -15,6 +17,7 @@ import TabPanel from '@mui/lab/TabPanel';
 import SearchIcon from '@mui/icons-material/Search';
 import { Link, useHistory} from 'react-router-dom'
 import FormControlLabel from '@mui/material/FormControlLabel';
+import AddIcon from '@mui/icons-material/Add';
 import FormControl from '@mui/material/FormControl';
 import Checkbox from '@mui/material/Checkbox';
 import DataTable from "react-data-table-component";
@@ -36,7 +39,12 @@ import deleteIcon from '../../assets/icons/svg/delete.svg'
 import copyIcon from '../../assets/icons/svg/Copy.svg'
 import editIcon from '../../assets/icons/svg/edit.svg'
 import searchstatusIcon from '../../assets/icons/svg/search-status.svg'
-import searchLogo from '../../assets/icons/svg/search.svg';
+import $ from "jquery";
+import {
+    getSearchCoverageForFamily,
+    getSearchQueryCoverage,
+  } from "../../services/index";
+  import SelectFilter from "react-select";
 
 export function SolutionServicePortfolio(props) {
     const history=useHistory()
@@ -261,6 +269,80 @@ export function SolutionServicePortfolio(props) {
         // { id: 8, DocumentType: 'Frances', PrimaruQuote: 'Rossini', Groupid: 36, progress: 35, },
         // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
     ];
+    const handleDeletQuerySearch = () => {
+        setQuerySearchSelector([]);
+        setCount(0);
+        setMasterData([]);
+        setFilterMasterData([]);
+        setSelectedMasterData([]);
+      };
+      const addSearchQuerryHtml = () => {
+        setQuerySearchSelector([
+          ...querySearchSelector,
+          {
+            id: count,
+            selectOperator: "",
+            selectFamily: "",
+            inputSearch: "",
+            selectOptions: [],
+            selectedOption: "",
+          },
+        ]);
+        setCount(count + 1);
+      };
+      const [querySearchSelector, setQuerySearchSelector] = useState([
+        {
+          id: 0,
+          selectFamily: "",
+          selectOperator: "",
+          inputSearch: "",
+          selectOptions: [],
+          selectedOption: "",
+        },
+      ]);
+      const [count, setCount] = useState(1);
+      const handleSearchListClick = (e, currentItem, obj1, id) => {
+        let tempArray = [...querySearchSelector];
+        let obj = tempArray[id];
+        obj.inputSearch = currentItem;
+        obj.selectedOption = currentItem;
+        tempArray[id] = obj;
+        setQuerySearchSelector([...tempArray]);
+        $(`.scrollbar-${id}`).css("display", "none");
+      };
+      const [selectedMasterData, setSelectedMasterData] = useState([]);
+      const handleInputSearch = (e, id) => {
+        let tempArray = [...querySearchSelector];
+        let obj = tempArray[id];
+        getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
+          .then((res) => {
+            obj.selectOptions = res;
+            tempArray[id] = obj;
+            setQuerySearchSelector([...tempArray]);
+            $(`.scrollbar-${id}`).css("display", "block");
+          })
+          .catch((err) => {
+            console.log("err in api call", err);
+          });
+        obj.inputSearch = e.target.value;
+      };
+      const handleFamily = (e, id) => {
+        let tempArray = [...querySearchSelector];
+        console.log("handleFamily e:", e);
+        let obj = tempArray[id];
+        obj.selectFamily = e;
+        tempArray[id] = obj;
+        setQuerySearchSelector([...tempArray]);
+      };
+      const [filterMasterData, setFilterMasterData] = useState([]);
+      const handleOperator = (e, id) => {
+        let tempArray = [...querySearchSelector];
+        let obj = tempArray[id];
+        obj.selectOperator = e;
+        tempArray[id] = obj;
+        setQuerySearchSelector([...tempArray]);
+      };
+      const [masterData, setMasterData] = useState([]);
     return (
         <>
             {/* <CommanComponents /> */}
@@ -656,58 +738,143 @@ export function SolutionServicePortfolio(props) {
 
                     </div>
                     <div className="card px-4 pb-4 mt-5 pt-0">
-                        <div className="row align-items-center">
-                            <div className="col-3">
+                        <div className="row align-items-center p-3">
+                            <div className="col-1">
                                 <div className="d-flex ">
-                                    <h5 className="mr-4 mb-0"><span style={{fontSize: "18px"}}>Quote Item</span></h5>
-                                    <p className="ml-4 mb-0">
+                                    <h5 className="mr-4 mb-0"><span style={{fontSize: "18px", whiteSpace:"pre"}}>Quote Item</span></h5>
+                                    {/* <p className="ml-4 mb-0">
                                         <a href="#" className="ml-3 "><img src={editIcon}></img></a>
                                         <a href="#" className="ml-3 "><img src={shareIcon}></img></a>
-                                    </p>
+                                    </p> */}
                                 </div>
                             </div>
-                            <div className="col-6">
-                                <div className="d-flex align-items-center" style={{ background: '#F9F9F9', padding: '10px 15px', borderRadius: '10px' }}>
-                                    <div className="search-icon mr-2" style={{ lineHeight: '24px' }}>
-                                        <img src={searchstatusIcon}></img>
-                                    </div>
-                                    <div className="w-100 mx-2">
-                                        <div className="machine-drop d-flex align-items-center">
-                                            {/* <div><lable className="label-div">Search By</lable></div> */}
-                                            <FormControl className="" sx={{ m: 1, }}>
-                                                <Select
-                                                    placeholder="Search By"
-                                                    id="demo-simple-select-autowidth"
-                                                    value={age}
-                                                    onChange={handleChangedrop}
-                                                    autoWidth
-                                                >
-                                                    <MenuItem value="5">
-                                                        <em>Engine</em>
-                                                    </MenuItem>
-                                                    <MenuItem value={10}>Twenty</MenuItem>
-                                                    <MenuItem value={21}>Twenty one</MenuItem>
-                                                    <MenuItem value={22}>Twenty one and a half</MenuItem>
-                                                </Select>
-                                            </FormControl>
-                                        </div>
-                                    </div>
+                            <div className="col-10">
+                            <div className="d-flex justify-content-between align-items-center w-100 ">
+                    <div className="row align-items-center m-0">
+                      {querySearchSelector.map((obj, i) => {
+                        return (
+                          <>
+                            <div className="customselect d-flex align-items-center mr-3 my-2">
+                              {i > 0 ? (
+                                <SelectFilter
+                                  isClearable={true}
+                                  defaultValue={{ label: "And", value: "AND" }}
+                                  options={[
+                                    { label: "And", value: "AND", id: i },
+                                    { label: "Or", value: "OR", id: i },
+                                  ]}
+                                  placeholder="Search By.."
+                                  onChange={(e) => handleOperator(e, i)}
+                                  // value={querySearchOperator[i]}
+                                  value={obj.selectOperator}
+                                />
+                              ) : (
+                                <></>
+                              )}
 
-                                </div>
+                              <div>
+                                <SelectFilter
+                                  // isClearable={true}
+                                  options={[
+                                    { label: "Make", value: "make", id: i },
+                                    { label: "Family", value: "family", id: i },
+                                    { label: "Model", value: "model", id: i },
+                                    { label: "Prefix", value: "prefix", id: i },
+                                  ]}
+                                  placeholder="Search By.."
+                                  onChange={(e) => handleFamily(e, i)}
+                                  value={obj.selectFamily}
+                                />
+                              </div>
+                              <div className="customselectsearch customize">
+                              <span className="search-icon-postn"><SearchIcon /></span>
+                                <input
+                                  className="custom-input-sleact "
+                                  style={{position:"relative"}}
+                                  type="text"
+                                  placeholder="Search Parts"
+                                  value={obj.inputSearch}
+                                  onChange={(e) => handleInputSearch(e, i)}
+                                  id={"inputSearch-" + i}
+                                  autoComplete="off"
+                                />
+                                <div className="bg-primary text-white btn"><span className="mr-2"><AddIcon /></span>Add Part</div>
+                                   
+                                {
+                                  <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}>
+                                    {obj.selectOptions.map((currentItem, j) => (
+                                      <li
+                                        className="list-group-item"
+                                        key={j}
+                                        onClick={(e) =>
+                                          handleSearchListClick(
+                                            e,
+                                            currentItem,
+                                            obj,
+                                            i
+                                          )
+                                        }
+                                      >
+                                        {currentItem}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                }
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })}
+                      <div onClick={(e) => addSearchQuerryHtml(e)}>
+                        <Link
+                          to="#"
+                          className="btn-sm text-primary border mr-2"
+                          style={{ border: "1px solid #872FF7" }}
+                        >
+                          +
+                        </Link>
+                      </div>
+                      <div onClick={handleDeletQuerySearch}>
+                        <Link to="#" className="btn-sm border">
+                          <svg
+                            data-name="Layer 41"
+                            id="Layer_41"
+                            fill="#872ff7"
+                            viewBox="0 0 50 50"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <title />
+                            <path
+                              className="cls-1"
+                              d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                            />
+                            <path
+                              className="cls-1"
+                              d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                            />
+                            <path
+                              className="cls-1"
+                              d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                            />
+                          </svg>
+                          {/* <DeleteIcon className="font-size-16" /> */}
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
 
                             </div>
-                            <div className="col-3">
+                            <div className="col-auto">
                                 <div className="d-flex align-items-center">
-                                    <div className="col-8 text-center">
+                                    {/* <div className="col-8 text-center">
                                         <a href="#" className="p-1 more-btn">+ 3 more
                                             <span className="c-btn">C</span>
                                             <span className="b-btn">B</span>
                                             <span className="a-btn">A</span>
                                         </a>
-                                    </div>
-                                    <div className="col-4 text-center border-left py-4">
-                                        <a href="#" className="p-1 ">+ Add Part</a>
-                                    </div>
+                                    </div> */}
+                                        <a href="#" data-toggle="modal" data-target="#myModal12" className=" btn bg-primary text-white">+ Upload</a>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -1028,6 +1195,99 @@ export function SolutionServicePortfolio(props) {
             </div>
           </div>
         </div>
+        <div class="modal right fade" id="myModal12" tabindex="-1" role="dialog" aria-labelledby="myModal12">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                  <div class="modal-header" style={{borderBottom: "1px solid #872ff7"}}>
+                    <h4 class="modal-title text-primary" id="myModal12">Order Details</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true" className="text-primary">&times;</span>
+                    </button>
+                  </div>
+
+                  <div class="modal-body">
+                    <div className="p-2">
+                    <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Description</span></p>
+                            <h6 className="mb-0 "><b>REPLACE ENGINE 797</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Service Organisation</span></p>
+                            <h6 className="mb-0 "><b>ESPERENCE (SV71)</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>SERIAL NUMBER#</span></p>
+                            <h6 className="mb-0 "><b>LAJ00632</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Customer</span></p>
+                            <h6 className="mb-0 "><b>207039 CHINALCO BEJING</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Model</span></p>
+                            <h6 className="mb-0 "><b>797</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Manufacturer</span></p>
+                            <h6 className="mb-0 "><b>Caterpillar</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Price Method</span></p>
+                            <h6 className="mb-0 "><b>Sale Price</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Price Type</span></p>
+                            <h6 className="mb-0 "><b>List Price</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Net Price</span></p>
+                            <h6 className="mb-0 "><b>$50000</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Estimated External Service Purchase $</span></p>
+                            <h6 className="mb-0 "><b>$5000</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Estimated Labour</span></p>
+                            <h6 className="mb-0 "><b>$10000</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Estimated Parts</span></p>
+                            <h6 className="mb-0 "><b>$35000</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Adjusted Price</span></p>
+                            <h6 className="mb-0 "><b>$48000</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Discounts</span></p>
+                            <h6 className="mb-0 "><b>$2000</b></h6>
+                        </div>
+                        <div className="hr"></div>
+                        <div className="d-flex align-items-center justify-content-between">
+                            <p className="mb-0 "><span>Margin</span></p>
+                            <h6 className="mb-0 "><b>32%</b></h6>
+                        </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
             </div>
         </>
     )

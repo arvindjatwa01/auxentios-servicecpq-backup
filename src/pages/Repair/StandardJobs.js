@@ -876,9 +876,9 @@ const history=useHistory()
           </div>
           </div>
           <div className="card p-4 mt-5">
-            <h5 className="d-flex align-items-center mb-0">
-              <div className="" style={{ display:'contents'}}><span className="mr-3">Header</span><a href="#" className="btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i></a> <a href="#" className="btn-sm"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a> <a href="#" className="btn-sm"><i class="fa fa-folder-o" aria-hidden="true"></i></a></div>
-              <div className="hr"></div>
+            <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
+              <div className="" style={{ display:'contents'}}><span className="mr-3 ml-2 text-white" style={{fontSize:"20px"}}>Header</span><a href="#" className="btn-sm text-white"><i class="fa fa-pencil" aria-hidden="true"></i></a> <a href="#" className="text-white btn-sm"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a> <a href="#" className="text-white btn-sm"><i class="fa fa-folder-o" aria-hidden="true"></i></a></div>
+              {/* <div className="hr"></div> */}
               </h5>
         <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
           <TabContext value={value}>
@@ -893,35 +893,35 @@ const history=useHistory()
               </TabList>
             </Box>
             <TabPanel value="1">
-            <div className="row">
+            <div className="row input-fields">
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOURCE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER ID</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER NAME</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONTACT EMAIL</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONTACT PHONE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -991,41 +991,41 @@ const history=useHistory()
 
             </TabPanel>
             <TabPanel value="2">
-            <div className="row">
+            <div className="row input-fields">
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MODEL</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SERIAL #</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SMU</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">UNIT NO / FLEET NO</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REGISTRATION NO</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CHASIS NO</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 
@@ -1076,35 +1076,35 @@ const history=useHistory()
                   </div>
             </TabPanel>
             <TabPanel value="3">
-            <div className="row">
+            <div className="row input-fields">
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED BY</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">APPROVED BY</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREPARED ON</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REVISED BY</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REVISED ON</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -1166,29 +1166,29 @@ const history=useHistory()
                   </div>
             </TabPanel>
             <TabPanel value="4">
-            <div className="row">
+            <div className="row input-fields">
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ESTIMATION DATE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ESTIMATION #</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">DESCRIPTION</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REFERENCE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -1205,7 +1205,7 @@ const history=useHistory()
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">VERSION</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 
@@ -1256,23 +1256,23 @@ const history=useHistory()
                   </div>
             </TabPanel>
             <TabPanel value="5">
-              <div className="row">
+              <div className="row input-fields">
               <div className="col-md-4 col-sm-4">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PRICE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PRICE DATE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COST PRICE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
               <div className="col-md-4 col-sm-4">
@@ -1289,7 +1289,7 @@ const history=useHistory()
               <div className="col-md-4 col-sm-4">
                 <div class="form-group">
                   <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">ADJUSTED PRICE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
               
