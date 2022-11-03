@@ -5,6 +5,7 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import FormGroup from '@mui/material/FormGroup';
+import DriveFolderUploadOutlinedIcon from '@mui/icons-material/DriveFolderUploadOutlined';
 import Tab from '@mui/material/Tab';
 import Divider from '@mui/material/Divider';
 import Menu from '@mui/material/Menu';
@@ -350,7 +351,7 @@ const handleChangedrop2 = (event) => {
       <div className="content-body" style={{ minHeight: '884px' }}>
         <div className="container-fluid mt-4">
           <div className="d-flex align-items-center justify-content-between mt-2">
-          <h5 className="font-weight-600 mb-0">Repair Option</h5>
+          <h5 className="font-weight-600 mb-0" style={{fontSize:"18px"}}>Repair Option</h5>
           <div className="d-flex justify-content-center align-items-center">
           <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
                             <a href="#" className="ml-3 font-size-14" title="Items to review"><img src={folderaddIcon}></img></a>
@@ -363,12 +364,12 @@ const handleChangedrop2 = (event) => {
           </div>
           </div>
     <div className="card p-4 mt-5">
-          <h5 className="d-flex align-items-center mb-0">
-              <div className="" style={{ display:'contents'}}><span className="mr-3" style={{whiteSpace:'pre'}}>Header</span>
-              <a href="#" className="btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-              <a href="#" className="btn-sm"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a> 
-              <a href="#" className="btn-sm"><img style={{width:'14px'}} src={folderaddIcon}></img></a></div>
-              <div class="hr"></div>
+          <h5 className="d-flex bg-primary p-3 border-radius-10 align-items-center mb-0">
+              <div className="" style={{ display:'contents'}}><span className="mr-3 text-white" style={{whiteSpace:'pre', fontSize:"20px"}}>Quote Header</span>
+              <a href="#" className="btn-sm text-white"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+              <a href="#" className="btn-sm text-white"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a> 
+              <a href="#" className="btn-sm text-white"><DriveFolderUploadOutlinedIcon /></a></div>
+              {/* <div class="hr"></div> */}
               </h5>
               <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
                 <TabContext value={value}>
@@ -382,41 +383,41 @@ const handleChangedrop2 = (event) => {
                     </TabList>
                   </Box>
                   <TabPanel value="1">
-                <div className="row mt-4">
+                <div className="row mt-4 input-fields">
                 <div class="col-md-6 col-sm-6">
                <div class="form-group">
                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOURCE ID</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EPR Work Order"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EPR Work Order"/>
                 </div>
               </div>
               <div class="col-md-6 col-sm-6">
                <div class="form-group">
                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REQUESTER</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Andrew Peplow"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Andrew Peplow"/>
                 </div>
               </div>
               <div class="col-md-6 col-sm-6">
                <div class="form-group">
                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER ID</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="203037"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="203037"/>
                 </div>
               </div>
               <div class="col-md-6 col-sm-6">
                <div class="form-group">
                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COSTOMER NAME</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="CHINALCO Bejing"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="CHINALCO Bejing"/>
                 </div>
               </div>
               <div class="col-md-6 col-sm-6">
                <div class="form-group">
                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER EMAIL</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="peplow@ferreycorp.com"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="peplow@ferreycorp.com"/>
                 </div>
               </div>
               <div class="col-md-6 col-sm-6">
                <div class="form-group">
                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COSTOMER ZIP CODE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="765-102"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="765-102"/>
                 </div>
               </div>
                 </div>
@@ -462,41 +463,41 @@ const handleChangedrop2 = (event) => {
              
             </TabPanel>
             <TabPanel value="2">
-            <div className="row mt-4">
+            <div className="row mt-4 input-fields">
                 <div class="col-md-6 col-sm-6">
                <div class="form-group">
                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOURCE ID</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EPR Work Order"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EPR Work Order"/>
                 </div>
               </div>
               <div class="col-md-6 col-sm-6">
                <div class="form-group">
                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REQUESTER</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Andrew Peplow"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Andrew Peplow"/>
                 </div>
               </div>
               <div class="col-md-6 col-sm-6">
                <div class="form-group">
                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER ID</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="203037"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="203037"/>
                 </div>
               </div>
               <div class="col-md-6 col-sm-6">
                <div class="form-group">
                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COSTOMER NAME</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="CHINALCO Bejing"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="CHINALCO Bejing"/>
                 </div>
               </div>
               <div class="col-md-6 col-sm-6">
                <div class="form-group">
                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CUSTOMER EMAIL</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="peplow@ferreycorp.com"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="peplow@ferreycorp.com"/>
                 </div>
               </div>
               <div class="col-md-6 col-sm-6">
                <div class="form-group">
                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COSTOMER ZIP CODE</label>
-                  <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="765-102"/>
+                  <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="765-102"/>
                 </div>
               </div>
               <div className=" col-md-12  col-sm-12">

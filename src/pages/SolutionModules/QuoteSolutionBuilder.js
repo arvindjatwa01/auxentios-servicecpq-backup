@@ -7,6 +7,7 @@ import FormGroup from '@mui/material/FormGroup';
 import DataTable from "react-data-table-component";
 import Select from 'react-select';
 import Box from '@mui/material/Box';
+import DriveFolderUploadOutlinedIcon from '@mui/icons-material/DriveFolderUploadOutlined';
 import {
     getSearchCoverageForFamily,
     getSearchQueryCoverage,
@@ -347,7 +348,7 @@ export function QuoteSolutionBuilder(props) {
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid ">
                     <div className="d-flex align-items-center justify-content-between mt-2">
-                        <h5 className="font-weight-600 mb-0">Solution Builder</h5>
+                        <h5 className="font-weight-600 mb-0" style={{fontSize:"18px"}}>Solution Quote</h5>
                         <div className="d-flex justify-content-center align-items-center">
                         <div className="ml-3">
                             <Button className="btn bg-primary text-white font-size-12"
@@ -386,17 +387,18 @@ export function QuoteSolutionBuilder(props) {
                       
                     </div>
                     <div className="card p-4 mt-5">
-                        <h5 className="d-flex align-items-center mb-0">
-                            <div className="" style={{ display: 'contents' }}><span className="mr-3" style={{whiteSpace: "pre"}}>Quote Header</span><a href="#" className="btn-sm"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                <a href="#" className="btn-sm"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a>
-                                <a href="#" className="btn-sm"><img style={{ width: '14px' }} src={folderaddIcon}></img></a></div>
-                            <div class="input-group icons border-radius-10 border">
+                        <h5 className="d-flex align-items-center mb-0 bg-primary p-3 border-radius-10">
+                            <div className="" style={{ display: 'contents' }}><span className="mr-3 text-white" style={{whiteSpace: "pre", fontSize:"20px"}}>Quote Header</span>
+                            <a href="#" className="btn-sm text-white"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                <a href="#" className="btn-sm text-white"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a>
+                                <a href="#" className="btn-sm text-white"><DriveFolderUploadOutlinedIcon /></a></div>
+                            {/* <div class="input-group icons border-radius-10 border">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text bg-transparent border-0 pr-0 " id="basic-addon1">
                                         <img src={searchLogo} /></span>
                                 </div>
                                 <input type="search" class="form-control search-form-control" aria-label="Search Dashboard" />
-                            </div>
+                            </div> */}
                         </h5>
                         
                         <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
@@ -410,7 +412,27 @@ export function QuoteSolutionBuilder(props) {
                                     </TabList>
                                 </Box>
                                 <TabPanel value="1">
-                                    <div class="row mt-4">
+                                    <div class="row mt-4 input-fields">
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOULTION CODE</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOULTION DESCRIPTION</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">REFERENCE</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row mt-4">
                                         <div class="col-md-4 col-sm-4">
                                             <div class="form-group">
                                                 <p class="font-size-12 font-weight-500 mb-2">SOLUTION CODE</p>
@@ -432,16 +454,16 @@ export function QuoteSolutionBuilder(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="2">
-                                    <div className="row">
+                                    <div className="row mt-4 input-fields">
                                         <div className="col-md-6 col-sm-6">
                                             <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">DATE</label>
                                             <div className="d-flex align-items-center">
                                                 <div class="form-group w-100">
-                                                    <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                    <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                 </div>
                                                 <div className="form-group mx-2">To</div>
                                                 <div class="form-group w-100">
-                                                    <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                    <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                 </div>
                                             </div>
                                         </div>
@@ -452,25 +474,25 @@ export function QuoteSolutionBuilder(props) {
                                             <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">HOUR</label>
                                             <div className="d-flex align-items-center">
                                                 <div class="form-group w-100">
-                                                    <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                    <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                 </div>
                                                 <div className="form-group mx-2">To</div>
                                                 <div class="form-group w-100">
-                                                    <input type="email" class="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                    <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="col-md-12 col-sm-12">
+                                        {/* <div className="col-md-12 col-sm-12">
                                             <div class="form-group">
                                                 <Link to={"/repairOption"} className="btn bg-primary text-white">
                                                     Next
                                                 </Link>
                                             </div>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="3">
-                                    <div className="row">
+                                    <div className="row mt-4 input-fields">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-14 font-weight-500" for="exampleInputEmail1">MAKE</label>
@@ -541,7 +563,43 @@ export function QuoteSolutionBuilder(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="4">
-                                    <div class="row mt-4">
+                                    <div class="row mt-4 input-fields">
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MAKE</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MODEL</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">PREFIX</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MACHINE/COMPONENT</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MACHINE TYPE</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">COVERAGE DATA</label>
+                                            <div class="form-group w-100">
+                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
                                         <div class="col-md-4 col-sm-4">
                                             <div class="form-group">
                                                 <p class="font-size-12 font-weight-500 mb-2">MAKE</p>
