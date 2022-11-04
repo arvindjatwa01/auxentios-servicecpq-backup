@@ -10,7 +10,7 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 
 import { PortfolioContext } from "../PortfolioAndBundle/ProtfolioContext";
 import { useAppSelector } from "../../app/hooks";
-import {selectUpdateTaskList,selectStrategyTaskOption,selectCategoryList} from "../PortfolioAndBundle/customerSegment/strategySlice"
+import { selectUpdateTaskList, selectStrategyTaskOption, selectCategoryList } from "../PortfolioAndBundle/customerSegment/strategySlice"
 
 
 const AddCustomPortfolioItem = (props) => {
@@ -27,7 +27,7 @@ const AddCustomPortfolioItem = (props) => {
     description: "",
     // usageIn:{label:categoryUsageKeyValue1.label,value:categoryUsageKeyValue1.value},
     // taskType: {label:stratgyTaskTypeKeyValue.label,value:stratgyTaskTypeKeyValue.value},
-    usageIn:"",
+    usageIn: "",
     taskType: "",
     frequency: "",
     unit: "",
@@ -38,10 +38,10 @@ const AddCustomPortfolioItem = (props) => {
     templateDescription: "",
     repairOption: "",
   });
-  
+
   const updatedTaskList = useAppSelector(selectStrategyTaskOption(selectUpdateTaskList));
   const categoryList = useAppSelector(selectStrategyTaskOption(selectCategoryList));
-  
+
   const frequencyOptions = [
     { label: "Cyclic", value: "Cyclic" },
     { label: "once", value: "once" },
@@ -80,7 +80,7 @@ const AddCustomPortfolioItem = (props) => {
         taskType: { label: taskType, value: taskType },
         frequency: { label: frequency, value: frequency },
         unit: { label: unit, value: unit },
-        recommendedValue:recommendedValue,
+        recommendedValue: recommendedValue,
         quantity,
         numberOfEvents: numberOfEvents,
         templateDescription: {
@@ -107,7 +107,7 @@ const AddCustomPortfolioItem = (props) => {
 
   return (
     <>
-      <div className="ligt-greey-bg p-3">
+      <div className="ligt-greey-bg p-3 d-none">
         <div>
           {props.compoFlag === "itemEdit" && (
             <span className="mr-3 cursor" onClick={() => setEditable(false)}>
@@ -118,7 +118,8 @@ const AddCustomPortfolioItem = (props) => {
 
           <span className="mr-3">
             <FormatListBulletedOutlinedIcon className=" font-size-16" />
-            <span className="ml-2">Related part list(s)</span>
+            {/* <span className="ml-2">Related part list(s)</span> */}
+            <span className="ml-2">Item Summary(s)</span>
           </span>
           <span className="mr-3">
             <AccessAlarmOutlinedIcon className=" font-size-16" />
@@ -130,7 +131,7 @@ const AddCustomPortfolioItem = (props) => {
           </span>
         </div>
       </div>
-      <div>
+      <div className="d-none">
         <p className="mt-4">SUMMARY</p>
         <div className="row mt-4">
           <div className="col-md-6 col-sm-6">
@@ -163,7 +164,7 @@ const AddCustomPortfolioItem = (props) => {
                 className="form-control border-radius-10"
                 placeholder="DESCRIPTION"
                 name="description"
-                onChange={(e) =>setAddportFolioItem({...addPortFolioItem,description: e.target.value,})}
+                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, description: e.target.value, })}
                 value={addPortFolioItem.description}
                 disabled={editable}
               />
@@ -181,7 +182,7 @@ const AddCustomPortfolioItem = (props) => {
                 options={categoryList}
                 // options={props.categoryList}
                 value={addPortFolioItem.usageIn}
-                onChange={(e) =>setAddportFolioItem({ ...addPortFolioItem, usageIn: e })}
+                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, usageIn: e })}
                 isDisabled={editable}
               />
             </div>
@@ -204,7 +205,7 @@ const AddCustomPortfolioItem = (props) => {
                     options={updatedTaskList}
                     // options={props.updatedTaskList}
                     value={addPortFolioItem.taskType}
-                    onChange={(e) =>setAddportFolioItem({...addPortFolioItem,taskType: e,})}
+                    onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, taskType: e, })}
                     isDisabled={editable}
                   />
                   <span className="search-icon searchIcon">
@@ -227,7 +228,7 @@ const AddCustomPortfolioItem = (props) => {
                   <Select
                     options={frequencyOptions}
                     placeholder="FREQUENCY"
-                    onChange={(e) =>setAddportFolioItem({...addPortFolioItem,frequency: e,})}
+                    onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, frequency: e, })}
                     value={addPortFolioItem.frequency}
                     isDisabled={editable}
                   />
@@ -257,7 +258,7 @@ const AddCustomPortfolioItem = (props) => {
                   { value: "per quarter", label: "per quarter" },
                 ]}
                 placeholder="HOURS"
-                onChange={(e) =>setAddportFolioItem({ ...addPortFolioItem, unit: e })}
+                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, unit: e })}
                 value={addPortFolioItem.unit}
                 isDisabled={editable}
               />
@@ -272,12 +273,12 @@ const AddCustomPortfolioItem = (props) => {
                 RECOMMENDED VALUE
               </label>
               <input
-              type="text"
+                type="text"
                 placeholder="RECOMMENDED VALUE"
                 className="form-control border-radius-10"
                 // options={options}
 
-                onChange={(e) =>setAddportFolioItem({...addPortFolioItem,recommendedValue: e.target.value,})}
+                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
                 value={addPortFolioItem.recommendedValue}
                 isDisabled={editable}
               />
@@ -295,7 +296,7 @@ const AddCustomPortfolioItem = (props) => {
                 type="text"
                 className="form-control border-radius-10"
                 placeholder="QUANTITY"
-                onChange={(e) =>setAddportFolioItem({...addPortFolioItem,quantity: e.target.value,})}
+                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, quantity: e.target.value, })}
                 value={addPortFolioItem.quantity}
                 disabled={editable}
               />
@@ -458,7 +459,7 @@ const AddCustomPortfolioItem = (props) => {
 
       {/* tabs view for addportfolio */}
 
-      <div className="d-none">
+      <div>
         <TabContext value={tabs}>
           <Box
             sx={{
@@ -473,7 +474,8 @@ const AddCustomPortfolioItem = (props) => {
               aria-label="lab API tabs example"
             >
               {/* <FormatListBulletedOutlinedIcon className=" font-size-16" /> */}
-              <Tab label="Related part list(s)" value="1" />
+              {/* <Tab label="Related part list(s)" value="1" /> */}
+              <Tab label="Item Summary(s)" value="1" />
               {/* <AccessAlarmOutlinedIcon className=" font-size-16" /> */}
               <Tab label="Related template(s)" value="2" />
               {/* <SellOutlinedIcon className=" font-size-16" /> */}
@@ -481,7 +483,7 @@ const AddCustomPortfolioItem = (props) => {
             </TabList>
           </Box>
           <TabPanel value="1">
-            <p className="mt-4">SUMMARY</p>
+            {/* <p className="mt-4">SUMMARY</p> */}
             <div className="row mt-4">
               <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">

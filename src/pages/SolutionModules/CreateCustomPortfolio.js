@@ -4958,6 +4958,22 @@ export function CreateCustomPortfolio() {
         </div>
     );
     const ExpandedPriceCalculator = ({ data }) => (<>
+        <div className="ligt-greey-bg p-2">
+            <div>
+                {/* <span className="mr-3">
+          <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
+          <span className="ml-2 font-size-14">Edit</span>
+        </span> */}
+                <span className="mr-3">
+                    <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                    <span className="ml-2 font-size-14">Related Standard Job</span>
+                </span>
+                <span className="mr-3">
+                    <AccessAlarmOutlinedIcon className=" font-size-16" />
+                    <span className="ml-2 font-size-14">Related Kit</span>
+                </span>
+            </div>
+        </div>
         <div className="row mt-3">
             <div className="col-md-6 col-sm-6">
                 <div className="form-group">
@@ -5301,7 +5317,7 @@ export function CreateCustomPortfolio() {
         const quoteRes = await quoteCreation(quoteObj);
         console.log("quoteRes : ", quoteRes);
 
-        console.log("quote Response data is : ", quoteRes.data)	
+        console.log("quote Response data is : ", quoteRes.data)
         setQuoteData({ ...quoteData, contact: quoteRes.data.quoteMasterId })
 
         console.log("quoteData : ", quoteData);
@@ -10117,6 +10133,8 @@ export function CreateCustomPortfolio() {
                                         { label: "Family", value: "itemHeaderFamily" },
                                         { label: "Model", value: "model" },
                                         { label: "Prefix", value: "prefix" },
+                                        { label: "Item Id", value: "itemId" },
+                                        { label: "Description", value: "description" },
                                     ]}
                                     setTempBundleService1={setTempBundleService1}
                                     setLoadingItem={setLoadingItem}
@@ -10173,7 +10191,7 @@ export function CreateCustomPortfolio() {
                             <TabPanel value="4">
                                 <>
                                     <div className="ligt-greey-bg p-3 mb-5">
-                                        <div>
+                                        {/* <div>
                                             <span className="mr-3">
                                                 <FormatListBulletedOutlinedIcon className=" font-size-16" />
                                                 <span className="ml-2">Related part list(s)</span>
@@ -10185,6 +10203,24 @@ export function CreateCustomPortfolio() {
                                             <span>
                                                 <SellOutlinedIcon className=" font-size-16" />
                                                 <span className="ml-2">Related repair option</span>
+                                            </span>
+                                        </div> */}
+                                        <div>
+                                            <span className="mr-3 cursor">
+                                                <i className="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                                                <span className="ml-2">Edit</span>
+                                            </span>
+                                            <span className="mr-3">
+                                                <SellOutlinedIcon className=" font-size-16" />
+                                                <span className="ml-2">Related repair option</span>
+                                            </span>
+                                            <span className="mr-3">
+                                                <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                                                <span className="ml-2">Related Standard Job</span>
+                                            </span>
+                                            <span className="mr-3">
+                                                <AccessAlarmOutlinedIcon className=" font-size-16" />
+                                                <span className="ml-2">Related Kit</span>
                                             </span>
                                         </div>
                                     </div>
@@ -10491,14 +10527,14 @@ export function CreateCustomPortfolio() {
                                             <MonetizationOnOutlinedIcon className=" font-size-16" />
                                             <span className="ml-2"> Adjust price</span>
                                         </span>
-                                        <span className="mr-3">
+                                        {/* <span className="mr-3">
                                             <FormatListBulletedOutlinedIcon className=" font-size-16" />
                                             <span className="ml-2">Related part list(s)</span>
                                         </span>
                                         <span className="mr-3">
                                             <AccessAlarmOutlinedIcon className=" font-size-16" />
                                             <span className="ml-2">Related service estimate(s)</span>
-                                        </span>
+                                        </span> */}
                                         <span>
                                             <SellOutlinedIcon className=" font-size-16" />
                                             <span className="ml-2">Split price</span>
