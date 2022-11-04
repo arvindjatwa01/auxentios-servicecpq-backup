@@ -8,6 +8,7 @@ import DataTable from "react-data-table-component";
 import Select from 'react-select';
 import Box from '@mui/material/Box';
 import DriveFolderUploadOutlinedIcon from '@mui/icons-material/DriveFolderUploadOutlined';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
     getSearchCoverageForFamily,
     getSearchQueryCoverage,
@@ -351,14 +352,14 @@ export function QuoteSolutionBuilder(props) {
                         <h5 className="font-weight-600 mb-0" style={{fontSize:"18px"}}>Solution Quote</h5>
                         <div className="d-flex justify-content-center align-items-center">
                         <div className="ml-3">
-                            <Button className="btn bg-primary text-white font-size-12"
+                            <Button className="btn py-1 px-2 bg-primary text-white font-size-12"
                                 id="fade-button"
                                 aria-controls={open2 ? 'fade-menu' : undefined}
                                 aria-haspopup="true"
                                 aria-expanded={open2 ? 'true' : undefined}
                                 onClick={handleClick}
                             >
-                                Convert to
+                                Convert to<span><ExpandMoreIcon className="ml-2"/></span>
                             </Button>
                             <Menu
                                 id="fade-menu"
