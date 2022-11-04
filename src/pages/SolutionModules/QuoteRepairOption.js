@@ -72,7 +72,7 @@ const QuoteRepairOption = () => {
       <div class="container-fluid ">
       <div className="d-flex align-items-center justify-content-between mt-2">
             <div className="d-flex">
-          <h5 className="font-weight-600 mb-0">Repair Option</h5>
+          <h5 className="font-weight-600 mb-0" style={{fontSize:"18px"}}>Repair Option</h5>
           <div className="d-flex">
             {/* <div className="ml-3"><a href="#" className="bg-yellow text-white btn-sm rounded-pill">* Gold <KeyboardArrowDownIcon className="font-size-14"/></a></div> */}
             <div className="ml-3">
@@ -90,15 +90,6 @@ const QuoteRepairOption = () => {
           </div>
           <div className="d-flex">
           <div className="d-flex justify-content-center align-items-center">
-          <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
-            <a href="#" className="ml-3 font-size-14" title="Items to Review"><img src={folderaddIcon}></img></a>
-            <a href="#" className="ml-3 font-size-14" title="Upload"><img src={uploadIcon}></img></a>
-            {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
-            <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
-            <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
-            <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions}/></a>
-           
-          </div>
           <div>
           <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
@@ -166,6 +157,16 @@ const QuoteRepairOption = () => {
       </Menu>
     </React.Fragment>
           </div>
+          <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
+            <a href="#" className="ml-3 font-size-14" title="Items to Review"><img src={folderaddIcon}></img></a>
+            <a href="#" className="ml-3 font-size-14" title="Upload"><img src={uploadIcon}></img></a>
+            {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
+            <a href="#" className="ml-3 font-size-14" title="Delete"><img src={deleteIcon}></img></a>
+            <a href="#" className="ml-3 font-size-14" title="Copy"><img src={copyIcon}></img></a>
+            <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions}/></a>
+           
+          </div>
+         
           </div>
           </div>
           {/* <div className="d-flex align-items-center justify-content-between mt-2">
@@ -249,9 +250,9 @@ const QuoteRepairOption = () => {
           <div className="row">
           <div className="col-md-6 col-sm-6">
             <div className="card p-4 mt-5">
-            <h5 className="d-flex align-items-center mb-0">
-              <div className="" style={{ display:'contents'}}><span className="mr-3 white-space">Header</span></div>
-              <div className="hr"></div>
+            <h5 className="d-flex bg-primary p-3 border-radius-10 align-items-center mb-0">
+              <div className="" style={{ display:'contents'}}><span className="mr-3 text-white white-space" style={{fontSize:"20px"}}>Header</span></div>
+              {/* <div className="hr"></div> */}
               </h5>
               <div className="row mt-4">
               <div className="col-md-4 col-sm-4">
@@ -343,9 +344,9 @@ const QuoteRepairOption = () => {
             </div>
             <div className="col-md-6 col-sm-6">
             <div className="card p-4 mt-5">
-            <h5 className="d-flex align-items-center mb-0">
-              <div className="" style={{ display:'contents'}}><span className="mr-3 white-space">Machine</span></div>
-              <div className="hr"></div>
+            <h5 className="d-flex border-radius-10 p-3 bg-primary align-items-center mb-0">
+              <div className="" style={{ display:'contents'}}><span className="mr-3 text-white white-space" style={{fontSize:"20px"}}>Machine</span></div>
+              {/* <div className="hr"></div> */}
               </h5>
               <div className="row mt-4">
               <div className="col-md-4 col-sm-4">

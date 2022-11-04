@@ -152,7 +152,7 @@ const  QuoteWithEvaluation=()=>{
                      <Link to="/RepairBuilderRepairOption" className="btn bg-primary text-white">Create New <ChevronRightIcon className=""/></Link>
                   </div>
                   <div className="mt-5">
-                    <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6>
+                    {/* <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6> */}
                     <div className="recent-div p-3">
                         <h6 className="font-weight-600 text-grey mb-0">RECENT REPAIR BUILDER</h6>
                         <div className="row">
@@ -298,7 +298,7 @@ const  QuoteWithEvaluation=()=>{
                         </div>
 
                     </div>
-                    <div className="recent-div p-3">
+                    {/* <div className="recent-div p-3">
                         <h6 className="font-weight-600 text-grey mb-0">SERVICE BUNDLES</h6>
                         <div className="row">
                         <div className="col-md-4">
@@ -371,7 +371,7 @@ const  QuoteWithEvaluation=()=>{
                             </div>
                         </div>
                         </div>
-                    </div>
+                    </div> */}
                     </div>
                   </TabPanel>
             <TabPanel value="2">
