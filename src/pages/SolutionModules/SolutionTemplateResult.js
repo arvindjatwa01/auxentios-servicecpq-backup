@@ -127,8 +127,8 @@ const customStyles = {
         style: {
             paddingLeft: "8px", // override the cell padding for head cells
             paddingRight: "8px",
-            backgroundColor: "#7571f9",
-            // backgroundColor: "#872ff7",
+            // backgroundColor: "#7571f9",
+            backgroundColor: "#872ff7",
             color: "#fff",
         },
     },
@@ -3502,7 +3502,8 @@ export function SolutionTemplateResult(props) {
                                         <Tab label="Strategy" value="3" />
                                         <Tab label="Administrative" value={"administrative"} />
                                         <Tab label="Price" value="4" />
-                                        <Tab label="Price Agreement" disabled={!priceAgreementOption} value="5" />
+                                        {/* <Tab label="Price Agreement" disabled={!priceAgreementOption} value="5" /> */}
+                                        <Tab label="Price Agreement" value="5" />
                                         <Tab label="Coverage" value="6" />
                                     </TabList>
                                 </Box>
@@ -4859,7 +4860,7 @@ export function SolutionTemplateResult(props) {
                                                 ]}
                                             />
                                             <div className=" ml-3">
-                                                <Link to="#" className="btn bg-primary text-white">
+                                                <Link to="#" onClick={() => setOpen(true)} className="btn bg-primary text-white">
                                                     <FileUploadOutlinedIcon />{" "}
                                                     <span className="ml-1">Upload</span>
                                                 </Link>
@@ -5481,7 +5482,7 @@ export function SolutionTemplateResult(props) {
                                 </div>
                                 <p className="mt-3">Single upload file should not be more than 10MB. Only the  .xls, .xlsx file types are allowed</p>
                             </div>
-                            <div className="recent-div p-3">
+                            {/* <div className="recent-div p-3">
                                 <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
                                 <div className="recent-items mt-3">
                                     <div className="d-flex justify-content-between align-items-center ">
@@ -5495,7 +5496,6 @@ export function SolutionTemplateResult(props) {
                                             <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
                                             <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
                                             <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                            {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
                                         </div>
                                     </div>
 
@@ -5516,7 +5516,6 @@ export function SolutionTemplateResult(props) {
                                             <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
                                             <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
                                             <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                            {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
                                         </div>
                                     </div>
 
@@ -5525,7 +5524,7 @@ export function SolutionTemplateResult(props) {
                                     <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
                                     <p className="font-size-12 mb-0">Part List </p>
                                 </div>
-                            </div>
+                            </div> */}
 
 
                         </Modal.Body>
