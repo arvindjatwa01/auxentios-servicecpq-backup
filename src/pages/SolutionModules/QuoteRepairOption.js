@@ -94,14 +94,14 @@ const QuoteRepairOption = () => {
           <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
       
-          <IconButton className="btn bg-primary text-white font-size-14" style={{borderRadius:'5px'}}
+          <IconButton className="btn bg-primary p-1 text-white font-size-12" style={{borderRadius:'5px'}}
             onClick={handleClick}
             size="small"
             aria-controls={open ? 'account-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
           >
-           <span>Convert to<span><KeyboardArrowDownIcon/></span></span>
+          Convert to<span><KeyboardArrowDownIcon className="ml-2"/></span>
           </IconButton>
 
       </Box>

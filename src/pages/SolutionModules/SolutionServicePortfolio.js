@@ -38,6 +38,7 @@ import cpqIcon from '../../assets/icons/svg/CPQ.svg'
 import deleteIcon from '../../assets/icons/svg/delete.svg'
 import copyIcon from '../../assets/icons/svg/Copy.svg'
 import editIcon from '../../assets/icons/svg/edit.svg'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import searchstatusIcon from '../../assets/icons/svg/search-status.svg'
 import $ from "jquery";
 import {
@@ -71,12 +72,14 @@ export function SolutionServicePortfolio(props) {
                 paddingRight: "8px",
                 backgroundColor: "#872ff7",
                 color: "#fff",
+                borderRight: "1px solid rgba(0,0,0,.12)",
             },
         },
         cells: {
             style: {
                 paddingLeft: "8px", // override the cell padding for data cells
                 paddingRight: "8px",
+                borderRight: "1px solid rgba(0,0,0,.12)",
             },
         },
     };
@@ -353,14 +356,14 @@ export function SolutionServicePortfolio(props) {
                         <div className="d-flex">
                           
                             <div>
-                            <Button className="btn bg-primary text-white font-size-12"
+                            <Button className="btn bg-primary text-white px-2 py-1 font-size-12"
                                 id="fade-button"
                                 aria-controls={open2 ? 'fade-menu' : undefined}
                                 aria-haspopup="true"
                                 aria-expanded={open2 ? 'true' : undefined}
                                 onClick={handleClick}
                             >
-                                Convert to
+                                Convert to<span><ExpandMoreIcon className="ml-2"/></span>
                             </Button>
                             <Menu
                                 id="fade-menu"
@@ -391,7 +394,7 @@ export function SolutionServicePortfolio(props) {
                         </div>
                     </div>
                     <div className="card p-4 mt-5">
-                        <h5 className="d-flex align-items-center mb-0 bg-primary px-3 py-2" style={{borderRadius: "5px"}}>
+                        <h5 className="d-flex align-items-center mb-0 bg-primary p-3" style={{borderRadius: "5px"}}>
                             <div className="" style={{ display: 'contents' }}><span className="mr-3 text-white" style={{fontSize:"20px", fontWeight: "500", whiteSpace: "pre"}}>Quote Header</span>
                                 <a href="#" className="btn-sm text-white"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                                 <a href="#" className="btn-sm text-white"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a>
@@ -410,12 +413,12 @@ export function SolutionServicePortfolio(props) {
                             <TabContext value={value}>
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                                     <TabList onChange={handleChange} aria-label="lab API tabs example">
-                                        <Tab label="Customer" value="1" />
-                                        <Tab label="Machine " value="2" />
-                                        <Tab label="Estimation Details" value="3" />
-                                        <Tab label="General Details" value="4" />
-                                        <Tab label="Price" value="5" />
-                                        <Tab label="Shipping / Billing" value="6" />
+                                        <Tab label="Customer" value="1" className="heading-tabs" />
+                                        <Tab label="Machine " value="2" className="heading-tabs" />
+                                        <Tab label="Estimation Details" value="3" className="heading-tabs" />
+                                        <Tab label="General Details" value="4" className="heading-tabs" />
+                                        <Tab label="Price" value="5" className="heading-tabs" />
+                                        <Tab label="Shipping / Billing" value="6" className="heading-tabs" />
                                     </TabList>
                                 </Box>
                                 <TabPanel value="1">
@@ -1185,7 +1188,7 @@ export function SolutionServicePortfolio(props) {
               </div>
               <div class="modal-footer"style={{display:'unset'}}>
                 <div>
-                  <a href="/SparePartsQuoteTemplate" className="btn bg-primary d-block text-white">Done</a>
+                  <a href="/SparePartsQuoteTemplate" className="my-2 btn bg-primary d-block text-white">Done</a>
                 </div>
                 <div>
                 <button class="btn  btn-primary">Create</button>

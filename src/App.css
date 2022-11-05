@@ -3153,12 +3153,16 @@ button.bg-primary:hover {
 
 .bg-gray{background-color: #9E9E9E;}
 .bg-pink{background-color: #FF6493 !important;}
-.tab2 .css-1h9z7r5-MuiButtonBase-root-MuiTab-root {
+/* .tab2 .css-1h9z7r5-MuiButtonBase-root-MuiTab-root {
   text-transform: capitalize !important;
   border: 1px solid #9E9E9E !important;
   margin-right: 17px !important;
   border-radius: 9px !important;
-}
+} */
+.heading-tabs{text-transform: capitalize !important;
+  border: 1px solid #9E9E9E !important;
+  margin-right: 17px !important;
+  border-radius: 9px !important;}
 .tab2 .css-1ujnqem-MuiTabs-root {
   min-height: 59px !important;
 }
@@ -3170,10 +3174,10 @@ button.bg-primary:hover {
   background-color: transparent !important;
 }
 
-.hUvRIg {
+/* .hUvRIg {
   border-right: 1px solid rgba(0,0,0,.12);
 }
-.WMXoO{border-right: 1px solid rgba(0,0,0,.12);}
+.WMXoO{border-right: 1px solid rgba(0,0,0,.12);} */
 /* .checkbox-custom2 .css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.Mui-checked, .css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.MuiCheckbox-indeterminate {
   color: #fff !important;
   border: 1px solid #00B8B0;
