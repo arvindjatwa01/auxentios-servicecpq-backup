@@ -28,27 +28,7 @@ const  SolutionQuoteSearch=()=>{
   const [show, setShow] = React.useState(false);
   const handleOpen=()=>setShow(true)
   const handleClose=()=>setShow(false)
-  const customStyles = {
-    rows: {
-        style: {
-            minHeight: "72px", // override the row height
-        },
-    },
-    headCells: {
-        style: {
-            paddingLeft: "8px", // override the cell padding for head cells
-            paddingRight: "8px",
-            backgroundColor: "#872ff7",
-            color: "#fff",
-        },
-    },
-    cells: {
-        style: {
-            paddingLeft: "8px", // override the cell padding for data cells
-            paddingRight: "8px",
-        },
-    },
-};
+  
 const masterColumns = [
     {
         name: (
@@ -59,7 +39,8 @@ const masterColumns = [
         // selector: (row) => row.check1,
         wrap: true,
         sortable: true,
-        maxWidth: "300px",
+        maxWidth: "50px",
+        minWidth: "50px",
         cell: (row) => (
             <Checkbox
                 className="text-black"
@@ -168,6 +149,29 @@ const masterColumns = [
         format: (row) => row.Actions,
     },
 ];
+const customStyles = {
+  rows: {
+      style: {
+          minHeight: "72px", // override the row height
+      },
+  },
+  headCells: {
+      style: {
+          paddingLeft: "8px", // override the cell padding for head cells
+          paddingRight: "8px",
+          backgroundColor: "#872ff7",
+          color: "#fff",
+          borderRight: "1px solid rgba(0,0,0,.12)",
+      },
+  },
+  cells: {
+      style: {
+          paddingLeft: "8px", // override the cell padding for data cells
+          paddingRight: "8px",
+          borderRight: "1px solid rgba(0,0,0,.12)",
+      },
+  },
+};
   const handleDeletQuerySearch = () => {
     setQuerySearchSelector([]);
     setCount(0);
@@ -346,12 +350,12 @@ const masterColumns = [
             </div>
               </div>
               </div>
-           <div className="bg-primary px-3 mb-3 py-1">
-           <div className="row align-items-center">
+           <div className="bg-primary px-3 mb-3">
+           <div className="row align-items-center"style={{height:"66px"}}>
           <div className="col-2">
           <div className="d-flex ">
-          <h5 className="mr-4 mb-0 text-white"><span>Quotes</span></h5>
-          <p className="ml-4 mb-0">
+          <h5 className="mb-0 text-white"><span>Quotes</span></h5>
+          <p className=" mb-0">
             <a href="#" className="ml-3 text-white"><EditOutlinedIcon/></a>
             <a href="#" className="ml-3 text-white"><ShareOutlinedIcon/></a>
           </p>

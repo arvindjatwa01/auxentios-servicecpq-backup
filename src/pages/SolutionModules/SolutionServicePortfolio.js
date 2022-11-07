@@ -46,6 +46,30 @@ import {
     getSearchQueryCoverage,
   } from "../../services/index";
   import SelectFilter from "react-select";
+  const customStyles = {
+    rows: {
+        style: {
+            minHeight: "72px", // override the row height
+        },
+    },
+    headCells: {
+        style: {
+            paddingLeft: "8px", // override the cell padding for head cells
+            paddingRight: "8px",
+            backgroundColor: "#872ff7",
+            color: "#fff",
+            borderRight: "1px solid rgba(0,0,0,.12)",
+        },
+    },
+    cells: {
+        style: {
+            paddingLeft: "8px", // override the cell padding for data cells
+            paddingRight: "8px",
+            borderRight: "1px solid rgba(0,0,0,.12)",
+        },
+    },
+};
+
 
 export function SolutionServicePortfolio(props) {
     const history=useHistory()
@@ -60,29 +84,7 @@ export function SolutionServicePortfolio(props) {
     const handleClose2 = () => {
       setAnchorEl(null);
     };
-    const customStyles = {
-        rows: {
-            style: {
-                minHeight: "72px", // override the row height
-            },
-        },
-        headCells: {
-            style: {
-                paddingLeft: "8px", // override the cell padding for head cells
-                paddingRight: "8px",
-                backgroundColor: "#872ff7",
-                color: "#fff",
-                borderRight: "1px solid rgba(0,0,0,.12)",
-            },
-        },
-        cells: {
-            style: {
-                paddingLeft: "8px", // override the cell padding for data cells
-                paddingRight: "8px",
-                borderRight: "1px solid rgba(0,0,0,.12)",
-            },
-        },
-    };
+    
     const masterColumns = [
         {
             name: (
