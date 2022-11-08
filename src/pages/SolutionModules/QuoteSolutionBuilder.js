@@ -58,25 +58,49 @@ export function QuoteSolutionBuilder(props) {
     const handleClick = (event) => {
       setAnchorEl(event.currentTarget);
     };
-    const masterColumns = [
-        {
-            name: (
-                <>
-                    <div>Select</div>
-                </>
-            ),
-            // selector: (row) => row.check1,
-            wrap: true,
-            sortable: true,
-            maxWidth: "300px",
-            cell: (row) => (
-                <Checkbox
-                    className="text-black"
-                // checked={row.check1}
-                // onChange={(e) => handleCheckboxData(e, row)}
-                />
-            ),
+    const customStyles = {
+        rows: {
+            style: {
+                minHeight: "72px", // override the row height
+            },
         },
+        headCells: {
+            style: {
+                paddingLeft: "8px", // override the cell padding for head cells
+                paddingRight: "8px",
+                backgroundColor: "#872ff7",
+                color: "#fff",
+                borderRight: "1px solid rgba(0,0,0,.12)",
+            },
+        },
+        cells: {
+            style: {
+                paddingLeft: "8px", // override the cell padding for data cells
+                paddingRight: "8px",
+                borderRight: "1px solid rgba(0,0,0,.12)",
+            },
+        },
+    };
+    const masterColumns = [
+        // {
+        //     name: (
+        //         <>
+        //             <div>Select</div>
+        //         </>
+        //     ),
+        //     // selector: (row) => row.check1,
+        //     wrap: true,
+        //     sortable: true,
+        //     maxWidth: "50px",
+        //     minWidth: "50px",
+        //     cell: (row) => (
+        //         <Checkbox
+        //             className="text-black"
+        //         // checked={row.check1}
+        //         // onChange={(e) => handleCheckboxData(e, row)}
+        //         />
+        //     ),
+        // },
         {
             name: (
                 <>
@@ -177,27 +201,7 @@ export function QuoteSolutionBuilder(props) {
             format: (row) => row.Actions,
         },
     ];
-    const customStyles = {
-        rows: {
-            style: {
-                minHeight: "72px", // override the row height
-            },
-        },
-        headCells: {
-            style: {
-                paddingLeft: "8px", // override the cell padding for head cells
-                paddingRight: "8px",
-                backgroundColor: "#872ff7",
-                color: "#fff",
-            },
-        },
-        cells: {
-            style: {
-                paddingLeft: "8px", // override the cell padding for data cells
-                paddingRight: "8px",
-            },
-        },
-    };
+   
     const handleClose2 = () => {
       setAnchorEl(null);
     };
@@ -415,7 +419,7 @@ export function QuoteSolutionBuilder(props) {
                                 <TabPanel value="1">
                                     <div class="row mt-4 input-fields">
                                         <div class="col-md-4 col-sm-4">
-                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOULTION CODE</label>
+                                            <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SOLUTION CODE</label>
                                             <div class="form-group w-100">
                                                 <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
@@ -841,6 +845,7 @@ export function QuoteSolutionBuilder(props) {
                                 data={rows}
                                 customStyles={customStyles}
                                 pagination
+                                selectableRows
                             />
                         </div>
                     </div>

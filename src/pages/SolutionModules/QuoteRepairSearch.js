@@ -41,34 +41,37 @@ const  QuoteRepairSearch=()=>{
             paddingRight: "8px",
             backgroundColor: "#872ff7",
             color: "#fff",
+            borderRight: "1px solid rgba(0,0,0,.12)",
         },
     },
     cells: {
         style: {
             paddingLeft: "8px", // override the cell padding for data cells
             paddingRight: "8px",
+            borderRight: "1px solid rgba(0,0,0,.12)",
         },
     },
-};
+  };
 const masterColumns = [
-    {
-        name: (
-            <>
-                <div>Select</div>
-            </>
-        ),
-        // selector: (row) => row.check1,
-        wrap: true,
-        sortable: true,
-        maxWidth: "300px",
-        cell: (row) => (
-            <Checkbox
-                className="text-black"
-            // checked={row.check1}
-            // onChange={(e) => handleCheckboxData(e, row)}
-            />
-        ),
-    },
+    // {
+    //     name: (
+    //         <>
+    //             <div>Select</div>
+    //         </>
+    //     ),
+    //     // selector: (row) => row.check1,
+    //     wrap: true,
+    //     sortable: true,
+    //     maxWidth: "50px",
+    //     minWidth: "50px",
+    //     cell: (row) => (
+    //         <Checkbox
+    //             className="text-black"
+    //         // checked={row.check1}
+    //         // onChange={(e) => handleCheckboxData(e, row)}
+    //         />
+    //     ),
+    // },
     {
         name: (
             <>
@@ -347,8 +350,8 @@ const masterColumns = [
             </div>
               </div>
               </div>
-           <div className="bg-primary px-3 mb-3 py-1">
-           <div className="row align-items-center">
+           <div className="bg-primary px-3 mb-3">
+           <div className="row align-items-center height-66">
           <div className="col-2">
           <div className="d-flex ">
           <h5 className="mr-4 mb-0 text-white"><span>Quotes</span></h5>
@@ -501,7 +504,7 @@ const masterColumns = [
                                 customStyles={customStyles}
                                 pagination
                                 onRowClicked={(e)=>handleRowClick(e)}
-                                // selectableRows
+                                selectableRows
                             />
                         </div> 
         </div>

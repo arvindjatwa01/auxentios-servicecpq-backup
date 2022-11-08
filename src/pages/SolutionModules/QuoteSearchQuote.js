@@ -185,34 +185,36 @@ const  QuoteSearchQuote=()=>{
             paddingRight: "8px",
             backgroundColor: "#872ff7",
             color: "#fff",
+            borderRight: "1px solid rgba(0,0,0,.12)",
         },
     },
     cells: {
         style: {
             paddingLeft: "8px", // override the cell padding for data cells
             paddingRight: "8px",
+            borderRight: "1px solid rgba(0,0,0,.12)",
         },
     },
-};
+  };
 const masterColumns = [
-    {
-        name: (
-            <>
-                <div>Select</div>
-            </>
-        ),
-        // selector: (row) => row.check1,
-        wrap: true,
-        sortable: true,
-        maxWidth: "300px",
-        cell: (row) => (
-            <Checkbox
-                className="text-black"
-            // checked={row.check1}
-            // onChange={(e) => handleCheckboxData(e, row)}
-            />
-        ),
-    },
+    // {
+    //     name: (
+    //         <>
+    //             <div>Select</div>
+    //         </>
+    //     ),
+    //     // selector: (row) => row.check1,
+    //     wrap: true,
+    //     sortable: true,
+    //     maxWidth: "300px",
+    //     cell: (row) => (
+    //         <Checkbox
+    //             className="text-black"
+    //         // checked={row.check1}
+    //         // onChange={(e) => handleCheckboxData(e, row)}
+    //         />
+    //     ),
+    // },
     {
         name: (
             <>
@@ -338,12 +340,12 @@ const masterColumns = [
             </div>
               </div>
               </div>
-           <div className="bg-primary px-3 py-1 mb-3">
-           <div className="row align-items-center">
+           <div className="bg-primary px-3 mb-3">
+           <div className="row align-items-center height-66">
           <div className="col-2">
           <div className="d-flex ">
-          <h5 className="mr-4 mb-0 text-white"><span>Spare Parts Quotes</span></h5>
-          <p className="ml-4 mb-0">
+          <h5 className=" mb-0 text-white"><span>Spare Parts Quotes</span></h5>
+          <p className=" mb-0">
             <a href="#" className="ml-3 text-white"><EditOutlinedIcon/></a>
             <a href="#" className="ml-3 text-white"><ShareOutlinedIcon/></a>
           </p>
@@ -491,6 +493,7 @@ const masterColumns = [
                                 data={rows}
                                 customStyles={customStyles}
                                 pagination
+                                selectableRows
                                 onRowClicked={(e)=>handleRowClick(e)}
                                 // selectableRows
                             />
