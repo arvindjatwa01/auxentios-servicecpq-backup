@@ -69,6 +69,7 @@ import PriceCalculator from "../PortfolioAndBundle/PriceCalculator";
 import penIcon from "../../assets/images/pen.png";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import Loader from "react-js-loader";
+import $ from "jquery";
 
 
 import {
@@ -2261,24 +2262,24 @@ export function PortfolioTemplatesResult(props) {
     ];
 
     const masterColumns = [
-        {
-            name: (
-                <>
-                    <div>Select</div>
-                </>
-            ),
-            selector: (row) => row.check1,
-            wrap: true,
-            sortable: true,
-            maxWidth: "300px",
-            cell: (row) => (
-                <Checkbox
-                    className="text-black"
-                    checked={row.check1}
-                    onChange={(e) => handleCheckboxData(e, row)}
-                />
-            ),
-        },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Select</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.check1,
+        //     wrap: true,
+        //     sortable: true,
+        //     maxWidth: "300px",
+        //     cell: (row) => (
+        //         <Checkbox
+        //             className="text-black"
+        //             checked={row.check1}
+        //             onChange={(e) => handleCheckboxData(e, row)}
+        //         />
+        //     ),
+        // },
         {
             name: (
                 <>
@@ -3017,7 +3018,7 @@ export function PortfolioTemplatesResult(props) {
         {
             name: (
                 <>
-                    <div>ID</div>
+                    <div>Item ID</div>
                 </>
             ),
             selector: (row) => row.customItemId,
@@ -3028,18 +3029,7 @@ export function PortfolioTemplatesResult(props) {
         {
             name: (
                 <>
-                    <div>Name</div>
-                </>
-            ),
-            selector: (row) => row.itemName,
-            wrap: true,
-            sortable: true,
-            format: (row) => row.itemName,
-        },
-        {
-            name: (
-                <>
-                    <div>Description</div>
+                    <div>Item Description</div>
                 </>
             ),
             selector: (row) => row.customItemHeaderModel?.itemHeaderDescription,
@@ -3047,38 +3037,17 @@ export function PortfolioTemplatesResult(props) {
             sortable: true,
             format: (row) => row.customItemHeaderModel?.itemHeaderDescription,
         },
+
         {
             name: (
                 <>
-                    <div>Solution Code</div>
+                    <div>Strategy</div>
                 </>
             ),
-            selector: (row) => row.customItemBodyModel?.solutionCode,
+            selector: (row) => row.customItemHeaderModel?.strategy,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemBodyModel?.solutionCode,
-        },
-        {
-            name: (
-                <>
-                    <div>Repair Option</div>
-                </>
-            ),
-            selector: (row) => row.customItemHeaderModel?.itemHeaderGeographic,
-            wrap: true,
-            sortable: true,
-            format: (row) => row.customItemHeaderModel?.itemHeaderGeographic,
-        },
-        {
-            name: (
-                <>
-                    <div>Component Code</div>
-                </>
-            ),
-            selector: (row) => row.customItemHeaderModel?.componentCode,
-            wrap: true,
-            sortable: true,
-            format: (row) => row.customItemHeaderModel?.componentCode,
+            format: (row) => row.customItemHeaderModel?.strategy,
         },
         {
             name: (
@@ -3086,15 +3055,26 @@ export function PortfolioTemplatesResult(props) {
                     <div>Task Type</div>
                 </>
             ),
-            selector: (row) => row.customItemBodyModel?.taskType,
+            selector: (row) => row.customItemBodyModel.taskType,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemBodyModel?.taskType,
+            format: (row) => row.customItemBodyModel.taskType,
         },
         {
             name: (
                 <>
-                    <div>Total $</div>
+                    <div>Quantity</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel?.quantity,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel?.quantity,
+        },
+        {
+            name: (
+                <>
+                    <div>Net Price</div>
                 </>
             ),
             selector: (row) => row.customItemHeaderModel?.netPrice,
@@ -3102,6 +3082,51 @@ export function PortfolioTemplatesResult(props) {
             sortable: true,
             format: (row) => row.customItemHeaderModel?.netPrice,
         },
+        {
+            name: (
+                <>
+                    <div>Net Additional</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.additional,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.additional,
+        },
+        {
+            name: (
+                <>
+                    <div>Net Parts Price</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel?.partsprice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel?.partsprice,
+        },
+        {
+            name: (
+                <>
+                    <div>Total Price</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.netPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.netPrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Comments</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.comments,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.comments,
+        },
+
         {
             name: (
                 <>
@@ -3418,6 +3443,29 @@ export function PortfolioTemplatesResult(props) {
         </div>
     );
 
+
+    // useEffect(() => {
+
+    //     /* window.addEventListener("beforeunload", function (event) {
+    //         event.returnValue = "You have unsaved changes.";
+    //     }); */
+    //      window.addEventListener("beforeunload", handleBeforeUnload);
+    //      return () => {
+    //          window.removeEventListener("beforeunload", handleBeforeUnload);
+    //      };
+    // }, []);
+
+    // const handleBeforeUnload = (e) => {
+    //     console.log("e : ", e);
+    //     e.preventDefault();
+    //     console.log(" e.preventDefault() : ",  "hello")
+    //     const message =
+    //         "Are you sure you want to leave? All provided data will be lost.";
+    //         alert(message);
+    //     e.returnValue = message;
+    //     console.log("message");
+    //     return e.returnValue;
+    // };
 
     return (
         <>
@@ -4581,6 +4629,9 @@ export function PortfolioTemplatesResult(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="6">
+                                    <ul class="submenu templateResultheading accordion" style={{ display: 'block' }}>
+                                        <li><a className="cursor result" >Search Coverage</a></li>
+                                    </ul>
                                     <div
                                         className="custom-table card p-3 "
                                         style={{ width: "100%", backgroundColor: "#fff" }}
@@ -4618,6 +4669,8 @@ export function PortfolioTemplatesResult(props) {
                                                     columns={masterColumns}
                                                     data={masterData}
                                                     customStyles={customStyles}
+                                                    selectableRows
+                                                    onSelectedRowsChange={(state) => setFilterMasterData(state.selectedRows)}
                                                     pagination
                                                 />
                                                 <div>
@@ -4629,7 +4682,8 @@ export function PortfolioTemplatesResult(props) {
                                                             }}
                                                             className="btn bg-primary text-white"
                                                             value="+ Add Selected"
-                                                            disabled={!flagIs}
+                                                            // disabled={!flagIs}
+                                                            disabled={filterMasterData.length == 0}
                                                         />
 
                                                         {/* <Link to="#"

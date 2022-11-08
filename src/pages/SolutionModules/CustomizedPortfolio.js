@@ -5360,6 +5360,9 @@ export function CustomizedPortfolio(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="6">
+                                    <ul class="submenu templateResultheading accordion" style={{ display: 'block' }}>
+                                        <li><a className="cursor result" >Search Coverage</a></li>
+                                    </ul>
                                     <div
                                         className="custom-table card p-3 "
                                         style={{ width: "100%", backgroundColor: "#fff" }}

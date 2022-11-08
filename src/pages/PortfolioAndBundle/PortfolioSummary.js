@@ -6,6 +6,9 @@ import Checkbox from "@mui/material/Checkbox";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 // import Select from "@mui/material/Select";
+
+import DataTable from "react-data-table-component";
+
 import { FileUploader } from "react-drag-drop-files";
 import { MuiMenuComponent } from "../Operational/index";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -127,8 +130,8 @@ export const PortfolioSummary = () => {
     machine: "",
     additional: "",
   });
-const [addPortFolioItem,setAddportFolioItem]=useState({})
-const [priceCalculator,setPriceCalculator]=useState({})
+  const [addPortFolioItem, setAddportFolioItem] = useState({})
+  const [priceCalculator, setPriceCalculator] = useState({})
 
   const histoy = useHistory()
   const options = [
@@ -152,11 +155,35 @@ const [priceCalculator,setPriceCalculator]=useState({})
       fontSize: "14px",
       padding: "5px 10px",
       color: "#fff !important",
-      fontSize:"14px",
-      fontWeight:"500",
+      fontSize: "14px",
+      fontWeight: "500",
       cursor: "pointer"
     }),
   }
+
+  const customTableStyles = {
+    rows: {
+      style: {
+        minHeight: "72px", // override the row height
+      },
+    },
+    headCells: {
+      style: {
+        paddingLeft: "8px", // override the cell padding for head cells
+        paddingRight: "8px",
+        backgroundColor: "#872ff7",
+        color: "#fff",
+        borderRight: "1px solid rgba(0,0,0,.12)",
+      },
+    },
+    cells: {
+      style: {
+        paddingLeft: "8px", // override the cell padding for data cells
+        paddingRight: "8px",
+        borderRight: "1px solid rgba(0,0,0,.12)",
+      },
+    },
+  };
 
   useEffect(() => {
     getTypeKeyValue()
@@ -261,6 +288,8 @@ const [priceCalculator,setPriceCalculator]=useState({})
     //       params.getValue(params.id, 'DocumentType') || ''
     //     }`,
   ];
+
+
 
   const handleBuildSolution = (e) => {
     setBuildSolutionValue(e.target.value);
@@ -526,27 +555,129 @@ const [priceCalculator,setPriceCalculator]=useState({})
     setSelectedMasterData(updated);
   };
 
+  // const columns2 = [
+  //   { field: "GroupNumber", headerName: "ID#", flex: 1, width: 70 },
+  //   { field: "Type", headerName: "Description", flex: 1, width: 130 },
+  //   { field: "Partnumber", headerName: "Customer#", flex: 1, width: 130 },
+  //   { field: "PriceExtended", headerName: "Make", flex: 1, width: 130 },
+  //   { field: "Pricecurrency", headerName: "Model", flex: 1, width: 130 },
+  //   { field: "Usage", headerName: "Family", flex: 1, width: 130 },
+  //   { field: "TotalPrice", headerName: "Serial#", flex: 1, width: 130 },
+  //   { field: "Comments", headerName: "Created by", flex: 1, width: 130 },
+  //   { field: "Created", headerName: "Created On", flex: 1, width: 130 },
+  //   { field: "Total", headerName: "Total $", flex: 1, width: 130 },
+  //   { field: "Status", headerName: "Status", flex: 1, width: 130 },
+  //   // { field: 'Actions', headerName: 'Actions',  flex:1, width: 130 },
+  //   // { field: 'Actions', headerName: 'Total $',  flex:1, width: 130 },
+  //   // { field: 'Actions', headerName: 'Status',  flex:1, width: 130 },
+  //   // {field: 'age',headerName: 'Age',type: 'number', width: 90,},
+  //   // {field: 'fullName',headerName: 'Full name',description: 'This column has a value getter and is not sortable.',sortable: false,width: 160,valueGetter: (params) =>
+  //   //   `${params.getValue(params.id, 'firstName') || ''} ${
+  //   //       params.getValue(params.id, 'DocumentType') || ''
+  //   //     }`,
+  // ];
+
   const columns2 = [
-    { field: "GroupNumber", headerName: "ID#", flex: 1, width: 70 },
-    { field: "Type", headerName: "Description", flex: 1, width: 130 },
-    { field: "Partnumber", headerName: "Customer#", flex: 1, width: 130 },
-    { field: "PriceExtended", headerName: "Make", flex: 1, width: 130 },
-    { field: "Pricecurrency", headerName: "Model", flex: 1, width: 130 },
-    { field: "Usage", headerName: "Family", flex: 1, width: 130 },
-    { field: "TotalPrice", headerName: "Serial#", flex: 1, width: 130 },
-    { field: "Comments", headerName: "Created by", flex: 1, width: 130 },
-    { field: "Created", headerName: "Created On", flex: 1, width: 130 },
-    { field: "Total", headerName: "Total $", flex: 1, width: 130 },
-    { field: "Status", headerName: "Status", flex: 1, width: 130 },
-    // { field: 'Actions', headerName: 'Actions',  flex:1, width: 130 },
-    // { field: 'Actions', headerName: 'Total $',  flex:1, width: 130 },
-    // { field: 'Actions', headerName: 'Status',  flex:1, width: 130 },
-    // {field: 'age',headerName: 'Age',type: 'number', width: 90,},
-    // {field: 'fullName',headerName: 'Full name',description: 'This column has a value getter and is not sortable.',sortable: false,width: 160,valueGetter: (params) =>
-    //   `${params.getValue(params.id, 'firstName') || ''} ${
-    //       params.getValue(params.id, 'DocumentType') || ''
-    //     }`,
-  ];
+    {
+      name: (
+        <>
+          <div>Group Number</div>
+        </>
+      ),
+      selector: (row) => row.GroupNumber,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.GroupNumber,
+    },
+    {
+      name: (
+        <>
+          <div>Type</div>
+        </>
+      ),
+      selector: (row) => row.Type,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.Type,
+    },
+    {
+      name: (
+        <>
+          <div>Part number</div>
+        </>
+      ),
+      selector: (row) => row.Partnumber,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.Partnumber,
+    },
+    {
+      name: (
+        <>
+          <div>Price Extended</div>
+        </>
+      ),
+      selector: (row) => row.PriceExtended,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.PriceExtended,
+    },
+    {
+      name: (
+        <>
+          <div>Price currency</div>
+        </>
+      ),
+      selector: (row) => row.Pricecurrency,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.Pricecurrency,
+    },
+    {
+      name: (
+        <>
+          <div>Usage</div>
+        </>
+      ),
+      selector: (row) => row.Usage,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.Usage,
+    },
+    {
+      name: (
+        <>
+          <div>Total Price</div>
+        </>
+      ),
+      selector: (row) => row.TotalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.TotalPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Comments</div>
+        </>
+      ),
+      selector: (row) => row.Comments,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.Comments,
+    },
+    {
+      name: (
+        <>
+          <div>Actions</div>
+        </>
+      ),
+      selector: (row) => row.Actions,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.Actions,
+    },
+  ]
 
   const handleCreatePortfolio = async () => {
     let reqData = {
@@ -604,7 +735,8 @@ const [priceCalculator,setPriceCalculator]=useState({})
       let reqObj = {
         itemId: 0,
         itemName: "",
-        itemHeaderModel:{ itemHeaderId: 0,
+        itemHeaderModel: {
+          itemHeaderId: 0,
           itemHeaderDescription: createServiceOrBundle.description,
           bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
           portfolioItemId: 0,
@@ -628,37 +760,37 @@ const [priceCalculator,setPriceCalculator]=useState({})
           status: "NEW"
         },
         itemBodyModel: {
-          itemBodyId: serviceOrBundlePrefix==="BUNDLE"?parseInt(addPortFolioItem.id):0,
-          itemBodyDescription: serviceOrBundlePrefix==="BUNDLE"?addPortFolioItem.description:"",
-          quantity:serviceOrBundlePrefix==="BUNDLE"?parseInt(addPortFolioItem.quantity): 0,
+          itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
+          itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
+          quantity: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.quantity) : 0,
           startUsage: "",
-          endUsage:priceCalculator.startUsage?priceCalculator.startUsage: "",
-          standardJobId:priceCalculator.endUsage?priceCalculator.endUsage: "",
-          frequency: serviceOrBundlePrefix==="BUNDLE"?addPortFolioItem.frequency?.value:"",
+          endUsage: priceCalculator.startUsage ? priceCalculator.startUsage : "",
+          standardJobId: priceCalculator.endUsage ? priceCalculator.endUsage : "",
+          frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
           additional: "",
           spareParts: ["WITH_SPARE_PARTS"],
           labours: ["WITH_LABOUR"],
           miscellaneous: ["LUBRICANTS"],
-          taskType:serviceOrBundlePrefix==="BUNDLE"?addPortFolioItem.taskType?.value:["PM1"],
+          taskType: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.taskType?.value : ["PM1"],
           solutionCode: "",
-          usageIn:serviceOrBundlePrefix==="BUNDLE"?addPortFolioItem.usageIn?.value:"",
-          recommendedValue: serviceOrBundlePrefix==="BUNDLE"?parseInt(addPortFolioItem.recommendedValue):0,
+          usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+          recommendedValue: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.recommendedValue) : 0,
           usage: "",
           repairKitId: "",
           templateDescription: "",
           partListId: "",
           serviceEstimateId: "",
-          numberOfEvents:serviceOrBundlePrefix==="BUNDLE"?parseInt(addPortFolioItem.numberOfEvents): 0,
-          repairOption: serviceOrBundlePrefix==="BUNDLE"?addPortFolioItem.repairOption.value:"",
+          numberOfEvents: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.numberOfEvents) : 0,
+          repairOption: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.repairOption.value : "",
           priceMethod: "LIST_PRICE",
-          listPrice:priceCalculator.listPrice?parseInt(priceCalculator.listPrice): 0,
+          listPrice: priceCalculator.listPrice ? parseInt(priceCalculator.listPrice) : 0,
           priceEscalation: "",
-          calculatedPrice:priceCalculator.calculatedPrice?parseInt(priceCalculator.calculatedPrice): 0,
-          flatPrice:priceCalculator.flatPrice?parseInt(priceCalculator.flatPrice): 0,
+          calculatedPrice: priceCalculator.calculatedPrice ? parseInt(priceCalculator.calculatedPrice) : 0,
+          flatPrice: priceCalculator.flatPrice ? parseInt(priceCalculator.flatPrice) : 0,
           discountType: "",
-          year: priceCalculator.priceYear?priceCalculator.priceYear.value:"",
+          year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
           avgUsage: 0,
-          unit: serviceOrBundlePrefix==="BUNDLE"?addPortFolioItem.unit?.value:"",
+          unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
           sparePartsPrice: 0,
           sparePartsPriceBreakDownPercentage: 0,
           servicePrice: 0,
@@ -669,7 +801,7 @@ const [priceCalculator,setPriceCalculator]=useState({})
         }
       }
       const res = await itemCreation(reqObj);
-      if(res.status===200){
+      if (res.status === 200) {
         toast("😎" + `${serviceOrBundlePrefix} created`, {
           position: "top-right",
           autoClose: 3000,
@@ -716,7 +848,7 @@ const [priceCalculator,setPriceCalculator]=useState({})
     }
     // setTabs("4") //moving to component Data tab in create Item model
   };
-  const getAddportfolioItemData=(data)=>{
+  const getAddportfolioItemData = (data) => {
     setAddportFolioItem(data)
   }
   const getPriceCalculatorDataFun = (data) => {
@@ -1432,7 +1564,7 @@ const [priceCalculator,setPriceCalculator]=useState({})
               className=""
               style={{ height: 400, width: "100%", backgroundColor: "#fff" }}
             >
-              <DataGrid
+              {/* <DataGrid
                 sx={{
                   "& .MuiDataGrid-columnHeaders": {
                     backgroundColor: "#872ff7",
@@ -1445,6 +1577,16 @@ const [priceCalculator,setPriceCalculator]=useState({})
                 rowsPerPageOptions={[5]}
                 checkboxSelection
                 onCellClick={(e) => handleRowClick(e)}
+              /> */}
+              <DataTable
+                className=""
+                title=""
+                columns={columns2}
+                data={rows}
+                customStyles={customTableStyles}
+                selectableRows
+                // onSelectedRowsChange={(state) => setPortfolioTempFilterMasterData(state.selectedRows)}
+                pagination
               />
             </div>
           </div>
@@ -1480,7 +1622,7 @@ const [priceCalculator,setPriceCalculator]=useState({})
                       backgroundColor: "#fff",
                     }}
                   >
-                    <DataGrid
+                    {/* <DataGrid
                       sx={{
                         "& .MuiDataGrid-columnHeaders": {
                           backgroundColor: "#872ff7",
@@ -1493,6 +1635,16 @@ const [priceCalculator,setPriceCalculator]=useState({})
                       rowsPerPageOptions={[5]}
                       checkboxSelection
                       onCellClick={(e) => handleRowClick(e)}
+                    /> */}
+                    <DataTable
+                      className=""
+                      title=""
+                      columns={columns2}
+                      data={rows}
+                      customStyles={customTableStyles}
+                      selectableRows
+                      // onSelectedRowsChange={(state) => setPortfolioTempFilterMasterData(state.selectedRows)}
+                      pagination
                     />
                   </div>
                 </div>
@@ -1788,7 +1940,7 @@ const [priceCalculator,setPriceCalculator]=useState({})
                   setBundleTabs={setBundleTabs}
                   compoFlag="BUNDLE"
                   getAddportfolioItemData={getAddportfolioItemData}
-                  />
+                />
               </TabPanel>
               <TabPanel value="3">
                 <PriceCalculator

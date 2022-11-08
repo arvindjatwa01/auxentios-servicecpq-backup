@@ -2803,24 +2803,24 @@ export function CreatePortfolio() {
   ];
 
   const masterColumns = [
-    {
-      name: (
-        <>
-          <div>Select</div>
-        </>
-      ),
-      selector: (row) => row.check1,
-      wrap: true,
-      sortable: true,
-      maxWidth: "300px",
-      cell: (row) => (
-        <Checkbox
-          className="text-black"
-          checked={row.check1}
-          onChange={(e) => handleCheckboxData(e, row)}
-        />
-      ),
-    },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Select</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.check1,
+    //   wrap: true,
+    //   sortable: true,
+    //   maxWidth: "300px",
+    //   cell: (row) => (
+    //     <Checkbox
+    //       className="text-black"
+    //       checked={row.check1}
+    //       onChange={(e) => handleCheckboxData(e, row)}
+    //     />
+    //   ),
+    // },
     {
       name: (
         <>
@@ -5883,14 +5883,19 @@ export function CreatePortfolio() {
                 </TabPanel>
 
                 <TabPanel value="coverage">
+                  <ul class="submenu templateResultheading accordion" style={{ display: 'block' }}>
+                    <li><a className="cursor result" >Search Coverage</a></li>
+                  </ul>
                   <div
-                    className="custom-table card p-3 "
+                    className="custom-table card p-3"
                     style={{ width: "100%", backgroundColor: "#fff" }}
                   >
+
                     <div
                       className="row align-items-center m-0"
                       style={{ flexFlow: "unset" }}
                     >
+
                       <QuerySearchComp
                         setMasterData={setMasterData}
                         setFilterMasterData={setFilterMasterData}
@@ -5920,6 +5925,8 @@ export function CreatePortfolio() {
                           columns={masterColumns}
                           data={masterData}
                           customStyles={customStyles}
+                          selectableRows
+                          onSelectedRowsChange={(state) => setFilterMasterData(state.selectedRows)}
                           pagination
                         />
                         <div>
@@ -5931,7 +5938,8 @@ export function CreatePortfolio() {
                               }}
                               className="btn bg-primary text-white"
                               value="+ Add Selected"
-                              disabled={!flagIs}
+                              // disabled={!flagIs}
+                              disabled={filterMasterData.length == 0}
                             />
 
                             {/* <Link to="#"
