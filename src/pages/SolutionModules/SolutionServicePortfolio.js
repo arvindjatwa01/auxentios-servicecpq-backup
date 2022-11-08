@@ -86,24 +86,25 @@ export function SolutionServicePortfolio(props) {
     };
     
     const masterColumns = [
-        {
-            name: (
-                <>
-                    <div>Select</div>
-                </>
-            ),
-            // selector: (row) => row.check1,
-            wrap: true,
-            sortable: true,
-            maxWidth: "300px",
-            cell: (row) => (
-                <Checkbox
-                    className="text-black"
-                // checked={row.check1}
-                // onChange={(e) => handleCheckboxData(e, row)}
-                />
-            ),
-        },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Select</div>
+        //         </>
+        //     ),
+        //     // selector: (row) => row.check1,
+        //     wrap: true,
+        //     sortable: true,
+        //     maxWidth: "50px",
+        //     minWidth: "50px",
+        //     cell: (row) => (
+        //         <Checkbox
+        //             className="text-black"
+        //         // checked={row.check1}
+        //         // onChange={(e) => handleCheckboxData(e, row)}
+        //         />
+        //     ),
+        // },
         {
             name: (
                 <>
@@ -462,15 +463,52 @@ export function SolutionServicePortfolio(props) {
                                                 <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
-                                       
+
+                                    </div>
+                                    <div className="row mt-4">
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">SOURCE</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">CUSTOMER ID</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">CUSTOMER NAME</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">CONTACT EMAIL</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">CONTACT PHONE</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">CUSTOMER GROUP</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
                                         <div className="col-md-12 col-sm-12">
                                             <div class="form-group">
                                                 <Link className="btn bg-primary text-white pull-right">
-                                                    Next
+                                                    Save & Next
                                                 </Link>
                                             </div>
                                         </div>
-
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="2">
@@ -535,10 +573,48 @@ export function SolutionServicePortfolio(props) {
                                                 </div>
                                             </div>
                                         </div> */}
+                                    </div>
+                                    <div className="row mt-4">
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">MODEL</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">SERIAL #</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">SMU</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">UNIT NO / FLEET NO</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">MODEL</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">MODEL</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
                                         <div className="col-md-12 col-sm-12">
                                             <div class="form-group">
                                                 <Link className="btn bg-primary text-white pull-right">
-                                                    Next
+                                                Save & Next
                                                 </Link>
                                             </div>
                                         </div>
@@ -582,10 +658,48 @@ export function SolutionServicePortfolio(props) {
                                                 <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
+                                    </div>
+                                    <div className="row mt-4">
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">PREPARED BY</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">APPROVED BY</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">PREPARED ON</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">REVISED BY</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">REVISED ON</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">SALES OFFICE / BRANCH</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
                                         <div className="col-md-12 col-sm-12">
                                             <div class="form-group">
                                                 <Link className="btn bg-primary text-white pull-right">
-                                                    Next
+                                                Save & Next
                                                 </Link>
                                             </div>
                                         </div>
@@ -629,10 +743,48 @@ export function SolutionServicePortfolio(props) {
                                                 <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
-                                        <div className="col-md-12 col-sm-12">
+                                    </div>
+                                    <div className="mt-4 row">
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">QUOTE DATE</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">QUOTE #</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">QUOTE DESCRIPTION</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">VALIDITY</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">VERSION</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                         <div className="col-md-12 col-sm-12">
                                             <div class="form-group">
                                                 <Link className="btn bg-primary text-white pull-right">
-                                                    Next
+                                                Save & Next
                                                 </Link>
                                             </div>
                                         </div>
@@ -682,10 +834,54 @@ export function SolutionServicePortfolio(props) {
                                                 <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
+                                    </div>
+                                    <div className="row mt-4">
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">NET PRICE</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">PRICE DATE</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">COST PRICE</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">PRICE METHOD</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">ADJUSTED PRICE</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">MARGIN</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">CURRENCY</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
                                         <div className="col-md-12 col-sm-12">
                                             <div class="form-group">
                                                 <Link className="btn bg-primary text-white pull-right">
-                                                    Next
+                                                Save & Next
                                                 </Link>
                                             </div>
                                         </div>
@@ -733,6 +929,57 @@ export function SolutionServicePortfolio(props) {
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">NET PAYABLE BY PAYER</label>
                                             <div class="form-group w-100">
                                                 <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row mt-4">
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">DELIVERY TYPE</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">DELIVERY PRIORITY</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">PAYMENT TERMS</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">BILLING FREQUENCY</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">PAYER (s)</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">% SPLIT</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-sm-4">
+                                            <div class="form-group">
+                                                <p class="font-size-12 font-weight-500 mb-2">NET PAYABLE BY PAYER</p>
+                                                <h6 class="font-weight-600">X1234</h6>
+                                            </div>
+                                        </div>
+                                         <div className="col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <Link className="btn bg-primary text-white pull-right">
+                                                Save & Next
+                                                </Link>
                                             </div>
                                         </div>
                                     </div>
@@ -890,6 +1137,7 @@ export function SolutionServicePortfolio(props) {
                                 columns={masterColumns}
                                 data={rows}
                                 customStyles={customStyles}
+                                selectableRows
                                 pagination
                             />
                         </div>

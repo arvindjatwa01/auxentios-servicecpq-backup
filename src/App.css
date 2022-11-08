@@ -3218,3 +3218,8 @@ z-index: 1;}
   border-radius: 10px;
 }
 .css-1q2h7u5{ padding: 12px 16px !important;}
+.height-66{min-height: 66px !important;}
+.custom-tabs-div{}
+.custom-tabs-div span{display: none;}
+.custom-tabs-div button{ padding: 10px 15px !important;}
+.custom-tabs-div button.Mui-selected{color: #872ff7  !important; border-bottom:2px solid #872ff7 !important;}
