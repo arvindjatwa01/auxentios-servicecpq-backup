@@ -6902,6 +6902,9 @@ export function CreateCustomPortfolio() {
                                 </TabPanel>
 
                                 <TabPanel value="coverage">
+                                    <ul class="submenu templateResultheading accordion" style={{ display: 'block' }}>
+                                        <li><a className="cursor result" >Search Coverage</a></li>
+                                    </ul>
                                     <div
                                         className="custom-table card p-3 "
                                         style={{ width: "100%", backgroundColor: "#fff" }}
@@ -6939,6 +6942,8 @@ export function CreateCustomPortfolio() {
                                                     columns={masterColumns}
                                                     data={masterData}
                                                     customStyles={customStyles}
+                                                    selectableRows
+                                                    onSelectedRowsChange={(state) => setFilterMasterData(state.selectedRows)}
                                                     pagination
                                                 />
                                                 <div>
@@ -6950,7 +6955,8 @@ export function CreateCustomPortfolio() {
                                                             }}
                                                             className="btn bg-primary text-white"
                                                             value="+ Add Selected"
-                                                            disabled={!flagIs}
+                                                            // disabled={!flagIs}
+                                                            disabled={filterMasterData.length == 0}
                                                         />
 
                                                         {/* <Link to="#"

@@ -1868,7 +1868,7 @@ export function SolutionTemplateResult(props) {
             description: location.selectedTemplateItems[0].description,
             serviceDescription: "",
             externalReference: location.selectedTemplateItems[0].externalReference,
-            customerSegment: {value: location.selectedTemplateItems[0].customerSegment, label: "Energy"},
+            customerSegment: { value: location.selectedTemplateItems[0].customerSegment, label: "Energy" },
             items: [],
             customCoverages: [],
         });
@@ -4838,6 +4838,9 @@ export function SolutionTemplateResult(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="6">
+                                    <ul class="submenu templateResultheading accordion" style={{ display: 'block' }}>
+                                        <li><a className="cursor result" >Search Coverage</a></li>
+                                    </ul>
                                     <div
                                         className="custom-table card p-3 "
                                         style={{ width: "100%", backgroundColor: "#fff" }}
@@ -4875,6 +4878,8 @@ export function SolutionTemplateResult(props) {
                                                     columns={masterColumns}
                                                     data={masterData}
                                                     customStyles={customStyles}
+                                                    selectableRows
+                                                    onSelectedRowsChange={(state) => setFilterMasterData(state.selectedRows)}
                                                     pagination
                                                 />
                                                 <div>
@@ -4886,7 +4891,8 @@ export function SolutionTemplateResult(props) {
                                                             }}
                                                             className="btn bg-primary text-white"
                                                             value="+ Add Selected"
-                                                            disabled={!flagIs}
+                                                            // disabled={!flagIs}
+                                                            disabled={filterMasterData.length == 0}
                                                         />
 
                                                         {/* <Link to="#"

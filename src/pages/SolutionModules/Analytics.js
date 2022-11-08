@@ -206,7 +206,7 @@ export const Analytics = () => {
          setSelectedSolutionTempMasterData([])
          setSolutionRadioCheck("")
          setSolutionTempFlagIs(false)
-      } else if(e.target.value === "2") {
+      } else if (e.target.value === "2") {
          history.push('/solutionBuilder/guide')
          setSolutionValue(2)
 
@@ -582,12 +582,9 @@ export const Analytics = () => {
 
                   /* =============== Search Custom Price Using selected Item PriceDataId ============== */
 
-
-
                   var itemsPrice = await itemPriceDataId(selectedPortfolioTempMasterData[x].items[k].itemBodyModel.itemPrices[j].itemPriceDataId);
-                  console.log("item price is before : ", itemsPrice)
-
-                  // delete itemsPrice['itemPriceDataId'];
+                  
+                  // console.log("item price is before : ", itemsPrice)
 
                   // itemsPrice['customPortfolio'] = {};
                   // itemsPrice['customItemPriceDataId'] = 0;
@@ -629,7 +626,7 @@ export const Analytics = () => {
                      totalPrice: itemsPrice.totalPrice,
                      netService: itemsPrice.netService,
                      customPortfolio: {
-                        portfolioId: 26
+                        portfolioId: CreatedcustomPortfolioData.customPortfolioId
                      },
                      tenantId: itemsPrice.tenantId,
                      partsRequired: itemsPrice.partsRequired,
@@ -640,16 +637,14 @@ export const Analytics = () => {
 
                   customItemsIdData.push(itemPriceObj)
                   // console.log("item price is after  : ", itemsPrice)
-
-                  // console.log("My values are : ", selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices[j].itemPriceDataId)
-
                }
 
                /* =============== loop for create custom Price with selected portfolio master Data Items Price ============ */
 
                for (let p = 0; p < customItemsIdData.length; p++) {
                   var customPriceDataCreate = await customPriceCreation(customItemsIdData[p])
-                  console.log("customPriceDataCreate REponse is ", customPriceDataCreate);
+
+                  // console.log("customPriceDataCreate REponse is ", customPriceDataCreate);
 
                   customPriceIdArr.push({
                      customItemPriceDataId: parseInt(customPriceDataCreate.data.customItemPriceDataId),
@@ -659,9 +654,6 @@ export const Analytics = () => {
                   //    customItemPriceDataId: parseInt(item.itemPriceDataId),
                   // };
                }
-
-
-               // console.log("customPriceIdArr : ", customPriceIdArr)
 
                let customItemObj = {
                   customItemId: 0,
@@ -736,10 +728,63 @@ export const Analytics = () => {
          }
 
 
+         const updateCreatedCutomPortfolo = {
+            customPortfolioId: CreatedcustomPortfolioData.customPortfolioId,
+            name: CreatedcustomPortfolioData.name,
+            description: CreatedcustomPortfolioData.description,
+            machineType: null,
+            searchTerm: null,
+            lubricant: false,
+            customerId: 0,
+            customerGroup: null,
+            customerSegment: "",
+            externalReference: "",
+            status: null,
+            validFrom: null,
+            validTo: null,
+            strategyTask: "PREVENTIVE_MAINTENANCE",
+            taskType: "PM1",
+            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+            productHierarchy: "END_PRODUCT",
+            geographic: "ONSITE",
+            availability: "AVAILABILITY_GREATER_95",
+            responseTime: "PROACTIVE",
+            type: "MACHINE",
+            application: "HILL",
+            contractOrSupport: "LEVEL_I",
+            lifeStageOfMachine: "NEW_BREAKIN",
+            supportLevel: "PREMIUM",
+            numberOfEvents: 0.0,
+            itemRelations: null,
+            rating: null,
+            startUsage: null,
+            endUsage: null,
+            unit: null,
+            additionals: null,
+            preparedBy: null,
+            approvedBy: null,
+            preparedOn: null,
+            revisedBy: null,
+            revisedOn: null,
+            salesOffice: null,
+            offerValidity: null,
+            customItems: [],
+            customCoverages: [],
+            portfolioPrice: null,
+            additionalPrice: null,
+            escalationPrice: null,
+            saveState: false,
+            userId: null,
+            createdAt: "2022-11-08T05:48:54.826606",
+            template: false,
+            visibleInCommerce: false
+         };
+
+
 
          const updatePortfolioRes = await updateCustomPortfolio(
             CreatedcustomPortfolioData.customPortfolioId,
-            CreatedcustomPortfolioData
+            updateCreatedCutomPortfolo
          );
 
          console.log("createdCustomItems ", createdCustomItems);
@@ -751,6 +796,7 @@ export const Analytics = () => {
                solutionValueIs: solutionValue,
                autocreatedcustomPortfolioData: CreatedcustomPortfolioData
             });
+            // console.log("Created");
          }
 
          // console.log("createdCustomItems is :", createdCustomItems);
@@ -2096,24 +2142,24 @@ export const Analytics = () => {
    // Portfolio Solution Templates 
 
    const portfolioTemplatesMasterColumn = [
-      {
-         name: (
-            <>
-               <div>Select</div>
-            </>
-         ),
-         selector: (row) => row.itemId,
-         wrap: true,
-         sortable: true,
-         // format: (row) => row.itemId,
-         cell: (row) => (
-            <Checkbox
-               className="text-black"
-               checked={row.check1 === true}
-               onChange={(e) => handlePortfolioRowCheckboxData(e, row)}
-            />
-         ),
-      },
+      // {
+      //    name: (
+      //       <>
+      //          <div>Select</div>
+      //       </>
+      //    ),
+      //    selector: (row) => row.itemId,
+      //    wrap: true,
+      //    sortable: true,
+      //    // format: (row) => row.itemId,
+      //    cell: (row) => (
+      //       <Checkbox
+      //          className="text-black"
+      //          checked={row.check1 === true}
+      //          onChange={(e) => handlePortfolioRowCheckboxData(e, row)}
+      //       />
+      //    ),
+      // },
       {
          name: (
             <>
@@ -2157,29 +2203,7 @@ export const Analytics = () => {
          wrap: true,
          sortable: true,
          format: (row) => row.externalReference,
-      },
-      {
-         name: (
-            <>
-               <div>Geographic</div>
-            </>
-         ),
-         selector: (row) => row.geographic,
-         wrap: true,
-         sortable: true,
-         format: (row) => row.geographic,
-      },
-      // {
-      //    name: (
-      //       <>
-      //          <div>Quantity</div>
-      //       </>
-      //    ),
-      //    selector: (row) => row.itemBodyModel.quantity,
-      //    wrap: true,
-      //    sortable: true,
-      //    format: (row) => row.itemBodyModel.quantity,
-      // },
+      }, ,
       {
          name: (
             <>
@@ -2191,6 +2215,17 @@ export const Analytics = () => {
          sortable: true,
          format: (row) => row.numberOfEvents,
       },
+      {
+         name: (
+            <>
+               <div>Total Price</div>
+            </>
+         ),
+         selector: (row) => row?.portfolioPrice?.totalPrice,
+         wrap: true,
+         sortable: true,
+         format: (row) => row?.portfolioPrice?.totalPrice,
+      }
    ];
 
    // selected POrtfolio Template Table Data 
@@ -2243,28 +2278,6 @@ export const Analytics = () => {
       {
          name: (
             <>
-               <div>Geographic</div>
-            </>
-         ),
-         selector: (row) => row.geographic,
-         wrap: true,
-         sortable: true,
-         format: (row) => row.geographic,
-      },
-      // {
-      //    name: (
-      //       <>
-      //          <div>Quantity</div>
-      //       </>
-      //    ),
-      //    selector: (row) => row.itemBodyModel.quantity,
-      //    wrap: true,
-      //    sortable: true,
-      //    format: (row) => row.itemBodyModel.quantity,
-      // },
-      {
-         name: (
-            <>
                <div>Total Event</div>
             </>
          ),
@@ -2272,6 +2285,17 @@ export const Analytics = () => {
          wrap: true,
          sortable: true,
          format: (row) => row.numberOfEvents,
+      },
+      {
+         name: (
+            <>
+               <div>Total Price</div>
+            </>
+         ),
+         selector: (row) => row?.portfolioPrice?.totalPrice,
+         wrap: true,
+         sortable: true,
+         format: (row) => row?.portfolioPrice?.totalPrice,
       },
    ];
 
@@ -2456,17 +2480,6 @@ export const Analytics = () => {
       {
          name: (
             <>
-               <div>Geographic</div>
-            </>
-         ),
-         selector: (row) => row.geographic,
-         wrap: true,
-         sortable: true,
-         format: (row) => row.geographic,
-      },
-      {
-         name: (
-            <>
                <div>Total Events</div>
             </>
          ),
@@ -2474,6 +2487,17 @@ export const Analytics = () => {
          wrap: true,
          sortable: true,
          format: (row) => row.numberOfEvents,
+      },
+      {
+         name: (
+            <>
+               <div>Total Price</div>
+            </>
+         ),
+         selector: (row) => row?.portfolioPrice?.totalPrice,
+         wrap: true,
+         sortable: true,
+         format: (row) => row?.portfolioPrice?.totalPrice,
       },
 
    ]
@@ -3624,6 +3648,8 @@ export const Analytics = () => {
                                        columns={portfolioTemplatesMasterColumn}
                                        data={portfolioTempMasterData}
                                        customStyles={customStyles}
+                                       selectableRows
+                                       onSelectedRowsChange={(state) => setPortfolioTempFilterMasterData(state.selectedRows)}
                                        pagination
                                     />
                                     {/* {portfolioTempFlagIs === true ?
@@ -3648,7 +3674,7 @@ export const Analytics = () => {
                                           }}
                                           className="btn text-white bg-primary"
                                           value="+ Add Selected"
-                                          disabled={!portfolioTempFlagIs}
+                                          disabled={portfolioTempFilterMasterData.length == 0}
                                        />
                                     </div>
                                  </div>
