@@ -128,8 +128,8 @@ const customStyles = {
         style: {
             paddingLeft: "8px", // override the cell padding for head cells
             paddingRight: "8px",
-            backgroundColor: "#7571f9",
-            // backgroundColor: "#872ff7",
+            // backgroundColor: "#7571f9",
+            backgroundColor: "#872ff7",
             color: "#fff",
         },
     },
@@ -3459,7 +3459,7 @@ export function PortfolioTemplatesResult(props) {
                                         <Tab label="Strategy" value="3" />
                                         <Tab label="Administrative" value={"administrative"} />
                                         <Tab label="Price" value="4" />
-                                        <Tab label="Price Agreement" disabled={!priceAgreementOption} value="5" />
+                                        <Tab label="Price Agreement" value="5" />
                                         <Tab label="Coverage" value="6" />
                                     </TabList>
                                 </Box>
