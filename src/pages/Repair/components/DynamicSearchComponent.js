@@ -10,8 +10,11 @@ const DynamicSearchComponent = (props) => {
   const iconColor = props.color;
 
   const handleDeletQuerySearch = () => {
-    props.setQuerySearchSelector([]);
-    setCount(0);
+    // props.setQuerySearchSelector([]);
+    // setCount(0);
+    props.querySearchSelector.pop();
+    props.setQuerySearchSelector(props.querySearchSelector);
+    setCount(props.querySearchSelector.length);
     props.clearFilteredData();
   };
   const handleSearchCategory = (e, id) => {
@@ -111,7 +114,7 @@ const DynamicSearchComponent = (props) => {
                       { label: "And", value: "AND", id: i },
                       { label: "Or", value: "OR", id: i },
                     ]}
-                    placeholder="&amp;"
+                    placeholder="Select Op"
                     onChange={(e) => handleOperator(e, i)}
                     // value={querySearchOperator[i]}
                     value={obj.selectOperator}

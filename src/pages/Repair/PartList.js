@@ -874,6 +874,7 @@ function PartList(props) {
   const columnsPartList = [
     { headerName: "GroupNumber", field: "groupNumber", flex: 1 },
     { headerName: "Type", field: "partType", flex: 1 },
+    { headerName: "Desc", field: "description", flex: 1 },
     { headerName: "PartNumber", field: "partNumber", flex: 1 },
     {
       headerName: "Qty",
@@ -963,6 +964,7 @@ function PartList(props) {
     { value: "vanilla", label: "Construction-Medium" },
     { value: "Construction", label: "Construction" },
   ];
+  const currencyOptions = [{ value: "USD", label: "USD" }]
 
   //Logic to handle status changes
   const disableStatusOptions = (option) => {
@@ -1732,7 +1734,7 @@ function PartList(props) {
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
-                                SMU
+                                SMU (Service Meter Unit)
                               </label>
                               <input
                                 type="text"
@@ -1857,7 +1859,7 @@ function PartList(props) {
                         <div className="col-md-4 col-sm-4">
                           <div className="form-group">
                             <p className="font-size-12 font-weight-500 mb-2">
-                              SMU
+                              SMU (Service Meter Unit)
                             </p>
                             <h6 className="font-weight-500">
                               {machineData.smu}
@@ -2103,31 +2105,6 @@ function PartList(props) {
                       <>
                         <div className="row">
                           <div className="col-md-6 col-sm-6">
-                            <div className="align-items-center date-box">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                <span className=" mr-2">ESTIMATION DATE</span>
-                              </label>
-                              {/* <div className="form-group w-100"> */}
-
-                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <DatePicker
-                                  variant="inline"
-                                  format="dd/MM/yyyy"
-                                  className="form-controldate border-radius-10"
-                                  label=""
-                                  value={generalData.estimationDate}
-                                  onChange={(e) =>
-                                    setGeneralData({
-                                      ...generalData,
-                                      estimationDate: e,
-                                    })
-                                  }
-                                />
-                              </MuiPickersUtilsProvider>
-                              {/* </div> */}
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
                                 ESTIMATION #
@@ -2160,6 +2137,28 @@ function PartList(props) {
                                   })
                                 }
                               />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="align-items-center date-box">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                <span className=" mr-2">ESTIMATION DATE</span>
+                              </label>
+                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <DatePicker
+                                  variant="inline"
+                                  format="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  label=""
+                                  value={generalData.estimationDate}
+                                  onChange={(e) =>
+                                    setGeneralData({
+                                      ...generalData,
+                                      estimationDate: e,
+                                    })
+                                  }
+                                />
+                              </MuiPickersUtilsProvider>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -2398,7 +2397,7 @@ function PartList(props) {
                           <Select
                             defaultValue={selectedOption}
                             onChange={setSelectedOption}
-                            options={options}
+                            options={currencyOptions}
                             placeholder="placeholder (Optional)"
                           />
                         </div>
@@ -2530,9 +2529,9 @@ function PartList(props) {
                   fontSize: 12,
                 },
                 minHeight: 200,
-                "& .MuiDataGrid-columnHeader .MuiDataGrid-columnSeparator": {
-                  display: "none",
-                },
+                // "& .MuiDataGrid-columnHeader .MuiDataGrid-columnSeparator": {
+                //   display: "none",
+                // },
                 "&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell": {
                   fontSize: 12,
                   py: "8px",

@@ -20,7 +20,9 @@ import { Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { default as Select, default as SelectFilter } from "react-select";
 import { getSearchCoverageForFamily } from "../../services/index";
-function RepairServiceEstimate() {
+function RepairServiceEstimate(props) {
+  const { activeElement, setActiveElement } = props.builderDetails;
+
   const [selectedOption, setSelectedOption] = useState(null);
   const [value, setValue] = React.useState("1");
 
@@ -515,7 +517,7 @@ const masterColumns = [
 
   return (
     <>
-     <div className="content-body" style={{ minHeight: '884px' }}>
+     {/* <div className="content-body" style={{ minHeight: '884px' }}> */}
                 <div class="container-fluid">
       <div className="card p-4 mt-5">
         <h5 className="d-flex align-items-center bg-primary p-2 border-radius-10 mb-0">
@@ -742,6 +744,14 @@ const masterColumns = [
           </div>
         </div>
         <div className=" text-right">
+        <button
+                className="btn bg-primary text-white"
+                onClick={() =>
+                  setActiveElement({ ...activeElement, name: "operation" })
+                }
+              >
+                Back
+              </button>
           <a href="#" className="btn border bg-primary text-white">
             Save
           </a>
@@ -2430,7 +2440,7 @@ const masterColumns = [
         </Modal.Body>
       </Modal>
       </div>
-      </div>
+      {/* </div> */}
     </>
   );
 }

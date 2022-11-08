@@ -1095,7 +1095,7 @@ function WithoutSparePartsHeader(props) {
                               <div className="col-md-6 col-sm-6">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
-                                    SMU
+                                    SMU (Service Meter Unit)
                                   </label>
                                   <input
                                     type="text"
@@ -1218,7 +1218,7 @@ function WithoutSparePartsHeader(props) {
                             <div className="col-md-4 col-sm-4">
                               <div className="form-group">
                                 <p className="font-size-12 font-weight-500 mb-2">
-                                  SMU
+                                  SMU (Service Meter Unit)
                                 </p>
                                 <h6 className="font-weight-500">
                                   {machineData.smu}

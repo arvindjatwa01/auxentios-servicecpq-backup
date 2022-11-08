@@ -30,7 +30,7 @@ function WithoutRepairOption01(props) {
   const [noOptionsCompCode, setNoOptionsCompCode] = useState(false);
   const [noOptionsJobCode, setNoOptionsJobCode] = useState(false);
   const [showAddNewButton, setShowAddNewButton] = useState(true);
-  const [operationLoading, setOperationLoadig] = useState(false);
+  const [operationLoading, setOperationLoading] = useState(false);
 
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -54,27 +54,35 @@ function WithoutRepairOption01(props) {
   }, []);
 
   const fetchOperationsOfSegment = () => {
-    setOperationLoadig(true);
+    setOperationLoading(true);
     if (activeElement.sId) {
       fetchOperations(activeElement.sId)
         .then((result) => {
           if (result?.length > 0) {
             setOperations(result);
             setOperationViewOnly(true);
-            let lastOperation = result[result.length - 1];
-            setOperationData({
-              ...lastOperation,
-              header:
-                "Operation " +
-                lastOperation.operationNumber +
-                " - " +
-                lastOperation.description, //Rename after modifications in UI
-            });
+
+            console.log("Active Element" , activeElement);
+            let opToLoad = activeElement.oId ? result.filter(
+              (x) => x.id === activeElement.oId
+            )[0] : result[result.length - 1];
+            console.log("OpToLoad" , opToLoad);
+              
+              setOperationData({
+                ...opToLoad,
+                header:
+                  "Operation " +
+                  opToLoad.operationNumber +
+                  " - " +
+                  opToLoad.description, //Rename after modifications in UI
+              });
+           
+            
           } else {
             loadNewOperationUI();
             // setOperationData(newOperation);
           }
-          setOperationLoadig(false);
+          setOperationLoading(false);
           // console.log(operationData);
         })
         .catch((err) => {
@@ -83,7 +91,7 @@ function WithoutRepairOption01(props) {
             "error",
             "Error occurred while fetching the existing operations!"
           );
-          setOperationLoadig(false);
+          setOperationLoading(false);
         });
     } else {
       handleSnack("error", "Not a valid segment!");
@@ -539,7 +547,7 @@ function WithoutRepairOption01(props) {
               <button
                 // to="/RepairServiceEstimate"
                 onClick={() =>
-                  setActiveElement({ name: "service", oId: operationData.id })
+                  setActiveElement({ ...activeElement, name: "service", oId: operationData.id })
                 }
                 className="btn bg-primary text-white ml-2"
               >

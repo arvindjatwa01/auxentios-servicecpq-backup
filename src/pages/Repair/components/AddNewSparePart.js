@@ -376,6 +376,7 @@ const AddNewSparepartModal = (props) => {
                     </label>
                     <input
                       type="text"
+                      disabled
                       className="form-control border-radius-10"
                       value={props.sparePart.description}
                       onChange={(e) =>

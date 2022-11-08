@@ -1006,7 +1006,7 @@ const history=useHistory()
                 </div>
                 <div className="col-md-6 col-sm-6">
                 <div class="form-group">
-                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SMU</label>
+                  <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SMU (Service Meter Unit)</label>
                   <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)"/>
                 </div>
                 </div>
@@ -1046,7 +1046,7 @@ const history=useHistory()
             </div>
             <div class="col-md-4 col-sm-4">
             <div class="form-group">
-              <p class="font-size-12 font-weight-500 mb-2">SMU</p>
+              <p class="font-size-12 font-weight-500 mb-2">SMU (Service Meter Unit)</p>
               <h6 class="font-weight-500">12,580</h6>
               </div>
             </div>
