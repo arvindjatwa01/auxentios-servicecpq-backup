@@ -3163,14 +3163,22 @@ button.bg-primary:hover {
   border: 1px solid #9E9E9E !important;
   margin-right: 17px !important;
   border-radius: 9px !important;
+   padding: 12px 10px !important;
+   min-height: 32px !important;
+   max-height: 32px;
+}
+.heading-tabs.Mui-selected {
+  color: #872ff7 !important;
+   border: 1px solid #673ab7 !important;
+   border-bottom: 1px solid #673ab7 !important;
 }
 .tab2 .css-1ujnqem-MuiTabs-root {
   min-height: 48px !important;
 }
-.tab2 .css-1h9z7r5-MuiButtonBase-root-MuiTab-root.Mui-selected {
+/* .tab2 .css-1h9z7r5-MuiButtonBase-root-MuiTab-root.Mui-selected {
   color: #872ff7 !important;
   border: 1px solid #673ab7 !important;
-}
+} */
 .tab2 .css-1h9z7r5-MuiButtonBase-root-MuiTab-root{min-height: 32px !important; max-height: 32px;}
 .tab2 .css-1aquho2-MuiTabs-indicator {
   background-color: transparent !important;
@@ -3223,3 +3231,7 @@ z-index: 1;}
 .custom-tabs-div span{display: none;}
 .custom-tabs-div button{ padding: 10px 15px !important;}
 .custom-tabs-div button.Mui-selected{color: #872ff7  !important; border-bottom:2px solid #872ff7 !important;}
+
+.rdt_TableRow{    font-size: 12px !important;
+  color: #808080 !important;
+  min-height: 44px !important;}

@@ -41,7 +41,7 @@ const ModalShare = (props) => {
                   className="custom-tabs w-100"
                   sx={{ borderColor: "divider" }}
                 >
-                  <TabList
+                  <TabList className="custom-tabs-div"
                     onChange={handleChange}
                     aria-label="lab API tabs example"
                   >
