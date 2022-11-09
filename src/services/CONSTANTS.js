@@ -98,8 +98,6 @@ export const CREATE_REPAIR_BUILDER = () => REPAIR_BUILDER_URI + "builder";
 export const ADD_REPAIR_BUILDER_PARTLIST = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/partlist`;
 export const FETCH_REPAIR_BUILDER_PARTLIST = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/partlist`;
 
-// export const ADD_REPAIR_SEGMENT = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/segment`;
-// export const ADD_REPAIR_OPERATION= (segmentId) => REPAIR_BUILDER_URI + `segment/${segmentId}/operation`;
 export const ADD_REPAIR_PART_TO_PARTLIST = (partListId) => REPAIR_BUILDER_URI + `partlist/${partListId}/sparepart`;
 export const ADD_REPAIR_MULTI_PARTS_TO_PARTLIST = (partListId) => REPAIR_BUILDER_URI + `partlist/${partListId}/spareparts`;
 export const UPLOAD_REPAIR_PARTS_TO_PARTLIST = (partListId) => REPAIR_BUILDER_URI + `partlist/${partListId}/upload-excel`;
@@ -114,6 +112,15 @@ export const FETCH_BUILDER_DETAILS = (builderId) => REPAIR_BUILDER_URI + `builde
 export const FETCH_PARTS_OF_PARTLIST = (partListId, query) => REPAIR_BUILDER_URI + `partlist/${partListId}/sparepart?${query}`;
 export const BUILDER_SEGMENT = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/segment`;
 export const SEGMENT_OPERATION = (segmentId) => REPAIR_BUILDER_URI + `segment/${segmentId}/operation`;
+export const OPERATION_SERVICE = (operationId) => REPAIR_BUILDER_URI + `operation/${operationId}/service-estimate`;
+export const OPERATION_SERVICE_EST_DETAILS = (operationId) => REPAIR_BUILDER_URI + `operation/${operationId}/service-estimate-details`;
+
+export const LABOUR_TO_SERVICE = (serviceId) => REPAIR_BUILDER_URI + `service-estimate/${serviceId}/labour`;
+export const LABOUR_ITEM_TO_LABOUR = (labourId) => REPAIR_BUILDER_URI + `labour/${labourId}/labour-item`;
+export const CONSUMABLE_TO_SERVICE = (serviceId) => REPAIR_BUILDER_URI + `service-estimate/${serviceId}/consumable`;
+export const CONSUMABLE_ITEM_TO_CONSUMABLE = (consumableId) => REPAIR_BUILDER_URI + `consumable/${consumableId}/consumable-item`;
+export const EXTWORK_TO_SERVICE = (serviceId) => REPAIR_BUILDER_URI + `service-estimate/${serviceId}/external-work`;
+export const MISC_TO_SERVICE = (serviceId) => REPAIR_BUILDER_URI + `service-estimate/${serviceId}/miscellaneous`;
 export const FETCH_BUILDER_VERSION_DETAILS = (builderNo, versionNo) => REPAIR_BUILDER_URI + `builder/${builderNo}/version/${versionNo}`
 
 export const SEARCH_CUSTOMER = (query) => DATA_SERVICE_URI + `customer/search?search=${query}`;

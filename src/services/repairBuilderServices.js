@@ -22,6 +22,12 @@ import {
   UPDATE_REPAIR_PRICE,
   UPDATE_REPAIR_STATUS,
   UPLOAD_REPAIR_PARTS_TO_PARTLIST,
+  OPERATION_SERVICE,
+  LABOUR_TO_SERVICE,
+  CONSUMABLE_TO_SERVICE,
+  EXTWORK_TO_SERVICE,
+  MISC_TO_SERVICE,
+  OPERATION_SERVICE_EST_DETAILS,
 } from "./CONSTANTS";
 const accessToken = Cookies.get("accessToken");
 
@@ -134,6 +140,162 @@ export const AddOperation = (segmentId, data) => {
         });
     } catch (error) {
       console.error("AddOperation general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//fetch ServiceEstimate Header to the Operation of a builder
+export const FetchServiceHeader = (operationId, data) => {
+  console.log("service repairbuilder > FetchServiceHeader called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(OPERATION_SERVICE_EST_DETAILS(operationId), config)
+        .then((res) => {
+          console.log("repairbuilder -> FetchServiceHeader response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("FetchServiceHeader > axios err=", err);
+          reject("Error in FetchServiceHeader axios!");
+        });
+    } catch (error) {
+      console.error("FetchServiceHeader general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Add ServiceEstimate Header to the Operation of a builder
+export const AddServiceHeader = (operationId, data) => {
+  console.log("service repairbuilder > AddServiceHeader called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(OPERATION_SERVICE(operationId), data, config)
+        .then((res) => {
+          console.log("repairbuilder -> AddServiceHeader response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("AddLaborToService > axios err=", err);
+          reject("Error in AddServiceHeader axios!");
+        });
+    } catch (error) {
+      console.error("AddServiceHeader general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Add Labor to the service estimate of a builder
+export const AddLaborToService = (serviceId, data) => {
+  console.log("service repairbuilder > AddLaborToService called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(LABOUR_TO_SERVICE(serviceId), data, config)
+        .then((res) => {
+          console.log("repairbuilder -> AddLaborToService response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("AddLaborToService > axios err=", err);
+          reject("Error in AddLaborToService axios!");
+        });
+    } catch (error) {
+      console.error("AddLaborToService general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Add Consumable to the service estimate of a builder
+export const AddConsumableToService = (serviceId, data) => {
+  console.log("service repairbuilder > AddConsumableToService called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(CONSUMABLE_TO_SERVICE(serviceId), data, config)
+        .then((res) => {
+          console.log("repairbuilder -> AddConsumableToService response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("AddConsumableToService > axios err=", err);
+          reject("Error in AddConsumableToService axios!");
+        });
+    } catch (error) {
+      console.error("AddConsumableToService general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Add Ext Work to the service estimate of a builder
+export const AddExtWorkToService = (serviceId, data) => {
+  console.log("service repairbuilder > AddExtWorkToService called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(EXTWORK_TO_SERVICE(serviceId), data, config)
+        .then((res) => {
+          console.log("repairbuilder -> AddExtWorkToService response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("AddExtWorkToService > axios err=", err);
+          reject("Error in AddExtWorkToService axios!");
+        });
+    } catch (error) {
+      console.error("AddExtWorkToService general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Add MISC to the service estimate of a builder
+export const AddMiscToService = (serviceId, data) => {
+  console.log("service repairbuilder > AddMiscToService called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(MISC_TO_SERVICE(serviceId), data, config)
+        .then((res) => {
+          console.log("repairbuilder -> AddMiscToService response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("AddMiscToService > axios err=", err);
+          reject("Error in AddMiscToService axios!");
+        });
+    } catch (error) {
+      console.error("AddMiscToService general exception", error);
       reject(SYSTEM_ERROR);
     }
   });

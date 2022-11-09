@@ -4,10 +4,10 @@ import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBullet
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
 import SettingsBackupRestoreIcon from "@mui/icons-material/SettingsBackupRestore";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
-import AddIcon from '@mui/icons-material/Add';
-import SearchIcon from '@mui/icons-material/Search';
+import AddIcon from "@mui/icons-material/Add";
+import SearchIcon from "@mui/icons-material/Search";
 import TabContext from "@mui/lab/TabContext";
-import Checkbox from '@mui/material/Checkbox';
+import Checkbox from "@mui/material/Checkbox";
 import TabList from "@mui/lab/TabList";
 import DataTable from "react-data-table-component";
 import TabPanel from "@mui/lab/TabPanel";
@@ -20,12 +20,44 @@ import { Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { default as Select, default as SelectFilter } from "react-select";
 import { getSearchCoverageForFamily } from "../../services/index";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
+import { useEffect } from "react";
+import { FetchServiceHeader } from "services/repairBuilderServices";
+import Moment from "react-moment";
+
 function RepairServiceEstimate(props) {
   const { activeElement, setActiveElement } = props.builderDetails;
 
+  const [serviceEstimateData, setServiceEstimateData] = useState({
+    reference: "",
+    description: "",
+    segmentTitle: "",
+    jobOperation: "",
+    priceMethod: "",
+    priceDate: new Date(),
+    currency: "",
+    netPrice: "",
+    jobCode: "",
+  });
   const [selectedOption, setSelectedOption] = useState(null);
   const [value, setValue] = React.useState("1");
-
+  useEffect(() => {
+    FetchServiceHeader(activeElement.oId).then(result => {
+      setServiceEstimateData({
+        ...serviceEstimateData, 
+        reference: result.reference,
+        currency: result.currency,
+        description: result.description,
+        jobCode: result.jobCode,
+        jobOperation: result.jobOperation,
+        netPrice: result.netPrice,
+        priceDate: result.priceDate,
+        priceMethod: result.priceMethod,
+        segmentTitle: result.segmentTitle
+      })
+    })    
+  }, [])
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -37,144 +69,144 @@ function RepairServiceEstimate(props) {
   const handleClose2 = () => setOpen2(false);
   const customStyles = {
     rows: {
-        style: {
-            minHeight: "72px", // override the row height
-        },
+      style: {
+        minHeight: "72px", // override the row height
+      },
     },
     headCells: {
-        style: {
-            paddingLeft: "8px", // override the cell padding for head cells
-            paddingRight: "8px",
-            backgroundColor: "#872ff7",
-            color: "#fff",
-        },
+      style: {
+        paddingLeft: "8px", // override the cell padding for head cells
+        paddingRight: "8px",
+        backgroundColor: "#872ff7",
+        color: "#fff",
+      },
     },
     cells: {
-        style: {
-            paddingLeft: "8px", // override the cell padding for data cells
-            paddingRight: "8px",
-        },
+      style: {
+        paddingLeft: "8px", // override the cell padding for data cells
+        paddingRight: "8px",
+      },
     },
-};
-const masterColumns = [
+  };
+  const masterColumns = [
     {
-        name: (
-            <>
-                <div>Select</div>
-            </>
-        ),
-        // selector: (row) => row.check1,
-        wrap: true,
-        sortable: true,
-        maxWidth: "300px",
-        cell: (row) => (
-            <Checkbox
-                className="text-black"
-            // checked={row.check1}
-            // onChange={(e) => handleCheckboxData(e, row)}
-            />
-        ),
-    },
-    {
-        name: (
-            <>
-                <div>Group Number</div>
-            </>
-        ),
-        selector: (row) => row.GroupNumber,
-        wrap: true,
-        sortable: true,
-        format: (row) => row.GroupNumber,
+      name: (
+        <>
+          <div>Select</div>
+        </>
+      ),
+      // selector: (row) => row.check1,
+      wrap: true,
+      sortable: true,
+      maxWidth: "300px",
+      cell: (row) => (
+        <Checkbox
+          className="text-black"
+          // checked={row.check1}
+          // onChange={(e) => handleCheckboxData(e, row)}
+        />
+      ),
     },
     {
-        name: (
-            <>
-                <div>Type</div>
-            </>
-        ),
-        selector: (row) => row.Type,
-        wrap: true,
-        sortable: true,
-        format: (row) => row.Type,
+      name: (
+        <>
+          <div>Group Number</div>
+        </>
+      ),
+      selector: (row) => row.GroupNumber,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.GroupNumber,
     },
     {
-        name: (
-            <>
-                <div>Part number</div>
-            </>
-        ),
-        selector: (row) => row.Partnumber,
-        wrap: true,
-        sortable: true,
-        format: (row) => row.Partnumber,
+      name: (
+        <>
+          <div>Type</div>
+        </>
+      ),
+      selector: (row) => row.Type,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.Type,
     },
     {
-        name: (
-            <>
-                <div>Price Extended</div>
-            </>
-        ),
-        selector: (row) => row.PriceExtended,
-        wrap: true,
-        sortable: true,
-        format: (row) => row.PriceExtended,
+      name: (
+        <>
+          <div>Part number</div>
+        </>
+      ),
+      selector: (row) => row.Partnumber,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.Partnumber,
     },
     {
-        name: (
-            <>
-                <div>Price currency</div>
-            </>
-        ),
-        selector: (row) => row.Pricecurrency,
-        wrap: true,
-        sortable: true,
-        format: (row) => row.Pricecurrency,
+      name: (
+        <>
+          <div>Price Extended</div>
+        </>
+      ),
+      selector: (row) => row.PriceExtended,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.PriceExtended,
     },
     {
-        name: (
-            <>
-                <div>Usage</div>
-            </>
-        ),
-        selector: (row) => row.Usage,
-        wrap: true,
-        sortable: true,
-        format: (row) => row.Usage,
+      name: (
+        <>
+          <div>Price currency</div>
+        </>
+      ),
+      selector: (row) => row.Pricecurrency,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.Pricecurrency,
     },
     {
-        name: (
-            <>
-                <div>Total Price</div>
-            </>
-        ),
-        selector: (row) => row.TotalPrice,
-        wrap: true,
-        sortable: true,
-        format: (row) => row.TotalPrice,
+      name: (
+        <>
+          <div>Usage</div>
+        </>
+      ),
+      selector: (row) => row.Usage,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.Usage,
     },
     {
-        name: (
-            <>
-                <div>Comments</div>
-            </>
-        ),
-        selector: (row) => row.Comments,
-        wrap: true,
-        sortable: true,
-        format: (row) => row.Comments,
+      name: (
+        <>
+          <div>Total Price</div>
+        </>
+      ),
+      selector: (row) => row.TotalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.TotalPrice,
     },
     {
-        name: (
-            <>
-                <div>Actions</div>
-            </>
-        ),
-        selector: (row) => row.Actions,
-        wrap: true,
-        sortable: true,
-        format: (row) => row.Actions,
+      name: (
+        <>
+          <div>Comments</div>
+        </>
+      ),
+      selector: (row) => row.Comments,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.Comments,
     },
-];
+    {
+      name: (
+        <>
+          <div>Actions</div>
+        </>
+      ),
+      selector: (row) => row.Actions,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.Actions,
+    },
+  ];
   const [show, setShow] = React.useState(false);
   const [count, setCount] = useState(1);
   const options = [
@@ -517,1928 +549,1831 @@ const masterColumns = [
 
   return (
     <>
-     {/* <div className="content-body" style={{ minHeight: '884px' }}> */}
-                <div class="container-fluid">
-      <div className="card p-4 mt-5">
-        <h5 className="d-flex align-items-center bg-primary p-2 border-radius-10 mb-0">
-          <div className="" style={{ display: "contents" }}>
-            <span className="mr-3 white-space text-white">Header</span>
-          </div>
-          {/* <div className="hr"></div> */}
-        </h5>
-        <div className="row mt-4 input-fields">
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <label
-                className="text-light-dark font-size-12 font-weight-600"
-                for="exampleInputEmail1"
-              >
-                REFERENCE
-              </label>
-              <input
-                type="email"
-                class="form-control border-radius-10 text-primary"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
-                placeholder="Placeholder (Optional)"
-              />
+      {/* <div className="content-body" style={{ minHeight: '884px' }}> */}
+      <div class="container-fluid">
+        <div className="card p-4 mt-5">
+          <h5 className="d-flex align-items-center bg-primary p-2 border-radius-10 mb-0">
+            <div className="" style={{ display: "contents" }}>
+              <span className="mr-3 white-space text-white">Header</span>
+            </div>
+            {/* <div className="hr"></div> */}
+          </h5>
+          <div className="row mt-4 input-fields">
+            <div className="col-md-4 col-sm-4">
+              <div class="form-group mt-3">
+                <label className="text-light-dark font-size-12 font-weight-600">
+                  REFERENCE
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  class="form-control border-radius-10 text-primary"
+                  id="exampleInputEmail1"
+                  placeholder="Required"
+                  value={serviceEstimateData.reference}
+                />
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div class="form-group mt-3">
+                <label className="text-light-dark font-size-12 font-weight-600">
+                  DESCRIPTION
+                </label>
+                <input
+                  type="text"
+                  class="form-control border-radius-10 text-primary"
+                  id="exampleInputEmail1"
+                  aria-describedby="emailHelp"
+                  placeholder="Required"
+                  value={serviceEstimateData.description}
+                />
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div class="form-group mt-3">
+                <label className="text-light-dark font-size-12 font-weight-600">
+                  SEGMENT TITLE
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  class="form-control border-radius-10 text-primary"
+                  id="exampleInputEmail1"
+                  aria-describedby="emailHelp"
+                  placeholder="Required"
+                  value={serviceEstimateData.segmentTitle}
+                />
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div class="form-group mt-3">
+                <label className="text-light-dark font-size-12 font-weight-600">
+                  JOB OPERATION
+                </label>
+                <input
+                  type="text"
+                  disabled                  
+                  class="form-control border-radius-10 text-primary"
+                  id="exampleInputEmail1"
+                  placeholder="Required"
+                  value={serviceEstimateData.jobOperation}
+                />
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div class="form-group mt-3">
+                <label className="text-light-dark font-size-12 font-weight-600">
+                  PRICE METHOD
+                </label>
+                <input
+                  type="email"
+                  class="form-control border-radius-10 text-primary"
+                  id="exampleInputEmail1"
+                  aria-describedby="emailHelp"
+                  placeholder="Required"
+                  value={serviceEstimateData.priceMethod}
+                />
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div className="form-group mt-3 align-items-center date-box">
+                <label className="text-light-dark font-size-12 font-weight-500">
+                  PRICE DATE
+                </label>
+
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <DatePicker
+                    variant="inline"
+                    format="dd/MM/yyyy"
+                    className="form-controldate border-radius-10"
+                    label=""
+                    value={serviceEstimateData.priceDate}
+                    onChange={(e) =>
+                      setServiceEstimateData({
+                        ...serviceEstimateData,
+                        priceDate: e,
+                      })
+                    }
+                  />
+                </MuiPickersUtilsProvider>
+              </div>
+              {/* <div class="form-group mt-3">
+                <label
+                  className="text-light-dark font-size-12 font-weight-600"
+                  
+                >
+                  PRICE DATE
+                </label>
+                <input
+                  type="email"
+                  class="form-control border-radius-10 text-primary"
+                  id="exampleInputEmail1"
+                  aria-describedby="emailHelp"
+                  placeholder="Required"
+                />
+              </div> */}
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div class="form-group mt-3">
+                <label className="text-light-dark font-size-12 font-weight-600">
+                  CURRENCY
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  class="form-control border-radius-10 text-primary"
+                  id="exampleInputEmail1"
+                  placeholder="Required"
+                  value={serviceEstimateData.currency}
+                />
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div class="form-group mt-3">
+                <label className="text-light-dark font-size-12 font-weight-600">
+                  NET PRICE
+                </label>
+                <input
+                  type="text"
+                  class="form-control border-radius-10 text-primary"
+                  id="exampleInputEmail1"
+                  placeholder="Required"
+                  value={serviceEstimateData.netPrice}
+                />
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div class="form-group mt-3">
+                <label className="text-light-dark font-size-12 font-weight-600">
+                  JOB CODE
+                </label>
+                <input
+                  type="text"
+                  class="form-control border-radius-10 text-primary"
+                  id="exampleInputEmail1"
+                  placeholder="Optional"
+                  value={serviceEstimateData.jobCode}
+                />
+              </div>
             </div>
           </div>
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <label
-                className="text-light-dark font-size-12 font-weight-600"
-                for="exampleInputEmail1"
-              >
-                DESCRIPTION
-              </label>
-              <input
-                type="email"
-                class="form-control border-radius-10 text-primary"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
-                placeholder="Placeholder (Optional)"
-              />
+          <div className="row mt-4">
+            <div className="col-md-4 col-sm-4">
+              <div class="form-group mt-3">
+                <p className="font-size-12 font-weight-600 mb-2">REFERENCE</p>
+                <h6 className="font-weight-600">
+                {serviceEstimateData.reference}
+                </h6>
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div class="form-group mt-3">
+                <p className="font-size-12 font-weight-600 mb-2">
+                  DESCRIPTION{" "}
+                </p>
+                <h6 className="font-weight-600">
+                {serviceEstimateData.description}
+                </h6>
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div class="form-group mt-3">
+                <p className="font-size-12 font-weight-600 mb-2">
+                  SEGMENT TITLE
+                </p>
+                <h6 className="font-weight-600">{serviceEstimateData.segmentTitle} </h6>
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div class="form-group mt-3">
+                <p className="font-size-12 font-weight-600 mb-2">
+                  JOB OPERATION
+                </p>
+                <h6 className="font-weight-600">
+                {serviceEstimateData.jobOperation}
+                </h6>
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div class="form-group mt-3">
+                <p className="font-size-12 font-weight-600 mb-2">
+                  PRICE METHOD
+                </p>
+                <h6 className="font-weight-600">{serviceEstimateData.priceMethod}</h6>
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div class="form-group mt-3">
+                <p className="font-size-12 font-weight-600 mb-2">PRICE DATE</p>
+                <h6 className="font-weight-600"><Moment format="DD/MM/YYYY">{serviceEstimateData.priceDate}</Moment></h6>
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div class="form-group mt-3">
+                <p className="font-size-12 font-weight-600 mb-2">CURRENCY</p>
+                <h6 className="font-weight-600">{serviceEstimateData.currency}</h6>
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div class="form-group mt-3">
+                <p className="font-size-12 font-weight-600 mb-2">NET PRICE</p>
+                <h6 className="font-weight-600">{serviceEstimateData.netPrice}</h6>
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div class="form-group mt-3">
+                <p className="font-size-12 font-weight-600 mb-2">JOB CODE </p>
+                <h6 className="font-weight-600">{serviceEstimateData.jobCode}</h6>
+              </div>
             </div>
           </div>
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <label
-                className="text-light-dark font-size-12 font-weight-600"
-                for="exampleInputEmail1"
-              >
-                SEGMENT TITLE
-              </label>
-              <input
-                type="email"
-                class="form-control border-radius-10 text-primary"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
-                placeholder="Placeholder (Optional)"
-              />
-            </div>
-          </div>
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <label
-                className="text-light-dark font-size-12 font-weight-600"
-                for="exampleInputEmail1"
-              >
-                JOB OPERATION
-              </label>
-              <input
-                type="email"
-                class="form-control border-radius-10 text-primary"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
-                placeholder="Placeholder (Optional)"
-              />
-            </div>
-          </div>
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <label
-                className="text-light-dark font-size-12 font-weight-600"
-                for="exampleInputEmail1"
-              >
-                PRICE METHOD
-              </label>
-              <input
-                type="email"
-                class="form-control border-radius-10 text-primary"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
-                placeholder="Placeholder (Optional)"
-              />
-            </div>
-          </div>
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <label
-                className="text-light-dark font-size-12 font-weight-600"
-                for="exampleInputEmail1"
-              >
-                PRICE DATE
-              </label>
-              <input
-                type="email"
-                class="form-control border-radius-10 text-primary"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
-                placeholder="Placeholder (Optional)"
-              />
-            </div>
-          </div>
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <label
-                className="text-light-dark font-size-12 font-weight-600"
-                for="exampleInputEmail1"
-              >
-                CURRENCY
-              </label>
-              <input
-                type="email"
-                class="form-control border-radius-10 text-primary"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
-                placeholder="Placeholder (Optional)"
-              />
-            </div>
-          </div>
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <label
-                className="text-light-dark font-size-12 font-weight-600"
-                for="exampleInputEmail1"
-              >
-                NET PRICE
-              </label>
-              <input
-                type="email"
-                class="form-control border-radius-10 text-primary"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
-                placeholder="Placeholder (Optional)"
-              />
-            </div>
-          </div>
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <label
-                className="text-light-dark font-size-12 font-weight-600"
-                for="exampleInputEmail1"
-              >
-                JOB CODE
-              </label>
-              <input
-                type="email"
-                class="form-control border-radius-10 text-primary"
-                id="exampleInputEmail1"
-                aria-describedby="emailHelp"
-                placeholder="Placeholder (Optional)"
-              />
-            </div>
+          <div className=" text-right">
+            <button
+              className="btn bg-primary text-white"
+              onClick={() =>
+                setActiveElement({ ...activeElement, name: "operation" })
+              }
+            >
+              Back
+            </button>
+            <a href="#" className="btn border bg-primary text-white">
+              Save
+            </a>
           </div>
         </div>
-        <div className="row mt-4">
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <p className="font-size-12 font-weight-600 mb-2">REFERENCE</p>
-              <h6 className="font-weight-600">
-                Chinalco SA, Beijing,China (code 203027)
-              </h6>
-            </div>
-          </div>
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <p className="font-size-12 font-weight-600 mb-2">DESCRIPTION </p>
-              <h6 className="font-weight-600">
-                Alberto Franco, Head of purchase
-              </h6>
-            </div>
-          </div>
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <p className="font-size-12 font-weight-600 mb-2">SEGMENT TITLE</p>
-              <h6 className="font-weight-600">SF1234 </h6>
-            </div>
-          </div>
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <p className="font-size-12 font-weight-600 mb-2">JOB OPERATION</p>
-              <h6 className="font-weight-600">
-                Sales Opportunity for Chinalco for recondition{" "}
-              </h6>
-            </div>
-          </div>
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <p className="font-size-12 font-weight-600 mb-2">PRICE METHOD</p>
-              <h6 className="font-weight-600">LAJ00t6t31</h6>
-            </div>
-          </div>
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <p className="font-size-12 font-weight-600 mb-2">PRICE DATE</p>
-              <h6 className="font-weight-600">CAT</h6>
-            </div>
-          </div>
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <p className="font-size-12 font-weight-600 mb-2">CURRENCY</p>
-              <h6 className="font-weight-600">Customer 50%, Insurer 50%</h6>
-            </div>
-          </div>
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <p className="font-size-12 font-weight-600 mb-2">NET PRICE</p>
-              <h6 className="font-weight-600">30days</h6>
-            </div>
-          </div>
-          <div className="col-md-4 col-sm-4">
-            <div class="form-group mt-3">
-              <p className="font-size-12 font-weight-600 mb-2">JOB CODE </p>
-              <h6 className="font-weight-600">Standard</h6>
-            </div>
-          </div>
-        </div>
-        <div className=" text-right">
-        <button
-                className="btn bg-primary text-white"
-                onClick={() =>
-                  setActiveElement({ ...activeElement, name: "operation" })
-                }
-              >
-                Back
-              </button>
-          <a href="#" className="btn border bg-primary text-white">
-            Save
-          </a>
-        </div>
-      </div>
-      <div className="card p-4 mt-5">
-        <Box sx={{ width: "100%", typography: "body1" }}>
-          <TabContext value={value}>
-            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <TabList className="custom-tabs-div"
-                onChange={handleChange}
-                aria-label="lab API tabs example"
-              >
-                <Tab label="Labor" value="1" />
-                <Tab label="Consumables" value="2" />
-                <Tab label="External Work" value="3" />
-                <Tab label="Other misc." value="4" />
-              </TabList>
-            </Box>
-            <TabPanel value="1">
-              <div className="row mt-2 input-fields">
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      JOB CODE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
+        <div className="card p-4 mt-5">
+          <Box sx={{ width: "100%", typography: "body1" }}>
+            <TabContext value={value}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <TabList
+                  className="custom-tabs-div"
+                  onChange={handleChange}
+                  aria-label="lab API tabs example"
+                >
+                  <Tab label="Labor" value="1" />
+                  <Tab label="Consumables" value="2" />
+                  <Tab label="External Work" value="3" />
+                  <Tab label="Other misc." value="4" />
+                </TabList>
+              </Box>
+              <TabPanel value="1">
+                <div className="row mt-2 input-fields">
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        JOB CODE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        JOB CODE DESCRIPTION
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div className="form-group  mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        LABOR CODE
+                      </label>
+                      <Select
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options}
+                        placeholder="placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div className="form-group  mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        PRICE METHOD
+                      </label>
+                      <Select
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options}
+                        placeholder="placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        RATE PER HOUR / DAY
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        TOTAL PRICE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        NET PRICE - LABOR
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        NET PRICE - MISC.
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        SUPPLYING VENDOR
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        PAYER
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        TYPE OF MISC.{" "}
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        ADJUSTED PRICE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-12">
+                    <div class="form-group mt-3 mb-0 text-right">
+                      <a href="#" className="btn bg-primary text-white">
+                        Save
+                      </a>
+                    </div>
                   </div>
                 </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      JOB CODE DESCRIPTION
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
+                <hr />
+
+                <div className="">
+                  <div className="bg-primary px-3 mb-3">
+                    <div className="row align-items-center">
+                      <div className="col-11 mx-2">
+                        <div className="d-flex align-items-center bg-primary w-100">
+                          <div
+                            className="d-flex mr-3"
+                            style={{ whiteSpace: "pre" }}
+                          >
+                            <h5 className="mr-2 mb-0 text-white">
+                              <span>Labor</span>
+                            </h5>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="">
+                        <div className="text-center border-left pl-3 py-3">
+                          <Link
+                            onClick={() => setOpen2(true)}
+                            to="#"
+                            className="p-1 text-white"
+                            data-toggle="modal"
+                            data-target="#Datatable"
+                          >
+                            <span className="ml-1">Add Items</span>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className=""
+                    style={{
+                      height: 400,
+                      width: "100%",
+                      backgroundColor: "#fff",
+                    }}
+                  >
+                    <DataTable
+                      className=""
+                      title=""
+                      columns={masterColumns}
+                      data={rows}
+                      customStyles={customStyles}
+                      pagination
                     />
                   </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div className="form-group  mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      LABOR CODE
-                    </label>
-                    <Select
-                      defaultValue={selectedOption}
-                      onChange={setSelectedOption}
-                      options={options}
-                      placeholder="placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div className="form-group  mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      PRICE METHOD
-                    </label>
-                    <Select
-                      defaultValue={selectedOption}
-                      onChange={setSelectedOption}
-                      options={options}
-                      placeholder="placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      RATE PER HOUR / DAY
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      TOTAL PRICE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      NET PRICE - LABOR
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      NET PRICE - MISC.
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      SUPPLYING VENDOR
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      PAYER
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      TYPE OF MISC.{" "}
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      ADJUSTED PRICE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-12">
-                  <div class="form-group mt-3 mb-0 text-right">
-                    <a href="#" className="btn bg-primary text-white">
+                  <div className=" text-right mt-3">
+                    <a href="#" className="btn border bg-primary text-white">
                       Save
                     </a>
                   </div>
                 </div>
-              </div>
-              <hr />
-
-              <div className="">
-                <div className="bg-primary px-3 mb-3">
-                  <div className="row align-items-center">
-                    <div className="col-11 mx-2">
-                      <div className="d-flex align-items-center bg-primary w-100">
-                        <div
-                          className="d-flex mr-3"
-                          style={{ whiteSpace: "pre" }}
-                        >
-                          <h5 className="mr-2 mb-0 text-white">
-                            <span>Labor</span>
-                          </h5>
-                          
-                        </div>
-                      </div>
-                    </div>
-                    <div className="">
-                      <div className="text-center border-left pl-3 py-3">
-                        <Link
-                          onClick={() => setOpen2(true)}
-                          to="#"
-                          className="p-1 text-white"
-                          data-toggle="modal"
-                          data-target="#Datatable"
-                        >
-                          <span className="ml-1">Add Items</span>
-                        </Link>
-                      </div>
+              </TabPanel>
+              <TabPanel value="2">
+                <div className="row mt-2 input-fields">
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        JOB CODE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
                     </div>
                   </div>
-                </div>
-                <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
-                        <DataTable
-                                className=""
-                                title=""
-                                columns={masterColumns}
-                                data={rows}
-                                customStyles={customStyles}
-                                pagination
-                            />
-                        </div>
-                <div className=" text-right mt-3">
-                  <a href="#" className="btn border bg-primary text-white">
-                    Save
-                  </a>
-                </div>
-              </div>
-            </TabPanel>
-            <TabPanel value="2">
-              <div className="row mt-2 input-fields">
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      JOB CODE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        JOB CODE DESCRIPTION
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div className="form-group  mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        PRICE METHOD
+                      </label>
+                      <Select
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options}
+                        placeholder="placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        TOTAL PRICE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-12">
+                    <div class="form-group mt-3 mb-0 text-right">
+                      <a href="#" className="btn bg-primary text-white">
+                        Save
+                      </a>
+                    </div>
                   </div>
                 </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      JOB CODE DESCRIPTION
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div className="form-group  mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      PRICE METHOD
-                    </label>
-                    <Select
-                      defaultValue={selectedOption}
-                      onChange={setSelectedOption}
-                      options={options}
-                      placeholder="placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      TOTAL PRICE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-12">
-                  <div class="form-group mt-3 mb-0 text-right">
-                    <a href="#" className="btn bg-primary text-white">
-                      Save
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <hr />
+                <hr />
 
-              <div className="">
-                <div className="bg-primary px-3 mb-3">
-                  <div className="row align-items-center">
-                    <div className="col-11 mx-2">
-                      <div className="d-flex align-items-center bg-primary w-100">
-                        <div
-                          className="d-flex mr-3"
-                          style={{ whiteSpace: "pre" }}
-                        >
-                          <h5 className="mr-2 mb-0 text-white">
-                            <span>Consumables</span>
-                          </h5>
-                          <p className="ml-4 mb-0">
-                            <a href="#" className="ml-3 text-white">
-                              <EditOutlinedIcon />
-                            </a>
-                            <a href="#" className="ml-3 text-white">
-                              <ShareOutlinedIcon />
-                            </a>
-                          </p>
-                        </div>
-                        <div className="d-flex justify-content-between align-items-center w-100 ">
-                    <div className="row align-items-center m-0">
-                      {querySearchSelector.map((obj, i) => {
-                        return (
-                          <>
-                            <div className="customselect d-flex align-items-center mr-3 my-2">
-                              {i > 0 ? (
-                                <SelectFilter
-                                  isClearable={true}
-                                  defaultValue={{ label: "And", value: "AND" }}
-                                  options={[
-                                    { label: "And", value: "AND", id: i },
-                                    { label: "Or", value: "OR", id: i },
-                                  ]}
-                                  placeholder="Search By.."
-                                  onChange={(e) => handleOperator(e, i)}
-                                  // value={querySearchOperator[i]}
-                                  value={obj.selectOperator}
-                                />
-                              ) : (
-                                <></>
-                              )}
+                <div className="">
+                  <div className="bg-primary px-3 mb-3">
+                    <div className="row align-items-center">
+                      <div className="col-11 mx-2">
+                        <div className="d-flex align-items-center bg-primary w-100">
+                          <div
+                            className="d-flex mr-3"
+                            style={{ whiteSpace: "pre" }}
+                          >
+                            <h5 className="mr-2 mb-0 text-white">
+                              <span>Consumables</span>
+                            </h5>
+                            <p className="ml-4 mb-0">
+                              <a href="#" className="ml-3 text-white">
+                                <EditOutlinedIcon />
+                              </a>
+                              <a href="#" className="ml-3 text-white">
+                                <ShareOutlinedIcon />
+                              </a>
+                            </p>
+                          </div>
+                          <div className="d-flex justify-content-between align-items-center w-100 ">
+                            <div className="row align-items-center m-0">
+                              {querySearchSelector.map((obj, i) => {
+                                return (
+                                  <>
+                                    <div className="customselect d-flex align-items-center mr-3 my-2">
+                                      {i > 0 ? (
+                                        <SelectFilter
+                                          isClearable={true}
+                                          defaultValue={{
+                                            label: "And",
+                                            value: "AND",
+                                          }}
+                                          options={[
+                                            {
+                                              label: "And",
+                                              value: "AND",
+                                              id: i,
+                                            },
+                                            { label: "Or", value: "OR", id: i },
+                                          ]}
+                                          placeholder="Search By.."
+                                          onChange={(e) => handleOperator(e, i)}
+                                          // value={querySearchOperator[i]}
+                                          value={obj.selectOperator}
+                                        />
+                                      ) : (
+                                        <></>
+                                      )}
 
-                              <div>
-                                <SelectFilter
-                                  // isClearable={true}
-                                  options={[
-                                    { label: "Make", value: "make", id: i },
-                                    { label: "Family", value: "family", id: i },
-                                    { label: "Model", value: "model", id: i },
-                                    { label: "Prefix", value: "prefix", id: i },
-                                  ]}
-                                  placeholder="Search By.."
-                                  onChange={(e) => handleFamily(e, i)}
-                                  value={obj.selectFamily}
-                                />
-                              </div>
-                              <div className="customselectsearch customize">
-                              <span className="search-icon-postn"><SearchIcon /></span>
-                                <input
-                                  className="custom-input-sleact "
-                                  style={{position:"relative"}}
-                                  type="text"
-                                  placeholder="Search Parts"
-                                  value={obj.inputSearch}
-                                  onChange={(e) => handleInputSearch(e, i)}
-                                  id={"inputSearch-" + i}
-                                  autoComplete="off"
-                                />
-                                <div className="btn border"><span className="mr-2"><AddIcon /></span>Add Part</div>
-                                   
-                                {
-                                  <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}>
-                                    {obj.selectOptions.map((currentItem, j) => (
-                                      <li
-                                        className="list-group-item"
-                                        key={j}
-                                        onClick={(e) =>
-                                          handleSearchListClick(
-                                            e,
-                                            currentItem,
-                                            obj,
-                                            i
-                                          )
+                                      <div>
+                                        <SelectFilter
+                                          // isClearable={true}
+                                          options={[
+                                            {
+                                              label: "Make",
+                                              value: "make",
+                                              id: i,
+                                            },
+                                            {
+                                              label: "Family",
+                                              value: "family",
+                                              id: i,
+                                            },
+                                            {
+                                              label: "Model",
+                                              value: "model",
+                                              id: i,
+                                            },
+                                            {
+                                              label: "Prefix",
+                                              value: "prefix",
+                                              id: i,
+                                            },
+                                          ]}
+                                          placeholder="Search By.."
+                                          onChange={(e) => handleFamily(e, i)}
+                                          value={obj.selectFamily}
+                                        />
+                                      </div>
+                                      <div className="customselectsearch customize">
+                                        <span className="search-icon-postn">
+                                          <SearchIcon />
+                                        </span>
+                                        <input
+                                          className="custom-input-sleact "
+                                          style={{ position: "relative" }}
+                                          type="text"
+                                          placeholder="Search Parts"
+                                          value={obj.inputSearch}
+                                          onChange={(e) =>
+                                            handleInputSearch(e, i)
+                                          }
+                                          id={"inputSearch-" + i}
+                                          autoComplete="off"
+                                        />
+                                        <div className="btn border">
+                                          <span className="mr-2">
+                                            <AddIcon />
+                                          </span>
+                                          Add Part
+                                        </div>
+
+                                        {
+                                          <ul
+                                            className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
+                                          >
+                                            {obj.selectOptions.map(
+                                              (currentItem, j) => (
+                                                <li
+                                                  className="list-group-item"
+                                                  key={j}
+                                                  onClick={(e) =>
+                                                    handleSearchListClick(
+                                                      e,
+                                                      currentItem,
+                                                      obj,
+                                                      i
+                                                    )
+                                                  }
+                                                >
+                                                  {currentItem}
+                                                </li>
+                                              )
+                                            )}
+                                          </ul>
                                         }
-                                      >
-                                        {currentItem}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                }
+                                      </div>
+                                    </div>
+                                  </>
+                                );
+                              })}
+                              <div onClick={(e) => addSearchQuerryHtml(e)}>
+                                <Link
+                                  to="#"
+                                  className="btn-sm text-white border mr-2"
+                                  style={{ border: "1px solid #872FF7" }}
+                                >
+                                  +
+                                </Link>
+                              </div>
+                              <div onClick={handleDeletQuerySearch}>
+                                <Link to="#" className="btn-sm border">
+                                  <svg
+                                    data-name="Layer 41"
+                                    id="Layer_41"
+                                    fill="#ffffff"
+                                    viewBox="0 0 50 50"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <title />
+                                    <path
+                                      className="cls-1"
+                                      d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                                    />
+                                    <path
+                                      className="cls-1"
+                                      d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                                    />
+                                    <path
+                                      className="cls-1"
+                                      d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                                    />
+                                  </svg>
+                                  {/* <DeleteIcon className="font-size-16" /> */}
+                                </Link>
                               </div>
                             </div>
-                          </>
-                        );
-                      })}
-                      <div onClick={(e) => addSearchQuerryHtml(e)}>
-                        <Link
-                          to="#"
-                          className="btn-sm text-white border mr-2"
-                          style={{ border: "1px solid #872FF7" }}
-                        >
-                          +
-                        </Link>
-                      </div>
-                      <div onClick={handleDeletQuerySearch}>
-                        <Link to="#" className="btn-sm border">
-                          <svg
-                            data-name="Layer 41"
-                            id="Layer_41"
-                            fill="#ffffff"
-                            viewBox="0 0 50 50"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <title />
-                            <path
-                              className="cls-1"
-                              d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                            />
-                            <path
-                              className="cls-1"
-                              d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                            />
-                            <path
-                              className="cls-1"
-                              d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                            />
-                          </svg>
-                          {/* <DeleteIcon className="font-size-16" /> */}
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                        {/* <div className="px-3">
+                          </div>
+                          {/* <div className="px-3">
           <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
             <SearchIcon /><span className="ml-1">Search</span>
           </Link>
         </div> */}
+                        </div>
                       </div>
-                    </div>
-                    <div className="">
-                      <div className="text-center border-left pl-3 py-3">
-                        <Link
-                          onClick={() => setOpen3(true)}
-                          to="#"
-                          className="p-1 text-white"
-                          data-toggle="modal"
-                          data-target="#Datatableconsumables"
-                        >
-                          <span className="ml-1">Add Items</span>
-                        </Link>
+                      <div className="">
+                        <div className="text-center border-left pl-3 py-3">
+                          <Link
+                            onClick={() => setOpen3(true)}
+                            to="#"
+                            className="p-1 text-white"
+                            data-toggle="modal"
+                            data-target="#Datatableconsumables"
+                          >
+                            <span className="ml-1">Add Items</span>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div
-                  className=""
-                  style={{
-                    height: 400,
-                    width: "100%",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  <DataGrid
-                    sx={{
-                      "& .MuiDataGrid-columnHeaders": {
-                        backgroundColor: "#872ff7",
-                        color: "#fff",
-                      },
+                  <div
+                    className=""
+                    style={{
+                      height: 400,
+                      width: "100%",
+                      backgroundColor: "#fff",
                     }}
-                    rows={rowsConsumables}
-                    columns={columnsConsumables}
-                    pageSize={5}
-                    rowsPerPageOptions={[5]}
-                    checkboxSelection
-                    onCellClick={(e) => handleRowClick(e)}
-                  />
-                </div>
-                <div className=" text-right mt-3">
-                  <a href="#" className="btn border bg-primary text-white">
-                    Save
-                  </a>
-                </div>
-              </div>
-            </TabPanel>
-            <TabPanel value="3">
-              <div className="row mt-2 input-fields">
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      JOB CODE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
+                  >
+                    <DataGrid
+                      sx={{
+                        "& .MuiDataGrid-columnHeaders": {
+                          backgroundColor: "#872ff7",
+                          color: "#fff",
+                        },
+                      }}
+                      rows={rowsConsumables}
+                      columns={columnsConsumables}
+                      pageSize={5}
+                      rowsPerPageOptions={[5]}
+                      checkboxSelection
+                      onCellClick={(e) => handleRowClick(e)}
                     />
                   </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      JOB CODE DESCRIPTION
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      SUPPLYING VENDOR
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      PRICE METHOD
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      TOTAL PRICE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-12">
-                  <div class="form-group mt-3 mb-0 text-right">
-                    <a href="#" className="btn bg-primary text-white">
+                  <div className=" text-right mt-3">
+                    <a href="#" className="btn border bg-primary text-white">
                       Save
                     </a>
                   </div>
                 </div>
-              </div>
-              <hr />
+              </TabPanel>
+              <TabPanel value="3">
+                <div className="row mt-2 input-fields">
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        JOB CODE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        JOB CODE DESCRIPTION
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        SUPPLYING VENDOR
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        PRICE METHOD
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        TOTAL PRICE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-12">
+                    <div class="form-group mt-3 mb-0 text-right">
+                      <a href="#" className="btn bg-primary text-white">
+                        Save
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <hr />
 
-              <div className="">
-                <div className="bg-primary px-3 mb-3">
-                  <div className="row align-items-center">
-                    <div className="col-11 mx-2">
-                      <div className="d-flex align-items-center bg-primary w-100">
-                        <div
-                          className="d-flex mr-3"
-                          style={{ whiteSpace: "pre" }}
-                        >
-                          <h5 className="mr-2 mb-0 text-white">
-                            <span>External Work</span>
-                          </h5>
-                          <p className="ml-4 mb-0">
-                            <a href="#" className="ml-3 text-white">
-                              <EditOutlinedIcon />
-                            </a>
-                            <a href="#" className="ml-3 text-white">
-                              <ShareOutlinedIcon />
-                            </a>
-                          </p>
-                        </div>
-                        <div className="d-flex justify-content-between align-items-center w-100 ">
-                    <div className="row align-items-center m-0">
-                      {querySearchSelector.map((obj, i) => {
-                        return (
-                          <>
-                            <div className="customselect d-flex align-items-center mr-3 my-2">
-                              {i > 0 ? (
-                                <SelectFilter
-                                  isClearable={true}
-                                  defaultValue={{ label: "And", value: "AND" }}
-                                  options={[
-                                    { label: "And", value: "AND", id: i },
-                                    { label: "Or", value: "OR", id: i },
-                                  ]}
-                                  placeholder="Search By.."
-                                  onChange={(e) => handleOperator(e, i)}
-                                  // value={querySearchOperator[i]}
-                                  value={obj.selectOperator}
-                                />
-                              ) : (
-                                <></>
-                              )}
+                <div className="">
+                  <div className="bg-primary px-3 mb-3">
+                    <div className="row align-items-center">
+                      <div className="col-11 mx-2">
+                        <div className="d-flex align-items-center bg-primary w-100">
+                          <div
+                            className="d-flex mr-3"
+                            style={{ whiteSpace: "pre" }}
+                          >
+                            <h5 className="mr-2 mb-0 text-white">
+                              <span>External Work</span>
+                            </h5>
+                            <p className="ml-4 mb-0">
+                              <a href="#" className="ml-3 text-white">
+                                <EditOutlinedIcon />
+                              </a>
+                              <a href="#" className="ml-3 text-white">
+                                <ShareOutlinedIcon />
+                              </a>
+                            </p>
+                          </div>
+                          <div className="d-flex justify-content-between align-items-center w-100 ">
+                            <div className="row align-items-center m-0">
+                              {querySearchSelector.map((obj, i) => {
+                                return (
+                                  <>
+                                    <div className="customselect d-flex align-items-center mr-3 my-2">
+                                      {i > 0 ? (
+                                        <SelectFilter
+                                          isClearable={true}
+                                          defaultValue={{
+                                            label: "And",
+                                            value: "AND",
+                                          }}
+                                          options={[
+                                            {
+                                              label: "And",
+                                              value: "AND",
+                                              id: i,
+                                            },
+                                            { label: "Or", value: "OR", id: i },
+                                          ]}
+                                          placeholder="Search By.."
+                                          onChange={(e) => handleOperator(e, i)}
+                                          // value={querySearchOperator[i]}
+                                          value={obj.selectOperator}
+                                        />
+                                      ) : (
+                                        <></>
+                                      )}
 
-                              <div>
-                                <SelectFilter
-                                  // isClearable={true}
-                                  options={[
-                                    { label: "Make", value: "make", id: i },
-                                    { label: "Family", value: "family", id: i },
-                                    { label: "Model", value: "model", id: i },
-                                    { label: "Prefix", value: "prefix", id: i },
-                                  ]}
-                                  placeholder="Search By.."
-                                  onChange={(e) => handleFamily(e, i)}
-                                  value={obj.selectFamily}
-                                />
-                              </div>
-                              <div className="customselectsearch customize">
-                              <span className="search-icon-postn"><SearchIcon /></span>
-                                <input
-                                  className="custom-input-sleact "
-                                  style={{position:"relative"}}
-                                  type="text"
-                                  placeholder="Search Parts"
-                                  value={obj.inputSearch}
-                                  onChange={(e) => handleInputSearch(e, i)}
-                                  id={"inputSearch-" + i}
-                                  autoComplete="off"
-                                />
-                                <div className="btn border"><span className="mr-2"><AddIcon /></span>Add Part</div>
-                                   
-                                {
-                                  <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}>
-                                    {obj.selectOptions.map((currentItem, j) => (
-                                      <li
-                                        className="list-group-item"
-                                        key={j}
-                                        onClick={(e) =>
-                                          handleSearchListClick(
-                                            e,
-                                            currentItem,
-                                            obj,
-                                            i
-                                          )
+                                      <div>
+                                        <SelectFilter
+                                          // isClearable={true}
+                                          options={[
+                                            {
+                                              label: "Make",
+                                              value: "make",
+                                              id: i,
+                                            },
+                                            {
+                                              label: "Family",
+                                              value: "family",
+                                              id: i,
+                                            },
+                                            {
+                                              label: "Model",
+                                              value: "model",
+                                              id: i,
+                                            },
+                                            {
+                                              label: "Prefix",
+                                              value: "prefix",
+                                              id: i,
+                                            },
+                                          ]}
+                                          placeholder="Search By.."
+                                          onChange={(e) => handleFamily(e, i)}
+                                          value={obj.selectFamily}
+                                        />
+                                      </div>
+                                      <div className="customselectsearch customize">
+                                        <span className="search-icon-postn">
+                                          <SearchIcon />
+                                        </span>
+                                        <input
+                                          className="custom-input-sleact "
+                                          style={{ position: "relative" }}
+                                          type="text"
+                                          placeholder="Search Parts"
+                                          value={obj.inputSearch}
+                                          onChange={(e) =>
+                                            handleInputSearch(e, i)
+                                          }
+                                          id={"inputSearch-" + i}
+                                          autoComplete="off"
+                                        />
+                                        <div className="btn border">
+                                          <span className="mr-2">
+                                            <AddIcon />
+                                          </span>
+                                          Add Part
+                                        </div>
+
+                                        {
+                                          <ul
+                                            className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
+                                          >
+                                            {obj.selectOptions.map(
+                                              (currentItem, j) => (
+                                                <li
+                                                  className="list-group-item"
+                                                  key={j}
+                                                  onClick={(e) =>
+                                                    handleSearchListClick(
+                                                      e,
+                                                      currentItem,
+                                                      obj,
+                                                      i
+                                                    )
+                                                  }
+                                                >
+                                                  {currentItem}
+                                                </li>
+                                              )
+                                            )}
+                                          </ul>
                                         }
-                                      >
-                                        {currentItem}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                }
+                                      </div>
+                                    </div>
+                                  </>
+                                );
+                              })}
+                              <div onClick={(e) => addSearchQuerryHtml(e)}>
+                                <Link
+                                  to="#"
+                                  className="btn-sm text-white border mr-2"
+                                  style={{ border: "1px solid #872FF7" }}
+                                >
+                                  +
+                                </Link>
+                              </div>
+                              <div onClick={handleDeletQuerySearch}>
+                                <Link to="#" className="btn-sm border">
+                                  <svg
+                                    data-name="Layer 41"
+                                    id="Layer_41"
+                                    fill="#ffffff"
+                                    viewBox="0 0 50 50"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <title />
+                                    <path
+                                      className="cls-1"
+                                      d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                                    />
+                                    <path
+                                      className="cls-1"
+                                      d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                                    />
+                                    <path
+                                      className="cls-1"
+                                      d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                                    />
+                                  </svg>
+                                  {/* <DeleteIcon className="font-size-16" /> */}
+                                </Link>
                               </div>
                             </div>
-                          </>
-                        );
-                      })}
-                      <div onClick={(e) => addSearchQuerryHtml(e)}>
-                        <Link
-                          to="#"
-                          className="btn-sm text-white border mr-2"
-                          style={{ border: "1px solid #872FF7" }}
-                        >
-                          +
-                        </Link>
+                          </div>
+                        </div>
                       </div>
-                      <div onClick={handleDeletQuerySearch}>
-                        <Link to="#" className="btn-sm border">
-                          <svg
-                            data-name="Layer 41"
-                            id="Layer_41"
-                            fill="#ffffff"
-                            viewBox="0 0 50 50"
-                            xmlns="http://www.w3.org/2000/svg"
+                      <div className="">
+                        <div className="text-center border-left pl-3 py-3">
+                          <Link
+                            onClick={() => setOpen4(true)}
+                            to="#"
+                            className="p-1 text-white"
+                            data-toggle="modal"
+                            data-target="#Datatable"
                           >
-                            <title />
-                            <path
-                              className="cls-1"
-                              d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                            />
-                            <path
-                              className="cls-1"
-                              d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                            />
-                            <path
-                              className="cls-1"
-                              d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                            />
-                          </svg>
-                          {/* <DeleteIcon className="font-size-16" /> */}
-                        </Link>
+                            <span className="ml-1">Add Items</span>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
-                        {/* <div className="px-3">
-          <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
-            <SearchIcon /><span className="ml-1">Search</span>
-          </Link>
-        </div> */}
-                      </div>
-                    </div>
-                    <div className="">
-                      <div className="text-center border-left pl-3 py-3">
-                        <Link
-                          onClick={() => setOpen4(true)}
-                          to="#"
-                          className="p-1 text-white"
-                          data-toggle="modal"
-                          data-target="#Datatable"
-                        >
-                          <span className="ml-1">Add Items</span>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className=""
-                  style={{
-                    height: 400,
-                    width: "100%",
-                    backgroundColor: "#fff",
-                  }}
-                >
-                  <DataGrid
-                    sx={{
-                      "& .MuiDataGrid-columnHeaders": {
-                        backgroundColor: "#872ff7",
-                        color: "#fff",
-                      },
+                  <div
+                    className=""
+                    style={{
+                      height: 400,
+                      width: "100%",
+                      backgroundColor: "#fff",
                     }}
-                    rows={rowsExternal}
-                    columns={columnsExternal}
-                    pageSize={5}
-                    rowsPerPageOptions={[5]}
-                    checkboxSelection
-                    onCellClick={(e) => handleRowClick(e)}
-                  />
-                </div>
-                <div className=" text-right mt-3">
-                  <a href="#" className="btn border bg-primary text-white">
-                    Save
-                  </a>
-                </div>
-              </div>
-            </TabPanel>
-            <TabPanel value="4">
-              <div className="row mt-2 input-fields">
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      DESCRIPTION
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
+                  >
+                    <DataGrid
+                      sx={{
+                        "& .MuiDataGrid-columnHeaders": {
+                          backgroundColor: "#872ff7",
+                          color: "#fff",
+                        },
+                      }}
+                      rows={rowsExternal}
+                      columns={columnsExternal}
+                      pageSize={5}
+                      rowsPerPageOptions={[5]}
+                      checkboxSelection
+                      onCellClick={(e) => handleRowClick(e)}
                     />
                   </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      TYPE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      TOTAL PRICE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      PRICE METHOD
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      APPROVAL NEEDED
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-600"
-                      for="exampleInputEmail1"
-                    >
-                      PAYER
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10 text-primary"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Placeholder (Optional)"
-                    />
-                  </div>
-                </div>
-                <div className="col-md-12">
-                  <div class="form-group mt-3 mb-0 text-right">
-                    <a href="#" className="btn bg-primary text-white">
+                  <div className=" text-right mt-3">
+                    <a href="#" className="btn border bg-primary text-white">
                       Save
                     </a>
                   </div>
                 </div>
+              </TabPanel>
+              <TabPanel value="4">
+                <div className="row mt-2 input-fields">
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        DESCRIPTION
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        TYPE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        TOTAL PRICE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        PRICE METHOD
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        APPROVAL NEEDED
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        PAYER
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10 text-primary"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Placeholder (Optional)"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-12">
+                    <div class="form-group mt-3 mb-0 text-right">
+                      <a href="#" className="btn bg-primary text-white">
+                        Save
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </TabPanel>
+            </TabContext>
+          </Box>
+        </div>
+        <Modal
+          show={open2}
+          onHide={handleClose2}
+          size="lg"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>
+              1000-Engine|23-Replace Engine|Replace Engine
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="p-0 bg-white">
+            <div className="ligt-greey-bg p-3">
+              <div>
+                <span className="mr-3">
+                  <i class="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                  <span className="ml-2">Edit</span>
+                </span>
+                <span className="mr-3">
+                  <DeleteIcon className=" font-size-16" />
+                  <span className="ml-2">Delete</span>
+                </span>
+                <span className="mr-3">
+                  <MonetizationOnOutlinedIcon className=" font-size-16" />
+                  <span className="ml-2"> Adjust price</span>
+                </span>
+                <span className="mr-3">
+                  <SettingsBackupRestoreIcon className=" font-size-16" />
+                  <span className="ml-2">Go back to operations</span>
+                </span>
+                <span className="mr-3">
+                  <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                  <span className="ml-2">Related part list(s)</span>
+                </span>
               </div>
-            </TabPanel>
-          </TabContext>
-        </Box>
-      </div>
-      <Modal
-        show={open2}
-        onHide={handleClose2}
-        size="lg"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            1000-Engine|23-Replace Engine|Replace Engine
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="p-0 bg-white">
-          <div className="ligt-greey-bg p-3">
-            <div>
-              <span className="mr-3">
-                <i class="fa fa-pencil font-size-12" aria-hidden="true"></i>
-                <span className="ml-2">Edit</span>
-              </span>
-              <span className="mr-3">
-                <DeleteIcon className=" font-size-16" />
-                <span className="ml-2">Delete</span>
-              </span>
-              <span className="mr-3">
-                <MonetizationOnOutlinedIcon className=" font-size-16" />
-                <span className="ml-2"> Adjust price</span>
-              </span>
-              <span className="mr-3">
-                <SettingsBackupRestoreIcon className=" font-size-16" />
-                <span className="ml-2">Go back to operations</span>
-              </span>
-              <span className="mr-3">
-                <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                <span className="ml-2">Related part list(s)</span>
-              </span>
             </div>
-          </div>
-          <div>
-            <div className="p-3">
-              <div className="row mt-4">
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      CHARGE CODE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="1000 ENGINE"
-                    />
+            <div>
+              <div className="p-3">
+                <div className="row mt-4">
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        CHARGE CODE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="1000 ENGINE"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      LABOR TYPE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="0123 REPLACE"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        LABOR TYPE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="0123 REPLACE"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      SERVICE TYPE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Replace left side of the Engine"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        SERVICE TYPE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Replace left side of the Engine"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      UNIT OF MEASURES
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="List Price"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        UNIT OF MEASURES
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="List Price"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      ESTIMATED HOURS
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="$35000"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        ESTIMATED HOURS
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="$35000"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      UNIT PRICE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="EA"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        UNIT PRICE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="EA"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      EXTENDED PRICE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="$480000"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        EXTENDED PRICE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="$480000"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      TOTAL PRICE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="PAYER TYPE"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        TOTAL PRICE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="PAYER TYPE"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      CURRENCY
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="PAYER TYPE"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        CURRENCY
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="PAYER TYPE"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      COMMENTS
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="PAYER TYPE"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        COMMENTS
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="PAYER TYPE"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      ACTION
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="PAYER TYPE"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        ACTION
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="PAYER TYPE"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
+              <div className="m-3 text-right">
+                <a href="#" onClick={handleClose2} className="btn border mr-3 ">
+                  {" "}
+                  Cancel
+                </a>
+                <a href="#" className="btn text-white bg-primary">
+                  Save
+                </a>
+              </div>
             </div>
-            <div className="m-3 text-right">
-              <a href="#" onClick={handleClose2} className="btn border mr-3 ">
-                {" "}
-                Cancel
-              </a>
-              <a href="#" className="btn text-white bg-primary">
-                Save
-              </a>
+          </Modal.Body>
+        </Modal>
+        <Modal
+          show={open3}
+          onHide={handleClose3}
+          size="lg"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>
+              1000-Engine|23-Replace Engine|Replace Engine
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="p-0 bg-white">
+            <div className="ligt-greey-bg p-3">
+              <div>
+                <span className="mr-3">
+                  <i class="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                  <span className="ml-2">Edit</span>
+                </span>
+                <span className="mr-3">
+                  <DeleteIcon className=" font-size-16" />
+                  <span className="ml-2">Delete</span>
+                </span>
+                <span className="mr-3">
+                  <MonetizationOnOutlinedIcon className=" font-size-16" />
+                  <span className="ml-2"> Adjust price</span>
+                </span>
+                <span className="mr-3">
+                  <SettingsBackupRestoreIcon className=" font-size-16" />
+                  <span className="ml-2">Go back to operations</span>
+                </span>
+                <span className="mr-3">
+                  <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                  <span className="ml-2">Related part list(s)</span>
+                </span>
+              </div>
             </div>
-          </div>
-        </Modal.Body>
-      </Modal>
-      <Modal
-        show={open3}
-        onHide={handleClose3}
-        size="lg"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            1000-Engine|23-Replace Engine|Replace Engine
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="p-0 bg-white">
-          <div className="ligt-greey-bg p-3">
             <div>
-              <span className="mr-3">
-                <i class="fa fa-pencil font-size-12" aria-hidden="true"></i>
-                <span className="ml-2">Edit</span>
-              </span>
-              <span className="mr-3">
-                <DeleteIcon className=" font-size-16" />
-                <span className="ml-2">Delete</span>
-              </span>
-              <span className="mr-3">
-                <MonetizationOnOutlinedIcon className=" font-size-16" />
-                <span className="ml-2"> Adjust price</span>
-              </span>
-              <span className="mr-3">
-                <SettingsBackupRestoreIcon className=" font-size-16" />
-                <span className="ml-2">Go back to operations</span>
-              </span>
-              <span className="mr-3">
-                <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                <span className="ml-2">Related part list(s)</span>
-              </span>
-            </div>
-          </div>
-          <div>
-            <div className="p-3">
-              <div className="row mt-4">
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      CONSUMABLE TYPE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="1000 ENGINE"
-                    />
+              <div className="p-3">
+                <div className="row mt-4">
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        CONSUMABLE TYPE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="1000 ENGINE"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      CONSUMABLE ID
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="1000 ENGINE"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        CONSUMABLE ID
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="1000 ENGINE"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      CONSUMABLE DESCRIPTION
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="0123 REPLACE"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        CONSUMABLE DESCRIPTION
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="0123 REPLACE"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      QUANTITY
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="Replace left side of the Engine"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        QUANTITY
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="Replace left side of the Engine"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      UNIT OF MEASURES
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="List Price"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        UNIT OF MEASURES
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="List Price"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      VENDOR
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="$10000"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        VENDOR
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="$10000"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      UNIT PRICE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="$5000"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        UNIT PRICE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="$5000"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      EXTENDED PRICE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="EA"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        EXTENDED PRICE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="EA"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      CURRENCY
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="$480000"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        CURRENCY
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="$480000"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      TOTAL PRICE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="$480000"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        TOTAL PRICE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="$480000"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      ACTION
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="$480000"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        ACTION
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="$480000"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
+              <div className="m-3 text-right">
+                <a href="#" onClick={handleClose3} className="btn border mr-3 ">
+                  {" "}
+                  Cancel
+                </a>
+                <a href="#" className="btn text-white bg-primary">
+                  Save
+                </a>
+              </div>
             </div>
-            <div className="m-3 text-right">
-              <a href="#" onClick={handleClose3} className="btn border mr-3 ">
-                {" "}
-                Cancel
-              </a>
-              <a href="#" className="btn text-white bg-primary">
-                Save
-              </a>
-            </div>
-          </div>
-        </Modal.Body>
-      </Modal>
+          </Modal.Body>
+        </Modal>
 
-      <Modal
-        show={open4}
-        onHide={handleClose4}
-        size="lg"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>
-            1000-Engine|23-Replace Engine|Replace Engine
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="p-0 bg-white">
-          <div className="ligt-greey-bg p-3">
-            <div>
-              <span className="mr-3">
-                <i class="fa fa-pencil font-size-12" aria-hidden="true"></i>
-                <span className="ml-2">Edit</span>
-              </span>
-              <span className="mr-3">
-                <DeleteIcon className=" font-size-16" />
-                <span className="ml-2">Delete</span>
-              </span>
-              <span className="mr-3">
-                <MonetizationOnOutlinedIcon className=" font-size-16" />
-                <span className="ml-2"> Adjust price</span>
-              </span>
-              <span className="mr-3">
-                <SettingsBackupRestoreIcon className=" font-size-16" />
-                <span className="ml-2">Go back to operations</span>
-              </span>
-              <span className="mr-3">
-                <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                <span className="ml-2">Related part list(s)</span>
-              </span>
+        <Modal
+          show={open4}
+          onHide={handleClose4}
+          size="lg"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>
+              1000-Engine|23-Replace Engine|Replace Engine
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="p-0 bg-white">
+            <div className="ligt-greey-bg p-3">
+              <div>
+                <span className="mr-3">
+                  <i class="fa fa-pencil font-size-12" aria-hidden="true"></i>
+                  <span className="ml-2">Edit</span>
+                </span>
+                <span className="mr-3">
+                  <DeleteIcon className=" font-size-16" />
+                  <span className="ml-2">Delete</span>
+                </span>
+                <span className="mr-3">
+                  <MonetizationOnOutlinedIcon className=" font-size-16" />
+                  <span className="ml-2"> Adjust price</span>
+                </span>
+                <span className="mr-3">
+                  <SettingsBackupRestoreIcon className=" font-size-16" />
+                  <span className="ml-2">Go back to operations</span>
+                </span>
+                <span className="mr-3">
+                  <FormatListBulletedOutlinedIcon className=" font-size-16" />
+                  <span className="ml-2">Related part list(s)</span>
+                </span>
+              </div>
             </div>
-          </div>
-          <div>
-            <div className="p-3">
-              <div className="row mt-4">
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      ACTIVITY ID
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="1000 ENGINE"
-                    />
+            <div>
+              <div className="p-3">
+                <div className="row mt-4">
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        ACTIVITY ID
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="1000 ENGINE"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      ACTIVITY NAME
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="0123 REPLACE"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        ACTIVITY NAME
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="0123 REPLACE"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      SHORT DESCRIPTION
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="List Price"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        SHORT DESCRIPTION
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="List Price"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      QUANTITY
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="$35000"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        QUANTITY
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="$35000"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      UNIT OF MEASURE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="$10000"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        UNIT OF MEASURE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="$10000"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      UNIT PRICE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="$10000"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        UNIT PRICE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="$10000"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      EXTENDED PRICE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="$5000"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        EXTENDED PRICE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="$5000"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      CURRENCY
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="EA"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        CURRENCY
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="EA"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      TOTAL PRICE
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="$480000"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        TOTAL PRICE
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="$480000"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      DIMENSIONS
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="$480000"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        DIMENSIONS
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="$480000"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      SUPPLYING VENDOR
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="$480000"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        SUPPLYING VENDOR
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="$480000"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                  <div class="form-group w-100">
-                    <label
-                      className="text-light-dark font-size-12 font-weight-500"
-                      for="exampleInputEmail1"
-                    >
-                      ACTION
-                    </label>
-                    <input
-                      type="email"
-                      class="form-control border-radius-10"
-                      id="exampleInputEmail1"
-                      aria-describedby="emailHelp"
-                      placeholder="$480000"
-                    />
+                  <div className="col-md-6 col-sm-6">
+                    <div class="form-group w-100">
+                      <label className="text-light-dark font-size-12 font-weight-500">
+                        ACTION
+                      </label>
+                      <input
+                        type="email"
+                        class="form-control border-radius-10"
+                        id="exampleInputEmail1"
+                        aria-describedby="emailHelp"
+                        placeholder="$480000"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
+              <div className="m-3 text-right">
+                <a href="#" onClick={handleClose4} className="btn border mr-3 ">
+                  {" "}
+                  Cancel
+                </a>
+                <a href="#" className="btn text-white bg-primary">
+                  Save
+                </a>
+              </div>
             </div>
-            <div className="m-3 text-right">
-              <a href="#" onClick={handleClose4} className="btn border mr-3 ">
-                {" "}
-                Cancel
-              </a>
-              <a href="#" className="btn text-white bg-primary">
-                Save
-              </a>
-            </div>
-          </div>
-        </Modal.Body>
-      </Modal>
+          </Modal.Body>
+        </Modal>
       </div>
       {/* </div> */}
     </>
