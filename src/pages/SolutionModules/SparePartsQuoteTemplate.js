@@ -756,7 +756,7 @@ const handleChangedrop2 = (event) => {
               </div>
             </div>
             <div className=" col-md-12  col-sm-12">
-               <a href="#" className="btn text-white bg-primary">Next</a>
+               <a href="#" className="btn text-white bg-primary pull-right">Next</a>
               </div>
             </div>
             </TabPanel>
@@ -799,7 +799,7 @@ const handleChangedrop2 = (event) => {
                 </div>
               </div>
               <div className=" col-md-12  col-sm-12">
-               <a href="#" className="btn text-white bg-primary">Next</a>
+               <a href="#" className="btn text-white bg-primary pull-right">Next</a>
               </div>
                 </div>
              
@@ -1229,7 +1229,7 @@ const handleChangedrop2 = (event) => {
         customStyles={customStyles} 
         pagination />
         <div className=" col-md-12  col-sm-12">
-            <a href="/SparePartsQuoteReviewed" className="btn text-white bg-primary">Next</a>
+            <a href="/SparePartsQuoteReviewed" className="btn text-white bg-primary pull-right">Next</a>
         </div>
         </div>
         

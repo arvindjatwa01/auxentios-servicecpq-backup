@@ -595,7 +595,7 @@ const masterColumns = [
                         </div> 
        
           <div className="m-2">
-              <Link to="/RepairPartlist/Partlist" className="btn bg-primary text-white">Next<ChevronRightIcon className=""/></Link>
+              <Link to="/RepairPartlist/Partlist" className="btn bg-primary text-white pull-right">Next<ChevronRightIcon className=""/></Link>
             </div>
         </div>
             </TabPanel>
