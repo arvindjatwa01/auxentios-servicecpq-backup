@@ -146,6 +146,13 @@ export function PortfolioTemplatesResult(props) {
 
     const location = useLocation();
 
+    var selectedTemplateItemsVal = JSON.parse(localStorage.getItem('selectedTemplateItems'));
+    var autocreatedCustomPortfolioDataObj = JSON.parse(localStorage.getItem('autocreatedcustomPortfolioData'));
+    var SolutionValueIs = localStorage.getItem('solutionValueIs');
+
+    console.log("selectedTemplateItemsVal is : ", selectedTemplateItemsVal);
+
+
     const [makeKeyValue, setMakeKeyValue] = useState([]);
     const [modelKeyValue, setModelKeyValue] = useState([]);
     const [prefixKeyValue, setPrefixKeyValue] = useState([]);
@@ -1046,11 +1053,13 @@ export function PortfolioTemplatesResult(props) {
             });
 
             console.log("reqData is : ", reqData);
-            if (location.solutionValueIs == 1) {
+            // if (location.solutionValueIs == 1) {
+            if (SolutionValueIs == 1) {
                 var portfolioRes = await createCustomPortfolio(reqData);
             } else {
                 var portfolioRes = await updateCustomPortfolio(
-                    location.autocreatedcustomPortfolioData.customPortfolioId,
+                    // location.autocreatedcustomPortfolioData.customPortfolioId,
+                    autocreatedCustomPortfolioDataObj.customPortfolioId,
                     reqData
                 )
                 // console.log("My new row");
@@ -1862,44 +1871,65 @@ export function PortfolioTemplatesResult(props) {
 
     }, [dispatch]);
 
+
+    localStorage.setItem("distroyAble", true);
+
     useEffect(() => {
 
         // Solution Templates Auto fill  Data Conditons 
 
-        if (location.solutionValueIs == 1) {
+        // if (location.solutionValueIs == 1) {
+        if (SolutionValueIs == 1) {
 
-            console.log("data are here ", location.selectedTemplateItems)
+            // console.log("data are here ", location.selectedTemplateItems)
             setGeneralComponentData({
-                name: location.selectedTemplateItems[0].name,
-                description: location.selectedTemplateItems[0].description,
+                // name: location.selectedTemplateItems[0].name,
+                // description: location.selectedTemplateItems[0].description,
+                // serviceDescription: "",
+                // externalReference: location.selectedTemplateItems[0].externalReference,
+                // customerSegment: null,
+                // customItems: [],
+                // customCoverages: [],
+
+                name: selectedTemplateItemsVal[0].name,
+                description: selectedTemplateItemsVal[0].description,
                 serviceDescription: "",
-                externalReference: location.selectedTemplateItems[0].externalReference,
+                externalReference: selectedTemplateItemsVal[0].externalReference,
                 customerSegment: null,
                 customItems: [],
                 customCoverages: [],
             });
             setValidityData({
                 ...validityData,
-                fromDate: location.selectedTemplateItems[0].validFrom,
-                toDate: location.selectedTemplateItems[0].validTo,
+                // fromDate: location.selectedTemplateItems[0].validFrom,
+                // toDate: location.selectedTemplateItems[0].validTo,
+                fromDate: selectedTemplateItemsVal[0].validFrom,
+                toDate: selectedTemplateItemsVal[0].validTo,
                 from: null,
                 to: null,
                 fromInput: "",
                 toInput: "",
+                
             })
             // stratgyTaskTypeKeyValue({value: location.selectedTemplateItems[0].itemBodyModel.taskType})
             setStratgyResponseTimeKeyValue([{
-                "label": location.selectedTemplateItems[0].responseTime,
-                "value": location.selectedTemplateItems[0].responseTime
+                // "label": location.selectedTemplateItems[0].responseTime,
+                // "value": location.selectedTemplateItems[0].responseTime
+                "label": selectedTemplateItemsVal[0].responseTime,
+                "value": selectedTemplateItemsVal[0].responseTime
             }])
             setStratgyHierarchyKeyValue([{
-                "label": location.selectedTemplateItems[0].productHierarchy,
-                "value": location.selectedTemplateItems[0].productHierarchy
+                // "label": location.selectedTemplateItems[0].productHierarchy,
+                // "value": location.selectedTemplateItems[0].productHierarchy
+                "label": selectedTemplateItemsVal[0].productHierarchy,
+                "value": selectedTemplateItemsVal[0].productHierarchy
             }])
 
             setStratgyGeographicKeyValue([{
-                "label": location.selectedTemplateItems[0].geographic,
-                "value": location.selectedTemplateItems[0].geographic
+                // "label": location.selectedTemplateItems[0].geographic,
+                // "value": location.selectedTemplateItems[0].geographic
+                "label": selectedTemplateItemsVal[0].geographic,
+                "value": selectedTemplateItemsVal[0].geographic
             }])
 
             // setPriceMethodKeyValue([{
@@ -1922,19 +1952,22 @@ export function PortfolioTemplatesResult(props) {
 
         }
 
-        setCreatedCustomPortfolioItems(location.selectedTemplateItems);
+        // setCreatedCustomPortfolioItems(location.selectedTemplateItems);
+        setCreatedCustomPortfolioItems(JSON.parse(localStorage.getItem('selectedTemplateItems')));
 
-        console.log("location.selectedTemplateItems : ", location.selectedTemplateItems)
-
+        // console.log("location.selectedTemplateItems 11 : ", location.selectedTemplateItems)
+        // console.log("localStorage.getItem('selectedTemplateItems') : ", JSON.parse(localStorage.getItem('selectedTemplateItems')))
+        // console.log('setCreatedCustomPortfolioItems', createdCustomPortfolioItems)
         let itemIdData = []
         let priceDataId = []
         // itemIdData.push({ "itemId": location.selectedTemplateItems[0].itemId })
 
-        const customItemsId = location.selectedTemplateItems.map((data, i) => {
+        // const customItemsId = location.selectedTemplateItems.map((data, i) => {
+            const customItemsId = selectedTemplateItemsVal.map((data, i) => {
 
-            console.log("my map data is :=> ", data);
-            console.log("itemHeaderId is :=>  ", data.customItemHeaderModel?.itemHeaderId);
-            console.log("itemHeaderModel is => :  ", data.customItemHeaderModel);
+            // console.log("my map data is :=> ", data);
+            // console.log("itemHeaderId is :=>  ", data.customItemHeaderModel?.itemHeaderId);
+            // console.log("itemHeaderModel is => :  ", data.customItemHeaderModel);
             itemIdData.push({ "customItemId": parseInt(data.customItemId) })
             // itemIdValue.push(data)
 
@@ -3142,6 +3175,8 @@ export function PortfolioTemplatesResult(props) {
                     className="d-flex justify-content-center align-items-center row-svg-div"
                     style={{ minWidth: "180px !important" }}
                 >
+                    
+
 
                     <div className=" cursor" data-toggle="modal" data-target="#myModal12">
                         <Tooltip title="Inclusion" onClick={(e) => Inclusive_Exclusive(e, row)}>

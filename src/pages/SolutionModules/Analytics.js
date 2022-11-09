@@ -532,6 +532,10 @@ export const Analytics = () => {
             selectedTemplateItems: selectedSolutionTempMasterData,
             solutionValueIs: solutionValue
          });
+         localStorage.setItem("selectedSolutionTemplateItems", JSON.stringify(selectedSolutionTempMasterData));
+         localStorage.setItem("solutionValueIs", solutionValue);
+         // localStorage.setItem("autocreatedcustomPortfolioData", JSON.stringify(CreatedcustomPortfolioData));
+         // alert("hello");
       } else if (solutionValue == 0) {
 
          var newCustomItemsId = [];
@@ -583,7 +587,7 @@ export const Analytics = () => {
                   /* =============== Search Custom Price Using selected Item PriceDataId ============== */
 
                   var itemsPrice = await itemPriceDataId(selectedPortfolioTempMasterData[x].items[k].itemBodyModel.itemPrices[j].itemPriceDataId);
-                  
+
                   // console.log("item price is before : ", itemsPrice)
 
                   // itemsPrice['customPortfolio'] = {};
@@ -790,11 +794,15 @@ export const Analytics = () => {
          console.log("createdCustomItems ", createdCustomItems);
 
          if (updatePortfolioRes.status == 200) {
+            console.log("solutionValueIs : ", solutionValue);
+            localStorage.setItem("selectedTemplateItems", JSON.stringify(createdCustomItems));
+            localStorage.setItem("solutionValueIs", solutionValue);
+            localStorage.setItem("autocreatedcustomPortfolioData", JSON.stringify(CreatedcustomPortfolioData));
             history.push({
                pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
-               selectedTemplateItems: createdCustomItems,
-               solutionValueIs: solutionValue,
-               autocreatedcustomPortfolioData: CreatedcustomPortfolioData
+               // selectedTemplateItems: createdCustomItems,
+               // solutionValueIs: solutionValue,
+               // autocreatedcustomPortfolioData: CreatedcustomPortfolioData
             });
             // console.log("Created");
          }
@@ -1488,6 +1496,14 @@ export const Analytics = () => {
          setFlagIs(true);
       } else {
          setFlagIs(false);
+      }
+      var distroAbleOrNot = localStorage.getItem('distroyAble');
+      if (distroAbleOrNot) {
+         localStorage.removeItem("selectedTemplateItems");
+         localStorage.removeItem("solutionValueIs");
+         localStorage.removeItem("autocreatedcustomPortfolioData");
+         localStorage.removeItem("selectedSolutionTemplateItems");
+         localStorage.removeItem("distroyAble");
       }
    }, [masterData]);
 
