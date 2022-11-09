@@ -444,7 +444,7 @@
                       <div className="my-3">
                       <TabContext value={value}>
                             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                              <TabList onChange={handleChange} aria-label="lab API tabs example">
+                              <TabList className="custom-tabs-div" onChange={handleChange} aria-label="lab API tabs example">
                                 <Tab label="RECENT" value="1" />
                                 <Tab label="STARRED" value="2" />
                                 <Tab label="ALL" value="3" />

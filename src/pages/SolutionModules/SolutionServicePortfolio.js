@@ -415,7 +415,7 @@ export function SolutionServicePortfolio(props) {
                         <Box className="mt-4 tab2" sx={{ width: '100%', typography: 'body1' }}>
                             <TabContext value={value}>
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                                    <TabList onChange={handleChange} aria-label="lab API tabs example">
+                                    <TabList className="" onChange={handleChange} aria-label="lab API tabs example">
                                         <Tab label="Customer" value="1" className="heading-tabs" />
                                         <Tab label="Machine " value="2" className="heading-tabs" />
                                         <Tab label="Estimation Details" value="3" className="heading-tabs" />

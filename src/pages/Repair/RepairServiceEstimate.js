@@ -761,7 +761,7 @@ const masterColumns = [
         <Box sx={{ width: "100%", typography: "body1" }}>
           <TabContext value={value}>
             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <TabList
+              <TabList className="custom-tabs-div"
                 onChange={handleChange}
                 aria-label="lab API tabs example"
               >

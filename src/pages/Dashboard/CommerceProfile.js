@@ -74,7 +74,7 @@ export const CommerceProfile = () => {
         <div className="my-3">
                       <TabContext value={value}>
                             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                              <TabList onChange={handleChange} aria-label="lab API tabs example">
+                              <TabList className="custom-tabs-div" onChange={handleChange} aria-label="lab API tabs example">
                                 <Tab label="Profile" value="1" />
                                 <Tab label="Orders" value="2" />
                               </TabList>

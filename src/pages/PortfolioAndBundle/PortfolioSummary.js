@@ -1668,7 +1668,7 @@ export const PortfolioSummary = () => {
           <Box sx={{ typography: "body1" }}>
             <TabContext value={bundleTabs}>
               <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                <TabList
+                <TabList className="custom-tabs-div"
                   onChange={(e, newValue) => setBundleTabs(newValue)}
                   aria-label="lab API tabs example"
                 >

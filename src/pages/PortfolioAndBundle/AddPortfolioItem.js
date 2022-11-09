@@ -591,7 +591,7 @@ const AddPortfolioItem = (props) => {
               borderRadius: "5px",
             }}
           >
-            <TabList
+            <TabList className="custom-tabs-div"
               onChange={(e, newValue) => setTabs(newValue)}
               aria-label="lab API tabs example"
             >

@@ -129,7 +129,7 @@ const  SolutionQuoteConfiguration=()=>{
               <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
                 <TabContext value={value}>
                   <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <TabList onChange={handleChange} aria-label="lab API tabs example">
+                    <TabList className="custom-tabs-div" onChange={handleChange} aria-label="lab API tabs example">
                       <Tab label="Use Product/Solution Configurator " value="1" />
                       <Tab label="Use Configuration Templates " value="2" />
                       <Tab label="Import Configurations" value="3" />

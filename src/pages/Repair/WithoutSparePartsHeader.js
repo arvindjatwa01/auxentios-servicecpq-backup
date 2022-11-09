@@ -802,7 +802,7 @@ function WithoutSparePartsHeader(props) {
                   ) : (
                     <TabContext value={value}>
                       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                        <TabList onChange={handleChange}>
+                        <TabList className="custom-tabs-div" onChange={handleChange}>
                           <Tab label="Customer" value="customer" />
                           <Tab label="Machine " value="machine" />
                           <Tab label="Estimation Details" value="estimation" />

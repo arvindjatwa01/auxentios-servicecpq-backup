@@ -877,7 +877,7 @@ function Kits() {
             <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
               <TabContext value={value}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                  <TabList onChange={handleChange} aria-label="lab API tabs example">
+                  <TabList className="custom-tabs-div" onChange={handleChange} aria-label="lab API tabs example">
                     <Tab label="Customer" value="1" />
                     <Tab label="Machine " value="2" />
                     <Tab label="Estimation Team" value="3" />
