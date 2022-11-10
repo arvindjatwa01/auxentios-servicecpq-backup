@@ -1142,7 +1142,7 @@ export function SolutionServicePortfolio(props) {
                             />
                         </div>
                         <div className="my-2">
-              <Link to="/QuoteSolutionBuilder"  style={{ cursor: 'pointer' }} className="btn bg-primary text-white">
+              <Link to="/QuoteSolutionBuilder"  style={{ cursor: 'pointer' }} className=" pull-right btn bg-primary text-white">
        Next</Link>
             </div>
                     </div>
