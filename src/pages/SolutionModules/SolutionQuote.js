@@ -215,13 +215,13 @@ const  SolutionQuote=()=>{
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
-                              <FormControlLabel control={<Checkbox defaultChecked />} label="" />
+                              <FormControlLabel  control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
                             </FormGroup>
                           </div>
                           <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
                           <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
                           <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                          <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                          <a href="#" className="ml-2"><MuiMenuComponent className="more-icon-div p-0 font-size-14" options={activityOptions} /></a>
                         </div>
                       </div>
 

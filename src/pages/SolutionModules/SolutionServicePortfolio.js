@@ -357,7 +357,7 @@ export function SolutionServicePortfolio(props) {
                     <div className="d-flex align-items-center justify-content-between mt-2">
                         <h5 className="font-weight-600 mb-0" style={{fontSize:"20px"}}>Solution Quote</h5>
                         <div className="d-flex">
-                          
+{/*                           
                             <div>
                             <Button className="btn bg-primary text-white px-2 py-1 font-size-12"
                                 id="fade-button"
@@ -382,7 +382,7 @@ export function SolutionServicePortfolio(props) {
                                 <MenuItem onClick={handleClose2}>Kit</MenuItem>
                                 <MenuItem data-toggle="modal" data-target="#quotecreat" onClick={handleClose2}>Quote</MenuItem>
                             </Menu>
-                            </div>
+                            </div> */}
                             
                         <div className="d-flex justify-content-center align-items-center">
                             <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
@@ -397,7 +397,7 @@ export function SolutionServicePortfolio(props) {
                         </div>
                     </div>
                     <div className="card p-4 mt-5">
-                        <h5 className="d-flex align-items-center mb-0 bg-primary p-3" style={{borderRadius: "5px"}}>
+                        <h5 className="d-flex align-items-center mb-0 bg-primary p-3 border-radius-10">
                             <div className="" style={{ display: 'contents' }}><span className="mr-3 text-white" style={{fontSize:"20px", fontWeight: "500", whiteSpace: "pre"}}>Quote Header</span>
                                 <a href="#" className="btn-sm text-white"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                                 <a href="#" className="btn-sm text-white"><i class="fa fa-bookmark-o" aria-hidden="true"></i></a>
@@ -1001,12 +1001,12 @@ export function SolutionServicePortfolio(props) {
                                 </div>
                             </div>
                             <div className="col-10">
-                            <div className="d-flex justify-content-between align-items-center w-100 ">
-                    <div className="row align-items-center m-0">
+          <div className="d-flex justify-content-between align-items-center w-100 ">
+                    <div className="row align-items-center m-0 ">
                       {querySearchSelector.map((obj, i) => {
                         return (
                           <>
-                            <div className="customselect d-flex align-items-center mr-3 my-2">
+                            <div className="customselect overflow-hidden d-flex align-items-center mr-3 my-2 border-radius-10">
                               {i > 0 ? (
                                 <SelectFilter
                                   isClearable={true}
@@ -1039,7 +1039,7 @@ export function SolutionServicePortfolio(props) {
                                 />
                               </div>
                               <div className="customselectsearch customize">
-                              <span className="search-icon-postn"><SearchIcon /></span>
+                              <span className="search-icon-postn"><SearchIcon className="text-primary"/></span>
                                 <input
                                   className="custom-input-sleact "
                                   style={{position:"relative"}}
@@ -1050,7 +1050,7 @@ export function SolutionServicePortfolio(props) {
                                   id={"inputSearch-" + i}
                                   autoComplete="off"
                                 />
-                                <div className="bg-primary text-white btn"><span className="mr-2"><AddIcon /></span>Add Part</div>
+                                <div className="border bg-primary text-white btn"><span className="mr-2"><AddIcon /></span>Add Part</div>
                                    
                                 {
                                   <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}>
@@ -1114,8 +1114,8 @@ export function SolutionServicePortfolio(props) {
                       </div>
                     </div>
                   </div>
-
-                            </div>
+         
+          </div>
                             <div className="col-auto">
                                 <div className="d-flex align-items-center">
                                     {/* <div className="col-8 text-center">

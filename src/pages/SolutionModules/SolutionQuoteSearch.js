@@ -319,28 +319,7 @@ const customStyles = {
               <SearchIcon/></span>
             </div>
               <input type="search" class="form-control search-form-control"  aria-label="Search Dashboard"/>
-              {/* <div class="input-group-prepend align-items-center">
-              <div className="w-100 mx-2">
-              <div className="machine-drop d-flex align-items-center bg-white">
-             <div><lable className="label-div" style={{whiteSpace:'pre'}} >Quote Type</lable></div>
-            <FormControl className="" sx={{ m: 1,}}>
-              <Select 
-                id="demo-simple-select-autowidth"
-                value={age}
-                onChange={handleChangedrop}
-                autoWidth
-              >
-                <MenuItem value="5">
-                  <em>Repair Quote</em>
-                </MenuItem>
-                <MenuItem value={10}>Repair Quote</MenuItem>
-                <MenuItem value={21}>Twenty one</MenuItem>
-                <MenuItem value={22}>Twenty one and a half</MenuItem>
-              </Select>
-            </FormControl>
-          </div>
-              </div>
-              </div> */}
+            
             </div>
             <div className="ml-2">
               <Link className="btn bg-primary text-white">Search</Link>
@@ -350,7 +329,7 @@ const customStyles = {
             </div>
               </div>
               </div>
-           <div className="bg-primary px-3 mb-3">
+           <div className="bg-primary px-3 mb-3 border-radius-6">
            <div className="row align-items-center height-66">
           <div className="col-2">
           <div className="d-flex ">
@@ -363,11 +342,11 @@ const customStyles = {
           </div>
           <div className="col-10">
           <div className="d-flex justify-content-between align-items-center w-100 ">
-                    <div className="row align-items-center m-0">
+                    <div className="row align-items-center m-0 ">
                       {querySearchSelector.map((obj, i) => {
                         return (
                           <>
-                            <div className="customselect d-flex align-items-center mr-3 my-2">
+                            <div className="customselect overflow-hidden d-flex align-items-center mr-3 my-2 border-radius-10">
                               {i > 0 ? (
                                 <SelectFilter
                                   isClearable={true}
@@ -400,7 +379,7 @@ const customStyles = {
                                 />
                               </div>
                               <div className="customselectsearch customize">
-                              <span className="search-icon-postn"><SearchIcon /></span>
+                              <span className="search-icon-postn"><SearchIcon className="text-primary"/></span>
                                 <input
                                   className="custom-input-sleact "
                                   style={{position:"relative"}}

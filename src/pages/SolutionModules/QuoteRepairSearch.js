@@ -350,7 +350,7 @@ const masterColumns = [
             </div>
               </div>
               </div>
-           <div className="bg-primary px-3 mb-3">
+           <div className="bg-primary px-3 mb-3 overflow-hidden border-radius-6">
            <div className="row align-items-center height-66">
           <div className="col-2">
           <div className="d-flex ">
