@@ -144,6 +144,9 @@ export function SolutionTemplateResult(props) {
 
     const location = useLocation();
 
+    var selectedSolutionTemplateItemsVal = JSON.parse(localStorage.getItem('selectedSolutionTemplateItems'));
+    var SolutionValueIs = localStorage.getItem('solutionValueIs');
+
     const [makeKeyValue, setMakeKeyValue] = useState([]);
     const [modelKeyValue, setModelKeyValue] = useState([]);
     const [prefixKeyValue, setPrefixKeyValue] = useState([]);
@@ -368,7 +371,7 @@ export function SolutionTemplateResult(props) {
 
 
     const makeHeaderEditable = () => {
-        console.log("Data is : ", location.selectedTemplateItems[0])
+        // console.log("Data is : ", location.selectedTemplateItems[0])
         if (value === "1" && viewOnlyTab.generalViewOnly)
             setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: false });
         else if (value === "3" && viewOnlyTab.strategyViewOnly) {
@@ -1862,22 +1865,33 @@ export function SolutionTemplateResult(props) {
     useEffect(() => {
 
 
-        console.log("data are here ", location.selectedTemplateItems)
+        // console.log("data are here ", location.selectedTemplateItems)
         setGeneralComponentData({
-            name: location.selectedTemplateItems[0].name,
-            description: location.selectedTemplateItems[0].description,
+            // name: location.selectedTemplateItems[0].name,
+            // description: location.selectedTemplateItems[0].description,
+            // serviceDescription: "",
+            // externalReference: location.selectedTemplateItems[0].externalReference,
+            // customerSegment: { value: location.selectedTemplateItems[0].customerSegment, label: "Energy" },
+            // items: [],
+            // customCoverages: [],
+
+            name: selectedSolutionTemplateItemsVal[0].name,
+            description: selectedSolutionTemplateItemsVal[0].description,
             serviceDescription: "",
-            externalReference: location.selectedTemplateItems[0].externalReference,
-            customerSegment: { value: location.selectedTemplateItems[0].customerSegment, label: "Energy" },
+            externalReference: selectedSolutionTemplateItemsVal[0].externalReference,
+            customerSegment: { value: selectedSolutionTemplateItemsVal[0].customerSegment, label: "Energy" },
             items: [],
             customCoverages: [],
         });
-        setPortfolioId(location.selectedTemplateItems[0].customPortfolioId);
+        // setPortfolioId(location.selectedTemplateItems[0].customPortfolioId);
+        setPortfolioId(selectedSolutionTemplateItemsVal[0].customPortfolioId);
 
         setValidityData({
             ...validityData,
-            fromDate: location.selectedTemplateItems[0].validFrom,
-            toDate: location.selectedTemplateItems[0].validTo,
+            // fromDate: location.selectedTemplateItems[0].validFrom,
+            // toDate: location.selectedTemplateItems[0].validTo,
+            fromDate: selectedSolutionTemplateItemsVal[0].validFrom,
+            toDate: selectedSolutionTemplateItemsVal[0].validTo,
             from: null,
             to: null,
             fromInput: "",
@@ -1885,60 +1899,93 @@ export function SolutionTemplateResult(props) {
         })
 
         setAdministrative({
-            preparedBy: location.selectedTemplateItems[0].preparedBy,
-            approvedBy: location.selectedTemplateItems[0].approvedBy,
-            preparedOn: location.selectedTemplateItems[0].preparedOn,
-            revisedBy: location.selectedTemplateItems[0].revisedBy,
-            revisedOn: location.selectedTemplateItems[0].revisedOn,
-            salesOffice: location.selectedTemplateItems[0].salesOffice,
-            offerValidity: location.selectedTemplateItems[0].offerValidity
+            // preparedBy: location.selectedTemplateItems[0].preparedBy,
+            // approvedBy: location.selectedTemplateItems[0].approvedBy,
+            // preparedOn: location.selectedTemplateItems[0].preparedOn,
+            // revisedBy: location.selectedTemplateItems[0].revisedBy,
+            // revisedOn: location.selectedTemplateItems[0].revisedOn,
+            // salesOffice: location.selectedTemplateItems[0].salesOffice,
+            // offerValidity: location.selectedTemplateItems[0].offerValidity
+
+            preparedBy: selectedSolutionTemplateItemsVal.preparedBy,
+            approvedBy: selectedSolutionTemplateItemsVal.approvedBy,
+            preparedOn: selectedSolutionTemplateItemsVal.preparedOn,
+            revisedBy: selectedSolutionTemplateItemsVal.revisedBy,
+            revisedOn: selectedSolutionTemplateItemsVal.revisedOn,
+            salesOffice: selectedSolutionTemplateItemsVal.salesOffice,
+            offerValidity: selectedSolutionTemplateItemsVal.offerValidity
         })
 
 
         setCategoryUsageKeyValue1({
-            "label": location.selectedTemplateItems[0].usageCategory,
-            "value": location.selectedTemplateItems[0].usageCategory
+            // "label": location.selectedTemplateItems[0].usageCategory,
+            // "value": location.selectedTemplateItems[0].usageCategory
+            
+            "label": selectedSolutionTemplateItemsVal[0].usageCategory,
+            "value": selectedSolutionTemplateItemsVal[0].usageCategory
         });
 
         setStratgyTaskUsageKeyValue({
-            "label": location.selectedTemplateItems[0].strategyTask,
-            "value": location.selectedTemplateItems[0].strategyTask
+            // "label": location.selectedTemplateItems[0].strategyTask,
+            // "value": location.selectedTemplateItems[0].strategyTask
+
+            "label": selectedSolutionTemplateItemsVal[0].strategyTask,
+            "value": selectedSolutionTemplateItemsVal[0].strategyTask
         });
 
         setStratgyTaskTypeKeyValue({
-            "label": location.selectedTemplateItems[0].taskType,
-            "value": location.selectedTemplateItems[0].taskType
+            // "label": location.selectedTemplateItems[0].taskType,
+            // "value": location.selectedTemplateItems[0].taskType
+
+            "label": selectedSolutionTemplateItemsVal[0].taskType,
+            "value": selectedSolutionTemplateItemsVal[0].taskType
         });
 
         setStratgyResponseTimeKeyValue({
-            "label": location.selectedTemplateItems[0].responseTime,
-            "value": location.selectedTemplateItems[0].responseTime
+            // "label": location.selectedTemplateItems[0].responseTime,
+            // "value": location.selectedTemplateItems[0].responseTime
+
+            "label": selectedSolutionTemplateItemsVal[0].responseTime,
+            "value": selectedSolutionTemplateItemsVal[0].responseTime
         });
 
         setStratgyHierarchyKeyValue({
-            "label": location.selectedTemplateItems[0].productHierarchy,
-            "value": location.selectedTemplateItems[0].productHierarchy
+            // "label": location.selectedTemplateItems[0].productHierarchy,
+            // "value": location.selectedTemplateItems[0].productHierarchy
+
+            "label": selectedSolutionTemplateItemsVal[0].productHierarchy,
+            "value": selectedSolutionTemplateItemsVal[0].productHierarchy
         });
 
         setStratgyGeographicKeyValue({
-            "label": location.selectedTemplateItems[0].geographic,
-            "value": location.selectedTemplateItems[0].geographic
+            // "label": location.selectedTemplateItems[0].geographic,
+            // "value": location.selectedTemplateItems[0].geographic
+
+            "label": selectedSolutionTemplateItemsVal[0].geographic,
+            "value": selectedSolutionTemplateItemsVal[0].geographic
         });
 
         setMachineTypeKeyValue({
-            "label": location.selectedTemplateItems[0].machineType,
-            "value": location.selectedTemplateItems[0].machineType
+            // "label": location.selectedTemplateItems[0].machineType,
+            // "value": location.selectedTemplateItems[0].machineType
+
+            "label": selectedSolutionTemplateItemsVal[0].machineType,
+            "value": selectedSolutionTemplateItemsVal[0].machineType
         });
 
         setLifeStageOfMachineKeyValue({
-            "label": location.selectedTemplateItems[0].lifeStageOfMachine,
-            "value": location.selectedTemplateItems[0].lifeStageOfMachine
+            // "label": location.selectedTemplateItems[0].lifeStageOfMachine,
+            // "value": location.selectedTemplateItems[0].lifeStageOfMachine
+
+            "label": selectedSolutionTemplateItemsVal[0].lifeStageOfMachine,
+            "value": selectedSolutionTemplateItemsVal[0].lifeStageOfMachine
         });
 
-        setSelecteSolutionItems(location.selectedTemplateItems[0].customItems);
+        // setSelecteSolutionItems(location.selectedTemplateItems[0].customItems);
+        setSelecteSolutionItems(selectedSolutionTemplateItemsVal[0].customItems);
 
-        console.log("location.selectedTemplateItems : ", location.selectedTemplateItems)
-        console.log("New Life stage value is : ", lifeStageOfMachineKeyValue)
+        // console.log("location.selectedTemplateItems : ", location.selectedTemplateItems)
+        // console.log("New Life stage value is : ", lifeStageOfMachineKeyValue)
 
         // let itemIdData = []
         // let priceDataId = []
@@ -2110,6 +2157,7 @@ export function SolutionTemplateResult(props) {
         } else {
             setFlagIs(false);
         }
+        localStorage.setItem("distroyAble", true);
     }, [masterData]);
 
     // useEffect(() => {
