@@ -328,8 +328,8 @@ const customStyles = {
             </div>
               </div>
               </div>
-              <div className="bg-primary px-3 mb-3">
-           <div className="row align-items-center"style={{height:"66px"}}>
+              <div className="bg-primary px-3 mb-3 border-radius-6 overflow-hidden">
+           <div className="row align-items-center height-66 ">
           <div className="col-2">
           <div className="d-flex ">
           <h5 className="mb-0 text-white"><span>Quotes</span></h5>
@@ -341,11 +341,11 @@ const customStyles = {
           </div>
           <div className="col-10">
           <div className="d-flex justify-content-between align-items-center w-100 ">
-                    <div className="row align-items-center m-0">
+                    <div className="row align-items-center m-0 ">
                       {querySearchSelector.map((obj, i) => {
                         return (
                           <>
-                            <div className="customselect d-flex align-items-center mr-3 my-2">
+                            <div className="customselect overflow-hidden d-flex align-items-center mr-3 my-2 border-radius-10">
                               {i > 0 ? (
                                 <SelectFilter
                                   isClearable={true}
@@ -378,7 +378,7 @@ const customStyles = {
                                 />
                               </div>
                               <div className="customselectsearch customize">
-                              <span className="search-icon-postn"><SearchIcon /></span>
+                              <span className="search-icon-postn"><SearchIcon className="text-primary"/></span>
                                 <input
                                   className="custom-input-sleact "
                                   style={{position:"relative"}}

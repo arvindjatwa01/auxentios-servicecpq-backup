@@ -90,7 +90,7 @@ const QuoteRepairOption = () => {
           </div>
           <div className="d-flex">
           <div className="d-flex justify-content-center align-items-center">
-          <div>
+          {/* <div>
           <React.Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
       
@@ -156,7 +156,7 @@ const QuoteRepairOption = () => {
 
       </Menu>
     </React.Fragment>
-          </div>
+          </div> */}
           <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
             <a href="#" className="ml-3 font-size-14" title="Items to Review"><img src={folderaddIcon}></img></a>
             <a href="#" className="ml-3 font-size-14" title="Upload"><img src={uploadIcon}></img></a>

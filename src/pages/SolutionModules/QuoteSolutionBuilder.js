@@ -355,7 +355,7 @@ export function QuoteSolutionBuilder(props) {
                     <div className="d-flex align-items-center justify-content-between mt-2">
                         <h5 className="font-weight-600 mb-0" style={{fontSize:"18px"}}>Solution Quote</h5>
                         <div className="d-flex justify-content-center align-items-center">
-                        <div className="ml-3">
+                        {/* <div className="ml-3">
                             <Button className="btn py-1 px-2 bg-primary text-white font-size-12"
                                 id="fade-button"
                                 aria-controls={open2 ? 'fade-menu' : undefined}
@@ -379,7 +379,7 @@ export function QuoteSolutionBuilder(props) {
                                 <MenuItem onClick={handleClose2}>Kit</MenuItem>
                                 <MenuItem data-toggle="modal" data-target="#quotecreat" onClick={handleClose2}>Quote</MenuItem>
                             </Menu>
-                            </div>
+                            </div> */}
                             <a href="#" className="ml-3 font-size-14" title="Share"><img src={shareIcon}></img></a>
                             <a href="#" className="ml-3 font-size-14" title="Items to review"><img src={folderaddIcon}></img></a>
                             <a href="#" className="ml-3 font-size-14" title="Upload"><img src={uploadIcon}></img></a>
@@ -456,6 +456,13 @@ export function QuoteSolutionBuilder(props) {
                                                 <h6 class="font-weight-600">RFQ123 </h6>
                                             </div>
                                         </div>
+                                        <div className="col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <Link className="btn bg-primary text-white pull-right">
+                                                    Save & Next
+                                                </Link>
+                                            </div>
+                                        </div>
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="2">
@@ -485,6 +492,13 @@ export function QuoteSolutionBuilder(props) {
                                                 <div class="form-group w-100">
                                                     <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <Link className="btn bg-primary text-white pull-right">
+                                                    Save & Next
+                                                </Link>
                                             </div>
                                         </div>
                                         {/* <div className="col-md-12 col-sm-12">
@@ -565,6 +579,13 @@ export function QuoteSolutionBuilder(props) {
                                             </div>
                                             <a href="#" className="btn btn-primary w-100" onClick={() => setOpen1(true)}> Create New</a>
                                         </div>
+                                        <div className="col-md-12 col-sm-12 mt-2">
+                                            <div class="form-group">
+                                                <Link className="btn bg-primary text-white pull-right">
+                                                    Save & Next
+                                                </Link>
+                                            </div>
+                                        </div>
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="4">
@@ -643,6 +664,13 @@ export function QuoteSolutionBuilder(props) {
                                                 <h6 class="font-weight-600">Coverage123</h6>
                                             </div>
                                         </div>
+                                        <div className="col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <Link className="btn bg-primary text-white pull-right">
+                                                    Save & Next
+                                                </Link>
+                                            </div>
+                                        </div>
                                     </div>
                                 </TabPanel>
                             </TabContext>
@@ -661,12 +689,12 @@ export function QuoteSolutionBuilder(props) {
                                 </div>
                             </div>
                             <div className="col-10">
-                            <div className="d-flex justify-content-between align-items-center w-100 ">
-                    <div className="row align-items-center m-0">
+          <div className="d-flex justify-content-between align-items-center w-100 ">
+                    <div className="row align-items-center m-0 ">
                       {querySearchSelector.map((obj, i) => {
                         return (
                           <>
-                            <div className="customselect d-flex align-items-center mr-3 my-2">
+                            <div className="customselect overflow-hidden d-flex align-items-center mr-3 my-2 border-radius-10">
                               {i > 0 ? (
                                 <SelectFilter
                                   isClearable={true}
@@ -699,7 +727,7 @@ export function QuoteSolutionBuilder(props) {
                                 />
                               </div>
                               <div className="customselectsearch customize">
-                              <span className="search-icon-postn"><SearchIcon /></span>
+                              <span className="search-icon-postn"><SearchIcon className="text-primary"/></span>
                                 <input
                                   className="custom-input-sleact "
                                   style={{position:"relative"}}
@@ -710,7 +738,7 @@ export function QuoteSolutionBuilder(props) {
                                   id={"inputSearch-" + i}
                                   autoComplete="off"
                                 />
-                                <div className="bg-primary text-white btn"><span className="mr-2"><AddIcon /></span>Add Part</div>
+                                <div className="border bg-primary text-white btn"><span className="mr-2"><AddIcon /></span>Add Part</div>
                                    
                                 {
                                   <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}>
@@ -774,8 +802,8 @@ export function QuoteSolutionBuilder(props) {
                       </div>
                     </div>
                   </div>
-
-                            </div>
+         
+          </div>
                             <div className="col-auto">
                                 <div className="d-flex align-items-center">
                                         <a href="#" className="btn bg-primary text-white">+ Upload</a>
