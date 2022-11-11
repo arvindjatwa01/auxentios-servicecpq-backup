@@ -9,7 +9,8 @@ function* handleLogin(payload: LoginPayload) {
   try {
     const res = yield call(HttpService, 'post', USER_SERVICE_SIGNIN_URL(), payload.payload);
     console.log("login Response is : ", res);
-    localStorage.setItem('access_token', 'fake_token');
+    //localStorage.setItem('access_token', 'fake_token');
+    localStorage.setItem('access_token', 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYW5pc2hAdGVzdC5jb20iLCJzY29wZXMiOiJURU5BTlRfQURNSU4iLCJpYXQiOjE2NTc1Njg0NjYsImV4cCI6MTY1NzU4NjQ2Nn0.yNbrVCJJNmYubD4YkowfLtmOiDbfeE3JeKNpU5Jp0nc');
     // yield put(
     //   authActions.loginSuccess({
     //     // Dispatch action

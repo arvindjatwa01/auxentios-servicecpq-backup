@@ -6,7 +6,9 @@ import strategySaga from "../pages/PortfolioAndBundle/customerSegment/strategySa
 import {portfolioItemSaga} from "../pages/PortfolioAndBundle/createItem/portfolioItemSaga";
 import updateStrategySaga from "../pages/PortfolioAndBundle/customerSegment/updateSaga";
 import updateTaskTypeSaga from "../pages/PortfolioAndBundle/customerSegment/updateTaskSaga";
+import repairSaga from "../pages/Repair/dropdowns/repairSaga";
+
 
 export default function* rootSaga() {
-    yield all([authSaga(),signUpSaga(),verificationSaga(),strategySaga(),portfolioItemSaga(),updateStrategySaga(),updateTaskTypeSaga()]);
+    yield all([authSaga(),signUpSaga(),verificationSaga(),strategySaga(),portfolioItemSaga(),updateStrategySaga(),updateTaskTypeSaga(),repairSaga()]);
 }
