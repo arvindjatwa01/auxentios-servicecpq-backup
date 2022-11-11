@@ -80,6 +80,8 @@ import Tooltip from "@mui/material/Tooltip";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import Loader from "react-js-loader";
 
+import ExpendTablePopup from "./ExpendTablePopup";
+
 import {
   createPortfolio,
   getPortfolio,
@@ -1184,7 +1186,8 @@ export function CreatePortfolio() {
           spareParts: ["WITH_SPARE_PARTS"],
           labours: ["WITH_LABOUR"],
           miscellaneous: ["LUBRICANTS"],
-          taskType: [...addPortFolioItem.taskType.value],
+          // taskType: [...addPortFolioItem.taskType.value],
+          taskType: addPortFolioItem.taskType.value,
           solutionCode: "",
           usageIn: addPortFolioItem.usageIn.value,
           recommendedValue: 0,
@@ -2459,6 +2462,48 @@ export function CreatePortfolio() {
     // { id: 8, DocumentType: 'Frances', PrimaruQuote: 'Rossini', Groupid: 36, progress: 35, },
     // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
   ];
+
+  const handleBundleServiceItemCheckBoxData = () => {
+
+    var _selectedBundleServiceItemData = [...tempBundleService2];
+    // console.log("_selectedBundleServiceItemData : ", _selectedBundleServiceItemData);
+
+    let cloneArr = []
+    tempBundleService2.map((data, i) => {
+      console.log("data: ", data)
+      const exist = tempBundleService3.some(item => item.itemId === data.itemId)
+      console.log("exist: ", exist)
+      if (!exist) {
+        cloneArr.push(data)
+        // setTempBundleService3([...tempBundleService3, data])
+      }
+    })
+    setTempBundleService3([...tempBundleService3, ...cloneArr])
+    setTempBundleService1([])
+  }
+
+  // console.log("tempbundleService3 New : ", tempBundleService3);
+
+  const handleCoverageCheckBoxData = () => {
+    //   setSelectedMasterData(filterMasterData);
+    //   setMasterData([]);
+    var _selectedCoverageData = [...filterMasterData];
+    // console.log("_selectedBundleServiceItemData : ", _selectedBundleServiceItemData);
+
+    let cloneArr = []
+    filterMasterData.map((data, i) => {
+      console.log("data: ", data)
+      const exist = selectedMasterData.some(item => item.id === data.id)
+      console.log("exist: ", exist)
+      if (!exist) {
+        cloneArr.push(data)
+        // setSelectedMasterData([...selectedMasterData, data])
+      }
+    })
+    setSelectedMasterData([...selectedMasterData, ...cloneArr])
+    setMasterData([])
+  }
+
 
   const handleCheckboxData = (e, row) => {
     if (e.target.checked) {
@@ -4268,6 +4313,7 @@ export function CreatePortfolio() {
             options={priceMethodKeyValue}
             id="priceMethod"
             value={expandedPriceCalculator.priceMethod}
+            name="priceMethod"
             onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceMethod: e })}
           />
         </div>
@@ -4592,14 +4638,29 @@ export function CreatePortfolio() {
           break;
         }
       }
-      const itemPriceRes = await getItemPrice(reqObj)
-      setItemPriceCalculator({
-        netParts: "11",
-        netService: "11",
-        priceType: "11",
-        netPrice: itemPriceRes.itemHeaderModel.netPrice,
-        netAdditionals: "11",
-      })
+      if(Object.keys(reqObj).length === 0){
+        toast("😐" + " Please Create an Item first", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }else{
+        // console.log("reqObj : ", reqObj)
+        const itemPriceRes = await getItemPrice(reqObj)
+        setItemPriceCalculator({
+          netParts: "11",
+          netService: "11",
+          priceType: "11",
+          netPrice: itemPriceRes.itemHeaderModel.netPrice,
+          netAdditionals: "11",
+        })
+        setTabs("5")
+      }
+      
 
       // call put  rkid API to get price and populate it in tab 5
       // const itemPriceRes = await getItemPrice({
@@ -4626,7 +4687,7 @@ export function CreatePortfolio() {
       // });
 
 
-      setTabs("5")
+     
 
 
     }
@@ -5932,10 +5993,11 @@ export function CreatePortfolio() {
                         <div>
                           <div className="text-right">
                             <input
-                              onClick={() => {
-                                setSelectedMasterData(filterMasterData);
-                                setMasterData([]);
-                              }}
+                              // onClick={() => {
+                              //   setSelectedMasterData(filterMasterData);
+                              //   setMasterData([]);
+                              // }}
+                              onClick={handleCoverageCheckBoxData}
                               className="btn bg-primary text-white"
                               value="+ Add Selected"
                               // disabled={!flagIs}
@@ -9125,6 +9187,8 @@ export function CreatePortfolio() {
                     { label: "Description", value: "description" },
                   ]}
                   setTempBundleService1={setTempBundleService1}
+                  setTempBundleService2={setTempBundleService2}
+                  setTempBundleService3={setTempBundleService3}
                   setLoadingItem={setLoadingItem}
                 />
                 {loadingItem === "01" ? ("loading") :
@@ -9142,10 +9206,11 @@ export function CreatePortfolio() {
                         <button
                           type="button"
                           className="btn btn-light"
-                          onClick={() => {
-                            setTempBundleService3(tempBundleService2)
-                            setTempBundleService1([])
-                          }}
+                          // onClick={() => {
+                          //   setTempBundleService3(tempBundleService2)
+                          //   setTempBundleService1([])
+                          // }}
+                          onClick={handleBundleServiceItemCheckBoxData}
                         >
                           Add Selected
                         </button>
@@ -9161,7 +9226,8 @@ export function CreatePortfolio() {
                     data={tempBundleService3}
                     customStyles={customStyles}
                     expandableRows
-                    expandableRowsComponent={ExpandedPriceCalculator}
+                    // expandableRowsComponent={ExpandedPriceCalculator}
+                    expandableRowsComponent={ExpendTablePopup}
                     onRowExpandToggled={handleExpandRowForPriceCalculator}
                     pagination
                   />

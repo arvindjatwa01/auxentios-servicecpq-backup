@@ -141,6 +141,10 @@ const QuerySearchComp = (props) => {
     props.compoFlag === "solutionTempItemSearch" && props?.setSolutionTempMasterData([]);
     props.compoFlag === "solutionTempItemSearch" && props?.setSelectedSolutionTempMasterData([]);
 
+    props.compoFlag === "bundleSearch" && props?.setTempBundleService1([]);
+    props.compoFlag === "bundleSearch" && props?.setTempBundleService2([]);
+    props.compoFlag === "bundleSearch" && props?.setTempBundleService3([]);
+
     
     props.setTempBundleService1([])
 

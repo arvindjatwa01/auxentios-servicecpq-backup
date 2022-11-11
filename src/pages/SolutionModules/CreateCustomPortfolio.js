@@ -81,6 +81,8 @@ import Tooltip from "@mui/material/Tooltip";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import Loader from "react-js-loader";
 
+import ExpendCustomItemTablePopup from "./ExpendCustomItemTablePopup";
+
 import {
     createPortfolio,
     getPortfolio,
@@ -2585,6 +2587,26 @@ export function CreateCustomPortfolio() {
         // { id: 9, DocumentType: 'Roxie', PrimaruQuote: 'Harvey', Groupid: 65, progress: 35, },
     ];
 
+    const handleCoverageCheckBoxData = () => {
+        //   setSelectedMasterData(filterMasterData);
+        //   setMasterData([]);
+        var _selectedCoverageData = [...filterMasterData];
+        // console.log("_selectedBundleServiceItemData : ", _selectedBundleServiceItemData);
+
+        let cloneArr = []
+        filterMasterData.map((data, i) => {
+            console.log("data: ", data)
+            const exist = selectedMasterData.some(item => item.id === data.id)
+            console.log("exist: ", exist)
+            if (!exist) {
+                cloneArr.push(data)
+                // setSelectedMasterData([...selectedMasterData, data])
+            }
+        })
+        setSelectedMasterData([...selectedMasterData, ...cloneArr])
+        setMasterData([])
+    }
+
     const handleCheckboxData = (e, row) => {
         if (e.target.checked) {
             var _searchedData = [...masterData];
@@ -2880,14 +2902,13 @@ export function CreateCustomPortfolio() {
         setLoadingItem(false);
         setTabs("1");
     };
+    console.log("portfolioId -------------- ", portfolioId);
 
     const handleCreateCustomItem_SearchResult = async () => {
         // setTempBundleService3(tempBundleService2)
         // setTempBundleService1([])
         // alert("hello");
-        var createdItemId = 0;
-        // for (let key1 in tempBundleItemCheckList) {
-        // console.log("key1 : ", key1);
+        let reqObj = {};
         for (let i = 0; i < tempBundleItems.length; i++) {
             console.log("tempBundleItems[i].customItemId : ", tempBundleItems[i].customItemId)
             // if (
@@ -2897,167 +2918,194 @@ export function CreateCustomPortfolio() {
             // ) {
             //     console.log("tempBundleItems[i].customItemId :", tempBundleItems[i].customItemId)
             createdItemId = tempBundleItems[i].customItemId;
+
+            if (tempBundleItems[i].itemId === currentItemId) {
+                reqObj = {
+                    itemId: tempBundleItems[i].itemId,
+                    standardJobId: tempBundleItems[i].itemBodyModel.standardJobId,
+                    repairKitId: tempBundleItems[i].itemBodyModel.repairKitId,
+                }
+                break;
+            }
             // break;
             // }
         }
-        // }
-
-        console.log("CreatedItemId : ", createdItemId);
-
-        var createdNewCustomItems = [];
-        console.log("tempBundleService2 is : ", tempBundleService2)
-        for (let i = 0; i < tempBundleService2.length; i++) {
-            console.log("i is :", i);
-            var customItemsIdData = [];
-            var customPriceIdArr = [];
-
-            for (let j = 0; j < tempBundleService2[i].itemBodyModel.itemPrices.length; j++) {
-
+        if (portfolioId === undefined || portfolioId == null) {
+            toast("😐 Please Create Portfolio First", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        } else {
 
 
-                /* =============== Search Custom Price Using selected Item PriceDataId ============== */
+            var createdItemId = 0;
+            // currentItemId
+            // for (let key1 in tempBundleItemCheckList) {
+            // console.log("key1 : ", key1);
+            
+            // }
 
-                var itemsPrice = await itemPriceDataId(tempBundleService2[i].itemBodyModel.itemPrices[j].itemPriceDataId);
-                console.log("item price is before : ", itemsPrice)
+            console.log("CreatedItemId : ", createdItemId);
 
-                let itemPriceObj = {
+            var createdNewCustomItems = [];
+            console.log("tempBundleService2 is : ", tempBundleService2)
+            for (let i = 0; i < tempBundleService2.length; i++) {
+                console.log("i is :", i);
+                var customItemsIdData = [];
+                var customPriceIdArr = [];
 
-                    customItemPriceDataId: 0,
-                    quantity: parseInt(itemsPrice.quantity),
-                    startUsage: itemsPrice.startUsage,
-                    endUsage: itemsPrice.endUsage,
-                    standardJobId: itemsPrice.standardJobId,
-                    repairKitId: itemsPrice.repairKitId,
-                    templateDescription: itemsPrice.templateDescription,
-                    repairOption: itemsPrice.repairOption,
-                    frequency: itemsPrice.frequency,
-                    additional: itemsPrice.additional,
-                    recommendedValue: parseInt(itemsPrice.recommendedValue),
-                    partListId: itemsPrice.partListId,
-                    serviceEstimateId: itemsPrice.serviceEstimateId,
-                    numberOfEvents: parseInt(itemsPrice.numberOfEvents),
-                    priceMethod: itemsPrice.priceMethod,
-                    priceType: itemsPrice.priceType,
-                    listPrice: itemsPrice.listPrice,
-                    priceEscalation: itemsPrice.priceEscalation,
-                    calculatedPrice: itemsPrice.calculatedPrice,
-                    flatPrice: itemsPrice.flatPrice,
-                    discountType: itemsPrice.discountType,
-                    year: itemsPrice.year,
-                    noOfYear: itemsPrice.noOfYear,
-                    sparePartsPrice: itemsPrice.sparePartsPrice,
-                    sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
-                    servicePrice: itemsPrice.servicePrice,
-                    labourPrice: itemsPrice.labourPrice,
-                    labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-                    miscPrice: itemsPrice.miscPrice,
-                    miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
-                    totalPrice: itemsPrice.totalPrice,
-                    netService: itemsPrice.netService,
-                    customPortfolio: {
-                        portfolioId: portfolioId
+                for (let j = 0; j < tempBundleService2[i].itemBodyModel.itemPrices.length; j++) {
+
+
+
+                    /* =============== Search Custom Price Using selected Item PriceDataId ============== */
+
+                    var itemsPrice = await itemPriceDataId(tempBundleService2[i].itemBodyModel.itemPrices[j].itemPriceDataId);
+                    console.log("item price is before : ", itemsPrice)
+
+                    let itemPriceObj = {
+
+                        customItemPriceDataId: 0,
+                        quantity: parseInt(itemsPrice.quantity),
+                        startUsage: itemsPrice.startUsage,
+                        endUsage: itemsPrice.endUsage,
+                        standardJobId: itemsPrice.standardJobId,
+                        repairKitId: itemsPrice.repairKitId,
+                        templateDescription: itemsPrice.templateDescription,
+                        repairOption: itemsPrice.repairOption,
+                        frequency: itemsPrice.frequency,
+                        additional: itemsPrice.additional,
+                        recommendedValue: parseInt(itemsPrice.recommendedValue),
+                        partListId: itemsPrice.partListId,
+                        serviceEstimateId: itemsPrice.serviceEstimateId,
+                        numberOfEvents: parseInt(itemsPrice.numberOfEvents),
+                        priceMethod: itemsPrice.priceMethod,
+                        priceType: itemsPrice.priceType,
+                        listPrice: itemsPrice.listPrice,
+                        priceEscalation: itemsPrice.priceEscalation,
+                        calculatedPrice: itemsPrice.calculatedPrice,
+                        flatPrice: itemsPrice.flatPrice,
+                        discountType: itemsPrice.discountType,
+                        year: itemsPrice.year,
+                        noOfYear: itemsPrice.noOfYear,
+                        sparePartsPrice: itemsPrice.sparePartsPrice,
+                        sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
+                        servicePrice: itemsPrice.servicePrice,
+                        labourPrice: itemsPrice.labourPrice,
+                        labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+                        miscPrice: itemsPrice.miscPrice,
+                        miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
+                        totalPrice: itemsPrice.totalPrice,
+                        netService: itemsPrice.netService,
+                        customPortfolio: {
+                            portfolioId: portfolioId
+                        },
+                        tenantId: itemsPrice.tenantId,
+                        partsRequired: itemsPrice.partsRequired,
+                        labourRequired: itemsPrice.labourRequired,
+                        serviceRequired: itemsPrice.serviceRequired,
+                        miscRequired: itemsPrice.miscRequired
+                    }
+
+                    customItemsIdData.push(itemPriceObj)
+
+                }
+
+                for (let p = 0; p < customItemsIdData.length; p++) {
+                    var customPriceDataCreate = await customPriceCreation(customItemsIdData[p])
+                    console.log("customPriceDataCreate REponse is ", customPriceDataCreate);
+
+                    customPriceIdArr.push({
+                        customItemPriceDataId: parseInt(customPriceDataCreate.data.customItemPriceDataId),
+                    })
+                }
+
+
+                let customItemObj = {
+                    customItemId: 0,
+                    itemName: tempBundleService2[i].itemName,
+                    customItemHeaderModel: {
+                        customItemHeaderId: 0,
+                        itemHeaderDescription: tempBundleService2[i].itemHeaderModel.itemHeaderDescription,
+                        bundleFlag: tempBundleService2[i].itemHeaderModel.bundleFlag,
+                        portfolioItemId: createdItemId,
+                        // portfolioItemId: tempBundleService2[i].itemHeaderModel.portfolioItemId,
+                        reference: tempBundleService2[i].itemHeaderModel.reference,
+                        itemHeaderMake: tempBundleService2[i].itemHeaderModel.itemHeaderMake,
+                        itemHeaderFamily: tempBundleService2[i].itemHeaderModel.itemHeaderFamily,
+                        model: tempBundleService2[i].itemHeaderModel.model,
+                        prefix: tempBundleService2[i].itemHeaderModel.prefix,
+                        type: tempBundleService2[i].itemHeaderModel.type,
+                        additional: tempBundleService2[i].itemHeaderModel.additional,
+                        currency: tempBundleService2[i].itemHeaderModel.currency,
+                        netPrice: tempBundleService2[i].itemHeaderModel.netPrice,
+                        itemProductHierarchy: tempBundleService2[i].itemHeaderModel.itemProductHierarchy,
+                        itemHeaderGeographic: tempBundleService2[i].itemHeaderModel.itemHeaderGeographic,
+                        responseTime: tempBundleService2[i].itemHeaderModel.responseTime,
+                        usage: tempBundleService2[i].itemHeaderModel.usage,
+                        validFrom: tempBundleService2[i].itemHeaderModel.validFrom,
+                        validTo: tempBundleService2[i].itemHeaderModel.validTo,
+                        estimatedTime: tempBundleService2[i].itemHeaderModel.estimatedTime,
+                        servicePrice: tempBundleService2[i].itemHeaderModel.servicePrice,
+                        status: tempBundleService2[i].itemHeaderModel.status,
+                        componentCode: tempBundleService2[i].itemHeaderModel.componentCode,
+                        componentDescription: tempBundleService2[i].itemHeaderModel.componentDescription,
+                        serialNumber: tempBundleService2[i].itemHeaderModel.serialNumber,
+                        itemHeaderStrategy: tempBundleService2[i].itemHeaderModel.itemHeaderStrategy,
+                        variant: tempBundleService2[i].itemHeaderModel.variant,
+                        itemHeaderCustomerSegment: tempBundleService2[i].itemHeaderModel.itemHeaderCustomerSegment,
+                        jobCode: tempBundleService2[i].itemHeaderModel.jobCode,
+                        preparedBy: tempBundleService2[i].itemHeaderModel.preparedBy,
+                        approvedBy: tempBundleService2[i].itemHeaderModel.approvedBy,
+                        preparedOn: tempBundleService2[i].itemHeaderModel.preparedOn,
+                        revisedBy: tempBundleService2[i].itemHeaderModel.revisedBy,
+                        revisedOn: tempBundleService2[i].itemHeaderModel.revisedOn,
+                        salesOffice: tempBundleService2[i].itemHeaderModel.salesOffice,
+                        offerValidity: tempBundleService2[i].itemHeaderModel.offerValidity
                     },
-                    tenantId: itemsPrice.tenantId,
-                    partsRequired: itemsPrice.partsRequired,
-                    labourRequired: itemsPrice.labourRequired,
-                    serviceRequired: itemsPrice.serviceRequired,
-                    miscRequired: itemsPrice.miscRequired
+                    customItemBodyModel: {
+                        customItemBodyId: 0,
+                        itemBodyDescription: tempBundleService2[i].itemBodyModel.itemBodyDescription,
+                        spareParts: tempBundleService2[i].itemBodyModel.spareParts,
+                        labours: tempBundleService2[i].itemBodyModel.labours,
+                        miscellaneous: tempBundleService2[i].itemBodyModel.miscellaneous,
+                        taskType: tempBundleService2[i].itemBodyModel.taskType,
+                        solutionCode: tempBundleService2[i].itemBodyModel.solutionCode,
+                        usageIn: tempBundleService2[i].itemBodyModel.usageIn,
+                        usage: tempBundleService2[i].itemBodyModel.usage,
+                        year: tempBundleService2[i].itemBodyModel.year,
+                        avgUsage: tempBundleService2[i].itemBodyModel.avgUsage,
+                        unit: tempBundleService2[i].itemBodyModel.unit,
+                        customItemPrices: customPriceIdArr,
+                    }
                 }
 
-                customItemsIdData.push(itemPriceObj)
+                const itemRes = await customitemCreation(customItemObj)
+
+                // console.log(" Response is : ", itemRes.data)
+
+                // createdCustomItems.push(itemRes.data)
+                // tempBundleService3.push(itemRes.data)
+
+                // ;
+
+                // setTempBundleService3([
+                //     ...tempBundleService3,
+                //     itemRes.data,
+                // ]);
+                createdNewCustomItems.push(itemRes.data)
 
             }
-
-            for (let p = 0; p < customItemsIdData.length; p++) {
-                var customPriceDataCreate = await customPriceCreation(customItemsIdData[p])
-                console.log("customPriceDataCreate REponse is ", customPriceDataCreate);
-
-                customPriceIdArr.push({
-                    customItemPriceDataId: parseInt(customPriceDataCreate.data.customItemPriceDataId),
-                })
-            }
-
-
-            let customItemObj = {
-                customItemId: 0,
-                itemName: tempBundleService2[i].itemName,
-                customItemHeaderModel: {
-                    customItemHeaderId: 0,
-                    itemHeaderDescription: tempBundleService2[i].itemHeaderModel.itemHeaderDescription,
-                    bundleFlag: tempBundleService2[i].itemHeaderModel.bundleFlag,
-                    portfolioItemId: createdItemId,
-                    // portfolioItemId: tempBundleService2[i].itemHeaderModel.portfolioItemId,
-                    reference: tempBundleService2[i].itemHeaderModel.reference,
-                    itemHeaderMake: tempBundleService2[i].itemHeaderModel.itemHeaderMake,
-                    itemHeaderFamily: tempBundleService2[i].itemHeaderModel.itemHeaderFamily,
-                    model: tempBundleService2[i].itemHeaderModel.model,
-                    prefix: tempBundleService2[i].itemHeaderModel.prefix,
-                    type: tempBundleService2[i].itemHeaderModel.type,
-                    additional: tempBundleService2[i].itemHeaderModel.additional,
-                    currency: tempBundleService2[i].itemHeaderModel.currency,
-                    netPrice: tempBundleService2[i].itemHeaderModel.netPrice,
-                    itemProductHierarchy: tempBundleService2[i].itemHeaderModel.itemProductHierarchy,
-                    itemHeaderGeographic: tempBundleService2[i].itemHeaderModel.itemHeaderGeographic,
-                    responseTime: tempBundleService2[i].itemHeaderModel.responseTime,
-                    usage: tempBundleService2[i].itemHeaderModel.usage,
-                    validFrom: tempBundleService2[i].itemHeaderModel.validFrom,
-                    validTo: tempBundleService2[i].itemHeaderModel.validTo,
-                    estimatedTime: tempBundleService2[i].itemHeaderModel.estimatedTime,
-                    servicePrice: tempBundleService2[i].itemHeaderModel.servicePrice,
-                    status: tempBundleService2[i].itemHeaderModel.status,
-                    componentCode: tempBundleService2[i].itemHeaderModel.componentCode,
-                    componentDescription: tempBundleService2[i].itemHeaderModel.componentDescription,
-                    serialNumber: tempBundleService2[i].itemHeaderModel.serialNumber,
-                    itemHeaderStrategy: tempBundleService2[i].itemHeaderModel.itemHeaderStrategy,
-                    variant: tempBundleService2[i].itemHeaderModel.variant,
-                    itemHeaderCustomerSegment: tempBundleService2[i].itemHeaderModel.itemHeaderCustomerSegment,
-                    jobCode: tempBundleService2[i].itemHeaderModel.jobCode,
-                    preparedBy: tempBundleService2[i].itemHeaderModel.preparedBy,
-                    approvedBy: tempBundleService2[i].itemHeaderModel.approvedBy,
-                    preparedOn: tempBundleService2[i].itemHeaderModel.preparedOn,
-                    revisedBy: tempBundleService2[i].itemHeaderModel.revisedBy,
-                    revisedOn: tempBundleService2[i].itemHeaderModel.revisedOn,
-                    salesOffice: tempBundleService2[i].itemHeaderModel.salesOffice,
-                    offerValidity: tempBundleService2[i].itemHeaderModel.offerValidity
-                },
-                customItemBodyModel: {
-                    customItemBodyId: 0,
-                    itemBodyDescription: tempBundleService2[i].itemBodyModel.itemBodyDescription,
-                    spareParts: tempBundleService2[i].itemBodyModel.spareParts,
-                    labours: tempBundleService2[i].itemBodyModel.labours,
-                    miscellaneous: tempBundleService2[i].itemBodyModel.miscellaneous,
-                    taskType: tempBundleService2[i].itemBodyModel.taskType,
-                    solutionCode: tempBundleService2[i].itemBodyModel.solutionCode,
-                    usageIn: tempBundleService2[i].itemBodyModel.usageIn,
-                    usage: tempBundleService2[i].itemBodyModel.usage,
-                    year: tempBundleService2[i].itemBodyModel.year,
-                    avgUsage: tempBundleService2[i].itemBodyModel.avgUsage,
-                    unit: tempBundleService2[i].itemBodyModel.unit,
-                    customItemPrices: customPriceIdArr,
-                }
-            }
-
-            const itemRes = await customitemCreation(customItemObj)
-
-            console.log(" Response is : ", itemRes.data)
-
-            // createdCustomItems.push(itemRes.data)
-            // tempBundleService3.push(itemRes.data)
-
-            // ;
-
-            // setTempBundleService3([
-            //     ...tempBundleService3,
-            //     itemRes.data,
-            // ]);
-            createdNewCustomItems.push(itemRes.data)
-
-
+            console.log("createdNewCustomItems before : ", createdNewCustomItems)
+            setTempBundleService3([...tempBundleService3, ...createdNewCustomItems]);
+            console.log("tempBundleService3 after : ", tempBundleService3);
+            setTempBundleService1([])
         }
-        console.log("createdNewCustomItems before : ", createdNewCustomItems)
-        setTempBundleService3(createdNewCustomItems);
-        console.log("tempBundleService3 after : ", tempBundleService3);
-        setTempBundleService1([])
 
     }
 
@@ -3179,24 +3227,24 @@ export function CreateCustomPortfolio() {
     ];
 
     const masterColumns = [
-        {
-            name: (
-                <>
-                    <div>Select</div>
-                </>
-            ),
-            selector: (row) => row.check1,
-            wrap: true,
-            sortable: true,
-            maxWidth: "300px",
-            cell: (row) => (
-                <Checkbox
-                    className="text-black"
-                    checked={row.check1}
-                    onChange={(e) => handleCheckboxData(e, row)}
-                />
-            ),
-        },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Select</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.check1,
+        //     wrap: true,
+        //     sortable: true,
+        //     maxWidth: "300px",
+        //     cell: (row) => (
+        //         <Checkbox
+        //             className="text-black"
+        //             checked={row.check1}
+        //             onChange={(e) => handleCheckboxData(e, row)}
+        //         />
+        //     ),
+        // },
         {
             name: (
                 <>
@@ -6949,10 +6997,11 @@ export function CreateCustomPortfolio() {
                                                 <div>
                                                     <div className="text-right">
                                                         <input
-                                                            onClick={() => {
-                                                                setSelectedMasterData(filterMasterData);
-                                                                setMasterData([]);
-                                                            }}
+                                                            // onClick={() => {
+                                                            //     setSelectedMasterData(filterMasterData);
+                                                            //     setMasterData([]);
+                                                            // }}
+                                                            onClick={handleCoverageCheckBoxData}
                                                             className="btn bg-primary text-white"
                                                             value="+ Add Selected"
                                                             // disabled={!flagIs}
@@ -10180,7 +10229,8 @@ export function CreateCustomPortfolio() {
                                         data={tempBundleService3}
                                         customStyles={customStyles}
                                         expandableRows
-                                        expandableRowsComponent={ExpandedPriceCalculator}
+                                        // expandableRowsComponent={ExpandedPriceCalculator}
+                                        expandableRowsComponent={ExpendCustomItemTablePopup}
                                         onRowExpandToggled={handleExpandRowForPriceCalculator}
                                         pagination
                                     />
