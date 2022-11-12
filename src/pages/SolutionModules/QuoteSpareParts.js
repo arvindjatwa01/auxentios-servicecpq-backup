@@ -204,7 +204,7 @@ const  QuoteSpareParts=()=>{
           <div className="card p-4 mt-5">
            
             <div className="mt-5">
-              <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6>
+              {/* <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6> */}
               <div className="recent-div p-3">
                 <h6 className="font-weight-600 text-grey mb-0">RECENT SPARE PARTS QUOTE</h6>
                 <div className="row">
@@ -346,13 +346,6 @@ const  QuoteSpareParts=()=>{
                       <p className="font-size-12 mb-0">Spare Parts Option</p>
                     </div>
                   </div>
-
-                </div>
-
-              </div>
-              <div className="recent-div p-3">
-                <h6 className="font-weight-600 text-grey mb-0">SERVICE BUNDLES</h6>
-                <div className="row">
                   <div className="col-md-4">
                     <div className="recent-items mt-3">
                       <div className="d-flex justify-content-between align-items-center ">
@@ -383,7 +376,7 @@ const  QuoteSpareParts=()=>{
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
-                              <FormControlLabel control={<Checkbox />} label="" />
+                              <FormControlLabel control={<Checkbox defaultChecked />} label="" />
                             </FormGroup>
                           </div>
                           <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
@@ -406,7 +399,7 @@ const  QuoteSpareParts=()=>{
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
-                              <FormControlLabel control={<Checkbox />} label="" />
+                              <FormControlLabel control={<Checkbox defaultChecked />} label="" />
                             </FormGroup>
                           </div>
                           <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
@@ -422,8 +415,11 @@ const  QuoteSpareParts=()=>{
                       <p className="font-size-12 mb-0">Spare Parts Option</p>
                     </div>
                   </div>
+
                 </div>
+
               </div>
+            
             </div>
           </div>
           <Modal show={open} onHide={handleClose} size="lg"

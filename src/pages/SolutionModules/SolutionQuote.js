@@ -221,7 +221,7 @@ const  SolutionQuote=()=>{
                           <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
                           <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
                           <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                          <a href="#" className="ml-2"><MuiMenuComponent className="more-icon-div p-0 font-size-14" options={activityOptions} /></a>
+                          <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                         </div>
                       </div>
 
