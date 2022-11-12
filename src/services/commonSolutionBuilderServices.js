@@ -4,6 +4,18 @@ import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import { Common_SOLUTION_BUILDER_URL } from "./CONSTANTS";
 
+/* ----------------- Authorization ------------------- */
+
+var accessToken = localStorage.getItem("access_token");
+const headersdata = {
+  'content-type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': accessToken != undefined ? accessToken : ''
+  // 'Authorization': url.Auth_Token
+}
+
+/* ------------------------------------------------------------ */
+
 /**
  * Function to fetch usage-category keyvalue.
  */
@@ -12,7 +24,7 @@ export const getUsageCategoryKeyValue = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(Common_SOLUTION_BUILDER_URL() + "/usage-category")
+        .get(Common_SOLUTION_BUILDER_URL() + "/usage-category", { headers: headersdata })
         .then((res) => {
           // console.log("getUsageCategoryKeyValue > axios res=", res);
           resolve(res.data);
@@ -35,7 +47,7 @@ export const getStrategyTaskKeyValue = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(Common_SOLUTION_BUILDER_URL() + "/strategy-task")
+        .get(Common_SOLUTION_BUILDER_URL() + "/strategy-task", { headers: headersdata })
         .then((res) => {
           // console.log("getStrategyTaskKeyValue > axios res=", res);
           resolve(res.data);
@@ -58,7 +70,7 @@ export const getResponseTimeTaskKeyValue = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(Common_SOLUTION_BUILDER_URL() + "/response-time")
+        .get(Common_SOLUTION_BUILDER_URL() + "/response-time", { headers: headersdata })
         .then((res) => {
           // console.log("getResponseTimeTaskKeyValue > axios res=", res);
           resolve(res.data);
@@ -81,7 +93,7 @@ export const getValidityKeyValue = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(Common_SOLUTION_BUILDER_URL() + "/validity")
+        .get(Common_SOLUTION_BUILDER_URL() + "/validity", { headers: headersdata })
         .then((res) => {
           // console.log("getValidityKeyValue > axios res=", res);
           resolve(res.data);
@@ -104,7 +116,7 @@ export const getTaskTypeKeyValue = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(Common_SOLUTION_BUILDER_URL() + "/task-type")
+        .get(Common_SOLUTION_BUILDER_URL() + "/task-type", { headers: headersdata })
         .then((res) => {
           // console.log("getTaskTypeKeyValue > axios res=", res);
           resolve(res.data);
@@ -127,14 +139,14 @@ export const getProductHierarchyKeyValue = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(Common_SOLUTION_BUILDER_URL() + "/product-hierarchy")
+        .get(Common_SOLUTION_BUILDER_URL() + "/product-hierarchy", { headers: headersdata })
         .then((res) => {
           // console.log("getProductHierarchyKeyValue > axios res=", res);
           resolve(res.data);
         })
         .catch((err) => {
           // console.log("getProductHierarchyKeyValue > axios err=", err);
-          reject("Error in getProductHierarchyKeyValue axios!");
+          reject("Error in getProductHierarchyKeyValue axios!", { headers: headersdata });
         });
     } catch (error) {
       // console.error("in userServices > getProductHierarchyKeyValue, Err===", error);
@@ -150,14 +162,14 @@ export const getGergraphicKeyValue = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(Common_SOLUTION_BUILDER_URL() + "/geographic")
+        .get(Common_SOLUTION_BUILDER_URL() + "/geographic", { headers: headersdata })
         .then((res) => {
           // console.log("getGergraphicKeyValue > axios res=", res);
           resolve(res.data);
         })
         .catch((err) => {
           // console.log("getGergraphicKeyValue > axios err=", err);
-          reject("Error in getGergraphicKeyValue axios!");
+          reject("Error in getGergraphicKeyValue axios!", { headers: headersdata });
         });
     } catch (error) {
       // console.error("in userServices > getGergraphicKeyValue, Err===", error);
@@ -173,7 +185,7 @@ export const getTypeKeyValue = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(Common_SOLUTION_BUILDER_URL() + "/type")
+        .get(Common_SOLUTION_BUILDER_URL() + "/type", { headers: headersdata })
         .then((res) => {
           // console.log("getTypeKeyValue > axios res=", res);
           resolve(res.data);
@@ -196,7 +208,7 @@ export const getMachineTypeKeyValue = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(Common_SOLUTION_BUILDER_URL() + "/machine-type")
+        .get(Common_SOLUTION_BUILDER_URL() + "/machine-type", { headers: headersdata })
         .then((res) => {
           // console.log("getMachineTypeKeyValue > axios res=", res);
           resolve(res.data);
@@ -220,7 +232,7 @@ export const getLifeStageKeyValue = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(Common_SOLUTION_BUILDER_URL() + "/life-stage-of-machine")
+        .get(Common_SOLUTION_BUILDER_URL() + "/life-stage-of-machine", { headers: headersdata })
         .then((res) => {
           // console.log("getLifeStageKeyValue > axios res=", res);
           resolve(res.data);

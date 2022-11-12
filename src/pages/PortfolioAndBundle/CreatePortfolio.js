@@ -3202,7 +3202,7 @@ export function CreatePortfolio() {
     {
       name: (
         <>
-          <div>Id</div>
+          <div>Solution Id</div>
         </>
       ),
       selector: (row) => row.itemId,
@@ -3232,38 +3232,17 @@ export function CreatePortfolio() {
       sortable: true,
       format: (row) => row.itemHeaderModel.strategy,
     },
+    // --------------- New (Add on Update Item Fileds) Start ------------------- //
     {
       name: (
         <>
-          <div>Standard Job Id</div>
+          <div>Task Type</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.standardJobId,
+      selector: (row) => row.itemBodyModel.taskType,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.standardJobId,
-    },
-    {
-      name: (
-        <>
-          <div>Repair Options</div>
-        </>
-      ),
-      selector: (row) => row.itemBodyModel.repairOption,
-      sortable: true,
-      maxWidth: "300px",
-      format: (row) => row.itemBodyModel.repairOption,
-    },
-    {
-      name: (
-        <>
-          <div>Frequency</div>
-        </>
-      ),
-      selector: (row) => row.itemBodyModel.frequency,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemBodyModel.frequency,
+      format: (row) => row.itemBodyModel.taskType,
     },
     {
       name: (
@@ -3279,36 +3258,149 @@ export function CreatePortfolio() {
     {
       name: (
         <>
-          <div>Parts $</div>
+          <div>Net Price</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.sparePartsPrice,
+      selector: (row) => row.itemHeaderModel.netPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.sparePartsPrice,
+      format: (row) => row.itemHeaderModel.netPrice,
     },
     {
       name: (
         <>
-          <div>Service $</div>
+          <div>Net Additional</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.servicePrice,
+      selector: (row) => row.itemHeaderModel.additional,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.servicePrice,
+      format: (row) => row.itemHeaderModel.additional,
     },
     {
       name: (
         <>
-          <div>Total $</div>
+          <div>Net Parts Price</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.totalPrice,
+      selector: (row) => row.itemHeaderModel?.partsprice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.totalPrice,
+      format: (row) => row.itemHeaderModel?.partsprice,
     },
+    {
+      name: (
+        <>
+          <div>Net Service Price</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.servicePrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.servicePrice,
+    },
+    {
+      name: (
+        <>
+          <div>Total Price</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel?.totalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel?.totalPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Comments</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.comments,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.comments,
+    },
+
+    // --------------- New (Add on Update Item Fileds) End ------------------- //
+
+    // {
+    //   name: (
+    //     <>
+    //       <div>Standard Job Id</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.standardJobId,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.standardJobId,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Repair Options</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.repairOption,
+    //   sortable: true,
+    //   maxWidth: "300px",
+    //   format: (row) => row.itemBodyModel.repairOption,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Frequency</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.frequency,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.frequency,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Quantity</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.quantity,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.quantity,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Parts $</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.sparePartsPrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.sparePartsPrice,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Service $</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.servicePrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.servicePrice,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Total $</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.totalPrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.totalPrice,
+    // },
     {
       name: (
         <>
@@ -3434,7 +3526,7 @@ export function CreatePortfolio() {
     {
       name: (
         <>
-          <div>Id</div>
+          <div>Solution Id</div>
         </>
       ),
       selector: (row) => row.itemId,
@@ -3464,38 +3556,18 @@ export function CreatePortfolio() {
       sortable: true,
       format: (row) => row.itemHeaderModel.strategy,
     },
+    
+    // --------------- New (Add on Update Item Fileds) Start ------------------- //
     {
       name: (
         <>
-          <div>Standard Job Id</div>
+          <div>Task Type</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.standardJobId,
+      selector: (row) => row.itemBodyModel.taskType,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.standardJobId,
-    },
-    {
-      name: (
-        <>
-          <div>Repair Options</div>
-        </>
-      ),
-      selector: (row) => row.itemBodyModel.repairOption,
-      sortable: true,
-      maxWidth: "300px",
-      format: (row) => row.itemBodyModel.repairOption,
-    },
-    {
-      name: (
-        <>
-          <div>Frequency</div>
-        </>
-      ),
-      selector: (row) => row.itemBodyModel.frequency,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemBodyModel.frequency,
+      format: (row) => row.itemBodyModel.taskType,
     },
     {
       name: (
@@ -3511,36 +3583,149 @@ export function CreatePortfolio() {
     {
       name: (
         <>
-          <div>Parts $</div>
+          <div>Net Price</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.sparePartsPrice,
+      selector: (row) => row.itemHeaderModel.netPrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.sparePartsPrice,
+      format: (row) => row.itemHeaderModel.netPrice,
     },
     {
       name: (
         <>
-          <div>Service $</div>
+          <div>Net Additional</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.servicePrice,
+      selector: (row) => row.itemHeaderModel.additional,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.servicePrice,
+      format: (row) => row.itemHeaderModel.additional,
     },
     {
       name: (
         <>
-          <div>Total $</div>
+          <div>Net Parts Price</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.totalPrice,
+      selector: (row) => row.itemHeaderModel?.partsprice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.totalPrice,
+      format: (row) => row.itemHeaderModel?.partsprice,
     },
+    {
+      name: (
+        <>
+          <div>Net Service Price</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.servicePrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.servicePrice,
+    },
+    {
+      name: (
+        <>
+          <div>Total Price</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel?.totalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel?.totalPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Comments</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.comments,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.comments,
+    },
+
+    // --------------- New (Add on Update Item Fileds) End ------------------- //
+
+    // {
+    //   name: (
+    //     <>
+    //       <div>Standard Job Id</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.standardJobId,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.standardJobId,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Repair Options</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.repairOption,
+    //   sortable: true,
+    //   maxWidth: "300px",
+    //   format: (row) => row.itemBodyModel.repairOption,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Frequency</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.frequency,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.frequency,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Quantity</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.quantity,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.quantity,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Parts $</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.sparePartsPrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.sparePartsPrice,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Service $</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.servicePrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.servicePrice,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Total $</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.totalPrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.totalPrice,
+    // },
   ];
   const tempBundleItemColumns1 = [
 

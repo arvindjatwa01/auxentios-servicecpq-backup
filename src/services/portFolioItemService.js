@@ -2,13 +2,25 @@ import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import { CREATE_PORTFOLIO_ITEM, PORTFOLIO_ITEM_SEARCH, PORTFOLIO_ITEM_PRICE_RKID, PORTFOLIO_ITEM_PRICE_BY_ITEM_ID } from "./CONSTANTS";
 
+/* ----------------- Authorization ------------------- */
+
+var accessToken = localStorage.getItem("access_token");
+const headersdata = {
+  'content-type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': accessToken != undefined ? accessToken : ''
+  // 'Authorization': url.Auth_Token
+}
+
+/* ------------------------------------------------------------ */
+
 
 export const itemCreation = (payLoad) => {
   console.log("portfolioItemService > itemCreation called...");
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(CREATE_PORTFOLIO_ITEM(), payLoad)
+        .post(CREATE_PORTFOLIO_ITEM(), payLoad, { headers: headersdata })
         .then((res) => {
           console.log("itemCreation > axios res=", res);
           resolve(res);
@@ -28,7 +40,7 @@ export const getAllItems = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(CREATE_PORTFOLIO_ITEM())
+        .get(CREATE_PORTFOLIO_ITEM(), { headers: headersdata })
         .then((res) => {
           console.log("getAllItems > axios res=", res);
           resolve(res.data);
@@ -49,7 +61,7 @@ export const itemSearchSuggestion = (family, familyValue) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(CREATE_PORTFOLIO_ITEM() + `/${family}?${family}=${familyValue}`)
+        .get(CREATE_PORTFOLIO_ITEM() + `/${family}?${family}=${familyValue}`, { headers: headersdata })
         .then((res) => {
           console.log("itemSearchSuggestion > axios res=", res);
           resolve(res.data);
@@ -72,7 +84,7 @@ export const itemSearch = (searchStr) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(PORTFOLIO_ITEM_SEARCH() + searchStr)
+        .get(PORTFOLIO_ITEM_SEARCH() + searchStr, { headers: headersdata })
         .then((res) => {
           console.log("itemSearch > axios res=", res);
           resolve(res.data);
@@ -92,7 +104,7 @@ export const getItemPrice = (payLoad) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .put(PORTFOLIO_ITEM_PRICE_RKID(), payLoad)
+        .put(PORTFOLIO_ITEM_PRICE_RKID(), payLoad, { headers: headersdata })
         .then((res) => {
           console.log("getItemPrice > axios res=", res);
           resolve(res.data);
@@ -112,7 +124,7 @@ export const updateItemData = (id, payLoad) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .put(`${CREATE_PORTFOLIO_ITEM()}/${id}`, payLoad)
+        .put(`${CREATE_PORTFOLIO_ITEM()}/${id}`, payLoad, { headers: headersdata })
         .then((res) => {
           console.log("updateItemData > axios res=", res);
           resolve(res);
@@ -132,7 +144,7 @@ export const deleteItem = (id) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .delete(`${CREATE_PORTFOLIO_ITEM()}/${id}`)
+        .delete(`${CREATE_PORTFOLIO_ITEM()}/${id}`, { headers: headersdata })
         .then((res) => {
           console.log("deleteItem > axios res=", res);
           resolve(res);
@@ -152,7 +164,7 @@ export const itemPriceDataId = (searchId) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(PORTFOLIO_ITEM_PRICE_BY_ITEM_ID() + "/" + searchId)
+        .get(PORTFOLIO_ITEM_PRICE_BY_ITEM_ID() + "/" + searchId, { headers: headersdata })
         .then((res) => {
           // console.log("itemPricedataSearch > axios res=", res);
           resolve(res.data);
@@ -173,7 +185,7 @@ export const updateItemPriceData = (id, payLoad) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .put(`${PORTFOLIO_ITEM_PRICE_BY_ITEM_ID()}/${id}`, payLoad)
+        .put(`${PORTFOLIO_ITEM_PRICE_BY_ITEM_ID()}/${id}`, payLoad, { headers: headersdata })
         .then((res) => {
           console.log("updateItemPriceData > axios res=", res);
           resolve(res);

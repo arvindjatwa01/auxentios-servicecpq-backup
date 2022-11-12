@@ -4,6 +4,18 @@ import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, PORTFOLIO_URL, CUSTOM_PORTFOLIO_URL, PRICING_COMMON_CONFIG } from "./CONSTANTS";
 
+/* ----------------- Authorization ------------------- */
+
+var accessToken = localStorage.getItem("access_token");
+const headersdata = {
+  'content-type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': accessToken != undefined ? accessToken : ''
+  // 'Authorization': url.Auth_Token
+}
+
+/* ------------------------------------------------------------ */
+
 /**
  * Function to create the Portfolios.
  */
@@ -12,7 +24,7 @@ export const createCustomPortfolio = (data) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .post(CUSTOM_PORTFOLIO_URL(), data)
+                .post(CUSTOM_PORTFOLIO_URL(), data, { headers: headersdata })
                 .then((res) => {
                     console.log("createCustomPortfolio > axios res=", res);
                     resolve(res);
@@ -35,7 +47,7 @@ export const updateCustomPortfolio = (portfolioId, data) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .put(CUSTOM_PORTFOLIO_URL() + "/" + portfolioId, data)
+                .put(CUSTOM_PORTFOLIO_URL() + "/" + portfolioId, data, { headers: headersdata })
                 .then((res) => {
                     console.log("updatePortfolio > axios res=", res);
                     resolve(res);
@@ -60,7 +72,7 @@ export const getCustomPortfolio = (portfolioId) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .get(CUSTOM_PORTFOLIO_URL() + "/" + portfolioId)
+                .get(CUSTOM_PORTFOLIO_URL() + "/" + portfolioId, { headers: headersdata })
                 .then((res) => {
                     console.log("getPortfolio > axios res=", res);
                     resolve(res.data);
@@ -83,7 +95,7 @@ export const getAllPortfolios = () => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .get(GET_ALL_SOLUTION_PORTFOLIOS())
+                .get(GET_ALL_SOLUTION_PORTFOLIOS(), { headers: headersdata })
                 .then((res) => {
                     console.log("getAllPortfolios > axios res=", res);
                     resolve(res.data);
@@ -111,7 +123,7 @@ export const getUserDetails = (id) => {
         try {
             // do an SDK, DB call or API endpoint axios call here and return the promise.
             axios
-                .get(GET_USER_DETAILS(id))
+                .get(GET_USER_DETAILS(id), { headers: headersdata })
                 .then((res) => {
                     console.log("getUserDetails > axios res=", res);
                     resolve(res.data);

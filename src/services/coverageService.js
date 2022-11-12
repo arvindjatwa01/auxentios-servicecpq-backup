@@ -4,6 +4,18 @@ import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import { COVERAGE_REST, CUSTOM_COVERAGE_REST } from "./CONSTANTS";
 
+/* ----------------- Authorization ------------------- */
+
+var accessToken = localStorage.getItem("access_token");
+const headersdata = {
+  'content-type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': accessToken != undefined ? accessToken : ''
+  // 'Authorization': url.Auth_Token
+}
+
+/* ------------------------------------------------------------ */
+
 /**
  * Function to fetch Make keyvalue.
  */
@@ -12,7 +24,7 @@ export const getMakeKeyValue = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(COVERAGE_REST() + "/make")
+        .get(COVERAGE_REST() + "/make", { headers: headersdata })
         .then((res) => {
           console.log("getMakeKeyValue > axios res=", res);
           resolve(res.data);
@@ -35,7 +47,7 @@ export const getModelKeyValue = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(COVERAGE_REST() + "/model")
+        .get(COVERAGE_REST() + "/model", { headers: headersdata })
         .then((res) => {
           console.log("getModelKeyValue > axios res=", res);
           resolve(res.data);
@@ -58,7 +70,7 @@ export const getPrefixKeyValue = () => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(COVERAGE_REST() + "/prefix")
+        .get(COVERAGE_REST() + "/prefix", { headers: headersdata })
         .then((res) => {
           console.log("getPrefixKeyValue > axios res=", res);
           resolve(res.data);
@@ -77,7 +89,7 @@ export const createCoverage = (data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(COVERAGE_REST(),data)
+        .post(COVERAGE_REST(),data, { headers: headersdata })
         .then((res) => {
           console.log("createCoverage > axios res=", res);
           resolve(res.data);
@@ -97,7 +109,7 @@ export const createCutomCoverage = (data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(CUSTOM_COVERAGE_REST(),data)
+        .post(CUSTOM_COVERAGE_REST(),data, { headers: headersdata })
         .then((res) => {
           console.log("createCoverage > axios res=", res);
           resolve(res.data);
