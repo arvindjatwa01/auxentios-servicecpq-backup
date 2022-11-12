@@ -94,6 +94,21 @@ export const SCHEMA_CONFIG = () => SOLUTION_BUILDER_URI + "schema";
 export const GUIDED_SOLUTIONS = () => SOLUTION_BUILDER_URI + "/guided-solution";
 
 // Repair Builder Services
+export const GET_CHARGE_CODE = () =>
+  REPAIR_BUILDER_URI + "common-config/dropdown/charge-code";
+export const GET_SERVICE_TYPE = () =>
+  REPAIR_BUILDER_URI + "common-config/dropdown/service-type";
+export const GET_LABOUR_TYPE = () =>
+  REPAIR_BUILDER_URI + "common-config/dropdown/labour-type";
+export const GET_LABOUR_CODE = () =>
+  REPAIR_BUILDER_URI + "common-config/dropdown/labour-code";
+export const GET_DIMENSION = () =>
+  REPAIR_BUILDER_URI + "common-config/dropdown/dimension";
+export const GET_CONSUMABLE_TYPE = () =>
+  REPAIR_BUILDER_URI + "common-config/dropdown/consumable-type";
+export const GET_MISC_TYPE = () =>
+  REPAIR_BUILDER_URI + "common-config/dropdown/misc-type";
+
 export const CREATE_REPAIR_BUILDER = () => REPAIR_BUILDER_URI + "builder";
 export const ADD_REPAIR_BUILDER_PARTLIST = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/partlist`;
 export const FETCH_REPAIR_BUILDER_PARTLIST = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/partlist`;

@@ -6,6 +6,7 @@ import { history } from 'utils';
 import rootSaga from './rootSaga';
 import signUpReducer from "../features/auth/signUpSlice";
 import taskReducer from "../pages/PortfolioAndBundle/customerSegment/strategySlice";
+import repairReducer from "../pages/Repair/dropdowns/repairSlice";
 import portfolioItemReducer from "../pages/PortfolioAndBundle/createItem/portfolioSlice";
 
 import { appReducer } from "../redux/reducers/appReducer";
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
     auth: authReducer,
     signUp: signUpReducer,
     task:taskReducer,
+    dropdown: repairReducer,
     VerifyEmail:signUpReducer,
     loginSuccess:authReducer,
     portfolioItem:portfolioItemReducer,

@@ -2,7 +2,8 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import Environment from "../config/environment";
 import Cookies from "js-cookie";
 import "./AxiosInterceptor";
-const accessToken = Cookies.get("accessToken");
+// const accessToken = Cookies.get("accessToken");
+const accessToken = localStorage.getItem('access_token')
 
 export function HttpService<T>(
     method: AxiosRequestConfig["method"],
