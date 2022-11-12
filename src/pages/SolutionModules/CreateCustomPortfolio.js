@@ -174,12 +174,14 @@ const customStyles = {
             paddingRight: "8px",
             backgroundColor: "#872ff7",
             color: "#fff",
+            borderRight: "1px solid rgba(0,0,0,.12)",
         },
     },
     cells: {
         style: {
             paddingLeft: "8px", // override the cell padding for data cells
             paddingRight: "8px",
+            borderRight: "1px solid rgba(0,0,0,.12)",
         },
     },
 };
@@ -757,6 +759,7 @@ export function CreateCustomPortfolio() {
             if (itemRes.status !== 200) {
                 throw "Something went wrong/Item not created"
             }
+            // alert("Item created successdully");
             setCurrentItemId(itemRes.data.customItemId);
             const _generalComponentData = { ...generalComponentData };
             _generalComponentData.items?.push({ customItemId: itemRes.data.customItemId });
@@ -2902,7 +2905,7 @@ export function CreateCustomPortfolio() {
         setLoadingItem(false);
         setTabs("1");
     };
-    console.log("portfolioId -------------- ", portfolioId);
+    // console.log("portfolioId -------------- ", portfolioId);
 
     const handleCreateCustomItem_SearchResult = async () => {
         // setTempBundleService3(tempBundleService2)
@@ -2947,7 +2950,7 @@ export function CreateCustomPortfolio() {
             // currentItemId
             // for (let key1 in tempBundleItemCheckList) {
             // console.log("key1 : ", key1);
-            
+
             // }
 
             console.log("CreatedItemId : ", createdItemId);
@@ -3103,11 +3106,14 @@ export function CreateCustomPortfolio() {
             }
             console.log("createdNewCustomItems before : ", createdNewCustomItems)
             setTempBundleService3([...tempBundleService3, ...createdNewCustomItems]);
-            console.log("tempBundleService3 after : ", tempBundleService3);
+            // setTempBundleService3(createdNewCustomItems);
+            // console.log("tempBundleService3 after : ", tempBundleService3);
             setTempBundleService1([])
         }
 
     }
+
+    console.log("tempBundleService3 Newwwww------------ : ", tempBundleService3);
 
     const columns = [
         {
@@ -4755,6 +4761,9 @@ export function CreateCustomPortfolio() {
     const getAddportfolioItemDataFun = (data) => {
         setAddportFolioItem(data);
         handleBundleItemSaveAndContinue();
+        setTempBundleService1([]);
+        setTempBundleService2([]);
+        setTempBundleService3([]);
     };
     const getPriceCalculatorDataFun = (data) => {
         setPriceCalculator(data);
@@ -4823,7 +4832,7 @@ export function CreateCustomPortfolio() {
 
     }
 
-    const ExpandedComponent = ({ data }) => (
+    const ExpendedModelComponent = ({ data }) => (
         <div className="scrollbar" id="style">
             {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
                 <div
@@ -4833,21 +4842,31 @@ export function CreateCustomPortfolio() {
                     className="sc-evZas cMMpBL rdt_TableRow"
                     style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
                 >
-                    <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco"></div>
+                    <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
                     <div
                         id="cell-1-undefined"
                         data-column-id="1"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div>{bundleAndService.customItemId}</div>
                     </div>
                     <div
+                        id="cell-1-undefined"
+                        data-column-id="1"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div></div>
+                        {/* <div>{bundleAndService.customItemId}</div> */}
+                    </div>
+                    <div
                         id="cell-2-undefined"
                         data-column-id="2"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
@@ -4858,7 +4877,7 @@ export function CreateCustomPortfolio() {
                         id="cell-3-undefined"
                         data-column-id="3"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
@@ -4869,7 +4888,7 @@ export function CreateCustomPortfolio() {
                         id="cell-4-undefined"
                         data-column-id="4"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
@@ -4880,7 +4899,7 @@ export function CreateCustomPortfolio() {
                         id="cell-5-undefined"
                         data-column-id="5"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
@@ -4891,7 +4910,7 @@ export function CreateCustomPortfolio() {
                         id="cell-6-undefined"
                         data-column-id="6"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
@@ -4902,7 +4921,7 @@ export function CreateCustomPortfolio() {
                         id="cell-7-undefined"
                         data-column-id="7"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
@@ -4913,7 +4932,7 @@ export function CreateCustomPortfolio() {
                         id="cell-8-undefined"
                         data-column-id="8"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
@@ -4924,7 +4943,7 @@ export function CreateCustomPortfolio() {
                         id="cell-9-undefined"
                         data-column-id="9"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
@@ -4935,7 +4954,7 @@ export function CreateCustomPortfolio() {
                         id="cell-10-undefined"
                         data-column-id="10"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
@@ -4946,7 +4965,190 @@ export function CreateCustomPortfolio() {
                         id="cell-11-undefined"
                         data-column-id="11"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div
+                            className="cursor"
+                            onClick={(e) =>
+                                handleExpandedRowEdit(
+                                    e,
+                                    data.customItemId,
+                                    data.associatedServiceOrBundle[i]
+                                )
+                            }
+                        >
+                            <Tooltip title="Edit">
+                                <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
+                            </Tooltip>
+                        </div>
+                        <div
+                            className="cursor"
+                            onClick={(e) =>
+                                handleExpandedRowDelete(
+                                    e,
+                                    data.customItemId,
+                                    data.associatedServiceOrBundle[i].customItemId
+                                )
+                            }
+                        >
+                            <Tooltip title="Delete">
+                                <Link to="#" className="mx-1">
+                                    <svg
+                                        data-name="Layer 41"
+                                        id="Layer_41"
+                                        width="14px"
+                                        viewBox="0 0 50 50"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <title />
+                                        <path
+                                            className="cls-1"
+                                            d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                                        />
+                                        <path
+                                            className="cls-1"
+                                            d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                                        />
+                                        <path
+                                            className="cls-1"
+                                            d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                                        />
+                                    </svg>
+                                </Link>
+                            </Tooltip>
+                        </div>
+                    </div>)}
+
+                </div>
+            ))}
+        </div>
+    );
+
+    const ExpandedComponent = ({ data }) => (
+        <div className="scrollbar" id="style">
+            {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
+                <div
+                    key={i}
+                    id="row-0"
+                    role="row"
+                    className="sc-evZas cMMpBL rdt_TableRow"
+                    style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
+                >
+                    <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
+                    <div
+                        id="cell-1-undefined"
+                        data-column-id="1"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div>{bundleAndService.customItemId}</div>
+                    </div>
+                    <div
+                        id="cell-2-undefined"
+                        data-column-id="2"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemBodyModel?.itemBodyDescription}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-3-undefined"
+                        data-column-id="3"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemHeaderModel?.strategy}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-4-undefined"
+                        data-column-id="4"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemBodyModel?.standardJobId}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-5-undefined"
+                        data-column-id="5"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemBodyModel?.repairOption}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-6-undefined"
+                        data-column-id="6"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemBodyModel?.frequency}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-7-undefined"
+                        data-column-id="7"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemBodyModel?.quantity}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-8-undefined"
+                        data-column-id="8"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemBodyModel?.sparePartsPrice}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-9-undefined"
+                        data-column-id="9"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemBodyModel?.servicePrice}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-10-undefined"
+                        data-column-id="10"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemBodyModel?.totalPrice}
+                        </div>
+                    </div>
+                    {bundleItems.length > 0 && (<div
+                        id="cell-11-undefined"
+                        data-column-id="11"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div
@@ -7305,12 +7507,13 @@ export function CreateCustomPortfolio() {
                                 <div className="d-flex align-items-center w-100">
                                     <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
                                         <h5 className="mb-0 text-black">
-                                            <span>Portfolio Items</span>
+                                            <span>Portfolio Items {bundleItems.length}</span>
                                         </h5>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         {bundleItems.length > 0 ? (
                             <div>
                                 <div
@@ -10729,7 +10932,8 @@ export function CreateCustomPortfolio() {
                                             data={tempBundleItems}
                                             customStyles={customStyles}
                                             expandableRows
-                                            expandableRowsComponent={ExpandedComponent}
+                                            // expandableRowsComponent={ExpandedComponent}
+                                            expandableRowsComponent={ExpendedModelComponent}
                                             pagination
                                         />
                                     </div>

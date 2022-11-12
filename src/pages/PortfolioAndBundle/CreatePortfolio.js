@@ -65,6 +65,8 @@ import penIcon from "../../assets/images/pen.png";
 import { ReactTableNested } from "../Test/ReactTableNested";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
+import Validator from "../../utils/validator";
+
 import DataTable from "react-data-table-component";
 
 import boxicon from "../../assets/icons/png/box.png";
@@ -142,6 +144,28 @@ import { Link, useHistory, useLocation } from "react-router-dom";
 import Solution from "./Solution";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
+// const customStyles = {
+//   rows: {
+//     style: {
+//       minHeight: "72px", // override the row height
+//     },
+//   },
+//   headCells: {
+//     style: {
+//       paddingLeft: "8px", // override the cell padding for head cells
+//       paddingRight: "8px",
+//       backgroundColor: "#872ff7",
+//       color: "#fff",
+//     },
+//   },
+//   cells: {
+//     style: {
+//       paddingLeft: "8px", // override the cell padding for data cells
+//       paddingRight: "8px",
+//     },
+//   },
+// };
+
 const customStyles = {
   rows: {
     style: {
@@ -154,12 +178,14 @@ const customStyles = {
       paddingRight: "8px",
       backgroundColor: "#872ff7",
       color: "#fff",
+      borderRight: "1px solid rgba(0,0,0,.12)",
     },
   },
   cells: {
     style: {
       paddingLeft: "8px", // override the cell padding for data cells
       paddingRight: "8px",
+      borderRight: "1px solid rgba(0,0,0,.12)",
     },
   },
 };
@@ -332,6 +358,9 @@ export function CreatePortfolio() {
 
   const [portfolioId, setPortfolioId] = useState();
   const [currentItemId, setCurrentItemId] = useState();
+
+  const [createdItemsIdData, setCreatedItemsIdData] = useState([]);
+
   const [alignment, setAlignment] = useState("Portfolio");
   const [prefilgabelGeneral, setPrefilgabelGeneral] = useState("");
   const [priceAgreementOption, setPriceAgreementOption] = useState(false);
@@ -720,6 +749,7 @@ export function CreatePortfolio() {
         throw "Something went wrong/Item not created"
       }
       setCurrentItemId(itemRes.data.itemId);
+      setCreatedItemsIdData([...createdItemsIdData, itemRes.data.itemId]);
       const _generalComponentData = { ...generalComponentData };
       _generalComponentData.items?.push({ itemId: itemRes.data.itemId });
       // put API for porfolio update Item id
@@ -1689,6 +1719,25 @@ export function CreatePortfolio() {
           throw `${strategyRes.status}:error in update portfolio`;
         }
       } else if (e.target.id == "administrative") {
+
+        const validator = new Validator();
+
+        if ((!validator.emailValidation(administrative.preparedBy) ||
+          administrative.preparedBy == "" ||
+          administrative.preparedBy == undefined) ||
+          (administrative.approvedBy != "" &&
+            administrative.approvedBy != undefined &&
+            !validator.emailValidation(administrative.approvedBy)) ||
+          (administrative.revisedBy != "" &&
+            administrative.revisedBy != undefined &&
+            !validator.emailValidation(administrative.revisedBy)) ||
+          (administrative.branch == "" ||
+            administrative.branch == undefined) ||
+          (administrative.offerValidity == "" ||
+            administrative.offerValidity == undefined)
+        ) {
+          throw "Please fill manditory fields with valid data";
+        }
         setGeneralComponentData({
           ...generalComponentData,
           preparedBy: administrative.preparedBy,
@@ -2468,6 +2517,18 @@ export function CreatePortfolio() {
     var _selectedBundleServiceItemData = [...tempBundleService2];
     // console.log("_selectedBundleServiceItemData : ", _selectedBundleServiceItemData);
 
+    // if(createdItemsIdData)
+    // var createdItemsLength = createdItemsIdData.length;
+    // console.log("createdItemsLength : ", createdItemsLength)
+    // if(currentItemId === createdItemsIdData.)
+    // if (createdItemsLength > 0) {
+    //   if (currentItemId === createdItemsIdData.at(createdItemsLength - 1)) {
+
+    //   }
+    // } else {
+    // }
+
+    // console.log("tempBundleService2 : ",tempBundleService2);
     let cloneArr = []
     tempBundleService2.map((data, i) => {
       console.log("data: ", data)
@@ -2478,6 +2539,8 @@ export function CreatePortfolio() {
         // setTempBundleService3([...tempBundleService3, data])
       }
     })
+    // console.log("createdItemsIdData : ", createdItemsIdData);
+
     setTempBundleService3([...tempBundleService3, ...cloneArr])
     setTempBundleService1([])
   }
@@ -3909,6 +3972,10 @@ export function CreatePortfolio() {
   const getAddportfolioItemDataFun = (data) => {
     setAddportFolioItem(data);
     handleBundleItemSaveAndContinue();
+    setTempBundleService1([]);
+    setTempBundleService2([]);
+    setTempBundleService3([]);
+    // console.log("addPortfolioItem : ", addPortFolioItem);
   };
   const getPriceCalculatorDataFun = (data) => {
     setPriceCalculator(data);
@@ -3977,7 +4044,7 @@ export function CreatePortfolio() {
 
   }
 
-  const ExpandedComponent = ({ data }) => (
+  const ExpendedModelComponent = ({ data }) => (
     <div className="scrollbar" id="style">
       {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
         <div
@@ -3987,12 +4054,23 @@ export function CreatePortfolio() {
           className="sc-evZas cMMpBL rdt_TableRow"
           style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
         >
-          <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco"></div>
+          <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
+          {/* <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div> */}
           <div
             id="cell-1-undefined"
             data-column-id="1"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            data-tag="allowRowEvents"
+          >
+            <div></div>
+            {/* <div>{bundleAndService.itemId}</div> */}
+          </div>
+          <div
+            id="cell-1-undefined"
+            data-column-id="1"
+            role="gridcell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div>{bundleAndService.itemId}</div>
@@ -4001,7 +4079,7 @@ export function CreatePortfolio() {
             id="cell-2-undefined"
             data-column-id="2"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -4012,7 +4090,7 @@ export function CreatePortfolio() {
             id="cell-3-undefined"
             data-column-id="3"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -4023,7 +4101,7 @@ export function CreatePortfolio() {
             id="cell-4-undefined"
             data-column-id="4"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -4034,7 +4112,7 @@ export function CreatePortfolio() {
             id="cell-5-undefined"
             data-column-id="5"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY rdt_TableCell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -4045,7 +4123,7 @@ export function CreatePortfolio() {
             id="cell-6-undefined"
             data-column-id="6"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -4056,7 +4134,7 @@ export function CreatePortfolio() {
             id="cell-7-undefined"
             data-column-id="7"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -4067,7 +4145,7 @@ export function CreatePortfolio() {
             id="cell-8-undefined"
             data-column-id="8"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -4078,7 +4156,7 @@ export function CreatePortfolio() {
             id="cell-9-undefined"
             data-column-id="9"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -4089,7 +4167,7 @@ export function CreatePortfolio() {
             id="cell-10-undefined"
             data-column-id="10"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
@@ -4100,7 +4178,190 @@ export function CreatePortfolio() {
             id="cell-11-undefined"
             data-column-id="11"
             role="gridcell"
-            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz rdt_TableCell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz custom-rdt_TableCell rdt_TableCell"
+            data-tag="allowRowEvents"
+          >
+            <div
+              className="cursor"
+              onClick={(e) =>
+                handleExpandedRowEdit(
+                  e,
+                  data.itemId,
+                  data.associatedServiceOrBundle[i]
+                )
+              }
+            >
+              <Tooltip title="Edit">
+                <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
+              </Tooltip>
+            </div>
+            <div
+              className="cursor"
+              onClick={(e) =>
+                handleExpandedRowDelete(
+                  e,
+                  data.itemId,
+                  data.associatedServiceOrBundle[i].itemId
+                )
+              }
+            >
+              <Tooltip title="Delete">
+                <Link to="#" className="mx-1">
+                  <svg
+                    data-name="Layer 41"
+                    id="Layer_41"
+                    width="14px"
+                    viewBox="0 0 50 50"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <title />
+                    <path
+                      className="cls-1"
+                      d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                    />
+                    <path
+                      className="cls-1"
+                      d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                    />
+                    <path
+                      className="cls-1"
+                      d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                    />
+                  </svg>
+                </Link>
+              </Tooltip>
+            </div>
+          </div>)}
+
+        </div>
+      ))}
+    </div>
+  );
+
+  const ExpandedComponent = ({ data }) => (
+    <div className="scrollbar" id="style">
+      {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
+        <div
+          key={i}
+          id="row-0"
+          role="row"
+          className="sc-evZas cMMpBL rdt_TableRow"
+          style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
+        >
+          <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
+          <div
+            id="cell-1-undefined"
+            data-column-id="1"
+            role="gridcell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            data-tag="allowRowEvents"
+          >
+            <div>{bundleAndService.itemId}</div>
+          </div>
+          <div
+            id="cell-2-undefined"
+            data-column-id="2"
+            role="gridcell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            data-tag="allowRowEvents"
+          >
+            <div data-tag="allowRowEvents">
+              {bundleAndService.itemBodyModel.itemBodyDescription}
+            </div>
+          </div>
+          <div
+            id="cell-3-undefined"
+            data-column-id="3"
+            role="gridcell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            data-tag="allowRowEvents"
+          >
+            <div data-tag="allowRowEvents">
+              {bundleAndService.itemHeaderModel.strategy}
+            </div>
+          </div>
+          <div
+            id="cell-4-undefined"
+            data-column-id="4"
+            role="gridcell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            data-tag="allowRowEvents"
+          >
+            <div data-tag="allowRowEvents">
+              {bundleAndService.itemBodyModel.standardJobId}
+            </div>
+          </div>
+          <div
+            id="cell-5-undefined"
+            data-column-id="5"
+            role="gridcell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+            data-tag="allowRowEvents"
+          >
+            <div data-tag="allowRowEvents">
+              {bundleAndService.itemBodyModel.repairOption}
+            </div>
+          </div>
+          <div
+            id="cell-6-undefined"
+            data-column-id="6"
+            role="gridcell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            data-tag="allowRowEvents"
+          >
+            <div data-tag="allowRowEvents">
+              {bundleAndService.itemBodyModel.frequency}
+            </div>
+          </div>
+          <div
+            id="cell-7-undefined"
+            data-column-id="7"
+            role="gridcell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            data-tag="allowRowEvents"
+          >
+            <div data-tag="allowRowEvents">
+              {bundleAndService.itemBodyModel.quantity}
+            </div>
+          </div>
+          <div
+            id="cell-8-undefined"
+            data-column-id="8"
+            role="gridcell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            data-tag="allowRowEvents"
+          >
+            <div data-tag="allowRowEvents">
+              {bundleAndService.itemBodyModel.sparePartsPrice}
+            </div>
+          </div>
+          <div
+            id="cell-9-undefined"
+            data-column-id="9"
+            role="gridcell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            data-tag="allowRowEvents"
+          >
+            <div data-tag="allowRowEvents">
+              {bundleAndService.itemBodyModel.servicePrice}
+            </div>
+          </div>
+          <div
+            id="cell-10-undefined"
+            data-column-id="10"
+            role="gridcell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            data-tag="allowRowEvents"
+          >
+            <div data-tag="allowRowEvents">
+              {bundleAndService.itemBodyModel.totalPrice}
+            </div>
+          </div>
+          {bundleItems.length > 0 && (<div
+            id="cell-11-undefined"
+            data-column-id="11"
+            role="gridcell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
             <div
@@ -4638,7 +4899,7 @@ export function CreatePortfolio() {
           break;
         }
       }
-      if(Object.keys(reqObj).length === 0){
+      if (Object.keys(reqObj).length === 0) {
         toast("😐" + " Please Create an Item first", {
           position: "top-right",
           autoClose: 3000,
@@ -4648,7 +4909,7 @@ export function CreatePortfolio() {
           draggable: true,
           progress: undefined,
         });
-      }else{
+      } else {
         // console.log("reqObj : ", reqObj)
         const itemPriceRes = await getItemPrice(reqObj)
         setItemPriceCalculator({
@@ -4660,7 +4921,7 @@ export function CreatePortfolio() {
         })
         setTabs("5")
       }
-      
+
 
       // call put  rkid API to get price and populate it in tab 5
       // const itemPriceRes = await getItemPrice({
@@ -4687,7 +4948,7 @@ export function CreatePortfolio() {
       // });
 
 
-     
+
 
 
     }
@@ -9726,7 +9987,8 @@ export function CreatePortfolio() {
                       data={tempBundleItems}
                       customStyles={customStyles}
                       expandableRows
-                      expandableRowsComponent={ExpandedComponent}
+                      // expandableRowsComponent={ExpandedComponent}
+                      expandableRowsComponent={ExpendedModelComponent}
                       pagination
                     />
                   </div>
