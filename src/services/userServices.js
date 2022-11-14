@@ -5,6 +5,19 @@ import axios from 'axios'
 import { GET_ALL_USERS, GET_USER_DETAILS, USER_SERVICE_SIGNUP_URL, USER_SERVICE_SIGNIN_URL } from "./CONSTANTS";
 
 
+/* ----------------- Authorization ------------------- */
+
+var accessToken = localStorage.getItem("access_token");
+const headersdata = {
+  'content-type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': accessToken != undefined ? accessToken : ''
+  // 'Authorization': url.Auth_Token
+}
+
+/* ------------------------------------------------------------ */
+
+
 /**
  * Function to register the users.
  */
@@ -14,7 +27,7 @@ export const signup = (data) => {
     try {
       // do an SDK, DB call or API endpoint axios call here and return the promise.
       axios
-        .post(USER_SERVICE_SIGNUP_URL(), data)
+        .post(USER_SERVICE_SIGNUP_URL(), data, { headers: headersdata })
         .then((res) => {
           console.log("signup > axios res=", res);
           resolve(res.data);
@@ -38,7 +51,7 @@ export const signIn = (data) => {
     try {
       // do an SDK, DB call or API endpoint axios call here and return the promise.
       axios
-        .post(USER_SERVICE_SIGNIN_URL(), data)
+        .post(USER_SERVICE_SIGNIN_URL(), data, { headers: headersdata })
         .then((res) => {
           console.log("signIn > axios res=", res);
           resolve(res.data);
@@ -65,7 +78,7 @@ export const getAllUsers = () => {
     try {
       // do an SDK, DB call or API endpoint axios call here and return the promise.
       axios
-        .get(GET_ALL_USERS())
+        .get(GET_ALL_USERS(), { headers: headersdata })
         .then((res) => {
           console.log("getAllUsers > axios res=", res);
           resolve(res.data);
@@ -92,7 +105,7 @@ export const getUserDetails = (id) => {
     try {
       // do an SDK, DB call or API endpoint axios call here and return the promise.
       axios
-        .get(GET_USER_DETAILS(id))
+        .get(GET_USER_DETAILS(id), { headers: headersdata })
         .then((res) => {
           console.log("getUserDetails > axios res=", res);
           resolve(res.data);

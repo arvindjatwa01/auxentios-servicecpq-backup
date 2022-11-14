@@ -2,6 +2,18 @@ import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import {PRICING_COMMON_CONFIG } from "./CONSTANTS";
 
+/* ----------------- Authorization ------------------- */
+
+var accessToken = localStorage.getItem("access_token");
+const headersdata = {
+  'content-type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': accessToken != undefined ? accessToken : ''
+  // 'Authorization': url.Auth_Token
+}
+
+/* ------------------------------------------------------------ */
+
 
 //To get portfolio common config -"item-type","customer-segment","price-method"
 // value of endpath= "item-type","customer-segment","price-method"
@@ -11,7 +23,7 @@ export const getPortfolioCommonConfig = (endpath) => {
     return new Promise((resolve, reject) => {
       try {
         axios
-          .get(PRICING_COMMON_CONFIG+endpath)
+          .get(PRICING_COMMON_CONFIG+endpath, { headers: headersdata })
           .then((res) => {
             console.log("getPortfolioCommonConfig > axios res=", res);
             resolve(res.data);

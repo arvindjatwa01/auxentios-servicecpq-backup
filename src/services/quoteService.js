@@ -2,12 +2,25 @@ import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import { CREATE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID, CREATE_CUSTOM_PRICE, CUSTOM_PORTFOLIO_SEARCH_QUERY, QUOTE_CREATION, SEARCH_QUOTE_URL } from "./CONSTANTS";
 
+/* ----------------- Authorization ------------------- */
+
+var accessToken = localStorage.getItem("access_token");
+const headersdata = {
+  'content-type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': accessToken != undefined ? accessToken : ''
+  // 'Authorization': url.Auth_Token
+}
+
+/* ------------------------------------------------------------ */
+
+
 export const quoteCreation = (payLoad) => {
     console.log("QuoteService > quoteCreation called...");
     return new Promise((resolve, reject) => {
         try {
             axios
-                .post(QUOTE_CREATION(), payLoad)
+                .post(QUOTE_CREATION(), payLoad, { headers: headersdata })
                 .then((res) => {
                     console.log("quoteCreation > axios res=", res);
                     resolve(res);
@@ -28,7 +41,7 @@ export const getQuoteMasterData = (id) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .get(`${QUOTE_CREATION()}/${id}`)
+                .get(`${QUOTE_CREATION()}/${id}`, { headers: headersdata })
                 .then((res) => {
                     console.log("getQuoteMasterData > axios res=", res);
                     resolve(res);
@@ -52,7 +65,7 @@ export const getSearchQuoteData = (searchStr) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .get(SEARCH_QUOTE_URL + searchStr)
+                .get(SEARCH_QUOTE_URL + searchStr, { headers: headersdata })
                 .then((res) => {
                     console.log("getSearchQuoteData > axios res=", res);
                     resolve(res.data);
@@ -73,7 +86,7 @@ export const updateMasterQuoteData = (id, payLoad) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .put(`${QUOTE_CREATION()}/${id}`, payLoad)
+                .put(`${QUOTE_CREATION()}/${id}`, payLoad, { headers: headersdata })
                 .then((res) => {
                     console.log("updateMasterQuoteData > axios res=", res);
                     resolve(res);
@@ -94,7 +107,7 @@ export const deleteMasterQuote = (id) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .delete(`${QUOTE_CREATION()}/${id}`)
+                .delete(`${QUOTE_CREATION()}/${id}`, { headers: headersdata })
                 .then((res) => {
                     console.log("deleteMasterQuote > axios res=", res);
                     resolve(res);

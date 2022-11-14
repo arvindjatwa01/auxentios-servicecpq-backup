@@ -2,13 +2,25 @@ import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
 import { GET_SEARCH_COVERAGE,GET_SEARCH_FAMILY_COVERAGE } from "./CONSTANTS";
 
+/* ----------------- Authorization ------------------- */
+
+var accessToken = localStorage.getItem("access_token");
+const headersdata = {
+  'content-type': 'application/json',
+  'Accept': 'application/json',
+  'Authorization': accessToken != undefined ? accessToken : ''
+  // 'Authorization': url.Auth_Token
+}
+
+/* ------------------------------------------------------------ */
+
 
 export const getSearchQueryCoverage = (searchStr) => {
     console.log("Query coverageService > getSearchQueryCoverage called...");
     return new Promise((resolve, reject) => {
       try {
         axios
-          .get(GET_SEARCH_COVERAGE + searchStr)
+          .get(GET_SEARCH_COVERAGE + searchStr, { headers: headersdata })
           .then((res) => {
             console.log("getSearchQueryCoverage > axios res=", res);
             resolve(res.data);
@@ -29,7 +41,7 @@ export const getSearchCoverageForFamily = (family,familyValue) => {
       console.log("GET_SEARCH_FAMILY_COVERAGE",`${GET_SEARCH_FAMILY_COVERAGE}${family}?${family}=${familyValue}`)
       try {
         axios
-          .get(GET_SEARCH_FAMILY_COVERAGE+"?"+family+"="+familyValue)
+          .get(GET_SEARCH_FAMILY_COVERAGE+"?"+family+"="+familyValue, { headers: headersdata })
           .then((res) => {
             console.log("getSearchCoverageForFamily > axios res=", res);
             resolve(res.data);

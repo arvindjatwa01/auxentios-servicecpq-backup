@@ -10,7 +10,7 @@ function* handleLogin(payload: LoginPayload) {
     const res = yield call(HttpService, 'post', USER_SERVICE_SIGNIN_URL(), payload.payload);
     console.log("login Response is : ", res);
     //localStorage.setItem('access_token', 'fake_token');
-    localStorage.setItem('access_token', 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYW5pc2hAdGVzdC5jb20iLCJzY29wZXMiOiJURU5BTlRfQURNSU4iLCJpYXQiOjE2NTc1Njg0NjYsImV4cCI6MTY1NzU4NjQ2Nn0.yNbrVCJJNmYubD4YkowfLtmOiDbfeE3JeKNpU5Jp0nc');
+    // localStorage.setItem('access_token', 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYW5pc2hAdGVzdC5jb20iLCJzY29wZXMiOiJURU5BTlRfQURNSU4iLCJpYXQiOjE2NTc1Njg0NjYsImV4cCI6MTY1NzU4NjQ2Nn0.yNbrVCJJNmYubD4YkowfLtmOiDbfeE3JeKNpU5Jp0nc');
     // yield put(
     //   authActions.loginSuccess({
     //     // Dispatch action
@@ -31,6 +31,7 @@ function* handleLogin(payload: LoginPayload) {
       localStorage.setItem('user_userId', res.data.userId);
       localStorage.setItem('user_userEmail', res.data.userEmail);
       localStorage.setItem('user_accessToken', res.data.accessToken);
+      localStorage.setItem('access_token', res.data.accessToken);
       localStorage.setItem('user_roles', res.data.roles);
       localStorage.setItem('user_planId', res.data.planId);
       localStorage.setItem('user_logIn_Status', true);
