@@ -232,6 +232,7 @@ function WithoutRepairOption01(props) {
           ...operationData,
           operationNumber: result.operationNumber,
           description: result.description,
+          id: result.id,
           header:
             "Operation " +
             result.operationNumber +

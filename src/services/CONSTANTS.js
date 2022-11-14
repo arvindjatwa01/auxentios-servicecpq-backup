@@ -108,6 +108,8 @@ export const GET_CONSUMABLE_TYPE = () =>
   REPAIR_BUILDER_URI + "common-config/dropdown/consumable-type";
 export const GET_MISC_TYPE = () =>
   REPAIR_BUILDER_URI + "common-config/dropdown/misc-type";
+export const PRICING_METHODS = () => PRICING_URI + "common-config/price-method";
+
 
 export const CREATE_REPAIR_BUILDER = () => REPAIR_BUILDER_URI + "builder";
 export const ADD_REPAIR_BUILDER_PARTLIST = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/partlist`;
@@ -128,7 +130,7 @@ export const FETCH_PARTS_OF_PARTLIST = (partListId, query) => REPAIR_BUILDER_URI
 export const BUILDER_SEGMENT = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/segment`;
 export const SEGMENT_OPERATION = (segmentId) => REPAIR_BUILDER_URI + `segment/${segmentId}/operation`;
 export const OPERATION_SERVICE = (operationId) => REPAIR_BUILDER_URI + `operation/${operationId}/service-estimate`;
-export const OPERATION_SERVICE_EST_DETAILS = (operationId) => REPAIR_BUILDER_URI + `operation/${operationId}/service-estimate-details`;
+export const OPERATION_SERVICE_EST_DETAILS = (operationId) => REPAIR_BUILDER_URI + `operation/${operationId}/service-estimate`;
 
 export const LABOUR_TO_SERVICE = (serviceId) => REPAIR_BUILDER_URI + `service-estimate/${serviceId}/labour`;
 export const LABOUR_ITEM_TO_LABOUR = (labourId) => REPAIR_BUILDER_URI + `labour/${labourId}/labour-item`;
@@ -142,6 +144,7 @@ export const SEARCH_CUSTOMER = (query) => DATA_SERVICE_URI + `customer/search?se
 export const SEARCH_MACHINE = (query) => DATA_SERVICE_URI + `equipment/search?search=${query}`;
 export const SEARCH_SPAREPART = (query) => DATA_SERVICE_URI + `sparepart/search?search=${query}`;
 export const SEARCH_COMPONENT_CODE = (query) => DATA_SERVICE_URI + `component-code/search?search=${query}`;
+export const SEARCH_VENDOR = (query) => DATA_SERVICE_URI + `vendor/search?search=${query}`;
 export const SEARCH_JOB_CODE = (query) => DATA_SERVICE_URI + `job-code/search?search=${query}`;
 export const SEARCH_Builder = (query) => REPAIR_BUILDER_URI + `builder/search?search=${query}`;
 

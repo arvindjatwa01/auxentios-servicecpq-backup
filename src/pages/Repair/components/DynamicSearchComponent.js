@@ -114,7 +114,7 @@ const DynamicSearchComponent = (props) => {
                       { label: "And", value: "AND", id: i },
                       { label: "Or", value: "OR", id: i },
                     ]}
-                    placeholder="Select Op"
+                    placeholder="And/OR"
                     onChange={(e) => handleOperator(e, i)}
                     // value={querySearchOperator[i]}
                     value={obj.selectOperator}
