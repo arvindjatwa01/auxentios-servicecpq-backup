@@ -29,12 +29,12 @@ import {
   MISC_TO_SERVICE,
   OPERATION_SERVICE_EST_DETAILS,
 } from "./CONSTANTS";
-const accessToken = Cookies.get("accessToken");
+const accessToken = localStorage.getItem("access_token");
 
 const config = {
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYW5pc2hAdGVzdC5jb20iLCJzY29wZXMiOiJURU5BTlRfQURNSU4iLCJpYXQiOjE2NTc1Njg0NjYsImV4cCI6MTY1NzU4NjQ2Nn0.yNbrVCJJNmYubD4YkowfLtmOiDbfeE3JeKNpU5Jp0nc`,
+    Authorization: `Bearer ${accessToken}`,
   },
   xsrfCookieName: "XSRF-TOKEN",
   xsrfHeaderName: "X-XSRF-TOKEN",
@@ -187,7 +187,7 @@ export const AddServiceHeader = (operationId, data) => {
           }
         })
         .catch((err) => {
-          console.log("AddLaborToService > axios err=", err);
+          console.log("AddServiceHeader > axios err=", err);
           reject("Error in AddServiceHeader axios!");
         });
     } catch (error) {

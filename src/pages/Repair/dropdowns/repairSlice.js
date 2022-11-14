@@ -10,7 +10,8 @@ const initialState: DropdownState = {
   chargeCodeList: [],
   serviceTypeList: [],
   laborTypeList: [],
-  laborCodeList: []
+  laborCodeList: [],
+  pricingMethodList: []
 };
 
 const repairSlice = createSlice({
@@ -27,7 +28,7 @@ const repairSlice = createSlice({
       state.laborCodeList = action.payload.laborCodes.data;
       state.serviceTypeList = action.payload.serviceTypes.data;
       state.laborTypeList = action.payload.laborTypes.data;
-
+      state.pricingMethodList = action.payload.pricingMethods.data
     },
     
     fetchDropdownsFailed(state, action: PayloadAction<string>) {
@@ -46,6 +47,7 @@ export const selectChargeCodeList = (state: RootState) => state.dropdown.chargeC
 export const selectLaborCodeList = (state: RootState) => state.dropdown.laborCodeList;
 export const selectServiceTypeList = (state: RootState) => state.dropdown.serviceTypeList;
 export const selectLaborTypeList = (state: RootState) => state.dropdown.laborTypeList;
+export const selectPricingMethodList = (state: RootState) => state.dropdown.pricingMethodList;
 
 
 export const selectDropdownOption = (option)=>createSelector(option, (dropdownList) =>
