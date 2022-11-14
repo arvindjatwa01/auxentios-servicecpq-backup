@@ -3113,7 +3113,7 @@ export function CreateCustomPortfolio() {
 
     }
 
-    console.log("tempBundleService3 Newwwww------------ : ", tempBundleService3);
+    // console.log("tempBundleService3 Newwwww------------ : ", tempBundleService3);
 
     const columns = [
         {
@@ -6694,6 +6694,7 @@ export function CreateCustomPortfolio() {
                                                     name="preparedBy"
                                                     value={administrative.preparedBy}
                                                     onChange={handleAdministrativreChange}
+                                                    placeholder="Required"
                                                 />
                                             </div>
                                         </div>
@@ -6790,7 +6791,7 @@ export function CreateCustomPortfolio() {
                           onChange={handleAdministrativreChange}
                         /> */}
                                                 <div className="d-flex align-items-center date-box w-100">
-                                                    <div className="form-group w-100">
+                                                    <div className="form-group w-100 m-0">
                                                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                                             <DatePicker
                                                                 variant="inline"
@@ -7507,7 +7508,7 @@ export function CreateCustomPortfolio() {
                                 <div className="d-flex align-items-center w-100">
                                     <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
                                         <h5 className="mb-0 text-black">
-                                            <span>Portfolio Items {bundleItems.length}</span>
+                                            <span>Portfolio Items</span>
                                         </h5>
                                     </div>
                                 </div>

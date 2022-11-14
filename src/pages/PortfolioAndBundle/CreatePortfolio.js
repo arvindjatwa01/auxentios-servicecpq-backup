@@ -111,6 +111,7 @@ import {
   deleteItem,
   getComponentCodeSuggetions,
   itemPriceDataId,
+  quoteCreation,
   updateItemPriceData
 } from "../../services/index";
 import {
@@ -193,6 +194,8 @@ const customStyles = {
 export function CreatePortfolio() {
 
   const [disable, setDisable] = useState(true);
+  const [quoteDataShow, setQuoteDataShow] = useState(false)
+
   const [makeKeyValue, setMakeKeyValue] = useState([]);
   const [modelKeyValue, setModelKeyValue] = useState([]);
   const [prefixKeyValue, setPrefixKeyValue] = useState([]);
@@ -286,6 +289,13 @@ export function CreatePortfolio() {
   const [labourRequired, setlabourRequired] = useState(true);
   const [serviceRequired, setServiceRequired] = useState(true);
   const [miscRequired, setMiscRequired] = useState(true);
+
+  //  Set Quotes Data State 
+  const [quoteData, setQuoteData] = useState({
+    contact: "",
+    description: "",
+    reference: "",
+  });
 
   const [coverageData, setCoverageData] = useState({
     make: "",
@@ -1440,6 +1450,66 @@ export function CreatePortfolio() {
     }
   };
 
+  //  Convert To :- Quotes function onClick Create
+
+
+  const handleCreateQuote = async () => {
+    // alert("hello");
+    let quoteObj = {
+      quoteType: "SOLUTION",
+      customerId: 0,
+      equipmentId: 0,
+      netValue: 0,
+      currency: "string",
+      grossValue: 0,
+      discount: 0,
+      margin: 0,
+      tax: 0,
+      status: "string",
+      validFrom: "2022-11-14",
+      validTo: "2022-11-14",
+      quantity: 0,
+      // customPortfolioModels: portfolioId ? [
+      //   { customPortfolioId: portfolioId }
+      // ] : [],
+      customPortfolioModels: [],
+      quoteBodyModel: {
+        quoteBodyId: 0,
+        quoteBodyDescription: "string",
+        payerId: 0,
+        shortText: "string",
+        longText: "string",
+        terms: "string",
+        conditions: "string",
+        contact: "string",
+        serialNumber: "string",
+        statusNumber: "string",
+        billingType: "PAY_SUPPORT",
+        promisedDeliveryDate: "2022-11-14",
+        salesOpportunity: "string",
+        componentSerialNumber: "string",
+        versionNumber: "string",
+        serviceRecipientModel: {
+          serviceRecipientId: 0,
+          serviceRecipientName: "string",
+          serviceRecipientemail: "string",
+          serviceRecipientaddress: "string"
+        }
+      }
+    }
+
+    // console.log("Quote Object is : ", quoteObj)
+
+    const quoteRes = await quoteCreation(quoteObj);
+    console.log("quoteRes : ", quoteRes);
+
+    // console.log("quote Response data is : ", quoteRes.data)
+    setQuoteData({ ...quoteData, contact: quoteRes.data.quoteMasterId })
+
+    // console.log("quoteData : ", quoteData);
+    setQuoteDataShow(true);
+  }
+
   const handleDropdownChange = (type, e) => {
     if (type == ENUM.STRATEGY_TASK) {
       setStrategyData({
@@ -1732,9 +1802,10 @@ export function CreatePortfolio() {
             administrative.revisedBy != undefined &&
             !validator.emailValidation(administrative.revisedBy)) ||
           (administrative.branch == "" ||
-            administrative.branch == undefined) ||
-          (administrative.offerValidity == "" ||
-            administrative.offerValidity == undefined)
+            administrative.branch == undefined) 
+          //   ||
+          // (administrative.offerValidity == "" ||
+          //   administrative.offerValidity == undefined)
         ) {
           throw "Please fill manditory fields with valid data";
         }
@@ -3556,7 +3627,7 @@ export function CreatePortfolio() {
       sortable: true,
       format: (row) => row.itemHeaderModel.strategy,
     },
-    
+
     // --------------- New (Add on Update Item Fileds) Start ------------------- //
     {
       name: (
@@ -4542,7 +4613,31 @@ export function CreatePortfolio() {
               {bundleAndService.itemBodyModel.totalPrice}
             </div>
           </div>
-          {bundleItems.length > 0 && (<div
+          <div
+            id="cell-10-undefined"
+            data-column-id="10"
+            role="gridcell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            data-tag="allowRowEvents"
+          >
+            <div data-tag="allowRowEvents">
+              {bundleAndService.itemBodyModel.totalPrice}
+            </div>
+          </div>
+          <div
+            id="cell-10-undefined"
+            data-column-id="10"
+            role="gridcell"
+            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+            data-tag="allowRowEvents"
+          >
+            <div data-tag="allowRowEvents">
+              {/* {bundleAndService.itemBodyModel.totalPrice} */}
+            </div>
+          </div>
+
+          {/* {bundleItems.length > 0 && (
+          <div
             id="cell-11-undefined"
             data-column-id="11"
             role="gridcell"
@@ -4599,7 +4694,7 @@ export function CreatePortfolio() {
                 </Link>
               </Tooltip>
             </div>
-          </div>)}
+          </div>)} */}
 
         </div>
       ))}
@@ -4904,8 +4999,18 @@ export function CreatePortfolio() {
   };
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [open3, setOpen3] = React.useState(false);
+
+  // Function for done Quote Convert to 
   const handleCreate = () => {
-    history.push("/quoteTemplate");
+    // console.log("quote Data 1 : ", quoteData)
+    setQuoteDataShow(false)
+    setQuoteData({
+      contact: "",
+      description: "",
+      reference: ""
+    });
+    // console.log("quote Data 2 : ", quoteData)
+    // history.push("/quoteTemplate");
   };
   const history = useHistory();
 
@@ -5932,6 +6037,7 @@ export function CreatePortfolio() {
                           name="preparedBy"
                           value={administrative.preparedBy}
                           onChange={handleAdministrativreChange}
+                          placeholder="Required"
                         />
                       </div>
                     </div>
@@ -6028,7 +6134,7 @@ export function CreatePortfolio() {
                           onChange={handleAdministrativreChange}
                         /> */}
                         <div className="d-flex align-items-center date-box w-100">
-                          <div className="form-group w-100">
+                          <div className="form-group w-100 m-0">
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                               <DatePicker
                                 variant="inline"
@@ -6063,6 +6169,7 @@ export function CreatePortfolio() {
                           name="branch"
                           value={administrative.branch}
                           onChange={handleAdministrativreChange}
+                          placeholder="Required"
                         />
                       </div>
                     </div>
@@ -10605,51 +10712,56 @@ export function CreatePortfolio() {
                   </div>
                 </div>
               </div>
+              {quoteDataShow ? <>
+                <div className="row">
+                  <div class="col-md-12 col-sm-12">
+                    <div class="form-group mt-3">
+                      <p class="font-size-12 font-weight-500 mb-2">QUOTE TYPE </p>
+                      <h6 class="font-weight-500">
+                        Repair Quote with Spare Parts
+                      </h6>
+                    </div>
+                  </div>
+                  <div class="col-md-12 col-sm-12">
+                    <div class="form-group mt-3">
+                      <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
+                      <h6 class="font-weight-500">SB12345</h6>
+                    </div>
+                  </div>
+                  <div class="col-md-12 col-sm-12">
+                    <div class="form-group mt-3">
+                      <p class="font-size-12 font-weight-500 mb-2">
+                        QUOTE DESCRIPTION
+                      </p>
+                      <h6 class="font-weight-500">Holder text</h6>
+                    </div>
+                  </div>
+                  <div class="col-md-12 col-sm-12">
+                    <div class="form-group mt-3">
+                      <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
+                      <h6 class="font-weight-500">Holder text</h6>
+                    </div>
+                  </div>
+                </div>
+              </> : <></>}
 
-              <div className="row">
-                <div class="col-md-12 col-sm-12">
-                  <div class="form-group mt-3">
-                    <p class="font-size-12 font-weight-500 mb-2">QUOTE TYPE </p>
-                    <h6 class="font-weight-500">
-                      Repair Quote with Spare Parts
-                    </h6>
-                  </div>
-                </div>
-                <div class="col-md-12 col-sm-12">
-                  <div class="form-group mt-3">
-                    <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
-                    <h6 class="font-weight-500">SB12345</h6>
-                  </div>
-                </div>
-                <div class="col-md-12 col-sm-12">
-                  <div class="form-group mt-3">
-                    <p class="font-size-12 font-weight-500 mb-2">
-                      QUOTE DESCRIPTION
-                    </p>
-                    <h6 class="font-weight-500">Holder text</h6>
-                  </div>
-                </div>
-                <div class="col-md-12 col-sm-12">
-                  <div class="form-group mt-3">
-                    <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
-                    <h6 class="font-weight-500">Holder text</h6>
-                  </div>
-                </div>
-              </div>
             </div>
             <div class="modal-footer" style={{ display: "unset" }}>
-              <div className="mb-2">
-                <a
-                  href="#"
-                  onClick={() => handleCreate()}
-                  data-dismiss="modal"
-                  className="btn bg-primary d-block text-white"
-                >
-                  Done
-                </a>
-              </div>
+              {quoteDataShow ? <>
+                <div className="mb-2">
+                  <a
+                    href="#"
+                    onClick={() => handleCreate()}
+                    data-dismiss="modal"
+                    className="btn bg-primary d-block text-white"
+                  >
+                    Done
+                  </a>
+                </div>
+              </> : <></>}
+
               <div>
-                <button class="btn  btn-primary">Create</button>
+                <button class="btn  btn-primary" onClick={() => handleCreateQuote()}>Create</button>
                 <button
                   type="button"
                   class="btn pull-right border"
