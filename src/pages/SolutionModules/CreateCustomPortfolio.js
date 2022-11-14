@@ -1775,9 +1775,10 @@ export function CreateCustomPortfolio() {
                         administrative.revisedBy != undefined &&
                         !validator.emailValidation(administrative.revisedBy)) ||
                     (administrative.branch == "" ||
-                        administrative.branch == undefined) ||
-                    (administrative.offerValidity == "" ||
-                        administrative.offerValidity == undefined)
+                        administrative.branch == undefined) 
+                    //     ||
+                    // (administrative.offerValidity == "" ||
+                    //     administrative.offerValidity == undefined)
                 ) {
                     throw "Please fill manditory fields with valid data";
                 }
