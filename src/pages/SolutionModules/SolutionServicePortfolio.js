@@ -751,7 +751,12 @@ export function SolutionServicePortfolio(props) {
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SMU</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input
+                                                    type="email"
+                                                    class="form-control border-radius-10 text-primary"
+                                                    id="exampleInputEmail1"
+                                                    aria-describedby="emailHelp"
+                                                    placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">

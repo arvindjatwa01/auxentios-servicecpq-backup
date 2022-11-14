@@ -5002,7 +5002,7 @@ export function CreatePortfolio() {
 
   // Function for done Quote Convert to 
   const handleCreate = () => {
-    // console.log("quote Data 1 : ", quoteData)
+    console.log("quote Data 1 : ", quoteData)
     setQuoteDataShow(false)
     setQuoteData({
       contact: "",

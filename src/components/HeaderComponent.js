@@ -866,7 +866,7 @@ export function HeaderComponent(props) {
                             />
                           </svg>
                         </span>
-                        {/* <h6 className="mt-2">Solution builder</h6> */}
+                        {/* <h6 className="mt-2">Solution builder Data</h6> */}
                         <h6 className="mt-2">Solutions</h6>
                       </div>
                       </div>

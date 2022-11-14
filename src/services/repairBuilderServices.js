@@ -40,7 +40,7 @@ import {
 //   xsrfHeaderName: "X-XSRF-TOKEN",
 // };
 
-/* ----------------- Authorization ------------------- */
+/* ----------------- Authorization by LocalStorage Data ------------------- */
 
 var accessToken = localStorage.getItem("access_token");
 const headersdata = {
