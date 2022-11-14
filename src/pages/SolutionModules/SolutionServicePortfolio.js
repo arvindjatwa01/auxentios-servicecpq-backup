@@ -84,6 +84,10 @@ export function SolutionServicePortfolio(props) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open2 = Boolean(anchorEl);
 
+
+    const [searchModelResults, setSearchModelResults] = useState([]);
+    const [searchSerialResults, setSearchSerialResults] = useState([]);
+
     const [severity, setSeverity] = useState("");
     const [openSnack, setOpenSnack] = useState(false);
     const [snackMessage, setSnackMessage] = useState("");
@@ -98,6 +102,15 @@ export function SolutionServicePortfolio(props) {
         contactName: "",
         contactPhone: "",
         customerGroup: "",
+    });
+
+    const [machineData, setMachineData] = useState({
+        model: "",
+        serialNo: "",
+        smu: "",
+        fleetNo: "",
+        registrationNo: "",
+        chasisNo: "",
     });
 
     const handleClick = (event) => {
@@ -331,6 +344,93 @@ export function SolutionServicePortfolio(props) {
         setSearchCustResults([]);
     };
 
+    //Individual customer field value change
+    const handleCustomerDataChange = (e) => {
+        var value = e.target.value;
+        var name = e.target.name;
+        // console.log("customerData conatct value : ",value)
+        setCustomerData({
+            ...customerData,
+            [name]: value,
+        });
+    };
+
+    // Machine search based on model and serial number
+    const handleMachineSearch = async (searchMachinefieldName, searchText) => {
+        // console.log("cleared the result", searchText);
+        let searchQueryMachine = "";
+        setSearchModelResults([]);
+        setSearchSerialResults([]);
+
+        if (searchMachinefieldName === "model") {
+            machineData.model = searchText;
+            searchQueryMachine = searchText
+                ? searchMachinefieldName + "~" + searchText
+                : "";
+        } else if (searchMachinefieldName === "serialNo") {
+            machineData.serialNo = searchText;
+            searchQueryMachine = searchText
+                ? machineData.model
+                    ? `model:${machineData.model} AND equipmentNumber~` + searchText
+                    : "equipmentNumber~" + searchText
+                : "";
+        }
+        // console.log("search query", searchQueryMachine);
+        if (searchQueryMachine) {
+            await machineSearch(searchQueryMachine)
+                .then((result) => {
+                    if (result) {
+                        if (searchMachinefieldName === "model") {
+                            setSearchModelResults(result);
+                        } else if (searchMachinefieldName === "serialNo") {
+                            setSearchSerialResults(result);
+                        }
+                    }
+                })
+                .catch((e) => {
+                    handleSnack(
+                        "error",
+                        true,
+                        "Error occurred while searching the machine!"
+                    );
+                });
+        } else {
+            searchMachinefieldName === "model"
+                ? setSearchModelResults([])
+                : setSearchSerialResults([]);
+        }
+    };
+
+    // Select machine from the search result
+    const handleModelSelect = (type, currentItem) => {
+        if (type === "model") {
+            setMachineData({
+                ...machineData,
+                model: currentItem.model,
+            });
+            setSearchModelResults([]);
+        } else if (type === "equipmentNumber") {
+            setMachineData({
+                ...machineData,
+                model: currentItem.model,
+                fleetNo: currentItem.stockNumber,
+                serialNo: currentItem.equipmentNumber,
+                smu: currentItem.sensorId,
+            });
+            setSearchSerialResults([]);
+        }
+    };
+
+    //Individual machine field value change
+    const handleMachineDataChange = (e) => {
+        var value = e.target.value;
+        var name = e.target.name;
+        setMachineData({
+            ...machineData,
+            [name]: value,
+        });
+    };
+
     const handleDeletQuerySearch = () => {
         setQuerySearchSelector([]);
         setCount(0);
@@ -541,12 +641,14 @@ export function SolutionServicePortfolio(props) {
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CONTACT PHONE</label>
                                             <div class="form-group w-100">
                                                 <input
-                                                    value={customerData.contactPhone}
                                                     type="email"
                                                     class="form-control border-radius-10 text-primary"
                                                     id="exampleInputEmail1"
                                                     aria-describedby="emailHelp"
-                                                    disabled={true}
+                                                    name="contactPhone"
+                                                    onChange={handleCustomerDataChange}
+                                                    value={customerData.contactPhone}
+                                                    // disabled={true}
                                                     placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
@@ -616,19 +718,45 @@ export function SolutionServicePortfolio(props) {
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">MODEL</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input
+                                                    type="email"
+                                                    class="form-control border-radius-10 text-primary"
+                                                    id="exampleInputEmail1"
+                                                    aria-describedby="emailHelp"
+                                                    value={machineData.serialNo}
+                                                    disabled={true}
+                                                    placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SERIAL #</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                {/* <input
+                                                    type="email"
+                                                    class="form-control border-radius-10 text-primary"
+                                                    id="exampleInputEmail1"
+                                                    aria-describedby="emailHelp"
+                                                    placeholder="Placeholder (Optional)" /> */}
+                                                <SearchBox
+                                                    value={machineData.serialNo}
+                                                    onChange={(e) =>
+                                                        handleMachineSearch("serialNo", e.target.value)
+                                                    }
+                                                    type="equipmentNumber"
+                                                    result={searchSerialResults}
+                                                    onSelect={handleModelSelect}
+                                                />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">
                                             <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">SMU</label>
                                             <div class="form-group w-100">
-                                                <input type="email" class="form-control border-radius-10 text-primary" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" />
+                                                <input
+                                                    type="email"
+                                                    class="form-control border-radius-10 text-primary"
+                                                    id="exampleInputEmail1"
+                                                    aria-describedby="emailHelp"
+                                                    placeholder="Placeholder (Optional)" />
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-4">

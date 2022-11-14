@@ -844,7 +844,8 @@ export function HeaderComponent(props) {
                             />
                           </svg>
                         </span>
-                        <h6 className="mt-2">Portfolio and bundle</h6>
+                        {/* <h6 className="mt-2">Portfolio and bundle</h6> */}
+                        <h6 className="mt-2">Portfolio, Bundles & Services</h6>
                       </div>
                       </div>
                       <div className="col-md-3 col-sm-3 mt-4">
@@ -865,7 +866,8 @@ export function HeaderComponent(props) {
                             />
                           </svg>
                         </span>
-                        <h6 className="mt-2">Solution builder</h6>
+                        {/* <h6 className="mt-2">Solution builder Data</h6> */}
+                        <h6 className="mt-2">Solutions</h6>
                       </div>
                       </div>
                       <div className="col-md-3 col-sm-3 mt-4">
