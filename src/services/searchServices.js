@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
-import { SEARCH_COMPONENT_CODE, SEARCH_CUSTOMER, SEARCH_JOB_CODE, SEARCH_MACHINE, SEARCH_SPAREPART } from "./CONSTANTS";
+import { SEARCH_COMPONENT_CODE, SEARCH_CUSTOMER, SEARCH_JOB_CODE, SEARCH_MACHINE, SEARCH_SPAREPART, SEARCH_VENDOR } from "./CONSTANTS";
 
 /* ----------------- Authorization ------------------- */
 
@@ -139,3 +139,27 @@ export const customerSearch =  (searchStr) => {
     });
   };
 
+
+/**
+ * Function to get suggetions for vendors
+ */
+ export const getVendors = (query) => {
+  console.log("SearchService > getVendors called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(SEARCH_VENDOR(query), { headers: headersdata })
+        .then((res) => {
+          console.log("getVendors > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("getVendors > axios err=", err);
+          reject("Error in getVendors axios!");
+        });
+    } catch (error) {
+      console.error("in SearchService > getVendors, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
