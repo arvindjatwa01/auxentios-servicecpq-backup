@@ -27,9 +27,10 @@ import {
   AddServiceHeader,
   FetchServiceHeader,
   AddLaborToService,
+  FetchLabourforService,
   AddConsumableToService,
   AddExtWorkToService,
-  AddMiscToService
+  AddMiscToService,
 } from "services/repairBuilderServices";
 import Moment from "react-moment";
 import { useAppSelector } from "app/hooks";
@@ -92,15 +93,15 @@ function RepairServiceEstimate(props) {
     serviceType: "",
     unitOfMeasure: "",
     estimatedHours: 0,
-    unitPrice:0.0,
-    extendedPrice:0.0,
+    unitPrice: 0.0,
+    extendedPrice: 0.0,
     totalPrice: 0.0,
     currency: "",
     comments: "",
     travelIncluded: true,
     travelCharge: 0.0,
-    inspectionIncluded :true,
-    inspectionCharge: 0.0
+    inspectionIncluded: true,
+    inspectionCharge: 0.0,
   });
   const [consumableData, setConsumableData] = useState({
     jobCode: "",
@@ -176,21 +177,14 @@ function RepairServiceEstimate(props) {
   );
 
   const [selectedOption, setSelectedOption] = useState(null);
-  const [value, setValue] = React.useState("1");
+  const [value, setValue] = useState("labor");
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(repairActions.fetchDropdowns());
-    console.log(chargeCodeList);
     if (activeElement.oId) {
       setServiceEstHeaderLoading(true);
       FetchServiceHeader(activeElement.oId)
         .then((result) => {
-          console.log(
-            result,
-            priceMethodOptions.find(
-              (element) => element.value === result.priceMethod
-            )
-          );
           setServiceEstimateData({
             ...serviceEstimateData,
             reference: result.reference,
@@ -207,11 +201,34 @@ function RepairServiceEstimate(props) {
             segmentTitle: result.segmentTitle,
           });
           setServiceHeaderViewOnly(result.id ? true : false);
-          setLabourData({
-            ...labourData,
-            jobCode: result.jobCode,
-            jobCodeDescription: result.jobCodeDescription,
-          });
+          FetchLabourforService(result.id).then(resultLabour => {
+            if(resultLabour){
+              console.log( "in if", laborCodeList.find(
+                (element) => element.value === resultLabour.laborCode
+              ));
+              setLabourData({
+                ...resultLabour,
+                id: resultLabour.id,
+                pricingMethod: priceMethodOptions.find(
+                  (element) => element.value === resultLabour.pricingMethod
+                ),
+                laborCode: laborCodeList.find(
+                  (element) => element.value === resultLabour.laborCode
+                ),
+                payer: options.find(
+                  (element) => element.value === resultLabour.payer
+                ),
+              });
+              setViewOnlyTab({...viewOnlyTab, laborViewOnly: true});
+            } 
+          }).catch(e => {
+            setLabourData({
+              ...labourData,
+              jobCode: result.jobCode,
+              jobCodeDescription: result.jobOperation,
+            });
+          })
+          
           setConsumableData({
             ...consumableData,
             jobCode: result.jobCode,
@@ -315,8 +332,8 @@ function RepairServiceEstimate(props) {
     let data = {
       ...labourData,
       pricingMethod: labourData.pricingMethod?.value,
-      laborCode: "WITH_LABOUR",
-      payer: labourData.payer?.value
+      laborCode: labourData.laborCode?.value,
+      payer: labourData.payer?.value,
     };
     AddLaborToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -326,11 +343,17 @@ function RepairServiceEstimate(props) {
           ...result,
           id: result.id,
           pricingMethod: priceMethodOptions.find(
-            (element) => element.value === result.priceMethod
+            (element) => element.value === result.pricingMethod
+          ),
+          laborCode: laborCodeList.find(
+            (element) => element.value === result.laborCode
+          ),
+          payer: options.find(
+            (element) => element.value === result.payer
           ),
         });
         handleSnack("success", "Labour details updated!");
-        setViewOnlyTab({...viewOnlyTab, laborViewOnly: true});
+        setViewOnlyTab({ ...viewOnlyTab, laborViewOnly: true });
       })
       .catch((err) => {
         handleSnack(
@@ -1189,13 +1212,13 @@ function RepairServiceEstimate(props) {
               <TabContext value={value}>
                 <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                   <TabList className="custom-tabs-div" onChange={handleChange}>
-                    <Tab label="Labor" value="1" />
-                    <Tab label="Consumables" value="2" />
-                    <Tab label="External Work" value="3" />
-                    <Tab label="Other misc." value="4" />
+                    <Tab label="Labor" value="labor" />
+                    <Tab label="Consumables" value="consumables" />
+                    <Tab label="External Work" value="extwork" />
+                    <Tab label="Other misc." value="othrMisc" />
                   </TabList>
                 </Box>
-                <TabPanel value="1">
+                <TabPanel value="labor">
                   <div className="col-md-12 col-sm-12">
                     <div className=" d-flex justify-content-between align-items-center">
                       <div>
@@ -1216,104 +1239,105 @@ function RepairServiceEstimate(props) {
                   </div>
                   {flagRequired.flagLaborReq && (
                     <React.Fragment>
-                      <div className="row mt-2 input-fields">
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              JOB CODE
-                            </label>
-                            <input
-                              type="text"
-                              disabled
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
-                              placeholder="Required"
-                              value={labourData.jobCode}
-                            />
+                      {!viewOnlyTab.laborViewOnly ? (
+                        <div className="row mt-2 input-fields">
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                JOB CODE
+                              </label>
+                              <input
+                                type="text"
+                                disabled
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Required"
+                                value={labourData.jobCode}
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              JOB CODE DESCRIPTION
-                            </label>
-                            <input
-                              type="text"
-                              disabled
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
-                              placeholder="Required"
-                              value={labourData.jobCodeDescription}
-                            />
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                JOB CODE DESCRIPTION
+                              </label>
+                              <input
+                                type="text"
+                                disabled
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Required"
+                                value={labourData.jobCodeDescription}
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group  mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              LABOR CODE
-                            </label>
-                            <Select
-                              defaultValue={selectedOption}
-                              onChange={(e) =>
-                                setLabourData({ ...labourData, laborCode: e })
-                              }
-                              options={laborCodeList}
-                              placeholder="Required"
-                              value={labourData.laborCode}
-                            />
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group  mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                LABOR CODE
+                              </label>
+                              <Select
+                                defaultValue={selectedOption}
+                                onChange={(e) =>
+                                  setLabourData({ ...labourData, laborCode: e })
+                                }
+                                options={laborCodeList}
+                                placeholder="Required"
+                                value={labourData.laborCode}
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group  mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              PRICE METHOD
-                            </label>
-                            <Select
-                              defaultValue={selectedOption}
-                              onChange={(e) =>
-                                setLabourData({
-                                  ...labourData,
-                                  pricingMethod: e,
-                                })
-                              }
-                              options={priceMethodOptions}
-                              placeholder="Required"
-                              value={labourData.pricingMethod}
-                            />
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group  mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                PRICE METHOD
+                              </label>
+                              <Select
+                                defaultValue={selectedOption}
+                                onChange={(e) =>
+                                  setLabourData({
+                                    ...labourData,
+                                    pricingMethod: e,
+                                  })
+                                }
+                                options={priceMethodOptions}
+                                placeholder="Required"
+                                value={labourData.pricingMethod}
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              RATE PER HOUR / DAY
-                            </label>
-                            <input
-                              type="text"
-                              disabled
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
-                              placeholder="Required"
-                              value={labourData.ratePerHourOrDay}
-                            />
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                RATE PER HOUR / DAY
+                              </label>
+                              <input
+                                type="text"
+                                disabled
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Required"
+                                value={labourData.ratePerHourOrDay}
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              NET PRICE - LABOR
-                            </label>
-                            <input
-                              type="text"
-                              disabled
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
-                              placeholder="Required"
-                              value={labourData.totalPrice}
-                            />
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                NET PRICE - LABOR
+                              </label>
+                              <input
+                                type="text"
+                                disabled
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Required"
+                                value={labourData.totalPrice}
+                              />
+                            </div>
                           </div>
-                        </div>
 
-                        {/* <div className="col-md-4 col-sm-4">
+                          {/* <div className="col-md-4 col-sm-4">
                     <div class="form-group mt-3">
                       <label className="text-light-dark font-size-12 font-weight-600">
                         SUPPLYING VENDOR
@@ -1327,136 +1351,139 @@ function RepairServiceEstimate(props) {
                       />
                     </div>
                   </div> */}
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              PAYER
-                            </label>
-                            <Select
-                              defaultValue={selectedOption}
-                              onChange={(e) =>
-                                setLabourData({ ...labourData, payer: e })
-                              }
-                              options={options}
-                              placeholder="Required"
-                              value={labourData.payer}
-                            />
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                PAYER
+                              </label>
+                              <Select
+                                defaultValue={selectedOption}
+                                onChange={(e) =>
+                                  setLabourData({ ...labourData, payer: e })
+                                }
+                                options={options}
+                                placeholder="Required"
+                                value={labourData.payer}
+                              />
+                            </div>
                           </div>
-                        </div>
 
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              ADJUSTED PRICE
-                            </label>
-                            <input
-                              type="text"
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
-                              placeholder="Optional"
-                              value={labourData.adjustedPrice}
-                              onChange={(e) =>
-                                setLabourData({
-                                  ...labourData,
-                                  adjustedPrice: e.target.value,
-                                })
-                              }
-                            />
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                ADJUSTED PRICE
+                              </label>
+                              <input
+                                type="text"
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Optional"
+                                value={labourData.adjustedPrice}
+                                onChange={(e) =>
+                                  setLabourData({
+                                    ...labourData,
+                                    adjustedPrice: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-12">
+                            <div class="form-group mt-3 mb-0 text-right">
+                              <button
+                                type="button"
+                                className="btn btn-light bg-primary text-white"
+                                onClick={updateLabourEstHeader}
+                              >
+                                Save
+                              </button>
+                            </div>
                           </div>
                         </div>
-                        <div className="col-md-12">
-                          <div class="form-group mt-3 mb-0 text-right">
-                          <button
-                            type="button"
-                            className="btn btn-light bg-primary text-white" 
-                            onClick={updateLabourEstHeader}>
-                              Save
-                            </button>
+                      ) : (
+                        <div className="row mt-4">
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                JOB CODE
+                              </p>
+                              <h6 className="font-weight-600">
+                                {labourData.jobCode}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                JOB CODE DESCRIPTION{" "}
+                              </p>
+                              <h6 className="font-weight-600">
+                                {labourData.jobCodeDescription}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                LABOR CODE
+                              </p>
+                              <h6 className="font-weight-600">
+                                {labourData.laborCode?.value}{" "}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                PRICE METHOD
+                              </p>
+                              <h6 className="font-weight-600">
+                                {labourData.pricingMethod?.value}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                RATE PER HOUR / DAY
+                              </p>
+                              <h6 className="font-weight-600">
+                                {labourData.ratePerHourOrDay}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                NET PRICE - LABOR
+                              </p>
+                              <h6 className="font-weight-600">
+                                {labourData.totalPrice}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                PAYER
+                              </p>
+                              <h6 className="font-weight-600">
+                                {labourData.payer?.value}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                ADJUSTED PRICE
+                              </p>
+                              <h6 className="font-weight-600">
+                                {labourData.adjustedPrice}
+                              </h6>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="row mt-4">
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              JOB CODE
-                            </p>
-                            <h6 className="font-weight-600">
-                              {labourData.jobCode}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              JOB CODE DESCRIPTION{" "}
-                            </p>
-                            <h6 className="font-weight-600">
-                              {labourData.jobCodeDescription}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              LABOR CODE
-                            </p>
-                            <h6 className="font-weight-600">
-                              {labourData.laborCode?.value}{" "}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              PRICE METHOD
-                            </p>
-                            <h6 className="font-weight-600">
-                              {labourData.pricingMethod?.value}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              RATE PER HOUR / DAY
-                            </p>
-                            <h6 className="font-weight-600">
-                              {labourData.ratePerHourOrDay}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              NET PRICE - LABOR
-                            </p>
-                            <h6 className="font-weight-600">
-                              {labourData.totalPrice}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              PAYER
-                            </p>
-                            <h6 className="font-weight-600">
-                              {labourData.payer?.value}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              ADJUSTED PRICE
-                            </p>
-                            <h6 className="font-weight-600">
-                              {labourData.adjustedPrice}
-                            </h6>
-                          </div>
-                        </div>
-                      </div>
+                      )}
                       <hr />
 
                       <div className="">
@@ -1475,7 +1502,7 @@ function RepairServiceEstimate(props) {
                               </div>
                             </div>
                             <div className="">
-                              <div className="text-center border-left pl-3 py-3">
+                              <div className="text-center border-left pl-2 py-3">
                                 <Link
                                   onClick={() => setOpen2(true)}
                                   to="#"
@@ -1518,7 +1545,7 @@ function RepairServiceEstimate(props) {
                     </React.Fragment>
                   )}
                 </TabPanel>
-                <TabPanel value="2">
+                <TabPanel value="consumables">
                   <div className="col-md-12 col-sm-12">
                     <div className=" d-flex justify-content-between align-items-center">
                       <div>
@@ -1539,181 +1566,184 @@ function RepairServiceEstimate(props) {
                   </div>
                   {flagRequired.flagConsumableReq && (
                     <React.Fragment>
-                      <div className="row mt-2 input-fields">
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              JOB CODE
-                            </label>
-                            <input
-                              type="text"
-                              disabled
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
-                              placeholder="Required"
-                              value={consumableData.jobCode}
-                            />
+                      {!viewOnlyTab.consumableViewOnly ? (
+                        <div className="row mt-2 input-fields">
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                JOB CODE
+                              </label>
+                              <input
+                                type="text"
+                                disabled
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Required"
+                                value={consumableData.jobCode}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                JOB CODE DESCRIPTION
+                              </label>
+                              <input
+                                type="text"
+                                disabled
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Required"
+                                value={consumableData.jobCodeDescription}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group  mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                PRICE METHOD
+                              </label>
+                              <Select
+                                defaultValue={selectedOption}
+                                onChange={(e) =>
+                                  setConsumableData({
+                                    ...consumableData,
+                                    pricingMethod: e,
+                                  })
+                                }
+                                value={consumableData.pricingMethod}
+                                options={priceMethodOptions}
+                                placeholder="Required"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                NET PRICE
+                              </label>
+                              <input
+                                type="text"
+                                disabled
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Required"
+                                value={consumableData.totalPrice}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                PAYER
+                              </label>
+                              <Select
+                                defaultValue={selectedOption}
+                                onChange={(e) =>
+                                  setConsumableData({
+                                    ...consumableData,
+                                    payer: e,
+                                  })
+                                }
+                                options={options}
+                                placeholder="Required"
+                                value={consumableData.payer}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                ADJUSTED PRICE
+                              </label>
+                              <input
+                                type="text"
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Optional"
+                                value={consumableData.adjustedPrice}
+                                onChange={(e) =>
+                                  setConsumableData({
+                                    ...consumableData,
+                                    adjustedPrice: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-12">
+                            <div class="form-group mt-3 mb-0 text-right">
+                              <a href="#" className="btn bg-primary text-white">
+                                Save
+                              </a>
+                            </div>
                           </div>
                         </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              JOB CODE DESCRIPTION
-                            </label>
-                            <input
-                              type="text"
-                              disabled
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
-                              placeholder="Required"
-                              value={consumableData.jobCodeDescription}
-                            />
+                      ) : (
+                        <div className="row mt-4">
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                JOB CODE
+                              </p>
+                              <h6 className="font-weight-600">
+                                {consumableData.jobCode}
+                              </h6>
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group  mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              PRICE METHOD
-                            </label>
-                            <Select
-                              defaultValue={selectedOption}
-                              onChange={(e) =>
-                                setConsumableData({
-                                  ...consumableData,
-                                  pricingMethod: e,
-                                })
-                              }
-                              value={consumableData.pricingMethod}
-                              options={priceMethodOptions}
-                              placeholder="Required"
-                            />
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                JOB CODE DESCRIPTION{" "}
+                              </p>
+                              <h6 className="font-weight-600">
+                                {consumableData.jobCodeDescription}
+                              </h6>
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              NET PRICE
-                            </label>
-                            <input
-                              type="text"
-                              disabled
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
-                              placeholder="Required"
-                              value={consumableData.totalPrice}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              PAYER
-                            </label>
-                            <Select
-                              defaultValue={selectedOption}
-                              onChange={(e) =>
-                                setConsumableData({
-                                  ...consumableData,
-                                  payer: e,
-                                })
-                              }
-                              options={options}
-                              placeholder="Required"
-                              value={consumableData.payer}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              ADJUSTED PRICE
-                            </label>
-                            <input
-                              type="text"
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
-                              placeholder="Optional"
-                              value={consumableData.adjustedPrice}
-                              onChange={(e) =>
-                                setConsumableData({
-                                  ...consumableData,
-                                  adjustedPrice: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-12">
-                          <div class="form-group mt-3 mb-0 text-right">
-                            <a href="#" className="btn bg-primary text-white">
-                              Save
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row mt-4">
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              JOB CODE
-                            </p>
-                            <h6 className="font-weight-600">
-                              {consumableData.jobCode}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              JOB CODE DESCRIPTION{" "}
-                            </p>
-                            <h6 className="font-weight-600">
-                              {consumableData.jobCodeDescription}
-                            </h6>
-                          </div>
-                        </div>
 
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              PRICE METHOD
-                            </p>
-                            <h6 className="font-weight-600">
-                              {consumableData.pricingMethod?.value}
-                            </h6>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                PRICE METHOD
+                              </p>
+                              <h6 className="font-weight-600">
+                                {consumableData.pricingMethod?.value}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                NET PRICE
+                              </p>
+                              <h6 className="font-weight-600">
+                                {consumableData.totalPrice}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                PAYER
+                              </p>
+                              <h6 className="font-weight-600">
+                                {consumableData.payer?.value}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                ADJUSTED PRICE
+                              </p>
+                              <h6 className="font-weight-600">
+                                {consumableData.adjustedPrice}
+                              </h6>
+                            </div>
                           </div>
                         </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              NET PRICE
-                            </p>
-                            <h6 className="font-weight-600">
-                              {consumableData.totalPrice}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              PAYER
-                            </p>
-                            <h6 className="font-weight-600">
-                              {consumableData.payer?.value}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              ADJUSTED PRICE
-                            </p>
-                            <h6 className="font-weight-600">
-                              {consumableData.adjustedPrice}
-                            </h6>
-                          </div>
-                        </div>
-                      </div>
+                      )}
                       <hr />
 
                       <div className="">
@@ -1903,7 +1933,7 @@ function RepairServiceEstimate(props) {
         </div> */}
                               </div>
                             </div>
-                            <div className="">
+                            <div className="col-1">
                               <div className="text-center border-left pl-3 py-3">
                                 <Link
                                   onClick={() => setOpen3(true)}
@@ -1953,7 +1983,7 @@ function RepairServiceEstimate(props) {
                     </React.Fragment>
                   )}
                 </TabPanel>
-                <TabPanel value="3">
+                <TabPanel value="extwork">
                   <div className="col-md-12 col-sm-12">
                     <div className=" d-flex justify-content-between align-items-center">
                       <div>
@@ -1975,211 +2005,213 @@ function RepairServiceEstimate(props) {
                   </div>
                   {flagRequired.flagExtWorkReq && (
                     <React.Fragment>
-                      <div className="row mt-2 input-fields">
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              JOB CODE
-                            </label>
-                            <input
-                              type="text"
-                              disabled
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
-                              placeholder="Required"
-                              value={extWorkData.jobCode}
-                            />
+                      {!viewOnlyTab.extWorkViewOnly ? (
+                        <div className="row mt-2 input-fields">
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                JOB CODE
+                              </label>
+                              <input
+                                type="text"
+                                disabled
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Required"
+                                value={extWorkData.jobCode}
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              JOB CODE DESCRIPTION
-                            </label>
-                            <input
-                              type="text"
-                              disabled
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
-                              placeholder="Required"
-                              value={extWorkData.jobCodeDescription}
-                            />
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                JOB CODE DESCRIPTION
+                              </label>
+                              <input
+                                type="text"
+                                disabled
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Required"
+                                value={extWorkData.jobCodeDescription}
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              SUPPLYING VENDOR
-                            </label>
-                            <SearchBox
-                              value={extWorkData.supplyingVendor}
-                              onChange={(e) =>
-                                handleVendorSearch("vendor", e.target.value)
-                              }
-                              type="fullName"
-                              result={searchVenodrResults}
-                              onSelect={handleVendorSelect}
-                              noOptions={noOptionsVendor}
-                            />
-                            {/* <Select
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                SUPPLYING VENDOR
+                              </label>
+                              <SearchBox
+                                value={extWorkData.supplyingVendor}
+                                onChange={(e) =>
+                                  handleVendorSearch("vendor", e.target.value)
+                                }
+                                type="fullName"
+                                result={searchVenodrResults}
+                                onSelect={handleVendorSelect}
+                                noOptions={noOptionsVendor}
+                              />
+                              {/* <Select
                           defaultValue={selectedOption}
                           onChange={setSelectedOption}
                           options={options}
                           placeholder="Required"
                         /> */}
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                PRICE METHOD
+                              </label>
+                              <Select
+                                defaultValue={selectedOption}
+                                onChange={(e) =>
+                                  setExtWorkData({
+                                    ...extWorkData,
+                                    pricingMethod: e,
+                                  })
+                                }
+                                value={extWorkData.pricingMethod}
+                                options={priceMethodOptions}
+                                placeholder="Required"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                NET PRICE
+                              </label>
+                              <input
+                                type="text"
+                                disabled
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Required"
+                                value={extWorkData.totalPrice}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                PAYER
+                              </label>
+                              <Select
+                                defaultValue={selectedOption}
+                                onChange={(e) =>
+                                  setExtWorkData({ ...extWorkData, payer: e })
+                                }
+                                options={options}
+                                placeholder="Required"
+                                value={extWorkData.payer}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                ADJUSTED PRICE
+                              </label>
+                              <input
+                                type="text"
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Optional"
+                                value={extWorkData.adjustedPrice}
+                                onChange={(e) =>
+                                  setExtWorkData({
+                                    ...extWorkData,
+                                    adjustedPrice: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-12">
+                            <div class="form-group mt-3 mb-0 text-right">
+                              <a href="#" className="btn bg-primary text-white">
+                                Save
+                              </a>
+                            </div>
                           </div>
                         </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              PRICE METHOD
-                            </label>
-                            <Select
-                              defaultValue={selectedOption}
-                              onChange={(e) =>
-                                setExtWorkData({
-                                  ...extWorkData,
-                                  pricingMethod: e,
-                                })
-                              }
-                              value={extWorkData.pricingMethod}
-                              options={priceMethodOptions}
-                              placeholder="Required"
-                            />
+                      ) : (
+                        <div className="row mt-4">
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                JOB CODE
+                              </p>
+                              <h6 className="font-weight-600">
+                                {extWorkData.jobCode}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                JOB CODE DESCRIPTION{" "}
+                              </p>
+                              <h6 className="font-weight-600">
+                                {extWorkData.jobCodeDescription}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                PRICE METHOD
+                              </p>
+                              <h6 className="font-weight-600">
+                                {extWorkData.pricingMethod?.value}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                NET PRICE
+                              </p>
+                              <h6 className="font-weight-600">
+                                {extWorkData.totalPrice}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                SUPPLYING VENDOR
+                              </p>
+                              <h6 className="font-weight-600">
+                                {extWorkData.supplyingVendor}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                PAYER
+                              </p>
+                              <h6 className="font-weight-600">
+                                {extWorkData.payer?.value}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                ADJUSTED PRICE
+                              </p>
+                              <h6 className="font-weight-600">
+                                {extWorkData.adjustedPrice}
+                              </h6>
+                            </div>
                           </div>
                         </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              NET PRICE
-                            </label>
-                            <input
-                              type="text"
-                              disabled
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
-                              placeholder="Required"
-                              value={extWorkData.totalPrice}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              PAYER
-                            </label>
-                            <Select
-                              defaultValue={selectedOption}
-                              onChange={(e) =>
-                                setExtWorkData({ ...extWorkData, payer: e })
-                              }
-                              options={options}
-                              placeholder="Required"
-                              value={extWorkData.payer}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              ADJUSTED PRICE
-                            </label>
-                            <input
-                              type="text"
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
-                              placeholder="Optional"
-                              value={extWorkData.adjustedPrice}
-                              onChange={(e) =>
-                                setExtWorkData({
-                                  ...extWorkData,
-                                  adjustedPrice: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-12">
-                          <div class="form-group mt-3 mb-0 text-right">
-                            <a href="#" className="btn bg-primary text-white">
-                              Save
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row mt-4">
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              JOB CODE
-                            </p>
-                            <h6 className="font-weight-600">
-                              {extWorkData.jobCode}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              JOB CODE DESCRIPTION{" "}
-                            </p>
-                            <h6 className="font-weight-600">
-                              {extWorkData.jobCodeDescription}
-                            </h6>
-                          </div>
-                        </div>
-
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              PRICE METHOD
-                            </p>
-                            <h6 className="font-weight-600">
-                              {extWorkData.pricingMethod?.value}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              NET PRICE
-                            </p>
-                            <h6 className="font-weight-600">
-                              {extWorkData.totalPrice}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              SUPPLYING VENDOR
-                            </p>
-                            <h6 className="font-weight-600">
-                              {extWorkData.supplyingVendor}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              PAYER
-                            </p>
-                            <h6 className="font-weight-600">
-                              {extWorkData.payer?.value}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              ADJUSTED PRICE
-                            </p>
-                            <h6 className="font-weight-600">
-                              {extWorkData.adjustedPrice}
-                            </h6>
-                          </div>
-                        </div>
-                      </div>
+                      )}
                       <hr />
 
                       <div className="">
@@ -2414,7 +2446,7 @@ function RepairServiceEstimate(props) {
                     </React.Fragment>
                   )}
                 </TabPanel>
-                <TabPanel value="4">
+                <TabPanel value="othrMisc">
                   <div className="col-md-12 col-sm-12">
                     <div className=" d-flex justify-content-between align-items-center">
                       <div>
@@ -2436,192 +2468,195 @@ function RepairServiceEstimate(props) {
                   </div>
                   {flagRequired.flagMiscReq && (
                     <React.Fragment>
-                      <div className="row mt-2 input-fields">
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              JOB CODE
-                            </label>
-                            <input
-                              type="text"
-                              disabled
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
-                              placeholder="Required"
-                              value={miscData.jobCode}
-                            />
+                      {!viewOnlyTab.miscViewOnly ? (
+                        <div className="row mt-2 input-fields">
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                JOB CODE
+                              </label>
+                              <input
+                                type="text"
+                                disabled
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Required"
+                                value={miscData.jobCode}
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              JOB CODE DESCRIPTION
-                            </label>
-                            <input
-                              type="text"
-                              disabled
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
-                              placeholder="Required"
-                              value={miscData.jobCodeDescription}
-                            />
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                JOB CODE DESCRIPTION
+                              </label>
+                              <input
+                                type="text"
+                                disabled
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Required"
+                                value={miscData.jobCodeDescription}
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              PRICE METHOD
-                            </label>
-                            <Select
-                              defaultValue={selectedOption}
-                              onChange={(e) =>
-                                setMiscData({ ...miscData, pricingMethod: e })
-                              }
-                              options={priceMethodOptions}
-                              placeholder="Required"
-                              value={miscData.pricingMethod}
-                            />
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                PRICE METHOD
+                              </label>
+                              <Select
+                                defaultValue={selectedOption}
+                                onChange={(e) =>
+                                  setMiscData({ ...miscData, pricingMethod: e })
+                                }
+                                options={priceMethodOptions}
+                                placeholder="Required"
+                                value={miscData.pricingMethod}
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              NET PRICE - MISC.
-                            </label>
-                            <input
-                              type="text"
-                              disabled
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
-                              placeholder="Required"
-                              value={miscData.totalPrice}
-                            />
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                NET PRICE - MISC.
+                              </label>
+                              <input
+                                type="text"
+                                disabled
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Required"
+                                value={miscData.totalPrice}
+                              />
+                            </div>
                           </div>
-                        </div>
 
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              TYPE OF MISC.{" "}
-                            </label>
-                            <Select
-                              defaultValue={selectedOption}
-                              onChange={setSelectedOption}
-                              options={options}
-                              placeholder="Required"
-                            />
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                TYPE OF MISC.{" "}
+                              </label>
+                              <Select
+                                defaultValue={selectedOption}
+                                onChange={setSelectedOption}
+                                options={options}
+                                placeholder="Required"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                PAYER
+                              </label>
+                              <Select
+                                defaultValue={selectedOption}
+                                onChange={(e) =>
+                                  setMiscData({ ...miscData, payer: e })
+                                }
+                                options={options}
+                                placeholder="Required"
+                                value={miscData.payer}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                ADJUSTED PRICE
+                              </label>
+                              <input
+                                type="text"
+                                class="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="Optional"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-12">
+                            <div class="form-group mt-3 mb-0 text-right">
+                              <a href="#" className="btn bg-primary text-white">
+                                Save
+                              </a>
+                            </div>
                           </div>
                         </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              PAYER
-                            </label>
-                            <Select
-                              defaultValue={selectedOption}
-                              onChange={(e) =>
-                                setMiscData({ ...miscData, payer: e })
-                              }
-                              options={options}
-                              placeholder="Required"
-                              value={miscData.payer}
-                            />
+                      ) : (
+                        <div className="row mt-4">
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                JOB CODE
+                              </p>
+                              <h6 className="font-weight-600">
+                                {miscData.jobCode}
+                              </h6>
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <label className="text-light-dark font-size-12 font-weight-600">
-                              ADJUSTED PRICE
-                            </label>
-                            <input
-                              type="text"
-                              class="form-control border-radius-10 text-primary"
-                              id="exampleInputEmail1"
-                              placeholder="Optional"
-                            />
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                JOB CODE DESCRIPTION{" "}
+                              </p>
+                              <h6 className="font-weight-600">
+                                {miscData.jobCodeDescription}
+                              </h6>
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-md-12">
-                          <div class="form-group mt-3 mb-0 text-right">
-                            <a href="#" className="btn bg-primary text-white">
-                              Save
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row mt-4">
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              JOB CODE
-                            </p>
-                            <h6 className="font-weight-600">
-                              {miscData.jobCode}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              JOB CODE DESCRIPTION{" "}
-                            </p>
-                            <h6 className="font-weight-600">
-                              {miscData.jobCodeDescription}
-                            </h6>
-                          </div>
-                        </div>
 
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              PRICE METHOD
-                            </p>
-                            <h6 className="font-weight-600">
-                              {miscData.pricingMethod?.value}
-                            </h6>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                PRICE METHOD
+                              </p>
+                              <h6 className="font-weight-600">
+                                {miscData.pricingMethod?.value}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                NET PRICE - MISC
+                              </p>
+                              <h6 className="font-weight-600">
+                                {miscData.totalPrice}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                TYPE OF MISC.
+                              </p>
+                              <h6 className="font-weight-600">
+                                {miscData.typeOfMisc}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                PAYER
+                              </p>
+                              <h6 className="font-weight-600">
+                                {miscData.payer?.value}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                ADJUSTED PRICE
+                              </p>
+                              <h6 className="font-weight-600">
+                                {miscData.adjustedPrice}
+                              </h6>
+                            </div>
                           </div>
                         </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              NET PRICE - MISC
-                            </p>
-                            <h6 className="font-weight-600">
-                              {miscData.totalPrice}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              TYPE OF MISC.
-                            </p>
-                            <h6 className="font-weight-600">
-                              {miscData.typeOfMisc}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              PAYER
-                            </p>
-                            <h6 className="font-weight-600">
-                              {miscData.payer?.value}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div class="form-group mt-3">
-                            <p className="font-size-12 font-weight-600 mb-2">
-                              ADJUSTED PRICE
-                            </p>
-                            <h6 className="font-weight-600">
-                              {miscData.adjustedPrice}
-                            </h6>
-                          </div>
-                        </div>
-                      </div>
+                      )}
                     </React.Fragment>
                   )}
                 </TabPanel>
@@ -2674,7 +2709,12 @@ function RepairServiceEstimate(props) {
                           CHARGE CODE
                         </label>
                         <Select
-                          onChange={(e) => setLabourItemData({...labourItemData, chargeCode: e})}
+                          onChange={(e) =>
+                            setLabourItemData({
+                              ...labourItemData,
+                              chargeCode: e,
+                            })
+                          }
                           options={chargeCodeList}
                           placeholder="Required"
                           value={labourItemData.chargeCode}
@@ -2687,7 +2727,12 @@ function RepairServiceEstimate(props) {
                           LABOR TYPE
                         </label>
                         <Select
-                          onChange={(e) => setLabourItemData({...labourItemData, laborType: e})}
+                          onChange={(e) =>
+                            setLabourItemData({
+                              ...labourItemData,
+                              laborType: e,
+                            })
+                          }
                           options={laborTypeList}
                           value={labourItemData.laborType}
                           placeholder="Required"
@@ -2700,7 +2745,12 @@ function RepairServiceEstimate(props) {
                           SERVICE TYPE
                         </label>
                         <Select
-                          onChange={(e) => setLabourItemData({...labourItemData, serviceType: e})}
+                          onChange={(e) =>
+                            setLabourItemData({
+                              ...labourItemData,
+                              serviceType: e,
+                            })
+                          }
                           options={serviceTypeList}
                           value={labourItemData.serviceType}
                           placeholder="Required"
@@ -2713,8 +2763,16 @@ function RepairServiceEstimate(props) {
                           UNIT OF MEASURES
                         </label>
                         <Select
-                          onChange={(e) => setLabourItemData({...labourItemData, unitOfMeasure: e})}
-                          options={[{label: "Hours", value: "Hours"},{label: "Days", value: "Days"}]}
+                          onChange={(e) =>
+                            setLabourItemData({
+                              ...labourItemData,
+                              unitOfMeasure: e,
+                            })
+                          }
+                          options={[
+                            { label: "Hours", value: "Hours" },
+                            { label: "Days", value: "Days" },
+                          ]}
                           placeholder="Required"
                           value={labourItemData.unitOfMeasure}
                         />
@@ -2729,7 +2787,12 @@ function RepairServiceEstimate(props) {
                           type="text"
                           class="form-control border-radius-10"
                           placeholder="Required"
-                          onChange={(e) => setLabourItemData({...labourItemData, estimatedHours: e.target.value})}
+                          onChange={(e) =>
+                            setLabourItemData({
+                              ...labourItemData,
+                              estimatedHours: e.target.value,
+                            })
+                          }
                           value={labourItemData.estimatedHours}
                         />
                       </div>
@@ -2789,7 +2852,7 @@ function RepairServiceEstimate(props) {
                           class="form-control border-radius-10"
                           id="exampleInputEmail1"
                           placeholder="REQUIRED"
-                          value={labourItemData.currency}
+                          value={serviceEstimateData.currency}
                         />
                       </div>
                     </div>
@@ -2803,26 +2866,36 @@ function RepairServiceEstimate(props) {
                           class="form-control border-radius-10"
                           placeholder="Optional"
                           value={labourItemData.comments}
-                          onChange={(e) => setLabourItemData({...labourItemData, comments: e.target.value})}
+                          onChange={(e) =>
+                            setLabourItemData({
+                              ...labourItemData,
+                              comments: e.target.value,
+                            })
+                          }
                         />
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
-                    <div className=" d-flex justify-content-between align-items-center">
-                      <div>
-                        <FormGroup>
-                          <FormControlLabel
-                            control={
-                              <Switch
-                                checked={labourItemData.travelIncluded}
-                                onChange={(e) => setLabourItemData({...labourItemData, travelIncluded: e.target.checked})}
-                              />
-                            }
-                            label="TRAVEL INCLUDED"
-                          />
-                        </FormGroup>
+                      <div className=" d-flex justify-content-between align-items-center">
+                        <div>
+                          <FormGroup>
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  checked={labourItemData.travelIncluded}
+                                  onChange={(e) =>
+                                    setLabourItemData({
+                                      ...labourItemData,
+                                      travelIncluded: e.target.checked,
+                                    })
+                                  }
+                                />
+                              }
+                              label="TRAVEL INCLUDED"
+                            />
+                          </FormGroup>
+                        </div>
                       </div>
-                    </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div className=" d-flex justify-content-between align-items-center">
@@ -2832,7 +2905,12 @@ function RepairServiceEstimate(props) {
                               control={
                                 <Switch
                                   checked={labourItemData.inspectionIncluded}
-                                  onChange={(e) => setLabourItemData({...labourItemData, inspectionIncluded: e.target.checked})}
+                                  onChange={(e) =>
+                                    setLabourItemData({
+                                      ...labourItemData,
+                                      inspectionIncluded: e.target.checked,
+                                    })
+                                  }
                                 />
                               }
                               label="INSPECTION INCLUDED"
@@ -2841,35 +2919,48 @@ function RepairServiceEstimate(props) {
                         </div>
                       </div>
                     </div>
-                     <div className="col-md-6 col-sm-6">
-                     {!labourItemData.travelIncluded &&
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          TRAVEL CHARGE
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          value={labourItemData.travelCharge}
-                          onChange={(e) => setLabourItemData({...labourItemData, travelCharge: e.target.value})}
-                        />
-                      </div>}
+                    <div className="col-md-6 col-sm-6">
+                      {!labourItemData.travelIncluded && (
+                        <div class="form-group w-100">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            TRAVEL CHARGE
+                          </label>
+                          <input
+                            type="text"
+                            class="form-control border-radius-10"
+                            id="exampleInputEmail1"
+                            value={labourItemData.travelCharge}
+                            onChange={(e) =>
+                              setLabourItemData({
+                                ...labourItemData,
+                                travelCharge: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                      )}
                     </div>
-                   
-                     <div className="col-md-6 col-sm-6">
-                     {!labourItemData.inspectionIncluded && <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          INSPECTION
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          value={labourItemData.inspectionCharge}
-                          onChange={(e) => setLabourItemData({...labourItemData, inspectionCharge: e.target.value})}
-                        />
-                      </div>}
+
+                    <div className="col-md-6 col-sm-6">
+                      {!labourItemData.inspectionIncluded && (
+                        <div class="form-group w-100">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            INSPECTION
+                          </label>
+                          <input
+                            type="text"
+                            class="form-control border-radius-10"
+                            id="exampleInputEmail1"
+                            value={labourItemData.inspectionCharge}
+                            onChange={(e) =>
+                              setLabourItemData({
+                                ...labourItemData,
+                                inspectionCharge: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
