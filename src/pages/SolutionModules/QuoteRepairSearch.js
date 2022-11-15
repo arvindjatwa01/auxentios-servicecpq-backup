@@ -354,10 +354,10 @@ const masterColumns = [
            <div className="row align-items-center height-66">
           <div className="col-2">
           <div className="d-flex ">
-          <h5 className="mr-4 mb-0 text-white"><span>Quotes</span></h5>
-          <p className="ml-4 mb-0">
-            <a href="#" className="ml-3 text-white"><EditOutlinedIcon/></a>
-            <a href="#" className="ml-3 text-white"><ShareOutlinedIcon/></a>
+          <h5 className="mb-0 text-white mr-2"><span>Quotes</span></h5>
+          <p className="mb-0">
+            <a href="#" className="ml-2 text-white"><EditOutlinedIcon/></a>
+            <a href="#" className="ml-2 text-white"><ShareOutlinedIcon/></a>
           </p>
           </div>
           </div>

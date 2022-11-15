@@ -1920,7 +1920,7 @@ export function SolutionTemplateResult(props) {
         setCategoryUsageKeyValue1({
             // "label": location.selectedTemplateItems[0].usageCategory,
             // "value": location.selectedTemplateItems[0].usageCategory
-            
+
             "label": selectedSolutionTemplateItemsVal[0].usageCategory,
             "value": selectedSolutionTemplateItemsVal[0].usageCategory
         });
@@ -3592,7 +3592,8 @@ export function SolutionTemplateResult(props) {
                                                 <div className="col-md-3 col-sm-3">
                                                     <div className="form-group">
                                                         <label className="text-light-dark font-size-12 font-weight-500">
-                                                            {prefilgabelGeneral} ID
+                                                            {/* {prefilgabelGeneral} ID */}
+                                                            SOLUTION ID
                                                         </label>
                                                         <input
                                                             type="text"
@@ -3609,7 +3610,8 @@ export function SolutionTemplateResult(props) {
                                                 <div className="col-md-3 col-sm-3">
                                                     <div className="form-group">
                                                         <label className="text-light-dark font-size-12 font-weight-500">
-                                                            {prefilgabelGeneral} NAME
+                                                            {/* {prefilgabelGeneral} NAME */}
+                                                            SOLUTION NAME
                                                         </label>
                                                         <input
                                                             type="text"
@@ -3624,7 +3626,8 @@ export function SolutionTemplateResult(props) {
                                                 <div className="col-md-3 col-sm-3">
                                                     <div className="form-group">
                                                         <label className="text-light-dark font-size-12 font-weight-500">
-                                                            SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY)
+                                                            {/* SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY) */}
+                                                            SOLUTION DESCRIPTION
                                                         </label>
                                                         <input
                                                             type="text"
@@ -4890,7 +4893,7 @@ export function SolutionTemplateResult(props) {
                                         <li><a className="cursor result" >Search Coverage</a></li>
                                     </ul>
                                     <div
-                                        className="custom-table card p-3 "
+                                        className="custom-table card p-1 "
                                         style={{ width: "100%", backgroundColor: "#fff" }}
                                     >
                                         <div

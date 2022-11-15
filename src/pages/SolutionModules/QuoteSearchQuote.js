@@ -342,16 +342,16 @@ const masterColumns = [
               </div>
            <div className="bg-primary px-3 mb-3 overflow-hidden border-radius-6">
            <div className="row align-items-center height-66">
-          <div className="col-2">
+          <div className="col-3">
           <div className="d-flex ">
           <h5 className=" mb-0 text-white"><span>Spare Parts Quotes</span></h5>
           <p className=" mb-0">
-            <a href="#" className="ml-3 text-white"><EditOutlinedIcon/></a>
-            <a href="#" className="ml-3 text-white"><ShareOutlinedIcon/></a>
+            <a href="#" className="ml-2 text-white"><EditOutlinedIcon/></a>
+            <a href="#" className="ml-2 text-white"><ShareOutlinedIcon/></a>
           </p>
           </div>
           </div>
-          <div className="col-10">
+          <div className="col-9">
           <div className="d-flex justify-content-between align-items-center w-100 ">
                     <div className="row align-items-center m-0 ">
                       {querySearchSelector.map((obj, i) => {

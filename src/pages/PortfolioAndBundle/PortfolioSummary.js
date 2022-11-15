@@ -1401,8 +1401,8 @@ export const PortfolioSummary = () => {
             </div>
           </div>
           <div className="bg-primary px-3 mb-3">
-            <div className="row align-items-center">
-              <div className="col-11 mx-2">
+            <div className="d-block d-md-flex justify-content-between align-items-center">
+              <div className="mx-2">
                 <div className="d-flex align-items-center bg-primary w-100">
                   <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
                     <h5 className="mr-2 mb-0 text-white">
@@ -1537,7 +1537,7 @@ export const PortfolioSummary = () => {
                 </div>
               </div>
               <div className="">
-                <div className="text-center border-left pl-3 py-3">
+                <div className="text-center pl-3 py-3">
                   <Link
                     to="#"
                     className="p-1 text-white"

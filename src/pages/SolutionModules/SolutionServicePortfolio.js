@@ -1228,8 +1228,8 @@ export function SolutionServicePortfolio(props) {
                                     </p> */}
                                 </div>
                             </div>
-                            <div className="col-10">
-                                <div className="d-flex justify-content-between align-items-center w-100 ">
+                            <div className="col-9">
+                                <div className="d-flex justify-content-between align-items-center w-100 ml-4">
                                     <div className="row align-items-center m-0 ">
                                         {querySearchSelector.map((obj, i) => {
                                             return (
@@ -1278,7 +1278,7 @@ export function SolutionServicePortfolio(props) {
                                                                 id={"inputSearch-" + i}
                                                                 autoComplete="off"
                                                             />
-                                                            <div className="border bg-primary text-white btn"><span className="mr-2"><AddIcon /></span>Add Part</div>
+                                                            <div className="bg-primary text-white btn"><span className="mr-2"><AddIcon /></span>Add Part</div>
 
                                                             {
                                                                 <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}>
@@ -1344,8 +1344,8 @@ export function SolutionServicePortfolio(props) {
                                 </div>
 
                             </div>
-                            <div className="col-auto">
-                                <div className="d-flex align-items-center">
+                            <div className="col-2">
+                                <div className="d-flex align-items-center justify-content-end">
                                     {/* <div className="col-8 text-center">
                                         <a href="#" className="p-1 more-btn">+ 3 more
                                             <span className="c-btn">C</span>

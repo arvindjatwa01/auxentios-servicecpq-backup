@@ -688,8 +688,8 @@ export function QuoteSolutionBuilder(props) {
                                     </p> */}
                                 </div>
                             </div>
-                            <div className="col-10">
-          <div className="d-flex justify-content-between align-items-center w-100 ">
+                            <div className="col-9">
+          <div className="d-flex justify-content-between align-items-center w-100 ml-4">
                     <div className="row align-items-center m-0 ">
                       {querySearchSelector.map((obj, i) => {
                         return (
@@ -804,8 +804,8 @@ export function QuoteSolutionBuilder(props) {
                   </div>
          
           </div>
-                            <div className="col-auto">
-                                <div className="d-flex align-items-center">
+                            <div className="col-2">
+                                <div className="d-flex align-items-center justify-content-end">
                                         <a href="#" className="btn bg-primary text-white">+ Upload</a>
                                     
                                 </div>
