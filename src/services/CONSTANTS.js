@@ -109,6 +109,7 @@ export const GET_CONSUMABLE_TYPE = () =>
 export const GET_MISC_TYPE = () =>
   REPAIR_BUILDER_URI + "common-config/dropdown/misc-type";
 export const PRICING_METHODS = () => PRICING_URI + "common-config/price-method";
+export const GET_ACTIVITY_ID = () => REPAIR_BUILDER_URI + "common-config/dropdown/activity";
 
 
 export const CREATE_REPAIR_BUILDER = () => REPAIR_BUILDER_URI + "builder";
@@ -132,12 +133,12 @@ export const SEGMENT_OPERATION = (segmentId) => REPAIR_BUILDER_URI + `segment/${
 export const OPERATION_SERVICE = (operationId) => REPAIR_BUILDER_URI + `operation/${operationId}/service-estimate`;
 export const OPERATION_SERVICE_EST_DETAILS = (operationId) => REPAIR_BUILDER_URI + `operation/${operationId}/service-estimate`;
 
-export const LABOUR_SERVICE = (serviceId) => REPAIR_BUILDER_URI + `service-estimate/${serviceId}/labour`;
-export const LABOUR_ITEM_TO_LABOUR = (labourId) => REPAIR_BUILDER_URI + `labour/${labourId}/labour-item`;
-export const CONSUMABLE_TO_SERVICE = (serviceId) => REPAIR_BUILDER_URI + `service-estimate/${serviceId}/consumable`;
+export const LABOR_SERVICE = (serviceId) => REPAIR_BUILDER_URI + `service-estimate/${serviceId}/labour`;
+export const LABOR_ITEM = (labourId) => REPAIR_BUILDER_URI + `labour/${labourId}/labour-item`;
+export const CONSUMABLE_SERVICE = (serviceId) => REPAIR_BUILDER_URI + `service-estimate/${serviceId}/consumable`;
 export const CONSUMABLE_ITEM_TO_CONSUMABLE = (consumableId) => REPAIR_BUILDER_URI + `consumable/${consumableId}/consumable-item`;
-export const EXTWORK_TO_SERVICE = (serviceId) => REPAIR_BUILDER_URI + `service-estimate/${serviceId}/external-work`;
-export const MISC_TO_SERVICE = (serviceId) => REPAIR_BUILDER_URI + `service-estimate/${serviceId}/miscellaneous`;
+export const EXTWORK_SERVICE = (serviceId) => REPAIR_BUILDER_URI + `service-estimate/${serviceId}/external-work`;
+export const MISC_SERVICE = (serviceId) => REPAIR_BUILDER_URI + `service-estimate/${serviceId}/miscellaneous`;
 export const FETCH_BUILDER_VERSION_DETAILS = (builderNo, versionNo) => REPAIR_BUILDER_URI + `builder/${builderNo}/version/${versionNo}`
 export const SEARCH_CUSTOMER = (query) => DATA_SERVICE_URI + `customer/search?search=${query}`;
 export const SEARCH_MACHINE = (query) => DATA_SERVICE_URI + `equipment/search?search=${query}`;

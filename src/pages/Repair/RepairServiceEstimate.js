@@ -7,9 +7,7 @@ import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
 import TabContext from "@mui/lab/TabContext";
-import Checkbox from "@mui/material/Checkbox";
 import TabList from "@mui/lab/TabList";
-import DataTable from "react-data-table-component";
 import TabPanel from "@mui/lab/TabPanel";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
@@ -27,32 +25,30 @@ import {
   AddServiceHeader,
   FetchServiceHeader,
   AddLaborToService,
-  FetchLabourforService,
+  FetchLaborforService,
   AddConsumableToService,
   AddExtWorkToService,
   AddMiscToService,
+  FetchConsumableforService,
+  AddLaborItemToLabor,
+  FetchLaborItems
 } from "services/repairBuilderServices";
 import Moment from "react-moment";
 import { useAppSelector } from "app/hooks";
-// import {
-//   selectCategoryList,
-//   selectStrategyTaskOption,
-//   taskActions,
-// } from "pages/PortfolioAndBundle/customerSegment/strategySlice";
 
 import {
   selectDropdownOption,
   selectChargeCodeList,
-  repairActions,
   selectLaborTypeList,
   selectServiceTypeList,
   selectLaborCodeList,
   selectPricingMethodList,
+  selectMiscTypeList,
+  selectActivityIdList,
 } from "pages/Repair/dropdowns/repairSlice";
 
 import Loader from "react-js-loader";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-import { useDispatch } from "react-redux";
 import SearchBox from "./components/SearchBox";
 import { getVendors } from "services/searchServices";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
@@ -96,8 +92,8 @@ function RepairServiceEstimate(props) {
     unitPrice: 0.0,
     extendedPrice: 0.0,
     totalPrice: 0.0,
-    currency: "",
-    comments: "",
+    currency: serviceEstimateData.currency,
+    comment: "",
     travelIncluded: true,
     travelCharge: 0.0,
     inspectionIncluded: true,
@@ -135,12 +131,10 @@ function RepairServiceEstimate(props) {
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
-  const [viewOnlyTab, setViewOnlyTab] = useState({
-    laborViewOnly: false,
-    consumableViewOnly: false,
-    extWorkViewOnly: false,
-    miscViewOnly: false,
-  });
+  const [laborViewOnly,setLaborViewOnly] = useState(false);
+  const [consumableViewOnly,setConsumableViewOnly] = useState(false);
+  const [extWorkViewOnly,setExtWorkViewOnly] = useState(false);
+  const [miscViewOnly,setMiscViewOnly] = useState(false);
   const [serviceHeaderViewOnly, setServiceHeaderViewOnly] = useState(false);
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -172,24 +166,30 @@ function RepairServiceEstimate(props) {
   const laborCodeList = useAppSelector(
     selectDropdownOption(selectLaborCodeList)
   );
+  const miscTypeList = useAppSelector(
+    selectDropdownOption(selectMiscTypeList)
+  );
+
   const priceMethodOptions = useAppSelector(
     selectDropdownOption(selectPricingMethodList)
+  );
+  const activityIdList = useAppSelector(
+    selectDropdownOption(selectActivityIdList)
   );
 
   const [selectedOption, setSelectedOption] = useState(null);
   const [value, setValue] = useState("labor");
-  const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(repairActions.fetchDropdowns());
+    setServiceEstHeaderLoading(true);
+    console.log(activityIdList);
     if (activeElement.oId) {
-      setServiceEstHeaderLoading(true);
       FetchServiceHeader(activeElement.oId)
         .then((result) => {
           setServiceEstimateData({
             ...serviceEstimateData,
             reference: result.reference,
             id: result.id,
-            // currency: result.currency, //TODO: Uncomment this once currecy is updated.
+            currency: result.currency, //TODO: Uncomment this once currecy is updated.
             description: result.description,
             jobCode: result.jobCode,
             jobOperation: result.jobOperation,
@@ -201,39 +201,9 @@ function RepairServiceEstimate(props) {
             segmentTitle: result.segmentTitle,
           });
           setServiceHeaderViewOnly(result.id ? true : false);
-          FetchLabourforService(result.id).then(resultLabour => {
-            if(resultLabour){
-              console.log( "in if", laborCodeList.find(
-                (element) => element.value === resultLabour.laborCode
-              ));
-              setLabourData({
-                ...resultLabour,
-                id: resultLabour.id,
-                pricingMethod: priceMethodOptions.find(
-                  (element) => element.value === resultLabour.pricingMethod
-                ),
-                laborCode: laborCodeList.find(
-                  (element) => element.value === resultLabour.laborCode
-                ),
-                payer: options.find(
-                  (element) => element.value === resultLabour.payer
-                ),
-              });
-              setViewOnlyTab({...viewOnlyTab, laborViewOnly: true});
-            } 
-          }).catch(e => {
-            setLabourData({
-              ...labourData,
-              jobCode: result.jobCode,
-              jobCodeDescription: result.jobOperation,
-            });
-          })
+          populateLaborData(result);
+          populateConsumableData(result);      
           
-          setConsumableData({
-            ...consumableData,
-            jobCode: result.jobCode,
-            jobCodeDescription: result.jobCodeDescription,
-          });
           setExtWorkData({
             ...extWorkData,
             jobCode: result.jobCode,
@@ -244,34 +214,94 @@ function RepairServiceEstimate(props) {
             jobCode: result.jobCode,
             jobCodeDescription: result.jobOperation,
           });
+          setServiceEstHeaderLoading(false);
         })
         .catch((e) => {
           handleSnack(
             "error",
             "Error occurred while fetching the estimate header details!"
           );
+          setServiceEstHeaderLoading(false);
         });
-      setServiceEstHeaderLoading(false);
+      
     }
   }, []);
 
+  function populateLaborData (result) {
+    FetchLaborforService(result.id).then(resultLabour => {
+      if(resultLabour && resultLabour.id){
+        setLabourData({
+          ...resultLabour,
+          id: resultLabour.id,
+          pricingMethod: priceMethodOptions.find(
+            (element) => element.value === resultLabour.pricingMethod
+          ),
+          laborCode: laborCodeList.find(
+            (element) => element.value === resultLabour.laborCode
+          ),
+          payer: options.find(
+            (element) => element.value === resultLabour.payer
+          ),
+        });
+        populateLaborItems(resultLabour);
+        setLaborViewOnly(true);
+      } 
+    }).catch(e => {
+      setLabourData({
+        ...labourData,
+        jobCode: result.jobCode,
+        jobCodeDescription: result.jobOperation,
+      });
+    })
+  }
+
+  function populateLaborItems (result) {
+    FetchLaborItems(result.id).then(resultLabourItems => {
+      if(resultLabourItems && resultLabourItems.result.length > 0){
+        setLaborItems(resultLabourItems.result);
+
+        console.log(resultLabourItems.result); 
+      } 
+    }).catch(e => {
+      handleSnack('error', "Error occurred while fetching labor items");
+    })
+  }
+
+  function populateConsumableData(result) {
+    FetchConsumableforService(result.id).then(resultConsumable => {
+      if(resultConsumable && resultConsumable.id){
+        setConsumableViewOnly(true);
+
+        setConsumableData({
+          ...resultConsumable,
+          id: resultConsumable.id,
+          pricingMethod: priceMethodOptions.find(
+            (element) => element.value === resultConsumable.pricingMethod
+          ),
+          payer: options.find(
+            (element) => element.value === resultConsumable.payer
+          ),
+        });        
+      } 
+    }).catch(e => {
+      setConsumableData({
+        ...consumableData,
+        jobCode: result.jobCode,
+        jobCodeDescription: result.jobOperation,
+      });
+    })
+  }
   const makeHeaderEditable = (type) => {
     if (type === "serviceEstHeader" && serviceHeaderViewOnly)
       setServiceHeaderViewOnly(false);
-    if (value === "labor" && viewOnlyTab.laborViewOnly)
-      setViewOnlyTab({ ...viewOnlyTab, laborViewOnly: false });
-    else if (value === "consumable" && viewOnlyTab.consumableViewOnly)
-      setViewOnlyTab({
-        ...viewOnlyTab,
-        consumableViewOnly: false,
-      });
-    else if (value === "extWork" && viewOnlyTab.extWorkViewOnly)
-      setViewOnlyTab({ ...viewOnlyTab, extWorkViewOnly: false });
-    else if (value === "misc" && viewOnlyTab.miscViewOnly)
-      setViewOnlyTab({
-        ...viewOnlyTab,
-        miscViewOnly: false,
-      });
+    if (value === "labor" && laborViewOnly)
+      setLaborViewOnly(false);
+    else if (value === "consumables" && consumableViewOnly)
+      setConsumableViewOnly(false);
+    else if (value === "extWork" && extWorkViewOnly)
+      setExtWorkViewOnly(false);
+    else if (value === "misc" && miscViewOnly)
+      setMiscViewOnly(false);
   };
   // Search Vendors
   const handleVendorSearch = async (searchVendorfieldName, searchText) => {
@@ -309,8 +339,6 @@ function RepairServiceEstimate(props) {
     };
     AddServiceHeader(activeElement.oId, data)
       .then((result) => {
-        // setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
-        // setValue("machine");
         setServiceEstimateData({
           ...result,
           id: result.id,
@@ -337,8 +365,6 @@ function RepairServiceEstimate(props) {
     };
     AddLaborToService(serviceEstimateData.id, data)
       .then((result) => {
-        // setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
-        // setValue("machine");
         setLabourData({
           ...result,
           id: result.id,
@@ -353,7 +379,7 @@ function RepairServiceEstimate(props) {
           ),
         });
         handleSnack("success", "Labour details updated!");
-        setViewOnlyTab({ ...viewOnlyTab, laborViewOnly: true });
+        setLaborViewOnly(true);
       })
       .catch((err) => {
         handleSnack(
@@ -362,6 +388,130 @@ function RepairServiceEstimate(props) {
         );
       });
   };
+
+  // Add or Update consumable data
+  const updateConsumableHeader = () => {
+    let data = {
+      ...consumableData,
+      pricingMethod: consumableData.pricingMethod?.value,
+      payer: consumableData.payer?.value,
+    };
+    AddConsumableToService(serviceEstimateData.id, data)
+      .then((result) => {
+        setConsumableData({
+          ...result,
+          id: result.id,
+          pricingMethod: priceMethodOptions.find(
+            (element) => element.value === result.pricingMethod
+          ),
+          payer: options.find(
+            (element) => element.value === result.payer
+          ),
+        });
+        handleSnack("success", "Consumable details updated!");
+        setConsumableViewOnly(true);
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          "Error occurred while updating consumable data!"
+        );
+      });
+  };
+
+  // Add or Update ext work data
+  const updateExtWorkHeader = () => {
+    let data = {
+      ...extWorkData,
+      pricingMethod: consumableData.pricingMethod?.value,
+      payer: consumableData.payer?.value,
+    };
+    AddExtWorkToService(serviceEstimateData.id, data)
+      .then((result) => {
+        setConsumableData({
+          ...result,
+          id: result.id,
+          pricingMethod: priceMethodOptions.find(
+            (element) => element.value === result.pricingMethod
+          ),
+          payer: options.find(
+            (element) => element.value === result.payer
+          ),
+        });
+        handleSnack("success", "External work details updated!");
+        setExtWorkViewOnly(true);
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          "Error occurred while updating external work data!"
+        );
+      });
+  };
+
+  // Add or Update misc data
+  const updateMiscHeader = () => {
+    let data = {
+      ...miscData,
+      pricingMethod: miscData.pricingMethod?.value,
+      typeOfMisc: miscData.typeOfMisc?.value,
+      payer: consumableData.payer?.value,
+    };
+    AddMiscToService(serviceEstimateData.id, data)
+      .then((result) => {
+        setMiscData({
+          ...result,
+          id: result.id,
+          pricingMethod: priceMethodOptions.find(
+            (element) => element.value === result.pricingMethod
+          ),
+          typeOfMisc: miscTypeList.find(
+            (element) => element.value === result.typeOfMisc
+          ),
+          payer: options.find(
+            (element) => element.value === result.payer
+          ),
+        });
+        handleSnack("success", "Misc details updated!");
+        setMiscViewOnly(true);
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          "Error occurred while updating misc data!"
+        );
+      });
+  };
+
+  // Add or Update Labor Item
+  const addLaborItem = () => {
+    let data = {
+      ...labourItemData,
+      chargeCode: labourItemData.chargeCode?.value,
+      laborType: labourItemData.laborType?.value,
+      serviceType: labourItemData.serviceType?.value,
+      unitOfMeasure: labourItemData.unitOfMeasure?.value,
+    };
+    //TODO: Remove this once these fields are added.
+    delete data.travelCharge;
+    delete data.travelIncluded;
+    delete data.inspectionIncluded;
+    delete data.inspectionCharge;
+
+    AddLaborItemToLabor(labourData.id, data)
+      .then((result) => {
+        console.log(result);
+        populateLaborItems(labourData);
+        handleSnack("success", "Added labor item successfully");
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          "Error occurred while adding labor item!"
+        );
+      });
+  };
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -393,24 +543,6 @@ function RepairServiceEstimate(props) {
     },
   };
   const masterColumns = [
-    {
-      name: (
-        <>
-          <div>Select</div>
-        </>
-      ),
-      // selector: (row) => row.check1,
-      wrap: true,
-      sortable: true,
-      maxWidth: "300px",
-      cell: (row) => (
-        <Checkbox
-          className="text-black"
-          // checked={row.check1}
-          // onChange={(e) => handleCheckboxData(e, row)}
-        />
-      ),
-    },
     {
       name: (
         <>
@@ -615,76 +747,74 @@ function RepairServiceEstimate(props) {
     obj.inputSearch = e.target.value;
   };
 
-  const rows = [
-    {
-      id: 1,
-      GroupNumber: "Snow",
-      Type: "Jon",
-      Partnumber: 35,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Inconsistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Created: "Created On",
-      Total: "25",
-      Status: "Status",
-      Actions: "Action",
-    },
-    {
-      id: 2,
-      GroupNumber: "Lannister",
-      Type: "Cersei",
-      Partnumber: 42,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Consistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Created: "Created On",
-      Total: "25",
-      Status: "Status",
-      Actions: "Action",
-    },
-    {
-      id: 3,
-      GroupNumber: "Lannister",
-      Type: "Jaime",
-      Partnumber: 45,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Consistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Created: "Created On",
-      Total: "25",
-      Status: "Status",
-      Actions: "Action",
-    },
-  ];
+  let [laborItems, setLaborItems] = useState([]);
+  // let rows = [
+  //   {
+  //     id: 1,
+  //     chargeCode: "Snow",
+  //     laborType: "Jon",
+  //     serviceType: 35,
+  //     unitOfMeasure: "pending",
+  //     estimatedHours: "Open",
+  //     unitPrice: "Inconsistent",
+  //     extendedPrice: "Inconsistent",
+  //     comments: "Inconsistent",
+  //     currency: "Created On",
+  //     totalPrice: "25",
+  //     Actions: "Action",
+  //   },
+  //   {
+  //     id: 2,
+  //     chargeCode: "Snow",
+  //     laborType: "Jon",
+  //     serviceType: 35,
+  //     unitOfMeasure: "pending",
+  //     estimatedHours: "Open",
+  //     unitPrice: "Inconsistent",
+  //     extendedPrice: "Inconsistent",
+  //     comments: "Inconsistent",
+  //     currency: "Created On",
+  //     totalPrice: "25",
+  //     Actions: "Action",
+  //   },
+  //   {
+  //     id: 3,
+  //     chargeCode: "Snow",
+  //     laborType: "Jon",
+  //     serviceType: 35,
+  //     unitOfMeasure: "pending",
+  //     estimatedHours: "Open",
+  //     unitPrice: "Inconsistent",
+  //     extendedPrice: "Inconsistent",
+  //     comments: "Inconsistent",
+  //     currency: "Created On",
+  //     totalPrice: "25",
+  //     Actions: "Action",
+  //   },
+  // ];
 
-  const columns = [
-    { field: "GroupNumber", headerName: "Charge Code", flex: 1, width: 70 },
-    { field: "Type", headerName: "Labor Type", flex: 1, width: 130 },
-    { field: "Partnumber", headerName: "Service Type", flex: 1, width: 130 },
+  const laborColumns = [
+    { field: "chargeCode", headerName: "Charge Code", flex: 1, width: 70 },
+    { field: "laborType", headerName: "Labor Type", flex: 1, width: 130 },
+    { field: "serviceType", headerName: "Service Type", flex: 1, width: 130 },
     {
-      field: "PriceExtended",
+      field: "unitOfMeasure",
       headerName: "Unit of measure",
       flex: 1,
       width: 130,
     },
     {
-      field: "Pricecurrency",
+      field: "estimatedHours",
       headerName: "Estimated hours",
       flex: 1,
       width: 130,
     },
-    { field: "Usage", headerName: "Unit Price", flex: 1, width: 130 },
-    { field: "TotalPrice", headerName: "Extended Price", flex: 1, width: 130 },
-    { field: "Comments", headerName: "Comments", flex: 1, width: 130 },
-    { field: "Created", headerName: "Currency", flex: 1, width: 130 },
-    { field: "Total", headerName: "Total Price", flex: 1, width: 130 },
-    { field: "Actions", headerName: "Action", flex: 1, width: 130 },
+    { field: "unitPrice", headerName: "Unit Price", flex: 1, width: 130 },
+    { field: "extendedPrice", headerName: "Extended Price", flex: 1, width: 130 },
+    { field: "comment", headerName: "Comments", flex: 1, width: 130 },
+    { field: "currency", headerName: "Currency", flex: 1, width: 130 },
+    { field: "totalPrice", headerName: "Total Price", flex: 1, width: 130 },
+    { field: "Actions", headerName: "Actions", flex: 1, width: 130 },
   ];
 
   const rowsConsumables = [
@@ -859,7 +989,7 @@ function RepairServiceEstimate(props) {
         severity={severity}
         message={snackMessage}
       />
-      {serviceEstHeaderLoading ? (
+      {serviceEstHeaderLoading ? 
         <div className="d-flex align-items-center justify-content-center">
           <Loader
             type="spinner-default"
@@ -869,7 +999,7 @@ function RepairServiceEstimate(props) {
             size={35}
           />
         </div>
-      ) : (
+       : (
         <div class="container-fluid">
           <div className="card p-4 mt-5">
             <h5 className="d-flex align-items-center bg-primary p-2 border-radius-10 mb-0">
@@ -1105,12 +1235,10 @@ function RepairServiceEstimate(props) {
                   >
                     Save
                   </button>
-                  {/* <a href="#" className="btn border bg-primary text-white">
-              Save
-            </a> */}
                 </div>
               </>
             ) : (
+              <>
               <div className="row mt-4">
                 <div className="col-md-4 col-sm-4">
                   <div class="form-group mt-3">
@@ -1204,10 +1332,38 @@ function RepairServiceEstimate(props) {
                     </h6>
                   </div>
                 </div>
+
               </div>
+                              <div className=" text-right">
+                              <button
+                                className="btn bg-primary text-white"
+                                onClick={() =>
+                                  setActiveElement({ ...activeElement, name: "operation" })
+                                }
+                              >
+                                Back
+                              </button> 
+                              </div>
+                              </>
             )}
           </div>
           <div className="card p-4 mt-5">
+          <h5 className="d-flex align-items-center mb-2">
+
+          <div className="" style={{ display: "contents" }}>
+            <span className="mr-3">Header</span>
+            <a
+                  href={undefined}
+                  className="ml-3"
+                  style={{ cursor: "pointer" }}
+                >
+                  <EditOutlinedIcon
+                    onClick={() => makeHeaderEditable()}
+                  />
+                </a>
+            </div>
+            
+            </h5>
             <Box sx={{ width: "100%", typography: "body1" }}>
               <TabContext value={value}>
                 <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -1219,7 +1375,7 @@ function RepairServiceEstimate(props) {
                   </TabList>
                 </Box>
                 <TabPanel value="labor">
-                  <div className="col-md-12 col-sm-12">
+                  {!labourData.id && <div className="col-md-12 col-sm-12">
                     <div className=" d-flex justify-content-between align-items-center">
                       <div>
                         <FormGroup>
@@ -1236,10 +1392,10 @@ function RepairServiceEstimate(props) {
                         </FormGroup>
                       </div>
                     </div>
-                  </div>
+                  </div>}
                   {flagRequired.flagLaborReq && (
                     <React.Fragment>
-                      {!viewOnlyTab.laborViewOnly ? (
+                      {!laborViewOnly ? (
                         <div className="row mt-2 input-fields">
                           <div className="col-md-4 col-sm-4">
                             <div class="form-group mt-3">
@@ -1516,23 +1672,34 @@ function RepairServiceEstimate(props) {
                             </div>
                           </div>
                         </div>
-                        <div
+                        {/* <div
                           className=""
                           style={{
-                            height: 400,
+                            height: 300,
                             width: "100%",
                             backgroundColor: "#fff",
                           }}
-                        >
-                          <DataTable
-                            className=""
-                            title=""
-                            columns={masterColumns}
-                            data={rows}
-                            customStyles={customStyles}
-                            pagination
+                        > */}
+                          <DataGrid
+                            sx={{
+                              "& .MuiDataGrid-columnHeaders": {
+                                backgroundColor: "#872ff7",
+                                color: "#fff",
+                                fontSize: 12,
+                              },
+                              minHeight: 300,
+                              "& .MuiDataGrid-cellContent": {
+                                fontSize: 12,
+                              },
+                            }}
+                              
+                            rows={laborItems}
+                            columns={laborColumns}
+                            pageSize={5}
+                            rowsPerPageOptions={[5]}
+                            onCellClick={(e) => handleRowClick(e)}
                           />
-                        </div>
+                        {/* </div> */}
                         <div className=" text-right mt-3">
                           <a
                             href="#"
@@ -1546,7 +1713,7 @@ function RepairServiceEstimate(props) {
                   )}
                 </TabPanel>
                 <TabPanel value="consumables">
-                  <div className="col-md-12 col-sm-12">
+                {!consumableData.id && <div className="col-md-12 col-sm-12">
                     <div className=" d-flex justify-content-between align-items-center">
                       <div>
                         <FormGroup>
@@ -1563,10 +1730,10 @@ function RepairServiceEstimate(props) {
                         </FormGroup>
                       </div>
                     </div>
-                  </div>
+                  </div>}
                   {flagRequired.flagConsumableReq && (
                     <React.Fragment>
-                      {!viewOnlyTab.consumableViewOnly ? (
+                      {!consumableViewOnly ? (
                         <div className="row mt-2 input-fields">
                           <div className="col-md-4 col-sm-4">
                             <div class="form-group mt-3">
@@ -1673,9 +1840,13 @@ function RepairServiceEstimate(props) {
                           </div>
                           <div className="col-md-12">
                             <div class="form-group mt-3 mb-0 text-right">
-                              <a href="#" className="btn bg-primary text-white">
+                            <button
+                                type="button"
+                                className="btn btn-light bg-primary text-white"
+                                onClick={updateConsumableHeader}
+                              >
                                 Save
-                              </a>
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -1749,7 +1920,7 @@ function RepairServiceEstimate(props) {
                       <div className="">
                         <div className="bg-primary px-3 mb-3">
                           <div className="row align-items-center">
-                            <div className="col-11 mx-2">
+                            <div className="col-10 mx-5">
                               <div className="d-flex align-items-center bg-primary w-100">
                                 <div
                                   className="d-flex mr-3"
@@ -1921,7 +2092,6 @@ function RepairServiceEstimate(props) {
                                             d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
                                           />
                                         </svg>
-                                        {/* <DeleteIcon className="font-size-16" /> */}
                                       </Link>
                                     </div>
                                   </div>
@@ -1933,8 +2103,8 @@ function RepairServiceEstimate(props) {
         </div> */}
                               </div>
                             </div>
-                            <div className="col-1">
-                              <div className="text-center border-left pl-3 py-3">
+                            <div className="">
+                              <div className="text-center border-left pl-1 py-3">
                                 <Link
                                   onClick={() => setOpen3(true)}
                                   to="#"
@@ -1984,7 +2154,7 @@ function RepairServiceEstimate(props) {
                   )}
                 </TabPanel>
                 <TabPanel value="extwork">
-                  <div className="col-md-12 col-sm-12">
+                {!extWorkData.id && <div className="col-md-12 col-sm-12">
                     <div className=" d-flex justify-content-between align-items-center">
                       <div>
                         <FormGroup>
@@ -2002,10 +2172,10 @@ function RepairServiceEstimate(props) {
                         </FormGroup>
                       </div>
                     </div>
-                  </div>
+                  </div>}
                   {flagRequired.flagExtWorkReq && (
                     <React.Fragment>
-                      {!viewOnlyTab.extWorkViewOnly ? (
+                      {!extWorkViewOnly ? (
                         <div className="row mt-2 input-fields">
                           <div className="col-md-4 col-sm-4">
                             <div class="form-group mt-3">
@@ -2132,9 +2302,13 @@ function RepairServiceEstimate(props) {
                           </div>
                           <div className="col-md-12">
                             <div class="form-group mt-3 mb-0 text-right">
-                              <a href="#" className="btn bg-primary text-white">
+                            <button
+                                type="button"
+                                className="btn btn-light bg-primary text-white"
+                                onClick={updateExtWorkHeader}
+                              >
                                 Save
-                              </a>
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -2217,7 +2391,7 @@ function RepairServiceEstimate(props) {
                       <div className="">
                         <div className="bg-primary px-3 mb-3">
                           <div className="row align-items-center">
-                            <div className="col-11 mx-2">
+                            <div className="col-10 mx-5">
                               <div className="d-flex align-items-center bg-primary w-100">
                                 <div
                                   className="d-flex mr-3"
@@ -2447,7 +2621,7 @@ function RepairServiceEstimate(props) {
                   )}
                 </TabPanel>
                 <TabPanel value="othrMisc">
-                  <div className="col-md-12 col-sm-12">
+                {!miscData.id && <div className="col-md-12 col-sm-12">
                     <div className=" d-flex justify-content-between align-items-center">
                       <div>
                         <FormGroup>
@@ -2465,10 +2639,10 @@ function RepairServiceEstimate(props) {
                         </FormGroup>
                       </div>
                     </div>
-                  </div>
+                  </div>}
                   {flagRequired.flagMiscReq && (
                     <React.Fragment>
-                      {!viewOnlyTab.miscViewOnly ? (
+                      {!miscViewOnly ? (
                         <div className="row mt-2 input-fields">
                           <div className="col-md-4 col-sm-4">
                             <div class="form-group mt-3">
@@ -2539,8 +2713,9 @@ function RepairServiceEstimate(props) {
                               </label>
                               <Select
                                 defaultValue={selectedOption}
-                                onChange={setSelectedOption}
-                                options={options}
+                                onChange={(e) => setMiscData({...miscData, typeOfMisc: e })}
+                                options={miscTypeList}
+                                value={miscData.typeOfMisc}
                                 placeholder="Required"
                               />
                             </div>
@@ -2576,9 +2751,13 @@ function RepairServiceEstimate(props) {
                           </div>
                           <div className="col-md-12">
                             <div class="form-group mt-3 mb-0 text-right">
-                              <a href="#" className="btn bg-primary text-white">
+                            <button
+                                type="button"
+                                className="btn btn-light bg-primary text-white"
+                                onClick={updateMiscHeader}
+                              >
                                 Save
-                              </a>
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -2834,6 +3013,7 @@ function RepairServiceEstimate(props) {
                         </label>
                         <input
                           type="text"
+                          disabled
                           class="form-control border-radius-10"
                           id="exampleInputEmail1"
                           placeholder="Required"
@@ -2865,11 +3045,11 @@ function RepairServiceEstimate(props) {
                           type="text"
                           class="form-control border-radius-10"
                           placeholder="Optional"
-                          value={labourItemData.comments}
+                          value={labourItemData.comment}
                           onChange={(e) =>
                             setLabourItemData({
                               ...labourItemData,
-                              comments: e.target.value,
+                              comment: e.target.value,
                             })
                           }
                         />
@@ -2973,9 +3153,13 @@ function RepairServiceEstimate(props) {
                     {" "}
                     Cancel
                   </a>
-                  <a href="#" className="btn text-white bg-primary">
+                  <button
+                    type="button"
+                    className="btn btn-light bg-primary text-white"
+                    onClick={addLaborItem}
+                  >
                     Save
-                  </a>
+                  </button>
                 </div>
               </div>
             </Modal.Body>
@@ -3230,7 +3414,7 @@ function RepairServiceEstimate(props) {
                         <Select
                           defaultValue={selectedOption}
                           onChange={setSelectedOption}
-                          options={options}
+                          options={activityIdList}
                           placeholder="Required"
                         />
                       </div>

@@ -14,6 +14,8 @@ import {
 import SearchBox from "./components/SearchBox";
 import { NEW_SEGMENT } from "./CONSTANTS";
 import Loader from "react-js-loader";
+import { useDispatch } from "react-redux";
+import { repairActions } from "./dropdowns/repairSlice";
 
 function WithoutSpareParts(props) {
   // const { state } = props.location;
@@ -46,7 +48,9 @@ function WithoutSpareParts(props) {
     id: "",
   };
   const [segmentData, setSegmentData] = useState(newSegment);
+  const dispatch = useDispatch();
   useEffect(() => {
+    dispatch(repairActions.fetchDropdowns());
     fetchSegmentsOfBuilder();
   }, []);
 

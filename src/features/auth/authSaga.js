@@ -31,7 +31,7 @@ function* handleLogin(payload: LoginPayload) {
       localStorage.setItem('user_userId', res.data.userId);
       localStorage.setItem('user_userEmail', res.data.userEmail);
       localStorage.setItem('user_accessToken', res.data.accessToken);
-      localStorage.setItem('access_token', `Bearer ${res.data.accessToken}`);
+      localStorage.setItem('access_token', res.data.accessToken ? `Bearer ${res.data.accessToken}` : '');
       localStorage.setItem('user_roles', res.data.roles);
       localStorage.setItem('user_planId', res.data.planId);
       localStorage.setItem('user_logIn_Status', true);

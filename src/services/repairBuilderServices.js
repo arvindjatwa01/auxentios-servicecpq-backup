@@ -23,18 +23,19 @@ import {
   UPDATE_REPAIR_STATUS,
   UPLOAD_REPAIR_PARTS_TO_PARTLIST,
   OPERATION_SERVICE,
-  CONSUMABLE_TO_SERVICE,
-  EXTWORK_TO_SERVICE,
-  MISC_TO_SERVICE,
   OPERATION_SERVICE_EST_DETAILS,
-  LABOUR_SERVICE,
+  LABOR_SERVICE,
+  CONSUMABLE_SERVICE,
+  EXTWORK_SERVICE,
+  MISC_SERVICE,
+  LABOR_ITEM,
 } from "./CONSTANTS";
 const accessToken = localStorage.getItem("access_token");
 
 const config = {
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${accessToken}`,
+    Authorization: `${accessToken}`,
   },
   // xsrfCookieName: "XSRF-TOKEN",
   // xsrfHeaderName: "X-XSRF-TOKEN",
@@ -171,15 +172,15 @@ export const FetchServiceHeader = (operationId) => {
   });
 };
 
-//fetch labour from service estimate
-export const FetchLabourforService = (serviceId) => {
-  console.log("service repairbuilder > FetchLabourforService called...");
+//fetch labor from service estimate
+export const FetchLaborforService = (serviceId) => {
+  console.log("service repairbuilder > FetchLaborforService called...");
   return new Promise((resolve, reject) => {
     try {
       axios
-        .get(LABOUR_SERVICE(serviceId), config)
+        .get(LABOR_SERVICE(serviceId), config)
         .then((res) => {
-          console.log("repairbuilder -> FetchLabourforService response: ", res);
+          console.log("repairbuilder -> FetchLaborforService response: ", res);
           if (res.status === 200) {
             resolve(res.data);
           } else {
@@ -187,11 +188,116 @@ export const FetchLabourforService = (serviceId) => {
           }
         })
         .catch((err) => {
-          console.log("FetchLabourforService > axios err=", err);
-          reject("Error in FetchLabourforService axios!");
+          console.log("FetchLaborforService > axios err=", err);
+          reject("Error in FetchLaborforService axios!");
         });
     } catch (error) {
-      console.error("FetchLabourforService general exception", error);
+      console.error("FetchLaborforService general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//fetch labor items
+export const FetchLaborItems = (laborId) => {
+  console.log("service repairbuilder > FetchLaborItems called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(LABOR_ITEM(laborId), config)
+        .then((res) => {
+          console.log("repairbuilder -> FetchLaborItems response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("FetchLaborItems > axios err=", err);
+          reject("Error in FetchLaborItems axios!");
+        });
+    } catch (error) {
+      console.error("FetchLaborforService general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//fetch consumable from service estimate
+export const FetchConsumableforService = (serviceId) => {
+  console.log("service repairbuilder > FetchConsumableforService called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(CONSUMABLE_SERVICE(serviceId), config)
+        .then((res) => {
+          console.log("repairbuilder -> FetchConsumableforService response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("FetchConsumableforService > axios err=", err);
+          reject("Error in FetchConsumableforService axios!");
+        });
+    } catch (error) {
+      console.error("FetchConsumableforService general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//fetch ext work from service estimate
+export const FetchExtWorkforService = (serviceId) => {
+  console.log("service repairbuilder > FetchExtWorkforService called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(EXTWORK_SERVICE(serviceId), config)
+        .then((res) => {
+          console.log("repairbuilder -> FetchExtWorkforService response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("FetchExtWorkforService > axios err=", err);
+          reject("Error in FetchExtWorkforService axios!");
+        });
+    } catch (error) {
+      console.error("FetchExtWorkforService general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//fetch misc from service estimate
+export const FetchMiscforService = (serviceId) => {
+  console.log("service repairbuilder > FetchMiscforService called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(MISC_SERVICE(serviceId), config)
+        .then((res) => {
+          console.log("repairbuilder -> FetchMiscforService response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("FetchMiscforService > axios err=", err);
+          reject("Error in FetchMiscforService axios!");
+        });
+    } catch (error) {
+      console.error("FetchMiscforService general exception", error);
       reject(SYSTEM_ERROR);
     }
   });
@@ -229,7 +335,7 @@ export const AddLaborToService = (serviceId, data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(LABOUR_SERVICE(serviceId), data, config)
+        .post(LABOR_SERVICE(serviceId), data, config)
         .then((res) => {
           console.log("repairbuilder -> AddLaborToService response: ", res);
           if (res.status === 200) {
@@ -249,13 +355,38 @@ export const AddLaborToService = (serviceId, data) => {
   });
 };
 
+//Add labor item to the labor of a builder
+export const AddLaborItemToLabor = (laborId, data) => {
+  console.log("service repairbuilder > AddLaborItemToLabor called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(LABOR_ITEM(laborId), data, config)
+        .then((res) => {
+          console.log("repairbuilder -> AddLaborItemToLabor response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("AddLaborItemToLabor > axios err=", err);
+          reject("Error in AddLaborItemToLabor axios!");
+        });
+    } catch (error) {
+      console.error("AddLaborItemToLabor general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
 //Add Consumable to the service estimate of a builder
 export const AddConsumableToService = (serviceId, data) => {
   console.log("service repairbuilder > AddConsumableToService called...");
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(CONSUMABLE_TO_SERVICE(serviceId), data, config)
+        .post(CONSUMABLE_SERVICE(serviceId), data, config)
         .then((res) => {
           console.log("repairbuilder -> AddConsumableToService response: ", res);
           if (res.status === 200) {
@@ -281,7 +412,7 @@ export const AddExtWorkToService = (serviceId, data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(EXTWORK_TO_SERVICE(serviceId), data, config)
+        .post(EXTWORK_SERVICE(serviceId), data, config)
         .then((res) => {
           console.log("repairbuilder -> AddExtWorkToService response: ", res);
           if (res.status === 200) {
@@ -307,7 +438,7 @@ export const AddMiscToService = (serviceId, data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(MISC_TO_SERVICE(serviceId), data, config)
+        .post(MISC_SERVICE(serviceId), data, config)
         .then((res) => {
           console.log("repairbuilder -> AddMiscToService response: ", res);
           if (res.status === 200) {
