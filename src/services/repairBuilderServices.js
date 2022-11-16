@@ -225,6 +225,33 @@ export const FetchLaborItems = (laborId) => {
   });
 };
 
+
+//Remove labor item
+export const RemoveLaborItem = (laborId, laborItemId) => {
+  console.log("service repairbuilder > removeLaborItem called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .delete(LABOR_ITEM(laborId)+`/${laborItemId}`, config)
+        .then((res) => {
+          console.log("repairbuilder -> removeLaborItem response: ", res);
+          if (res.status === 200) {
+            resolve("Successfully removed the item!");
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("removeLaborItem > axios err=", err);
+          reject("Error in removeLaborItem axios!");
+        });
+    } catch (error) {
+      console.error("removeLaborItem general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 //fetch consumable from service estimate
 export const FetchConsumableforService = (serviceId) => {
   console.log("service repairbuilder > FetchConsumableforService called...");

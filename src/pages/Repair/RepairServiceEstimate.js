@@ -11,7 +11,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import $ from "jquery";
 import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
@@ -31,7 +31,8 @@ import {
   AddMiscToService,
   FetchConsumableforService,
   AddLaborItemToLabor,
-  FetchLaborItems
+  FetchLaborItems,
+  RemoveLaborItem,
 } from "services/repairBuilderServices";
 import Moment from "react-moment";
 import { useAppSelector } from "app/hooks";
@@ -52,10 +53,12 @@ import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import SearchBox from "./components/SearchBox";
 import { getVendors } from "services/searchServices";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
+import AddLaborItemModal from "./components/AddLaborItem";
 
 function RepairServiceEstimate(props) {
   const { activeElement, setActiveElement } = props.builderDetails;
   const [serviceEstHeaderLoading, setServiceEstHeaderLoading] = useState(true);
+
   const [flagRequired, setFlagRequired] = useState({
     flagLaborReq: true,
     flagConsumableReq: true,
@@ -73,17 +76,7 @@ function RepairServiceEstimate(props) {
     netPrice: "",
     jobCode: "",
   });
-  const [labourData, setLabourData] = useState({
-    jobCode: "",
-    jobCodeDescription: "",
-    laborCode: "",
-    pricingMethod: "",
-    ratePerHourOrDay: 0,
-    totalPrice: 0.0,
-    payer: "",
-    adjustedPrice: 0.0,
-  });
-  const [labourItemData, setLabourItemData] = useState({
+  const initialLaborItemData = {
     chargeCode: "",
     laborType: "",
     serviceType: "",
@@ -98,7 +91,18 @@ function RepairServiceEstimate(props) {
     travelCharge: 0.0,
     inspectionIncluded: true,
     inspectionCharge: 0.0,
+  };
+  const [labourData, setLabourData] = useState({
+    jobCode: "",
+    jobCodeDescription: "",
+    laborCode: "",
+    pricingMethod: "",
+    ratePerHourOrDay: 0,
+    totalPrice: 0.0,
+    payer: "",
+    adjustedPrice: 0.0,
   });
+  const [labourItemData, setLabourItemData] = useState(initialLaborItemData);
   const [consumableData, setConsumableData] = useState({
     jobCode: "",
     jobCodeDescription: "",
@@ -131,10 +135,10 @@ function RepairServiceEstimate(props) {
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
-  const [laborViewOnly,setLaborViewOnly] = useState(false);
-  const [consumableViewOnly,setConsumableViewOnly] = useState(false);
-  const [extWorkViewOnly,setExtWorkViewOnly] = useState(false);
-  const [miscViewOnly,setMiscViewOnly] = useState(false);
+  const [laborViewOnly, setLaborViewOnly] = useState(false);
+  const [consumableViewOnly, setConsumableViewOnly] = useState(false);
+  const [extWorkViewOnly, setExtWorkViewOnly] = useState(false);
+  const [miscViewOnly, setMiscViewOnly] = useState(false);
   const [serviceHeaderViewOnly, setServiceHeaderViewOnly] = useState(false);
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -166,13 +170,15 @@ function RepairServiceEstimate(props) {
   const laborCodeList = useAppSelector(
     selectDropdownOption(selectLaborCodeList)
   );
-  const miscTypeList = useAppSelector(
-    selectDropdownOption(selectMiscTypeList)
-  );
+  const miscTypeList = useAppSelector(selectDropdownOption(selectMiscTypeList));
 
   const priceMethodOptions = useAppSelector(
     selectDropdownOption(selectPricingMethodList)
   );
+  const unitOfMeasureOptions = [
+    { label: "Hours", value: "Hours" },
+    { label: "Days", value: "Days" },
+  ];
   const activityIdList = useAppSelector(
     selectDropdownOption(selectActivityIdList)
   );
@@ -202,8 +208,8 @@ function RepairServiceEstimate(props) {
           });
           setServiceHeaderViewOnly(result.id ? true : false);
           populateLaborData(result);
-          populateConsumableData(result);      
-          
+          populateConsumableData(result);
+
           setExtWorkData({
             ...extWorkData,
             jobCode: result.jobCode,
@@ -223,85 +229,87 @@ function RepairServiceEstimate(props) {
           );
           setServiceEstHeaderLoading(false);
         });
-      
     }
   }, []);
 
-  function populateLaborData (result) {
-    FetchLaborforService(result.id).then(resultLabour => {
-      if(resultLabour && resultLabour.id){
+  function populateLaborData(result) {
+    FetchLaborforService(result.id)
+      .then((resultLabour) => {
+        if (resultLabour && resultLabour.id) {
+          setLabourData({
+            ...resultLabour,
+            id: resultLabour.id,
+            pricingMethod: priceMethodOptions.find(
+              (element) => element.value === resultLabour.pricingMethod
+            ),
+            laborCode: laborCodeList.find(
+              (element) => element.value === resultLabour.laborCode
+            ),
+            payer: options.find(
+              (element) => element.value === resultLabour.payer
+            ),
+          });
+          populateLaborItems(resultLabour);
+          setLaborViewOnly(true);
+        }
+      })
+      .catch((e) => {
         setLabourData({
-          ...resultLabour,
-          id: resultLabour.id,
-          pricingMethod: priceMethodOptions.find(
-            (element) => element.value === resultLabour.pricingMethod
-          ),
-          laborCode: laborCodeList.find(
-            (element) => element.value === resultLabour.laborCode
-          ),
-          payer: options.find(
-            (element) => element.value === resultLabour.payer
-          ),
+          ...labourData,
+          jobCode: result.jobCode,
+          jobCodeDescription: result.jobOperation,
         });
-        populateLaborItems(resultLabour);
-        setLaborViewOnly(true);
-      } 
-    }).catch(e => {
-      setLabourData({
-        ...labourData,
-        jobCode: result.jobCode,
-        jobCodeDescription: result.jobOperation,
       });
-    })
   }
 
-  function populateLaborItems (result) {
-    FetchLaborItems(result.id).then(resultLabourItems => {
-      if(resultLabourItems && resultLabourItems.result.length > 0){
-        setLaborItems(resultLabourItems.result);
+  function populateLaborItems(result) {
+    FetchLaborItems(result.id)
+      .then((resultLabourItems) => {
+        if (resultLabourItems && resultLabourItems.result.length > 0) {
+          setLaborItems(resultLabourItems.result);
 
-        console.log(resultLabourItems.result); 
-      } 
-    }).catch(e => {
-      handleSnack('error', "Error occurred while fetching labor items");
-    })
+          console.log(resultLabourItems.result);
+        }
+      })
+      .catch((e) => {
+        handleSnack("error", "Error occurred while fetching labor items");
+      });
   }
 
   function populateConsumableData(result) {
-    FetchConsumableforService(result.id).then(resultConsumable => {
-      if(resultConsumable && resultConsumable.id){
-        setConsumableViewOnly(true);
+    FetchConsumableforService(result.id)
+      .then((resultConsumable) => {
+        if (resultConsumable && resultConsumable.id) {
+          setConsumableViewOnly(true);
 
+          setConsumableData({
+            ...resultConsumable,
+            id: resultConsumable.id,
+            pricingMethod: priceMethodOptions.find(
+              (element) => element.value === resultConsumable.pricingMethod
+            ),
+            payer: options.find(
+              (element) => element.value === resultConsumable.payer
+            ),
+          });
+        }
+      })
+      .catch((e) => {
         setConsumableData({
-          ...resultConsumable,
-          id: resultConsumable.id,
-          pricingMethod: priceMethodOptions.find(
-            (element) => element.value === resultConsumable.pricingMethod
-          ),
-          payer: options.find(
-            (element) => element.value === resultConsumable.payer
-          ),
-        });        
-      } 
-    }).catch(e => {
-      setConsumableData({
-        ...consumableData,
-        jobCode: result.jobCode,
-        jobCodeDescription: result.jobOperation,
+          ...consumableData,
+          jobCode: result.jobCode,
+          jobCodeDescription: result.jobOperation,
+        });
       });
-    })
   }
   const makeHeaderEditable = (type) => {
     if (type === "serviceEstHeader" && serviceHeaderViewOnly)
       setServiceHeaderViewOnly(false);
-    if (value === "labor" && laborViewOnly)
-      setLaborViewOnly(false);
+    if (value === "labor" && laborViewOnly) setLaborViewOnly(false);
     else if (value === "consumables" && consumableViewOnly)
       setConsumableViewOnly(false);
-    else if (value === "extWork" && extWorkViewOnly)
-      setExtWorkViewOnly(false);
-    else if (value === "misc" && miscViewOnly)
-      setMiscViewOnly(false);
+    else if (value === "extWork" && extWorkViewOnly) setExtWorkViewOnly(false);
+    else if (value === "misc" && miscViewOnly) setMiscViewOnly(false);
   };
   // Search Vendors
   const handleVendorSearch = async (searchVendorfieldName, searchText) => {
@@ -374,9 +382,7 @@ function RepairServiceEstimate(props) {
           laborCode: laborCodeList.find(
             (element) => element.value === result.laborCode
           ),
-          payer: options.find(
-            (element) => element.value === result.payer
-          ),
+          payer: options.find((element) => element.value === result.payer),
         });
         handleSnack("success", "Labour details updated!");
         setLaborViewOnly(true);
@@ -404,18 +410,13 @@ function RepairServiceEstimate(props) {
           pricingMethod: priceMethodOptions.find(
             (element) => element.value === result.pricingMethod
           ),
-          payer: options.find(
-            (element) => element.value === result.payer
-          ),
+          payer: options.find((element) => element.value === result.payer),
         });
         handleSnack("success", "Consumable details updated!");
         setConsumableViewOnly(true);
       })
       .catch((err) => {
-        handleSnack(
-          "error",
-          "Error occurred while updating consumable data!"
-        );
+        handleSnack("error", "Error occurred while updating consumable data!");
       });
   };
 
@@ -434,9 +435,7 @@ function RepairServiceEstimate(props) {
           pricingMethod: priceMethodOptions.find(
             (element) => element.value === result.pricingMethod
           ),
-          payer: options.find(
-            (element) => element.value === result.payer
-          ),
+          payer: options.find((element) => element.value === result.payer),
         });
         handleSnack("success", "External work details updated!");
         setExtWorkViewOnly(true);
@@ -468,18 +467,13 @@ function RepairServiceEstimate(props) {
           typeOfMisc: miscTypeList.find(
             (element) => element.value === result.typeOfMisc
           ),
-          payer: options.find(
-            (element) => element.value === result.payer
-          ),
+          payer: options.find((element) => element.value === result.payer),
         });
         handleSnack("success", "Misc details updated!");
         setMiscViewOnly(true);
       })
       .catch((err) => {
-        handleSnack(
-          "error",
-          "Error occurred while updating misc data!"
-        );
+        handleSnack("error", "Error occurred while updating misc data!");
       });
   };
 
@@ -501,148 +495,61 @@ function RepairServiceEstimate(props) {
     AddLaborItemToLabor(labourData.id, data)
       .then((result) => {
         console.log(result);
+        setLabourItemData(initialLaborItemData);
         populateLaborItems(labourData);
         handleSnack("success", "Added labor item successfully");
       })
       .catch((err) => {
-        handleSnack(
-          "error",
-          "Error occurred while adding labor item!"
-        );
+        handleSnack("error", "Error occurred while adding labor item!");
       });
   };
 
+  // Open Labor item to view or edit
+  const openLaborRow = (row) => {
+    setLabourItemData({
+      ...row,
+      chargeCode: chargeCodeList.find(
+        (element) => element.value === row.chargeCode
+      ),
+      laborType: laborTypeList.find(
+        (element) => element.value === row.laborType
+      ),
+      serviceType: serviceTypeList.find(
+        (element) => element.value === row.serviceType
+      ),
+      unitOfMeasure: unitOfMeasureOptions.find(
+        (element) => element.value === row.unitOfMeasure
+      ),
+    });
+    // setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
+    // setPartFieldViewonly(true);
+    setLaborItemOpen(true);
+  };
+  //Remove Labor Item
+  const handleDeleteLaborItem = (laborItemId) => {
+    RemoveLaborItem(labourData.id, laborItemId)
+      .then((res) => {
+        handleSnack("success", res);
+        populateLaborItems(labourData);
+      })
+      .catch((e) => {
+        console.log(e);
+        handleSnack("error", "Error occurred while removing the labor item");
+      });
+  };
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  const [open2, setOpen2] = React.useState(false);
+  const [laborItemOpen, setLaborItemOpen] = React.useState(false);
   const [open3, setOpen3] = React.useState(false);
   const [open4, setOpen4] = React.useState(false);
   const handleClose4 = () => setOpen4(false);
   const handleClose3 = () => setOpen3(false);
-  const handleClose2 = () => setOpen2(false);
-  const customStyles = {
-    rows: {
-      style: {
-        minHeight: "72px", // override the row height
-      },
-    },
-    headCells: {
-      style: {
-        paddingLeft: "8px", // override the cell padding for head cells
-        paddingRight: "8px",
-        backgroundColor: "#872ff7",
-        color: "#fff",
-      },
-    },
-    cells: {
-      style: {
-        paddingLeft: "8px", // override the cell padding for data cells
-        paddingRight: "8px",
-      },
-    },
+  const handleLaborItemClose = () => {
+    setLaborItemOpen(false);
+    setLabourItemData(initialLaborItemData);
   };
-  const masterColumns = [
-    {
-      name: (
-        <>
-          <div>Group Number</div>
-        </>
-      ),
-      selector: (row) => row.GroupNumber,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.GroupNumber,
-    },
-    {
-      name: (
-        <>
-          <div>Type</div>
-        </>
-      ),
-      selector: (row) => row.Type,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.Type,
-    },
-    {
-      name: (
-        <>
-          <div>Part number</div>
-        </>
-      ),
-      selector: (row) => row.Partnumber,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.Partnumber,
-    },
-    {
-      name: (
-        <>
-          <div>Price Extended</div>
-        </>
-      ),
-      selector: (row) => row.PriceExtended,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.PriceExtended,
-    },
-    {
-      name: (
-        <>
-          <div>Price currency</div>
-        </>
-      ),
-      selector: (row) => row.Pricecurrency,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.Pricecurrency,
-    },
-    {
-      name: (
-        <>
-          <div>Usage</div>
-        </>
-      ),
-      selector: (row) => row.Usage,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.Usage,
-    },
-    {
-      name: (
-        <>
-          <div>Total Price</div>
-        </>
-      ),
-      selector: (row) => row.TotalPrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.TotalPrice,
-    },
-    {
-      name: (
-        <>
-          <div>Comments</div>
-        </>
-      ),
-      selector: (row) => row.Comments,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.Comments,
-    },
-    {
-      name: (
-        <>
-          <div>Actions</div>
-        </>
-      ),
-      selector: (row) => row.Actions,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.Actions,
-    },
-  ];
+
   const [show, setShow] = React.useState(false);
   const [count, setCount] = useState(1);
   const options = [
@@ -810,11 +717,40 @@ function RepairServiceEstimate(props) {
       width: 130,
     },
     { field: "unitPrice", headerName: "Unit Price", flex: 1, width: 130 },
-    { field: "extendedPrice", headerName: "Extended Price", flex: 1, width: 130 },
+    {
+      field: "extendedPrice",
+      headerName: "Extended Price",
+      flex: 1,
+      width: 130,
+    },
     { field: "comment", headerName: "Comments", flex: 1, width: 130 },
     { field: "currency", headerName: "Currency", flex: 1, width: 130 },
     { field: "totalPrice", headerName: "Total Price", flex: 1, width: 130 },
-    { field: "Actions", headerName: "Actions", flex: 1, width: 130 },
+    {
+      field: "Actions",
+      headerName: "Actions",
+      type: "actions",
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={<EditOutlinedIcon />}
+            label="Edit"
+            className="textPrimary"
+            onClick={() => openLaborRow(params.row)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={<DeleteIcon />}
+            label="Delete"
+            onClick={() => handleDeleteLaborItem(params.row.id)}
+            color="inherit"
+          />,
+        ];
+      },
+      flex: 1,
+      width: 130,
+    },
   ];
 
   const rowsConsumables = [
@@ -989,7 +925,7 @@ function RepairServiceEstimate(props) {
         severity={severity}
         message={snackMessage}
       />
-      {serviceEstHeaderLoading ? 
+      {serviceEstHeaderLoading ? (
         <div className="d-flex align-items-center justify-content-center">
           <Loader
             type="spinner-default"
@@ -999,7 +935,7 @@ function RepairServiceEstimate(props) {
             size={35}
           />
         </div>
-       : (
+      ) : (
         <div class="container-fluid">
           <div className="card p-4 mt-5">
             <h5 className="d-flex align-items-center bg-primary p-2 border-radius-10 mb-0">
@@ -1239,130 +1175,125 @@ function RepairServiceEstimate(props) {
               </>
             ) : (
               <>
-              <div className="row mt-4">
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <p className="font-size-12 font-weight-600 mb-2">
-                      REFERENCE
-                    </p>
-                    <h6 className="font-weight-600">
-                      {serviceEstimateData.reference}
-                    </h6>
+                <div className="row mt-4">
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <p className="font-size-12 font-weight-600 mb-2">
+                        REFERENCE
+                      </p>
+                      <h6 className="font-weight-600">
+                        {serviceEstimateData.reference}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <p className="font-size-12 font-weight-600 mb-2">
+                        DESCRIPTION{" "}
+                      </p>
+                      <h6 className="font-weight-600">
+                        {serviceEstimateData.description}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <p className="font-size-12 font-weight-600 mb-2">
+                        SEGMENT TITLE
+                      </p>
+                      <h6 className="font-weight-600">
+                        {serviceEstimateData.segmentTitle}{" "}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <p className="font-size-12 font-weight-600 mb-2">
+                        JOB OPERATION
+                      </p>
+                      <h6 className="font-weight-600">
+                        {serviceEstimateData.jobOperation}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <p className="font-size-12 font-weight-600 mb-2">
+                        PRICE METHOD
+                      </p>
+                      <h6 className="font-weight-600">
+                        {serviceEstimateData.priceMethod?.value}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <p className="font-size-12 font-weight-600 mb-2">
+                        PRICE DATE
+                      </p>
+                      <h6 className="font-weight-600">
+                        <Moment format="DD/MM/YYYY">
+                          {serviceEstimateData.priceDate}
+                        </Moment>
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <p className="font-size-12 font-weight-600 mb-2">
+                        CURRENCY
+                      </p>
+                      <h6 className="font-weight-600">
+                        {serviceEstimateData.currency}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <p className="font-size-12 font-weight-600 mb-2">
+                        NET PRICE
+                      </p>
+                      <h6 className="font-weight-600">
+                        {serviceEstimateData.netPrice}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <p className="font-size-12 font-weight-600 mb-2">
+                        JOB CODE{" "}
+                      </p>
+                      <h6 className="font-weight-600">
+                        {serviceEstimateData.jobCode}
+                      </h6>
+                    </div>
                   </div>
                 </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <p className="font-size-12 font-weight-600 mb-2">
-                      DESCRIPTION{" "}
-                    </p>
-                    <h6 className="font-weight-600">
-                      {serviceEstimateData.description}
-                    </h6>
-                  </div>
+                <div className=" text-right">
+                  <button
+                    className="btn bg-primary text-white"
+                    onClick={() =>
+                      setActiveElement({ ...activeElement, name: "operation" })
+                    }
+                  >
+                    Back
+                  </button>
                 </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <p className="font-size-12 font-weight-600 mb-2">
-                      SEGMENT TITLE
-                    </p>
-                    <h6 className="font-weight-600">
-                      {serviceEstimateData.segmentTitle}{" "}
-                    </h6>
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <p className="font-size-12 font-weight-600 mb-2">
-                      JOB OPERATION
-                    </p>
-                    <h6 className="font-weight-600">
-                      {serviceEstimateData.jobOperation}
-                    </h6>
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <p className="font-size-12 font-weight-600 mb-2">
-                      PRICE METHOD
-                    </p>
-                    <h6 className="font-weight-600">
-                      {serviceEstimateData.priceMethod?.value}
-                    </h6>
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <p className="font-size-12 font-weight-600 mb-2">
-                      PRICE DATE
-                    </p>
-                    <h6 className="font-weight-600">
-                      <Moment format="DD/MM/YYYY">
-                        {serviceEstimateData.priceDate}
-                      </Moment>
-                    </h6>
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <p className="font-size-12 font-weight-600 mb-2">
-                      CURRENCY
-                    </p>
-                    <h6 className="font-weight-600">
-                      {serviceEstimateData.currency}
-                    </h6>
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <p className="font-size-12 font-weight-600 mb-2">
-                      NET PRICE
-                    </p>
-                    <h6 className="font-weight-600">
-                      {serviceEstimateData.netPrice}
-                    </h6>
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-4">
-                  <div class="form-group mt-3">
-                    <p className="font-size-12 font-weight-600 mb-2">
-                      JOB CODE{" "}
-                    </p>
-                    <h6 className="font-weight-600">
-                      {serviceEstimateData.jobCode}
-                    </h6>
-                  </div>
-                </div>
-
-              </div>
-                              <div className=" text-right">
-                              <button
-                                className="btn bg-primary text-white"
-                                onClick={() =>
-                                  setActiveElement({ ...activeElement, name: "operation" })
-                                }
-                              >
-                                Back
-                              </button> 
-                              </div>
-                              </>
+              </>
             )}
           </div>
           <div className="card p-4 mt-5">
-          <h5 className="d-flex align-items-center mb-2">
-
-          <div className="" style={{ display: "contents" }}>
-            <span className="mr-3">Header</span>
-            <a
+            <h5 className="d-flex align-items-center mb-2">
+              <div className="" style={{ display: "contents" }}>
+                <span className="mr-3">Header</span>
+                <a
                   href={undefined}
                   className="ml-3"
                   style={{ cursor: "pointer" }}
                 >
-                  <EditOutlinedIcon
-                    onClick={() => makeHeaderEditable()}
-                  />
+                  <EditOutlinedIcon onClick={() => makeHeaderEditable()} />
                 </a>
-            </div>
-            
+              </div>
             </h5>
             <Box sx={{ width: "100%", typography: "body1" }}>
               <TabContext value={value}>
@@ -1375,24 +1306,26 @@ function RepairServiceEstimate(props) {
                   </TabList>
                 </Box>
                 <TabPanel value="labor">
-                  {!labourData.id && <div className="col-md-12 col-sm-12">
-                    <div className=" d-flex justify-content-between align-items-center">
-                      <div>
-                        <FormGroup>
-                          <FormControlLabel
-                            control={
-                              <Switch
-                                checked={flagRequired.flagLaborReq}
-                                onChange={handleChangeSwitch}
-                                name="flagLaborReq"
-                              />
-                            }
-                            label="REQUIRED"
-                          />
-                        </FormGroup>
+                  {!labourData.id && (
+                    <div className="col-md-12 col-sm-12">
+                      <div className=" d-flex justify-content-between align-items-center">
+                        <div>
+                          <FormGroup>
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  checked={flagRequired.flagLaborReq}
+                                  onChange={handleChangeSwitch}
+                                  name="flagLaborReq"
+                                />
+                              }
+                              label="REQUIRED"
+                            />
+                          </FormGroup>
+                        </div>
                       </div>
                     </div>
-                  </div>}
+                  )}
                   {flagRequired.flagLaborReq && (
                     <React.Fragment>
                       {!laborViewOnly ? (
@@ -1660,7 +1593,7 @@ function RepairServiceEstimate(props) {
                             <div className="">
                               <div className="text-center border-left pl-2 py-3">
                                 <Link
-                                  onClick={() => setOpen2(true)}
+                                  onClick={() => setLaborItemOpen(true)}
                                   to="#"
                                   className="p-1 text-white"
                                   data-toggle="modal"
@@ -1680,25 +1613,24 @@ function RepairServiceEstimate(props) {
                             backgroundColor: "#fff",
                           }}
                         > */}
-                          <DataGrid
-                            sx={{
-                              "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#872ff7",
-                                color: "#fff",
-                                fontSize: 12,
-                              },
-                              minHeight: 300,
-                              "& .MuiDataGrid-cellContent": {
-                                fontSize: 12,
-                              },
-                            }}
-                              
-                            rows={laborItems}
-                            columns={laborColumns}
-                            pageSize={5}
-                            rowsPerPageOptions={[5]}
-                            onCellClick={(e) => handleRowClick(e)}
-                          />
+                        <DataGrid
+                          sx={{
+                            "& .MuiDataGrid-columnHeaders": {
+                              backgroundColor: "#872ff7",
+                              color: "#fff",
+                              fontSize: 12,
+                            },
+                            minHeight: 300,
+                            "& .MuiDataGrid-cellContent": {
+                              fontSize: 12,
+                            },
+                          }}
+                          rows={laborItems}
+                          columns={laborColumns}
+                          pageSize={5}
+                          rowsPerPageOptions={[5]}
+                          onCellClick={(e) => handleRowClick(e)}
+                        />
                         {/* </div> */}
                         <div className=" text-right mt-3">
                           <a
@@ -1713,24 +1645,26 @@ function RepairServiceEstimate(props) {
                   )}
                 </TabPanel>
                 <TabPanel value="consumables">
-                {!consumableData.id && <div className="col-md-12 col-sm-12">
-                    <div className=" d-flex justify-content-between align-items-center">
-                      <div>
-                        <FormGroup>
-                          <FormControlLabel
-                            control={
-                              <Switch
-                                checked={flagRequired.flagConsumableReq}
-                                onChange={handleChangeSwitch}
-                                name="flagConsumableReq"
-                              />
-                            }
-                            label="REQUIRED"
-                          />
-                        </FormGroup>
+                  {!consumableData.id && (
+                    <div className="col-md-12 col-sm-12">
+                      <div className=" d-flex justify-content-between align-items-center">
+                        <div>
+                          <FormGroup>
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  checked={flagRequired.flagConsumableReq}
+                                  onChange={handleChangeSwitch}
+                                  name="flagConsumableReq"
+                                />
+                              }
+                              label="REQUIRED"
+                            />
+                          </FormGroup>
+                        </div>
                       </div>
                     </div>
-                  </div>}
+                  )}
                   {flagRequired.flagConsumableReq && (
                     <React.Fragment>
                       {!consumableViewOnly ? (
@@ -1840,7 +1774,7 @@ function RepairServiceEstimate(props) {
                           </div>
                           <div className="col-md-12">
                             <div class="form-group mt-3 mb-0 text-right">
-                            <button
+                              <button
                                 type="button"
                                 className="btn btn-light bg-primary text-white"
                                 onClick={updateConsumableHeader}
@@ -2154,25 +2088,27 @@ function RepairServiceEstimate(props) {
                   )}
                 </TabPanel>
                 <TabPanel value="extwork">
-                {!extWorkData.id && <div className="col-md-12 col-sm-12">
-                    <div className=" d-flex justify-content-between align-items-center">
-                      <div>
-                        <FormGroup>
-                          <FormControlLabel
-                            control={
-                              <Switch
-                                checked={flagRequired.flagExtWorkReq}
-                                onChange={handleChangeSwitch}
-                                name="flagExtWorkReq"
-                              />
-                            }
-                            label="REQUIRED"
-                            value={flagRequired.flagExtWorkReq}
-                          />
-                        </FormGroup>
+                  {!extWorkData.id && (
+                    <div className="col-md-12 col-sm-12">
+                      <div className=" d-flex justify-content-between align-items-center">
+                        <div>
+                          <FormGroup>
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  checked={flagRequired.flagExtWorkReq}
+                                  onChange={handleChangeSwitch}
+                                  name="flagExtWorkReq"
+                                />
+                              }
+                              label="REQUIRED"
+                              value={flagRequired.flagExtWorkReq}
+                            />
+                          </FormGroup>
+                        </div>
                       </div>
                     </div>
-                  </div>}
+                  )}
                   {flagRequired.flagExtWorkReq && (
                     <React.Fragment>
                       {!extWorkViewOnly ? (
@@ -2302,7 +2238,7 @@ function RepairServiceEstimate(props) {
                           </div>
                           <div className="col-md-12">
                             <div class="form-group mt-3 mb-0 text-right">
-                            <button
+                              <button
                                 type="button"
                                 className="btn btn-light bg-primary text-white"
                                 onClick={updateExtWorkHeader}
@@ -2450,25 +2386,20 @@ function RepairServiceEstimate(props) {
                                                 // isClearable={true}
                                                 options={[
                                                   {
-                                                    label: "Make",
-                                                    value: "make",
+                                                    label: "ID",
+                                                    value: "ID",
                                                     id: i,
                                                   },
                                                   {
-                                                    label: "Family",
-                                                    value: "family",
+                                                    label: "NAME",
+                                                    value: "name",
                                                     id: i,
                                                   },
                                                   {
-                                                    label: "Model",
-                                                    value: "model",
+                                                    label: "SUPPLYING VENDOR",
+                                                    value: "supplyingVendor",
                                                     id: i,
-                                                  },
-                                                  {
-                                                    label: "Prefix",
-                                                    value: "prefix",
-                                                    id: i,
-                                                  },
+                                                  },                                                  
                                                 ]}
                                                 placeholder="Search By.."
                                                 onChange={(e) =>
@@ -2621,25 +2552,27 @@ function RepairServiceEstimate(props) {
                   )}
                 </TabPanel>
                 <TabPanel value="othrMisc">
-                {!miscData.id && <div className="col-md-12 col-sm-12">
-                    <div className=" d-flex justify-content-between align-items-center">
-                      <div>
-                        <FormGroup>
-                          <FormControlLabel
-                            control={
-                              <Switch
-                                checked={flagRequired.flagMiscReq}
-                                onChange={handleChangeSwitch}
-                                name="flagMiscReq"
-                              />
-                            }
-                            label="REQUIRED"
-                            value={flagRequired.flagMiscReq}
-                          />
-                        </FormGroup>
+                  {!miscData.id && (
+                    <div className="col-md-12 col-sm-12">
+                      <div className=" d-flex justify-content-between align-items-center">
+                        <div>
+                          <FormGroup>
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  checked={flagRequired.flagMiscReq}
+                                  onChange={handleChangeSwitch}
+                                  name="flagMiscReq"
+                                />
+                              }
+                              label="REQUIRED"
+                              value={flagRequired.flagMiscReq}
+                            />
+                          </FormGroup>
+                        </div>
                       </div>
                     </div>
-                  </div>}
+                  )}
                   {flagRequired.flagMiscReq && (
                     <React.Fragment>
                       {!miscViewOnly ? (
@@ -2713,7 +2646,9 @@ function RepairServiceEstimate(props) {
                               </label>
                               <Select
                                 defaultValue={selectedOption}
-                                onChange={(e) => setMiscData({...miscData, typeOfMisc: e })}
+                                onChange={(e) =>
+                                  setMiscData({ ...miscData, typeOfMisc: e })
+                                }
                                 options={miscTypeList}
                                 value={miscData.typeOfMisc}
                                 placeholder="Required"
@@ -2751,7 +2686,7 @@ function RepairServiceEstimate(props) {
                           </div>
                           <div className="col-md-12">
                             <div class="form-group mt-3 mb-0 text-right">
-                            <button
+                              <button
                                 type="button"
                                 className="btn btn-light bg-primary text-white"
                                 onClick={updateMiscHeader}
@@ -2842,328 +2777,20 @@ function RepairServiceEstimate(props) {
               </TabContext>
             </Box>
           </div>
-          <Modal
-            show={open2}
-            onHide={handleClose2}
-            size="lg"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-          >
-            <Modal.Header closeButton>
-              <Modal.Title>
-                1000-Engine|23-Replace Engine|Replace Engine
-              </Modal.Title>
-            </Modal.Header>
-            <Modal.Body className="p-0 bg-white">
-              <div className="ligt-greey-bg p-3">
-                <div>
-                  <span className="mr-3">
-                    <i class="fa fa-pencil font-size-12" aria-hidden="true"></i>
-                    <span className="ml-2">Edit</span>
-                  </span>
-                  <span className="mr-3">
-                    <DeleteIcon className=" font-size-16" />
-                    <span className="ml-2">Delete</span>
-                  </span>
-                  <span className="mr-3">
-                    <MonetizationOnOutlinedIcon className=" font-size-16" />
-                    <span className="ml-2"> Adjust price</span>
-                  </span>
-                  <span className="mr-3">
-                    <SettingsBackupRestoreIcon className=" font-size-16" />
-                    <span className="ml-2">Go back to operations</span>
-                  </span>
-                  <span className="mr-3">
-                    <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                    <span className="ml-2">Related part list(s)</span>
-                  </span>
-                </div>
-              </div>
-              <div>
-                <div className="p-3">
-                  <div className="row mt-4">
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          CHARGE CODE
-                        </label>
-                        <Select
-                          onChange={(e) =>
-                            setLabourItemData({
-                              ...labourItemData,
-                              chargeCode: e,
-                            })
-                          }
-                          options={chargeCodeList}
-                          placeholder="Required"
-                          value={labourItemData.chargeCode}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          LABOR TYPE
-                        </label>
-                        <Select
-                          onChange={(e) =>
-                            setLabourItemData({
-                              ...labourItemData,
-                              laborType: e,
-                            })
-                          }
-                          options={laborTypeList}
-                          value={labourItemData.laborType}
-                          placeholder="Required"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          SERVICE TYPE
-                        </label>
-                        <Select
-                          onChange={(e) =>
-                            setLabourItemData({
-                              ...labourItemData,
-                              serviceType: e,
-                            })
-                          }
-                          options={serviceTypeList}
-                          value={labourItemData.serviceType}
-                          placeholder="Required"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          UNIT OF MEASURES
-                        </label>
-                        <Select
-                          onChange={(e) =>
-                            setLabourItemData({
-                              ...labourItemData,
-                              unitOfMeasure: e,
-                            })
-                          }
-                          options={[
-                            { label: "Hours", value: "Hours" },
-                            { label: "Days", value: "Days" },
-                          ]}
-                          placeholder="Required"
-                          value={labourItemData.unitOfMeasure}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          ESTIMATED HOURS
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          placeholder="Required"
-                          onChange={(e) =>
-                            setLabourItemData({
-                              ...labourItemData,
-                              estimatedHours: e.target.value,
-                            })
-                          }
-                          value={labourItemData.estimatedHours}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          UNIT PRICE
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          class="form-control border-radius-10"
-                          placeholder="Required"
-                          value={labourItemData.unitPrice}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          EXTENDED PRICE
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="Required"
-                          value={labourItemData.extendedPrice}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          TOTAL PRICE
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="Required"
-                          value={labourItemData.totalPrice}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          CURRENCY
-                        </label>
-                        <input
-                          type="text"
-                          disabled
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="REQUIRED"
-                          value={serviceEstimateData.currency}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          COMMENTS (More Action)
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          placeholder="Optional"
-                          value={labourItemData.comment}
-                          onChange={(e) =>
-                            setLabourItemData({
-                              ...labourItemData,
-                              comment: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className=" d-flex justify-content-between align-items-center">
-                        <div>
-                          <FormGroup>
-                            <FormControlLabel
-                              control={
-                                <Switch
-                                  checked={labourItemData.travelIncluded}
-                                  onChange={(e) =>
-                                    setLabourItemData({
-                                      ...labourItemData,
-                                      travelIncluded: e.target.checked,
-                                    })
-                                  }
-                                />
-                              }
-                              label="TRAVEL INCLUDED"
-                            />
-                          </FormGroup>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div className=" d-flex justify-content-between align-items-center">
-                        <div>
-                          <FormGroup>
-                            <FormControlLabel
-                              control={
-                                <Switch
-                                  checked={labourItemData.inspectionIncluded}
-                                  onChange={(e) =>
-                                    setLabourItemData({
-                                      ...labourItemData,
-                                      inspectionIncluded: e.target.checked,
-                                    })
-                                  }
-                                />
-                              }
-                              label="INSPECTION INCLUDED"
-                            />
-                          </FormGroup>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      {!labourItemData.travelIncluded && (
-                        <div class="form-group w-100">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            TRAVEL CHARGE
-                          </label>
-                          <input
-                            type="text"
-                            class="form-control border-radius-10"
-                            id="exampleInputEmail1"
-                            value={labourItemData.travelCharge}
-                            onChange={(e) =>
-                              setLabourItemData({
-                                ...labourItemData,
-                                travelCharge: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="col-md-6 col-sm-6">
-                      {!labourItemData.inspectionIncluded && (
-                        <div class="form-group w-100">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            INSPECTION
-                          </label>
-                          <input
-                            type="text"
-                            class="form-control border-radius-10"
-                            id="exampleInputEmail1"
-                            value={labourItemData.inspectionCharge}
-                            onChange={(e) =>
-                              setLabourItemData({
-                                ...labourItemData,
-                                inspectionCharge: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="m-3 text-right">
-                  <a
-                    href="#"
-                    onClick={handleClose2}
-                    className="btn border mr-3 "
-                  >
-                    {" "}
-                    Cancel
-                  </a>
-                  <button
-                    type="button"
-                    className="btn btn-light bg-primary text-white"
-                    onClick={addLaborItem}
-                  >
-                    Save
-                  </button>
-                </div>
-              </div>
-            </Modal.Body>
-          </Modal>
+          <AddLaborItemModal
+            laborItemOpen={laborItemOpen}
+            handleLaborItemClose={handleLaborItemClose}
+            setLabourItemData={setLabourItemData}
+            labourItemData={labourItemData}
+            serviceEstimateData={serviceEstimateData}
+            unitOfMeasureOptions={unitOfMeasureOptions}
+            chargeCodeList={chargeCodeList}
+            // title={addPartModalTitle}
+            addLaborItem={addLaborItem}
+            laborTypeList={laborTypeList}
+            serviceTypeList={serviceTypeList}
+          />
+         
           <Modal
             show={open3}
             onHide={handleClose3}
