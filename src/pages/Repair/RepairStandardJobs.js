@@ -793,9 +793,9 @@ export const RepairStandardJobs = () => {
                         </div>
                     </div>
                     <div className="bg-primary px-3 mb-3">
-           <div className="row align-items-center">
+           <div className="d-md-flex d-block justify-content-between align-items-center">
           
-           <div className="col-11 mx-2">
+           <div className=" mx-2">
          
          <div className="d-flex align-items-center bg-primary w-100">
          <div className="d-flex mr-3" style={{whiteSpace:'pre'}}>
@@ -1002,7 +1002,7 @@ export const RepairStandardJobs = () => {
         
          </div>
          <div className="">
-         <div className="text-center border-left pl-3 py-3">
+         <div className="text-center d-flex  py-3">
              <Link to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable">
                 <SearchIcon /><span className="ml-1">Search</span>
              </Link>

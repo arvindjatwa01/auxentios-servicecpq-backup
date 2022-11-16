@@ -617,10 +617,10 @@ const customStyles = {
            <div className="row align-items-center height-66">
           <div className="col-2">
           <div className="d-flex ">
-          <h5 className="mb-0 text-white"><span>Templates</span></h5>
+          <h5 className="mb-0 text-white mr-2"><span>Templates</span></h5>
           <p className="mb-0">
-            <a href="#" className="ml-3 text-white"><EditOutlinedIcon/></a>
-            <a href="#" className="ml-3 text-white"><ShareOutlinedIcon/></a>
+            <a href="#" className="ml-2 text-white"><EditOutlinedIcon/></a>
+            <a href="#" className="ml-2 text-white"><ShareOutlinedIcon/></a>
           </p>
           </div>
           </div>

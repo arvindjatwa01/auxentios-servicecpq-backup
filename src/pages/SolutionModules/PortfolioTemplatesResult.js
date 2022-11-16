@@ -1909,7 +1909,7 @@ export function PortfolioTemplatesResult(props) {
                 to: null,
                 fromInput: "",
                 toInput: "",
-                
+
             })
             // stratgyTaskTypeKeyValue({value: location.selectedTemplateItems[0].itemBodyModel.taskType})
             setStratgyResponseTimeKeyValue([{
@@ -1963,7 +1963,7 @@ export function PortfolioTemplatesResult(props) {
         // itemIdData.push({ "itemId": location.selectedTemplateItems[0].itemId })
 
         // const customItemsId = location.selectedTemplateItems.map((data, i) => {
-            const customItemsId = selectedTemplateItemsVal.map((data, i) => {
+        const customItemsId = selectedTemplateItemsVal.map((data, i) => {
 
             // console.log("my map data is :=> ", data);
             // console.log("itemHeaderId is :=>  ", data.customItemHeaderModel?.itemHeaderId);
@@ -3175,7 +3175,7 @@ export function PortfolioTemplatesResult(props) {
                     className="d-flex justify-content-center align-items-center row-svg-div"
                     style={{ minWidth: "180px !important" }}
                 >
-                    
+
 
 
                     <div className=" cursor" data-toggle="modal" data-target="#myModal12">
@@ -4668,7 +4668,7 @@ export function PortfolioTemplatesResult(props) {
                                         <li><a className="cursor result" >Search Coverage</a></li>
                                     </ul>
                                     <div
-                                        className="custom-table card p-3 "
+                                        className="custom-table card p-1 "
                                         style={{ width: "100%", backgroundColor: "#fff" }}
                                     >
                                         <div
