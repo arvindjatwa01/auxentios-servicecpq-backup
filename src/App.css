@@ -773,13 +773,20 @@ nav.main-menu li.hover>a span {
 }
 
 .main-menu:hover>ul {}
-
 .main-menu:hover>ul>li {}
+.main-menu:hover>ul>li a{ opacity:25%;}
 
 .main-menu:hover>ul>li>ul {}
+.main-menu:hover>ul>li>ul>li{}
+.main-menu:hover>li>ul>li a{opacity:50%;}
 
-.main-menu:hover>ul>li>ul>li {}
+.main-menu ul li.active a{opacity:25%;}
 
+.main-menu ul li ul li.active a{opacity:50%;}
+
+.main-menu ul li ul li ul li.active a{opacity:75%;}
+
+.main-menu ul li ul li ul li ul li a.active{opacity:100%;}
 .main-menu:hover>ul>li>ul>li a {
   padding-left: 15px;
 }
@@ -1392,7 +1399,7 @@ nav.main-menu li.active>a,
 }
 
 .customselect {
-  border: 1px solid #872ff7 !important;
+  /* border: 1px solid #872ff7 !important; */
   background: #F8F9FD !important;
   /* border-radius: 8px; */
   color: #4D4D4D !important;
@@ -1482,7 +1489,7 @@ nav.main-menu li.active>a,
 }
 
 .customselect .css-tlfecz-indicatorContainer {
-  padding: 0 !important;
+  padding: 0 5px 0 0 !important;
 }
 
 .customselect .css-1gtu0rj-indicatorContainer {
@@ -3220,11 +3227,11 @@ border-radius: 50%;
   font-size: 17px !important;
 }
 .search-icon-postn{position: absolute;
-top: 8px;
-left: 3px;
+  top: 9px;
+  left: 6px;
 z-index: 1;}
 .customize .custom-input-sleact {
-  padding-left: 21px !important;
+  padding-left: 24px !important;
 }
 .input-fields .css-1s2u09g-control {
   border-radius: 10px;
@@ -3277,3 +3284,5 @@ font-size: 14px !important;}
   max-width: 100%;
   min-width: 100px;}
 .input-fields .form-control{color: #872ff7;}
+.border-primary{border: 1px solid #872ff7 !important;}
+.border-white{border: 1px solid #ffffff !important;}

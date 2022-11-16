@@ -8,7 +8,7 @@ export function HeaderLogoComponent(props) {
     <>
       <div className="nav-header">
         <div className="brand-logo">
-          <Link to="/">
+          <Link>
             <b className="logo-abbr"><img src={logoIcon}></img> </b>
             <span className="logo-compact"><img src={logoIcon}></img></span>
             <span className="brand-title mr-4">
