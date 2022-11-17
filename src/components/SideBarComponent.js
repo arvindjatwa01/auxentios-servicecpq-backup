@@ -568,9 +568,9 @@ export function SideBarComponent(props) {
        
             </li> */}
         </ul>
-        <ul className="metismenu" id="menu">
+        <ul className="metismenu scrollbamenu" id="menu">
         <li className="has-subnav sub-li">
-            <a className="" href="/" aria-expanded="false">
+            <a className="border-radius-50" href="/" aria-expanded="false">
               <span className="span-icon">
                 <svg style={{width:"30px"}}
                   id="uuid-c284ff3d-7bb4-40a6-aa03-9e912e189278"
@@ -599,7 +599,7 @@ export function SideBarComponent(props) {
             </a>
           </li>
           <li className="has-subnav sub-li">
-            <a className="has-arrow" href="#" aria-expanded="false">
+            <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
               <span className="span-icon">
                 <svg
                   id="uuid-c284ff3d-7bb4-40a6-aa03-9e912e189278"
@@ -634,7 +634,7 @@ export function SideBarComponent(props) {
             </a>
             <ul aria-expanded="false">
               <li>
-                <NavLink exact to="/" activeClassName="active">
+                <NavLink exact to="/" activeClassName="active" className="border-radius-50">
                   <span className="span-icon">
                     <svg
                       id="uuid-80f962bf-0984-4652-b8d6-016aa47e6fca"
@@ -665,7 +665,7 @@ export function SideBarComponent(props) {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/analytics" activeClassName="active">
+                <NavLink to="/analytics" activeClassName="active" className="border-radius-50">
                   <span className="span-icon">
                     <svg
                       id="uuid-c05174b0-733e-42a0-8a41-26f820ee4aba"
@@ -688,7 +688,7 @@ export function SideBarComponent(props) {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/reports" activeClassName="active">
+                <NavLink to="/reports" activeClassName="active" className="border-radius-50">
                   <span className="span-icon">
                     <svg
                       id="uuid-2339a07b-c6d4-4b85-897c-b6ee6a6101ee"
@@ -725,7 +725,7 @@ export function SideBarComponent(props) {
             </ul>
           </li>
           <li className="has-subnav sub-li">
-            <a className="has-arrow" href="#" aria-expanded="false">
+            <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
               <span className="span-icon">
                 <svg
                   id="uuid-0b37c72c-fd44-4acc-9628-08cba1263678"
@@ -756,7 +756,7 @@ export function SideBarComponent(props) {
             </a>
             <ul aria-expanded="false">
               <li>
-                <a className="has-arrow" href="#" aria-expanded="false">
+                <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
                   <span className="span-icon">
                     <svg
                       id="uuid-cf613211-c02e-4b21-bff9-68072c5a135d"
@@ -779,7 +779,7 @@ export function SideBarComponent(props) {
                 </a>
                 <ul aria-expanded="false">
                   <li>
-                    <a className="has-arrow" href="#" aria-expanded="false">
+                    <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
                       <span className="span-icon">
                         <svg
                           id="uuid-bef549ba-ad8e-4cb9-81ef-441e7c48833e"
@@ -820,6 +820,7 @@ export function SideBarComponent(props) {
                         <NavLink
                           to="/RepairWithSpareParts"
                           activeClassName="active"
+                          className="border-radius-50"
                         >
                           <span className="span-icon">
                             <svg
@@ -881,6 +882,7 @@ export function SideBarComponent(props) {
                         <NavLink
                           to="/RepairWithoutSpareParts"
                           activeClassName="active"
+                          className="border-radius-50"
                         >
                           <span className="span-icon">
                             <svg
@@ -942,7 +944,7 @@ export function SideBarComponent(props) {
                   </li>
 
                   <li>
-                    <NavLink to="/RepairPartList" activeClassName="active">
+                    <NavLink to="/RepairPartList" activeClassName="active" className="border-radius-50">
                       <span className="span-icon">
                         <svg
                           id="uuid-ae0f5633-9fa9-459c-9052-9dfe57b47331"
@@ -992,7 +994,7 @@ export function SideBarComponent(props) {
                     </NavLink>
                   </li>
                   <li>
-                    <a className="has-arrow" href="#" aria-expanded="false">
+                    <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
                       <span className="span-icon">
                         <img src={TemplatesIcon} height="28" />
                       </span>
@@ -1012,6 +1014,7 @@ export function SideBarComponent(props) {
                         <NavLink
                           to="/RepairStandardJobs"
                           activeClassName="active"
+                          className="border-radius-50"
                         >
                           <span className="span-icon">
                             <svg
@@ -1042,7 +1045,7 @@ export function SideBarComponent(props) {
                         </NavLink>
                       </li>
                       <li>
-                        <NavLink to="/RepairKits" activeClassName="active">
+                        <NavLink to="/RepairKits" activeClassName="active" className="border-radius-50">
                           <span className="span-icon">
                             <svg
                               id="uuid-8b9cd8c2-8c40-4465-a1fa-23edb937326d"
@@ -1084,7 +1087,7 @@ export function SideBarComponent(props) {
                 </ul>
               </li>
               <li>
-                <a className="has-arrow" href="#" aria-expanded="false">
+                <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
                   <span className="span-icon">
                     <svg
                       id="uuid-3abd2398-f403-4cd5-aa98-d6b336293d57"
@@ -1119,7 +1122,7 @@ export function SideBarComponent(props) {
                 </a>
                 <ul aria-expanded="false">
                   <li>
-                    <Link to="/portfolio/summary">
+                    <Link to="/portfolio/summary" className="border-radius-50">
                       <span className="span-icon">
                         <svg
                           id="uuid-fd97eedc-9e4d-4a33-a68e-8d9f474ba343"
@@ -1148,6 +1151,7 @@ export function SideBarComponent(props) {
                     <Link
                       style={{ cursor: "pointer" }}
                       to="/solutionBuilder/analytics"
+                      className="border-radius-50"
                     >
                       {/* <li><a style={{ cursor: 'pointer' }} onClick={handleShow}> */}
                       <span className="span-icon">
@@ -1193,7 +1197,7 @@ export function SideBarComponent(props) {
           </li>
 
           <li className="has-subnav sub-li">
-            <a className="has-arrow" href="#" aria-expanded="false">
+            <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
               <span className="span-icon">
                 <svg
                   id="uuid-44f21729-ee7f-4ae1-a13f-50d052182172"
@@ -1232,7 +1236,7 @@ export function SideBarComponent(props) {
             </a>
             <ul aria-expanded="false">
               <li>
-                <Link to="/SolutionQuote">
+                <NavLink to="/SolutionQuote" className="border-radius-50">
                   <span className="span-icon">
                     <svg
                       id="uuid-e1f64c88-ce49-4df1-a848-c28d42dd73fb"
@@ -1256,10 +1260,10 @@ export function SideBarComponent(props) {
                       </span>
                     </span>
                   </span>
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link to="/QuoteRepairQuote">
+                <NavLink to="/QuoteRepairQuote" className="border-radius-50">
                   <span className="span-icon">
                     <svg
                       id="uuid-ca4af1ef-6b2a-43ba-b263-14c9653fee82"
@@ -1287,10 +1291,10 @@ export function SideBarComponent(props) {
                       </span>
                     </span>
                   </span>
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link to="/QuoteSpareParts">
+                <NavLink to="/QuoteSpareParts" className="border-radius-50">
                   <span className="span-icon">
                     <svg
                       id="uuid-fff7022f-e3d4-42a4-9d61-a33e4511768e"
@@ -1350,12 +1354,12 @@ export function SideBarComponent(props) {
                       </span>
                     </span>
                   </span>
-                </Link>
+                </NavLink>
               </li>
             </ul>
           </li>
           <li className="has-subnav sub-li">
-            <a className="has-arrow" href="#" aria-expanded="false">
+            <a className="has-arrow border-radius-50" href="#" aria-expanded="false">
               <span className="span-icon">
                 <svg
                   id="uuid-9ce0e2a9-dce3-4e3c-9203-296e2dedc338"
@@ -1382,7 +1386,7 @@ export function SideBarComponent(props) {
             </a>
             <ul aria-expanded="false">
               <li>
-                <Link to="Pricesetting">
+                <Link to="/PriceSetting" className="border-radius-50">
                   <span className="span-icon">
                     <svg
                       id="uuid-a5522de4-b158-4b69-af44-ca862042c87a"
@@ -1418,7 +1422,7 @@ export function SideBarComponent(props) {
                         </Link>
                         </li> */}
               <li>
-                <Link to="PriceMaintenance">
+                <Link to="/PriceMaintenance" className="border-radius-50">
                   <span className="span-icon">
                     <svg
                       id="uuid-de246da4-4706-4310-b3d5-ffa9f8d22cd2"
@@ -1449,7 +1453,7 @@ export function SideBarComponent(props) {
                 </Link>
               </li>
               <li>
-                <Link to="PriceComputation">
+                <Link to="/PriceComputation" className="border-radius-50">
                   <span className="span-icon">
                     <svg
                       id="uuid-123364d5-ff3a-4fe6-9baa-8783f1001abc"

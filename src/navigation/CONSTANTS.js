@@ -59,7 +59,12 @@ export const COMMERCE_GUIDED ="/CommerceGuided";
 export const COMMERCE_GUIDED_QUESTIONS ="/CommerceGuidedQuestions";
 export const SHOPPING_CART_LIST ="/ShoppingCartList";
 export const COMMERCE_PROFILE ="/CommerceProfile";
-
+export const PRICE_SETTING ="/PriceSetting";
+export const PRICE_CONFIGURATION ="/PriceConfiguration";
+export const PRICE_GLOBAL_SETTING ="/PriceGlobalSetting";
+export const PRICE_DETERMINATION ="/PriceDetermination";
+export const PRICE_MAINTENANCE ="/PriceMaintenance";
+export const PRICE_COMPUTATION ="/PriceComputation";
 export const VERIFY_EMAIL = "/verify-email/:id";
 
 //Solution Builder Module
