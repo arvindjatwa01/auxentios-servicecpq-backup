@@ -93,6 +93,30 @@
     const handleRowClick=(e)=>{
       setShow(true)
     }
+    // Properties for recommended part
+
+
+    const recommendedProducts =[
+      {
+        "orderedBefore": true,
+        "suggestion": "Based on your current usage that has exceeded 80% for DX8T XLL",
+        "type": "Product",
+        "id": "PS7890",
+        "miniDescription": "This service contract covers the service of the core parts of the machine.",
+        "includesText": "Commerce app. Cover for all models of the fleet starting from the base model. Periodic maintenance triggered every 3 months",
+        "price": 20000
+      },
+      {
+        "orderedBefore": false,
+        "suggestion": "Mock Based on your current usage that has exceeded 80% for DX8T XLL",
+        "type": "Service Contract",
+        "id": "PS7892",
+        "miniDescription": "This service contract covers the service of the core parts of the machine.",
+        "includesText": "2 year service of core parts. 4 year service of accessories. 4 year service of accessories",
+        "price": 20000
+      }
+    ];
+
     return (
       <>
         <CustomizedSnackbar
@@ -102,146 +126,12 @@
           message={snackMessage}
         />
         <div className="content-body" style={{ minHeight: "884px" }}>
+          {/* Recommended part */}
           <div className="container-fluid">
             <div className="d-flex align-items-center mt-2">
               <h4 className="font-weight-600 mb-0">Recommended</h4>
             </div>
-            <div class="contain-slider mt-3">
-                    <OwlCarousel items={4} className='owl-theme' style={{zIndex: "0"}} loop margin={10} nav>
-                        <div class='item2 border-none'>
-                        <div className="card-bg p-4">
-                        <a href="#" class="btn text-white custom-green-btn">Ordered Before<EastIcon className="ml-3 font-size-16"/></a>
-                        </div>
-                        <div className="d-flex px-3 py-2" style={{background:'#D0E1EF'}}>
-                        <div><LightbulbOutlinedIcon className="text-light"/></div>
-                            <div>
-                                <p className="text-light ml-3">Based on your current usage that has exceeded 80% for DX8T XL </p>
-                            </div>
-                        </div>
-                        <div className="p-3">
-                            <a href='#' className='mt-3 bg-primary text-white btn'><CabinIcon className=" font-size-16 mr-2"></CabinIcon>Product</a>
-                            <h4 className="text-light mt-3">PS7890</h4>
-                                <p>This service contract covers the service of the core parts of the machine.</p>
-                                  <h5 className=" mt-4">INCLUDES</h5>
-                                  <ul>
-                                    <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>Cover for all models of the fleet starting from the base model</li>
-                                    <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>Periodic maintenance triggered every 3 months</li>
-                                  </ul>
-                                  <div>
-                                    <a href="#" style={{textDecoration:'underline'}}>View Details</a>
-                                  </div>
-                                  <div className="Choose-btn2 bg-primary px-2">
-                                     <h6 className="mb-0 text-white">$20,000</h6>
-                                     <a href="/ShoppingCartList" class="btn text-white ">Add to Cart<EastIcon className="ml-3 font-size-16"/></a>
-                                  </div>
-                                 </div>
-                        </div>
-                        <div class='item2 border-none'>
-                        <div className="d-flex px-3 py-2" style={{background:'#D0E1EF'}}>
-                        <div><LightbulbOutlinedIcon className="text-light"/></div>
-                            <div>
-                                <p className="text-light ml-3">Based on your current usage that has exceeded 80% for DX8T XL </p>
-                            </div>
-                        </div>
-                        <div className="p-3">
-                            <a href='#' className='mt-3 bg-primary text-white btn'><CabinIcon className=" font-size-16 mr-2"></CabinIcon>Service Contract</a>
-                            <h4 className="text-light mt-3">SCC1234</h4>
-                                <p>This service contract covers the service of the core parts of the machine.</p>
-                                  <h5 className=" mt-4">INCLUDES</h5>
-                                  <ul>
-                                    <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>2 year service of core parts</li>
-                                    <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>4 year service of accessories</li>
-                                    <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>4 year service of accessories</li>
-                                  </ul>
-                                  <div>
-                                    <a href="#" style={{textDecoration:'underline'}}>View Details</a>
-                                  </div>
-                                  <div className="Choose-btn2 bg-primary px-2">
-                                     <h6 className="mb-0 text-white">$20,000</h6>
-                                     <a href="/ShoppingCartList" class="btn text-white ">Add to Cart<EastIcon className="ml-3 font-size-16"/></a>
-                                  </div>
-                                 </div>
-                        </div>
-                        <div class='item2 border-none'>
-                        <div className="d-flex px-3 py-2" style={{background:'#D0E1EF'}}>
-                        <div><LightbulbOutlinedIcon className="text-light"/></div>
-                            <div>
-                                <p className="text-light ml-3">Based on your current usage that has exceeded 80% for DX8T XL </p>
-                            </div>
-                        </div>
-                        <div className="p-3">
-                            <a href='#' className='mt-3 bg-primary text-white btn'><CabinIcon className=" font-size-16 mr-2"></CabinIcon>Portfolio Solution</a>
-                            <h4 className="text-light mt-3">PS7890</h4>
-                                <p>This service contract covers the service of the core parts of the machine.</p>
-                                  <h5 className=" mt-4">INCLUDES</h5>
-                                  <ul>
-                                    <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>5 year CVA</li>
-                                    <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>Cover for all models of the fleet starting from the base model</li>
-                                    <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>Periodic maintenence triggered every 3 months</li>
-                                  </ul>
-                                  <div>
-                                    <a href="#" style={{textDecoration:'underline'}}>View Details</a>
-                                  </div>
-                                  <div className="Choose-btn2 bg-primary px-2">
-                                     <h6 className="mb-0 text-white">$20,000</h6>
-                                     <div className="Choose-btn2 bg-primary px-2">
-                                     <h6 className="mb-0 text-white">$20,000</h6>
-                                     <a href="/ShoppingCartList" class="btn text-white ">Add to Cart<EastIcon className="ml-3 font-size-16"/></a>
-                                  </div>
-                                  </div>
-                                 </div>
-                        </div>
-                        <div class='item2 border-none'>
-                        <div className="d-flex px-3 py-2" style={{background:'#D0E1EF'}}>
-                        <div><LightbulbOutlinedIcon className="text-light"/></div>
-                            <div>
-                                <p className="text-light ml-3">Based on your current usage that has exceeded 80% for DX8T XL </p>
-                            </div>
-                        </div>
-                        <div className="p-3">
-                            <a href='#' className='mt-3 bg-primary text-white btn'><CabinIcon className=" font-size-16 mr-2"></CabinIcon>Service Contract</a>
-                            <h4 className="text-light mt-3">SCC1234</h4>
-                                <p>This service contract covers the service of the core parts of the machine.</p>
-                                  <h5 className=" mt-4">INCLUDES</h5>
-                                  <ul>
-                                    <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>2 year service of core parts</li>
-                                    <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>4 year service of accessories</li>
-                                    <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>4 year service of accessories</li>
-                                  </ul>
-                                  <div>
-                                    <a href="#" style={{textDecoration:'underline'}}>View Details</a>
-                                  </div>
-                                  <a href="/ShoppingCartList" class="btn bg-primary text-white Choose-btn"><ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>Add to Cart</a>
-                                 </div>
-                        </div>
-                        <div class='item2 border-none'>
-                        <div className="d-flex px-3 py-2" style={{background:'#D0E1EF'}}>
-                        <div><LightbulbOutlinedIcon className="text-light"/></div>
-                            <div>
-                                <p className="text-light ml-3">Based on your current usage that has exceeded 80% for DX8T XL </p>
-                            </div>
-                        </div>
-                        <div className="p-3">
-                            <a href='#' className='mt-3 bg-primary text-white btn'><CabinIcon className=" font-size-16 mr-2"></CabinIcon>Service Contract</a>
-                            <h4 className="text-light mt-3">SCC1234</h4>
-                                <p>This service contract covers the service of the core parts of the machine.</p>
-                                  <h5 className=" mt-4">INCLUDES</h5>
-                                  <ul>
-                                    <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>2 year service of core parts</li>
-                                    <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>4 year service of accessories</li>
-                                    <li className="my-2"><span className="mr-3 "><FormatListBulletedOutlinedIcon/></span>4 year service of accessories</li>
-                                  </ul>
-                                  <div>
-                                    <a href="#" style={{textDecoration:'underline'}}>View Details</a>
-                                  </div>
-                                  <div className="Choose-btn2 bg-primary px-2">
-                                     <h6 className="mb-0 text-white">$20,000</h6>
-                                     <a href="/ShoppingCartList" class="btn text-white ">Add to Cart<EastIcon className="ml-3 font-size-16"/></a>
-                                  </div>
-                                 </div>
-                        </div>
-                    </OwlCarousel>
-                </div>
+             <RecommendedCarousel recommendedProducts = {recommendedProducts}/>
             <div className="card p-4 mt-5" style={{background:'#D0E1EF'}}>
             <h5 className="font-weight-600 mb-0">Select the solutions you want to search</h5>
             <div className='card mt-4 p-4'>
@@ -487,4 +377,345 @@
       </>
     );
   };
+
+  function RecommendedCarousel({recommendedProducts}) {
+    const formatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      // These options are needed to round to whole numbers if that's what you want.
+      //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+      //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+    });
+
+    return (
+      <>
+        <div class="contain-slider mt-3">
+          <OwlCarousel
+            items={4}
+            className="owl-theme"
+            style={{ zIndex: "0" }}
+            loop
+            margin={10}
+            nav
+          >
+            {recommendedProducts.map((recoproduct) => (<RecommendedTile product = {recoproduct}/> ))}
+
+            <div class="item2 border-none">
+              <div
+                className="d-flex px-3 py-2"
+                style={{ background: "#D0E1EF" }}
+              >
+                <div>
+                  <LightbulbOutlinedIcon className="text-light" />
+                </div>
+                <div>
+                  <p className="text-light ml-3">
+                    Based on your current usage that has exceeded 80% for DX8T
+                    XL{" "}
+                  </p>
+                </div>
+              </div>
+              <div className="p-3">
+                <a href="#" className="mt-3 bg-primary text-white btn">
+                  <CabinIcon className=" font-size-16 mr-2"></CabinIcon>Service
+                  Contract
+                </a>
+                <h4 className="text-light mt-3">SCC1234</h4>
+                <p>
+                  This service contract covers the service of the core parts of
+                  the machine.
+                </p>
+                <h5 className=" mt-4">INCLUDES</h5>
+                <ul>
+                  <li className="my-2">
+                    <span className="mr-3 ">
+                      <FormatListBulletedOutlinedIcon />
+                    </span>
+                    2 year service of core parts
+                  </li>
+                  <li className="my-2">
+                    <span className="mr-3 ">
+                      <FormatListBulletedOutlinedIcon />
+                    </span>
+                    4 year service of accessories
+                  </li>
+                  <li className="my-2">
+                    <span className="mr-3 ">
+                      <FormatListBulletedOutlinedIcon />
+                    </span>
+                    4 year service of accessories
+                  </li>
+                </ul>
+                <div>
+                  <a href="#" style={{ textDecoration: "underline" }}>
+                    View Details
+                  </a>
+                </div>
+                <div className="Choose-btn2 bg-primary px-2">
+                  <h6 className="mb-0 text-white">$20,000</h6>
+                  <a href="/ShoppingCartList" class="btn text-white ">
+                    Add to Cart
+                    <EastIcon className="ml-3 font-size-16" />
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="item2 border-none">
+              <div
+                className="d-flex px-3 py-2"
+                style={{ background: "#D0E1EF" }}
+              >
+                <div>
+                  <LightbulbOutlinedIcon className="text-light" />
+                </div>
+                <div>
+                  <p className="text-light ml-3">
+                    Based on your current usage that has exceeded 80% for DX8T
+                    XL{" "}
+                  </p>
+                </div>
+              </div>
+              <div className="p-3">
+                <a href="#" className="mt-3 bg-primary text-white btn">
+                  <CabinIcon className=" font-size-16 mr-2"></CabinIcon>
+                  Portfolio Solution
+                </a>
+                <h4 className="text-light mt-3">PS7890</h4>
+                <p>
+                  This service contract covers the service of the core parts of
+                  the machine.
+                </p>
+                <h5 className=" mt-4">INCLUDES</h5>
+                <ul>
+                  <li className="my-2">
+                    <span className="mr-3 ">
+                      <FormatListBulletedOutlinedIcon />
+                    </span>
+                    5 year CVA
+                  </li>
+                  <li className="my-2">
+                    <span className="mr-3 ">
+                      <FormatListBulletedOutlinedIcon />
+                    </span>
+                    Cover for all models of the fleet starting from the base
+                    model
+                  </li>
+                  <li className="my-2">
+                    <span className="mr-3 ">
+                      <FormatListBulletedOutlinedIcon />
+                    </span>
+                    Periodic maintenence triggered every 3 months
+                  </li>
+                </ul>
+                <div>
+                  <a href="#" style={{ textDecoration: "underline" }}>
+                    View Details
+                  </a>
+                </div>
+                <div className="Choose-btn2 bg-primary px-2">
+                  <h6 className="mb-0 text-white">$20,000</h6>
+                  <div className="Choose-btn2 bg-primary px-2">
+                    <h6 className="mb-0 text-white">$20,000</h6>
+                    <a href="/ShoppingCartList" class="btn text-white ">
+                      Add to Cart
+                      <EastIcon className="ml-3 font-size-16" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="item2 border-none">
+              <div
+                className="d-flex px-3 py-2"
+                style={{ background: "#D0E1EF" }}
+              >
+                <div>
+                  <LightbulbOutlinedIcon className="text-light" />
+                </div>
+                <div>
+                  <p className="text-light ml-3">
+                    Based on your current usage that has exceeded 80% for DX8T
+                    XL{" "}
+                  </p>
+                </div>
+              </div>
+              <div className="p-3">
+                <a href="#" className="mt-3 bg-primary text-white btn">
+                  <CabinIcon className=" font-size-16 mr-2"></CabinIcon>Service
+                  Contract
+                </a>
+                <h4 className="text-light mt-3">SCC1234</h4>
+                <p>
+                  This service contract covers the service of the core parts of
+                  the machine.
+                </p>
+                <h5 className=" mt-4">INCLUDES</h5>
+                <ul>
+                  <li className="my-2">
+                    <span className="mr-3 ">
+                      <FormatListBulletedOutlinedIcon />
+                    </span>
+                    2 year service of core parts
+                  </li>
+                  <li className="my-2">
+                    <span className="mr-3 ">
+                      <FormatListBulletedOutlinedIcon />
+                    </span>
+                    4 year service of accessories
+                  </li>
+                  <li className="my-2">
+                    <span className="mr-3 ">
+                      <FormatListBulletedOutlinedIcon />
+                    </span>
+                    4 year service of accessories
+                  </li>
+                </ul>
+                <div>
+                  <a href="#" style={{ textDecoration: "underline" }}>
+                    View Details
+                  </a>
+                </div>
+                <a
+                  href="/ShoppingCartList"
+                  class="btn bg-primary text-white Choose-btn"
+                >
+                  <ShoppingCartOutlinedIcon className=" font-size-16 mr-2"></ShoppingCartOutlinedIcon>
+                  Add to Cart
+                </a>
+              </div>
+            </div>
+            <div class="item2 border-none">
+              <div
+                className="d-flex px-3 py-2"
+                style={{ background: "#D0E1EF" }}
+              >
+                <div>
+                  <LightbulbOutlinedIcon className="text-light" />
+                </div>
+                <div>
+                  <p className="text-light ml-3">
+                    Based on your current usage that has exceeded 80% for DX8T
+                    XL{" "}
+                  </p>
+                </div>
+              </div>
+              <div className="p-3">
+                <a href="#" className="mt-3 bg-primary text-white btn">
+                  <CabinIcon className=" font-size-16 mr-2"></CabinIcon>Service
+                  Contract
+                </a>
+                <h4 className="text-light mt-3">SCC1234</h4>
+                <p>
+                  This service contract covers the service of the core parts of
+                  the machine.
+                </p>
+                <h5 className=" mt-4">INCLUDES</h5>
+                <ul>
+                  <li className="my-2">
+                    <span className="mr-3 ">
+                      <FormatListBulletedOutlinedIcon />
+                    </span>
+                    2 year service of core parts
+                  </li>
+                  <li className="my-2">
+                    <span className="mr-3 ">
+                      <FormatListBulletedOutlinedIcon />
+                    </span>
+                    4 year service of accessories
+                  </li>
+                  <li className="my-2">
+                    <span className="mr-3 ">
+                      <FormatListBulletedOutlinedIcon />
+                    </span>
+                    4 year service of accessories
+                  </li>
+                </ul>
+                <div>
+                  <a href="#" style={{ textDecoration: "underline" }}>
+                    View Details
+                  </a>
+                </div>
+                <div className="Choose-btn2 bg-primary px-2">
+                  <h6 className="mb-0 text-white">$20,000</h6>
+                  <a href="/ShoppingCartList" class="btn text-white ">
+                    Add to Cart
+                    <EastIcon className="ml-3 font-size-16" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </OwlCarousel>
+        </div>
+      </>
+    );
+  }
+
+  function RecommendedTile({product}) {
+    const formatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      // These options are needed to round to whole numbers if that's what you want.
+      //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+      //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+    });
+    return (
+      <>
+        <div class="item2 border-none">
+          <div className="card-bg p-4">
+            {product.orderedBefore && (
+              <a href="#" class="btn text-white custom-green-btn">
+                Ordered Before
+                <EastIcon className="ml-3 font-size-16" />
+              </a>
+            )}
+          </div>
+          <div className="d-flex px-3 py-2" style={{ background: "#D0E1EF" }}>
+            <div>
+              <LightbulbOutlinedIcon className="text-light" />
+            </div>
+            <div>
+              <p className="text-light ml-3">{product.suggestion}</p>
+            </div>
+          </div>
+          <div className="p-3">
+            <a href="#" className="mt-3 bg-primary text-white btn">
+              <CabinIcon className=" font-size-16 mr-2"></CabinIcon>
+              Product
+            </a>
+            <h4 className="text-light mt-3">{product.id}</h4>
+            <p>{product.miniDescription}</p>
+            <h5 className=" mt-4">INCLUDES</h5>
+            <ul>
+              {product.includesText.split(". ").map((text) => (
+                <>
+                  <li className="my-2">
+                    <span className="mr-3 ">
+                      <FormatListBulletedOutlinedIcon />
+                    </span>
+                    {text}
+                  </li>
+                </>
+              ))}
+            </ul>
+            <div>
+              <a href="#" style={{ textDecoration: "underline" }}>
+                View Details
+              </a>
+            </div>
+            <div className="Choose-btn2 bg-primary px-2">
+              <h6 className="mb-0 text-white">
+                {formatter.format(product.price)}
+              </h6>
+              <a href="/ShoppingCartList" class="btn text-white ">
+                Add to Cart
+                <EastIcon className="ml-3 font-size-16" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
   
