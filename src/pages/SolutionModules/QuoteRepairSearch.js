@@ -367,7 +367,7 @@ const masterColumns = [
                       {querySearchSelector.map((obj, i) => {
                         return (
                           <>
-                            <div className="customselect overflow-hidden d-flex align-items-center mr-3 my-2 border-radius-10">
+                            <div className="customselect border-white overflow-hidden d-flex align-items-center mr-3 my-2 border-radius-10">
                               {i > 0 ? (
                                 <SelectFilter
                                   isClearable={true}
@@ -411,7 +411,7 @@ const masterColumns = [
                                   id={"inputSearch-" + i}
                                   autoComplete="off"
                                 />
-                                <div className="border bg-primary text-white btn"><span className="mr-2"><AddIcon /></span>Add Part</div>
+                                <div className="bg-primary text-white btn"><span className="mr-2"><AddIcon /></span>Add Item</div>
                                    
                                 {
                                   <ul className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}>
