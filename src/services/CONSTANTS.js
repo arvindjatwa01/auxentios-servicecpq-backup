@@ -145,6 +145,7 @@ export const SEARCH_MACHINE = (query) => DATA_SERVICE_URI + `equipment/search?se
 export const SEARCH_SPAREPART = (query) => DATA_SERVICE_URI + `sparepart/search?search=${query}`;
 export const SEARCH_COMPONENT_CODE = (query) => DATA_SERVICE_URI + `component-code/search?search=${query}`;
 export const SEARCH_VENDOR = (query) => DATA_SERVICE_URI + `vendor/search?search=${query}`;
+export const SEARCH_CONSUMABLE = (query) => DATA_SERVICE_URI + `consumable/search?search=${query}`;
 export const SEARCH_JOB_CODE = (query) => DATA_SERVICE_URI + `job-code/search?search=${query}`;
 export const SEARCH_Builder = (query) => REPAIR_BUILDER_URI + `builder/search?search=${query}`;
 

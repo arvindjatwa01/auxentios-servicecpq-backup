@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
-import { SEARCH_COMPONENT_CODE, SEARCH_CUSTOMER, SEARCH_JOB_CODE, SEARCH_MACHINE, SEARCH_SPAREPART, SEARCH_VENDOR } from "./CONSTANTS";
+import { SEARCH_COMPONENT_CODE, SEARCH_CONSUMABLE, SEARCH_CUSTOMER, SEARCH_JOB_CODE, SEARCH_MACHINE, SEARCH_SPAREPART, SEARCH_VENDOR } from "./CONSTANTS";
 
 /* ----------------- Authorization ------------------- */
 
@@ -159,6 +159,27 @@ export const customerSearch =  (searchStr) => {
         });
     } catch (error) {
       console.error("in SearchService > getVendors, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+export const getConsumables = (query) => {
+  console.log("SearchService > getConsumables called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(SEARCH_CONSUMABLE(query), { headers: headersdata })
+        .then((res) => {
+          console.log("getConsumables > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("getConsumables > axios err=", err);
+          reject("Error in getConsumables axios!");
+        });
+    } catch (error) {
+      console.error("in SearchService > getConsumables, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

@@ -46,14 +46,18 @@ import {
   selectPricingMethodList,
   selectMiscTypeList,
   selectActivityIdList,
+  selectDimensionList,
+  selectConsumableTypeList,
 } from "pages/Repair/dropdowns/repairSlice";
 
 import Loader from "react-js-loader";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import SearchBox from "./components/SearchBox";
-import { getVendors } from "services/searchServices";
+import { getConsumables, getVendors } from "services/searchServices";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
 import AddLaborItemModal from "./components/AddLaborItem";
+import { CONSUMABLE_SEARCH_Q_OPTIONS } from "./CONSTANTS";
+import SearchComponent from "./components/SearchComponent";
 
 function RepairServiceEstimate(props) {
   const { activeElement, setActiveElement } = props.builderDetails;
@@ -92,6 +96,30 @@ function RepairServiceEstimate(props) {
     inspectionIncluded: true,
     inspectionCharge: 0.0,
   };
+  const initialExtWorkItemData = {
+    activityId: "",
+    activityName: "",
+    shortDescription: "",
+    supplyingVendor: "",
+    unitPrice: 0.0,
+    extendedPrice: 0.0,
+    totalPrice: 0.0,
+    estimatedHours: "",
+    adjustedPrice: 0.0,
+    dimension: "",
+  };
+  const initialConsumableItemData = {
+    consumableType: "",
+    consumableId: "",
+    consumableDesc: "",
+    quantity: "",
+    unitOfMeasure: "",
+    vendor:"",
+    unitPrice: 0.0,
+    extendedPrice: 0.0,
+    totalPrice: 0.0,
+    currency: serviceEstimateData.currency,
+  };
   const [labourData, setLabourData] = useState({
     jobCode: "",
     jobCodeDescription: "",
@@ -101,8 +129,17 @@ function RepairServiceEstimate(props) {
     totalPrice: 0.0,
     payer: "",
     adjustedPrice: 0.0,
+    flatRateIndicator: false,
+    totalHours: 0,
   });
   const [labourItemData, setLabourItemData] = useState(initialLaborItemData);
+  const [extWorkItemData, setExtWorkItemData] = useState(
+    initialExtWorkItemData
+  );
+  const [consumableItemData, setConsumableItemData] = useState(
+    initialConsumableItemData
+  );
+
   const [consumableData, setConsumableData] = useState({
     jobCode: "",
     jobCodeDescription: "",
@@ -118,7 +155,6 @@ function RepairServiceEstimate(props) {
     totalPrice: 0.0,
     payer: "",
     adjustedPrice: 0.0,
-    supplyingVendor: "",
   });
   const [miscData, setMiscData] = useState({
     jobCode: "",
@@ -130,7 +166,11 @@ function RepairServiceEstimate(props) {
     typeOfMisc: "",
   });
   const [noOptionsVendor, setNoOptionsVendor] = useState(false);
+  const [noOptionsConsumable, setNoOptionsConsumable] = useState(false);
+
   const [searchVenodrResults, setSearchVendorResults] = useState([]);
+  const [searchConsumableResult, setSearchConsumableResult] = useState([]);
+
   // const [priceMethodOptions, setPriceMethodOptions] = useState([]);
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
@@ -146,6 +186,45 @@ function RepairServiceEstimate(props) {
     }
     setOpenSnack(false);
   };
+
+  const handleQuerySearchClick = async () => {
+    $(".scrollbar").css("display", "none");
+    // console.log("handleQuerySearchClick", querySearchSelector);
+    var searchStr = "";
+    queryConsSearchSelector.map(function (item, i) {
+      if (i === 0 && item.selectCategory.value && item.inputSearch) {
+        searchStr = item.selectCategory.value + ":" + item.inputSearch;
+      } else if (
+        item.selectCategory.value &&
+        item.inputSearch &&
+        item.selectOperator.value
+      ) {
+        searchStr =
+          searchStr +
+          " " +
+          item.selectOperator.value +
+          " " +
+          item.selectCategory.value +
+          ":" +
+          item.inputSearch;
+      }
+      return searchStr;
+    });
+
+    try {
+      if (searchStr) {
+        const res = await getConsumables(searchStr);
+        // console.log("search Query Result :", res);
+        setMasterData(res);
+        // setSearchResultOpen(true);
+      } else {
+        handleSnack("info", "Please fill the search criteria!");
+      }
+    } catch (err) {
+      handleSnack("error", "Error occurred while fetching consumables!");
+    }
+  };
+
   const handleSnack = (snackSeverity, snackMessage) => {
     setSnackMessage(snackMessage);
     setSeverity(snackSeverity);
@@ -171,6 +250,13 @@ function RepairServiceEstimate(props) {
     selectDropdownOption(selectLaborCodeList)
   );
   const miscTypeList = useAppSelector(selectDropdownOption(selectMiscTypeList));
+
+  const dimensionList = useAppSelector(
+    selectDropdownOption(selectDimensionList)
+  );
+  const consumableTypeList = useAppSelector(
+    selectDropdownOption(selectConsumableTypeList)
+  );
 
   const priceMethodOptions = useAppSelector(
     selectDropdownOption(selectPricingMethodList)
@@ -315,7 +401,7 @@ function RepairServiceEstimate(props) {
   const handleVendorSearch = async (searchVendorfieldName, searchText) => {
     // console.log("clear data", searchText);
     setSearchVendorResults([]);
-    extWorkData.supplyingVendor = searchText;
+    extWorkItemData.supplyingVendor = searchText;
     if (searchText) {
       await getVendors("fullName~" + searchText)
         .then((result) => {
@@ -332,14 +418,49 @@ function RepairServiceEstimate(props) {
     }
   };
 
-  // Select the customer from search result
+  // Search Consumable
+  const handleConsumableSearch = async (searchConsumablefieldName, searchText) => {
+    // console.log("clear data", searchText);
+    setSearchConsumableResult([]);
+    consumableItemData.consumableId = searchText;
+    if (searchText) {
+      await getConsumables("consumableId~" + searchText)
+        .then((result) => {
+          if (result && result.length > 0) {
+            setSearchConsumableResult(result);
+            setNoOptionsConsumable(false);
+          } else {
+            setNoOptionsConsumable(true);
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+          handleSnack("error", "Error occurred while searching the Consumable!");
+        });
+    }
+  };
+
+  // Select the vendor from search result
   const handleVendorSelect = (type, currentItem) => {
-    setExtWorkData({
-      ...extWorkData,
+    setExtWorkItemData({
+      ...extWorkItemData,
       supplyingVendor: currentItem.fullName,
     });
     setSearchVendorResults([]);
   };
+
+  // Select the consumable from search result
+  const handleConsumableSelect = (type, currentItem) => {
+    setConsumableItemData({
+      ...consumableItemData,
+      consumableId: currentItem.consumableId,
+      consumableDesc: currentItem.name,
+      unitOfMeasure: currentItem.unit
+    });
+    setSearchConsumableResult([]);
+  };
+
+  //Add or update Service Est Header
   const updateServiceEstHeader = () => {
     let data = {
       ...serviceEstimateData,
@@ -602,6 +723,18 @@ function RepairServiceEstimate(props) {
       selectedOption: "",
     },
   ]);
+
+  const [queryConsSearchSelector, setQueryConsSearchSelector] = useState([
+    {
+      id: 0,
+      selectFamily: "",
+      selectOperator: "",
+      inputSearch: "",
+      selectOptions: [],
+      selectedOption: "",
+    },
+  ]);
+  
   const handleFamily = (e, id) => {
     let tempArray = [...querySearchSelector];
     console.log("handleFamily e:", e);
@@ -610,6 +743,12 @@ function RepairServiceEstimate(props) {
     tempArray[id] = obj;
     setQuerySearchSelector([...tempArray]);
   };
+
+    // Once parts are selected to add clear the search results
+    const clearFilteredData = () => {
+      setMasterData([]);
+      setSelectedMasterData([]);
+    };
   const handleMasterCheck = (e, row) => {
     if (e.target.checked) {
       var _masterData = [...masterData];
@@ -967,7 +1106,6 @@ function RepairServiceEstimate(props) {
                         type="text"
                         disabled
                         class="form-control border-radius-10 text-primary"
-                        id="exampleInputEmail1"
                         placeholder="Required"
                         value={serviceEstimateData.reference}
                       />
@@ -981,7 +1119,6 @@ function RepairServiceEstimate(props) {
                       <input
                         type="text"
                         class="form-control border-radius-10 text-primary"
-                        id="exampleInputEmail1"
                         placeholder="Required"
                         value={serviceEstimateData.description}
                         onChange={(e) =>
@@ -1002,7 +1139,6 @@ function RepairServiceEstimate(props) {
                         type="text"
                         disabled
                         class="form-control border-radius-10 text-primary"
-                        id="exampleInputEmail1"
                         placeholder="Required"
                         value={serviceEstimateData.segmentTitle}
                       />
@@ -1017,7 +1153,6 @@ function RepairServiceEstimate(props) {
                         type="text"
                         disabled
                         class="form-control border-radius-10 text-primary"
-                        id="exampleInputEmail1"
                         placeholder="Required"
                         value={serviceEstimateData.jobOperation}
                       />
@@ -1043,7 +1178,7 @@ function RepairServiceEstimate(props) {
                       {/* <input
                   type="text"
                   class="form-control border-radius-10 text-primary"
-                  id="exampleInputEmail1"
+                  
                   placeholder="Required"
                   value={serviceEstimateData.priceMethod}
                 /> */}
@@ -1081,7 +1216,7 @@ function RepairServiceEstimate(props) {
                 <input
                   type="text"
                   class="form-control border-radius-10 text-primary"
-                  id="exampleInputEmail1"
+                  
                   
                   placeholder="Required"
                 />
@@ -1096,7 +1231,6 @@ function RepairServiceEstimate(props) {
                         type="text"
                         disabled
                         class="form-control border-radius-10 text-primary"
-                        id="exampleInputEmail1"
                         placeholder="Required"
                         value={serviceEstimateData.currency}
                       />
@@ -1110,7 +1244,6 @@ function RepairServiceEstimate(props) {
                       <input
                         type="text"
                         class="form-control border-radius-10 text-primary"
-                        id="exampleInputEmail1"
                         placeholder="Required"
                         value={serviceEstimateData.netPrice}
                         onChange={(e) =>
@@ -1130,7 +1263,6 @@ function RepairServiceEstimate(props) {
                       <input
                         type="text"
                         class="form-control border-radius-10 text-primary"
-                        id="exampleInputEmail1"
                         placeholder="Optional"
                         value={serviceEstimateData.jobCode}
                         onChange={(e) =>
@@ -1222,7 +1354,7 @@ function RepairServiceEstimate(props) {
                         PRICE METHOD
                       </p>
                       <h6 className="font-weight-600">
-                        {serviceEstimateData.priceMethod?.value}
+                        {serviceEstimateData.priceMethod?.label}
                       </h6>
                     </div>
                   </div>
@@ -1339,7 +1471,6 @@ function RepairServiceEstimate(props) {
                                 type="text"
                                 disabled
                                 class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
                                 placeholder="Required"
                                 value={labourData.jobCode}
                               />
@@ -1354,7 +1485,6 @@ function RepairServiceEstimate(props) {
                                 type="text"
                                 disabled
                                 class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
                                 placeholder="Required"
                                 value={labourData.jobCodeDescription}
                               />
@@ -1404,7 +1534,6 @@ function RepairServiceEstimate(props) {
                                 type="text"
                                 disabled
                                 class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
                                 placeholder="Required"
                                 value={labourData.ratePerHourOrDay}
                               />
@@ -1413,33 +1542,37 @@ function RepairServiceEstimate(props) {
                           <div className="col-md-4 col-sm-4">
                             <div class="form-group mt-3">
                               <label className="text-light-dark font-size-12 font-weight-600">
-                                NET PRICE - LABOR
+                                NET PRICE
                               </label>
                               <input
                                 type="text"
                                 disabled
                                 class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
                                 placeholder="Required"
                                 value={labourData.totalPrice}
                               />
                             </div>
                           </div>
 
-                          {/* <div className="col-md-4 col-sm-4">
-                    <div class="form-group mt-3">
-                      <label className="text-light-dark font-size-12 font-weight-600">
-                        SUPPLYING VENDOR
-                      </label>
-                      <input
-                        type="text"
-                        class="form-control border-radius-10 text-primary"
-                        id="exampleInputEmail1"
-                        
-                        placeholder="Placeholder (Optional)"
-                      />
-                    </div>
-                  </div> */}
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <label className="text-light-dark font-size-12 font-weight-600">
+                                TOTAL HOURS (PLANNED/RECOMMENDED)
+                              </label>
+                              <input
+                                type="text"
+                                class="form-control border-radius-10 text-primary"
+                                placeholder="Optional"
+                                value={labourData.totalHours}
+                                onChange={(e) =>
+                                  setLabourData({
+                                    ...labourData,
+                                    totalHours: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
                           <div className="col-md-4 col-sm-4">
                             <div class="form-group mt-3">
                               <label className="text-light-dark font-size-12 font-weight-600">
@@ -1456,6 +1589,32 @@ function RepairServiceEstimate(props) {
                               />
                             </div>
                           </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <FormGroup>
+                                <FormControlLabel
+                                  style={{ alignItems: "start", marginLeft: 0 }}
+                                  control={
+                                    <Switch
+                                      checked={labourData.flatRateIndicator}
+                                      onChange={(e) =>
+                                        setLabourData({
+                                          ...labourData,
+                                          flatRateIndicator: e.target.checked,
+                                        })
+                                      }
+                                    />
+                                  }
+                                  labelPlacement="top"
+                                  label={
+                                    <span className="text-light-dark font-size-12 font-weight-600">
+                                      FLAT RATE INDICATOR
+                                    </span>
+                                  }
+                                />
+                              </FormGroup>
+                            </div>
+                          </div>
 
                           <div className="col-md-4 col-sm-4">
                             <div class="form-group mt-3">
@@ -1464,8 +1623,8 @@ function RepairServiceEstimate(props) {
                               </label>
                               <input
                                 type="text"
+                                disabled={!labourData.flatRateIndicator}
                                 class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
                                 placeholder="Optional"
                                 value={labourData.adjustedPrice}
                                 onChange={(e) =>
@@ -1527,7 +1686,7 @@ function RepairServiceEstimate(props) {
                                 PRICE METHOD
                               </p>
                               <h6 className="font-weight-600">
-                                {labourData.pricingMethod?.value}
+                                {labourData.pricingMethod?.label}
                               </h6>
                             </div>
                           </div>
@@ -1538,6 +1697,16 @@ function RepairServiceEstimate(props) {
                               </p>
                               <h6 className="font-weight-600">
                                 {labourData.ratePerHourOrDay}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div class="form-group mt-3">
+                              <p className="font-size-12 font-weight-600 mb-2">
+                                TOTAL HOURS (PLANNED / RECOMMENDED)
+                              </p>
+                              <h6 className="font-weight-600">
+                                {labourData.totalHours}
                               </h6>
                             </div>
                           </div>
@@ -1633,12 +1802,13 @@ function RepairServiceEstimate(props) {
                         />
                         {/* </div> */}
                         <div className=" text-right mt-3">
-                          <a
-                            href="#"
-                            className="btn border bg-primary text-white"
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            // onClick={}
                           >
                             Save
-                          </a>
+                          </button>
                         </div>
                       </div>
                     </React.Fragment>
@@ -1678,7 +1848,6 @@ function RepairServiceEstimate(props) {
                                 type="text"
                                 disabled
                                 class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
                                 placeholder="Required"
                                 value={consumableData.jobCode}
                               />
@@ -1693,7 +1862,6 @@ function RepairServiceEstimate(props) {
                                 type="text"
                                 disabled
                                 class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
                                 placeholder="Required"
                                 value={consumableData.jobCodeDescription}
                               />
@@ -1727,7 +1895,6 @@ function RepairServiceEstimate(props) {
                                 type="text"
                                 disabled
                                 class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
                                 placeholder="Required"
                                 value={consumableData.totalPrice}
                               />
@@ -1760,7 +1927,6 @@ function RepairServiceEstimate(props) {
                               <input
                                 type="text"
                                 class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
                                 placeholder="Optional"
                                 value={consumableData.adjustedPrice}
                                 onChange={(e) =>
@@ -1813,7 +1979,7 @@ function RepairServiceEstimate(props) {
                                 PRICE METHOD
                               </p>
                               <h6 className="font-weight-600">
-                                {consumableData.pricingMethod?.value}
+                                {consumableData.pricingMethod?.label}
                               </h6>
                             </div>
                           </div>
@@ -1872,164 +2038,17 @@ function RepairServiceEstimate(props) {
                                     </a>
                                   </p>
                                 </div>
-                                <div className="d-flex justify-content-between align-items-center w-100 ">
-                                  <div className="row align-items-center m-0">
-                                    {querySearchSelector.map((obj, i) => {
-                                      return (
-                                        <>
-                                          <div className="customselect d-flex align-items-center mr-3 my-2">
-                                            {i > 0 ? (
-                                              <SelectFilter
-                                                isClearable={true}
-                                                defaultValue={{
-                                                  label: "And",
-                                                  value: "AND",
-                                                }}
-                                                options={[
-                                                  {
-                                                    label: "And",
-                                                    value: "AND",
-                                                    id: i,
-                                                  },
-                                                  {
-                                                    label: "Or",
-                                                    value: "OR",
-                                                    id: i,
-                                                  },
-                                                ]}
-                                                placeholder="Search By.."
-                                                onChange={(e) =>
-                                                  handleOperator(e, i)
-                                                }
-                                                // value={querySearchOperator[i]}
-                                                value={obj.selectOperator}
-                                              />
-                                            ) : (
-                                              <></>
-                                            )}
-
-                                            <div>
-                                              <SelectFilter
-                                                // isClearable={true}
-                                                options={[
-                                                  {
-                                                    label: "Make",
-                                                    value: "make",
-                                                    id: i,
-                                                  },
-                                                  {
-                                                    label: "Family",
-                                                    value: "family",
-                                                    id: i,
-                                                  },
-                                                  {
-                                                    label: "Model",
-                                                    value: "model",
-                                                    id: i,
-                                                  },
-                                                  {
-                                                    label: "Prefix",
-                                                    value: "prefix",
-                                                    id: i,
-                                                  },
-                                                ]}
-                                                placeholder="Search By.."
-                                                onChange={(e) =>
-                                                  handleFamily(e, i)
-                                                }
-                                                value={obj.selectFamily}
-                                              />
-                                            </div>
-                                            <div className="customselectsearch customize">
-                                              <span className="search-icon-postn">
-                                                <SearchIcon />
-                                              </span>
-                                              <input
-                                                className="custom-input-sleact "
-                                                style={{ position: "relative" }}
-                                                type="text"
-                                                placeholder="Search Parts"
-                                                value={obj.inputSearch}
-                                                onChange={(e) =>
-                                                  handleInputSearch(e, i)
-                                                }
-                                                id={"inputSearch-" + i}
-                                                autoComplete="off"
-                                              />
-                                              <div className="btn border">
-                                                <span className="mr-2">
-                                                  <AddIcon />
-                                                </span>
-                                                Add Part
-                                              </div>
-
-                                              {
-                                                <ul
-                                                  className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
-                                                >
-                                                  {obj.selectOptions.map(
-                                                    (currentItem, j) => (
-                                                      <li
-                                                        className="list-group-item"
-                                                        key={j}
-                                                        onClick={(e) =>
-                                                          handleSearchListClick(
-                                                            e,
-                                                            currentItem,
-                                                            obj,
-                                                            i
-                                                          )
-                                                        }
-                                                      >
-                                                        {currentItem}
-                                                      </li>
-                                                    )
-                                                  )}
-                                                </ul>
-                                              }
-                                            </div>
-                                          </div>
-                                        </>
-                                      );
-                                    })}
-                                    <div
-                                      onClick={(e) => addSearchQuerryHtml(e)}
-                                    >
-                                      <Link
-                                        to="#"
-                                        className="btn-sm text-white border mr-2"
-                                        style={{ border: "1px solid #872FF7" }}
-                                      >
-                                        +
-                                      </Link>
-                                    </div>
-                                    <div onClick={handleDeletQuerySearch}>
-                                      <Link to="#" className="btn-sm border">
-                                        <svg
-                                          data-name="Layer 41"
-                                          id="Layer_41"
-                                          fill="#ffffff"
-                                          viewBox="0 0 50 50"
-                                          xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                          <title />
-                                          <path
-                                            className="cls-1"
-                                            d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                                          />
-                                          <path
-                                            className="cls-1"
-                                            d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                                          />
-                                          <path
-                                            className="cls-1"
-                                            d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                                          />
-                                        </svg>
-                                      </Link>
-                                    </div>
-                                  </div>
-                                </div>
+                                <SearchComponent
+                                  querySearchSelector={queryConsSearchSelector}
+                                  setQuerySearchSelector={setQueryConsSearchSelector}
+                                  clearFilteredData={clearFilteredData}
+                                  handleSnack={handleSnack}
+                                  searchAPI={getConsumables}
+                                  searchClick={handleQuerySearchClick}
+                                  options={CONSUMABLE_SEARCH_Q_OPTIONS}
+                                  color={'white'}
+                                />
+                                
                                 {/* <div className="px-3">
           <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
             <SearchIcon /><span className="ml-1">Search</span>
@@ -2065,23 +2084,29 @@ function RepairServiceEstimate(props) {
                               "& .MuiDataGrid-columnHeaders": {
                                 backgroundColor: "#872ff7",
                                 color: "#fff",
+                                fontSize: 12
+                              },
+                              minHeight: 300,
+                              "& .MuiDataGrid-cellContent": {
+                                fontSize: 12,
                               },
                             }}
                             rows={rowsConsumables}
                             columns={columnsConsumables}
                             pageSize={5}
                             rowsPerPageOptions={[5]}
-                            checkboxSelection
+                            // checkboxSelection
                             onCellClick={(e) => handleRowClick(e)}
                           />
                         </div>
                         <div className=" text-right mt-3">
-                          <a
-                            href="#"
+                          <button
+                            type="button"
                             className="btn border bg-primary text-white"
+                            // onClick={updateLabourEstHeader}
                           >
                             Save
-                          </a>
+                          </button>
                         </div>
                       </div>
                     </React.Fragment>
@@ -2122,7 +2147,6 @@ function RepairServiceEstimate(props) {
                                 type="text"
                                 disabled
                                 class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
                                 placeholder="Required"
                                 value={extWorkData.jobCode}
                               />
@@ -2137,35 +2161,12 @@ function RepairServiceEstimate(props) {
                                 type="text"
                                 disabled
                                 class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
                                 placeholder="Required"
                                 value={extWorkData.jobCodeDescription}
                               />
                             </div>
                           </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                SUPPLYING VENDOR
-                              </label>
-                              <SearchBox
-                                value={extWorkData.supplyingVendor}
-                                onChange={(e) =>
-                                  handleVendorSearch("vendor", e.target.value)
-                                }
-                                type="fullName"
-                                result={searchVenodrResults}
-                                onSelect={handleVendorSelect}
-                                noOptions={noOptionsVendor}
-                              />
-                              {/* <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="Required"
-                        /> */}
-                            </div>
-                          </div>
+
                           <div className="col-md-4 col-sm-4">
                             <div class="form-group mt-3">
                               <label className="text-light-dark font-size-12 font-weight-600">
@@ -2194,7 +2195,6 @@ function RepairServiceEstimate(props) {
                                 type="text"
                                 disabled
                                 class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
                                 placeholder="Required"
                                 value={extWorkData.totalPrice}
                               />
@@ -2224,7 +2224,6 @@ function RepairServiceEstimate(props) {
                               <input
                                 type="text"
                                 class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
                                 placeholder="Optional"
                                 value={extWorkData.adjustedPrice}
                                 onChange={(e) =>
@@ -2276,7 +2275,7 @@ function RepairServiceEstimate(props) {
                                 PRICE METHOD
                               </p>
                               <h6 className="font-weight-600">
-                                {extWorkData.pricingMethod?.value}
+                                {extWorkData.pricingMethod?.label}
                               </h6>
                             </div>
                           </div>
@@ -2287,16 +2286,6 @@ function RepairServiceEstimate(props) {
                               </p>
                               <h6 className="font-weight-600">
                                 {extWorkData.totalPrice}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                SUPPLYING VENDOR
-                              </p>
-                              <h6 className="font-weight-600">
-                                {extWorkData.supplyingVendor}
                               </h6>
                             </div>
                           </div>
@@ -2350,7 +2339,7 @@ function RepairServiceEstimate(props) {
                                     {querySearchSelector.map((obj, i) => {
                                       return (
                                         <>
-                                          <div className="customselect d-flex align-items-center mr-3 my-2">
+                                          <div className="customselect border-white overflow-hiden border-radius-10 d-flex align-items-center mr-3 my-2">
                                             {i > 0 ? (
                                               <SelectFilter
                                                 isClearable={true}
@@ -2370,7 +2359,7 @@ function RepairServiceEstimate(props) {
                                                     id: i,
                                                   },
                                                 ]}
-                                                placeholder="Search By.."
+                                                placeholder="And/Or"
                                                 onChange={(e) =>
                                                   handleOperator(e, i)
                                                 }
@@ -2399,7 +2388,7 @@ function RepairServiceEstimate(props) {
                                                     label: "SUPPLYING VENDOR",
                                                     value: "supplyingVendor",
                                                     id: i,
-                                                  },                                                  
+                                                  },
                                                 ]}
                                                 placeholder="Search By.."
                                                 onChange={(e) =>
@@ -2535,17 +2524,17 @@ function RepairServiceEstimate(props) {
                             columns={columnsExternal}
                             pageSize={5}
                             rowsPerPageOptions={[5]}
-                            checkboxSelection
                             onCellClick={(e) => handleRowClick(e)}
                           />
                         </div>
                         <div className=" text-right mt-3">
-                          <a
-                            href="#"
+                          <button
+                            type="button"
                             className="btn border bg-primary text-white"
+                            onClick={updateLabourEstHeader}
                           >
                             Save
-                          </a>
+                          </button>
                         </div>
                       </div>
                     </React.Fragment>
@@ -2586,7 +2575,6 @@ function RepairServiceEstimate(props) {
                                 type="text"
                                 disabled
                                 class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
                                 placeholder="Required"
                                 value={miscData.jobCode}
                               />
@@ -2601,7 +2589,6 @@ function RepairServiceEstimate(props) {
                                 type="text"
                                 disabled
                                 class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
                                 placeholder="Required"
                                 value={miscData.jobCodeDescription}
                               />
@@ -2632,7 +2619,6 @@ function RepairServiceEstimate(props) {
                                 type="text"
                                 disabled
                                 class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
                                 placeholder="Required"
                                 value={miscData.totalPrice}
                               />
@@ -2679,7 +2665,6 @@ function RepairServiceEstimate(props) {
                               <input
                                 type="text"
                                 class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
                                 placeholder="Optional"
                               />
                             </div>
@@ -2725,7 +2710,7 @@ function RepairServiceEstimate(props) {
                                 PRICE METHOD
                               </p>
                               <h6 className="font-weight-600">
-                                {miscData.pricingMethod?.value}
+                                {miscData.pricingMethod?.label}
                               </h6>
                             </div>
                           </div>
@@ -2790,7 +2775,7 @@ function RepairServiceEstimate(props) {
             laborTypeList={laborTypeList}
             serviceTypeList={serviceTypeList}
           />
-         
+
           <Modal
             show={open3}
             onHide={handleClose3}
@@ -2836,11 +2821,11 @@ function RepairServiceEstimate(props) {
                         <label className="text-light-dark font-size-12 font-weight-500">
                           CONSUMABLE TYPE
                         </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="1000 ENGINE"
+                        <Select
+                          onChange={e=>setConsumableItemData({...consumableItemData, consumableType: e})}
+                          value={consumableItemData.consumableType}
+                          options={consumableTypeList}
+                          placeholder="Required"
                         />
                       </div>
                     </div>
@@ -2849,13 +2834,17 @@ function RepairServiceEstimate(props) {
                         <label className="text-light-dark font-size-12 font-weight-500">
                           CONSUMABLE ID
                         </label>
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="Required"
+                        <SearchBox
+                          value={consumableItemData.consumableId}
+                          onChange={(e) =>
+                            handleConsumableSearch("consumable", e.target.value)
+                          }
+                          type="consumableId"
+                          result={searchConsumableResult}
+                          onSelect={handleConsumableSelect}
+                          noOptions={noOptionsConsumable}
                         />
-                      </div>
+                    </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
@@ -2864,9 +2853,10 @@ function RepairServiceEstimate(props) {
                         </label>
                         <input
                           type="text"
+                          disabled
+                          value={consumableItemData.consumableDesc}
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="0123 REPLACE"
+                          placeholder="Required"
                         />
                       </div>
                     </div>
@@ -2877,9 +2867,10 @@ function RepairServiceEstimate(props) {
                         </label>
                         <input
                           type="text"
+                          value={consumableItemData.quantity}
+                          onChange={e => setConsumableItemData({...consumableItemData, quantity: e.target.value})}
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="Replace left side of the Engine"
+                          placeholder="Required"
                         />
                       </div>
                     </div>
@@ -2890,9 +2881,10 @@ function RepairServiceEstimate(props) {
                         </label>
                         <input
                           type="text"
+                          value={consumableItemData.unitOfMeasure}
+                          onChange={e => setConsumableItemData({...consumableItemData, unitOfMeasure: e.target.value})}
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="List Price"
+                          placeholder="Required"
                         />
                       </div>
                     </div>
@@ -2903,9 +2895,10 @@ function RepairServiceEstimate(props) {
                         </label>
                         <input
                           type="text"
+                          value={consumableItemData.vendor}
+                          onChange={e => setConsumableItemData({...consumableItemData, vendor: e.target.value})}
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$10000"
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
@@ -2916,9 +2909,11 @@ function RepairServiceEstimate(props) {
                         </label>
                         <input
                           type="text"
+                          disabled
+                          value={consumableItemData.unitPrice}
+                          // onChange={e => setConsumableItemData({...consumableItemData, unitPrice: e.target.value})}
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$5000"
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
@@ -2929,9 +2924,10 @@ function RepairServiceEstimate(props) {
                         </label>
                         <input
                           type="text"
+                          disabled
+                          value={consumableItemData.extendedPrice}
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="EA"
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
@@ -2942,9 +2938,10 @@ function RepairServiceEstimate(props) {
                         </label>
                         <input
                           type="text"
+                          disabled
+                          value={consumableItemData.currency}
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$480000"
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
@@ -2955,9 +2952,10 @@ function RepairServiceEstimate(props) {
                         </label>
                         <input
                           type="text"
+                          disabled
+                          value={consumableItemData.quantity}
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$480000"
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
@@ -2969,7 +2967,6 @@ function RepairServiceEstimate(props) {
                         <input
                           type="text"
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
                           placeholder="$480000"
                         />
                       </div>
@@ -2977,17 +2974,21 @@ function RepairServiceEstimate(props) {
                   </div>
                 </div>
                 <div className="m-3 text-right">
-                  <a
-                    href="#"
+                  <button
+                    type="button"
+                    className="btn border mr-3"
                     onClick={handleClose3}
-                    className="btn border mr-3 "
                   >
                     {" "}
                     Cancel
-                  </a>
-                  <a href="#" className="btn text-white bg-primary">
+                  </button>
+                  <button
+                    type="button"
+                    className="btn text-white bg-primary"
+                    onClick={handleClose3}
+                  >
                     Save
-                  </a>
+                  </button>
                 </div>
               </div>
             </Modal.Body>
@@ -3039,8 +3040,13 @@ function RepairServiceEstimate(props) {
                           ACTIVITY ID
                         </label>
                         <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
+                          onChange={(e) =>
+                            setExtWorkItemData({
+                              ...extWorkItemData,
+                              activityId: e,
+                            })
+                          }
+                          value={extWorkItemData.activityId}
                           options={activityIdList}
                           placeholder="Required"
                         />
@@ -3051,11 +3057,12 @@ function RepairServiceEstimate(props) {
                         <label className="text-light-dark font-size-12 font-weight-500">
                           ACTIVITY NAME
                         </label>
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="Required"
+                        <input
+                          type="text"
+                          disabled
+                          value={extWorkItemData.activityName}
+                          class="form-control border-radius-10"
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
@@ -3066,51 +3073,74 @@ function RepairServiceEstimate(props) {
                         </label>
                         <input
                           type="text"
+                          value={extWorkItemData.shortDescription}
+                          onChange={(e) =>
+                            setExtWorkItemData({
+                              ...extWorkItemData,
+                              shortDescription: e.target.value,
+                            })
+                          }
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="List Price"
+                          placeholder="Optional"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div class="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-600">
+                          SUPPLYING VENDOR
+                        </label>
+                        <SearchBox
+                          value={extWorkItemData.supplyingVendor}
+                          onChange={(e) =>
+                            handleVendorSearch("vendor", e.target.value)
+                          }
+                          type="fullName"
+                          result={searchVenodrResults}
+                          onSelect={handleVendorSelect}
+                          noOptions={noOptionsVendor}
                         />
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
                         <label className="text-light-dark font-size-12 font-weight-500">
-                          QUANTITY
+                          RATE (UNIT PRICE)
                         </label>
                         <input
                           type="text"
+                          onChange={(e) =>
+                            setExtWorkItemData({
+                              ...extWorkItemData,
+                              unitPrice: e.target.value,
+                            })
+                          }
+                          value={extWorkItemData.unitPrice}
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$35000"
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
                         <label className="text-light-dark font-size-12 font-weight-500">
-                          UNIT OF MEASURE
+                          ESTIMATED HOURS / DAYS
                         </label>
                         <input
                           type="text"
+                          value={extWorkItemData.estimatedHours}
+                          onChange={(e) =>
+                            setExtWorkItemData({
+                              ...extWorkItemData,
+                              estimatedHours: e.target.value,
+                            })
+                          }
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$10000"
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          UNIT PRICE
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$10000"
-                        />
-                      </div>
-                    </div>
+
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
                         <label className="text-light-dark font-size-12 font-weight-500">
@@ -3118,25 +3148,19 @@ function RepairServiceEstimate(props) {
                         </label>
                         <input
                           type="text"
+                          value={extWorkItemData.extendedPrice}
+                          onChange={(e) =>
+                            setExtWorkItemData({
+                              ...extWorkItemData,
+                              extendedPrice: e.target.value,
+                            })
+                          }
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$5000"
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          CURRENCY
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="EA"
-                        />
-                      </div>
-                    </div>
+
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
                         <label className="text-light-dark font-size-12 font-weight-500">
@@ -3144,9 +3168,35 @@ function RepairServiceEstimate(props) {
                         </label>
                         <input
                           type="text"
+                          value={extWorkItemData.totalPrice}
+                          onChange={(e) =>
+                            setExtWorkItemData({
+                              ...extWorkItemData,
+                              totalPrice: e.target.value,
+                            })
+                          }
                           class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$480000"
+                          placeholder="Optional"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-md-6 col-sm-6">
+                      <div class="form-group w-100">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          ADJUSTED PRICE
+                        </label>
+                        <input
+                          type="text"
+                          value={extWorkItemData.adjustedPrice}
+                          onChange={(e) =>
+                            setExtWorkItemData({
+                              ...extWorkItemData,
+                              adjustedPrice: e.target.value,
+                            })
+                          }
+                          class="form-control border-radius-10"
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
@@ -3155,54 +3205,33 @@ function RepairServiceEstimate(props) {
                         <label className="text-light-dark font-size-12 font-weight-500">
                           DIMENSIONS
                         </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$480000"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          SUPPLYING VENDOR
-                        </label>
                         <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="Required"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          ACTION
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$480000"
+                          onChange={(e) =>
+                            setExtWorkItemData({
+                              ...extWorkItemData,
+                              dimension: e,
+                            })
+                          }
+                          options={dimensionList}
+                          value={extWorkItemData.dimension}
+                          placeholder="Optional"
                         />
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="m-3 text-right">
-                  <a
-                    href="#"
+                  <button
+                    type="button"
                     onClick={handleClose4}
                     className="btn border mr-3 "
                   >
                     {" "}
                     Cancel
-                  </a>
-                  <a href="#" className="btn text-white bg-primary">
+                  </button>
+                  <button type="button" className="btn text-white bg-primary">
                     Save
-                  </a>
+                  </button>
                 </div>
               </div>
             </Modal.Body>

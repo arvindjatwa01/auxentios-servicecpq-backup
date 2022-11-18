@@ -59,3 +59,32 @@ export const BUILDER_SEARCH_Q_OPTIONS = [
   { label: "SerialNo", value: "serialNo" },
   { label: "Status", value: "status" },
 ];
+export const CONSUMABLE_SEARCH_Q_OPTIONS = [
+  {
+    label: "Id",
+    value: "consumableId",
+  },
+  {
+    label: "Name",
+    value: "name",
+  },
+  {
+    label: "Vendor",
+    value: "sourceOrVendor",
+  },
+];
+
+export const EXTWORK_SEARCH_Q_OPTIONS = [
+  {
+    label: "Id",
+    value: "id",
+  },
+  {
+    label: "Name",
+    value: "name",
+  },
+  {
+    label: "Supplying Vendor",
+    value: "supplyingVendor",
+  },
+];

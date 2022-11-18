@@ -14,6 +14,8 @@ const initialState: DropdownState = {
   pricingMethodList: [],
   miscTypeList: [],
   activityIdList: [],
+  dimensionList: [],
+  consumableTypeList: []
 };
 
 const repairSlice = createSlice({
@@ -33,6 +35,8 @@ const repairSlice = createSlice({
       state.miscTypeList = action.payload.miscTypes.data;
       state.activityIdList = action.payload.activityIds.data;
       state.pricingMethodList = action.payload.pricingMethods.data;
+      state.dimensionList = action.payload.dimensions.data
+      state.consumableTypeList = action.payload.consumableTypes.data;
     },
 
     fetchDropdownsFailed(state, action: PayloadAction<string>) {
@@ -60,6 +64,10 @@ export const selectMiscTypeList = (state: RootState) =>
   state.dropdown.miscTypeList;
 export const selectActivityIdList = (state: RootState) =>
   state.dropdown.activityIdList;
+export const selectDimensionList = (state: RootState) =>
+  state.dropdown.dimensionList;
+export const selectConsumableTypeList = (state: RootState) =>
+  state.dropdown.consumableTypeList;
 export const selectPricingMethodList = (state: RootState) =>
   state.dropdown.pricingMethodList;
 
