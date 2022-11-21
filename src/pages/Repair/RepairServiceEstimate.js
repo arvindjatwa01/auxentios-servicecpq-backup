@@ -17,7 +17,6 @@ import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { default as Select, default as SelectFilter } from "react-select";
-import { getSearchCoverageForFamily } from "../../services/index";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { useEffect } from "react";
@@ -33,6 +32,11 @@ import {
   AddLaborItemToLabor,
   FetchLaborItems,
   RemoveLaborItem,
+  FetchExtWorkforService,
+  FetchExtWorkItems,
+  FetchConsumableItems,
+  AddConsumableItem,
+  AddExtWorkItem,
 } from "services/repairBuilderServices";
 import Moment from "react-moment";
 import { useAppSelector } from "app/hooks";
@@ -53,15 +57,75 @@ import {
 import Loader from "react-js-loader";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import SearchBox from "./components/SearchBox";
-import { getConsumables, getVendors } from "services/searchServices";
+import {
+  getConsumables,
+  getExtWork,
+  getVendors,
+} from "services/searchServices";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
 import AddLaborItemModal from "./components/AddLaborItem";
-import { CONSUMABLE_SEARCH_Q_OPTIONS } from "./CONSTANTS";
+import {
+  CONSUMABLE_SEARCH_Q_OPTIONS,
+  EXTWORK_SEARCH_Q_OPTIONS,
+} from "./CONSTANTS";
 import SearchComponent from "./components/SearchComponent";
 
 function RepairServiceEstimate(props) {
   const { activeElement, setActiveElement } = props.builderDetails;
   const [serviceEstHeaderLoading, setServiceEstHeaderLoading] = useState(true);
+  const [searchResultConsOpen, setSearchResultConsOpen] = useState(false);
+  const [searchResultExtWorkOpen, setSearchResultExtWorkOpen] = useState(false);
+  // Close consumable search modal
+  const handleSearchResConsClose = () => {
+    setSearchResultConsOpen(false);
+    setSelectedMasterData([]);
+  };
+
+  // Close ext work search modal
+  const handleSearchResExtClose = () => {
+    setSearchResultExtWorkOpen(false);
+    setSelectedMasterData([]);
+  };
+
+  // Retrieve charge codes
+  const chargeCodeList = useAppSelector(
+    selectDropdownOption(selectChargeCodeList)
+  );
+
+  // Retrieve labor types
+  const laborTypeList = useAppSelector(
+    selectDropdownOption(selectLaborTypeList)
+  );
+
+  // Retrieve service types
+  const serviceTypeList = useAppSelector(
+    selectDropdownOption(selectServiceTypeList)
+  );
+
+  // Retrieve labor codes
+  const laborCodeList = useAppSelector(
+    selectDropdownOption(selectLaborCodeList)
+  );
+
+  // Retrieve misc types
+  const miscTypeList = useAppSelector(selectDropdownOption(selectMiscTypeList));
+
+  // Retrieve dimensions
+  const dimensionList = useAppSelector(
+    selectDropdownOption(selectDimensionList)
+  );
+  // Retrieve consumables
+  const consumableTypeList = useAppSelector(
+    selectDropdownOption(selectConsumableTypeList)
+  );
+  // Retrieve price methods
+  const priceMethodOptions = useAppSelector(
+    selectDropdownOption(selectPricingMethodList)
+  );
+  // Retrieve activity Ids
+  const activityIdList = useAppSelector(
+    selectDropdownOption(selectActivityIdList)
+  );
 
   const [flagRequired, setFlagRequired] = useState({
     flagLaborReq: true,
@@ -100,7 +164,8 @@ function RepairServiceEstimate(props) {
     activityId: "",
     activityName: "",
     shortDescription: "",
-    supplyingVendor: "",
+    supplyingVendorCode: "",
+    supplyingVendorName: "",
     unitPrice: 0.0,
     extendedPrice: 0.0,
     totalPrice: 0.0,
@@ -110,11 +175,11 @@ function RepairServiceEstimate(props) {
   };
   const initialConsumableItemData = {
     consumableType: "",
-    consumableId: "",
-    consumableDesc: "",
+    consumableCode: "",
+    description: "",
     quantity: "",
     unitOfMeasure: "",
-    vendor:"",
+    vendor: "",
     unitPrice: 0.0,
     extendedPrice: 0.0,
     totalPrice: 0.0,
@@ -139,7 +204,7 @@ function RepairServiceEstimate(props) {
   const [consumableItemData, setConsumableItemData] = useState(
     initialConsumableItemData
   );
-
+  // Consumable Header
   const [consumableData, setConsumableData] = useState({
     jobCode: "",
     jobCodeDescription: "",
@@ -148,6 +213,7 @@ function RepairServiceEstimate(props) {
     payer: "",
     adjustedPrice: 0.0,
   });
+  // Ext Work Header
   const [extWorkData, setExtWorkData] = useState({
     jobCode: "",
     jobCodeDescription: "",
@@ -156,6 +222,7 @@ function RepairServiceEstimate(props) {
     payer: "",
     adjustedPrice: 0.0,
   });
+  // Misc Header
   const [miscData, setMiscData] = useState({
     jobCode: "",
     jobCodeDescription: "",
@@ -165,35 +232,45 @@ function RepairServiceEstimate(props) {
     adjustedPrice: 0.0,
     typeOfMisc: "",
   });
+  // In case there are no options from search result set the flag
   const [noOptionsVendor, setNoOptionsVendor] = useState(false);
   const [noOptionsConsumable, setNoOptionsConsumable] = useState(false);
-
+  // To store search API results
   const [searchVenodrResults, setSearchVendorResults] = useState([]);
   const [searchConsumableResult, setSearchConsumableResult] = useState([]);
-
-  // const [priceMethodOptions, setPriceMethodOptions] = useState([]);
+  // to handle snack messages
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
+  // Make the headers viewonly after storing the data
   const [laborViewOnly, setLaborViewOnly] = useState(false);
   const [consumableViewOnly, setConsumableViewOnly] = useState(false);
   const [extWorkViewOnly, setExtWorkViewOnly] = useState(false);
   const [miscViewOnly, setMiscViewOnly] = useState(false);
   const [serviceHeaderViewOnly, setServiceHeaderViewOnly] = useState(false);
+  //Open the snack message
+  const handleSnack = (snackSeverity, snackMessage) => {
+    setSnackMessage(snackMessage);
+    setSeverity(snackSeverity);
+    setOpenSnack(true);
+  };
+  // To close snack message
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
     setOpenSnack(false);
   };
-
-  const handleQuerySearchClick = async () => {
+  // Consumable Search
+  const handleQuerySearchClick = async (type) => {
     $(".scrollbar").css("display", "none");
     // console.log("handleQuerySearchClick", querySearchSelector);
     var searchStr = "";
-    queryConsSearchSelector.map(function (item, i) {
+    var querySearchSelector =
+      type === "consumables" ? queryConsSearchSelector : queryExtSearchSelector;
+    querySearchSelector.map(function (item, i) {
       if (i === 0 && item.selectCategory.value && item.inputSearch) {
-        searchStr = item.selectCategory.value + ":" + item.inputSearch;
+        searchStr = item.selectCategory.value + ":" + encodeURI('"'+item.inputSearch+'"');
       } else if (
         item.selectCategory.value &&
         item.inputSearch &&
@@ -213,67 +290,43 @@ function RepairServiceEstimate(props) {
 
     try {
       if (searchStr) {
-        const res = await getConsumables(searchStr);
-        // console.log("search Query Result :", res);
-        setMasterData(res);
-        // setSearchResultOpen(true);
+        if (type === "consumables") {
+          const res = await getConsumables(searchStr);
+          // console.log("search Query Result :", res);
+          setMasterData(res);
+          setSearchResultConsOpen(true);
+        } else if (type === "extwork") {
+          const res = await getExtWork(searchStr);
+          // console.log("search Query Result :", res);
+          setMasterData(res);
+          setSearchResultExtWorkOpen(true);
+        }
       } else {
         handleSnack("info", "Please fill the search criteria!");
       }
     } catch (err) {
-      handleSnack("error", "Error occurred while fetching consumables!");
+      handleSnack("error", "Error occurred while fetching results!");
     }
   };
 
-  const handleSnack = (snackSeverity, snackMessage) => {
-    setSnackMessage(snackMessage);
-    setSeverity(snackSeverity);
-    setOpenSnack(true);
-  };
-  const handleChangeSwitch = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Header fields are required or not (Labor, ext work, misc etc)
+  const handleChangeSwitch = (event) => {
     setFlagRequired({
       ...flagRequired,
       [event.target.name]: event.target.checked,
     });
   };
-  const chargeCodeList = useAppSelector(
-    selectDropdownOption(selectChargeCodeList)
-  );
-  const laborTypeList = useAppSelector(
-    selectDropdownOption(selectLaborTypeList)
-  );
-  const serviceTypeList = useAppSelector(
-    selectDropdownOption(selectServiceTypeList)
-  );
 
-  const laborCodeList = useAppSelector(
-    selectDropdownOption(selectLaborCodeList)
-  );
-  const miscTypeList = useAppSelector(selectDropdownOption(selectMiscTypeList));
-
-  const dimensionList = useAppSelector(
-    selectDropdownOption(selectDimensionList)
-  );
-  const consumableTypeList = useAppSelector(
-    selectDropdownOption(selectConsumableTypeList)
-  );
-
-  const priceMethodOptions = useAppSelector(
-    selectDropdownOption(selectPricingMethodList)
-  );
   const unitOfMeasureOptions = [
     { label: "Hours", value: "Hours" },
     { label: "Days", value: "Days" },
   ];
-  const activityIdList = useAppSelector(
-    selectDropdownOption(selectActivityIdList)
-  );
-
-  const [selectedOption, setSelectedOption] = useState(null);
+  // Sets the value for the tab (labor, consumable, misc, extWork)
   const [value, setValue] = useState("labor");
+
+  //fetches the service headers if already saved or sets the appropriate values
   useEffect(() => {
     setServiceEstHeaderLoading(true);
-    console.log(activityIdList);
     if (activeElement.oId) {
       FetchServiceHeader(activeElement.oId)
         .then((result) => {
@@ -281,7 +334,7 @@ function RepairServiceEstimate(props) {
             ...serviceEstimateData,
             reference: result.reference,
             id: result.id,
-            currency: result.currency, //TODO: Uncomment this once currecy is updated.
+            currency: result.currency,
             description: result.description,
             jobCode: result.jobCode,
             jobOperation: result.jobOperation,
@@ -292,9 +345,11 @@ function RepairServiceEstimate(props) {
             ),
             segmentTitle: result.segmentTitle,
           });
+          //if service header exists then mark it view only
           setServiceHeaderViewOnly(result.id ? true : false);
           populateLaborData(result);
           populateConsumableData(result);
+          populateExtWorkData(result);
 
           setExtWorkData({
             ...extWorkData,
@@ -366,8 +421,6 @@ function RepairServiceEstimate(props) {
     FetchConsumableforService(result.id)
       .then((resultConsumable) => {
         if (resultConsumable && resultConsumable.id) {
-          setConsumableViewOnly(true);
-
           setConsumableData({
             ...resultConsumable,
             id: resultConsumable.id,
@@ -378,6 +431,8 @@ function RepairServiceEstimate(props) {
               (element) => element.value === resultConsumable.payer
             ),
           });
+          populateConsItems(resultConsumable);
+          setConsumableViewOnly(true);
         }
       })
       .catch((e) => {
@@ -388,6 +443,63 @@ function RepairServiceEstimate(props) {
         });
       });
   }
+
+  function populateConsItems(result) {
+    FetchConsumableItems(result.id)
+      .then((resultConsumableItems) => {
+        if (resultConsumableItems && resultConsumableItems.result.length > 0) {
+          setConsumableItems(resultConsumableItems.result);
+          console.log(resultConsumableItems.result);
+        }
+      })
+      .catch((e) => {
+        handleSnack("error", "Error occurred while fetching consumable items");
+      });
+  }
+
+  // Populate Ext work header
+  function populateExtWorkData(result) {
+    FetchExtWorkforService(result.id)
+      .then((resultExtWork) => {
+        if (resultExtWork && resultExtWork.id) {
+          setExtWorkData({
+            ...resultExtWork,
+            id: resultExtWork.id,
+            pricingMethod: priceMethodOptions.find(
+              (element) => element.value === resultExtWork.pricingMethod
+            ),
+            // payer: options.find(
+            //   (element) => element.value === resultExtWork.payer
+            // ),
+          });
+          populateExtWorkItems(resultExtWork);
+          setExtWorkViewOnly(true);
+        }
+      })
+      .catch((e) => {
+        setExtWorkData({
+          ...extWorkData,
+          jobCode: result.jobCode,
+          jobCodeDescription: result.jobOperation,
+        });
+      });
+  }
+  function populateExtWorkItems(result) {
+    FetchExtWorkItems(result.id)
+      .then((resultExtWorkItems) => {
+        if (resultExtWorkItems && resultExtWorkItems.result.length > 0) {
+          setExtWorkItems(resultExtWorkItems.result);
+          console.log(resultExtWorkItems.result);
+        }
+      })
+      .catch((e) => {
+        handleSnack(
+          "error",
+          "Error occurred while fetching external work items"
+        );
+      });
+  }
+
   const makeHeaderEditable = (type) => {
     if (type === "serviceEstHeader" && serviceHeaderViewOnly)
       setServiceHeaderViewOnly(false);
@@ -401,7 +513,7 @@ function RepairServiceEstimate(props) {
   const handleVendorSearch = async (searchVendorfieldName, searchText) => {
     // console.log("clear data", searchText);
     setSearchVendorResults([]);
-    extWorkItemData.supplyingVendor = searchText;
+    extWorkItemData.supplyingVendorName = searchText;
     if (searchText) {
       await getVendors("fullName~" + searchText)
         .then((result) => {
@@ -419,10 +531,13 @@ function RepairServiceEstimate(props) {
   };
 
   // Search Consumable
-  const handleConsumableSearch = async (searchConsumablefieldName, searchText) => {
+  const handleConsumableSearch = async (
+    searchConsumablefieldName,
+    searchText
+  ) => {
     // console.log("clear data", searchText);
     setSearchConsumableResult([]);
-    consumableItemData.consumableId = searchText;
+    consumableItemData.consumableCode = searchText;
     if (searchText) {
       await getConsumables("consumableId~" + searchText)
         .then((result) => {
@@ -435,7 +550,10 @@ function RepairServiceEstimate(props) {
         })
         .catch((e) => {
           console.log(e);
-          handleSnack("error", "Error occurred while searching the Consumable!");
+          handleSnack(
+            "error",
+            "Error occurred while searching the Consumable!"
+          );
         });
     }
   };
@@ -444,7 +562,7 @@ function RepairServiceEstimate(props) {
   const handleVendorSelect = (type, currentItem) => {
     setExtWorkItemData({
       ...extWorkItemData,
-      supplyingVendor: currentItem.fullName,
+      supplyingVendorName: currentItem.fullName,
     });
     setSearchVendorResults([]);
   };
@@ -453,9 +571,9 @@ function RepairServiceEstimate(props) {
   const handleConsumableSelect = (type, currentItem) => {
     setConsumableItemData({
       ...consumableItemData,
-      consumableId: currentItem.consumableId,
-      consumableDesc: currentItem.name,
-      unitOfMeasure: currentItem.unit
+      consumableCode: currentItem.consumableId,
+      description: currentItem.name,
+      unitOfMeasure: currentItem.unit,
     });
     setSearchConsumableResult([]);
   };
@@ -615,13 +733,49 @@ function RepairServiceEstimate(props) {
 
     AddLaborItemToLabor(labourData.id, data)
       .then((result) => {
-        console.log(result);
         setLabourItemData(initialLaborItemData);
         populateLaborItems(labourData);
         handleSnack("success", "Added labor item successfully");
       })
       .catch((err) => {
         handleSnack("error", "Error occurred while adding labor item!");
+      });
+  };
+
+  // Add or Update Consumable Item
+  const addConsumableItem = () => {
+    let data = {
+      ...consumableItemData,
+      consumableType: consumableItemData.consumableType?.value,
+    };
+
+    AddConsumableItem(consumableData.id, data)
+      .then((result) => {
+        setConsumableItemData(initialConsumableItemData);
+        populateConsItems(consumableData);
+        handleSnack("success", "Added consumable item successfully");
+      })
+      .catch((err) => {
+        handleSnack("error", "Error occurred while adding consumable item!");
+      });
+  };
+
+  // Add or Update Consumable Item
+  const addExtWorkItem = () => {
+    let data = {
+      ...extWorkItemData,
+      activityId: extWorkItemData.activityId?.label,
+      dimensions: extWorkItemData.dimension?.value,
+    };
+
+    AddExtWorkItem(extWorkData.id, data)
+      .then((result) => {
+        setExtWorkItemData(initialExtWorkItemData);
+        populateExtWorkItems(extWorkData);
+        handleSnack("success", "Added ext work item successfully");
+      })
+      .catch((err) => {
+        handleSnack("error", "Error occurred while adding external work item!");
       });
   };
 
@@ -662,10 +816,17 @@ function RepairServiceEstimate(props) {
     setValue(newValue);
   };
   const [laborItemOpen, setLaborItemOpen] = React.useState(false);
-  const [open3, setOpen3] = React.useState(false);
-  const [open4, setOpen4] = React.useState(false);
-  const handleClose4 = () => setOpen4(false);
-  const handleClose3 = () => setOpen3(false);
+  const [consumableItemOpen, setConsumableItemOpen] = React.useState(false);
+  const [extWorkItemOpen, setExtWorkItemOpen] = React.useState(false);
+  const handleExtWorkItemClose = () => {
+    setExtWorkItemOpen(false);
+    setExtWorkItemData(initialExtWorkItemData);
+
+  }
+  const handleConsumableItemClose = () => {
+    setConsumableItemOpen(false);
+    setConsumableItemData(initialConsumableItemData);
+  }
   const handleLaborItemClose = () => {
     setLaborItemOpen(false);
     setLabourItemData(initialLaborItemData);
@@ -683,47 +844,6 @@ function RepairServiceEstimate(props) {
     setShow(true);
   };
 
-  const handleSearchListClick = (e, currentItem, obj1, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.inputSearch = currentItem;
-    obj.selectedOption = currentItem;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-    $(`.scrollbar-${id}`).css("display", "none");
-  };
-  const addSearchQuerryHtml = () => {
-    setQuerySearchSelector([
-      ...querySearchSelector,
-      {
-        id: count,
-        selectOperator: "",
-        selectFamily: "",
-        inputSearch: "",
-        selectOptions: [],
-        selectedOption: "",
-      },
-    ]);
-    setCount(count + 1);
-  };
-  const handleOperator = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.selectOperator = e;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-  };
-  const [querySearchSelector, setQuerySearchSelector] = useState([
-    {
-      id: 0,
-      selectFamily: "",
-      selectOperator: "",
-      inputSearch: "",
-      selectOptions: [],
-      selectedOption: "",
-    },
-  ]);
-
   const [queryConsSearchSelector, setQueryConsSearchSelector] = useState([
     {
       id: 0,
@@ -734,110 +854,30 @@ function RepairServiceEstimate(props) {
       selectedOption: "",
     },
   ]);
-  
-  const handleFamily = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    console.log("handleFamily e:", e);
-    let obj = tempArray[id];
-    obj.selectFamily = e;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-  };
+  const [queryExtSearchSelector, setQueryExtSearchSelector] = useState([
+    {
+      id: 0,
+      selectFamily: "",
+      selectOperator: "",
+      inputSearch: "",
+      selectOptions: [],
+      selectedOption: "",
+    },
+  ]);
 
-    // Once parts are selected to add clear the search results
-    const clearFilteredData = () => {
-      setMasterData([]);
-      setSelectedMasterData([]);
-    };
-  const handleMasterCheck = (e, row) => {
-    if (e.target.checked) {
-      var _masterData = [...masterData];
-      const updated = _masterData.map((currentItem, i) => {
-        if (row.id == currentItem.id) {
-          return { ...currentItem, ["check1"]: e.target.checked };
-        } else return currentItem;
-      });
-      setMasterData([...updated]);
-      setFilterMasterData([...filterMasterData, { ...row }]);
-    } else {
-      var _filterMasterData = [...filterMasterData];
-      const updated = _filterMasterData.filter((currentItem, i) => {
-        if (row.id !== currentItem.id) return currentItem;
-      });
-      setFilterMasterData(updated);
-    }
+
+  // Once parts are selected to add clear the search results
+  const clearFilteredData = () => {
+    setMasterData([]);
+    setSelectedMasterData([]);
   };
+  
   const [filterMasterData, setFilterMasterData] = useState([]);
   const [selectedMasterData, setSelectedMasterData] = useState([]);
   const [masterData, setMasterData] = useState([]);
-  const handleDeletQuerySearch = () => {
-    setQuerySearchSelector([]);
-    setCount(0);
-    setMasterData([]);
-    setFilterMasterData([]);
-    setSelectedMasterData([]);
-  };
-  const handleInputSearch = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
-      .then((res) => {
-        obj.selectOptions = res;
-        tempArray[id] = obj;
-        setQuerySearchSelector([...tempArray]);
-        $(`.scrollbar-${id}`).css("display", "block");
-      })
-      .catch((err) => {
-        console.log("err in api call", err);
-      });
-    obj.inputSearch = e.target.value;
-  };
-
   let [laborItems, setLaborItems] = useState([]);
-  // let rows = [
-  //   {
-  //     id: 1,
-  //     chargeCode: "Snow",
-  //     laborType: "Jon",
-  //     serviceType: 35,
-  //     unitOfMeasure: "pending",
-  //     estimatedHours: "Open",
-  //     unitPrice: "Inconsistent",
-  //     extendedPrice: "Inconsistent",
-  //     comments: "Inconsistent",
-  //     currency: "Created On",
-  //     totalPrice: "25",
-  //     Actions: "Action",
-  //   },
-  //   {
-  //     id: 2,
-  //     chargeCode: "Snow",
-  //     laborType: "Jon",
-  //     serviceType: 35,
-  //     unitOfMeasure: "pending",
-  //     estimatedHours: "Open",
-  //     unitPrice: "Inconsistent",
-  //     extendedPrice: "Inconsistent",
-  //     comments: "Inconsistent",
-  //     currency: "Created On",
-  //     totalPrice: "25",
-  //     Actions: "Action",
-  //   },
-  //   {
-  //     id: 3,
-  //     chargeCode: "Snow",
-  //     laborType: "Jon",
-  //     serviceType: 35,
-  //     unitOfMeasure: "pending",
-  //     estimatedHours: "Open",
-  //     unitPrice: "Inconsistent",
-  //     extendedPrice: "Inconsistent",
-  //     comments: "Inconsistent",
-  //     currency: "Created On",
-  //     totalPrice: "25",
-  //     Actions: "Action",
-  //   },
-  // ];
+  let [consumableItems, setConsumableItems] = useState([]);
+  let [extWorkItems, setExtWorkItems] = useState([]);
 
   const laborColumns = [
     { field: "chargeCode", headerName: "Charge Code", flex: 1, width: 70 },
@@ -892,82 +932,111 @@ function RepairServiceEstimate(props) {
     },
   ];
 
-  const rowsConsumables = [
+  // Search table column for consumable
+  const columnsConsumableSearch = [
+    { headerName: "Consumable Id", field: "consumableId", flex: 1, width: 70 },
+    { headerName: "Name", field: "name", flex: 1, width: 130 },
     {
-      id: 1,
-      ConsumableId: "Snow",
-      ConsumableType: "Type",
-      Description: 34,
-      Quantity: "4",
-      UnitMeasures: "5",
-      Vendor: "Consistent",
-      UnitPrice: "Inconsistent",
-      ExtendedPrice: "Consistent",
-      Currency: "$",
-      TotalPrice: "37",
-      Actions: "Action",
+      headerName: "Supplying Vendor",
+      field: "sourceOrVendor",
+      flex: 1,
+      width: 130,
     },
     {
-      id: 2,
-      ConsumableId: "Lannister",
-      ConsumableType: "Cersei",
-      Description: 34,
-      Quantity: "4",
-      UnitMeasures: "5",
-      Vendor: "Consistent",
-      UnitPrice: "Inconsistent",
-      ExtendedPrice: "Consistent",
-      Currency: "$",
-      TotalPrice: "37",
-      Actions: "Action",
+      headerName: "Unit Price",
+      field: "unitPrice",
+      flex: 1,
+      width: 130,
+    },
+  ];
+  // Search table column for consumable
+  const columnsExtWorkSearch = [
+    { headerName: "Activity Id", field: "activityId", flex: 1, width: 70 },
+    {
+      headerName: "Activity Name",
+      field: "activityDescription",
+      flex: 1,
+      width: 130,
     },
     {
-      id: 3,
-      ConsumableId: "Lannister",
-      ConsumableType: "Jaime",
-      Description: 34,
-      Quantity: "4",
-      UnitMeasures: "5",
-      Vendor: "Consistent",
-      UnitPrice: "Inconsistent",
-      ExtendedPrice: "Consistent",
-      Currency: "$",
-      TotalPrice: "37",
-      Actions: "Action",
+      headerName: "Supplying Vendor",
+      field: "supplyingVendorName",
+      flex: 1,
+      width: 130,
+    },
+    {
+      headerName: "Quoted Price",
+      field: "contractedPrice",
+      flex: 1,
+      width: 130,
     },
   ];
 
+  // Add the selected parts from search result to partlist
+  const selectConsumableItem = async (selectedData) => {
+    setSearchResultConsOpen(false);
+    setConsumableItemData({
+        ...consumableItemData,
+        consumableCode: selectedData.consumableId,
+        description: selectedData.name,
+        consumableType: "",
+        vendor: selectedData.sourceOrVendor,
+        unitOfMeasure: selectedData.unit,
+    });
+    console.log(selectedData);
+    setConsumableItemOpen(true) ;
+  };
+
+    // Select the external work item
+    const selectExtWorkItem = async (selectedData) => {
+      setSearchResultExtWorkOpen(false);
+      setExtWorkItemData({
+          ...extWorkItemData,
+          activityId: activityIdList.find(
+            (element) => element.value === selectedData.activityId
+          ),
+          activityName: selectedData.activityDescription,
+          // activityType: selectedData.activityType,
+          supplyingVendorCode: selectedData.supplyingVendorCode,
+          supplyingVendorName: selectedData.supplyingVendorName,
+          // unitOfMeasure: selectedData.unit,
+          // dimension: 
+      });
+      console.log(selectedData);
+      setExtWorkItemOpen(true) ;
+    };
+
   const columnsConsumables = [
-    { field: "ConsumableId", headerName: "Consumable ID", flex: 1, width: 70 },
+    { field: "consumableCode", headerName: "Consumable ID", flex: 1, width: 70 },
     {
-      field: "ConsumableType",
+      field: "consumableType",
       headerName: "Consumable Type",
       flex: 1,
       width: 70,
     },
     {
-      field: "Description",
+      field: "description",
       headerName: "Consumable Description",
       flex: 1,
       width: 130,
     },
-    { field: "Quantity", headerName: " Quantity", flex: 1, width: 130 },
+    { field: "quantity", headerName: " Quantity", flex: 1, width: 130 },
     {
-      field: "UnitMeasures",
+      field: "unitOfMeasure",
       headerName: "Unit of measure",
       flex: 1,
       width: 130,
     },
-    { field: "Vendor", headerName: "Vendor", flex: 1, width: 130 },
-    { field: "UnitPrice", headerName: "Unit Price", flex: 1, width: 130 },
+    { field: "vendor", headerName: "Vendor", flex: 1, width: 130 },
+    { field: "unitPrice", headerName: "Unit Price", flex: 1, width: 130 },
     {
-      field: "ExtendedPrice",
+      field: "extendedPrice",
       headerName: "Extended price",
       flex: 1,
       width: 130,
     },
-    { field: "Currency", headerName: "Currency", flex: 1, width: 130 },
-    { field: "TotalPrice", headerName: "Total price", flex: 1, width: 130 },
+    { field: "currency", headerName: "Currency", flex: 1, width: 130 },
+    { field: "totalPrice", headerName: "Total price", flex: 1, width: 130 },
     { field: "Actions", headerName: "Action", flex: 1, width: 130 },
   ];
 
@@ -1020,41 +1089,39 @@ function RepairServiceEstimate(props) {
   ];
 
   const columnsExternal = [
-    { field: "ActivityId", headerName: "Activity ID", flex: 1, width: 70 },
-    { field: "ActivityName", headerName: "Activity Name", flex: 1, width: 70 },
+    { field: "activityId", headerName: "Activity ID", flex: 1, width: 70 },
+    { field: "activityName", headerName: "Activity Name", flex: 1, width: 70 },
     {
-      field: "Description",
+      field: "sescription",
       headerName: "Short Description",
       flex: 1,
       width: 70,
     },
-    { field: "Quantity", headerName: "Quantity", flex: 1, width: 70 },
+    { field: "quantity", headerName: "Quantity", flex: 1, width: 70 },
     {
-      field: "UnitMeasures",
+      field: "unitOfMeasure",
       headerName: "Unit of measure",
       flex: 1,
       width: 130,
     },
-    { field: "UnitPrice", headerName: "Unit Price", flex: 1, width: 130 },
+    { field: "unitPrice", headerName: "Unit Price", flex: 1, width: 130 },
     {
-      field: "ExtendedPrice",
+      field: "extendedPrice",
       headerName: "Extended price",
       flex: 1,
       width: 130,
     },
-    { field: "Currency", headerName: "Currency", flex: 1, width: 130 },
-    { field: "TotalPrice", headerName: "Total price", flex: 1, width: 130 },
-    { field: "Dimensions", headerName: "Dimension", flex: 1, width: 130 },
+    { field: "currency", headerName: "Currency", flex: 1, width: 130 },
+    { field: "totalPrice", headerName: "Total price", flex: 1, width: 130 },
+    { field: "dimensions", headerName: "Dimension", flex: 1, width: 130 },
     {
-      field: "SupplyingVendor",
+      field: "supplyingVendorName",
       headerName: "Supplying Vendor",
       flex: 1,
       width: 130,
     },
     { field: "Actions", headerName: "Action", flex: 1, width: 130 },
   ];
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
 
   return (
     <>
@@ -1164,7 +1231,6 @@ function RepairServiceEstimate(props) {
                         PRICE METHOD
                       </label>
                       <Select
-                        defaultValue={selectedOption}
                         value={serviceEstimateData.priceMethod}
                         onChange={(e) =>
                           setServiceEstimateData({
@@ -1496,7 +1562,6 @@ function RepairServiceEstimate(props) {
                                 LABOR CODE
                               </label>
                               <Select
-                                defaultValue={selectedOption}
                                 onChange={(e) =>
                                   setLabourData({ ...labourData, laborCode: e })
                                 }
@@ -1512,7 +1577,6 @@ function RepairServiceEstimate(props) {
                                 PRICE METHOD
                               </label>
                               <Select
-                                defaultValue={selectedOption}
                                 onChange={(e) =>
                                   setLabourData({
                                     ...labourData,
@@ -1579,7 +1643,6 @@ function RepairServiceEstimate(props) {
                                 PAYER
                               </label>
                               <Select
-                                defaultValue={selectedOption}
                                 onChange={(e) =>
                                   setLabourData({ ...labourData, payer: e })
                                 }
@@ -1873,7 +1936,6 @@ function RepairServiceEstimate(props) {
                                 PRICE METHOD
                               </label>
                               <Select
-                                defaultValue={selectedOption}
                                 onChange={(e) =>
                                   setConsumableData({
                                     ...consumableData,
@@ -1906,7 +1968,6 @@ function RepairServiceEstimate(props) {
                                 PAYER
                               </label>
                               <Select
-                                defaultValue={selectedOption}
                                 onChange={(e) =>
                                   setConsumableData({
                                     ...consumableData,
@@ -2040,15 +2101,18 @@ function RepairServiceEstimate(props) {
                                 </div>
                                 <SearchComponent
                                   querySearchSelector={queryConsSearchSelector}
-                                  setQuerySearchSelector={setQueryConsSearchSelector}
+                                  setQuerySearchSelector={
+                                    setQueryConsSearchSelector
+                                  }
                                   clearFilteredData={clearFilteredData}
                                   handleSnack={handleSnack}
                                   searchAPI={getConsumables}
+                                  type={"consumables"}
                                   searchClick={handleQuerySearchClick}
                                   options={CONSUMABLE_SEARCH_Q_OPTIONS}
-                                  color={'white'}
+                                  color={"white"}
                                 />
-                                
+
                                 {/* <div className="px-3">
           <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
             <SearchIcon /><span className="ml-1">Search</span>
@@ -2059,7 +2123,7 @@ function RepairServiceEstimate(props) {
                             <div className="">
                               <div className="text-center border-left pl-1 py-3">
                                 <Link
-                                  onClick={() => setOpen3(true)}
+                                  onClick={() => setConsumableItemOpen(true)}
                                   to="#"
                                   className="p-1 text-white"
                                   data-toggle="modal"
@@ -2084,14 +2148,14 @@ function RepairServiceEstimate(props) {
                               "& .MuiDataGrid-columnHeaders": {
                                 backgroundColor: "#872ff7",
                                 color: "#fff",
-                                fontSize: 12
+                                fontSize: 12,
                               },
                               minHeight: 300,
                               "& .MuiDataGrid-cellContent": {
                                 fontSize: 12,
                               },
                             }}
-                            rows={rowsConsumables}
+                            rows={consumableItems}
                             columns={columnsConsumables}
                             pageSize={5}
                             rowsPerPageOptions={[5]}
@@ -2173,7 +2237,6 @@ function RepairServiceEstimate(props) {
                                 PRICE METHOD
                               </label>
                               <Select
-                                defaultValue={selectedOption}
                                 onChange={(e) =>
                                   setExtWorkData({
                                     ...extWorkData,
@@ -2206,7 +2269,6 @@ function RepairServiceEstimate(props) {
                                 PAYER
                               </label>
                               <Select
-                                defaultValue={selectedOption}
                                 onChange={(e) =>
                                   setExtWorkData({ ...extWorkData, payer: e })
                                 }
@@ -2334,166 +2396,25 @@ function RepairServiceEstimate(props) {
                                     </a>
                                   </p>
                                 </div>
-                                <div className="d-flex justify-content-between align-items-center w-100 ">
-                                  <div className="row align-items-center m-0">
-                                    {querySearchSelector.map((obj, i) => {
-                                      return (
-                                        <>
-                                          <div className="customselect border-white overflow-hiden border-radius-10 d-flex align-items-center mr-3 my-2">
-                                            {i > 0 ? (
-                                              <SelectFilter
-                                                isClearable={true}
-                                                defaultValue={{
-                                                  label: "And",
-                                                  value: "AND",
-                                                }}
-                                                options={[
-                                                  {
-                                                    label: "And",
-                                                    value: "AND",
-                                                    id: i,
-                                                  },
-                                                  {
-                                                    label: "Or",
-                                                    value: "OR",
-                                                    id: i,
-                                                  },
-                                                ]}
-                                                placeholder="And/Or"
-                                                onChange={(e) =>
-                                                  handleOperator(e, i)
-                                                }
-                                                // value={querySearchOperator[i]}
-                                                value={obj.selectOperator}
-                                              />
-                                            ) : (
-                                              <></>
-                                            )}
-
-                                            <div>
-                                              <SelectFilter
-                                                // isClearable={true}
-                                                options={[
-                                                  {
-                                                    label: "ID",
-                                                    value: "ID",
-                                                    id: i,
-                                                  },
-                                                  {
-                                                    label: "NAME",
-                                                    value: "name",
-                                                    id: i,
-                                                  },
-                                                  {
-                                                    label: "SUPPLYING VENDOR",
-                                                    value: "supplyingVendor",
-                                                    id: i,
-                                                  },
-                                                ]}
-                                                placeholder="Search By.."
-                                                onChange={(e) =>
-                                                  handleFamily(e, i)
-                                                }
-                                                value={obj.selectFamily}
-                                              />
-                                            </div>
-                                            <div className="customselectsearch customize">
-                                              <span className="search-icon-postn">
-                                                <SearchIcon />
-                                              </span>
-                                              <input
-                                                className="custom-input-sleact "
-                                                style={{ position: "relative" }}
-                                                type="text"
-                                                placeholder="Search Parts"
-                                                value={obj.inputSearch}
-                                                onChange={(e) =>
-                                                  handleInputSearch(e, i)
-                                                }
-                                                id={"inputSearch-" + i}
-                                                autoComplete="off"
-                                              />
-                                              <div className="btn border">
-                                                <span className="mr-2">
-                                                  <AddIcon />
-                                                </span>
-                                                Add Part
-                                              </div>
-
-                                              {
-                                                <ul
-                                                  className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
-                                                >
-                                                  {obj.selectOptions.map(
-                                                    (currentItem, j) => (
-                                                      <li
-                                                        className="list-group-item"
-                                                        key={j}
-                                                        onClick={(e) =>
-                                                          handleSearchListClick(
-                                                            e,
-                                                            currentItem,
-                                                            obj,
-                                                            i
-                                                          )
-                                                        }
-                                                      >
-                                                        {currentItem}
-                                                      </li>
-                                                    )
-                                                  )}
-                                                </ul>
-                                              }
-                                            </div>
-                                          </div>
-                                        </>
-                                      );
-                                    })}
-                                    <div
-                                      onClick={(e) => addSearchQuerryHtml(e)}
-                                    >
-                                      <Link
-                                        to="#"
-                                        className="btn-sm text-white border mr-2"
-                                        style={{ border: "1px solid #872FF7" }}
-                                      >
-                                        +
-                                      </Link>
-                                    </div>
-                                    <div onClick={handleDeletQuerySearch}>
-                                      <Link to="#" className="btn-sm border">
-                                        <svg
-                                          data-name="Layer 41"
-                                          id="Layer_41"
-                                          fill="#ffffff"
-                                          viewBox="0 0 50 50"
-                                          xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                          <title />
-                                          <path
-                                            className="cls-1"
-                                            d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                                          />
-                                          <path
-                                            className="cls-1"
-                                            d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                                          />
-                                          <path
-                                            className="cls-1"
-                                            d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                                          />
-                                        </svg>
-                                        {/* <DeleteIcon className="font-size-16" /> */}
-                                      </Link>
-                                    </div>
-                                  </div>
-                                </div>
+                                <SearchComponent
+                                  querySearchSelector={queryExtSearchSelector}
+                                  setQuerySearchSelector={
+                                    setQueryExtSearchSelector
+                                  }
+                                  clearFilteredData={clearFilteredData}
+                                  handleSnack={handleSnack}
+                                  searchAPI={getExtWork}
+                                  type={"extwork"}
+                                  searchClick={handleQuerySearchClick}
+                                  options={EXTWORK_SEARCH_Q_OPTIONS}
+                                  color={"white"}
+                                />
                               </div>
                             </div>
                             <div className="">
                               <div className="text-center border-left pl-3 py-3">
                                 <Link
-                                  onClick={() => setOpen4(true)}
+                                  onClick={() => setExtWorkItemOpen(true)}
                                   to="#"
                                   className="p-1 text-white"
                                   data-toggle="modal"
@@ -2600,7 +2521,6 @@ function RepairServiceEstimate(props) {
                                 PRICE METHOD
                               </label>
                               <Select
-                                defaultValue={selectedOption}
                                 onChange={(e) =>
                                   setMiscData({ ...miscData, pricingMethod: e })
                                 }
@@ -2631,7 +2551,6 @@ function RepairServiceEstimate(props) {
                                 TYPE OF MISC.{" "}
                               </label>
                               <Select
-                                defaultValue={selectedOption}
                                 onChange={(e) =>
                                   setMiscData({ ...miscData, typeOfMisc: e })
                                 }
@@ -2647,7 +2566,6 @@ function RepairServiceEstimate(props) {
                                 PAYER
                               </label>
                               <Select
-                                defaultValue={selectedOption}
                                 onChange={(e) =>
                                   setMiscData({ ...miscData, payer: e })
                                 }
@@ -2777,8 +2695,8 @@ function RepairServiceEstimate(props) {
           />
 
           <Modal
-            show={open3}
-            onHide={handleClose3}
+            show={consumableItemOpen}
+            onHide={handleConsumableItemClose}
             size="lg"
             aria-labelledby="contained-modal-title-vcenter"
             centered
@@ -2822,7 +2740,12 @@ function RepairServiceEstimate(props) {
                           CONSUMABLE TYPE
                         </label>
                         <Select
-                          onChange={e=>setConsumableItemData({...consumableItemData, consumableType: e})}
+                          onChange={(e) =>
+                            setConsumableItemData({
+                              ...consumableItemData,
+                              consumableType: e,
+                            })
+                          }
                           value={consumableItemData.consumableType}
                           options={consumableTypeList}
                           placeholder="Required"
@@ -2835,16 +2758,16 @@ function RepairServiceEstimate(props) {
                           CONSUMABLE ID
                         </label>
                         <SearchBox
-                          value={consumableItemData.consumableId}
+                          value={consumableItemData.consumableCode}
                           onChange={(e) =>
                             handleConsumableSearch("consumable", e.target.value)
                           }
-                          type="consumableId"
+                          type="consumableCode"
                           result={searchConsumableResult}
                           onSelect={handleConsumableSelect}
                           noOptions={noOptionsConsumable}
                         />
-                    </div>
+                      </div>
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
@@ -2854,7 +2777,7 @@ function RepairServiceEstimate(props) {
                         <input
                           type="text"
                           disabled
-                          value={consumableItemData.consumableDesc}
+                          value={consumableItemData.description}
                           class="form-control border-radius-10"
                           placeholder="Required"
                         />
@@ -2868,7 +2791,12 @@ function RepairServiceEstimate(props) {
                         <input
                           type="text"
                           value={consumableItemData.quantity}
-                          onChange={e => setConsumableItemData({...consumableItemData, quantity: e.target.value})}
+                          onChange={(e) =>
+                            setConsumableItemData({
+                              ...consumableItemData,
+                              quantity: e.target.value,
+                            })
+                          }
                           class="form-control border-radius-10"
                           placeholder="Required"
                         />
@@ -2882,7 +2810,12 @@ function RepairServiceEstimate(props) {
                         <input
                           type="text"
                           value={consumableItemData.unitOfMeasure}
-                          onChange={e => setConsumableItemData({...consumableItemData, unitOfMeasure: e.target.value})}
+                          onChange={(e) =>
+                            setConsumableItemData({
+                              ...consumableItemData,
+                              unitOfMeasure: e.target.value,
+                            })
+                          }
                           class="form-control border-radius-10"
                           placeholder="Required"
                         />
@@ -2896,7 +2829,12 @@ function RepairServiceEstimate(props) {
                         <input
                           type="text"
                           value={consumableItemData.vendor}
-                          onChange={e => setConsumableItemData({...consumableItemData, vendor: e.target.value})}
+                          onChange={(e) =>
+                            setConsumableItemData({
+                              ...consumableItemData,
+                              vendor: e.target.value,
+                            })
+                          }
                           class="form-control border-radius-10"
                           placeholder="Optional"
                         />
@@ -2953,31 +2891,20 @@ function RepairServiceEstimate(props) {
                         <input
                           type="text"
                           disabled
-                          value={consumableItemData.quantity}
+                          value={consumableItemData.totalPrice}
                           class="form-control border-radius-10"
                           placeholder="Optional"
                         />
                       </div>
                     </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          ACTION
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          placeholder="$480000"
-                        />
-                      </div>
-                    </div>
+                    
                   </div>
                 </div>
                 <div className="m-3 text-right">
                   <button
                     type="button"
                     className="btn border mr-3"
-                    onClick={handleClose3}
+                    onClick={handleConsumableItemClose}
                   >
                     {" "}
                     Cancel
@@ -2985,7 +2912,7 @@ function RepairServiceEstimate(props) {
                   <button
                     type="button"
                     className="btn text-white bg-primary"
-                    onClick={handleClose3}
+                    onClick={addConsumableItem}
                   >
                     Save
                   </button>
@@ -2995,8 +2922,8 @@ function RepairServiceEstimate(props) {
           </Modal>
 
           <Modal
-            show={open4}
-            onHide={handleClose4}
+            show={extWorkItemOpen}
+            onHide={handleExtWorkItemClose}
             size="lg"
             aria-labelledby="contained-modal-title-vcenter"
             centered
@@ -3044,8 +2971,10 @@ function RepairServiceEstimate(props) {
                             setExtWorkItemData({
                               ...extWorkItemData,
                               activityId: e,
+                              activityName: e.label
                             })
                           }
+                          getOptionLabel={(option) => `${option.value}`}
                           value={extWorkItemData.activityId}
                           options={activityIdList}
                           placeholder="Required"
@@ -3091,7 +3020,7 @@ function RepairServiceEstimate(props) {
                           SUPPLYING VENDOR
                         </label>
                         <SearchBox
-                          value={extWorkItemData.supplyingVendor}
+                          value={extWorkItemData.supplyingVendorName}
                           onChange={(e) =>
                             handleVendorSearch("vendor", e.target.value)
                           }
@@ -3223,17 +3152,112 @@ function RepairServiceEstimate(props) {
                 <div className="m-3 text-right">
                   <button
                     type="button"
-                    onClick={handleClose4}
+                    onClick={handleExtWorkItemClose}
                     className="btn border mr-3 "
                   >
                     {" "}
                     Cancel
                   </button>
-                  <button type="button" className="btn text-white bg-primary">
+                  <button type="button" className="btn text-white bg-primary" onClick={addExtWorkItem}>
                     Save
                   </button>
                 </div>
               </div>
+            </Modal.Body>
+          </Modal>
+          <Modal
+            show={searchResultConsOpen}
+            onHide={handleSearchResConsClose}
+            size="lg"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header>
+              <Modal.Title>Search Results</Modal.Title>
+            </Modal.Header>
+            <Modal.Body className="p-0 bg-white">
+              <div className="card w-100 p-2">
+                <div
+                  className=""
+                  style={{
+                    height: 400,
+                    width: "100%",
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  <DataGrid
+                    sx={{
+                      "& .MuiDataGrid-columnHeaders": {
+                        backgroundColor: "#872ff7",
+                        color: "#fff",
+                      },
+                    }}
+                    rows={masterData}
+                    columns={columnsConsumableSearch}
+                    pageSize={5}
+                    rowsPerPageOptions={[5]}
+                    checkboxSelection
+                    // onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
+                    onRowClick={(e) => selectConsumableItem(e.row)}
+                  />
+                </div>
+              </div>
+              {/* <div className="m-2 text-right">
+                <button
+                  className="btn text-white bg-primary"
+                  // onClick={addSelectedPartsToPartList}
+                >
+                  + Add Selected
+                </button>
+              </div> */}
+            </Modal.Body>
+          </Modal>
+
+          <Modal
+            show={searchResultExtWorkOpen}
+            onHide={handleSearchResExtClose}
+            size="xl"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+          >
+            <Modal.Header>
+              <Modal.Title>Search Results</Modal.Title>
+            </Modal.Header>
+            <Modal.Body className="p-0 bg-white">
+              <div className="card w-100 p-2">
+                <div
+                  className=""
+                  style={{
+                    height: 400,
+                    width: "100%",
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  <DataGrid
+                    sx={{
+                      "& .MuiDataGrid-columnHeaders": {
+                        backgroundColor: "#872ff7",
+                        color: "#fff",
+                      },
+                    }}
+                    rows={masterData}
+                    columns={columnsExtWorkSearch}
+                    pageSize={5}
+                    rowsPerPageOptions={[5]}
+                    checkboxSelection
+                    // onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
+                    onRowClick={(e) => selectExtWorkItem(e.row)}
+                  />
+                </div>
+              </div>
+              {/* <div className="m-2 text-right">
+                <button
+                  className="btn text-white bg-primary"
+                  // onClick={addSelectedPartsToPartList}
+                >
+                  + Add Selected
+                </button>
+              </div> */}
             </Modal.Body>
           </Modal>
         </div>

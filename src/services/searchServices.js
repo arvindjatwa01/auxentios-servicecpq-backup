@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
-import { SEARCH_COMPONENT_CODE, SEARCH_CONSUMABLE, SEARCH_CUSTOMER, SEARCH_JOB_CODE, SEARCH_MACHINE, SEARCH_SPAREPART, SEARCH_VENDOR } from "./CONSTANTS";
+import { SEARCH_COMPONENT_CODE, SEARCH_CONSUMABLE, SEARCH_CUSTOMER, SEARCH_EXTWORK, SEARCH_JOB_CODE, SEARCH_MACHINE, SEARCH_SPAREPART, SEARCH_VENDOR } from "./CONSTANTS";
 
 /* ----------------- Authorization ------------------- */
 
@@ -180,6 +180,27 @@ export const getConsumables = (query) => {
         });
     } catch (error) {
       console.error("in SearchService > getConsumables, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+export const getExtWork = (query) => {
+  console.log("SearchService > getExtWork called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(SEARCH_EXTWORK(query), { headers: headersdata })
+        .then((res) => {
+          console.log("getExtWork > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("getExtWork > axios err=", err);
+          reject("Error in getExtWork axios!");
+        });
+    } catch (error) {
+      console.error("in SearchService > getExtWork, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

@@ -77,14 +77,14 @@ export const CONSUMABLE_SEARCH_Q_OPTIONS = [
 export const EXTWORK_SEARCH_Q_OPTIONS = [
   {
     label: "Id",
-    value: "id",
+    value: "activityId",
   },
   {
-    label: "Name",
-    value: "name",
+    label: "Activity Name",
+    value: "activityDescription",
   },
   {
     label: "Supplying Vendor",
-    value: "supplyingVendor",
+    value: "supplyingVendorName",
   },
 ];

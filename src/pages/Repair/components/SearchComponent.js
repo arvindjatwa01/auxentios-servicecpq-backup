@@ -147,7 +147,7 @@ const SearchComponent = (props) => {
                     id={"inputSearch-" + i}
                     autoComplete="off"
                   />
-                  <div className="btn border" onClick={props.searchClick}>
+                  <div className="btn border" onClick={() => props.searchClick(props.type)}>
                     <span className="mr-2">
                       <AddIcon />
                     </span>
