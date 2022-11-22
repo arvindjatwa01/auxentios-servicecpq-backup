@@ -37,6 +37,8 @@ import {
   FetchConsumableItems,
   AddConsumableItem,
   AddExtWorkItem,
+  RemoveConsumableItem,
+  RemoveExtWorkItem,
 } from "services/repairBuilderServices";
 import Moment from "react-moment";
 import { useAppSelector } from "app/hooks";
@@ -141,7 +143,7 @@ function RepairServiceEstimate(props) {
     priceMethod: null,
     priceDate: new Date(),
     currency: "USD",
-    netPrice: "",
+    netPrice: 0.0,
     jobCode: "",
   });
   const initialLaborItemData = {
@@ -163,7 +165,7 @@ function RepairServiceEstimate(props) {
   const initialExtWorkItemData = {
     activityId: "",
     activityName: "",
-    shortDescription: "",
+    description: "",
     supplyingVendorCode: "",
     supplyingVendorName: "",
     unitPrice: 0.0,
@@ -171,7 +173,7 @@ function RepairServiceEstimate(props) {
     totalPrice: 0.0,
     estimatedHours: "",
     adjustedPrice: 0.0,
-    dimension: "",
+    dimensions: "",
   };
   const initialConsumableItemData = {
     consumableType: "",
@@ -270,7 +272,10 @@ function RepairServiceEstimate(props) {
       type === "consumables" ? queryConsSearchSelector : queryExtSearchSelector;
     querySearchSelector.map(function (item, i) {
       if (i === 0 && item.selectCategory.value && item.inputSearch) {
-        searchStr = item.selectCategory.value + ":" + encodeURI('"'+item.inputSearch+'"');
+        searchStr =
+          item.selectCategory.value +
+          ":" +
+          encodeURI('"' + item.inputSearch + '"');
       } else if (
         item.selectCategory.value &&
         item.inputSearch &&
@@ -334,11 +339,11 @@ function RepairServiceEstimate(props) {
             ...serviceEstimateData,
             reference: result.reference,
             id: result.id,
-            currency: result.currency,
+            currency: result.currency ? result.currency : "USD",
             description: result.description,
             jobCode: result.jobCode,
             jobOperation: result.jobOperation,
-            netPrice: result.netPrice,
+            netPrice: result.netPrice ? result.netPrice : 0.0,
             priceDate: result.priceDate,
             priceMethod: priceMethodOptions.find(
               (element) => element.value === result.priceMethod
@@ -347,20 +352,32 @@ function RepairServiceEstimate(props) {
           });
           //if service header exists then mark it view only
           setServiceHeaderViewOnly(result.id ? true : false);
-          populateLaborData(result);
-          populateConsumableData(result);
-          populateExtWorkData(result);
-
-          setExtWorkData({
-            ...extWorkData,
-            jobCode: result.jobCode,
-            jobCodeDescription: result.jobOperation,
-          });
-          setMiscData({
-            ...miscData,
-            jobCode: result.jobCode,
-            jobCodeDescription: result.jobOperation,
-          });
+          if (result.id) {
+            populateLaborData(result);
+            populateConsumableData(result);
+            populateExtWorkData(result);
+          } else {
+            setLabourData({
+              ...labourData,
+              jobCode: result.jobCode,
+              jobCodeDescription: result.jobOperation,
+            });
+            setConsumableData({
+              ...consumableData,
+              jobCode: result.jobCode,
+              jobCodeDescription: result.jobOperation,
+            });
+            setExtWorkData({
+              ...extWorkData,
+              jobCode: result.jobCode,
+              jobCodeDescription: result.jobOperation,
+            });
+            setMiscData({
+              ...miscData,
+              jobCode: result.jobCode,
+              jobCodeDescription: result.jobOperation,
+            });
+          }
           setServiceEstHeaderLoading(false);
         })
         .catch((e) => {
@@ -385,9 +402,6 @@ function RepairServiceEstimate(props) {
             ),
             laborCode: laborCodeList.find(
               (element) => element.value === resultLabour.laborCode
-            ),
-            payer: options.find(
-              (element) => element.value === resultLabour.payer
             ),
           });
           populateLaborItems(resultLabour);
@@ -427,9 +441,6 @@ function RepairServiceEstimate(props) {
             pricingMethod: priceMethodOptions.find(
               (element) => element.value === resultConsumable.pricingMethod
             ),
-            payer: options.find(
-              (element) => element.value === resultConsumable.payer
-            ),
           });
           populateConsItems(resultConsumable);
           setConsumableViewOnly(true);
@@ -468,9 +479,6 @@ function RepairServiceEstimate(props) {
             pricingMethod: priceMethodOptions.find(
               (element) => element.value === resultExtWork.pricingMethod
             ),
-            // payer: options.find(
-            //   (element) => element.value === resultExtWork.payer
-            // ),
           });
           populateExtWorkItems(resultExtWork);
           setExtWorkViewOnly(true);
@@ -608,7 +616,6 @@ function RepairServiceEstimate(props) {
       ...labourData,
       pricingMethod: labourData.pricingMethod?.value,
       laborCode: labourData.laborCode?.value,
-      payer: labourData.payer?.value,
     };
     AddLaborToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -621,7 +628,6 @@ function RepairServiceEstimate(props) {
           laborCode: laborCodeList.find(
             (element) => element.value === result.laborCode
           ),
-          payer: options.find((element) => element.value === result.payer),
         });
         handleSnack("success", "Labour details updated!");
         setLaborViewOnly(true);
@@ -639,7 +645,6 @@ function RepairServiceEstimate(props) {
     let data = {
       ...consumableData,
       pricingMethod: consumableData.pricingMethod?.value,
-      payer: consumableData.payer?.value,
     };
     AddConsumableToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -649,7 +654,6 @@ function RepairServiceEstimate(props) {
           pricingMethod: priceMethodOptions.find(
             (element) => element.value === result.pricingMethod
           ),
-          payer: options.find((element) => element.value === result.payer),
         });
         handleSnack("success", "Consumable details updated!");
         setConsumableViewOnly(true);
@@ -664,7 +668,6 @@ function RepairServiceEstimate(props) {
     let data = {
       ...extWorkData,
       pricingMethod: consumableData.pricingMethod?.value,
-      payer: consumableData.payer?.value,
     };
     AddExtWorkToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -674,7 +677,6 @@ function RepairServiceEstimate(props) {
           pricingMethod: priceMethodOptions.find(
             (element) => element.value === result.pricingMethod
           ),
-          payer: options.find((element) => element.value === result.payer),
         });
         handleSnack("success", "External work details updated!");
         setExtWorkViewOnly(true);
@@ -693,7 +695,6 @@ function RepairServiceEstimate(props) {
       ...miscData,
       pricingMethod: miscData.pricingMethod?.value,
       typeOfMisc: miscData.typeOfMisc?.value,
-      payer: consumableData.payer?.value,
     };
     AddMiscToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -706,7 +707,6 @@ function RepairServiceEstimate(props) {
           typeOfMisc: miscTypeList.find(
             (element) => element.value === result.typeOfMisc
           ),
-          payer: options.find((element) => element.value === result.payer),
         });
         handleSnack("success", "Misc details updated!");
         setMiscViewOnly(true);
@@ -758,14 +758,15 @@ function RepairServiceEstimate(props) {
       .catch((err) => {
         handleSnack("error", "Error occurred while adding consumable item!");
       });
+    setQueryConsSearchSelector(initialConsQuery);
   };
 
   // Add or Update Consumable Item
   const addExtWorkItem = () => {
     let data = {
       ...extWorkItemData,
-      activityId: extWorkItemData.activityId?.label,
-      dimensions: extWorkItemData.dimension?.value,
+      activityId: extWorkItemData.activityId?.value,
+      dimensions: extWorkItemData.dimensions?.value,
     };
 
     AddExtWorkItem(extWorkData.id, data)
@@ -777,6 +778,7 @@ function RepairServiceEstimate(props) {
       .catch((err) => {
         handleSnack("error", "Error occurred while adding external work item!");
       });
+    setQueryExtSearchSelector(initialExtWorkQuery);
   };
 
   // Open Labor item to view or edit
@@ -800,6 +802,7 @@ function RepairServiceEstimate(props) {
     // setPartFieldViewonly(true);
     setLaborItemOpen(true);
   };
+
   //Remove Labor Item
   const handleDeleteLaborItem = (laborItemId) => {
     RemoveLaborItem(labourData.id, laborItemId)
@@ -812,6 +815,63 @@ function RepairServiceEstimate(props) {
         handleSnack("error", "Error occurred while removing the labor item");
       });
   };
+
+  // Open consumable item to view or edit
+  const openConsumableRow = (row) => {
+    setConsumableItemData({
+      ...row,
+      consumableType: consumableTypeList.find(
+        (element) => element.value === row.consumableType
+      ),
+    });
+    // setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
+    setConsumableItemOpen(true);
+  };
+
+  //Remove Consumable Item
+  const handleDeleteConsumableItem = (consItemId) => {
+    RemoveConsumableItem(consumableData.id, consItemId)
+      .then((res) => {
+        handleSnack("success", res);
+        populateConsItems(consumableData);
+      })
+      .catch((e) => {
+        console.log(e);
+        handleSnack(
+          "error",
+          "Error occurred while removing the consumable item"
+        );
+      });
+  };
+
+  // Open ext work item to view or edit
+  const openExtWorkRow = (row) => {
+    setExtWorkItemData({
+      ...row,
+      activityId: activityIdList.find(
+        (element) => element.label === row.activityId
+      ),
+      dimensions: dimensionList.find(
+        (element) => element.value === row.dimensions
+      ),      
+    });
+    // setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
+    // setPartFieldViewonly(true);
+    setExtWorkItemOpen(true);
+  };
+  //Remove Ext work Item
+  const handleDeleteExtWorkItem = (extWorkItemId) => {
+    RemoveExtWorkItem(extWorkData.id, extWorkItemId)
+      .then((res) => {
+        handleSnack("success", res);
+        populateExtWorkItems(extWorkData);
+      })
+      .catch((e) => {
+        console.log(e);
+        handleSnack("error", "Error occurred while removing the ext work item!");
+      });
+  };
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -821,12 +881,11 @@ function RepairServiceEstimate(props) {
   const handleExtWorkItemClose = () => {
     setExtWorkItemOpen(false);
     setExtWorkItemData(initialExtWorkItemData);
-
-  }
+  };
   const handleConsumableItemClose = () => {
     setConsumableItemOpen(false);
     setConsumableItemData(initialConsumableItemData);
-  }
+  };
   const handleLaborItemClose = () => {
     setLaborItemOpen(false);
     setLabourItemData(initialLaborItemData);
@@ -843,8 +902,7 @@ function RepairServiceEstimate(props) {
   const handleRowClick = (e) => {
     setShow(true);
   };
-
-  const [queryConsSearchSelector, setQueryConsSearchSelector] = useState([
+  const initialConsQuery = [
     {
       id: 0,
       selectFamily: "",
@@ -853,8 +911,8 @@ function RepairServiceEstimate(props) {
       selectOptions: [],
       selectedOption: "",
     },
-  ]);
-  const [queryExtSearchSelector, setQueryExtSearchSelector] = useState([
+  ];
+  const initialExtWorkQuery = [
     {
       id: 0,
       selectFamily: "",
@@ -863,15 +921,18 @@ function RepairServiceEstimate(props) {
       selectOptions: [],
       selectedOption: "",
     },
-  ]);
-
+  ];
+  const [queryConsSearchSelector, setQueryConsSearchSelector] =
+    useState(initialConsQuery);
+  const [queryExtSearchSelector, setQueryExtSearchSelector] =
+    useState(initialExtWorkQuery);
 
   // Once parts are selected to add clear the search results
   const clearFilteredData = () => {
     setMasterData([]);
     setSelectedMasterData([]);
   };
-  
+
   const [filterMasterData, setFilterMasterData] = useState([]);
   const [selectedMasterData, setSelectedMasterData] = useState([]);
   const [masterData, setMasterData] = useState([]);
@@ -976,47 +1037,52 @@ function RepairServiceEstimate(props) {
   const selectConsumableItem = async (selectedData) => {
     setSearchResultConsOpen(false);
     setConsumableItemData({
-        ...consumableItemData,
-        consumableCode: selectedData.consumableId,
-        description: selectedData.name,
-        consumableType: "",
-        vendor: selectedData.sourceOrVendor,
-        unitOfMeasure: selectedData.unit,
+      ...consumableItemData,
+      consumableCode: selectedData.consumableId,
+      description: selectedData.name,
+      consumableType: "",
+      vendor: selectedData.sourceOrVendor,
+      unitOfMeasure: selectedData.unit,
     });
     console.log(selectedData);
-    setConsumableItemOpen(true) ;
+    setConsumableItemOpen(true);
   };
 
-    // Select the external work item
-    const selectExtWorkItem = async (selectedData) => {
-      setSearchResultExtWorkOpen(false);
-      setExtWorkItemData({
-          ...extWorkItemData,
-          activityId: activityIdList.find(
-            (element) => element.value === selectedData.activityId
-          ),
-          activityName: selectedData.activityDescription,
-          // activityType: selectedData.activityType,
-          supplyingVendorCode: selectedData.supplyingVendorCode,
-          supplyingVendorName: selectedData.supplyingVendorName,
-          // unitOfMeasure: selectedData.unit,
-          // dimension: 
-      });
-      console.log(selectedData);
-      setExtWorkItemOpen(true) ;
-    };
+  // Select the external work item
+  const selectExtWorkItem = async (selectedData) => {
+    setSearchResultExtWorkOpen(false);
+    setExtWorkItemData({
+      ...extWorkItemData,
+      activityId: activityIdList.find(
+        (element) => element.value === selectedData.activityId
+      ),
+      activityName: selectedData.activityDescription,
+      // activityType: selectedData.activityType,
+      supplyingVendorCode: selectedData.supplyingVendorCode,
+      supplyingVendorName: selectedData.supplyingVendorName,
+      // unitOfMeasure: selectedData.unit,
+      // dimension:
+    });
+    console.log(selectedData);
+    setExtWorkItemOpen(true);
+  };
 
   const columnsConsumables = [
-    { field: "consumableCode", headerName: "Consumable ID", flex: 1, width: 70 },
+    {
+      field: "consumableCode",
+      headerName: "Consumable ID",
+      flex: 1,
+      width: 70,
+    },
     {
       field: "consumableType",
-      headerName: "Consumable Type",
+      headerName: "Type",
       flex: 1,
       width: 70,
     },
     {
       field: "description",
-      headerName: "Consumable Description",
+      headerName: "Description",
       flex: 1,
       width: 130,
     },
@@ -1037,54 +1103,30 @@ function RepairServiceEstimate(props) {
     },
     { field: "currency", headerName: "Currency", flex: 1, width: 130 },
     { field: "totalPrice", headerName: "Total price", flex: 1, width: 130 },
-    { field: "Actions", headerName: "Action", flex: 1, width: 130 },
-  ];
-
-  const rowsExternal = [
     {
-      id: 1,
-      ActivityId: "Snow",
-      ActivityName: "Jon",
-      Description: 35,
-      Quantity: "24",
-      UnitMeasures: "24",
-      UnitPrice: "Inconsistent",
-      ExtendedPrice: "Consistent",
-      Currency: "$",
-      TotalPrice: "37",
-      Dimensions: "Inconsistent",
-      SupplyingVendor: "Created On",
-      Actions: "Action",
-    },
-    {
-      id: 2,
-      ActivityId: "Lannister",
-      ActivityName: "Cersei",
-      Description: 35,
-      Quantity: "24",
-      UnitMeasures: "24",
-      UnitPrice: "Inconsistent",
-      ExtendedPrice: "Consistent",
-      Currency: "$",
-      TotalPrice: "37",
-      Dimensions: "Inconsistent",
-      SupplyingVendor: "Created On",
-      Actions: "Action",
-    },
-    {
-      id: 3,
-      ActivityId: "Lannister",
-      ActivityName: "Jaime",
-      Description: 35,
-      Quantity: "24",
-      UnitMeasures: "24",
-      UnitPrice: "Inconsistent",
-      ExtendedPrice: "Consistent",
-      Currency: "$",
-      TotalPrice: "37",
-      Dimensions: "Inconsistent",
-      SupplyingVendor: "Created On",
-      Actions: "Action",
+      field: "Actions",
+      headerName: "Actions",
+      type: "actions",
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={<EditOutlinedIcon />}
+            label="Edit"
+            className="textPrimary"
+            onClick={() => openConsumableRow(params.row)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={<DeleteIcon />}
+            label="Delete"
+            onClick={() => handleDeleteConsumableItem(params.row.id)}
+            color="inherit"
+          />,
+        ];
+      },
+      flex: 1,
+      width: 130,
     },
   ];
 
@@ -1092,15 +1134,14 @@ function RepairServiceEstimate(props) {
     { field: "activityId", headerName: "Activity ID", flex: 1, width: 70 },
     { field: "activityName", headerName: "Activity Name", flex: 1, width: 70 },
     {
-      field: "sescription",
-      headerName: "Short Description",
+      field: "description",
+      headerName: "Description",
       flex: 1,
       width: 70,
     },
-    { field: "quantity", headerName: "Quantity", flex: 1, width: 70 },
     {
-      field: "unitOfMeasure",
-      headerName: "Unit of measure",
+      field: "estimatedHours",
+      headerName: "Estimated Effort",
       flex: 1,
       width: 130,
     },
@@ -1111,7 +1152,6 @@ function RepairServiceEstimate(props) {
       flex: 1,
       width: 130,
     },
-    { field: "currency", headerName: "Currency", flex: 1, width: 130 },
     { field: "totalPrice", headerName: "Total price", flex: 1, width: 130 },
     { field: "dimensions", headerName: "Dimension", flex: 1, width: 130 },
     {
@@ -1120,7 +1160,31 @@ function RepairServiceEstimate(props) {
       flex: 1,
       width: 130,
     },
-    { field: "Actions", headerName: "Action", flex: 1, width: 130 },
+    {
+      field: "Actions",
+      headerName: "Actions",
+      type: "actions",
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={<EditOutlinedIcon />}
+            label="Edit"
+            className="textPrimary"
+            onClick={() => openExtWorkRow(params.row)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={<DeleteIcon />}
+            label="Delete"
+            onClick={() => handleDeleteExtWorkItem(params.row.id)}
+            color="inherit"
+          />,
+        ];
+      },
+      flex: 1,
+      width: 130,
+    },
   ];
 
   return (
@@ -1190,7 +1254,7 @@ function RepairServiceEstimate(props) {
                         value={serviceEstimateData.description}
                         onChange={(e) =>
                           setServiceEstimateData({
-                            ...serviceEstimateData.currency,
+                            ...serviceEstimateData,
                             description: e.target.value,
                           })
                         }
@@ -1309,15 +1373,16 @@ function RepairServiceEstimate(props) {
                       </label>
                       <input
                         type="text"
+                        disabled
                         class="form-control border-radius-10 text-primary"
-                        placeholder="Required"
+                        // placeholder="Required"
                         value={serviceEstimateData.netPrice}
-                        onChange={(e) =>
-                          setServiceEstimateData({
-                            ...serviceEstimateData,
-                            netPrice: e.target.value,
-                          })
-                        }
+                        // onChange={(e) =>
+                        //   setServiceEstimateData({
+                        //     ...serviceEstimateData,
+                        //     netPrice: e.target.value,
+                        //   })
+                        // }
                       />
                     </div>
                   </div>
@@ -1358,7 +1423,7 @@ function RepairServiceEstimate(props) {
                         serviceEstimateData.jobOperation &&
                         serviceEstimateData.description &&
                         serviceEstimateData.currency &&
-                        serviceEstimateData.netPrice &&
+                        // serviceEstimateData.netPrice &&
                         serviceEstimateData.priceDate &&
                         serviceEstimateData.priceMethod?.value &&
                         serviceEstimateData.reference &&
@@ -1480,364 +1545,378 @@ function RepairServiceEstimate(props) {
               </>
             )}
           </div>
-          <div className="card p-4 mt-5">
-            <h5 className="d-flex align-items-center mb-2">
-              <div className="" style={{ display: "contents" }}>
-                <span className="mr-3">Header</span>
-                <a
-                  href={undefined}
-                  className="ml-3"
-                  style={{ cursor: "pointer" }}
-                >
-                  <EditOutlinedIcon onClick={() => makeHeaderEditable()} />
-                </a>
-              </div>
-            </h5>
-            <Box sx={{ width: "100%", typography: "body1" }}>
-              <TabContext value={value}>
-                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                  <TabList className="custom-tabs-div" onChange={handleChange}>
-                    <Tab label="Labor" value="labor" />
-                    <Tab label="Consumables" value="consumables" />
-                    <Tab label="External Work" value="extwork" />
-                    <Tab label="Other misc." value="othrMisc" />
-                  </TabList>
-                </Box>
-                <TabPanel value="labor">
-                  {!labourData.id && (
-                    <div className="col-md-12 col-sm-12">
-                      <div className=" d-flex justify-content-between align-items-center">
-                        <div>
-                          <FormGroup>
-                            <FormControlLabel
-                              control={
-                                <Switch
-                                  checked={flagRequired.flagLaborReq}
-                                  onChange={handleChangeSwitch}
-                                  name="flagLaborReq"
-                                />
-                              }
-                              label="REQUIRED"
-                            />
-                          </FormGroup>
+          {serviceEstimateData.id && (
+            <div className="card p-4 mt-5">
+              <h5 className="d-flex align-items-center mb-2">
+                <div className="" style={{ display: "contents" }}>
+                  <span className="mr-3">Header</span>
+                  <a
+                    href={undefined}
+                    className="ml-3"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <EditOutlinedIcon onClick={() => makeHeaderEditable()} />
+                  </a>
+                </div>
+              </h5>
+              <Box sx={{ width: "100%", typography: "body1" }}>
+                <TabContext value={value}>
+                  <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                    <TabList
+                      className="custom-tabs-div"
+                      onChange={handleChange}
+                    >
+                      <Tab label="Labor" value="labor" />
+                      <Tab label="Consumables" value="consumables" />
+                      <Tab label="External Work" value="extwork" />
+                      <Tab label="Other misc." value="othrMisc" />
+                    </TabList>
+                  </Box>
+                  <TabPanel value="labor">
+                    {!labourData.id && (
+                      <div className="col-md-12 col-sm-12">
+                        <div className=" d-flex justify-content-between align-items-center">
+                          <div>
+                            <FormGroup>
+                              <FormControlLabel
+                                control={
+                                  <Switch
+                                    checked={flagRequired.flagLaborReq}
+                                    onChange={handleChangeSwitch}
+                                    name="flagLaborReq"
+                                  />
+                                }
+                                label="REQUIRED"
+                              />
+                            </FormGroup>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
-                  {flagRequired.flagLaborReq && (
-                    <React.Fragment>
-                      {!laborViewOnly ? (
-                        <div className="row mt-2 input-fields">
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                JOB CODE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Required"
-                                value={labourData.jobCode}
-                              />
+                    )}
+                    {flagRequired.flagLaborReq && (
+                      <React.Fragment>
+                        {!laborViewOnly ? (
+                          <div className="row mt-2 input-fields">
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  JOB CODE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={labourData.jobCode}
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                JOB CODE DESCRIPTION
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Required"
-                                value={labourData.jobCodeDescription}
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  JOB CODE DESCRIPTION
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={labourData.jobCodeDescription}
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group  mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                LABOR CODE
-                              </label>
-                              <Select
-                                onChange={(e) =>
-                                  setLabourData({ ...labourData, laborCode: e })
-                                }
-                                options={laborCodeList}
-                                placeholder="Required"
-                                value={labourData.laborCode}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group  mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                PRICE METHOD
-                              </label>
-                              <Select
-                                onChange={(e) =>
-                                  setLabourData({
-                                    ...labourData,
-                                    pricingMethod: e,
-                                  })
-                                }
-                                options={priceMethodOptions}
-                                placeholder="Required"
-                                value={labourData.pricingMethod}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                RATE PER HOUR / DAY
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Required"
-                                value={labourData.ratePerHourOrDay}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                NET PRICE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Required"
-                                value={labourData.totalPrice}
-                              />
-                            </div>
-                          </div>
-
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                TOTAL HOURS (PLANNED/RECOMMENDED)
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Optional"
-                                value={labourData.totalHours}
-                                onChange={(e) =>
-                                  setLabourData({
-                                    ...labourData,
-                                    totalHours: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                PAYER
-                              </label>
-                              <Select
-                                onChange={(e) =>
-                                  setLabourData({ ...labourData, payer: e })
-                                }
-                                options={options}
-                                placeholder="Required"
-                                value={labourData.payer}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <FormGroup>
-                                <FormControlLabel
-                                  style={{ alignItems: "start", marginLeft: 0 }}
-                                  control={
-                                    <Switch
-                                      checked={labourData.flatRateIndicator}
-                                      onChange={(e) =>
-                                        setLabourData({
-                                          ...labourData,
-                                          flatRateIndicator: e.target.checked,
-                                        })
-                                      }
-                                    />
+                            <div className="col-md-4 col-sm-4">
+                              <div className="form-group  mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-500">
+                                  LABOR CODE
+                                </label>
+                                <Select
+                                  onChange={(e) =>
+                                    setLabourData({
+                                      ...labourData,
+                                      laborCode: e,
+                                    })
                                   }
-                                  labelPlacement="top"
-                                  label={
-                                    <span className="text-light-dark font-size-12 font-weight-600">
-                                      FLAT RATE INDICATOR
-                                    </span>
+                                  options={laborCodeList}
+                                  placeholder="Required"
+                                  value={labourData.laborCode}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div className="form-group  mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-500">
+                                  PRICE METHOD
+                                </label>
+                                <Select
+                                  onChange={(e) =>
+                                    setLabourData({
+                                      ...labourData,
+                                      pricingMethod: e,
+                                    })
+                                  }
+                                  options={priceMethodOptions}
+                                  placeholder="Required"
+                                  value={labourData.pricingMethod}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  RATE PER HOUR / DAY
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={labourData.ratePerHourOrDay}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={labourData.totalPrice}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  TOTAL HOURS (PLANNED/RECOMMENDED)
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={labourData.totalHours}
+                                  onChange={(e) =>
+                                    setLabourData({
+                                      ...labourData,
+                                      totalHours: e.target.value,
+                                    })
                                   }
                                 />
-                              </FormGroup>
+                              </div>
                             </div>
-                          </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PAYER
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={labourData.payer}
+                                  onChange={(e) =>
+                                    setLabourData({
+                                      ...labourData,
+                                      payer: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <FormGroup>
+                                  <FormControlLabel
+                                    style={{
+                                      alignItems: "start",
+                                      marginLeft: 0,
+                                    }}
+                                    control={
+                                      <Switch
+                                        checked={labourData.flatRateIndicator}
+                                        onChange={(e) =>
+                                          setLabourData({
+                                            ...labourData,
+                                            flatRateIndicator: e.target.checked,
+                                          })
+                                        }
+                                      />
+                                    }
+                                    labelPlacement="top"
+                                    label={
+                                      <span className="text-light-dark font-size-12 font-weight-600">
+                                        FLAT RATE INDICATOR
+                                      </span>
+                                    }
+                                  />
+                                </FormGroup>
+                              </div>
+                            </div>
 
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                ADJUSTED PRICE
-                              </label>
-                              <input
-                                type="text"
-                                disabled={!labourData.flatRateIndicator}
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Optional"
-                                value={labourData.adjustedPrice}
-                                onChange={(e) =>
-                                  setLabourData({
-                                    ...labourData,
-                                    adjustedPrice: e.target.value,
-                                  })
-                                }
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  ADJUSTED PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled={!labourData.flatRateIndicator}
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={labourData.adjustedPrice}
+                                  onChange={(e) =>
+                                    setLabourData({
+                                      ...labourData,
+                                      adjustedPrice: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-12">
-                            <div class="form-group mt-3 mb-0 text-right">
-                              <button
-                                type="button"
-                                className="btn btn-light bg-primary text-white"
-                                onClick={updateLabourEstHeader}
-                              >
-                                Save
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="row mt-4">
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                JOB CODE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {labourData.jobCode}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                JOB CODE DESCRIPTION{" "}
-                              </p>
-                              <h6 className="font-weight-600">
-                                {labourData.jobCodeDescription}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                LABOR CODE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {labourData.laborCode?.value}{" "}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                PRICE METHOD
-                              </p>
-                              <h6 className="font-weight-600">
-                                {labourData.pricingMethod?.label}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                RATE PER HOUR / DAY
-                              </p>
-                              <h6 className="font-weight-600">
-                                {labourData.ratePerHourOrDay}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                TOTAL HOURS (PLANNED / RECOMMENDED)
-                              </p>
-                              <h6 className="font-weight-600">
-                                {labourData.totalHours}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                NET PRICE - LABOR
-                              </p>
-                              <h6 className="font-weight-600">
-                                {labourData.totalPrice}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                PAYER
-                              </p>
-                              <h6 className="font-weight-600">
-                                {labourData.payer?.value}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                ADJUSTED PRICE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {labourData.adjustedPrice}
-                              </h6>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      <hr />
-
-                      <div className="">
-                        <div className="bg-primary px-3 mb-3">
-                          <div className="row align-items-center">
-                            <div className="col-11 mx-2">
-                              <div className="d-flex align-items-center bg-primary w-100">
-                                <div
-                                  className="d-flex mr-3"
-                                  style={{ whiteSpace: "pre" }}
+                            <div className="col-md-12">
+                              <div class="form-group mt-3 mb-0 text-right">
+                                <button
+                                  type="button"
+                                  className="btn btn-light bg-primary text-white"
+                                  onClick={updateLabourEstHeader}
                                 >
-                                  <h5 className="mr-2 mb-0 text-white">
-                                    <span>Labor</span>
-                                  </h5>
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="row mt-4">
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  JOB CODE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.jobCode}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  JOB CODE DESCRIPTION{" "}
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.jobCodeDescription}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  LABOR CODE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.laborCode?.value}{" "}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PRICE METHOD
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.pricingMethod?.label}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  RATE PER HOUR / DAY
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.ratePerHourOrDay}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  TOTAL HOURS (PLANNED / RECOMMENDED)
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.totalHours}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  NET PRICE - LABOR
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.totalPrice}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PAYER
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.payer}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  ADJUSTED PRICE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.adjustedPrice}
+                                </h6>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        <hr />
+
+                        <div className="">
+                          <div className="bg-primary px-3 mb-3">
+                            <div className="row align-items-center">
+                              <div className="col-11 mx-2">
+                                <div className="d-flex align-items-center bg-primary w-100">
+                                  <div
+                                    className="d-flex mr-3"
+                                    style={{ whiteSpace: "pre" }}
+                                  >
+                                    <h5 className="mr-2 mb-0 text-white">
+                                      <span>Labor</span>
+                                    </h5>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="">
+                                <div className="text-center border-left pl-2 py-3">
+                                  <Link
+                                    onClick={() => setLaborItemOpen(true)}
+                                    to="#"
+                                    className="p-1 text-white"
+                                    data-toggle="modal"
+                                    data-target="#Datatable"
+                                  >
+                                    <span className="ml-1">Add Items</span>
+                                  </Link>
                                 </div>
                               </div>
                             </div>
-                            <div className="">
-                              <div className="text-center border-left pl-2 py-3">
-                                <Link
-                                  onClick={() => setLaborItemOpen(true)}
-                                  to="#"
-                                  className="p-1 text-white"
-                                  data-toggle="modal"
-                                  data-target="#Datatable"
-                                >
-                                  <span className="ml-1">Add Items</span>
-                                </Link>
-                              </div>
-                            </div>
                           </div>
-                        </div>
-                        {/* <div
+                          {/* <div
                           className=""
                           style={{
                             height: 300,
@@ -1845,304 +1924,6 @@ function RepairServiceEstimate(props) {
                             backgroundColor: "#fff",
                           }}
                         > */}
-                        <DataGrid
-                          sx={{
-                            "& .MuiDataGrid-columnHeaders": {
-                              backgroundColor: "#872ff7",
-                              color: "#fff",
-                              fontSize: 12,
-                            },
-                            minHeight: 300,
-                            "& .MuiDataGrid-cellContent": {
-                              fontSize: 12,
-                            },
-                          }}
-                          rows={laborItems}
-                          columns={laborColumns}
-                          pageSize={5}
-                          rowsPerPageOptions={[5]}
-                          onCellClick={(e) => handleRowClick(e)}
-                        />
-                        {/* </div> */}
-                        <div className=" text-right mt-3">
-                          <button
-                            type="button"
-                            className="btn btn-light bg-primary text-white"
-                            // onClick={}
-                          >
-                            Save
-                          </button>
-                        </div>
-                      </div>
-                    </React.Fragment>
-                  )}
-                </TabPanel>
-                <TabPanel value="consumables">
-                  {!consumableData.id && (
-                    <div className="col-md-12 col-sm-12">
-                      <div className=" d-flex justify-content-between align-items-center">
-                        <div>
-                          <FormGroup>
-                            <FormControlLabel
-                              control={
-                                <Switch
-                                  checked={flagRequired.flagConsumableReq}
-                                  onChange={handleChangeSwitch}
-                                  name="flagConsumableReq"
-                                />
-                              }
-                              label="REQUIRED"
-                            />
-                          </FormGroup>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {flagRequired.flagConsumableReq && (
-                    <React.Fragment>
-                      {!consumableViewOnly ? (
-                        <div className="row mt-2 input-fields">
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                JOB CODE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Required"
-                                value={consumableData.jobCode}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                JOB CODE DESCRIPTION
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Required"
-                                value={consumableData.jobCodeDescription}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group  mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                PRICE METHOD
-                              </label>
-                              <Select
-                                onChange={(e) =>
-                                  setConsumableData({
-                                    ...consumableData,
-                                    pricingMethod: e,
-                                  })
-                                }
-                                value={consumableData.pricingMethod}
-                                options={priceMethodOptions}
-                                placeholder="Required"
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                NET PRICE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Required"
-                                value={consumableData.totalPrice}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                PAYER
-                              </label>
-                              <Select
-                                onChange={(e) =>
-                                  setConsumableData({
-                                    ...consumableData,
-                                    payer: e,
-                                  })
-                                }
-                                options={options}
-                                placeholder="Required"
-                                value={consumableData.payer}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                ADJUSTED PRICE
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Optional"
-                                value={consumableData.adjustedPrice}
-                                onChange={(e) =>
-                                  setConsumableData({
-                                    ...consumableData,
-                                    adjustedPrice: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-12">
-                            <div class="form-group mt-3 mb-0 text-right">
-                              <button
-                                type="button"
-                                className="btn btn-light bg-primary text-white"
-                                onClick={updateConsumableHeader}
-                              >
-                                Save
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="row mt-4">
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                JOB CODE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {consumableData.jobCode}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                JOB CODE DESCRIPTION{" "}
-                              </p>
-                              <h6 className="font-weight-600">
-                                {consumableData.jobCodeDescription}
-                              </h6>
-                            </div>
-                          </div>
-
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                PRICE METHOD
-                              </p>
-                              <h6 className="font-weight-600">
-                                {consumableData.pricingMethod?.label}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                NET PRICE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {consumableData.totalPrice}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                PAYER
-                              </p>
-                              <h6 className="font-weight-600">
-                                {consumableData.payer?.value}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                ADJUSTED PRICE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {consumableData.adjustedPrice}
-                              </h6>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      <hr />
-
-                      <div className="">
-                        <div className="bg-primary px-3 mb-3">
-                          <div className="row align-items-center">
-                            <div className="col-10 mx-5">
-                              <div className="d-flex align-items-center bg-primary w-100">
-                                <div
-                                  className="d-flex mr-3"
-                                  style={{ whiteSpace: "pre" }}
-                                >
-                                  <h5 className="mr-2 mb-0 text-white">
-                                    <span>Consumables</span>
-                                  </h5>
-                                  <p className="ml-4 mb-0">
-                                    <a href="#" className="ml-3 text-white">
-                                      <EditOutlinedIcon />
-                                    </a>
-                                    <a href="#" className="ml-3 text-white">
-                                      <ShareOutlinedIcon />
-                                    </a>
-                                  </p>
-                                </div>
-                                <SearchComponent
-                                  querySearchSelector={queryConsSearchSelector}
-                                  setQuerySearchSelector={
-                                    setQueryConsSearchSelector
-                                  }
-                                  clearFilteredData={clearFilteredData}
-                                  handleSnack={handleSnack}
-                                  searchAPI={getConsumables}
-                                  type={"consumables"}
-                                  searchClick={handleQuerySearchClick}
-                                  options={CONSUMABLE_SEARCH_Q_OPTIONS}
-                                  color={"white"}
-                                />
-
-                                {/* <div className="px-3">
-          <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
-            <SearchIcon /><span className="ml-1">Search</span>
-          </Link>
-        </div> */}
-                              </div>
-                            </div>
-                            <div className="">
-                              <div className="text-center border-left pl-1 py-3">
-                                <Link
-                                  onClick={() => setConsumableItemOpen(true)}
-                                  to="#"
-                                  className="p-1 text-white"
-                                  data-toggle="modal"
-                                  data-target="#Datatableconsumables"
-                                >
-                                  <span className="ml-1">Add Items</span>
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          className=""
-                          style={{
-                            height: 400,
-                            width: "100%",
-                            backgroundColor: "#fff",
-                          }}
-                        >
                           <DataGrid
                             sx={{
                               "& .MuiDataGrid-columnHeaders": {
@@ -2155,6 +1936,307 @@ function RepairServiceEstimate(props) {
                                 fontSize: 12,
                               },
                             }}
+                            rows={laborItems}
+                            columns={laborColumns}
+                            pageSize={5}
+                            rowsPerPageOptions={[5]}
+                            onCellClick={(e) => handleRowClick(e)}
+                          />
+                          {/* </div> */}
+                          <div className=" text-right mt-3">
+                            <button
+                              type="button"
+                              className="btn btn-light bg-primary text-white"
+                              // onClick={}
+                            >
+                              Save
+                            </button>
+                          </div>
+                        </div>
+                      </React.Fragment>
+                    )}
+                  </TabPanel>
+                  <TabPanel value="consumables">
+                    {!consumableData.id && (
+                      <div className="col-md-12 col-sm-12">
+                        <div className=" d-flex justify-content-between align-items-center">
+                          <div>
+                            <FormGroup>
+                              <FormControlLabel
+                                control={
+                                  <Switch
+                                    checked={flagRequired.flagConsumableReq}
+                                    onChange={handleChangeSwitch}
+                                    name="flagConsumableReq"
+                                  />
+                                }
+                                label="REQUIRED"
+                              />
+                            </FormGroup>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {flagRequired.flagConsumableReq && (
+                      <React.Fragment>
+                        {!consumableViewOnly ? (
+                          <div className="row mt-2 input-fields">
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  JOB CODE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={consumableData.jobCode}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  JOB CODE DESCRIPTION
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={consumableData.jobCodeDescription}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div className="form-group  mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-500">
+                                  PRICE METHOD
+                                </label>
+                                <Select
+                                  onChange={(e) =>
+                                    setConsumableData({
+                                      ...consumableData,
+                                      pricingMethod: e,
+                                    })
+                                  }
+                                  value={consumableData.pricingMethod}
+                                  options={priceMethodOptions}
+                                  placeholder="Required"
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={consumableData.totalPrice}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PAYER
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={consumableData.payer}
+                                  onChange={(e) =>
+                                    setConsumableData({
+                                      ...consumableData,
+                                      payer: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  ADJUSTED PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={consumableData.adjustedPrice}
+                                  onChange={(e) =>
+                                    setConsumableData({
+                                      ...consumableData,
+                                      adjustedPrice: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-12">
+                              <div class="form-group mt-3 mb-0 text-right">
+                                <button
+                                  type="button"
+                                  className="btn btn-light bg-primary text-white"
+                                  onClick={updateConsumableHeader}
+                                >
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="row mt-4">
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  JOB CODE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {consumableData.jobCode}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  JOB CODE DESCRIPTION{" "}
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {consumableData.jobCodeDescription}
+                                </h6>
+                              </div>
+                            </div>
+
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PRICE METHOD
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {consumableData.pricingMethod?.label}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  NET PRICE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {consumableData.totalPrice}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PAYER
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {consumableData.payer}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  ADJUSTED PRICE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {consumableData.adjustedPrice}
+                                </h6>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        <hr />
+
+                        <div className="">
+                          <div className="bg-primary px-3 mb-3">
+                            <div className="row align-items-center">
+                              <div className="col-10 mx-5">
+                                <div className="d-flex align-items-center bg-primary w-100">
+                                  <div
+                                    className="d-flex mr-3"
+                                    style={{ whiteSpace: "pre" }}
+                                  >
+                                    <h5 className="mr-2 mb-0 text-white">
+                                      <span>Consumables</span>
+                                    </h5>
+                                    {/* <p className="ml-4 mb-0">
+                                    <a href="#" className="ml-3 text-white">
+                                      <EditOutlinedIcon />
+                                    </a>
+                                    <a href="#" className="ml-3 text-white">
+                                      <ShareOutlinedIcon />
+                                    </a>
+                                  </p> */}
+                                  </div>
+                                  <SearchComponent
+                                    querySearchSelector={
+                                      queryConsSearchSelector
+                                    }
+                                    setQuerySearchSelector={
+                                      setQueryConsSearchSelector
+                                    }
+                                    clearFilteredData={clearFilteredData}
+                                    handleSnack={handleSnack}
+                                    searchAPI={getConsumables}
+                                    type={"consumables"}
+                                    searchClick={handleQuerySearchClick}
+                                    options={CONSUMABLE_SEARCH_Q_OPTIONS}
+                                    color={"white"}
+                                  />
+
+                                  {/* <div className="px-3">
+          <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
+            <SearchIcon /><span className="ml-1">Search</span>
+          </Link>
+        </div> */}
+                                </div>
+                              </div>
+                              <div className="">
+                                <div className="text-center border-left pl-1 py-3">
+                                  <Link
+                                    onClick={() => setConsumableItemOpen(true)}
+                                    to="#"
+                                    className="p-1 text-white"
+                                    data-toggle="modal"
+                                    data-target="#Datatableconsumables"
+                                  >
+                                    <span className="ml-1">Add Items</span>
+                                  </Link>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          {/* <div
+                          className=""
+                          style={{
+                            height: 400,
+                            width: "100%",
+                            backgroundColor: "#fff",
+                          }}
+                        > */}
+                          <DataGrid
+                            sx={{
+                              "& .MuiDataGrid-columnHeaders": {
+                                backgroundColor: "#872ff7",
+                                color: "#fff",
+                                fontSize: 12,
+                              },
+                              minHeight: 400,
+                              "& .MuiDataGrid-cellContent": {
+                                fontSize: 12,
+                              },
+                            }}
                             rows={consumableItems}
                             columns={columnsConsumables}
                             pageSize={5}
@@ -2162,8 +2244,8 @@ function RepairServiceEstimate(props) {
                             // checkboxSelection
                             onCellClick={(e) => handleRowClick(e)}
                           />
-                        </div>
-                        <div className=" text-right mt-3">
+                          {/* </div> */}
+                          {/* <div className=" text-right mt-3">
                           <button
                             type="button"
                             className="btn border bg-primary text-white"
@@ -2171,284 +2253,293 @@ function RepairServiceEstimate(props) {
                           >
                             Save
                           </button>
+                        </div> */}
+                        </div>
+                      </React.Fragment>
+                    )}
+                  </TabPanel>
+                  <TabPanel value="extwork">
+                    {!extWorkData.id && (
+                      <div className="col-md-12 col-sm-12">
+                        <div className=" d-flex justify-content-between align-items-center">
+                          <div>
+                            <FormGroup>
+                              <FormControlLabel
+                                control={
+                                  <Switch
+                                    checked={flagRequired.flagExtWorkReq}
+                                    onChange={handleChangeSwitch}
+                                    name="flagExtWorkReq"
+                                  />
+                                }
+                                label="REQUIRED"
+                                value={flagRequired.flagExtWorkReq}
+                              />
+                            </FormGroup>
+                          </div>
                         </div>
                       </div>
-                    </React.Fragment>
-                  )}
-                </TabPanel>
-                <TabPanel value="extwork">
-                  {!extWorkData.id && (
-                    <div className="col-md-12 col-sm-12">
-                      <div className=" d-flex justify-content-between align-items-center">
-                        <div>
-                          <FormGroup>
-                            <FormControlLabel
-                              control={
-                                <Switch
-                                  checked={flagRequired.flagExtWorkReq}
-                                  onChange={handleChangeSwitch}
-                                  name="flagExtWorkReq"
+                    )}
+                    {flagRequired.flagExtWorkReq && (
+                      <React.Fragment>
+                        {!extWorkViewOnly ? (
+                          <div className="row mt-2 input-fields">
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  JOB CODE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={extWorkData.jobCode}
                                 />
-                              }
-                              label="REQUIRED"
-                              value={flagRequired.flagExtWorkReq}
-                            />
-                          </FormGroup>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {flagRequired.flagExtWorkReq && (
-                    <React.Fragment>
-                      {!extWorkViewOnly ? (
-                        <div className="row mt-2 input-fields">
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                JOB CODE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Required"
-                                value={extWorkData.jobCode}
-                              />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                JOB CODE DESCRIPTION
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Required"
-                                value={extWorkData.jobCodeDescription}
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  JOB CODE DESCRIPTION
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={extWorkData.jobCodeDescription}
+                                />
+                              </div>
                             </div>
-                          </div>
 
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                PRICE METHOD
-                              </label>
-                              <Select
-                                onChange={(e) =>
-                                  setExtWorkData({
-                                    ...extWorkData,
-                                    pricingMethod: e,
-                                  })
-                                }
-                                value={extWorkData.pricingMethod}
-                                options={priceMethodOptions}
-                                placeholder="Required"
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PRICE METHOD
+                                </label>
+                                <Select
+                                  onChange={(e) =>
+                                    setExtWorkData({
+                                      ...extWorkData,
+                                      pricingMethod: e,
+                                    })
+                                  }
+                                  value={extWorkData.pricingMethod}
+                                  options={priceMethodOptions}
+                                  placeholder="Required"
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                NET PRICE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Required"
-                                value={extWorkData.totalPrice}
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={extWorkData.totalPrice}
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                PAYER
-                              </label>
-                              <Select
-                                onChange={(e) =>
-                                  setExtWorkData({ ...extWorkData, payer: e })
-                                }
-                                options={options}
-                                placeholder="Required"
-                                value={extWorkData.payer}
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PAYER
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={extWorkData.payer}
+                                  onChange={(e) =>
+                                    setExtWorkData({
+                                      ...extWorkData,
+                                      payer: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                ADJUSTED PRICE
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Optional"
-                                value={extWorkData.adjustedPrice}
-                                onChange={(e) =>
-                                  setExtWorkData({
-                                    ...extWorkData,
-                                    adjustedPrice: e.target.value,
-                                  })
-                                }
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  ADJUSTED PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={extWorkData.adjustedPrice}
+                                  onChange={(e) =>
+                                    setExtWorkData({
+                                      ...extWorkData,
+                                      adjustedPrice: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-12">
-                            <div class="form-group mt-3 mb-0 text-right">
-                              <button
-                                type="button"
-                                className="btn btn-light bg-primary text-white"
-                                onClick={updateExtWorkHeader}
-                              >
-                                Save
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="row mt-4">
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                JOB CODE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {extWorkData.jobCode}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                JOB CODE DESCRIPTION{" "}
-                              </p>
-                              <h6 className="font-weight-600">
-                                {extWorkData.jobCodeDescription}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                PRICE METHOD
-                              </p>
-                              <h6 className="font-weight-600">
-                                {extWorkData.pricingMethod?.label}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                NET PRICE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {extWorkData.totalPrice}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                PAYER
-                              </p>
-                              <h6 className="font-weight-600">
-                                {extWorkData.payer?.value}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                ADJUSTED PRICE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {extWorkData.adjustedPrice}
-                              </h6>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      <hr />
-
-                      <div className="">
-                        <div className="bg-primary px-3 mb-3">
-                          <div className="row align-items-center">
-                            <div className="col-10 mx-5">
-                              <div className="d-flex align-items-center bg-primary w-100">
-                                <div
-                                  className="d-flex mr-3"
-                                  style={{ whiteSpace: "pre" }}
+                            <div className="col-md-12">
+                              <div class="form-group mt-3 mb-0 text-right">
+                                <button
+                                  type="button"
+                                  className="btn btn-light bg-primary text-white"
+                                  onClick={updateExtWorkHeader}
                                 >
-                                  <h5 className="mr-2 mb-0 text-white">
-                                    <span>External Work</span>
-                                  </h5>
-                                  <p className="ml-4 mb-0">
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="row mt-4">
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  JOB CODE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {extWorkData.jobCode}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  JOB CODE DESCRIPTION{" "}
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {extWorkData.jobCodeDescription}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PRICE METHOD
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {extWorkData.pricingMethod?.label}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  NET PRICE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {extWorkData.totalPrice}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PAYER
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {extWorkData.payer}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  ADJUSTED PRICE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {extWorkData.adjustedPrice}
+                                </h6>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        <hr />
+
+                        <div className="">
+                          <div className="bg-primary px-3 mb-3">
+                            <div className="row align-items-center">
+                              <div className="col-10 mx-5">
+                                <div className="d-flex align-items-center bg-primary w-100">
+                                  <div
+                                    className="d-flex mr-3"
+                                    style={{ whiteSpace: "pre" }}
+                                  >
+                                    <h5 className="mr-2 mb-0 text-white">
+                                      <span>External Work</span>
+                                    </h5>
+                                    {/* <p className="ml-4 mb-0">
                                     <a href="#" className="ml-3 text-white">
                                       <EditOutlinedIcon />
                                     </a>
                                     <a href="#" className="ml-3 text-white">
                                       <ShareOutlinedIcon />
                                     </a>
-                                  </p>
+                                  </p> */}
+                                  </div>
+                                  <SearchComponent
+                                    querySearchSelector={queryExtSearchSelector}
+                                    setQuerySearchSelector={
+                                      setQueryExtSearchSelector
+                                    }
+                                    clearFilteredData={clearFilteredData}
+                                    handleSnack={handleSnack}
+                                    searchAPI={getExtWork}
+                                    type={"extwork"}
+                                    searchClick={handleQuerySearchClick}
+                                    options={EXTWORK_SEARCH_Q_OPTIONS}
+                                    color={"white"}
+                                  />
                                 </div>
-                                <SearchComponent
-                                  querySearchSelector={queryExtSearchSelector}
-                                  setQuerySearchSelector={
-                                    setQueryExtSearchSelector
-                                  }
-                                  clearFilteredData={clearFilteredData}
-                                  handleSnack={handleSnack}
-                                  searchAPI={getExtWork}
-                                  type={"extwork"}
-                                  searchClick={handleQuerySearchClick}
-                                  options={EXTWORK_SEARCH_Q_OPTIONS}
-                                  color={"white"}
-                                />
                               </div>
-                            </div>
-                            <div className="">
-                              <div className="text-center border-left pl-3 py-3">
-                                <Link
-                                  onClick={() => setExtWorkItemOpen(true)}
-                                  to="#"
-                                  className="p-1 text-white"
-                                  data-toggle="modal"
-                                  data-target="#Datatable"
-                                >
-                                  <span className="ml-1">Add Items</span>
-                                </Link>
+                              <div className="">
+                                <div className="text-center border-left pl-3 py-3">
+                                  <Link
+                                    onClick={() => setExtWorkItemOpen(true)}
+                                    to="#"
+                                    className="p-1 text-white"
+                                    data-toggle="modal"
+                                    data-target="#Datatable"
+                                  >
+                                    <span className="ml-1">Add Items</span>
+                                  </Link>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div
+                          {/* <div
                           className=""
                           style={{
                             height: 400,
                             width: "100%",
                             backgroundColor: "#fff",
                           }}
-                        >
+                        > */}
                           <DataGrid
                             sx={{
                               "& .MuiDataGrid-columnHeaders": {
                                 backgroundColor: "#872ff7",
                                 color: "#fff",
+                                fontSize: 12,
+                              },
+                              minHeight: 300,
+                              "& .MuiDataGrid-cellContent": {
+                                fontSize: 12,
                               },
                             }}
-                            rows={rowsExternal}
+                            rows={extWorkItems}
                             columns={columnsExternal}
                             pageSize={5}
                             rowsPerPageOptions={[5]}
                             onCellClick={(e) => handleRowClick(e)}
                           />
-                        </div>
-                        <div className=" text-right mt-3">
+                          {/* </div> */}
+                          {/* <div className=" text-right mt-3">
                           <button
                             type="button"
                             className="btn border bg-primary text-white"
@@ -2456,230 +2547,238 @@ function RepairServiceEstimate(props) {
                           >
                             Save
                           </button>
+                        </div> */}
+                        </div>
+                      </React.Fragment>
+                    )}
+                  </TabPanel>
+                  <TabPanel value="othrMisc">
+                    {!miscData.id && (
+                      <div className="col-md-12 col-sm-12">
+                        <div className=" d-flex justify-content-between align-items-center">
+                          <div>
+                            <FormGroup>
+                              <FormControlLabel
+                                control={
+                                  <Switch
+                                    checked={flagRequired.flagMiscReq}
+                                    onChange={handleChangeSwitch}
+                                    name="flagMiscReq"
+                                  />
+                                }
+                                label="REQUIRED"
+                                value={flagRequired.flagMiscReq}
+                              />
+                            </FormGroup>
+                          </div>
                         </div>
                       </div>
-                    </React.Fragment>
-                  )}
-                </TabPanel>
-                <TabPanel value="othrMisc">
-                  {!miscData.id && (
-                    <div className="col-md-12 col-sm-12">
-                      <div className=" d-flex justify-content-between align-items-center">
-                        <div>
-                          <FormGroup>
-                            <FormControlLabel
-                              control={
-                                <Switch
-                                  checked={flagRequired.flagMiscReq}
-                                  onChange={handleChangeSwitch}
-                                  name="flagMiscReq"
+                    )}
+                    {flagRequired.flagMiscReq && (
+                      <React.Fragment>
+                        {!miscViewOnly ? (
+                          <div className="row mt-2 input-fields">
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  JOB CODE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={miscData.jobCode}
                                 />
-                              }
-                              label="REQUIRED"
-                              value={flagRequired.flagMiscReq}
-                            />
-                          </FormGroup>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {flagRequired.flagMiscReq && (
-                    <React.Fragment>
-                      {!miscViewOnly ? (
-                        <div className="row mt-2 input-fields">
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                JOB CODE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Required"
-                                value={miscData.jobCode}
-                              />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                JOB CODE DESCRIPTION
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Required"
-                                value={miscData.jobCodeDescription}
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  JOB CODE DESCRIPTION
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={miscData.jobCodeDescription}
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                PRICE METHOD
-                              </label>
-                              <Select
-                                onChange={(e) =>
-                                  setMiscData({ ...miscData, pricingMethod: e })
-                                }
-                                options={priceMethodOptions}
-                                placeholder="Required"
-                                value={miscData.pricingMethod}
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PRICE METHOD
+                                </label>
+                                <Select
+                                  onChange={(e) =>
+                                    setMiscData({
+                                      ...miscData,
+                                      pricingMethod: e,
+                                    })
+                                  }
+                                  options={priceMethodOptions}
+                                  placeholder="Required"
+                                  value={miscData.pricingMethod}
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                NET PRICE - MISC.
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Required"
-                                value={miscData.totalPrice}
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE - MISC.
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={miscData.totalPrice}
+                                />
+                              </div>
                             </div>
-                          </div>
 
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                TYPE OF MISC.{" "}
-                              </label>
-                              <Select
-                                onChange={(e) =>
-                                  setMiscData({ ...miscData, typeOfMisc: e })
-                                }
-                                options={miscTypeList}
-                                value={miscData.typeOfMisc}
-                                placeholder="Required"
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  TYPE OF MISC.{" "}
+                                </label>
+                                <Select
+                                  onChange={(e) =>
+                                    setMiscData({ ...miscData, typeOfMisc: e })
+                                  }
+                                  options={miscTypeList}
+                                  value={miscData.typeOfMisc}
+                                  placeholder="Required"
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PAYER
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={miscData.payer}
+                                  onChange={(e) =>
+                                    setMiscData({
+                                      ...miscData,
+                                      payer: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  ADJUSTED PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-12">
+                              <div class="form-group mt-3 mb-0 text-right">
+                                <button
+                                  type="button"
+                                  className="btn btn-light bg-primary text-white"
+                                  onClick={updateMiscHeader}
+                                >
+                                  Save
+                                </button>
+                              </div>
                             </div>
                           </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                PAYER
-                              </label>
-                              <Select
-                                onChange={(e) =>
-                                  setMiscData({ ...miscData, payer: e })
-                                }
-                                options={options}
-                                placeholder="Required"
-                                value={miscData.payer}
-                              />
+                        ) : (
+                          <div className="row mt-4">
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  JOB CODE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.jobCode}
+                                </h6>
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                ADJUSTED PRICE
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control border-radius-10 text-primary"
-                                placeholder="Optional"
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  JOB CODE DESCRIPTION{" "}
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.jobCodeDescription}
+                                </h6>
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-12">
-                            <div class="form-group mt-3 mb-0 text-right">
-                              <button
-                                type="button"
-                                className="btn btn-light bg-primary text-white"
-                                onClick={updateMiscHeader}
-                              >
-                                Save
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="row mt-4">
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                JOB CODE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {miscData.jobCode}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                JOB CODE DESCRIPTION{" "}
-                              </p>
-                              <h6 className="font-weight-600">
-                                {miscData.jobCodeDescription}
-                              </h6>
-                            </div>
-                          </div>
 
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                PRICE METHOD
-                              </p>
-                              <h6 className="font-weight-600">
-                                {miscData.pricingMethod?.label}
-                              </h6>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PRICE METHOD
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.pricingMethod?.label}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  NET PRICE - MISC
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.totalPrice}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  TYPE OF MISC.
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.typeOfMisc}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PAYER
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.payer}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  ADJUSTED PRICE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.adjustedPrice}
+                                </h6>
+                              </div>
                             </div>
                           </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                NET PRICE - MISC
-                              </p>
-                              <h6 className="font-weight-600">
-                                {miscData.totalPrice}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                TYPE OF MISC.
-                              </p>
-                              <h6 className="font-weight-600">
-                                {miscData.typeOfMisc}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                PAYER
-                              </p>
-                              <h6 className="font-weight-600">
-                                {miscData.payer?.value}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                ADJUSTED PRICE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {miscData.adjustedPrice}
-                              </h6>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </React.Fragment>
-                  )}
-                </TabPanel>
-              </TabContext>
-            </Box>
-          </div>
+                        )}
+                      </React.Fragment>
+                    )}
+                  </TabPanel>
+                </TabContext>
+              </Box>
+            </div>
+          )}
           <AddLaborItemModal
             laborItemOpen={laborItemOpen}
             handleLaborItemClose={handleLaborItemClose}
@@ -2707,7 +2806,7 @@ function RepairServiceEstimate(props) {
               </Modal.Title>
             </Modal.Header>
             <Modal.Body className="p-0 bg-white">
-              <div className="ligt-greey-bg p-3">
+              {/* <div className="ligt-greey-bg p-3">
                 <div>
                   <span className="mr-3">
                     <i class="fa fa-pencil font-size-12" aria-hidden="true"></i>
@@ -2730,7 +2829,7 @@ function RepairServiceEstimate(props) {
                     <span className="ml-2">Related part list(s)</span>
                   </span>
                 </div>
-              </div>
+              </div> */}
               <div>
                 <div className="p-3">
                   <div className="row mt-4">
@@ -2762,7 +2861,7 @@ function RepairServiceEstimate(props) {
                           onChange={(e) =>
                             handleConsumableSearch("consumable", e.target.value)
                           }
-                          type="consumableCode"
+                          type="consumableId"
                           result={searchConsumableResult}
                           onSelect={handleConsumableSelect}
                           noOptions={noOptionsConsumable}
@@ -2897,7 +2996,6 @@ function RepairServiceEstimate(props) {
                         />
                       </div>
                     </div>
-                    
                   </div>
                 </div>
                 <div className="m-3 text-right">
@@ -2913,6 +3011,14 @@ function RepairServiceEstimate(props) {
                     type="button"
                     className="btn text-white bg-primary"
                     onClick={addConsumableItem}
+                    disabled={
+                      !(
+                        consumableItemData.consumableCode &&
+                        consumableItemData.consumableType &&
+                        consumableItemData.description &&
+                        consumableItemData.quantity
+                      )
+                    }
                   >
                     Save
                   </button>
@@ -2934,7 +3040,7 @@ function RepairServiceEstimate(props) {
               </Modal.Title>
             </Modal.Header>
             <Modal.Body className="p-0 bg-white">
-              <div className="ligt-greey-bg p-3">
+              {/* <div className="ligt-greey-bg p-3">
                 <div>
                   <span className="mr-3">
                     <i class="fa fa-pencil font-size-12" aria-hidden="true"></i>
@@ -2957,7 +3063,7 @@ function RepairServiceEstimate(props) {
                     <span className="ml-2">Related part list(s)</span>
                   </span>
                 </div>
-              </div>
+              </div> */}
               <div>
                 <div className="p-3">
                   <div className="row mt-4">
@@ -2971,7 +3077,7 @@ function RepairServiceEstimate(props) {
                             setExtWorkItemData({
                               ...extWorkItemData,
                               activityId: e,
-                              activityName: e.label
+                              activityName: e.label,
                             })
                           }
                           getOptionLabel={(option) => `${option.value}`}
@@ -3002,11 +3108,11 @@ function RepairServiceEstimate(props) {
                         </label>
                         <input
                           type="text"
-                          value={extWorkItemData.shortDescription}
+                          value={extWorkItemData.description}
                           onChange={(e) =>
                             setExtWorkItemData({
                               ...extWorkItemData,
-                              shortDescription: e.target.value,
+                              description: e.target.value,
                             })
                           }
                           class="form-control border-radius-10"
@@ -3138,11 +3244,11 @@ function RepairServiceEstimate(props) {
                           onChange={(e) =>
                             setExtWorkItemData({
                               ...extWorkItemData,
-                              dimension: e,
+                              dimensions: e,
                             })
                           }
                           options={dimensionList}
-                          value={extWorkItemData.dimension}
+                          value={extWorkItemData.dimensions}
                           placeholder="Optional"
                         />
                       </div>
@@ -3158,7 +3264,11 @@ function RepairServiceEstimate(props) {
                     {" "}
                     Cancel
                   </button>
-                  <button type="button" className="btn text-white bg-primary" onClick={addExtWorkItem}>
+                  <button
+                    type="button"
+                    className="btn text-white bg-primary"
+                    onClick={addExtWorkItem}
+                  >
                     Save
                   </button>
                 </div>

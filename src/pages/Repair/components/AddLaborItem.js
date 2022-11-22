@@ -21,7 +21,7 @@ const AddLaborItemModal = (props) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="p-0 bg-white">
-          <div className="ligt-greey-bg p-3">
+          {/* <div className="ligt-greey-bg p-3">
             <div>
               <span className="mr-3">
                 <i class="fa fa-pencil font-size-12" aria-hidden="true"></i>
@@ -44,7 +44,7 @@ const AddLaborItemModal = (props) => {
                 <span className="ml-2">Related part list(s)</span>
               </span>
             </div>
-          </div>
+          </div> */}
           <div>
             <div className="p-3">
               <div className="row mt-4">

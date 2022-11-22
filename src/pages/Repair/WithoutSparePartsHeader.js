@@ -28,6 +28,7 @@ import {
   updateBuilderEstimation,
   updateBuilderGeneralDet,
   updateBuilderMachine,
+  updateBuilderPrice,
   updateBuilderStatus,
 } from "services/repairBuilderServices";
 import Validator from "utils/validator";
@@ -59,6 +60,7 @@ function WithoutSparePartsHeader(props) {
   const [noOptionsCust, setNoOptionsCust] = useState(false);
   const [noOptionsModel, setNoOptionsModel] = useState(false);
   const [noOptionsSerial, setNoOptionsSerial] = useState(false);
+  const currencyOptions = [{ value: "USD", label: "USD" }]
   const [activeElement, setActiveElement] = useState({
     name: "header",
     bId: "",
@@ -75,6 +77,7 @@ function WithoutSparePartsHeader(props) {
     machineViewOnly: false,
     generalViewOnly: false,
     estViewOnly: false,
+    priceViewOnly: false
   });
 
   const [customerData, setCustomerData] = useState({
@@ -231,6 +234,7 @@ function WithoutSparePartsHeader(props) {
       machineViewOnly: result.serialNo ? true : false,
       generalViewOnly: result.estimationNumber ? true : false,
       estViewOnly: result.preparedBy ? true : false,
+      // priceViewOnly: result.priceMethod ? true : false,
     });
     setBId(result.id);
     setRating(result.rating);
@@ -539,6 +543,28 @@ function WithoutSparePartsHeader(props) {
       });
   };
 
+  const updatePriceData = () => {
+    let data = {
+      builderId,
+      priceMethod: pricingData.priceMethod?.value,
+      currency: pricingData.currency?.value,
+      priceDate: pricingData.priceDate,
+      adjustedPrice: pricingData.adjustedPrice,
+    };
+    updateBuilderPrice(bId, data)
+      .then((result) => {
+        // setValue("price");
+        setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
+        handleSnack("success", "Pricing details updated!");
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          "Error occurred while updating the pricing details!"
+        );
+      });
+  };
+
   //Logic to handle status changes
   const disableStatusOptions = (option) => {
     const selectedValue = selBuilderStatus.value;
@@ -588,6 +614,11 @@ function WithoutSparePartsHeader(props) {
       setViewOnlyTab({
         ...viewOnlyTab,
         generalViewOnly: false,
+      });
+    else if (value === "price" && viewOnlyTab.priceViewOnly)
+      setViewOnlyTab({
+        ...viewOnlyTab,
+        priceViewOnly: false,
       });
   };
 
@@ -1670,18 +1701,19 @@ function WithoutSparePartsHeader(props) {
                         )}
                       </TabPanel>
                       <TabPanel value="price">
-                        <div className="row">
+                      {!viewOnlyTab.priceViewOnly ? 
+                        <><div className="row">
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
                                 NET PRICE
                               </label>
                               <input
-                                type="email"
+                                type="text"
+                                disabled
                                 className="form-control border-radius-10"
-                                id="exampleInputEmail1"
-                                aria-describedby="emailHelp"
                                 placeholder="Optional"
+                                value={pricingData.netPrice}
                               />
                             </div>
                           </div>
@@ -1708,27 +1740,26 @@ function WithoutSparePartsHeader(props) {
                               </MuiPickersUtilsProvider>
                             </div>
                           </div>
-                          <div className="col-md-4 col-sm-4">
+                          {/* <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
                                 COST PRICE
                               </label>
                               <input
-                                type="email"
+                                type="text"
+                                disabled
                                 className="form-control border-radius-10"
-                                id="exampleInputEmail1"
-                                aria-describedby="emailHelp"
                                 placeholder="Optional"
+                                value={pricingData.}
                               />
                             </div>
-                          </div>
+                          </div> */}
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
                                 PRICE METHOD
                               </label>
                               <Select
-                                defaultValue={selectedOption}
                                 value={pricingData.priceMethod}
                                 onChange={(e) =>
                                   setPricingData({
@@ -1737,7 +1768,7 @@ function WithoutSparePartsHeader(props) {
                                   })
                                 }
                                 options={priceMethodOptions}
-                                placeholder="placeholder (Optional)"
+                                placeholder="Required"
                               />
                             </div>
                           </div>
@@ -1747,36 +1778,51 @@ function WithoutSparePartsHeader(props) {
                                 ADJUSTED PRICE
                               </label>
                               <input
-                                type="email"
+                                type="text"
                                 className="form-control border-radius-10"
-                                id="exampleInputEmail1"
-                                aria-describedby="emailHelp"
                                 placeholder="Optional"
+                                value={pricingData.adjustedPrice}
+                                onChange={e=> setPricingData({...pricingData, adjustedPrice: e.target.value})}
                               />
                             </div>
                           </div>
-
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
                                 CURRENCY
                               </label>
                               <Select
-                                defaultValue={selectedOption}
-                                onChange={setSelectedOption}
-                                options={options}
-                                placeholder="placeholder (Optional)"
+                                onChange={e=> setPricingData({...pricingData, currency: e})}
+                                options={currencyOptions}
+                                placeholder="Required"
+                                value={pricingData.currency}
                               />
                             </div>
                           </div>
                         </div>
+                        <div
+                        className="row"
+                        style={{ justifyContent: "right" }}
+                      >
+                        <button
+                          type="button"
+                          className="btn btn-light bg-primary text-white"
+                          onClick={updatePriceData}
+                          disabled={
+                            !(pricingData.priceDate && pricingData.priceMethod && pricingData.currency)
+                          }
+                        >
+                          Save
+                        </button>
+                      </div>
+                      </> :
                         <div className="row mt-3">
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <p className="font-size-12 font-weight-500 mb-2">
                                 NET PRICE
                               </p>
-                              <h6 className="font-weight-500">Mining</h6>
+                              <h6 className="font-weight-500">{pricingData.netPrice}</h6>
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
@@ -1784,23 +1830,27 @@ function WithoutSparePartsHeader(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 PRICE DATE
                               </p>
-                              <h6 className="font-weight-500">01.09.2021</h6>
+                              <h6 className="font-weight-500">
+                                <Moment format="DD/MM/YYYY">
+                                    {pricingData.priceDate}
+                                </Moment>
+                              </h6>
                             </div>
                           </div>
-                          <div className="col-md-4 col-sm-4">
+                          {/* <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <p className="font-size-12 font-weight-500 mb-2">
                                 COST PRICE
                               </p>
                               <h6 className="font-weight-500">01.09.2021</h6>
                             </div>
-                          </div>
+                          </div> */}
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <p className="font-size-12 font-weight-500 mb-2">
                                 PRICE METHOD
                               </p>
-                              <h6 className="font-weight-500">List Price </h6>
+                              <h6 className="font-weight-500">{pricingData.priceMethod?.label} </h6>
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-4">
@@ -1808,7 +1858,7 @@ function WithoutSparePartsHeader(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 ADJUSTED PRICE{" "}
                               </p>
-                              <h6 className="font-weight-500">Mining</h6>
+                              <h6 className="font-weight-500">{pricingData.adjustedPrice}</h6>
                             </div>
                           </div>
 
@@ -1817,21 +1867,11 @@ function WithoutSparePartsHeader(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 CURRENCY{" "}
                               </p>
-                              <h6 className="font-weight-500">AUD</h6>
+                              <h6 className="font-weight-500">{pricingData.currency?.label}</h6>
                             </div>
                           </div>
                         </div>
-                        <div
-                          className="row"
-                          style={{ justifyContent: "right" }}
-                        >
-                          <button
-                            type="button"
-                            className="btn btn-light bg-primary text-white"
-                          >
-                            Next
-                          </button>
-                        </div>
+}
                       </TabPanel>
                     </TabContext>
                   )}

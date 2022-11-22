@@ -254,6 +254,59 @@ export const RemoveLaborItem = (laborId, laborItemId) => {
   });
 };
 
+
+//Remove consumable item
+export const RemoveConsumableItem = (consumableId, consumableItemId) => {
+  console.log("service repairbuilder > RemoveConsumableItem called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .delete(CONSUMABLE_ITEM(consumableId)+`/${consumableItemId}`, config)
+        .then((res) => {
+          console.log("repairbuilder -> RemoveConsumableItem response: ", res);
+          if (res.status === 200) {
+            resolve("Successfully removed the item!");
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("RemoveConsumableItem > axios err=", err);
+          reject("Error in RemoveConsumableItem axios!");
+        });
+    } catch (error) {
+      console.error("RemoveConsumableItem general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Remove labor item
+export const RemoveExtWorkItem = (extWorkId, extWorkItemId) => {
+  console.log("service repairbuilder > RemoveExtWorkItem called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .delete(EXTWORK_ITEM(extWorkId)+`/${extWorkItemId}`, config)
+        .then((res) => {
+          console.log("repairbuilder -> RemoveExtWorkItem response: ", res);
+          if (res.status === 200) {
+            resolve("Successfully removed the item!");
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("RemoveExtWorkItem > axios err=", err);
+          reject("Error in RemoveExtWorkItem axios!");
+        });
+    } catch (error) {
+      console.error("RemoveExtWorkItem general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 //fetch consumable from service estimate
 export const FetchConsumableforService = (serviceId) => {
   console.log("service repairbuilder > FetchConsumableforService called...");

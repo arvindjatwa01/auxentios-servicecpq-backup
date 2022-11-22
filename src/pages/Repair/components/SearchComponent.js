@@ -147,12 +147,13 @@ const SearchComponent = (props) => {
                     id={"inputSearch-" + i}
                     autoComplete="off"
                   />
-                  <div className="btn border" onClick={() => props.searchClick(props.type)}>
+                  {props.querySearchSelector.length - 1 === i ? <div className="btn border" onClick={() => props.searchClick(props.type)}>
                     <span className="mr-2">
                       <AddIcon />
                     </span>
                     Add Item
-                  </div>
+                  </div> : 
+                  <div className="btn" style={{height: 40, width: 70}}></div>}
                   {obj.selectOptions && obj.selectOptions.length > 0 && (
                     <ul
                       className={`list-group customselectsearch-list scrollbar-repair-autocomplete scrollbar-${i} style`}
