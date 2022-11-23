@@ -54,10 +54,13 @@ import {
   fetchBuilderVersionDet,
   fetchPartlistFromBuilder,
   fetchPartsFromPartlist,
+  RemoveLaborItem,
+  RemoveSparepart,
   updateBuilderCustomer,
   updateBuilderEstimation,
   updateBuilderGeneralDet,
   updateBuilderMachine,
+  updateBuilderPrice,
   updateBuilderStatus,
   uploadPartsToPartlist,
 } from "services/repairBuilderServices";
@@ -94,6 +97,9 @@ import {
 } from "services/searchServices";
 import ModalCreateVersion from "./components/ModalCreateVersion";
 import ModalShare from "./components/ModalShare";
+import SearchComponent from "./components/SearchComponent";
+import { useAppSelector } from "app/hooks";
+import { selectDropdownOption, selectPricingMethodList } from "./dropdowns/repairSlice";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -206,6 +212,7 @@ function PartList(props) {
     machineViewOnly: false,
     generalViewOnly: false,
     estViewOnly: false,
+    priceViewOnly: false
   });
 
   const [customerData, setCustomerData] = useState({
@@ -274,23 +281,10 @@ function PartList(props) {
     { value: "60", label: "2 months" },
   ];
 
-  const [priceMethodOptions, setPriceMethodOptions] = useState([]);
-  const populatePricingMethods = () => {
-    fetchBuilderPricingMethods("price-method")
-      .then((res) => {
-        const options = res.map((d) => ({
-          value: d.key,
-          label: d.value,
-        }));
-        setPriceMethodOptions(options);
-      })
-      .catch((err) => {
-        handleSnack(
-          "error",
-          `😐 Error occurred while fetching pricing methods!`
-        );
-      });
-  };
+    // Retrieve price methods
+    const priceMethodOptions = useAppSelector(
+      selectDropdownOption(selectPricingMethodList)
+    );
 
   // TODO: Replace it with tenant details
   const salesOfficeOptions = [
@@ -314,7 +308,7 @@ function PartList(props) {
   };
 
   useEffect(() => {
-    populatePricingMethods();
+    
     if (state && state.type === "new") {
       console.log(state);
       setBuilderId(state.builderId);
@@ -408,6 +402,7 @@ function PartList(props) {
       machineViewOnly: result.serialNo ? true : false,
       generalViewOnly: result.estimationNumber ? true : false,
       estViewOnly: result.preparedBy ? true : false,
+      priceViewOnly: result.priceMethod !== "EMPTY" && result.priceMethod !== null && result.priceMethod !== "" ? true : false,
     });
     setRating(result.rating);
     setSelBuilderStatus(
@@ -462,6 +457,17 @@ function PartList(props) {
         (element) => element.value === result.salesOffice
       ),
     });
+    setPricingData({
+      priceDate: result.priceDate,
+      priceMethod: priceMethodOptions.find(
+        (element) => element.value === result.priceMethod
+      ),
+      netPrice: result.netPrice,
+      adjustedPrice: result.adjustedPrice,
+      currency: currencyOptions.find(
+        (element) => element.value === result.currency
+      ),
+    })
   };
 
   const createVersion = async (versionDesc) => {
@@ -769,6 +775,28 @@ function PartList(props) {
       });
   };
 
+  const updatePriceData = () => {
+    let data = {
+      builderId,
+      priceMethod: pricingData.priceMethod?.value,
+      currency: pricingData.currency?.value,
+      priceDate: pricingData.priceDate,
+      adjustedPrice: pricingData.adjustedPrice,
+    };
+    updateBuilderPrice(bId, data)
+      .then((result) => {
+        // setValue("price");
+        setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
+        handleSnack("success", "Pricing details updated!");
+      })
+      .catch((err) => {
+        handleSnack(
+          "error",
+          "Error occurred while updating the pricing details!"
+        );
+      });
+  };
+
   const calculateTotalPrice = (extendedPrice, usage) => {
     return usage > 0 ? (usage / 100) * extendedPrice : extendedPrice;
   };
@@ -950,13 +978,26 @@ function PartList(props) {
           <GridActionsCellItem
             icon={<DeleteIcon />}
             label="Delete"
-            // onClick={handleDeleteClick(id)}
+            onClick={() => handleDeleteSparePart(params.row.id)}
             color="inherit"
           />,
         ];
       },
     },
   ];
+
+  //Remove Labor Item
+  const handleDeleteSparePart = (sparePartId) => {
+    RemoveSparepart(partListNo, sparePartId)
+      .then((res) => {
+        handleSnack("success", res);
+        fetchPartsOfPartlist(partListNo, page, pageSize);
+      })
+      .catch((e) => {
+        console.log(e);
+        handleSnack("error", "Error occurred while removing the spare part");
+      });
+  };
 
   const options = [
     { value: "chocolate", label: "Construction-Heavy" },
@@ -1090,6 +1131,11 @@ function PartList(props) {
       setViewOnlyTab({
         ...viewOnlyTab,
         generalViewOnly: false,
+      });
+      else if (value === "price" && viewOnlyTab.priceViewOnly)
+      setViewOnlyTab({
+        ...viewOnlyTab,
+        priceViewOnly: false,
       });
   };
 
@@ -2306,19 +2352,22 @@ function PartList(props) {
                     )}
                   </TabPanel>
                   <TabPanel value="price">
-                    <div className="row">
+                  {!viewOnlyTab.priceViewOnly ? 
+                    <React.Fragment>
+                      
+                      <div className="row">
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <label className="text-light-dark font-size-12 font-weight-500">
                             NET PRICE
                           </label>
                           <input
-                            type="email"
-                            className="form-control border-radius-10"
-                            id="exampleInputEmail1"
-                            aria-describedby="emailHelp"
-                            placeholder="Placeholder (Optional)"
-                          />
+                                type="text"
+                                disabled
+                                className="form-control border-radius-10"
+                                placeholder="Optional"
+                                value={pricingData.netPrice}
+                              />
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
@@ -2344,7 +2393,7 @@ function PartList(props) {
                           </MuiPickersUtilsProvider>
                         </div>
                       </div>
-                      <div className="col-md-4 col-sm-4">
+                      {/* <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <label className="text-light-dark font-size-12 font-weight-500">
                             COST PRICE
@@ -2357,20 +2406,19 @@ function PartList(props) {
                             placeholder="Placeholder (Optional)"
                           />
                         </div>
-                      </div>
+                      </div> */}
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <label className="text-light-dark font-size-12 font-weight-500">
                             PRICE METHOD
                           </label>
                           <Select
-                            defaultValue={selectedOption}
                             value={pricingData.priceMethod}
                             onChange={(e) =>
                               setPricingData({ ...pricingData, priceMethod: e })
                             }
                             options={priceMethodOptions}
-                            placeholder="placeholder (Optional)"
+                            placeholder="Required"
                           />
                         </div>
                       </div>
@@ -2380,12 +2428,12 @@ function PartList(props) {
                             ADJUSTED PRICE
                           </label>
                           <input
-                            type="email"
-                            className="form-control border-radius-10"
-                            id="exampleInputEmail1"
-                            aria-describedby="emailHelp"
-                            placeholder="Placeholder (Optional)"
-                          />
+                              type="text"
+                              className="form-control border-radius-10"
+                              placeholder="Optional"
+                              value={pricingData.adjustedPrice}
+                              onChange={e=> setPricingData({...pricingData, adjustedPrice: e.target.value})}
+                            />
                         </div>
                       </div>
 
@@ -2395,21 +2443,34 @@ function PartList(props) {
                             CURRENCY
                           </label>
                           <Select
-                            defaultValue={selectedOption}
-                            onChange={setSelectedOption}
-                            options={currencyOptions}
-                            placeholder="placeholder (Optional)"
-                          />
+                                onChange={e=> setPricingData({...pricingData, currency: e})}
+                                options={currencyOptions}
+                                placeholder="Required"
+                                value={pricingData.currency}
+                              />
                         </div>
                       </div>
-                    </div>
+                    </div> 
+                    <div className="row" style={{ justifyContent: "right" }}>
+                    <button
+                      type="button"
+                      className="btn btn-light bg-primary text-white"
+                      onClick={updatePriceData}
+                      disabled={
+                        !(pricingData.priceDate && pricingData.priceMethod && pricingData.currency)
+                      }
+                    >
+                      Save
+                    </button>
+                  </div>
+                  </React.Fragment>:
                     <div className="row mt-3">
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="font-size-12 font-weight-500 mb-2">
                             NET PRICE
                           </p>
-                          <h6 className="font-weight-500">Mining</h6>
+                          <h6 className="font-weight-500">{pricingData.netPrice}</h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
@@ -2417,23 +2478,27 @@ function PartList(props) {
                           <p className="font-size-12 font-weight-500 mb-2">
                             PRICE DATE
                           </p>
-                          <h6 className="font-weight-500">01.09.2021</h6>
+                          <h6 className="font-weight-500">
+                            <Moment format="DD/MM/YYYY">
+                              {pricingData.priceDate}
+                            </Moment>
+                          </h6>
                         </div>
                       </div>
-                      <div className="col-md-4 col-sm-4">
+                      {/* <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="font-size-12 font-weight-500 mb-2">
                             COST PRICE
                           </p>
-                          <h6 className="font-weight-500">01.09.2021</h6>
+                          <h6 className="font-weight-500">{01.09.2021}</h6>
                         </div>
-                      </div>
+                      </div> */}
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="font-size-12 font-weight-500 mb-2">
                             PRICE METHOD
                           </p>
-                          <h6 className="font-weight-500">List Price </h6>
+                          <h6 className="font-weight-500">{pricingData.priceMethod?.label}</h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
@@ -2441,7 +2506,7 @@ function PartList(props) {
                           <p className="font-size-12 font-weight-500 mb-2">
                             ADJUSTED PRICE{" "}
                           </p>
-                          <h6 className="font-weight-500">Mining</h6>
+                          <h6 className="font-weight-500">{pricingData.adjustedPrice}</h6>
                         </div>
                       </div>
 
@@ -2450,18 +2515,11 @@ function PartList(props) {
                           <p className="font-size-12 font-weight-500 mb-2">
                             CURRENCY{" "}
                           </p>
-                          <h6 className="font-weight-500">AUD</h6>
+                          <h6 className="font-weight-500">{pricingData.currency?.label}</h6>
                         </div>
                       </div>
-                    </div>
-                    <div className="row" style={{ justifyContent: "right" }}>
-                      <button
-                        type="button"
-                        className="btn btn-light bg-primary text-white"
-                      >
-                        Next
-                      </button>
-                    </div>
+                    </div> }
+                    
                   </TabPanel>
                 </TabContext>
               )}
@@ -2480,7 +2538,7 @@ function PartList(props) {
                     </h5>
                     <span>Version {selectedVersion.value}</span>
                   </div>
-                  <DynamicSearchComponent
+                  <SearchComponent
                     querySearchSelector={querySearchSelector}
                     setQuerySearchSelector={setQuerySearchSelector}
                     clearFilteredData={clearFilteredData}
@@ -2488,6 +2546,7 @@ function PartList(props) {
                     searchAPI={sparePartSearch}
                     searchClick={handleQuerySearchClick}
                     options={SPAREPART_SEARCH_Q_OPTIONS}
+                    type=""
                   />
                 </div>
               </div>

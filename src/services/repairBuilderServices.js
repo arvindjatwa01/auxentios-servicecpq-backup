@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import {
   ADD_REPAIR_BUILDER_PARTLIST,
   ADD_REPAIR_MULTI_PARTS_TO_PARTLIST,
-  ADD_REPAIR_PART_TO_PARTLIST,
+  REPAIR_PART_OF_PARTLIST,
   SEGMENT_OPERATION,
   BUILDER_SEGMENT,
   CREATE_BUILDER_VERSION,
@@ -839,7 +839,7 @@ export const addPartToPartList = (partListId, data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(ADD_REPAIR_PART_TO_PARTLIST(partListId), data, config)
+        .post(REPAIR_PART_OF_PARTLIST(partListId), data, config)
         .then((res) => {
           console.log("repairbuilder -> addPartToPartList response: ", res);
           if (res.status === 200) {
@@ -860,6 +860,31 @@ export const addPartToPartList = (partListId, data) => {
   });
 };
 
+//Remove spare part from partlist
+export const RemoveSparepart = (partlistId, sparePartId) => {
+  console.log("service repairbuilder > RemoveSparepart called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .delete(REPAIR_PART_OF_PARTLIST(partlistId)+`/${sparePartId}`, config)
+        .then((res) => {
+          console.log("repairbuilder -> RemoveSparepart response: ", res);
+          if (res.status === 200) {
+            resolve("Successfully removed the item!");
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("RemoveSparepart > axios err=", err);
+          reject("Error in RemoveSparepart axios!");
+        });
+    } catch (error) {
+      console.error("RemoveSparepart general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
 
 //Add multiple spareparts to the partlist builder
 export const addMultiPartsToPartList = (partListId, data) => {

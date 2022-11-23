@@ -46,6 +46,8 @@ import RepairServiceEstimate from "./RepairServiceEstimate";
 import ModalCreateVersion from "./components/ModalCreateVersion";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import { ERROR_MAX_VERSIONS } from "./CONSTANTS";
+import { useAppSelector } from "app/hooks";
+import { selectDropdownOption, selectPricingMethodList } from "./dropdowns/repairSlice";
 
 function WithoutSparePartsHeader(props) {
   const history = useHistory();
@@ -160,25 +162,12 @@ function WithoutSparePartsHeader(props) {
 
   const [value, setValue] = useState("customer");
   const open = Boolean(anchorEl);
-  const [priceMethodOptions, setPriceMethodOptions] = useState([]);
-  const populatePricingMethods = () => {
-    fetchBuilderPricingMethods("price-method")
-      .then((res) => {
-        const options = res.map((d) => ({
-          value: d.key,
-          label: d.value,
-        }));
-        setPriceMethodOptions(options);
-      })
-      .catch((err) => {
-        handleSnack(
-          "error",
-          `😐 Error occurred while fetching pricing methods!`
-        );
-      });
-  };
+  // Retrieve price methods
+  const priceMethodOptions = useAppSelector(
+    selectDropdownOption(selectPricingMethodList)
+  );
+
   useEffect(() => {
-    populatePricingMethods();
     if (state && state.type === "new") {
       setBuilderId(state.builderId);
       setBId(state.bId);
@@ -234,7 +223,7 @@ function WithoutSparePartsHeader(props) {
       machineViewOnly: result.serialNo ? true : false,
       generalViewOnly: result.estimationNumber ? true : false,
       estViewOnly: result.preparedBy ? true : false,
-      // priceViewOnly: result.priceMethod ? true : false,
+      priceViewOnly: result.priceMethod ? true : false,
     });
     setBId(result.id);
     setRating(result.rating);
@@ -290,6 +279,17 @@ function WithoutSparePartsHeader(props) {
         (element) => element.value === result.salesOffice
       ),
     });
+    setPricingData({
+      priceDate: result.priceDate,
+      priceMethod: priceMethodOptions.find(
+        (element) => element.value === result.priceMethod
+      ),
+      netPrice: result.netPrice,
+      adjustedPrice: result.adjustedPrice,
+      currency: currencyOptions.find(
+        (element) => element.value === result.currency
+      ),
+    })
   };
 
   const [severity, setSeverity] = useState("");

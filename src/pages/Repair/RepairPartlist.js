@@ -33,6 +33,8 @@ import DynamicSearchComponent from "./components/DynamicSearchComponent";
 import { BUILDER_SEARCH_Q_OPTIONS } from "./CONSTANTS";
 import { Typography } from "@mui/material";
 import Loader from "react-js-loader";
+import { useDispatch } from "react-redux";
+import { repairActions } from "./dropdowns/repairSlice";
 
 export const RepairPartlist = () => {
   const [show, setShow] = React.useState(false);
@@ -49,7 +51,9 @@ export const RepairPartlist = () => {
     setOpenSnack(false);
   };
 
+  const dispatch = useDispatch();
   useEffect(() => {
+    dispatch(repairActions.fetchDropdowns());
     fetcheRecentPartlists();
   }, []);
 
@@ -142,7 +146,7 @@ export const RepairPartlist = () => {
 
     try {
       if (searchStr) {
-        const res = await builderSearch(`builderType:PARTLIST&${searchStr}`);
+        const res = await builderSearch(`builderType:PARTLIST AND ${searchStr}`);
         setMasterData(res);
       } else {
         handleSnack("info", "Please fill the search criteria!");

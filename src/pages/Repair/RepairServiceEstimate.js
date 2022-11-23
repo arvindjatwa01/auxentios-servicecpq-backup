@@ -39,6 +39,7 @@ import {
   AddExtWorkItem,
   RemoveConsumableItem,
   RemoveExtWorkItem,
+  FetchMiscforService,
 } from "services/repairBuilderServices";
 import Moment from "react-moment";
 import { useAppSelector } from "app/hooks";
@@ -213,6 +214,7 @@ function RepairServiceEstimate(props) {
     pricingMethod: "",
     totalPrice: 0.0,
     payer: "",
+    flatRateIndicator: false,
     adjustedPrice: 0.0,
   });
   // Ext Work Header
@@ -222,6 +224,7 @@ function RepairServiceEstimate(props) {
     pricingMethod: "",
     totalPrice: 0.0,
     payer: "",
+    flatRateIndicator: false,
     adjustedPrice: 0.0,
   });
   // Misc Header
@@ -231,6 +234,7 @@ function RepairServiceEstimate(props) {
     pricingMethod: "",
     totalPrice: 0.0,
     payer: "",
+    flatRateIndicator: false,
     adjustedPrice: 0.0,
     typeOfMisc: "",
   });
@@ -356,6 +360,8 @@ function RepairServiceEstimate(props) {
             populateLaborData(result);
             populateConsumableData(result);
             populateExtWorkData(result);
+            populateMiscData(result);
+
           } else {
             setLabourData({
               ...labourData,
@@ -508,13 +514,36 @@ function RepairServiceEstimate(props) {
       });
   }
 
+  // Populate misc header
+  function populateMiscData(result) {
+    FetchMiscforService(result.id)
+      .then((resultMisc) => {
+        if (resultMisc && resultMisc.id) {
+          setExtWorkData({
+            ...resultMisc,
+            id: resultMisc.id,
+            pricingMethod: priceMethodOptions.find(
+              (element) => element.value === resultMisc.pricingMethod
+            ),
+          });
+          setMiscViewOnly(true);
+        }
+      })
+      .catch((e) => {
+        setMiscData({
+          ...miscData,
+          jobCode: result.jobCode,
+          jobCodeDescription: result.jobOperation,
+        });
+      });
+  }
   const makeHeaderEditable = (type) => {
     if (type === "serviceEstHeader" && serviceHeaderViewOnly)
       setServiceHeaderViewOnly(false);
     if (value === "labor" && laborViewOnly) setLaborViewOnly(false);
     else if (value === "consumables" && consumableViewOnly)
       setConsumableViewOnly(false);
-    else if (value === "extWork" && extWorkViewOnly) setExtWorkViewOnly(false);
+    else if (value === "extwork" && extWorkViewOnly) setExtWorkViewOnly(false);
     else if (value === "misc" && miscViewOnly) setMiscViewOnly(false);
   };
   // Search Vendors
@@ -725,11 +754,6 @@ function RepairServiceEstimate(props) {
       serviceType: labourItemData.serviceType?.value,
       unitOfMeasure: labourItemData.unitOfMeasure?.value,
     };
-    //TODO: Remove this once these fields are added.
-    delete data.travelCharge;
-    delete data.travelIncluded;
-    delete data.inspectionIncluded;
-    delete data.inspectionCharge;
 
     AddLaborItemToLabor(labourData.id, data)
       .then((result) => {
@@ -892,13 +916,7 @@ function RepairServiceEstimate(props) {
   };
 
   const [show, setShow] = React.useState(false);
-  const [count, setCount] = useState(1);
-  const options = [
-    { value: "chocolate", label: "Construction-Heavy" },
-    { value: "strawberry", label: "Construction-Low" },
-    { value: "vanilla", label: "Construction-Medium" },
-    { value: "Construction", label: "Construction" },
-  ];
+
   const handleRowClick = (e) => {
     setShow(true);
   };
@@ -1942,16 +1960,6 @@ function RepairServiceEstimate(props) {
                             rowsPerPageOptions={[5]}
                             onCellClick={(e) => handleRowClick(e)}
                           />
-                          {/* </div> */}
-                          <div className=" text-right mt-3">
-                            <button
-                              type="button"
-                              className="btn btn-light bg-primary text-white"
-                              // onClick={}
-                            >
-                              Save
-                            </button>
-                          </div>
                         </div>
                       </React.Fragment>
                     )}
@@ -2062,11 +2070,42 @@ function RepairServiceEstimate(props) {
                             </div>
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
+                                <FormGroup>
+                                  <FormControlLabel
+                                    style={{
+                                      alignItems: "start",
+                                      marginLeft: 0,
+                                    }}
+                                    control={
+                                      <Switch
+                                        checked={consumableData.flatRateIndicator}
+                                        onChange={(e) =>
+                                          setConsumableData({
+                                            ...consumableData,
+                                            flatRateIndicator: e.target.checked,
+                                          })
+                                        }
+                                      />
+                                    }
+                                    labelPlacement="top"
+                                    label={
+                                      <span className="text-light-dark font-size-12 font-weight-600">
+                                        FLAT RATE INDICATOR
+                                      </span>
+                                    }
+                                  />
+                                </FormGroup>
+                              </div>
+                            </div>
+
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
                                   ADJUSTED PRICE
                                 </label>
                                 <input
                                   type="text"
+                                  disabled={!consumableData.flatRateIndicator}
                                   class="form-control border-radius-10 text-primary"
                                   placeholder="Optional"
                                   value={consumableData.adjustedPrice}
@@ -2366,11 +2405,41 @@ function RepairServiceEstimate(props) {
                             </div>
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
+                                <FormGroup>
+                                  <FormControlLabel
+                                    style={{
+                                      alignItems: "start",
+                                      marginLeft: 0,
+                                    }}
+                                    control={
+                                      <Switch
+                                        checked={extWorkData.flatRateIndicator}
+                                        onChange={(e) =>
+                                          setExtWorkData({
+                                            ...extWorkData,
+                                            flatRateIndicator: e.target.checked,
+                                          })
+                                        }
+                                      />
+                                    }
+                                    labelPlacement="top"
+                                    label={
+                                      <span className="text-light-dark font-size-12 font-weight-600">
+                                        FLAT RATE INDICATOR
+                                      </span>
+                                    }
+                                  />
+                                </FormGroup>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
                                   ADJUSTED PRICE
                                 </label>
                                 <input
                                   type="text"
+                                  disabled={!extWorkData.flatRateIndicator}
                                   class="form-control border-radius-10 text-primary"
                                   placeholder="Optional"
                                   value={extWorkData.adjustedPrice}
@@ -2512,14 +2581,6 @@ function RepairServiceEstimate(props) {
                               </div>
                             </div>
                           </div>
-                          {/* <div
-                          className=""
-                          style={{
-                            height: 400,
-                            width: "100%",
-                            backgroundColor: "#fff",
-                          }}
-                        > */}
                           <DataGrid
                             sx={{
                               "& .MuiDataGrid-columnHeaders": {
@@ -2538,16 +2599,6 @@ function RepairServiceEstimate(props) {
                             rowsPerPageOptions={[5]}
                             onCellClick={(e) => handleRowClick(e)}
                           />
-                          {/* </div> */}
-                          {/* <div className=" text-right mt-3">
-                          <button
-                            type="button"
-                            className="btn border bg-primary text-white"
-                            onClick={updateLabourEstHeader}
-                          >
-                            Save
-                          </button>
-                        </div> */}
                         </div>
                       </React.Fragment>
                     )}
@@ -2675,13 +2726,50 @@ function RepairServiceEstimate(props) {
                             </div>
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
+                                <FormGroup>
+                                  <FormControlLabel
+                                    style={{
+                                      alignItems: "start",
+                                      marginLeft: 0,
+                                    }}
+                                    control={
+                                      <Switch
+                                        checked={miscData.flatRateIndicator}
+                                        onChange={(e) =>
+                                          setMiscData({
+                                            ...miscData,
+                                            flatRateIndicator: e.target.checked,
+                                          })
+                                        }
+                                      />
+                                    }
+                                    labelPlacement="top"
+                                    label={
+                                      <span className="text-light-dark font-size-12 font-weight-600">
+                                        FLAT RATE INDICATOR
+                                      </span>
+                                    }
+                                  />
+                                </FormGroup>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
                                   ADJUSTED PRICE
                                 </label>
                                 <input
                                   type="text"
+                                  disabled={!miscData.flatRateIndicator}
                                   class="form-control border-radius-10 text-primary"
                                   placeholder="Optional"
+                                  value={miscData.adjustedPrice}
+                                  onChange={(e) =>
+                                    setMiscData({
+                                      ...miscData,
+                                      adjustedPrice: e.target.value,
+                                    })
+                                  }
                                 />
                               </div>
                             </div>
