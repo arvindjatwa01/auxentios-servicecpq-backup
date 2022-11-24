@@ -49,6 +49,7 @@ export const USER_SERVICE_SIGNIN_URL = () => USER_SERVICE_URI + "root-login";
 //Service Portfolio
 
 export const PORTFOLIO_URL = () => SOLUTION_BUILDER_URI + "portfolio";
+export const RECENT_PORTFOLIO_URL = SOLUTION_BUILDER_URI + "portfolio";
 export const PORTFOLIO_SEARCH_URL = SOLUTION_BUILDER_URI + "portfolio/search?search=";
 
 export const Common_SOLUTION_BUILDER_URL = () =>
@@ -70,6 +71,7 @@ export const GET_GEOGRAPHIC = () =>
   SOLUTION_BUILDER_URI + "common-config/geographic";
 
 export const CREATE_PORTFOLIO_ITEM = () => SOLUTION_BUILDER_URI + "item";
+export const GET_RECENT_BUNDLE_SERVICE_URL = SOLUTION_BUILDER_URI + "item";
 export const PORTFOLIO_ITEM_PRICE_RKID = () => CREATE_PORTFOLIO_ITEM() + "/get-RB-price-update-item-rkid";
 export const PORTFOLIO_ITEM_PRICE_SJID = () => CREATE_PORTFOLIO_ITEM() + "/get-RB-price-update-item-sjid";
 export const PORTFOLIO_ITEM_SEARCH = () => CREATE_PORTFOLIO_ITEM()+ "/search?search=";

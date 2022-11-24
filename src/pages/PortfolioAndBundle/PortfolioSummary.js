@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Modal } from "react-bootstrap";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -55,6 +55,7 @@ import { Box, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import AddPortfolioItem from "./AddPortfolioItem";
 import PriceCalculator from "./PriceCalculator";
+import penIcon from "../../assets/images/pen.png";
 
 import {
   createPortfolio,
@@ -76,7 +77,12 @@ import {
   getPortfolioCommonConfig,
   getSearchQueryCoverage,
   getSearchCoverageForFamily,
+  getSearchForPortfolio,
+  getSearchForRecentPortfolio,
+  getSearchForRecentBundleService,
   itemCreation,
+  portfolioSearch,
+  itemSearch,
 } from "../../services/index";
 
 export const PortfolioSummary = () => {
@@ -91,6 +97,11 @@ export const PortfolioSummary = () => {
 
   const [openSearchSolution, setOpenSearchSolution] = useState(false);
   const [typeOfSearch, setTypeOfSearch] = useState(null);
+
+  const [portfolioItemData, setPortfolioItemData] = useState([]);
+  const [bundleServiceItemData, setBundleServiceItemData] = useState([]);
+  const [recentPortfolio, setRecentPortfolio] = useState([])
+  const [recentBundleService, setRecentBundleService] = useState([]);
 
   const [typeOfSolutionSelector, setTypeOfSolutionSelector] = useState(-1);
   const [typeOfSearchColumn, setTypeOfSearchColumn] = useState(null);
@@ -123,6 +134,7 @@ export const PortfolioSummary = () => {
   const [typeKeyValue, setTypeKeyValue] = useState([]);
   const [createServiceOrBundle, setCreateServiceOrBundle] = useState({
     id: "",
+    name: "",
     description: "",
     bundleFlag: "",
     reference: "",
@@ -135,6 +147,9 @@ export const PortfolioSummary = () => {
   });
   const [addPortFolioItem, setAddportFolioItem] = useState({})
   const [priceCalculator, setPriceCalculator] = useState({})
+
+  const [selectedItemType, setSelectedItemType] = useState("");
+  const [familySelectOption, setFamilySelectOption] = useState([]);
 
   const histoy = useHistory()
   const options = [
@@ -200,8 +215,32 @@ export const PortfolioSummary = () => {
       .catch((err) => {
         alert(err);
       });
+
+
+    getPortfolioCommonConfig("customer-segment")
+      .then((res) => {
+        const options = res.map((d) => ({
+          value: d.key,
+          label: d.value,
+        }));
+        setCustomerSegmentKeyValue(options);
+      })
+      .catch((err) => {
+        alert(err);
+      });
+    getSearchForRecentPortfolio()
+      .then((res) => {
+        setRecentPortfolio(res);
+      })
+
+    getSearchForRecentBundleService()
+      .then((res) => {
+        setRecentBundleService(res);
+      })
+
   }, []);
 
+  // console.log("setRecentPortfolio : ", recentPortfolio);
   const handleChangedrop = (event) => {
     setAge(event.target.value);
   };
@@ -291,19 +330,6 @@ export const PortfolioSummary = () => {
     //       params.getValue(params.id, 'DocumentType') || ''
     //     }`,
   ];
-
-
-  getPortfolioCommonConfig("customer-segment")
-    .then((res) => {
-      const options = res.map((d) => ({
-        value: d.key,
-        label: d.value,
-      }));
-      setCustomerSegmentKeyValue(options);
-    })
-    .catch((err) => {
-      alert(err);
-    });
 
   const handleBuildSolution = (e) => {
     setBuildSolutionValue(e.target.value);
@@ -451,6 +477,17 @@ export const PortfolioSummary = () => {
   const handleInputSearch = (e, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
+    // getSearchForPortfolio(tempArray[id].selectFamily.value, e.target.value)
+    // .then((res) => {
+    //   obj.selectOptions = res;
+    //   tempArray[id] = obj;
+    //   setQuerySearchSelector([...tempArray]);
+    //   $(`.scrollbar-${id}`).css("display", "block");
+    // })
+    // .catch((err) => {
+    //   console.log("err in api call", err);
+    // });
+    // obj.inputSearch = e.target.value;
     getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
       .then((res) => {
         obj.selectOptions = res;
@@ -463,6 +500,54 @@ export const PortfolioSummary = () => {
       });
     obj.inputSearch = e.target.value;
   };
+
+  const handleLandingPageQuerySearchClick = async () => {
+    try {
+      if (selectedItemType == "" ||
+        querySearchSelector[0]?.selectFamily?.value == "" ||
+        querySearchSelector[0]?.inputSearch == "" ||
+        querySearchSelector[0]?.selectFamily?.value === undefined) {
+        throw "Please fill data properly"
+      }
+      var searchStr = `${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
+      if (selectedItemType === "PORTFOLIO") {
+        var newArr = [];
+        const res2 = await portfolioSearch(searchStr)
+        for (var j = 0; j < res2.length; j++) {
+          for (var k = 0; k < res2[j].items.length; k++) {
+            newArr.push(res2[j].items[k]);
+          }
+        }
+
+        var result = newArr.reduce((unique, o) => {
+          if (!unique.some(obj => obj.itemId === o.itemId)) {
+            unique.push(o);
+          }
+          return unique;
+        }, []);
+        setPortfolioItemData(result);
+
+        console.log("setPortfolioItemData : ", portfolioItemData)
+      } else {
+        const res1 = await itemSearch(searchStr);
+        // console.log(res1)
+        setBundleServiceItemData(res1)
+      }
+
+    } catch (error) {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return
+    }
+  };
+
   const handleQuerySearchClick = () => {
     $(".scrollbar").css("display", "none");
     console.log("handleQuerySearchClick", querySearchSelector);
@@ -493,22 +578,39 @@ export const PortfolioSummary = () => {
       });
   };
   const addSearchQuerryHtml = () => {
-    setQuerySearchSelector([
-      ...querySearchSelector,
-      {
-        id: count,
-        selectOperator: "",
-        selectFamily: "",
-        inputSearch: "",
-        selectOptions: [],
-        selectedOption: "",
-      },
-    ]);
-    setCount(count + 1);
+    // New Updated 24 Nov 2022
+    if (count !== 2) {
+      setQuerySearchSelector([
+        ...querySearchSelector,
+        {
+          id: count,
+          selectOperator: "",
+          selectFamily: "",
+          inputSearch: "",
+          selectOptions: [],
+          selectedOption: "",
+        },
+      ]);
+      setCount(count + 1);
+    }
+
+    // Old Before 24 Nov 2022
+    // setQuerySearchSelector([
+    //   ...querySearchSelector,
+    //   {
+    //     id: count,
+    //     selectOperator: "",
+    //     selectFamily: "",
+    //     inputSearch: "",
+    //     selectOptions: [],
+    //     selectedOption: "",
+    //   },
+    // ]);
+    // setCount(count + 1);
   };
   const handleFamily = (e, id) => {
     let tempArray = [...querySearchSelector];
-    console.log("handleFamily e:", e);
+    console.log("handleFamily e:", tempArray[id]);
     let obj = tempArray[id];
     obj.selectFamily = e;
     tempArray[id] = obj;
@@ -531,6 +633,66 @@ export const PortfolioSummary = () => {
     setFilterMasterData([]);
     setSelectedMasterData([]);
   };
+
+  // Select Item Type 
+  const handleItemType = useCallback(
+    (e, i) => {
+      // console.log("event is : ", e.value)
+      // console.log("id is : ", id)
+      setBundleServiceItemData([]);
+      setPortfolioItemData([]);
+      setSelectedItemType(e.value);
+
+      let tempArray = [...querySearchSelector];
+      console.log("tempArray : ", tempArray)
+      // let obj = tempArray[i];
+      // // obj.selectFamily = "";
+      // // tempArray[id] = obj;
+      setQuerySearchSelector([{
+        id: 0,
+        selectFamily: "",
+        selectOperator: "",
+        inputSearch: "",
+        selectOptions: [],
+        selectedOption: "",
+      }]);
+
+      if (e.value === "PORTFOLIO") {
+        setFamilySelectOption([
+          { label: "Make", value: "make", id: i },
+          { label: "Family", value: "family", id: i },
+          { label: "Model", value: "model", id: i },
+          { label: "Prefix", value: "prefix", id: i },
+          { label: "Name", value: "name", id: i },
+          { label: "Description", value: "description", id: i },
+        ])
+      } else if (e.value === "BUNDLE_ITEM") {
+        setFamilySelectOption([{ label: "Make", value: "make", id: i },
+        { label: "Family", value: "family", id: i },
+        { label: "Model", value: "model", id: i },
+        { label: "Prefix", value: "prefix", id: i },
+        { label: "Name", value: "itemName", id: i },
+        { label: "Description", value: "description", id: i },])
+      } else if (e.value === "SERVICE") {
+        setFamilySelectOption([{ label: "Make", value: "make", id: i },
+        { label: "Family", value: "family", id: i },
+        { label: "Model", value: "model", id: i },
+        { label: "Prefix", value: "prefix", id: i },
+        { label: "Name", value: "itemName", id: i },
+        { label: "Description", value: "description", id: i },])
+      }
+    },
+    [],
+  );
+  // (e, id) => {
+
+  //   // let tempArray = [...querySearchSelector];
+  //   // let obj = tempArray[id];
+  //   // obj.itemType = e;
+  //   // tempArray[id] = obj;
+  //   // console.log("tempArray : ", tempArray)
+  //   // setQuerySearchSelector(tempArray);
+  // }
   const handleSearchListClick = (e, currentItem, obj1, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
@@ -740,6 +902,8 @@ export const PortfolioSummary = () => {
     setAnchorEl(null);
   };
 
+  console.log("family option is : ", familySelectOption)
+
   // SERVICE/BUNDLE MODEL FUNCTIONS
   const saveAddNewServiceOrBundle = async () => {
     try {
@@ -748,7 +912,8 @@ export const PortfolioSummary = () => {
       // }
       let reqObj = {
         itemId: 0,
-        itemName: "",
+        // itemName: "",
+        itemName: createServiceOrBundle.name,
         itemHeaderModel: {
           itemHeaderId: 0,
           itemHeaderDescription: createServiceOrBundle.description,
@@ -887,6 +1052,187 @@ export const PortfolioSummary = () => {
 
   }
 
+  const PortfolioItemColumn = [
+    {
+      name: (
+        <>
+          {/* <div>Solution Id</div> */}
+          <div>Name</div>
+        </>
+      ),
+      // selector: (row) => row.itemId,
+      // wrap: true,
+      // sortable: true,
+      // format: (row) => row.itemId,
+      selector: (row) => row.itemName,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemName,
+    },
+    {
+      name: (
+        <>
+          <div>Description</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.itemBodyDescription,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.itemBodyDescription,
+    },
+    {
+      name: (
+        <>
+          <div>Strategy</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel.itemHeaderStrategy,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel.itemHeaderStrategy,
+    }, {
+      name: (
+        <>
+          <div>Task Type</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.taskType,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.taskType,
+    },
+    {
+      name: (
+        <>
+          <div>Quantity</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.quantity,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.quantity,
+    },
+    {
+      name: (
+        <>
+          <div>Net Price</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel.netPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel.netPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Additional</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel.additional,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel.additional,
+    },
+    {
+      name: (
+        <>
+          <div>Net Parts Price</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.partsprice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.partsprice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Service Price</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.servicePrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.servicePrice,
+    },
+    {
+      name: (
+        <>
+          <div>Total Price</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel?.totalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel?.totalPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Comments</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.comments,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.comments,
+    },
+    {
+      name: (
+        <>
+          <div>Action</div>
+        </>
+      ),
+      selector: (row) => row.action,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.action,
+      cell: (row) => (
+        <div>
+          <img className="mr-2" src={penIcon} />
+        </div>
+      ),
+    },
+  ]
+
+  const getFormattedDateTimeByTimeStamp = (timeStamp) => {
+
+    var date = new Date(timeStamp);
+    var year = date.getFullYear();
+    // var m = date.getMonth() + 1;
+    var m = date.getMonth();
+    var month = m < 10 ? '0' + m : m;
+    var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+    var format = "AM";
+    var hour = date.getHours();
+    var minutes = date.getMinutes();
+
+    var monthName = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    if (hour > 11) {
+      format = "PM";
+    }
+    if (hour > 12) {
+      hour = hour - 12;
+    } else if (hour === 0) {
+      hour = 12;
+    }
+
+    if (hour < 10) {
+      hour = "0" + hour;
+    }
+
+    if (minutes < 10) {
+      minutes = "0" + minutes;
+    }
+
+    // var finalDateString = day + "-" + month + "-" + year + " " + hour + ":" + minutes + " " + format;
+    var finalDateString = hour + ":" + minutes + "" + format + ", " + day + " " + monthName[month] + " " + year;
+    return finalDateString;
+  }
+
+  console.log("--------=-- ", recentBundleService);
   return (
     <>
       {/* <CommanComponents /> */}
@@ -923,7 +1269,96 @@ export const PortfolioSummary = () => {
               <div className="recent-div p-3">
                 <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
                 <div className="row">
-                  <div className="col-md-4">
+                  {recentPortfolio.map((data, index) =>
+                    index < 3 ?
+                      <div className="col-md-4">
+                        <div className="recent-items mt-3">
+                          <div className="d-flex justify-content-between align-items-center ">
+                            <p className="mb-0 ">
+                              <FontAwesomeIcon
+                                className=" font-size-14"
+                                icon={faFileAlt}
+                              />
+                              <span className="font-weight-500 ml-2">
+                                {/* Portfolio{" "} {data.name} */} {data.name}
+                              </span>
+                            </p>
+                            <div className="d-flex align-items-center">
+                              <div className="white-space custom-checkbox">
+                                <FormGroup>
+                                  <FormControlLabel
+                                    control={<Checkbox defaultChecked />}
+                                    label=""
+                                  />
+                                </FormGroup>
+                              </div>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faShareAlt} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faFolderPlus} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faUpload} />
+                              </a>
+                              <a href="#" className="ml-2">
+                                <MuiMenuComponent options={activityOptions} />
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center mt-2">
+                          {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
+                          <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(data.createdAt)}</p>
+                          <p className="font-size-12 mb-0">Portfolio</p>
+                        </div>
+                      </div> : <></>
+                  )}
+                  {recentBundleService.map((data, sIndex) =>
+                    <div className="col-md-4">
+                      <div className="recent-items mt-3">
+                        <div className="d-flex justify-content-between align-items-center ">
+                          <p className="mb-0 ">
+                            <FontAwesomeIcon
+                              className=" font-size-14"
+                              icon={faFileAlt}
+                            />
+                            <span className="font-weight-500 ml-2">
+                              {/* Portfolio{" "} {data.name} */} {data.itemName}
+                            </span>
+                          </p>
+                          <div className="d-flex align-items-center">
+                            <div className="white-space custom-checkbox">
+                              <FormGroup>
+                                <FormControlLabel
+                                  control={<Checkbox />}
+                                  label=""
+                                />
+                              </FormGroup>
+                            </div>
+                            <a href="#" className="ml-3 font-size-14">
+                              <FontAwesomeIcon icon={faShareAlt} />
+                            </a>
+                            <a href="#" className="ml-3 font-size-14">
+                              <FontAwesomeIcon icon={faFolderPlus} />
+                            </a>
+                            <a href="#" className="ml-3 font-size-14">
+                              <FontAwesomeIcon icon={faUpload} />
+                            </a>
+                            <a href="#" className="ml-2">
+                              <MuiMenuComponent options={activityOptions} />
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center mt-2">
+                        {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
+                        <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(data.createdAt)}</p>
+                        <p className="font-size-12 mb-0">{data.itemHeaderModel.bundleFlag == "SSERVICE" ? "Service" : data.itemHeaderModel.bundleFlag == "BUNDLE_ITEM" ? "Bundle" : "Portfolio"}</p>
+                      </div>
+                    </div>)}
+
+                  {/* <div className="col-md-4">
                     <div className="recent-items mt-3">
                       <div className="d-flex justify-content-between align-items-center ">
                         <p className="mb-0 ">
@@ -963,8 +1398,8 @@ export const PortfolioSummary = () => {
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
                       <p className="font-size-12 mb-0">Portfolio</p>
                     </div>
-                  </div>
-                  <div className="col-md-4">
+                  </div> */}
+                  {/* <div className="col-md-4">
                     <div className="recent-items mt-3">
                       <div className="d-flex justify-content-between align-items-center ">
                         <p className="mb-0 ">
@@ -1279,7 +1714,7 @@ export const PortfolioSummary = () => {
                       <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
                       <p className="font-size-12 mb-0">Bundles</p>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className="recent-div p-3 d-none">
@@ -1437,15 +1872,44 @@ export const PortfolioSummary = () => {
                         return (
                           <>
                             <div className="customselect d-flex align-items-center mr-3 my-2">
+                              {i === 0 ?
+                                <>
+                                  <Select
+                                    placeholder="Select Type."
+                                    options={([
+                                      { label: "Portfolio", value: "PORTFOLIO" },
+                                      { label: "Bundle", value: "BUNDLE_ITEM" },
+                                      { label: "Service", value: "SERVICE" },
+
+                                    ])}
+
+                                    // defaultValue={props.compoFlag === "portfolioTempItemSearch" ? ({ label: "Portfolio", value: "PORTFOLIO" }) : ""}
+                                    value={querySearchSelector.itemType}
+                                    onChange={(e) => handleItemType(e, i)}
+                                  // autoSelect={props.compoFlag === "portfolioTempItemSearch"}
+                                  />
+                                  {/* <Select
+                                    options={[
+                                      { label: "AND", value: "AND" },
+                                      { label: "OR", value: "OR" },
+                                    ]}
+                                    disabled
+                                    placeholder="And"
+                                  // value={querySearchSelector.itemTypeOperator}
+                                  // onChange={(e) => handleitemTypeOperator(e, i)}
+                                  /> */}
+                                </>
+                                : <></>}
                               {i > 0 ? (
                                 <Select
                                   isClearable={true}
-                                  defaultValue={{ label: "And", value: "AND" }}
+                                  defaultValue={{ label: "AND", value: "AND" }}
                                   options={[
-                                    { label: "And", value: "AND", id: i },
-                                    { label: "Or", value: "OR", id: i },
+                                    { label: "AND", value: "AND", id: i },
+                                    { label: "OR", value: "OR", id: i },
                                   ]}
-                                  placeholder="&amp;"
+                                  // placeholder="&amp;"
+                                  placeholder="AND/OR"
                                   onChange={(e) => handleOperator(e, i)}
                                   // value={querySearchOperator[i]}
                                   value={obj.selectOperator}
@@ -1457,12 +1921,7 @@ export const PortfolioSummary = () => {
                               <div>
                                 <Select
                                   // isClearable={true}
-                                  options={[
-                                    { label: "Make", value: "make", id: i },
-                                    { label: "Family", value: "family", id: i },
-                                    { label: "Model", value: "model", id: i },
-                                    { label: "Prefix", value: "prefix", id: i },
-                                  ]}
+                                  options={familySelectOption}
                                   onChange={(e) => handleFamily(e, i)}
                                   value={obj.selectFamily}
                                 />
@@ -1552,11 +2011,20 @@ export const PortfolioSummary = () => {
               </div>
               <div className="">
                 <div className="text-center pl-3 py-3">
-                  <Link
+                  {/* <Link
                     to="#"
                     className="p-1 text-white"
                     data-toggle="modal"
                     data-target="#Datatable"
+                  >
+                    <SearchIcon />
+                    <span className="ml-1">Search</span>
+                  </Link> */}
+
+                  <Link
+                    to="#"
+                    className="btn bg-primary text-white"
+                    onClick={handleLandingPageQuerySearchClick}
                   >
                     <SearchIcon />
                     <span className="ml-1">Search</span>
@@ -1592,7 +2060,33 @@ export const PortfolioSummary = () => {
                 checkboxSelection
                 onCellClick={(e) => handleRowClick(e)}
               /> */}
-              <DataTable
+              {selectedItemType === "PORTFOLIO" && portfolioItemData.length > 0 ?
+                <>
+                  <DataTable
+                    className=""
+                    title=""
+                    columns={PortfolioItemColumn}
+                    data={portfolioItemData}
+                    customStyles={customTableStyles}
+                    selectableRows
+                    // onSelectedRowsChange={(state) => setPortfolioTempFilterMasterData(state.selectedRows)}
+                    pagination
+                  />
+                </> : <></>}
+              {selectedItemType == "BUNDLE_ITEM" || selectedItemType == "SERVICE" && bundleServiceItemData.length > 0 ?
+                <>
+                  <DataTable
+                    className=""
+                    title=""
+                    columns={PortfolioItemColumn}
+                    data={bundleServiceItemData}
+                    customStyles={customTableStyles}
+                    selectableRows
+                    // onSelectedRowsChange={(state) => setPortfolioTempFilterMasterData(state.selectedRows)}
+                    pagination
+                  />
+                </> : <></>}
+              {/* <DataTable
                 className=""
                 title=""
                 columns={columns2}
@@ -1601,7 +2095,7 @@ export const PortfolioSummary = () => {
                 selectableRows
                 // onSelectedRowsChange={(state) => setPortfolioTempFilterMasterData(state.selectedRows)}
                 pagination
-              />
+              /> */}
             </div>
           </div>
 
@@ -1766,9 +2260,9 @@ export const PortfolioSummary = () => {
                       <div className="col-md-4 col-sm-3">
                         <div className="form-group">
                           <label className="text-light-dark font-size-12 font-weight-500">
-                            {serviceOrBundlePrefix}
+                            {serviceOrBundlePrefix} NAME
                           </label>
-                          <input
+                          {/* <input
                             type="text"
                             className="form-control border-radius-10"
                             disabled
@@ -1779,6 +2273,14 @@ export const PortfolioSummary = () => {
                                 ? createServiceOrBundle.id
                                 : ""
                             }
+                          /> */}
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="name"
+                            placeholder="Name"
+                            onChange={handleAddServiceBundleChange}
+                            value={createServiceOrBundle.name}
                           />
                         </div>
                       </div>
