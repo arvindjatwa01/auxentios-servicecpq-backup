@@ -75,7 +75,7 @@ const DynamicSearchComponent = (props) => {
     let searchString = tempArray[id].selectCategory.value + "~" + e.target.value;
     if (tempArray[id].selectCategory.value && e.target.value) {
       if(props.builderType){
-        searchString = `builderType:${props.builderType}&${searchString}`;
+        searchString = `builderType:${props.builderType} AND ${searchString}`;
       } 
       props.searchAPI(searchString)
         .then((res) => {
@@ -87,7 +87,7 @@ const DynamicSearchComponent = (props) => {
         .catch((err) => {
           props.handleSnack(
             "error",
-            "Error occurred while searching spare parts!"
+            "Error occurred while searching!"
           );
         });      
     } else {

@@ -104,7 +104,7 @@ const SearchComponent = (props) => {
         {props.querySearchSelector.map((obj, i) => {
           return (
               <div
-                className="customselect border-white overflow-hiden border-radius-10 d-flex align-items-center mr-3 my-2"
+                className="customselectPortfolio overflow-hiden border-radius-10 d-flex align-items-center mr-3 my-2"
                 style={{ position: "relative", zIndex: 20 - i }}
                 key={"query"+i}
               >
