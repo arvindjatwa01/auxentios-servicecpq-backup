@@ -91,6 +91,7 @@ export const PortfolioSummary = () => {
 
   const [openSearchSolution, setOpenSearchSolution] = useState(false);
   const [typeOfSearch, setTypeOfSearch] = useState(null);
+
   const [typeOfSolutionSelector, setTypeOfSolutionSelector] = useState(-1);
   const [typeOfSearchColumn, setTypeOfSearchColumn] = useState(null);
   const [columnSearchKeyValue, setColumnSearchKeyValue] = useState([
@@ -107,6 +108,8 @@ export const PortfolioSummary = () => {
   const [typeOfSolutionBuild, setTypeOfSolutionBuild] = useState(-1);
   const [buildSolutionValue, setBuildSolutionValue] = useState(-1);
   const [portfolioResponse, setPortfolioResponse] = useState({});
+
+  const [customerSegmentKeyValue, setCustomerSegmentKeyValue] = useState([]);
 
   const [age, setAge] = React.useState("5");
   const [age1, setAge1] = React.useState("5");
@@ -290,6 +293,17 @@ export const PortfolioSummary = () => {
   ];
 
 
+  getPortfolioCommonConfig("customer-segment")
+    .then((res) => {
+      const options = res.map((d) => ({
+        value: d.key,
+        label: d.value,
+      }));
+      setCustomerSegmentKeyValue(options);
+    })
+    .catch((err) => {
+      alert(err);
+    });
 
   const handleBuildSolution = (e) => {
     setBuildSolutionValue(e.target.value);
@@ -1674,7 +1688,7 @@ export const PortfolioSummary = () => {
                 >
                   <Tab label={`${serviceOrBundlePrefix} HEADER`} value="1" />
                   {serviceOrBundlePrefix === "BUNDLE" && (
-                    <Tab label={`${serviceOrBundlePrefix} BODY`} value="2" />
+                    <Tab label={`${serviceOrBundlePrefix} ITEMS`} value="2" />
                   )}
                   <Tab label="PRICE CALCULATOR" value="3" />
                 </TabList>
@@ -1786,7 +1800,7 @@ export const PortfolioSummary = () => {
                       <div className="col-md-4 col-sm-3">
                         <div className="form-group">
                           <label className="text-light-dark font-size-12 font-weight-500">
-                            BUNDLE FLAG
+                            BUNDLE/SERVICE
                           </label>
                           <input
                             type="text"
@@ -1827,7 +1841,8 @@ export const PortfolioSummary = () => {
                             CUSTOMER SEGMENT
                           </label>
                           <Select
-                            options={options}
+                            // options={options}
+                            options={customerSegmentKeyValue}
                             onChange={(e) => setCreateServiceOrBundle({ ...createServiceOrBundle, customerSegment: e, })}
                             value={createServiceOrBundle.customerSegment}
                             placeholder="Customer Segment"
@@ -1901,7 +1916,7 @@ export const PortfolioSummary = () => {
                           />
                         </div>
                       </div>
-                      <div className="col-md-4 col-sm-3">
+                      {/* <div className="col-md-4 col-sm-3">
                         <div className="form-group">
                           <label
                             className="text-light-dark font-size-12 font-weight-500"
@@ -1921,7 +1936,7 @@ export const PortfolioSummary = () => {
                             placeholder="Preventive Maintenance"
                           />
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                     <div className="row" style={{ justifyContent: "right" }}>
                       <button
