@@ -70,6 +70,7 @@ import AddLaborItemModal from "./components/AddLaborItem";
 import {
   CONSUMABLE_SEARCH_Q_OPTIONS,
   EXTWORK_SEARCH_Q_OPTIONS,
+  GRID_STYLE,
 } from "./CONSTANTS";
 import SearchComponent from "./components/SearchComponent";
 import AddExtWorkItemModal from "./components/AddExtWorkItem";
@@ -311,7 +312,7 @@ function RepairServiceEstimate(props) {
           " " +
           item.selectCategory.value +
           ":" +
-          item.inputSearch;
+          encodeURI('"' + item.inputSearch + '"');
       } else {
         searchStr = "";
       }
@@ -2002,7 +2003,7 @@ function RepairServiceEstimate(props) {
                         <hr />
 
                         <div className="">
-                          <div className="bg-primary px-3 mb-3">
+                          <div className="bg-primary px-3 mb-3 border-radius-6">
                             <div className="row align-items-center">
                               <div className="col-11 mx-2">
                                 <div className="d-flex align-items-center bg-primary w-100">
@@ -2040,17 +2041,8 @@ function RepairServiceEstimate(props) {
                           }}
                         > */}
                           <DataGrid
-                            sx={{
-                              "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#872ff7",
-                                color: "#fff",
-                                fontSize: 12,
-                              },
-                              minHeight: 300,
-                              "& .MuiDataGrid-cellContent": {
-                                fontSize: 12,
-                              },
-                            }}
+                            sx={GRID_STYLE}
+                            paginationMode='client'
                             rows={laborItems}
                             columns={laborColumns}
                             pageSize={5}
@@ -2428,17 +2420,7 @@ function RepairServiceEstimate(props) {
                             </div>
                           </div>
                           <DataGrid
-                            sx={{
-                              "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#872ff7",
-                                color: "#fff",
-                                fontSize: 12,
-                              },
-                              minHeight: 400,
-                              "& .MuiDataGrid-cellContent": {
-                                fontSize: 12,
-                              },
-                            }}
+                            sx={GRID_STYLE}
                             rows={consumableItems}
                             columns={columnsConsumables}
                             pageSize={5}
@@ -2828,17 +2810,7 @@ function RepairServiceEstimate(props) {
                             </div>
                           </div>
                           <DataGrid
-                            sx={{
-                              "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#872ff7",
-                                color: "#fff",
-                                fontSize: 12,
-                              },
-                              minHeight: 300,
-                              "& .MuiDataGrid-cellContent": {
-                                fontSize: 12,
-                              },
-                            }}
+                            sx={GRID_STYLE}
                             rows={extWorkItems}
                             columns={columnsExternal}
                             pageSize={5}
@@ -3252,12 +3224,7 @@ function RepairServiceEstimate(props) {
                   }}
                 >
                   <DataGrid
-                    sx={{
-                      "& .MuiDataGrid-columnHeaders": {
-                        backgroundColor: "#872ff7",
-                        color: "#fff",
-                      },
-                    }}
+                    sx={GRID_STYLE}
                     rows={masterData}
                     columns={columnsConsumableSearch}
                     pageSize={5}
@@ -3282,7 +3249,7 @@ function RepairServiceEstimate(props) {
           <Modal
             show={searchResultExtWorkOpen}
             onHide={handleSearchResExtClose}
-            size="xl"
+            size="lg"
             aria-labelledby="contained-modal-title-vcenter"
             centered
           >
@@ -3300,12 +3267,7 @@ function RepairServiceEstimate(props) {
                   }}
                 >
                   <DataGrid
-                    sx={{
-                      "& .MuiDataGrid-columnHeaders": {
-                        backgroundColor: "#872ff7",
-                        color: "#fff",
-                      },
-                    }}
+                    sx={GRID_STYLE}
                     rows={masterData}
                     columns={columnsExtWorkSearch}
                     pageSize={5}
