@@ -2375,9 +2375,9 @@ function RepairServiceEstimate(props) {
                         )}
                         <hr />
                         <div className="">
-                          <div className="bg-primary px-3 mb-3">
+                          <div className="bg-primary px-3 mb-3 border-radius-6">
                             <div className="row align-items-center">
-                              <div className="col-10 mx-5">
+                              <div className="col-10 mr-5">
                                 <div className="d-flex align-items-center bg-primary w-100">
                                   <div
                                     className="d-flex mr-3"
@@ -2412,7 +2412,7 @@ function RepairServiceEstimate(props) {
                                   />
                                 </div>
                               </div>
-                              <div className="">
+                              <div className="ml-5">
                                 <div className="text-center border-left pl-1 py-3">
                                   <Link
                                     onClick={() => setConsumableItemOpen(true)}
@@ -2421,7 +2421,7 @@ function RepairServiceEstimate(props) {
                                     data-toggle="modal"
                                     data-target="#Datatableconsumables"
                                   >
-                                    <span className="ml-1">Add Items</span>
+                                    <span className="ml-3">Add Items</span>
                                   </Link>
                                 </div>
                               </div>
@@ -2777,9 +2777,9 @@ function RepairServiceEstimate(props) {
                         <hr />
 
                         <div className="">
-                          <div className="bg-primary px-3 mb-3">
+                          <div className="bg-primary px-3 mb-3 border-radius-6">
                             <div className="row align-items-center">
-                              <div className="col-10 mx-5">
+                              <div className="col-10 mr-5">
                                 <div className="d-flex align-items-center bg-primary w-100">
                                   <div
                                     className="d-flex mr-3"
@@ -2812,7 +2812,7 @@ function RepairServiceEstimate(props) {
                                   />
                                 </div>
                               </div>
-                              <div className="">
+                              <div className="ml-5">
                                 <div className="text-center border-left pl-3 py-3">
                                   <Link
                                     onClick={() => setExtWorkItemOpen(true)}

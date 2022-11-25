@@ -2546,6 +2546,7 @@ function PartList(props) {
                     searchAPI={sparePartSearch}
                     searchClick={handleQuerySearchClick}
                     options={SPAREPART_SEARCH_Q_OPTIONS}
+                    background={"white"}
                     type=""
                   />
                 </div>
