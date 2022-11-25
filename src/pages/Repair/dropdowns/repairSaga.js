@@ -12,7 +12,6 @@ import {
   GET_SERVICE_TYPE,
   PRICING_METHODS,
 } from "../../../services/CONSTANTS";
-import type { ListResponse, StrategyTask } from "../../../models";
 
 function* fetchDropdowns() {
   try {
@@ -26,7 +25,7 @@ function* fetchDropdowns() {
       activityIds,
       dimensions,
       consumableTypes,
-    ]: [ListResponse<StrategyTask>, ListResponse<StrategyTask>] = yield all([
+    ] = yield all([
       call(HttpService, "get", PRICING_METHODS()),
       call(HttpService, "get", GET_CHARGE_CODE()),
       call(HttpService, "get", GET_SERVICE_TYPE()),

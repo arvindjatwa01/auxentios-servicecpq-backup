@@ -294,15 +294,15 @@ function RepairServiceEstimate(props) {
     var querySearchSelector =
       type === "consumables" ? queryConsSearchSelector : queryExtSearchSelector;
     querySearchSelector.map(function (item, i) {
-      if (i === 0 && item.selectCategory.value && item.inputSearch) {
+      if (i === 0 && item.selectCategory?.value && item.inputSearch) {
         searchStr =
           item.selectCategory.value +
           ":" +
           encodeURI('"' + item.inputSearch + '"');
       } else if (
-        item.selectCategory.value &&
+        item.selectCategory?.value &&
         item.inputSearch &&
-        item.selectOperator.value
+        item.selectOperator?.value
       ) {
         searchStr =
           searchStr +
@@ -312,6 +312,8 @@ function RepairServiceEstimate(props) {
           item.selectCategory.value +
           ":" +
           item.inputSearch;
+      } else {
+        searchStr = "";
       }
       return searchStr;
     });
@@ -676,9 +678,20 @@ function RepairServiceEstimate(props) {
   };
   const updateLabourEstHeader = () => {
     let data = {
-      ...labourData,
+      // ...labourData,
+      ...(labourData.id && { id: labourData.id }),
+      jobCode: labourData.jobCode,
+      jobCodeDescription: labourData.jobCodeDescription,
       pricingMethod: labourData.pricingMethod?.value,
       laborCode: labourData.laborCode?.value,
+      totalHours: labourData.totalHours,
+      flatRateIndicator: labourData.flatRateIndicator,
+      // ratePerHourOrDay: labourData.ratePerHourOrDay, //TODO - Remove once API modifies to consider price at backend
+      // totalPrice: labourData.totalPrice, //TODO - Remove once API modifies to consider price at backend
+      adjustedPrice: labourData.flatRateIndicator
+        ? labourData.adjustedPrice
+        : 0.0,
+      payer: labourData.payer,
     };
     AddLaborToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -696,18 +709,24 @@ function RepairServiceEstimate(props) {
         setLaborViewOnly(true);
       })
       .catch((err) => {
-        handleSnack(
-          "error",
-          "Error occurred while updating service estimate header!"
-        );
+        handleSnack("error", "Error occurred while updating labor details!");
       });
   };
 
   // Add or Update consumable data
   const updateConsumableHeader = () => {
     let data = {
-      ...consumableData,
+      // ...consumableData,
+      ...(consumableData.id && { id: consumableData.id }),
+      jobCode: consumableData.jobCode,
+      jobCodeDescription: consumableData.jobCodeDescription,
+      percentagePrice: consumableData.percentagePrice,
+      flatRateIndicator: consumableData.flatRateIndicator,
+      adjustedPrice: consumableData.flatRateIndicator
+        ? consumableData.adjustedPrice
+        : 0.0,
       pricingMethod: consumableData.pricingMethod?.value,
+      payer: consumableData.payer,
     };
     AddConsumableToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -729,8 +748,17 @@ function RepairServiceEstimate(props) {
   // Add or Update ext work data
   const updateExtWorkHeader = () => {
     let data = {
-      ...extWorkData,
-      pricingMethod: consumableData.pricingMethod?.value,
+      // ...extWorkData,
+      ...(extWorkData.id && { id: extWorkData.id }),
+      jobCode: extWorkData.jobCode,
+      jobCodeDescription: extWorkData.jobCodeDescription,
+      percentagePrice: extWorkData.percentagePrice,
+      flatRateIndicator: extWorkData.flatRateIndicator,
+      adjustedPrice: extWorkData.flatRateIndicator
+        ? extWorkData.adjustedPrice
+        : 0.0,
+      payer: extWorkData.payer,
+      pricingMethod: extWorkData.pricingMethod?.value,
     };
     AddExtWorkToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -756,6 +784,12 @@ function RepairServiceEstimate(props) {
   const updateMiscHeader = () => {
     let data = {
       ...miscData,
+      jobCode: miscData.jobCode,
+      jobCodeDescription: miscData.jobCodeDescription,
+      percentagePrice: miscData.percentagePrice,
+      flatRateIndicator: miscData.flatRateIndicator,
+      adjustedPrice: miscData.flatRateIndicator ? miscData.adjustedPrice : 0.0,
+      payer: miscData.payer,
       pricingMethod: miscData.pricingMethod?.value,
       typeOfMisc: miscData.typeOfMisc?.value,
     };
@@ -782,11 +816,19 @@ function RepairServiceEstimate(props) {
   // Add or Update Labor Item
   const addLaborItem = () => {
     let data = {
-      ...labourItemData,
+      // ...labourItemData,
+      ...(labourItemData.id && { id: labourItemData.id }),
       chargeCode: labourItemData.chargeCode?.value,
       laborType: labourItemData.laborType?.value,
       serviceType: labourItemData.serviceType?.value,
       unitOfMeasure: labourItemData.unitOfMeasure?.value,
+      estimatedHours: labourItemData.estimatedHours,
+      comment: labourItemData.comment,
+      travelIncluded: labourItemData.travelIncluded,
+      travelCharge: labourItemData.travelCharge,
+      inspectionIncluded: labourItemData.inspectionIncluded,
+      inspectionCharge: labourItemData.inspectionCharge,
+      currency: labourItemData.currency,
     };
 
     AddLaborItemToLabor(labourData.id, data)
@@ -804,8 +846,15 @@ function RepairServiceEstimate(props) {
   // Add or Update Consumable Item
   const addConsumableItem = () => {
     let data = {
-      ...consumableItemData,
+      // ...consumableItemData,
+      ...(consumableItemData.id && { id: consumableItemData.id }),
       consumableType: consumableItemData.consumableType?.value,
+      consumableCode: consumableItemData.consumableCode,
+      description: consumableItemData.description,
+      quantity: consumableItemData.quantity,
+      unitOfMeasure: consumableItemData.unitOfMeasure,
+      vendor: consumableItemData.vendor,
+      currency: consumableItemData.currency,
     };
 
     AddConsumableItem(consumableData.id, data)
@@ -823,9 +872,16 @@ function RepairServiceEstimate(props) {
   // Add or Update Consumable Item
   const addExtWorkItem = () => {
     let data = {
-      ...extWorkItemData,
+      // ...extWorkItemData,
+      ...(extWorkItemData.id && { id: extWorkItemData.id }),
       activityId: extWorkItemData.activityId?.value,
+      activityName: extWorkItemData.activityName,
+      description: extWorkItemData.description,
+      supplyingVendorCode: extWorkItemData.supplyingVendorCode,
+      supplyingVendorName: extWorkItemData.supplyingVendorName,
+      estimatedHours: extWorkItemData.estimatedHours,
       dimensions: extWorkItemData.dimensions?.value,
+      adjustedPrice: extWorkItemData.adjustedPrice,
     };
 
     AddExtWorkItem(extWorkData.id, data)
@@ -1676,6 +1732,25 @@ function RepairServiceEstimate(props) {
                               </div>
                             </div>
                             <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PAYER
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={labourData.payer}
+                                  onChange={(e) =>
+                                    setLabourData({
+                                      ...labourData,
+                                      payer: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
                               <div className="form-group  mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-500">
                                   LABOR CODE
@@ -1727,40 +1802,6 @@ function RepairServiceEstimate(props) {
                             </div>
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  NET PRICE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
-                                  value={labourData.totalPrice}
-                                />
-                              </div>
-                            </div>
-
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  TOTAL HOURS (PLANNED/RECOMMENDED)
-                                </label>
-                                <input
-                                  type="text"
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={labourData.totalHours}
-                                  onChange={(e) =>
-                                    setLabourData({
-                                      ...labourData,
-                                      totalHours: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
                                 <FormGroup>
                                   <FormControlLabel
                                     style={{
@@ -1788,6 +1829,21 @@ function RepairServiceEstimate(props) {
                                 </FormGroup>
                               </div>
                             </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={labourData.totalPrice}
+                                />
+                              </div>
+                            </div>
+                            
 
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
@@ -1812,17 +1868,17 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
-                                  PAYER
+                                  TOTAL HOURS (PLANNED/RECOMMENDED)
                                 </label>
                                 <input
                                   type="text"
                                   class="form-control border-radius-10 text-primary"
                                   placeholder="Optional"
-                                  value={labourData.payer}
+                                  value={labourData.totalHours}
                                   onChange={(e) =>
                                     setLabourData({
                                       ...labourData,
-                                      payer: e.target.value,
+                                      totalHours: e.target.value,
                                     })
                                   }
                                 />
@@ -1874,6 +1930,16 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
+                                  PAYER
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.payer}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
                                   LABOR CODE
                                 </p>
                                 <h6 className="font-weight-600">
@@ -1904,16 +1970,6 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
-                                  TOTAL HOURS (PLANNED / RECOMMENDED)
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {labourData.totalHours}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
                                   NET PRICE
                                 </p>
                                 <h6 className="font-weight-600">
@@ -1924,20 +1980,20 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
-                                  PAYER
+                                  ADJUSTED PRICE
                                 </p>
                                 <h6 className="font-weight-600">
-                                  {labourData.payer}
+                                  {labourData.adjustedPrice}
                                 </h6>
                               </div>
                             </div>
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
-                                  ADJUSTED PRICE
+                                  TOTAL HOURS (PLANNED / RECOMMENDED)
                                 </p>
                                 <h6 className="font-weight-600">
-                                  {labourData.adjustedPrice}
+                                  {labourData.totalHours}
                                 </h6>
                               </div>
                             </div>
@@ -2058,6 +2114,25 @@ function RepairServiceEstimate(props) {
                               </div>
                             </div>
                             <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PAYER
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={consumableData.payer}
+                                  onChange={(e) =>
+                                    setConsumableData({
+                                      ...consumableData,
+                                      payer: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
                               <div className="form-group  mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-500">
                                   PRICE METHOD
@@ -2099,11 +2174,14 @@ function RepairServiceEstimate(props) {
                                   />
                                   <span
                                     className="hours-div"
-                                    style={{ float: "left", width: "90%" }}
+                                    style={{ float: "left", width: "40%" }}
                                   >
-                                    {consumableData.pricingMethod.label
-                                      ? consumableData.pricingMethod.label
-                                      : "Select Price Method"}
+                                    {consumableData.pricingMethod?.label
+                                      ? consumableData.pricingMethod?.label?.replace(
+                                          "Percentage",
+                                          "%"
+                                        )
+                                      : "%"}
                                   </span>
                                 </div>
                               </div>
@@ -2111,18 +2189,17 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
-                                  NET PRICE
+                                  TOTAL BASE
                                 </label>
                                 <input
                                   type="text"
                                   disabled
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
-                                  value={consumableData.totalPrice}
+                                  placeholder="Optional"
+                                  value={consumableData.totalBase}
                                 />
                               </div>
                             </div>
-
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <FormGroup>
@@ -2158,6 +2235,21 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={consumableData.totalPrice}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
                                   ADJUSTED PRICE
                                 </label>
                                 <input
@@ -2175,39 +2267,7 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  TOTAL BASE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={consumableData.totalBase}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  PAYER
-                                </label>
-                                <input
-                                  type="text"
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={consumableData.payer}
-                                  onChange={(e) =>
-                                    setConsumableData({
-                                      ...consumableData,
-                                      payer: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>
+
                             <div className="col-md-12">
                               <div class="form-group mt-3 mb-0 text-right">
                                 <button
@@ -2251,7 +2311,16 @@ function RepairServiceEstimate(props) {
                                 </h6>
                               </div>
                             </div>
-
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PAYER
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {consumableData.payer}
+                                </h6>
+                              </div>
+                            </div>
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
@@ -2275,16 +2344,6 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
-                                  NET PRICE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {consumableData.totalPrice}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
                                   TOTAL BASE
                                 </p>
                                 <h6 className="font-weight-600">
@@ -2295,10 +2354,10 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
-                                  PAYER
+                                  NET PRICE
                                 </p>
                                 <h6 className="font-weight-600">
-                                  {consumableData.payer}
+                                  {consumableData.totalPrice}
                                 </h6>
                               </div>
                             </div>
@@ -2315,7 +2374,6 @@ function RepairServiceEstimate(props) {
                           </div>
                         )}
                         <hr />
-
                         <div className="">
                           <div className="bg-primary px-3 mb-3">
                             <div className="row align-items-center">
@@ -2352,12 +2410,6 @@ function RepairServiceEstimate(props) {
                                     options={CONSUMABLE_SEARCH_Q_OPTIONS}
                                     color={"white"}
                                   />
-
-                                  {/* <div className="px-3">
-          <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
-            <SearchIcon /><span className="ml-1">Search</span>
-          </Link>
-        </div> */}
                                 </div>
                               </div>
                               <div className="">
@@ -2375,14 +2427,6 @@ function RepairServiceEstimate(props) {
                               </div>
                             </div>
                           </div>
-                          {/* <div
-                          className=""
-                          style={{
-                            height: 400,
-                            width: "100%",
-                            backgroundColor: "#fff",
-                          }}
-                        > */}
                           <DataGrid
                             sx={{
                               "& .MuiDataGrid-columnHeaders": {
@@ -2470,7 +2514,25 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
-
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PAYER
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={extWorkData.payer}
+                                  onChange={(e) =>
+                                    setExtWorkData({
+                                      ...extWorkData,
+                                      payer: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
+                            </div>
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
@@ -2513,11 +2575,14 @@ function RepairServiceEstimate(props) {
                                   />
                                   <span
                                     className="hours-div"
-                                    style={{ float: "left", width: "90%" }}
+                                    style={{ float: "left", width: "40%" }}
                                   >
                                     {extWorkData.pricingMethod?.label
-                                      ? extWorkData.pricingMethod?.label
-                                      : "Select Price Method"}
+                                      ? extWorkData.pricingMethod?.label?.replace(
+                                          "Percentage",
+                                          "%"
+                                        )
+                                      : "%"}
                                   </span>
                                 </div>
                               </div>
@@ -2525,14 +2590,14 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
-                                  NET PRICE
+                                  TOTAL BASE
                                 </label>
                                 <input
                                   type="text"
                                   disabled
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
-                                  value={extWorkData.totalPrice}
+                                  placeholder="Optional"
+                                  value={extWorkData.totalBase}
                                 />
                               </div>
                             </div>
@@ -2569,6 +2634,21 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={extWorkData.totalPrice}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
                                   ADJUSTED PRICE
                                 </label>
                                 <input
@@ -2586,39 +2666,7 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  TOTAL BASE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={extWorkData.totalBase}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  PAYER
-                                </label>
-                                <input
-                                  type="text"
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={extWorkData.payer}
-                                  onChange={(e) =>
-                                    setExtWorkData({
-                                      ...extWorkData,
-                                      payer: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>
+
                             <div className="col-md-12">
                               <div class="form-group mt-3 mb-0 text-right">
                                 <button
@@ -2665,6 +2713,16 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
+                                  PAYER
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {extWorkData.payer}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
                                   PRICE METHOD
                                 </p>
                                 <h6 className="font-weight-600">
@@ -2685,16 +2743,6 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
-                                  NET PRICE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {extWorkData.totalPrice}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
                                   TOTAL BASE
                                 </p>
                                 <h6 className="font-weight-600">
@@ -2702,16 +2750,18 @@ function RepairServiceEstimate(props) {
                                 </h6>
                               </div>
                             </div>
+
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
-                                  PAYER
+                                  NET PRICE
                                 </p>
                                 <h6 className="font-weight-600">
-                                  {extWorkData.payer}
+                                  {extWorkData.totalPrice}
                                 </h6>
                               </div>
                             </div>
+
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
@@ -2853,6 +2903,41 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
+                                  PAYER
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={miscData.payer}
+                                  onChange={(e) =>
+                                    setMiscData({
+                                      ...miscData,
+                                      payer: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  TYPE OF MISC.{" "}
+                                </label>
+                                <Select
+                                  onChange={(e) =>
+                                    setMiscData({ ...miscData, typeOfMisc: e })
+                                  }
+                                  options={miscTypeList}
+                                  value={miscData.typeOfMisc}
+                                  placeholder="Required"
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-8 col-sm-4"></div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
                                   PRICE METHOD
                                 </label>
                                 <Select
@@ -2880,7 +2965,6 @@ function RepairServiceEstimate(props) {
                                   <input
                                     type="text"
                                     className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                                    // style={{width: '64%'}}
                                     placeholder="Required"
                                     value={miscData.percentagePrice}
                                     onChange={(e) =>
@@ -2892,11 +2976,14 @@ function RepairServiceEstimate(props) {
                                   />
                                   <span
                                     className="hours-div"
-                                    style={{ float: "left", width: "90%" }}
+                                    style={{ float: "left", width: "40%" }}
                                   >
                                     {miscData.pricingMethod?.label
-                                      ? miscData.pricingMethod?.label
-                                      : "Select Price Method"}
+                                      ? miscData.pricingMethod?.label?.replace(
+                                          "Percentage",
+                                          "%"
+                                        )
+                                      : "%"}
                                   </span>
                                 </div>
                               </div>
@@ -2904,30 +2991,14 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
-                                  NET PRICE
+                                  TOTAL BASE
                                 </label>
                                 <input
                                   type="text"
                                   disabled
                                   class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
-                                  value={miscData.totalPrice}
-                                />
-                              </div>
-                            </div>
-
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  TYPE OF MISC.{" "}
-                                </label>
-                                <Select
-                                  onChange={(e) =>
-                                    setMiscData({ ...miscData, typeOfMisc: e })
-                                  }
-                                  options={miscTypeList}
-                                  value={miscData.typeOfMisc}
-                                  placeholder="Required"
+                                  placeholder="Optional"
+                                  value={miscData.totalBase}
                                 />
                               </div>
                             </div>
@@ -2964,6 +3035,21 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={miscData.totalPrice}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
                                   ADJUSTED PRICE
                                 </label>
                                 <input
@@ -2981,39 +3067,7 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  TOTAL BASE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={miscData.totalBase}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  PAYER
-                                </label>
-                                <input
-                                  type="text"
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={miscData.payer}
-                                  onChange={(e) =>
-                                    setMiscData({
-                                      ...miscData,
-                                      payer: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>
+
                             <div className="col-md-12">
                               <div class="form-group mt-3 mb-0 text-right">
                                 <button
@@ -3058,7 +3112,25 @@ function RepairServiceEstimate(props) {
                                 </h6>
                               </div>
                             </div>
-
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PAYER
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.payer}
+                                </h6>
+                              </div>
+                            </div><div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  TYPE OF MISC.
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.typeOfMisc?.label}
+                                </h6>
+                              </div>
+                            </div>
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
@@ -3082,26 +3154,6 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
-                                  NET PRICE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {miscData.totalPrice}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  TYPE OF MISC.
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {miscData.typeOfMisc?.label}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
                                   TOTAL BASE
                                 </p>
                                 <h6 className="font-weight-600">
@@ -3112,13 +3164,13 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
-                                  PAYER
+                                  NET PRICE
                                 </p>
                                 <h6 className="font-weight-600">
-                                  {miscData.payer}
+                                  {miscData.totalPrice}
                                 </h6>
                               </div>
-                            </div>
+                            </div>                                                      
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
