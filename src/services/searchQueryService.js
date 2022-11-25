@@ -128,3 +128,26 @@ export const getSearchForRecentBundleService = () => {
     }
   });
 }
+
+// Search Query Coverage Master
+export const getSearchQueryCoverageMaster = (searchStr) => {
+  console.log("Query coverageService > getSearchQueryCoverageMaster called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(GET_SEARCH_COVERAGE + searchStr, { headers: headersdata })
+        .then((res) => {
+          console.log("getSearchQueryCoverageMaster > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("getSearchQueryCoverageMaster > axios err=", err);
+          reject("Error in getSearchQueryCoverageMaster axios!");
+        });
+    } catch (error) {
+      console.error("in Query coverageService > getSearchQueryCoverageMaster, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+

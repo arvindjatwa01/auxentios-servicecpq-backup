@@ -127,11 +127,15 @@ export const PortfolioSummary = () => {
   const [age2, setAge2] = React.useState("5");
   const [show, setShow] = React.useState(false);
 
+  const [querySearchModelResult, setQuerySearchModelResult] = useState([])
+  const [querySearchModelPrefixOption, setQuerySearchModelPrefixOption] = useState([])
+
   // New Addition for bundle/Service Creation
   const [bundleServiceShow, setBundleServiceShow] = useState(false);
   const [bundleTabs, setBundleTabs] = useState("1");
   const [serviceOrBundlePrefix, setServiceOrBundlePrefix] = useState("");
   const [typeKeyValue, setTypeKeyValue] = useState([]);
+  const [selectedPrefixOption, setSelectedPrefixOption] = useState("");
   const [createServiceOrBundle, setCreateServiceOrBundle] = useState({
     id: "",
     name: "",
@@ -141,6 +145,7 @@ export const PortfolioSummary = () => {
     customerSegment: "",
     make: "",
     model: "",
+    family: "",
     prefix: "",
     machine: "",
     additional: "",
@@ -486,9 +491,11 @@ export const PortfolioSummary = () => {
     tempArray[id] = obj;
     setQuerySearchSelector([...tempArray]);
   };
+
   const handleInputSearch = (e, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
+    console.log(obj)
     // getSearchForPortfolio(tempArray[id].selectFamily.value, e.target.value)
     // .then((res) => {
     //   obj.selectOptions = res;
@@ -500,18 +507,40 @@ export const PortfolioSummary = () => {
     //   console.log("err in api call", err);
     // });
     // obj.inputSearch = e.target.value;
-    getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
-      .then((res) => {
-        obj.selectOptions = res;
-        tempArray[id] = obj;
-        setQuerySearchSelector([...tempArray]);
-        $(`.scrollbar-${id}`).css("display", "block");
-      })
-      .catch((err) => {
-        console.log("err in api call", err);
-      });
+    // getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
+    //   .then((res) => {
+    //     obj.selectOptions = res;
+    //     tempArray[id] = obj;
+    //     setQuerySearchSelector([...tempArray]);
+    //     $(`.scrollbar-${id}`).css("display", "block");
+    //   })
+    //   .catch((err) => {
+    //     console.log("err in api call", err);
+    //   });
+    setQuerySearchSelector([...tempArray]);
     obj.inputSearch = e.target.value;
   };
+
+  const handleModelInputSearch = (e) => {
+
+    setCreateServiceOrBundle({ ...createServiceOrBundle, [e.target.name]: e.target.value, });
+    var searchStr = "model~" + e.target.value;
+    getSearchQueryCoverage(searchStr)
+      .then((res) => {
+        // console.log("search Query Result --------- :", res);
+        // setMasterData(res);
+        $(`.scrollbar-model`).css("display", "block");
+        setQuerySearchModelResult(res)
+        var preArr = [];
+        for (var n = 0; n < res.length; n++) {
+          preArr.push({ label: res[n].prefix, value: res[n].prefix })
+        }
+        setQuerySearchModelPrefixOption(preArr);
+      })
+      .catch((err) => {
+        console.log("error in getSearchQueryCoverage", err);
+      });
+  }
 
   const handleLandingPageQuerySearchClick = async () => {
     try {
@@ -628,6 +657,18 @@ export const PortfolioSummary = () => {
     tempArray[id] = obj;
     setQuerySearchSelector([...tempArray]);
   };
+
+  // const [querySearchModelSelector, setQuerySearchModelSelector] = useState([
+  //   {
+  //     searchMake: "",
+  //     searchFamily: "",
+  //     searchModel: "",
+  //     SearchPrefix: []
+  //   }
+  // ])
+
+
+
   const [querySearchSelector, setQuerySearchSelector] = useState([
     {
       id: 0,
@@ -656,7 +697,7 @@ export const PortfolioSummary = () => {
       setSelectedItemType(e.value);
 
       let tempArray = [...querySearchSelector];
-      console.log("tempArray : ", tempArray)
+      // console.log("tempArray : ", tempArray)
       // let obj = tempArray[i];
       // // obj.selectFamily = "";
       // // tempArray[id] = obj;
@@ -705,6 +746,27 @@ export const PortfolioSummary = () => {
   //   // console.log("tempArray : ", tempArray)
   //   // setQuerySearchSelector(tempArray);
   // }
+
+  const handleSearchModelListClick = (e, currentItem) => {
+    console.log(currentItem)
+    setCreateServiceOrBundle({
+      ...createServiceOrBundle,
+      model: currentItem.model,
+      make: currentItem.make,
+      family: currentItem.family
+    })
+    $(`.scrollbar-model`).css("display", "none");
+  }
+
+  const selectPrefixOption = (e) => {
+    console.log(e);
+    setSelectedPrefixOption(e)
+    setCreateServiceOrBundle({
+      ...createServiceOrBundle,
+      prefix: e.value,
+    })
+  }
+
   const handleSearchListClick = (e, currentItem, obj1, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
@@ -914,7 +976,7 @@ export const PortfolioSummary = () => {
     setAnchorEl(null);
   };
 
-  console.log("family option is : ", familySelectOption)
+  // console.log("family option is : ", familySelectOption)
 
   // SERVICE/BUNDLE MODEL FUNCTIONS
   const saveAddNewServiceOrBundle = async () => {
@@ -1002,6 +1064,7 @@ export const PortfolioSummary = () => {
           draggable: true,
           progress: undefined,
         });
+        setAddportFolioItem({});
 
       }
 
@@ -1031,7 +1094,20 @@ export const PortfolioSummary = () => {
 
   const handleAddNewServiceOrBundle = () => {
     if (serviceOrBundlePrefix === "BUNDLE") {
-      setBundleTabs("2");
+      if (createServiceOrBundle.name == "" || createServiceOrBundle.description == "") {
+        toast("😐" + "Please fill mandatory Fields.", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        setBundleTabs("2");
+        console.log("createServiceOrBundle : ", createServiceOrBundle);
+      }
     }
     if (serviceOrBundlePrefix === "SERVICE") {
       setBundleTabs("3");
@@ -1244,7 +1320,7 @@ export const PortfolioSummary = () => {
     return finalDateString;
   }
 
-  console.log("--------=-- ", recentBundleService);
+  // console.log("--------=-- ", recentBundleService);
   return (
     <>
       {/* <CommanComponents /> */}
@@ -1299,7 +1375,7 @@ export const PortfolioSummary = () => {
                               <div className="white-space custom-checkbox">
                                 <FormGroup>
                                   <FormControlLabel
-                                    control={<Checkbox defaultChecked />}
+                                    control={index == 0 ? <Checkbox defaultChecked /> : <Checkbox />}
                                     label=""
                                   />
                                 </FormGroup>
@@ -2056,7 +2132,7 @@ export const PortfolioSummary = () => {
           <div className="card">
             <div
               className=""
-              style={{ height: 400, width: "100%", backgroundColor: "#fff" }}
+              style={{ minHeight: 200, height: "auto", width: "100%", backgroundColor: "#fff" }}
             >
               {/* <DataGrid
                 sx={{
@@ -2290,7 +2366,7 @@ export const PortfolioSummary = () => {
                             type="text"
                             className="form-control border-radius-10"
                             name="name"
-                            placeholder="Name"
+                            placeholder="Name (Required*)"
                             onChange={handleAddServiceBundleChange}
                             value={createServiceOrBundle.name}
                           />
@@ -2305,7 +2381,7 @@ export const PortfolioSummary = () => {
                             type="text"
                             className="form-control border-radius-10"
                             name="description"
-                            placeholder="Description"
+                            placeholder="Description (Required*)"
                             value={createServiceOrBundle.description}
                             onChange={handleAddServiceBundleChange}
                           />
@@ -2365,51 +2441,6 @@ export const PortfolioSummary = () => {
                       </div>
                       <div className="col-md-4 col-sm-3">
                         <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            MAKE
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            name="make"
-                            placeholder="Make"
-                            value={createServiceOrBundle.make}
-                            onChange={handleAddServiceBundleChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            MODEL(S)
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            name="model"
-                            placeholder="Model(S)"
-                            value={createServiceOrBundle.model}
-                            onChange={handleAddServiceBundleChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            PREFIX(S)
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            name="prefix"
-                            placeholder="Prefix(S)"
-                            value={createServiceOrBundle.prefix}
-                            onChange={handleAddServiceBundleChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
                           <label
                             className="text-light-dark font-size-12 font-weight-500"
                             htmlFor="exampleInputEmail1"
@@ -2430,6 +2461,101 @@ export const PortfolioSummary = () => {
                           />
                         </div>
                       </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            MAKE
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="make"
+                            placeholder="Search Model...."
+                            value={createServiceOrBundle.make}
+                            onChange={handleAddServiceBundleChange}
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            FAMILY
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="make"
+                            placeholder="Search Model...."
+                            value={createServiceOrBundle.family}
+                            // onChange={handleAddServiceBundleChange}
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group customselectmodelSerch">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            MODEL(S)
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="model"
+                            placeholder="Model(S)"
+                            value={createServiceOrBundle.model}
+                            // onChange={handleAddServiceBundleChange}
+                            onChange={(e) => handleModelInputSearch(e)}
+                          />
+                          {
+                            <ul
+                              className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
+                              id="style"
+                            >
+                              {querySearchModelResult.map((currentItem, j) => (
+                                <li
+                                  className="list-group-item"
+                                  key={j}
+                                  onClick={(e) => handleSearchModelListClick(
+                                    e,
+                                    currentItem
+                                  )}
+                                // onClick={(e) =>
+                                //   handleSearchListClick(
+                                //     e,
+                                //     currentItem,
+                                //   )
+                                // }
+                                >
+                                  {currentItem.model}
+                                </li>
+                              ))}
+                            </ul>
+                          }
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            PREFIX(S)
+                          </label>
+                          <Select
+                            onChange={(e) => selectPrefixOption(e)}
+                            value={selectedPrefixOption}
+                            options={querySearchModelPrefixOption}
+                            placeholder="select....."
+                          />
+                          {/* <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="prefix"
+                            placeholder="Prefix(S)"
+                            value={createServiceOrBundle.prefix}
+                            onChange={handleAddServiceBundleChange}
+                          /> */}
+                        </div>
+                      </div>
+
                       {/* <div className="col-md-4 col-sm-3">
                         <div className="form-group">
                           <label
