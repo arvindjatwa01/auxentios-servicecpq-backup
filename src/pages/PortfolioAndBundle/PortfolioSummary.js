@@ -331,6 +331,18 @@ export const PortfolioSummary = () => {
     //     }`,
   ];
 
+  //getPortfolioCommonConfig("customer-segment")
+  //  .then((res) => {
+  //    const options = res.map((d) => ({
+  //      value: d.key,
+  //      label: d.value,
+  //    }));
+  //    setCustomerSegmentKeyValue(options);
+  //  })
+  //  .catch((err) => {
+  //    alert(err);
+  //  });
+
   const handleBuildSolution = (e) => {
     setBuildSolutionValue(e.target.value);
   };
