@@ -223,7 +223,7 @@ function WithoutSparePartsHeader(props) {
       machineViewOnly: result.serialNo ? true : false,
       generalViewOnly: result.estimationNumber ? true : false,
       estViewOnly: result.preparedBy ? true : false,
-      priceViewOnly: result.priceMethod ? true : false,
+      priceViewOnly: result.priceMethod !== "EMPTY" && result.priceMethod !== null && result.priceMethod !== "" ? true : false,
     });
     setBId(result.id);
     setRating(result.rating);

@@ -83,6 +83,7 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 // import logoIcon from '../assets/icons/svg/menu.png'
 import {
   ERROR_MAX_VERSIONS,
+  GRID_STYLE,
   INITIAL_PAGE_NO,
   INITIAL_PAGE_SIZE,
   PARTS_TAG_OPTIONS,
@@ -1061,7 +1062,7 @@ function PartList(props) {
     var searchStr = "";
     querySearchSelector.map(function (item, i) {
       if (i === 0 && item.selectCategory.value && item.inputSearch) {
-        searchStr = item.selectCategory.value + ":" + item.inputSearch;
+        searchStr = item.selectCategory.value + ":" + encodeURI('"' + item.inputSearch + '"');
       } else if (
         item.selectCategory.value &&
         item.inputSearch &&
@@ -1074,7 +1075,7 @@ function PartList(props) {
           " " +
           item.selectCategory.value +
           ":" +
-          item.inputSearch;
+          encodeURI('"' + item.inputSearch + '"');
       }
       return searchStr;
     });
@@ -2546,6 +2547,7 @@ function PartList(props) {
                     searchAPI={sparePartSearch}
                     searchClick={handleQuerySearchClick}
                     options={SPAREPART_SEARCH_Q_OPTIONS}
+                    background={"white"}
                     type=""
                   />
                 </div>
@@ -2578,34 +2580,7 @@ function PartList(props) {
             </div>
 
             <DataGrid
-              sx={{
-                "& .MuiDataGrid-columnHeaders": {
-                  backgroundColor: "#872ff7",
-                  color: "#fff",
-                  fontSize: 12,
-                },
-                "& .MuiDataGrid-cellContent": {
-                  fontSize: 12,
-                },
-                minHeight: 200,
-                // "& .MuiDataGrid-columnHeader .MuiDataGrid-columnSeparator": {
-                //   display: "none",
-                // },
-                "&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell": {
-                  fontSize: 12,
-                  py: "8px",
-                },
-                "&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell": {
-                  py: "15px",
-                },
-                "&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell": {
-                  py: "22px",
-                },
-                "&.MuiDataGrid-root--densityStandard .MuiTablePagination-select, &.MuiDataGrid-root--densityStandard .MuiSelect-icon":
-                  {
-                    marginTop: -1,
-                  },
-              }}
+              sx={GRID_STYLE}
               rows={spareparts}
               columns={columnsPartList.map((column) => ({
                 ...column,
@@ -2627,7 +2602,7 @@ function PartList(props) {
               onFilterModelChange={onPartsFilterChange}
               onRowEditStop={(e) => setBulkUpdateProgress(false)}
               paginationMode="server"
-              autoHeight
+              // autoHeight
               loading={partsLoading}
               rowsPerPageOptions={[5, 10, 20]}
               pagination
@@ -2636,8 +2611,8 @@ function PartList(props) {
               processRowUpdate={(newRow, oldRow) =>
                 processRowUpdate(newRow, oldRow)
               }
-              getEstimatedRowHeight={() => 200}
-              getRowHeight={() => "auto"}
+              // getEstimatedRowHeight={() => 200}
+              // getRowHeight={() => "auto"}
               onProcessRowUpdateError={(error) => console.log(error)}
             />
             <div className=" my-3 text-right">

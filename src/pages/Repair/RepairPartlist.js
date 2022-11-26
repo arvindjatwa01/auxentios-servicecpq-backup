@@ -30,7 +30,7 @@ import {
 import moment from "moment-timezone";
 import Moment from "react-moment";
 import DynamicSearchComponent from "./components/DynamicSearchComponent";
-import { BUILDER_SEARCH_Q_OPTIONS } from "./CONSTANTS";
+import { BUILDER_SEARCH_Q_OPTIONS, GRID_STYLE } from "./CONSTANTS";
 import { Typography } from "@mui/material";
 import Loader from "react-js-loader";
 import { useDispatch } from "react-redux";
@@ -126,7 +126,7 @@ export const RepairPartlist = () => {
     var searchStr = "";
     querySearchSelector.map(function (item, i) {
       if (i === 0 && item.selectCategory.value && item.inputSearch) {
-        searchStr = item.selectCategory.value + ":" + item.inputSearch;
+        searchStr = item.selectCategory.value + ":" + encodeURI('"' + item.inputSearch + '"');
       } else if (
         item.selectCategory.value &&
         item.inputSearch &&
@@ -139,7 +139,7 @@ export const RepairPartlist = () => {
           " " +
           item.selectCategory.value +
           ":" +
-          item.inputSearch;
+          encodeURI('"' + item.inputSearch + '"');
       }
       return searchStr;
     });
@@ -378,15 +378,7 @@ export const RepairPartlist = () => {
               style={{ width: "100%", backgroundColor: "#fff" }}
             >
               <DataGrid
-                sx={{
-                  "& .MuiDataGrid-columnHeaders": {
-                    backgroundColor: "#872ff7",
-                    color: "#fff",
-                  },
-                  "& .MuiDataGrid-cellContent": {
-                    fontSize: 12,
-                  },
-                }}
+                sx={GRID_STYLE}
                 rows={masterData}
                 columns={searchBuilderColumns}
                 pageSize={5}

@@ -88,3 +88,23 @@ export const EXTWORK_SEARCH_Q_OPTIONS = [
     value: "supplyingVendorName",
   },
 ];
+
+export const GRID_STYLE = {
+  "& .MuiDataGrid-columnHeaders": {
+    backgroundColor: "#872ff7",
+    color: "#fff",
+    fontSize: 12,
+  },
+  '& .MuiDataGrid-columnHeader, .MuiDataGrid-cell': {
+    borderRight: `1px solid rgba(0,0,0,.12)`,
+    paddingLeft: "8px",
+    paddingRight: "8px"
+  },
+  '& .MuiDataGrid-iconSeparator': {
+    display: 'none',
+  },                              
+  minHeight: 300,
+  "& .MuiDataGrid-cellContent": {
+    fontSize: 12,
+  },  
+}

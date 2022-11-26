@@ -19,7 +19,7 @@ import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import Moment from "react-moment";
 import { builderSearch, createBuilder } from "services/repairBuilderServices";
 import DynamicSearchComponent from "./components/DynamicSearchComponent";
-import { BUILDER_SEARCH_Q_OPTIONS } from "./CONSTANTS";
+import { BUILDER_SEARCH_Q_OPTIONS, GRID_STYLE } from "./CONSTANTS";
 
 export const RepairWithoutSpareParts = () => {
   const [recentBuilders, setRecentBuilders] = useState([]);
@@ -91,7 +91,7 @@ export const RepairWithoutSpareParts = () => {
     var searchStr = "";
     querySearchSelector.map(function (item, i) {
       if (i === 0 && item.selectCategory.value && item.inputSearch) {
-        searchStr = item.selectCategory.value + ":" + item.inputSearch;
+        searchStr = item.selectCategory.value + ":" + encodeURI('"' + item.inputSearch + '"');
       } else if (
         item.selectCategory.value &&
         item.inputSearch &&
@@ -104,7 +104,7 @@ export const RepairWithoutSpareParts = () => {
           " " +
           item.selectCategory.value +
           ":" +
-          item.inputSearch;
+          encodeURI('"' + item.inputSearch + '"');
       }
       return searchStr;
     });
@@ -112,7 +112,7 @@ export const RepairWithoutSpareParts = () => {
     try {
       if (searchStr) {
         const res = await builderSearch(
-          `builderType:BUILDER_WITHOUT_SPAREPART&${searchStr}`
+          `builderType:BUILDER_WITHOUT_SPAREPART AND ${searchStr}`
         );
         setMasterData(res);
       } else {
@@ -312,7 +312,7 @@ export const RepairWithoutSpareParts = () => {
               </div>
             </div>
           </div>
-          <div className="bg-primary px-3 mb-3">
+          <div className="bg-primary px-3 mb-3 border-radius-6">
             <div className="row align-items-center">
               <div className="col-11 mx-2">
                 <div className="d-flex align-items-center bg-primary w-100">
@@ -345,15 +345,7 @@ export const RepairWithoutSpareParts = () => {
               style={{ width: "100%", backgroundColor: "#fff" }}
             >
               <DataGrid
-                sx={{
-                  "& .MuiDataGrid-columnHeaders": {
-                    backgroundColor: "#872ff7",
-                    color: "#fff",
-                  },
-                  "& .MuiDataGrid-cellContent": {
-                    fontSize: 12,
-                  },
-                }}
+                sx={GRID_STYLE}
                 rows={masterData}
                 columns={searchBuilderColumns}
                 pageSize={5}

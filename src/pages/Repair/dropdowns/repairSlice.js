@@ -1,11 +1,7 @@
-import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { RootState } from "../../../app/store";
+import { createSelector, createSlice } from "@reduxjs/toolkit";
 
-export interface DropdownState {
-  loading: boolean;
-}
 
-const initialState: DropdownState = {
+const initialState = {
   loading: false,
   chargeCodeList: [],
   serviceTypeList: [],
@@ -25,7 +21,7 @@ const repairSlice = createSlice({
     fetchDropdowns(state) {
       state.loading = true;
     },
-    fetchDropdownsSuccess(state, action: PayloadAction) {
+    fetchDropdownsSuccess(state, action) {
       state.loading = false;
       console.log("RepairSlice", action.payload.laborCodes.data);
       state.chargeCodeList = action.payload.chargeCodes.data;
@@ -39,7 +35,7 @@ const repairSlice = createSlice({
       state.consumableTypeList = action.payload.consumableTypes.data;
     },
 
-    fetchDropdownsFailed(state, action: PayloadAction<string>) {
+    fetchDropdownsFailed(state, action) {
       state.loading = false;
       console.log(action);
     },
@@ -50,25 +46,25 @@ const repairSlice = createSlice({
 export const repairActions = repairSlice.actions;
 
 // Selectors
-export const selectDropdownLoading = (state: RootState) =>
+export const selectDropdownLoading = (state) =>
   state.dropdown.loading;
-export const selectChargeCodeList = (state: RootState) =>
+export const selectChargeCodeList = (state) =>
   state.dropdown.chargeCodeList;
-export const selectLaborCodeList = (state: RootState) =>
+export const selectLaborCodeList = (state) =>
   state.dropdown.laborCodeList;
-export const selectServiceTypeList = (state: RootState) =>
+export const selectServiceTypeList = (state) =>
   state.dropdown.serviceTypeList;
-export const selectLaborTypeList = (state: RootState) =>
+export const selectLaborTypeList = (state) =>
   state.dropdown.laborTypeList;
-export const selectMiscTypeList = (state: RootState) =>
+export const selectMiscTypeList = (state) =>
   state.dropdown.miscTypeList;
-export const selectActivityIdList = (state: RootState) =>
+export const selectActivityIdList = (state) =>
   state.dropdown.activityIdList;
-export const selectDimensionList = (state: RootState) =>
+export const selectDimensionList = (state) =>
   state.dropdown.dimensionList;
-export const selectConsumableTypeList = (state: RootState) =>
+export const selectConsumableTypeList = (state) =>
   state.dropdown.consumableTypeList;
-export const selectPricingMethodList = (state: RootState) =>
+export const selectPricingMethodList = (state) =>
   state.dropdown.pricingMethodList;
 
 export const selectDropdownOption = (option) =>

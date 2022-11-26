@@ -130,6 +130,7 @@ const AddExtWorkItemModal = (props) => {
                   </label>
                   <input
                     type="text"
+                    disabled
                     onChange={(e) =>
                       props.setExtWorkItemData({
                         ...props.extWorkItemData,
@@ -169,6 +170,7 @@ const AddExtWorkItemModal = (props) => {
                   </label>
                   <input
                     type="text"
+                    disabled
                     value={props.extWorkItemData.extendedPrice}
                     onChange={(e) =>
                       props.setExtWorkItemData({
@@ -189,6 +191,7 @@ const AddExtWorkItemModal = (props) => {
                   </label>
                   <input
                     type="text"
+                    disabled
                     value={props.extWorkItemData.totalPrice}
                     onChange={(e) =>
                       props.setExtWorkItemData({
