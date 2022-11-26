@@ -52,6 +52,9 @@ import SelectFilter from 'react-select';
 import QuerySearchComp from "../PortfolioAndBundle/QuerySearchComp";
 import SolutionQuerySearchComp from "./SolutionQuerySearchComp";
 import SearchIcon from '@mui/icons-material/Search';
+
+import penIcon from "../../assets/images/pen.png";
+
 import $ from "jquery"
 import { useHistory } from 'react-router-dom';
 import {
@@ -81,6 +84,10 @@ import {
    customPriceCreation,
    createCustomPortfolio,
    updateCustomPortfolio,
+   solutionPortfolioSearch,
+   getSearchForRecentSolutionPortfolio,
+   getSearchForRecentSolutionBundleService,
+   copyPortfolioICustomPortfolio,
 } from "../../services/index";
 import DataTable from "react-data-table-component";
 
@@ -102,6 +109,30 @@ const customStyles = {
       style: {
          paddingLeft: "8px", // override the cell padding for data cells
          paddingRight: "8px",
+      },
+   },
+};
+
+const customTableStyles = {
+   rows: {
+      style: {
+         minHeight: "72px", // override the row height
+      },
+   },
+   headCells: {
+      style: {
+         paddingLeft: "8px", // override the cell padding for head cells
+         paddingRight: "8px",
+         backgroundColor: "#872ff7",
+         color: "#fff",
+         borderRight: "1px solid rgba(0,0,0,.12)",
+      },
+   },
+   cells: {
+      style: {
+         paddingLeft: "8px", // override the cell padding for data cells
+         paddingRight: "8px",
+         borderRight: "1px solid rgba(0,0,0,.12)",
       },
    },
 };
@@ -132,6 +163,10 @@ export const Analytics = () => {
 
    const [bundleServiceShow, setBundleServiceShow] = useState(false)
 
+   const [recentPortfolioSolution, setRecentPortfolioSolution] = useState([]);
+   const [recentBundleService, setRecentBundleService] = useState([]);
+   const [searchedPortfolioSolution, setSearchedPortfolioSolution] = useState([]);
+
    const [age, setAge] = React.useState('5');
    const [age1, setAge1] = React.useState('5');
    const [age2, setAge2] = React.useState('5');
@@ -153,6 +188,9 @@ export const Analytics = () => {
    const [portfolioTempFilterMasterData, setPortfolioTempFilterMasterData] = useState([])
    const [selectedPortfolioTempMasterData, setSelectedPortfolioTempMasterData] = useState([])
    const [portfolioTempFlagIs, setPortfolioTempFlagIs] = useState(false)
+
+   const [createdCustomPortfolio, setCreatedCustomPortfolio] = useState([]);
+   const [isCustomPortfolioCreated, setIsCustomPortfolioCreated] = useState(false);
 
    // Solution Templates States 
 
@@ -518,13 +556,43 @@ export const Analytics = () => {
    }
 
    const handleTemplateItemSaveAndContinue = async () => {
-      // setOpenSolutionSelector(false)
-      // setSolutionBuilderShow(false);
-      // setModalComponent(null)
-      // setOpenTemplatesSearchModelBox(false)
-      // return <>
-      //    <PortfolioTemplatesResult NewData="newData" />
-      // </>
+      
+      // To do New API Call
+      // if (solutionValue == 1) {
+      //    history.push({
+      //       pathname: SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT,
+      //       selectedTemplateItems: selectedSolutionTempMasterData,
+      //       solutionValueIs: solutionValue
+      //    });
+      //    localStorage.setItem("selectedSolutionTemplateItems", JSON.stringify(selectedSolutionTempMasterData));
+      //    localStorage.setItem("solutionValueIs", solutionValue);
+      //    // localStorage.setItem("autocreatedcustomPortfolioData", JSON.stringify(CreatedcustomPortfolioData));
+      //    // alert("hello");
+      // } else if (solutionValue == 0) {
+
+      //    var newCustomItemsId = [];
+
+      //    console.log("select Portfolio Items : ", selectedPortfolioTempMasterData);
+
+      //    /* =============== loop for selected portfolio master Data ============ */
+
+      //    for (let x = 0; x < selectedPortfolioTempMasterData.length; x++) {
+      //       // copyPortfolioICustomPortfolio(selectedPortfolioTempMasterData[x].portfolioId)
+      //       const copyPortfolioCustomRes = await copyPortfolioICustomPortfolio(selectedPortfolioTempMasterData[x].portfolioId);
+      //       newCustomItemsId.push(copyPortfolioCustomRes.data)
+      //       console.log("copyPortfolioCustomRes ", x + " : " + copyPortfolioCustomRes);
+      //    }
+      //    setCreatedCustomPortfolio(newCustomItemsId);
+      //    setIsCustomPortfolioCreated(true);
+      //    localStorage.setItem("createdCustomPortfolioData", JSON.stringify(newCustomItemsId));
+      //    localStorage.setItem("solutionValueIs", solutionValue);
+      //    history.push({
+      //       pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
+      //       // selectedTemplateItems: createdCustomItems,
+      //       // solutionValueIs: solutionValue,
+      //       // autocreatedcustomPortfolioData: CreatedcustomPortfolioData
+      //    });
+      // }
 
       if (solutionValue == 1) {
          history.push({
@@ -1092,14 +1160,15 @@ export const Analytics = () => {
    const handleInputSearch = (e, id) => {
       let tempArray = [...querySearchSelector]
       let obj = tempArray[id]
-      getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value).then((res) => {
-         obj.selectOptions = res
-         tempArray[id] = obj
-         setQuerySearchSelector([...tempArray]);
-         $(`.scrollbar-${id}`).css("display", "block")
-      }).catch((err) => {
-         console.log("err in api call", err)
-      })
+      // getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value).then((res) => {
+      //    obj.selectOptions = res
+      //    tempArray[id] = obj
+      //    setQuerySearchSelector([...tempArray]);
+      //    $(`.scrollbar-${id}`).css("display", "block")
+      // }).catch((err) => {
+      //    console.log("err in api call", err)
+      // })
+      setQuerySearchSelector([...tempArray]);
       obj.inputSearch = e.target.value
 
    }
@@ -1127,10 +1196,12 @@ export const Analytics = () => {
          }
 
          console.log("searchStr", searchStr)
-         getSearchQueryCoverage(searchStr).then((res) => {
+         solutionPortfolioSearch(searchStr).then((res) => {
             console.log("search Query Result :", res)
-            setMasterData(res)
-            setBundleServiceShow(true)
+            // setMasterData(res)
+            setSearchedPortfolioSolution(res)
+            console.log("res ---------: ", res)
+            // setBundleServiceShow(true)
 
          }).catch((err) => {
             console.log("error in getSearchQueryCoverage", err)
@@ -1152,15 +1223,17 @@ export const Analytics = () => {
 
    }
    const addSearchQuerryHtml = () => {
-      setQuerySearchSelector([...querySearchSelector, {
-         id: count,
-         selectOperator: "",
-         selectFamily: "",
-         inputSearch: "",
-         selectOptions: [],
-         selectedOption: ""
-      }])
-      setCount(count + 1)
+      if (count !== 2) {
+         setQuerySearchSelector([...querySearchSelector, {
+            id: count,
+            selectOperator: "",
+            selectFamily: "",
+            inputSearch: "",
+            selectOptions: [],
+            selectedOption: ""
+         }])
+         setCount(count + 1)
+      }
    }
    const handleFamily = (e, id) => {
       let tempArray = [...querySearchSelector]
@@ -1462,6 +1535,26 @@ export const Analytics = () => {
       }
    };
 
+   const handlePortfolioListCheckBoxData = () => {
+
+      // setSelectedPortfolioTempMasterData(portfolioTempFilterMasterData);
+      //    setPortfolioTempMasterData([]);
+      var _selectedCoverageData = [...portfolioTempFilterMasterData];
+      // console.log("_selectedBundleServiceItemData : ", _selectedBundleServiceItemData);
+
+      let cloneArr = []
+      portfolioTempFilterMasterData.map((data, i) => {
+         console.log("data: ", data)
+         const exist = selectedPortfolioTempMasterData.some(item => item.portfolioId === data.portfolioId)
+         console.log("exist: ", exist)
+         if (!exist) {
+            cloneArr.push(data)
+            // setSelectedMasterData([...selectedMasterData, data])
+         }
+      })
+      setSelectedPortfolioTempMasterData([...selectedPortfolioTempMasterData, ...cloneArr])
+      setPortfolioTempMasterData([])
+   }
 
 
    const PopupModelBoxShow = () => {
@@ -1522,6 +1615,92 @@ export const Analytics = () => {
          setPortfolioTempFlagIs(false);
       }
    }, [portfolioTempMasterData]);
+
+   useEffect(() => {
+      //    getTypeKeyValue()
+      //       .then((res) => {
+      //          const options = res.map((d) => ({
+      //             value: d.key,
+      //             label: d.value,
+      //          }));
+      //          setTypeKeyValue(options);
+      //       })
+      //       .catch((err) => {
+      //          alert(err);
+      //       });
+
+
+      //    getPortfolioCommonConfig("customer-segment")
+      //       .then((res) => {
+      //          const options = res.map((d) => ({
+      //             value: d.key,
+      //             label: d.value,
+      //          }));
+      //          setCustomerSegmentKeyValue(options);
+      //       })
+      //       .catch((err) => {
+      //          alert(err);
+      //       });
+      getSearchForRecentSolutionPortfolio()
+         .then((res) => {
+            setRecentPortfolioSolution(res);
+         })
+
+      // getSearchForRecentSolutionBundleService()
+      //    .then((res) => {
+      //       setRecentBundleService(res);
+      //    })
+
+   }, []);
+
+   const handleLandingPageQuerySearchClick = async () => {
+      try {
+         console.log("hello")
+         // if (selectedItemType == "" ||
+         //    querySearchSelector[0]?.selectFamily?.value == "" ||
+         //    querySearchSelector[0]?.inputSearch == "" ||
+         //    querySearchSelector[0]?.selectFamily?.value === undefined) {
+         //    throw "Please fill data properly"
+         // }
+         // var searchStr = `${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
+         // console.log("searchStr : ", searchStr);
+         // if (selectedItemType === "PORTFOLIO") {
+         //    var newArr = [];
+         //    const res2 = await portfolioSearch(searchStr)
+         //    for (var j = 0; j < res2.length; j++) {
+         //       for (var k = 0; k < res2[j].items.length; k++) {
+         //          newArr.push(res2[j].items[k]);
+         //       }
+         //    }
+
+         //    var result = newArr.reduce((unique, o) => {
+         //       if (!unique.some(obj => obj.itemId === o.itemId)) {
+         //          unique.push(o);
+         //       }
+         //       return unique;
+         //    }, []);
+         //    setPortfolioItemData(result);
+
+         //    console.log("setPortfolioItemData : ", portfolioItemData)
+         // } else {
+         //    const res1 = await itemSearch(searchStr);
+         //    // console.log(res1)
+         //    setBundleServiceItemData(res1)
+         // }
+
+      } catch (error) {
+         toast("😐" + error, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+         });
+         return
+      }
+   }
 
    // useEffect(() => {
 
@@ -2518,7 +2697,186 @@ export const Analytics = () => {
 
    ]
 
+   const SolutionPortfolioColumn = [
+      {
+         name: (
+            <>
+               {/* <div>Solution Id</div> */}
+               <div>Name</div>
+            </>
+         ),
+         // selector: (row) => row.itemId,
+         // wrap: true,
+         // sortable: true,
+         // format: (row) => row.itemId,
+         selector: (row) => row.name,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.name,
+      },
+      {
+         name: (
+            <>
+               <div>Description</div>
+            </>
+         ),
+         selector: (row) => row.description,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.description,
+      },
+      {
+         name: (
+            <>
+               <div>Strategy</div>
+            </>
+         ),
+         selector: (row) => row.strategyTask,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.strategyTask,
+      }, {
+         name: (
+            <>
+               <div>Task Type</div>
+            </>
+         ),
+         selector: (row) => row.taskType,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.taskType,
+      },
+      {
+         name: (
+            <>
+               <div>Quantity</div>
+            </>
+         ),
+         selector: (row) => row?.quantity,
+         wrap: true,
+         sortable: true,
+         format: (row) => row?.quantity,
+      },
+      {
+         name: (
+            <>
+               <div>Net Price</div>
+            </>
+         ),
+         selector: (row) => row?.netPrice,
+         wrap: true,
+         sortable: true,
+         format: (row) => row?.netPrice,
+      },
+      {
+         name: (
+            <>
+               <div>Net Additional</div>
+            </>
+         ),
+         selector: (row) => row.additionalPrice,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.additionalPrice,
+      },
+      {
+         name: (
+            <>
+               <div>Net Parts Price</div>
+            </>
+         ),
+         selector: (row) => row?.partsprice,
+         wrap: true,
+         sortable: true,
+         format: (row) => row?.partsprice,
+      },
+      {
+         name: (
+            <>
+               <div>Net Service Price</div>
+            </>
+         ),
+         selector: (row) => row?.portfolioPrice?.servicePrice,
+         wrap: true,
+         sortable: true,
+         format: (row) => row?.portfolioPrice?.servicePrice,
+      },
+      {
+         name: (
+            <>
+               <div>Total Price</div>
+            </>
+         ),
+         selector: (row) => row?.portfolioPrice?.totalPrice,
+         wrap: true,
+         sortable: true,
+         format: (row) => row?.portfolioPrice?.totalPrice,
+      },
+      {
+         name: (
+            <>
+               <div>Comments</div>
+            </>
+         ),
+         selector: (row) => row?.comments,
+         wrap: true,
+         sortable: true,
+         format: (row) => row?.comments,
+      },
+      {
+         name: (
+            <>
+               <div>Action</div>
+            </>
+         ),
+         selector: (row) => row.action,
+         wrap: true,
+         sortable: true,
+         format: (row) => row.action,
+         cell: (row) => (
+            <div>
+               <img className="mr-2" src={penIcon} />
+            </div>
+         ),
+      },
+   ]
 
+   const getFormattedDateTimeByTimeStamp = (timeStamp) => {
+
+      var date = new Date(timeStamp);
+      var year = date.getFullYear();
+      // var m = date.getMonth() + 1;
+      var m = date.getMonth();
+      // var month = m < 10 ? '0' + m : m;
+      var month = m;
+      var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+      var format = "AM";
+      var hour = date.getHours();
+      var minutes = date.getMinutes();
+
+      var monthName = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+      if (hour > 11) {
+         format = "PM";
+      }
+      if (hour > 12) {
+         hour = hour - 12;
+      } else if (hour === 0) {
+         hour = 12;
+      }
+
+      if (hour < 10) {
+         hour = "0" + hour;
+      }
+
+      if (minutes < 10) {
+         minutes = "0" + minutes;
+      }
+
+      // var finalDateString = day + "-" + month + "-" + year + " " + hour + ":" + minutes + " " + format;
+      var finalDateString = hour + ":" + minutes + "" + format + ", " + day + " " + monthName[month] + " " + year;
+      return finalDateString;
+   }
 
 
    return (
@@ -2543,7 +2901,40 @@ export const Analytics = () => {
                      <div className="recent-div p-3">
                         <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
                         <div className="row">
-                           <div className="col-md-4">
+                           {recentPortfolioSolution.map((solutionData, index) =>
+                              <div className="col-md-4">
+                                 <div className="recent-items mt-3">
+                                    <div className="d-flex justify-content-between align-items-center ">
+                                       <p className="mb-0 ">
+                                          <FontAwesomeIcon className=" font-size-14" icon={faFileAlt} />
+                                          <span className="font-weight-500 ml-2">
+                                             {/* Portfolio Solution */}{solutionData.name}
+                                          </span>
+                                       </p>
+                                       <div className="d-flex align-items-center">
+                                          <div className="white-space custom-checkbox">
+                                             <FormGroup>
+                                                <FormControlLabel control={index === 0 ? <Checkbox defaultChecked /> : <Checkbox />} label="" />
+                                             </FormGroup>
+                                          </div>
+                                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                          <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
+                                       </div>
+                                    </div>
+
+                                 </div>
+                                 <div className="d-flex justify-content-between align-items-center mt-2">
+                                    {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
+                                    <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(solutionData.createdAt)} </p>
+                                    <p className="font-size-12 mb-0">Portfolio Solution</p>
+                                 </div>
+                              </div>
+
+
+                           )}
+                           {/* <div className="col-md-4">
                               <div className="recent-items mt-3">
                                  <div className="d-flex justify-content-between align-items-center ">
                                     <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Portfolio Solution </span></p>
@@ -2680,12 +3071,12 @@ export const Analytics = () => {
                                  <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
                                  <p className="font-size-12 mb-0">Strategy Task</p>
                               </div>
-                           </div>
+                           </div> */}
 
                         </div>
 
                      </div>
-                     <div className="recent-div p-3">
+                     {/* <div className="recent-div p-3">
                         <h6 className="font-weight-600 text-grey mb-0">SERVICE BUNDLES</h6>
                         <div className="row">
                            <div className="col-md-4">
@@ -2758,7 +3149,7 @@ export const Analytics = () => {
                               </div>
                            </div>
                         </div>
-                     </div>
+                     </div> */}
                   </div>
                </div>
                <div className="bg-primary px-3 mb-3">
@@ -2790,7 +3181,7 @@ export const Analytics = () => {
                                                             { label: "And", value: "AND", id: i },
                                                             { label: "Or", value: "OR", id: i },
                                                          ]}
-                                                         placeholder="&amp;"
+                                                         placeholder="AND/OR"
                                                          onChange={(e) => handleOperator(e, i)}
                                                          // value={querySearchOperator[i]}
                                                          value={obj.selectOperator}
@@ -2806,6 +3197,8 @@ export const Analytics = () => {
                                                          { label: "Family", value: "family", id: i },
                                                          { label: "Model", value: "model", id: i },
                                                          { label: "Prefix", value: "prefix", id: i },
+                                                         { label: "Name", value: "name", id: i },
+                                                         { label: "Description", value: "description", id: i },
                                                       ]}
                                                       onChange={(e) => handleFamily(e, i)}
                                                       value={obj.selectFamily}
@@ -2865,12 +3258,12 @@ export const Analytics = () => {
                      </div>
                      <div className="col-auto">
                         <div className="text-center pl-3 py-3">
-                           <Link to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable"  >
-                              <SearchIcon /><span className="ml-1">Search</span>
-                           </Link>
-                           {/* <Link to="#" className="p-1 text-white" onClick={handleQuerySearchClick}>
+                           {/* <Link to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable"  >
                               <SearchIcon /><span className="ml-1">Search</span>
                            </Link> */}
+                           <Link to="#" className="p-1 text-white" onClick={handleQuerySearchClick}>
+                              <SearchIcon /><span className="ml-1">Search</span>
+                           </Link>
 
                         </div>
 
@@ -2888,8 +3281,8 @@ export const Analytics = () => {
                <div className="card">
 
                   {/* <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}> */}
-                  <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
-                     <DataGrid
+                  <div className="" style={{ minHeight: 200, height: "auto", width: '100%', backgroundColor: '#fff' }}>
+                     {/* <DataGrid
                         sx={{
                            '& .MuiDataGrid-columnHeaders': {
                               // backgroundColor: '#7380E4', color: '#fff'
@@ -2904,7 +3297,20 @@ export const Analytics = () => {
                         onCellClick={(e) => handleRowClick(e)}
 
 
-                     />
+                     /> */}
+                     {searchedPortfolioSolution.length > 0 ?
+                        <>
+                           <DataTable
+                              className=""
+                              title=""
+                              columns={SolutionPortfolioColumn}
+                              data={searchedPortfolioSolution}
+                              customStyles={customTableStyles}
+                              selectableRows
+                              // onSelectedRowsChange={(state) => setPortfolioTempFilterMasterData(state.selectedRows)}
+                              pagination
+                           />
+                        </> : <></>}
 
                   </div>
                </div>
@@ -3684,10 +4090,11 @@ export const Analytics = () => {
                                     </> : <></>} */}
                                     <div className="m-2 text-right">
                                        <input
-                                          onClick={() => {
-                                             setSelectedPortfolioTempMasterData(portfolioTempFilterMasterData);
-                                             setPortfolioTempMasterData([]);
-                                          }}
+                                          // onClick={() => {
+                                          //    setSelectedPortfolioTempMasterData(portfolioTempFilterMasterData);
+                                          //    setPortfolioTempMasterData([]);
+                                          // }}
+                                          onClick={handlePortfolioListCheckBoxData}
                                           className="btn text-white bg-primary"
                                           value="+ Add Selected"
                                           disabled={portfolioTempFilterMasterData.length == 0}
