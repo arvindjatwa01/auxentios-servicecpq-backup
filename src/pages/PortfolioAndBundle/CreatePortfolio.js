@@ -1689,7 +1689,7 @@ export function CreatePortfolio() {
           categoryUsageKeyValue1.value == undefined ||
           stratgyTaskUsageKeyValue.value == undefined
         ) {
-          throw "Please fill manditory fields properly";
+          throw "Please fill mandatory fields properly";
         }
         setGeneralComponentData({
           ...generalComponentData,
