@@ -4035,7 +4035,8 @@ export const Analytics = () => {
                            { label: "Family", value: "family" },
                            { label: "Model", value: "modelNo" },
                            { label: "Prefix", value: "serialNumberPrefix" },
-                           { label: "Portfolio Id", value: "portfolioId" },
+                           { label: "Name", value: "name" },
+                           // { label: "Portfolio Id", value: "portfolioId" },
                            { label: "Description", value: "description" },
                         ]}
                         setPortfolioTempMasterData={setPortfolioTempMasterData}
@@ -4055,7 +4056,8 @@ export const Analytics = () => {
                                  { label: "Family", value: "family" },
                                  { label: "Model", value: "modelNo" },
                                  { label: "Prefix", value: "serialNumberPrefix" },
-                                 { label: "Portfolio Id", value: "customPortfolioId" },
+                                 // { label: "Portfolio Id", value: "customPortfolioId" },
+                                 { label: "Name", value: "name" },
                                  { label: "Description", value: "description" },
                                  // { label: "Model", value: "model" },
                                  // { label: "Prefix", value: "prefix" },
