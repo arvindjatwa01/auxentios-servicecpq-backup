@@ -40,7 +40,7 @@ import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 
 import { SolutionBuilderModal } from "../../pages/SolutionModules/index"
-import { SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO, SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE } from '../../navigation/CONSTANTS'
+import { SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO, SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE, CREATED_CUSTOM_PORTFOLIO_DETAILS } from '../../navigation/CONSTANTS'
 import { SOLUTION_BUILDER_PORRTFOLIO_TEMP } from "../../navigation/CONSTANTS";
 import { SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT } from "../../navigation/CONSTANTS";
 
@@ -51,6 +51,8 @@ import repairicon from '../../assets/icons/svg/repair-icon.svg'
 import SelectFilter from 'react-select';
 import QuerySearchComp from "../PortfolioAndBundle/QuerySearchComp";
 import SolutionQuerySearchComp from "./SolutionQuerySearchComp";
+import { PortfolioTemplatesResult } from "./PortfolioTemplatesResult";
+import CreatedCustomPortfolioTemplate from "./CreatedCustomPortfolioTemplate";
 import SearchIcon from '@mui/icons-material/Search';
 
 import penIcon from "../../assets/images/pen.png";
@@ -556,44 +558,8 @@ export const Analytics = () => {
    }
 
    const handleTemplateItemSaveAndContinue = async () => {
-      
+
       // To do New API Call
-      // if (solutionValue == 1) {
-      //    history.push({
-      //       pathname: SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT,
-      //       selectedTemplateItems: selectedSolutionTempMasterData,
-      //       solutionValueIs: solutionValue
-      //    });
-      //    localStorage.setItem("selectedSolutionTemplateItems", JSON.stringify(selectedSolutionTempMasterData));
-      //    localStorage.setItem("solutionValueIs", solutionValue);
-      //    // localStorage.setItem("autocreatedcustomPortfolioData", JSON.stringify(CreatedcustomPortfolioData));
-      //    // alert("hello");
-      // } else if (solutionValue == 0) {
-
-      //    var newCustomItemsId = [];
-
-      //    console.log("select Portfolio Items : ", selectedPortfolioTempMasterData);
-
-      //    /* =============== loop for selected portfolio master Data ============ */
-
-      //    for (let x = 0; x < selectedPortfolioTempMasterData.length; x++) {
-      //       // copyPortfolioICustomPortfolio(selectedPortfolioTempMasterData[x].portfolioId)
-      //       const copyPortfolioCustomRes = await copyPortfolioICustomPortfolio(selectedPortfolioTempMasterData[x].portfolioId);
-      //       newCustomItemsId.push(copyPortfolioCustomRes.data)
-      //       console.log("copyPortfolioCustomRes ", x + " : " + copyPortfolioCustomRes);
-      //    }
-      //    setCreatedCustomPortfolio(newCustomItemsId);
-      //    setIsCustomPortfolioCreated(true);
-      //    localStorage.setItem("createdCustomPortfolioData", JSON.stringify(newCustomItemsId));
-      //    localStorage.setItem("solutionValueIs", solutionValue);
-      //    history.push({
-      //       pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
-      //       // selectedTemplateItems: createdCustomItems,
-      //       // solutionValueIs: solutionValue,
-      //       // autocreatedcustomPortfolioData: CreatedcustomPortfolioData
-      //    });
-      // }
-
       if (solutionValue == 1) {
          history.push({
             pathname: SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT,
@@ -608,480 +574,527 @@ export const Analytics = () => {
 
          var newCustomItemsId = [];
 
-         let reqData = {
-            type: "MACHINE",
-            name: `${Date.now()}`,
-            description: "",
-            externalReference: "",
-            customerSegment: "",
-            strategyTask: "PREVENTIVE_MAINTENANCE",
-            taskType: "PM1",
-            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-            productHierarchy: "END_PRODUCT",
-            geographic: "ONSITE",
-            availability: "AVAILABILITY_GREATER_95",
-            responseTime: "PROACTIVE",
-            type: "MACHINE",
-            application: "HILL",
-            contractOrSupport: "LEVEL_I",
-            lifeStageOfMachine: "NEW_BREAKIN",
-            supportLevel: "PREMIUM",
-            serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
-         };
-
-         const customPortfolioRes = await createCustomPortfolio(reqData);
-         var CreatedcustomPortfolioData = customPortfolioRes.data;
-
-         console.log("selecte Portfolio Items : ", selectedPortfolioTempMasterData);
+         console.log("select Portfolio Items : ", selectedPortfolioTempMasterData);
 
          /* =============== loop for selected portfolio master Data ============ */
 
-         for (let x = 0; x < selectedPortfolioTempMasterData.length; x++) {
+         // var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
 
-            /* =============== loop for selected portfolio master Data Items ============ */
-
-            for (let k = 0; k < selectedPortfolioTempMasterData[x].items.length; k++) {
-
-               var customItemsIdData = [];
-               var customPriceIdArr = [];
-               // console.log("K is : " + k + " for X : " + x);
-               // console.log("item is " + "K is : " + k + " for X : " + x + " : " + selectedPortfolioTempMasterData[x].items[k].itemBodyModel)
-
-               /* =============== loop for selected portfolio master Data Items Price ============ */
-
-               for (let j = 0; j < selectedPortfolioTempMasterData[x].items[k].itemBodyModel.itemPrices.length; j++) {
-
-
-                  /* =============== Search Custom Price Using selected Item PriceDataId ============== */
-
-                  var itemsPrice = await itemPriceDataId(selectedPortfolioTempMasterData[x].items[k].itemBodyModel.itemPrices[j].itemPriceDataId);
-
-                  // console.log("item price is before : ", itemsPrice)
-
-                  // itemsPrice['customPortfolio'] = {};
-                  // itemsPrice['customItemPriceDataId'] = 0;
-                  // delete itemsPrice['portfolio'];
-
-
-                  let itemPriceObj = {
-
-                     customItemPriceDataId: 0,
-                     quantity: parseInt(itemsPrice.quantity),
-                     startUsage: itemsPrice.startUsage,
-                     endUsage: itemsPrice.endUsage,
-                     standardJobId: itemsPrice.standardJobId,
-                     repairKitId: itemsPrice.repairKitId,
-                     templateDescription: itemsPrice.templateDescription,
-                     repairOption: itemsPrice.repairOption,
-                     frequency: itemsPrice.frequency,
-                     additional: itemsPrice.additional,
-                     recommendedValue: parseInt(itemsPrice.recommendedValue),
-                     partListId: itemsPrice.partListId,
-                     serviceEstimateId: itemsPrice.serviceEstimateId,
-                     numberOfEvents: parseInt(itemsPrice.numberOfEvents),
-                     priceMethod: itemsPrice.priceMethod,
-                     priceType: itemsPrice.priceType,
-                     listPrice: itemsPrice.listPrice,
-                     priceEscalation: itemsPrice.priceEscalation,
-                     calculatedPrice: itemsPrice.calculatedPrice,
-                     flatPrice: itemsPrice.flatPrice,
-                     discountType: itemsPrice.discountType,
-                     year: itemsPrice.year,
-                     noOfYear: itemsPrice.noOfYear,
-                     sparePartsPrice: itemsPrice.sparePartsPrice,
-                     sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
-                     servicePrice: itemsPrice.servicePrice,
-                     labourPrice: itemsPrice.labourPrice,
-                     labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-                     miscPrice: itemsPrice.miscPrice,
-                     miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
-                     totalPrice: itemsPrice.totalPrice,
-                     netService: itemsPrice.netService,
-                     customPortfolio: {
-                        portfolioId: CreatedcustomPortfolioData.customPortfolioId
-                     },
-                     tenantId: itemsPrice.tenantId,
-                     partsRequired: itemsPrice.partsRequired,
-                     labourRequired: itemsPrice.labourRequired,
-                     serviceRequired: itemsPrice.serviceRequired,
-                     miscRequired: itemsPrice.miscRequired
-                  }
-
-                  customItemsIdData.push(itemPriceObj)
-                  // console.log("item price is after  : ", itemsPrice)
-               }
-
-               /* =============== loop for create custom Price with selected portfolio master Data Items Price ============ */
-
-               for (let p = 0; p < customItemsIdData.length; p++) {
-                  var customPriceDataCreate = await customPriceCreation(customItemsIdData[p])
-
-                  // console.log("customPriceDataCreate REponse is ", customPriceDataCreate);
-
-                  customPriceIdArr.push({
-                     customItemPriceDataId: parseInt(customPriceDataCreate.data.customItemPriceDataId),
-                  })
-                  // var customPriceIdData = customPriceDataCreate.data.map(item => {
-                  // return {
-                  //    customItemPriceDataId: parseInt(item.itemPriceDataId),
-                  // };
-               }
-
-               let customItemObj = {
-                  customItemId: 0,
-                  itemName: selectedPortfolioTempMasterData[x].items[k].itemName,
-                  customItemHeaderModel: {
-                     customItemHeaderId: 0,
-                     itemHeaderDescription: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.itemHeaderDescription,
-                     bundleFlag: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.bundleFlag,
-                     portfolioItemId: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.portfolioItemId,
-                     reference: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.reference,
-                     itemHeaderMake: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.itemHeaderMake,
-                     itemHeaderFamily: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.itemHeaderFamily,
-                     model: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.model,
-                     prefix: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.prefix,
-                     type: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.type,
-                     additional: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.additional,
-                     currency: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.currency,
-                     netPrice: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.netPrice,
-                     itemProductHierarchy: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.itemProductHierarchy,
-                     itemHeaderGeographic: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.itemHeaderGeographic,
-                     responseTime: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.responseTime,
-                     usage: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.usage,
-                     validFrom: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.validFrom,
-                     validTo: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.validTo,
-                     estimatedTime: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.estimatedTime,
-                     servicePrice: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.servicePrice,
-                     status: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.status,
-                     componentCode: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.componentCode,
-                     componentDescription: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.componentDescription,
-                     serialNumber: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.serialNumber,
-                     itemHeaderStrategy: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.itemHeaderStrategy,
-                     variant: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.variant,
-                     itemHeaderCustomerSegment: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.itemHeaderCustomerSegment,
-                     jobCode: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.jobCode,
-                     preparedBy: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.preparedBy,
-                     approvedBy: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.approvedBy,
-                     preparedOn: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.preparedOn,
-                     revisedBy: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.revisedBy,
-                     revisedOn: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.revisedOn,
-                     salesOffice: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.salesOffice,
-                     offerValidity: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.offerValidity
-                  },
-                  customItemBodyModel: {
-                     customItemBodyId: 0,
-                     itemBodyDescription: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.itemBodyDescription,
-                     spareParts: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.spareParts,
-                     labours: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.labours,
-                     miscellaneous: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.miscellaneous,
-                     taskType: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.taskType,
-                     solutionCode: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.solutionCode,
-                     usageIn: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.usageIn,
-                     usage: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.usage,
-                     year: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.year,
-                     avgUsage: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.avgUsage,
-                     unit: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.unit,
-                     // customItemPrices: selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices,
-                     customItemPrices: customPriceIdArr,
-                  }
-               }
-
-               /* ========= create custom Items with selected portfoliomasterData Items ========= */
-
-               const itemRes = await customitemCreation(customItemObj)
-
-               console.log(" Response is : ", itemRes.data)
-
-               createdCustomItems.push(itemRes.data)
-
-               // console.log("create custom Item response data for index " + selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderId + "  " + itemRes);
-            }
-
-         }
-
-
-         const updateCreatedCutomPortfolo = {
-            customPortfolioId: CreatedcustomPortfolioData.customPortfolioId,
-            name: CreatedcustomPortfolioData.name,
-            description: CreatedcustomPortfolioData.description,
-            machineType: null,
-            searchTerm: null,
-            lubricant: false,
-            customerId: 0,
-            customerGroup: null,
-            customerSegment: "",
-            externalReference: "",
-            status: null,
-            validFrom: null,
-            validTo: null,
-            strategyTask: "PREVENTIVE_MAINTENANCE",
-            taskType: "PM1",
-            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-            productHierarchy: "END_PRODUCT",
-            geographic: "ONSITE",
-            availability: "AVAILABILITY_GREATER_95",
-            responseTime: "PROACTIVE",
-            type: "MACHINE",
-            application: "HILL",
-            contractOrSupport: "LEVEL_I",
-            lifeStageOfMachine: "NEW_BREAKIN",
-            supportLevel: "PREMIUM",
-            numberOfEvents: 0.0,
-            itemRelations: null,
-            rating: null,
-            startUsage: null,
-            endUsage: null,
-            unit: null,
-            additionals: null,
-            preparedBy: null,
-            approvedBy: null,
-            preparedOn: null,
-            revisedBy: null,
-            revisedOn: null,
-            salesOffice: null,
-            offerValidity: null,
-            customItems: [],
-            customCoverages: [],
-            portfolioPrice: null,
-            additionalPrice: null,
-            escalationPrice: null,
-            saveState: false,
-            userId: null,
-            createdAt: "2022-11-08T05:48:54.826606",
-            template: false,
-            visibleInCommerce: false
-         };
-
-
-
-         const updatePortfolioRes = await updateCustomPortfolio(
-            CreatedcustomPortfolioData.customPortfolioId,
-            updateCreatedCutomPortfolo
-         );
-
-         console.log("createdCustomItems ", createdCustomItems);
-
-         if (updatePortfolioRes.status == 200) {
-            console.log("solutionValueIs : ", solutionValue);
-            localStorage.setItem("selectedTemplateItems", JSON.stringify(createdCustomItems));
-            localStorage.setItem("solutionValueIs", solutionValue);
-            localStorage.setItem("autocreatedcustomPortfolioData", JSON.stringify(CreatedcustomPortfolioData));
-            history.push({
-               pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
-               // selectedTemplateItems: createdCustomItems,
-               // solutionValueIs: solutionValue,
-               // autocreatedcustomPortfolioData: CreatedcustomPortfolioData
-            });
-            // console.log("Created");
-         }
-
-         // console.log("createdCustomItems is :", createdCustomItems);
-         // let reqData = {
-         //    type: "MACHINE",
-         //    name: `${Date.now()}`,
-         //    description: "",
-         //    externalReference: "",
-         //    customerSegment: "",
-         //    strategyTask: "PREVENTIVE_MAINTENANCE",
-         //    taskType: "PM1",
-         //    usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-         //    productHierarchy: "END_PRODUCT",
-         //    geographic: "ONSITE",
-         //    availability: "AVAILABILITY_GREATER_95",
-         //    responseTime: "PROACTIVE",
-         //    type: "MACHINE",
-         //    application: "HILL",
-         //    contractOrSupport: "LEVEL_I",
-         //    lifeStageOfMachine: "NEW_BREAKIN",
-         //    supportLevel: "PREMIUM",
-         //    serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
-         // };
-
-         // const customPortfolioRes = await createCustomPortfolio(reqData);
-         // var CreatedcustomPortfolioData = customPortfolioRes.data;
-
-         // console.log("customPortfolioRes customItems : ", CreatedcustomPortfolioData.customItems)
-
-         // for (let k = 0; k < selectedPortfolioTempMasterData.length; k++) {
-
-         //    var customItemsIdData = [];
-         //    var customPriceIdArr = [];
-         //    console.log("Hello " + k);
-         //    for (let j = 0; j < selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices.length; j++) {
-
-         //       /* =============== Search Custom Price Using selected Item PriceDataId ============== */
-
-         //       var itemsPrice = await itemPriceDataId(selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices[j].itemPriceDataId);
-         //       // console.log("item price is before : ", itemsPrice)
-
-         //       delete itemsPrice['itemPriceDataId'];
-
-         //       itemsPrice['customPortfolio'] = {};
-         //       itemsPrice['customItemPriceDataId'] = 0;
-         //       delete itemsPrice['portfolio'];
-
-
-         //       let itemPriceObj = {
-
-         //          customItemPriceDataId: 0,
-         //          quantity: parseInt(itemsPrice.quantity),
-         //          startUsage: itemsPrice.startUsage,
-         //          endUsage: itemsPrice.endUsage,
-         //          standardJobId: itemsPrice.standardJobId,
-         //          repairKitId: itemsPrice.repairKitId,
-         //          templateDescription: itemsPrice.templateDescription,
-         //          repairOption: itemsPrice.repairOption,
-         //          frequency: itemsPrice.frequency,
-         //          additional: itemsPrice.additional,
-         //          recommendedValue: parseInt(itemsPrice.recommendedValue),
-         //          partListId: itemsPrice.partListId,
-         //          serviceEstimateId: itemsPrice.serviceEstimateId,
-         //          numberOfEvents: parseInt(itemsPrice.numberOfEvents),
-         //          priceMethod: itemsPrice.priceMethod,
-         //          priceType: itemsPrice.priceType,
-         //          listPrice: itemsPrice.listPrice,
-         //          priceEscalation: itemsPrice.priceEscalation,
-         //          calculatedPrice: itemsPrice.calculatedPrice,
-         //          flatPrice: itemsPrice.flatPrice,
-         //          discountType: itemsPrice.discountType,
-         //          year: itemsPrice.year,
-         //          noOfYear: itemsPrice.noOfYear,
-         //          sparePartsPrice: itemsPrice.sparePartsPrice,
-         //          sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
-         //          servicePrice: itemsPrice.servicePrice,
-         //          labourPrice: itemsPrice.labourPrice,
-         //          labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
-         //          miscPrice: itemsPrice.miscPrice,
-         //          miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
-         //          totalPrice: itemsPrice.totalPrice,
-         //          netService: itemsPrice.netService,
-         //          customPortfolio: {
-         //             portfolioId: 26
-         //          },
-         //          tenantId: itemsPrice.tenantId,
-         //          partsRequired: itemsPrice.partsRequired,
-         //          labourRequired: itemsPrice.labourRequired,
-         //          serviceRequired: itemsPrice.serviceRequired,
-         //          miscRequired: itemsPrice.miscRequired
-         //       }
-
-         //       customItemsIdData.push(itemPriceObj)
-         //       // console.log("item price is after  : ", itemsPrice)
-
-         //       // console.log("My values are : ", selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices[j].itemPriceDataId)
-
-         //    }
-         //    for (let p = 0; p < customItemsIdData.length; p++) {
-         //       var customPriceDataCreate = await customPriceCreation(customItemsIdData[p])
-         //       console.log("customPriceDataCreate REponse is ", customPriceDataCreate);
-
-         //       customPriceIdArr.push({
-         //          customItemPriceDataId: parseInt(customPriceDataCreate.data.customItemPriceDataId),
-         //       })
-         //       // var customPriceIdData = customPriceDataCreate.data.map(item => {
-         //       // return {
-         //       //    customItemPriceDataId: parseInt(item.itemPriceDataId),
-         //       // };
-         //    }
-
-
-         //    console.log("customPriceIdArr : ", customPriceIdArr)
-
-         //    let customItemObj = {
-         //       customItemId: 0,
-         //       itemName: selectedPortfolioTempMasterData[k].itemName,
-         //       customItemHeaderModel: {
-         //          // customItemHeaderId: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderId,
-         //          customItemHeaderId: 0,
-         //          itemHeaderDescription: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderDescription,
-         //          bundleFlag: selectedPortfolioTempMasterData[k].itemHeaderModel.bundleFlag,
-         //          portfolioItemId: selectedPortfolioTempMasterData[k].itemHeaderModel.portfolioItemId,
-         //          reference: selectedPortfolioTempMasterData[k].itemHeaderModel.reference,
-         //          itemHeaderMake: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderMake,
-         //          itemHeaderFamily: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderFamily,
-         //          model: selectedPortfolioTempMasterData[k].itemHeaderModel.model,
-         //          prefix: selectedPortfolioTempMasterData[k].itemHeaderModel.prefix,
-         //          type: selectedPortfolioTempMasterData[k].itemHeaderModel.type,
-         //          additional: selectedPortfolioTempMasterData[k].itemHeaderModel.additional,
-         //          currency: selectedPortfolioTempMasterData[k].itemHeaderModel.currency,
-         //          netPrice: selectedPortfolioTempMasterData[k].itemHeaderModel.netPrice,
-         //          itemProductHierarchy: selectedPortfolioTempMasterData[k].itemHeaderModel.itemProductHierarchy,
-         //          itemHeaderGeographic: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderGeographic,
-         //          responseTime: selectedPortfolioTempMasterData[k].itemHeaderModel.responseTime,
-         //          usage: selectedPortfolioTempMasterData[k].itemHeaderModel.usage,
-         //          validFrom: selectedPortfolioTempMasterData[k].itemHeaderModel.validFrom,
-         //          validTo: selectedPortfolioTempMasterData[k].itemHeaderModel.validTo,
-         //          estimatedTime: selectedPortfolioTempMasterData[k].itemHeaderModel.estimatedTime,
-         //          servicePrice: selectedPortfolioTempMasterData[k].itemHeaderModel.servicePrice,
-         //          status: selectedPortfolioTempMasterData[k].itemHeaderModel.status,
-         //          componentCode: selectedPortfolioTempMasterData[k].itemHeaderModel.componentCode,
-         //          componentDescription: selectedPortfolioTempMasterData[k].itemHeaderModel.componentDescription,
-         //          serialNumber: selectedPortfolioTempMasterData[k].itemHeaderModel.serialNumber,
-         //          itemHeaderStrategy: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderStrategy,
-         //          variant: selectedPortfolioTempMasterData[k].itemHeaderModel.variant,
-         //          itemHeaderCustomerSegment: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderCustomerSegment,
-         //          jobCode: selectedPortfolioTempMasterData[k].itemHeaderModel.jobCode,
-         //          preparedBy: selectedPortfolioTempMasterData[k].itemHeaderModel.preparedBy,
-         //          approvedBy: selectedPortfolioTempMasterData[k].itemHeaderModel.approvedBy,
-         //          preparedOn: selectedPortfolioTempMasterData[k].itemHeaderModel.preparedOn,
-         //          revisedBy: selectedPortfolioTempMasterData[k].itemHeaderModel.revisedBy,
-         //          revisedOn: selectedPortfolioTempMasterData[k].itemHeaderModel.revisedOn,
-         //          salesOffice: selectedPortfolioTempMasterData[k].itemHeaderModel.salesOffice,
-         //          offerValidity: selectedPortfolioTempMasterData[k].itemHeaderModel.offerValidity
-         //       },
-         //       customItemBodyModel: {
-         //          customItemBodyId: 0,
-         //          itemBodyDescription: selectedPortfolioTempMasterData[k].itemBodyModel.itemBodyDescription,
-         //          spareParts: selectedPortfolioTempMasterData[k].itemBodyModel.spareParts,
-         //          labours: selectedPortfolioTempMasterData[k].itemBodyModel.labours,
-         //          miscellaneous: selectedPortfolioTempMasterData[k].itemBodyModel.miscellaneous,
-         //          taskType: selectedPortfolioTempMasterData[k].itemBodyModel.taskType,
-         //          solutionCode: selectedPortfolioTempMasterData[k].itemBodyModel.solutionCode,
-         //          usageIn: selectedPortfolioTempMasterData[k].itemBodyModel.usageIn,
-         //          usage: selectedPortfolioTempMasterData[k].itemBodyModel.usage,
-         //          year: selectedPortfolioTempMasterData[k].itemBodyModel.year,
-         //          avgUsage: selectedPortfolioTempMasterData[k].itemBodyModel.avgUsage,
-         //          unit: selectedPortfolioTempMasterData[k].itemBodyModel.unit,
-         //          // customItemPrices: selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices,
-         //          customItemPrices: customPriceIdArr,
-         //       }
-         //    }
-
-
-
-         //    const itemRes = await customitemCreation(customItemObj)
-
-         //    console.log(" Response is : ", itemRes.data)
-
-         //    createdCustomItems.push(itemRes.data)
-
-         //    // console.log("create custom Item response data for index " + selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderId + "  " + itemRes);
+         // for (let i = 1; i < querySearchSelector.length; i++) {
+         //    searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + "~" + querySearchSelector[i].inputSearch
          // }
-         // console.log("createdCustomItems 9871 : ", createdCustomItems)
-         // const customItemsId = createdCustomItems.map((data, i) => {
-         //    CreatedcustomPortfolioData.customItems.push({ "customItemId": parseInt(data.customItemId) })
-
-         // })
-
-
-         // console.log("CreatedcustomPortfolioData Final : ", CreatedcustomPortfolioData);
-
-         // const updatePortfolioRes = await updateCustomPortfolio(
-         //    CreatedcustomPortfolioData.customPortfolioId,
-         //    CreatedcustomPortfolioData
-         // );
-
-         // if (updatePortfolioRes.status == 200) {
-         //    history.push({
-         //       pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
-         //       selectedTemplateItems: createdCustomItems,
-         //       solutionValueIs: solutionValue,
-         //       autocreatedcustomPortfolioData: CreatedcustomPortfolioData
-         //    });
-         // }
-
-
+         var searchUrl = "portfolioIds=" + selectedPortfolioTempMasterData[0].portfolioId;
+         for (let x = 1; x < selectedPortfolioTempMasterData.length; x++) {
+            // copyPortfolioICustomPortfolio(selectedPortfolioTempMasterData[x].portfolioId)
+            searchUrl = searchUrl + "&portfolioIds=" + selectedPortfolioTempMasterData[x].portfolioId
+            // const copyPortfolioCustomRes = await copyPortfolioICustomPortfolio(selectedPortfolioTempMasterData[x].portfolioId);
+            // newCustomItemsId.push(copyPortfolioCustomRes.data)
+            // console.log("copyPortfolioCustomRes ", x + " : " + copyPortfolioCustomRes);
+         }
+         console.log("searchUrl ------- - : ", searchUrl);
+         const copyPortfolioCustomRes = await copyPortfolioICustomPortfolio(searchUrl);
+         console.log("copyPortfolioCustomRes : ", copyPortfolioCustomRes.data);
+         // setCreatedCustomPortfolio(newCustomItemsId);
+         // setIsCustomPortfolioCreated(true);
+         // localStorage.setItem("createdCustomPortfolioData", copyPortfolioCustomRes.data);
+         localStorage.setItem("createdCustomPortfolioData", JSON.stringify(copyPortfolioCustomRes.data));
+         // localStorage.setItem("solutionValueIs", solutionValue);
+         history.push({
+            pathname: CREATED_CUSTOM_PORTFOLIO_DETAILS,
+            // selectedTemplateItems: createdCustomItems,
+            // solutionValueIs: solutionValue,
+            // autocreatedcustomPortfolioData: CreatedcustomPortfolioData
+         });
       }
+
+      // if (solutionValue == 1) {
+      //    history.push({
+      //       pathname: SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT,
+      //       selectedTemplateItems: selectedSolutionTempMasterData,
+      //       solutionValueIs: solutionValue
+      //    });
+      //    localStorage.setItem("selectedSolutionTemplateItems", JSON.stringify(selectedSolutionTempMasterData));
+      //    localStorage.setItem("solutionValueIs", solutionValue);
+      //    // localStorage.setItem("autocreatedcustomPortfolioData", JSON.stringify(CreatedcustomPortfolioData));
+      //    // alert("hello");
+      // } else if (solutionValue == 0) {
+
+      //    var newCustomItemsId = [];
+
+      //    let reqData = {
+      //       type: "MACHINE",
+      //       name: `${Date.now()}`,
+      //       description: "",
+      //       externalReference: "",
+      //       customerSegment: "",
+      //       strategyTask: "PREVENTIVE_MAINTENANCE",
+      //       taskType: "PM1",
+      //       usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+      //       productHierarchy: "END_PRODUCT",
+      //       geographic: "ONSITE",
+      //       availability: "AVAILABILITY_GREATER_95",
+      //       responseTime: "PROACTIVE",
+      //       type: "MACHINE",
+      //       application: "HILL",
+      //       contractOrSupport: "LEVEL_I",
+      //       lifeStageOfMachine: "NEW_BREAKIN",
+      //       supportLevel: "PREMIUM",
+      //       serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
+      //    };
+
+      //    const customPortfolioRes = await createCustomPortfolio(reqData);
+      //    var CreatedcustomPortfolioData = customPortfolioRes.data;
+
+      //    console.log("selecte Portfolio Items : ", selectedPortfolioTempMasterData);
+
+      //    /* =============== loop for selected portfolio master Data ============ */
+
+      //    for (let x = 0; x < selectedPortfolioTempMasterData.length; x++) {
+
+      //       /* =============== loop for selected portfolio master Data Items ============ */
+
+      //       for (let k = 0; k < selectedPortfolioTempMasterData[x].items.length; k++) {
+
+      //          var customItemsIdData = [];
+      //          var customPriceIdArr = [];
+      //          // console.log("K is : " + k + " for X : " + x);
+      //          // console.log("item is " + "K is : " + k + " for X : " + x + " : " + selectedPortfolioTempMasterData[x].items[k].itemBodyModel)
+
+      //          /* =============== loop for selected portfolio master Data Items Price ============ */
+
+      //          for (let j = 0; j < selectedPortfolioTempMasterData[x].items[k].itemBodyModel.itemPrices.length; j++) {
+
+
+      //             /* =============== Search Custom Price Using selected Item PriceDataId ============== */
+
+      //             var itemsPrice = await itemPriceDataId(selectedPortfolioTempMasterData[x].items[k].itemBodyModel.itemPrices[j].itemPriceDataId);
+
+      //             // console.log("item price is before : ", itemsPrice)
+
+      //             // itemsPrice['customPortfolio'] = {};
+      //             // itemsPrice['customItemPriceDataId'] = 0;
+      //             // delete itemsPrice['portfolio'];
+
+
+      //             let itemPriceObj = {
+
+      //                customItemPriceDataId: 0,
+      //                quantity: parseInt(itemsPrice.quantity),
+      //                startUsage: itemsPrice.startUsage,
+      //                endUsage: itemsPrice.endUsage,
+      //                standardJobId: itemsPrice.standardJobId,
+      //                repairKitId: itemsPrice.repairKitId,
+      //                templateDescription: itemsPrice.templateDescription,
+      //                repairOption: itemsPrice.repairOption,
+      //                frequency: itemsPrice.frequency,
+      //                additional: itemsPrice.additional,
+      //                recommendedValue: parseInt(itemsPrice.recommendedValue),
+      //                partListId: itemsPrice.partListId,
+      //                serviceEstimateId: itemsPrice.serviceEstimateId,
+      //                numberOfEvents: parseInt(itemsPrice.numberOfEvents),
+      //                priceMethod: itemsPrice.priceMethod,
+      //                priceType: itemsPrice.priceType,
+      //                listPrice: itemsPrice.listPrice,
+      //                priceEscalation: itemsPrice.priceEscalation,
+      //                calculatedPrice: itemsPrice.calculatedPrice,
+      //                flatPrice: itemsPrice.flatPrice,
+      //                discountType: itemsPrice.discountType,
+      //                year: itemsPrice.year,
+      //                noOfYear: itemsPrice.noOfYear,
+      //                sparePartsPrice: itemsPrice.sparePartsPrice,
+      //                sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
+      //                servicePrice: itemsPrice.servicePrice,
+      //                labourPrice: itemsPrice.labourPrice,
+      //                labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+      //                miscPrice: itemsPrice.miscPrice,
+      //                miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
+      //                totalPrice: itemsPrice.totalPrice,
+      //                netService: itemsPrice.netService,
+      //                customPortfolio: {
+      //                   portfolioId: CreatedcustomPortfolioData.customPortfolioId
+      //                },
+      //                tenantId: itemsPrice.tenantId,
+      //                partsRequired: itemsPrice.partsRequired,
+      //                labourRequired: itemsPrice.labourRequired,
+      //                serviceRequired: itemsPrice.serviceRequired,
+      //                miscRequired: itemsPrice.miscRequired
+      //             }
+
+      //             customItemsIdData.push(itemPriceObj)
+      //             // console.log("item price is after  : ", itemsPrice)
+      //          }
+
+      //          /* =============== loop for create custom Price with selected portfolio master Data Items Price ============ */
+
+      //          for (let p = 0; p < customItemsIdData.length; p++) {
+      //             var customPriceDataCreate = await customPriceCreation(customItemsIdData[p])
+
+      //             // console.log("customPriceDataCreate REponse is ", customPriceDataCreate);
+
+      //             customPriceIdArr.push({
+      //                customItemPriceDataId: parseInt(customPriceDataCreate.data.customItemPriceDataId),
+      //             })
+      //             // var customPriceIdData = customPriceDataCreate.data.map(item => {
+      //             // return {
+      //             //    customItemPriceDataId: parseInt(item.itemPriceDataId),
+      //             // };
+      //          }
+
+      //          let customItemObj = {
+      //             customItemId: 0,
+      //             itemName: selectedPortfolioTempMasterData[x].items[k].itemName,
+      //             customItemHeaderModel: {
+      //                customItemHeaderId: 0,
+      //                itemHeaderDescription: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.itemHeaderDescription,
+      //                bundleFlag: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.bundleFlag,
+      //                portfolioItemId: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.portfolioItemId,
+      //                reference: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.reference,
+      //                itemHeaderMake: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.itemHeaderMake,
+      //                itemHeaderFamily: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.itemHeaderFamily,
+      //                model: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.model,
+      //                prefix: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.prefix,
+      //                type: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.type,
+      //                additional: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.additional,
+      //                currency: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.currency,
+      //                netPrice: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.netPrice,
+      //                itemProductHierarchy: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.itemProductHierarchy,
+      //                itemHeaderGeographic: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.itemHeaderGeographic,
+      //                responseTime: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.responseTime,
+      //                usage: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.usage,
+      //                validFrom: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.validFrom,
+      //                validTo: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.validTo,
+      //                estimatedTime: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.estimatedTime,
+      //                servicePrice: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.servicePrice,
+      //                status: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.status,
+      //                componentCode: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.componentCode,
+      //                componentDescription: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.componentDescription,
+      //                serialNumber: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.serialNumber,
+      //                itemHeaderStrategy: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.itemHeaderStrategy,
+      //                variant: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.variant,
+      //                itemHeaderCustomerSegment: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.itemHeaderCustomerSegment,
+      //                jobCode: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.jobCode,
+      //                preparedBy: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.preparedBy,
+      //                approvedBy: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.approvedBy,
+      //                preparedOn: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.preparedOn,
+      //                revisedBy: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.revisedBy,
+      //                revisedOn: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.revisedOn,
+      //                salesOffice: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.salesOffice,
+      //                offerValidity: selectedPortfolioTempMasterData[x].items[k].itemHeaderModel.offerValidity
+      //             },
+      //             customItemBodyModel: {
+      //                customItemBodyId: 0,
+      //                itemBodyDescription: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.itemBodyDescription,
+      //                spareParts: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.spareParts,
+      //                labours: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.labours,
+      //                miscellaneous: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.miscellaneous,
+      //                taskType: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.taskType,
+      //                solutionCode: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.solutionCode,
+      //                usageIn: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.usageIn,
+      //                usage: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.usage,
+      //                year: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.year,
+      //                avgUsage: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.avgUsage,
+      //                unit: selectedPortfolioTempMasterData[x].items[k].itemBodyModel.unit,
+      //                // customItemPrices: selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices,
+      //                customItemPrices: customPriceIdArr,
+      //             }
+      //          }
+
+      //          /* ========= create custom Items with selected portfoliomasterData Items ========= */
+
+      //          const itemRes = await customitemCreation(customItemObj)
+
+      //          console.log(" Response is : ", itemRes.data)
+
+      //          createdCustomItems.push(itemRes.data)
+
+      //          // console.log("create custom Item response data for index " + selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderId + "  " + itemRes);
+      //       }
+
+      //    }
+
+
+      //    const updateCreatedCutomPortfolo = {
+      //       customPortfolioId: CreatedcustomPortfolioData.customPortfolioId,
+      //       name: CreatedcustomPortfolioData.name,
+      //       description: CreatedcustomPortfolioData.description,
+      //       machineType: null,
+      //       searchTerm: null,
+      //       lubricant: false,
+      //       customerId: 0,
+      //       customerGroup: null,
+      //       customerSegment: "",
+      //       externalReference: "",
+      //       status: null,
+      //       validFrom: null,
+      //       validTo: null,
+      //       strategyTask: "PREVENTIVE_MAINTENANCE",
+      //       taskType: "PM1",
+      //       usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+      //       productHierarchy: "END_PRODUCT",
+      //       geographic: "ONSITE",
+      //       availability: "AVAILABILITY_GREATER_95",
+      //       responseTime: "PROACTIVE",
+      //       type: "MACHINE",
+      //       application: "HILL",
+      //       contractOrSupport: "LEVEL_I",
+      //       lifeStageOfMachine: "NEW_BREAKIN",
+      //       supportLevel: "PREMIUM",
+      //       numberOfEvents: 0.0,
+      //       itemRelations: null,
+      //       rating: null,
+      //       startUsage: null,
+      //       endUsage: null,
+      //       unit: null,
+      //       additionals: null,
+      //       preparedBy: null,
+      //       approvedBy: null,
+      //       preparedOn: null,
+      //       revisedBy: null,
+      //       revisedOn: null,
+      //       salesOffice: null,
+      //       offerValidity: null,
+      //       customItems: [],
+      //       customCoverages: [],
+      //       portfolioPrice: null,
+      //       additionalPrice: null,
+      //       escalationPrice: null,
+      //       saveState: false,
+      //       userId: null,
+      //       createdAt: "2022-11-08T05:48:54.826606",
+      //       template: false,
+      //       visibleInCommerce: false
+      //    };
+
+
+
+      //    const updatePortfolioRes = await updateCustomPortfolio(
+      //       CreatedcustomPortfolioData.customPortfolioId,
+      //       updateCreatedCutomPortfolo
+      //    );
+
+      //    console.log("createdCustomItems ", createdCustomItems);
+
+      //    if (updatePortfolioRes.status == 200) {
+      //       console.log("solutionValueIs : ", solutionValue);
+      //       localStorage.setItem("selectedTemplateItems", JSON.stringify(createdCustomItems));
+      //       localStorage.setItem("solutionValueIs", solutionValue);
+      //       localStorage.setItem("autocreatedcustomPortfolioData", JSON.stringify(CreatedcustomPortfolioData));
+      //       history.push({
+      //          pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
+      //          // selectedTemplateItems: createdCustomItems,
+      //          // solutionValueIs: solutionValue,
+      //          // autocreatedcustomPortfolioData: CreatedcustomPortfolioData
+      //       });
+      //       // console.log("Created");
+      //    }
+
+      //    // console.log("createdCustomItems is :", createdCustomItems);
+      //    // let reqData = {
+      //    //    type: "MACHINE",
+      //    //    name: `${Date.now()}`,
+      //    //    description: "",
+      //    //    externalReference: "",
+      //    //    customerSegment: "",
+      //    //    strategyTask: "PREVENTIVE_MAINTENANCE",
+      //    //    taskType: "PM1",
+      //    //    usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+      //    //    productHierarchy: "END_PRODUCT",
+      //    //    geographic: "ONSITE",
+      //    //    availability: "AVAILABILITY_GREATER_95",
+      //    //    responseTime: "PROACTIVE",
+      //    //    type: "MACHINE",
+      //    //    application: "HILL",
+      //    //    contractOrSupport: "LEVEL_I",
+      //    //    lifeStageOfMachine: "NEW_BREAKIN",
+      //    //    supportLevel: "PREMIUM",
+      //    //    serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
+      //    // };
+
+      //    // const customPortfolioRes = await createCustomPortfolio(reqData);
+      //    // var CreatedcustomPortfolioData = customPortfolioRes.data;
+
+      //    // console.log("customPortfolioRes customItems : ", CreatedcustomPortfolioData.customItems)
+
+      //    // for (let k = 0; k < selectedPortfolioTempMasterData.length; k++) {
+
+      //    //    var customItemsIdData = [];
+      //    //    var customPriceIdArr = [];
+      //    //    console.log("Hello " + k);
+      //    //    for (let j = 0; j < selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices.length; j++) {
+
+      //    //       /* =============== Search Custom Price Using selected Item PriceDataId ============== */
+
+      //    //       var itemsPrice = await itemPriceDataId(selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices[j].itemPriceDataId);
+      //    //       // console.log("item price is before : ", itemsPrice)
+
+      //    //       delete itemsPrice['itemPriceDataId'];
+
+      //    //       itemsPrice['customPortfolio'] = {};
+      //    //       itemsPrice['customItemPriceDataId'] = 0;
+      //    //       delete itemsPrice['portfolio'];
+
+
+      //    //       let itemPriceObj = {
+
+      //    //          customItemPriceDataId: 0,
+      //    //          quantity: parseInt(itemsPrice.quantity),
+      //    //          startUsage: itemsPrice.startUsage,
+      //    //          endUsage: itemsPrice.endUsage,
+      //    //          standardJobId: itemsPrice.standardJobId,
+      //    //          repairKitId: itemsPrice.repairKitId,
+      //    //          templateDescription: itemsPrice.templateDescription,
+      //    //          repairOption: itemsPrice.repairOption,
+      //    //          frequency: itemsPrice.frequency,
+      //    //          additional: itemsPrice.additional,
+      //    //          recommendedValue: parseInt(itemsPrice.recommendedValue),
+      //    //          partListId: itemsPrice.partListId,
+      //    //          serviceEstimateId: itemsPrice.serviceEstimateId,
+      //    //          numberOfEvents: parseInt(itemsPrice.numberOfEvents),
+      //    //          priceMethod: itemsPrice.priceMethod,
+      //    //          priceType: itemsPrice.priceType,
+      //    //          listPrice: itemsPrice.listPrice,
+      //    //          priceEscalation: itemsPrice.priceEscalation,
+      //    //          calculatedPrice: itemsPrice.calculatedPrice,
+      //    //          flatPrice: itemsPrice.flatPrice,
+      //    //          discountType: itemsPrice.discountType,
+      //    //          year: itemsPrice.year,
+      //    //          noOfYear: itemsPrice.noOfYear,
+      //    //          sparePartsPrice: itemsPrice.sparePartsPrice,
+      //    //          sparePartsPriceBreakDownPercentage: itemsPrice.sparePartsPriceBreakDownPercentage,
+      //    //          servicePrice: itemsPrice.servicePrice,
+      //    //          labourPrice: itemsPrice.labourPrice,
+      //    //          labourPriceBreakDownPercentage: itemsPrice.labourPriceBreakDownPercentage,
+      //    //          miscPrice: itemsPrice.miscPrice,
+      //    //          miscPriceBreakDownPercentage: itemsPrice.miscPriceBreakDownPercentage,
+      //    //          totalPrice: itemsPrice.totalPrice,
+      //    //          netService: itemsPrice.netService,
+      //    //          customPortfolio: {
+      //    //             portfolioId: 26
+      //    //          },
+      //    //          tenantId: itemsPrice.tenantId,
+      //    //          partsRequired: itemsPrice.partsRequired,
+      //    //          labourRequired: itemsPrice.labourRequired,
+      //    //          serviceRequired: itemsPrice.serviceRequired,
+      //    //          miscRequired: itemsPrice.miscRequired
+      //    //       }
+
+      //    //       customItemsIdData.push(itemPriceObj)
+      //    //       // console.log("item price is after  : ", itemsPrice)
+
+      //    //       // console.log("My values are : ", selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices[j].itemPriceDataId)
+
+      //    //    }
+      //    //    for (let p = 0; p < customItemsIdData.length; p++) {
+      //    //       var customPriceDataCreate = await customPriceCreation(customItemsIdData[p])
+      //    //       console.log("customPriceDataCreate REponse is ", customPriceDataCreate);
+
+      //    //       customPriceIdArr.push({
+      //    //          customItemPriceDataId: parseInt(customPriceDataCreate.data.customItemPriceDataId),
+      //    //       })
+      //    //       // var customPriceIdData = customPriceDataCreate.data.map(item => {
+      //    //       // return {
+      //    //       //    customItemPriceDataId: parseInt(item.itemPriceDataId),
+      //    //       // };
+      //    //    }
+
+
+      //    //    console.log("customPriceIdArr : ", customPriceIdArr)
+
+      //    //    let customItemObj = {
+      //    //       customItemId: 0,
+      //    //       itemName: selectedPortfolioTempMasterData[k].itemName,
+      //    //       customItemHeaderModel: {
+      //    //          // customItemHeaderId: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderId,
+      //    //          customItemHeaderId: 0,
+      //    //          itemHeaderDescription: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderDescription,
+      //    //          bundleFlag: selectedPortfolioTempMasterData[k].itemHeaderModel.bundleFlag,
+      //    //          portfolioItemId: selectedPortfolioTempMasterData[k].itemHeaderModel.portfolioItemId,
+      //    //          reference: selectedPortfolioTempMasterData[k].itemHeaderModel.reference,
+      //    //          itemHeaderMake: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderMake,
+      //    //          itemHeaderFamily: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderFamily,
+      //    //          model: selectedPortfolioTempMasterData[k].itemHeaderModel.model,
+      //    //          prefix: selectedPortfolioTempMasterData[k].itemHeaderModel.prefix,
+      //    //          type: selectedPortfolioTempMasterData[k].itemHeaderModel.type,
+      //    //          additional: selectedPortfolioTempMasterData[k].itemHeaderModel.additional,
+      //    //          currency: selectedPortfolioTempMasterData[k].itemHeaderModel.currency,
+      //    //          netPrice: selectedPortfolioTempMasterData[k].itemHeaderModel.netPrice,
+      //    //          itemProductHierarchy: selectedPortfolioTempMasterData[k].itemHeaderModel.itemProductHierarchy,
+      //    //          itemHeaderGeographic: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderGeographic,
+      //    //          responseTime: selectedPortfolioTempMasterData[k].itemHeaderModel.responseTime,
+      //    //          usage: selectedPortfolioTempMasterData[k].itemHeaderModel.usage,
+      //    //          validFrom: selectedPortfolioTempMasterData[k].itemHeaderModel.validFrom,
+      //    //          validTo: selectedPortfolioTempMasterData[k].itemHeaderModel.validTo,
+      //    //          estimatedTime: selectedPortfolioTempMasterData[k].itemHeaderModel.estimatedTime,
+      //    //          servicePrice: selectedPortfolioTempMasterData[k].itemHeaderModel.servicePrice,
+      //    //          status: selectedPortfolioTempMasterData[k].itemHeaderModel.status,
+      //    //          componentCode: selectedPortfolioTempMasterData[k].itemHeaderModel.componentCode,
+      //    //          componentDescription: selectedPortfolioTempMasterData[k].itemHeaderModel.componentDescription,
+      //    //          serialNumber: selectedPortfolioTempMasterData[k].itemHeaderModel.serialNumber,
+      //    //          itemHeaderStrategy: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderStrategy,
+      //    //          variant: selectedPortfolioTempMasterData[k].itemHeaderModel.variant,
+      //    //          itemHeaderCustomerSegment: selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderCustomerSegment,
+      //    //          jobCode: selectedPortfolioTempMasterData[k].itemHeaderModel.jobCode,
+      //    //          preparedBy: selectedPortfolioTempMasterData[k].itemHeaderModel.preparedBy,
+      //    //          approvedBy: selectedPortfolioTempMasterData[k].itemHeaderModel.approvedBy,
+      //    //          preparedOn: selectedPortfolioTempMasterData[k].itemHeaderModel.preparedOn,
+      //    //          revisedBy: selectedPortfolioTempMasterData[k].itemHeaderModel.revisedBy,
+      //    //          revisedOn: selectedPortfolioTempMasterData[k].itemHeaderModel.revisedOn,
+      //    //          salesOffice: selectedPortfolioTempMasterData[k].itemHeaderModel.salesOffice,
+      //    //          offerValidity: selectedPortfolioTempMasterData[k].itemHeaderModel.offerValidity
+      //    //       },
+      //    //       customItemBodyModel: {
+      //    //          customItemBodyId: 0,
+      //    //          itemBodyDescription: selectedPortfolioTempMasterData[k].itemBodyModel.itemBodyDescription,
+      //    //          spareParts: selectedPortfolioTempMasterData[k].itemBodyModel.spareParts,
+      //    //          labours: selectedPortfolioTempMasterData[k].itemBodyModel.labours,
+      //    //          miscellaneous: selectedPortfolioTempMasterData[k].itemBodyModel.miscellaneous,
+      //    //          taskType: selectedPortfolioTempMasterData[k].itemBodyModel.taskType,
+      //    //          solutionCode: selectedPortfolioTempMasterData[k].itemBodyModel.solutionCode,
+      //    //          usageIn: selectedPortfolioTempMasterData[k].itemBodyModel.usageIn,
+      //    //          usage: selectedPortfolioTempMasterData[k].itemBodyModel.usage,
+      //    //          year: selectedPortfolioTempMasterData[k].itemBodyModel.year,
+      //    //          avgUsage: selectedPortfolioTempMasterData[k].itemBodyModel.avgUsage,
+      //    //          unit: selectedPortfolioTempMasterData[k].itemBodyModel.unit,
+      //    //          // customItemPrices: selectedPortfolioTempMasterData[k].itemBodyModel.itemPrices,
+      //    //          customItemPrices: customPriceIdArr,
+      //    //       }
+      //    //    }
+
+
+
+      //    //    const itemRes = await customitemCreation(customItemObj)
+
+      //    //    console.log(" Response is : ", itemRes.data)
+
+      //    //    createdCustomItems.push(itemRes.data)
+
+      //    //    // console.log("create custom Item response data for index " + selectedPortfolioTempMasterData[k].itemHeaderModel.itemHeaderId + "  " + itemRes);
+      //    // }
+      //    // console.log("createdCustomItems 9871 : ", createdCustomItems)
+      //    // const customItemsId = createdCustomItems.map((data, i) => {
+      //    //    CreatedcustomPortfolioData.customItems.push({ "customItemId": parseInt(data.customItemId) })
+
+      //    // })
+
+
+      //    // console.log("CreatedcustomPortfolioData Final : ", CreatedcustomPortfolioData);
+
+      //    // const updatePortfolioRes = await updateCustomPortfolio(
+      //    //    CreatedcustomPortfolioData.customPortfolioId,
+      //    //    CreatedcustomPortfolioData
+      //    // );
+
+      //    // if (updatePortfolioRes.status == 200) {
+      //    //    history.push({
+      //    //       pathname: SOLUTION_BUILDER_PORRTFOLIO_TEMP,
+      //    //       selectedTemplateItems: createdCustomItems,
+      //    //       solutionValueIs: solutionValue,
+      //    //       autocreatedcustomPortfolioData: CreatedcustomPortfolioData
+      //    //    });
+      //    // }
+
+
+      // }
 
    }
 
@@ -1596,6 +1609,7 @@ export const Analytics = () => {
          localStorage.removeItem("solutionValueIs");
          localStorage.removeItem("autocreatedcustomPortfolioData");
          localStorage.removeItem("selectedSolutionTemplateItems");
+         localStorage.removeItem("createdCustomPortfolioData");
          localStorage.removeItem("distroyAble");
       }
    }, [masterData]);
@@ -2355,17 +2369,17 @@ export const Analytics = () => {
       //       />
       //    ),
       // },
-      {
-         name: (
-            <>
-               <div>ID</div>
-            </>
-         ),
-         selector: (row) => row.portfolioId,
-         wrap: true,
-         sortable: true,
-         format: (row) => row.portfolioId,
-      },
+      // {
+      //    name: (
+      //       <>
+      //          <div>ID</div>
+      //       </>
+      //    ),
+      //    selector: (row) => row.portfolioId,
+      //    wrap: true,
+      //    sortable: true,
+      //    format: (row) => row.portfolioId,
+      // },
       {
          name: (
             <>
@@ -3315,6 +3329,8 @@ export const Analytics = () => {
                   </div>
                </div>
 
+               {/* {isCustomPortfolioCreated ? <><CreatedCustomPortfolioTemplate customPortfolioDetails={createdCustomPortfolio} /></> : <></>} */}
+
 
                <Modal show={open} onHide={handleClose} size="lg"
                   aria-labelledby="contained-modal-title-vcenter"
@@ -3334,7 +3350,8 @@ export const Analytics = () => {
                      <Modal.Title>Solution Selector</Modal.Title>
                   </Modal.Header>
                   <Modal.Body className="p25 pt-4" style={{ backgroundColor: '#F8F8F8 !important' }}>
-                     <div>
+                     <div>import { PortfolioTemplatesResult } from './PortfolioTemplatesResult';
+
 
                         <h5 className='text-black'>How do you want to build the solution ?</h5>
                         <RadioGroup className=''
@@ -3623,7 +3640,7 @@ export const Analytics = () => {
                                  title=""
                                  columns={masterColumns}
                                  data={masterData}
-                                 customStyles={customStyles}
+                                 customStyles={customTableStyles}
                                  pagination
                               />
 
@@ -3661,7 +3678,7 @@ export const Analytics = () => {
                                  title=""
                                  columns={selectedMasterColumns}
                                  data={selectedMasterData}
-                                 customStyles={customStyles}
+                                 customStyles={customTableStyles}
                                  pagination
                               />
                            </div>
@@ -4069,7 +4086,7 @@ export const Analytics = () => {
                                        title=""
                                        columns={portfolioTemplatesMasterColumn}
                                        data={portfolioTempMasterData}
-                                       customStyles={customStyles}
+                                       customStyles={customTableStyles}
                                        selectableRows
                                        onSelectedRowsChange={(state) => setPortfolioTempFilterMasterData(state.selectedRows)}
                                        pagination
@@ -4116,7 +4133,7 @@ export const Analytics = () => {
                                  title=""
                                  columns={SelectedPortfolioMasterDataColumn}
                                  data={selectedPortfolioTempMasterData}
-                                 customStyles={customStyles}
+                                 customStyles={customTableStyles}
                                  pagination
                               />
                               <div className="m-2 text-right">
@@ -4155,7 +4172,7 @@ export const Analytics = () => {
                                           title=""
                                           columns={solutionTemplatesMasterColumn}
                                           data={solutionTempMasterData}
-                                          customStyles={customStyles}
+                                          customStyles={customTableStyles}
                                           pagination
                                        />
                                        <div className="m-2 text-right">

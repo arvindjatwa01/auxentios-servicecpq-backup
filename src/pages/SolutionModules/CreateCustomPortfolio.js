@@ -1587,6 +1587,9 @@ export function CreateCustomPortfolio() {
                     lifeStageOfMachine: "NEW_BREAKIN",
                     supportLevel: "PREMIUM",
                     serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
+
+                    template: flagTemplate,
+                    visibleInCommerce: flagCommerce,
                 };
                 const portfolioRes = await createCustomPortfolio(reqData);
                 if (portfolioRes.status === 200) {
@@ -1742,6 +1745,9 @@ export function CreateCustomPortfolio() {
                     revisedOn: administrative.revisedOn,
                     salesOffice: administrative.branch,
                     offerValidity: administrative.offerValidity,
+
+                    template: flagTemplate,
+                    visibleInCommerce: flagCommerce,
                 };
                 const strategyRes = await updateCustomPortfolio(
                     generalComponentData.portfolioId,
@@ -1775,29 +1781,29 @@ export function CreateCustomPortfolio() {
                         administrative.revisedBy != undefined &&
                         !validator.emailValidation(administrative.revisedBy)) ||
                     (administrative.branch == "" ||
-                        administrative.branch == undefined) 
-                        // || (administrative.offerValidity == "" ||
-                        // administrative.offerValidity == undefined)
+                        administrative.branch == undefined)
+                    // || (administrative.offerValidity == "" ||
+                    // administrative.offerValidity == undefined)
                 ) {
-                    throw "Please fill manditory fields with valid data";
+                    throw "Please fill mandatory fields with valid data";
                 }
                 // if (administrative.approvedBy != "" &&
                 //     administrative.approvedBy != undefined &&
                 //     !validator.emailValidation(administrative.approvedBy)) {
-                //     throw "Please fill manditory fields with valid data 11";
+                //     throw "Please fill mandatory fields with valid data 11";
                 // }
                 // if (administrative.revisedBy != "" &&
                 //     administrative.revisedBy != undefined &&
                 //     !validator.emailValidation(administrative.revisedBy)) {
-                //     throw "Please fill manditory fields with valid data 22";
+                //     throw "Please fill mandatory fields with valid data 22";
                 // }
 
                 // if (administrative.branch == "" || administrative.branch == undefined) {
-                //     throw "Please fill manditory fields with valid data 33";
+                //     throw "Please fill mandatory fields with valid data 33";
                 // }
 
                 // if (administrative.offerValidity == "" || administrative.offerValidity == undefined) {
-                //     throw "Please fill manditory fields with valid data 44";
+                //     throw "Please fill mandatory fields with valid data 44";
                 // }
 
                 setGeneralComponentData({
@@ -1892,6 +1898,9 @@ export function CreateCustomPortfolio() {
                     revisedOn: administrative.revisedOn,
                     salesOffice: administrative.branch,
                     offerValidity: administrative.offerValidity,
+
+                    template: flagTemplate,
+                    visibleInCommerce: flagCommerce,
                 };
 
                 const administryRes = await updateCustomPortfolio(
@@ -2041,6 +2050,9 @@ export function CreateCustomPortfolio() {
                     revisedOn: administrative.revisedOn,
                     salesOffice: administrative.branch,
                     offerValidity: administrative.offerValidity,
+
+                    template: flagTemplate,
+                    visibleInCommerce: flagCommerce,
                 };
 
                 console.log("Update able obj : ", obj);
@@ -3721,7 +3733,7 @@ export function CreateCustomPortfolio() {
         {
             name: (
                 <>
-                    <div>Id</div>
+                    <div>Item ID </div>
                 </>
             ),
             selector: (row) => row.customItemId,
@@ -3732,13 +3744,13 @@ export function CreateCustomPortfolio() {
         {
             name: (
                 <>
-                    <div>Description</div>
+                    <div>Item Description</div>
                 </>
             ),
-            selector: (row) => row.customItemBodyModel?.itemBodyDescription,
+            selector: (row) => row.customItemHeaderModel.itemHeaderDescription,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemBodyModel?.itemBodyDescription,
+            format: (row) => row.customItemHeaderModel.itemHeaderDescription,
         },
         {
             name: (
@@ -3746,43 +3758,21 @@ export function CreateCustomPortfolio() {
                     <div>Strategy</div>
                 </>
             ),
-            selector: (row) => row.customItemHeaderModel?.strategy,
+            selector: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemHeaderModel?.strategy,
+            format: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
         },
         {
             name: (
                 <>
-                    <div>Standard Job Id</div>
+                    <div>Task Type</div>
                 </>
             ),
-            selector: (row) => row.customItemBodyModel?.standardJobId,
+            selector: (row) => row.customItemBodyModel.taskType,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemBodyModel?.standardJobId,
-        },
-        {
-            name: (
-                <>
-                    <div>Repair Options</div>
-                </>
-            ),
-            selector: (row) => row.customItemBodyModel?.repairOption,
-            sortable: true,
-            maxWidth: "300px",
-            format: (row) => row.customItemBodyModel?.repairOption,
-        },
-        {
-            name: (
-                <>
-                    <div>Frequency</div>
-                </>
-            ),
-            selector: (row) => row.customItemBodyModel?.frequency,
-            wrap: true,
-            sortable: true,
-            format: (row) => row.customItemBodyModel?.frequency,
+            format: (row) => row.customItemBodyModel.taskType,
         },
         {
             name: (
@@ -3798,35 +3788,57 @@ export function CreateCustomPortfolio() {
         {
             name: (
                 <>
-                    <div>Parts $</div>
+                    <div>Net Price</div>
                 </>
             ),
-            selector: (row) => row.customItemBodyModel?.sparePartsPrice,
+            selector: (row) => row.customItemHeaderModel?.netPrice,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemBodyModel?.sparePartsPrice,
+            format: (row) => row.customItemHeaderModel?.netPrice,
         },
         {
             name: (
                 <>
-                    <div>Service $</div>
+                    <div>Net Additional</div>
                 </>
             ),
-            selector: (row) => row.customItemBodyModel?.servicePrice,
+            selector: (row) => row.customItemHeaderModel?.additional,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemBodyModel?.servicePrice,
+            format: (row) => row.customItemHeaderModel?.additional,
         },
         {
             name: (
                 <>
-                    <div>Total $</div>
+                    <div>Net Parts Price</div>
                 </>
             ),
-            selector: (row) => row.customItemBodyModel?.totalPrice,
+            selector: (row) => row.customItemBodyModel?.partsprice,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemBodyModel?.totalPrice,
+            format: (row) => row.customItemBodyModel?.partsprice,
+        },
+        {
+            name: (
+                <>
+                    <div>Total Price</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.netPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.netPrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Comments</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.comments,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.comments,
         },
         {
             name: (
@@ -4099,7 +4111,7 @@ export function CreateCustomPortfolio() {
         {
             name: (
                 <>
-                    <div>Id</div>
+                    <div>Item ID </div>
                 </>
             ),
             selector: (row) => row.customItemId,
@@ -4110,13 +4122,13 @@ export function CreateCustomPortfolio() {
         {
             name: (
                 <>
-                    <div>Description</div>
+                    <div>Item Description</div>
                 </>
             ),
-            selector: (row) => row.customItemBodyModel?.itemBodyDescription,
+            selector: (row) => row.customItemHeaderModel.itemHeaderDescription,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemBodyModel?.itemBodyDescription,
+            format: (row) => row.customItemHeaderModel.itemHeaderDescription,
         },
         {
             name: (
@@ -4124,43 +4136,21 @@ export function CreateCustomPortfolio() {
                     <div>Strategy</div>
                 </>
             ),
-            selector: (row) => row.customItemHeaderModel?.strategy,
+            selector: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemHeaderModel?.strategy,
+            format: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
         },
         {
             name: (
                 <>
-                    <div>Standard Job Id</div>
+                    <div>Task Type</div>
                 </>
             ),
-            selector: (row) => row.customItemBodyModel?.standardJobId,
+            selector: (row) => row.customItemBodyModel.taskType,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemBodyModel?.standardJobId,
-        },
-        {
-            name: (
-                <>
-                    <div>Repair Options</div>
-                </>
-            ),
-            selector: (row) => row.customItemBodyModel?.repairOption,
-            sortable: true,
-            maxWidth: "300px",
-            format: (row) => row.customItemBodyModel?.repairOption,
-        },
-        {
-            name: (
-                <>
-                    <div>Frequency</div>
-                </>
-            ),
-            selector: (row) => row.customItemBodyModel?.frequency,
-            wrap: true,
-            sortable: true,
-            format: (row) => row.customItemBodyModel?.frequency,
+            format: (row) => row.customItemBodyModel.taskType,
         },
         {
             name: (
@@ -4176,35 +4166,57 @@ export function CreateCustomPortfolio() {
         {
             name: (
                 <>
-                    <div>Parts $</div>
+                    <div>Net Price</div>
                 </>
             ),
-            selector: (row) => row.customItemBodyModel?.sparePartsPrice,
+            selector: (row) => row.customItemHeaderModel?.netPrice,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemBodyModel?.sparePartsPrice,
+            format: (row) => row.customItemHeaderModel?.netPrice,
         },
         {
             name: (
                 <>
-                    <div>Service $</div>
+                    <div>Net Additional</div>
                 </>
             ),
-            selector: (row) => row.customItemBodyModel?.servicePrice,
+            selector: (row) => row.customItemHeaderModel?.additional,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemBodyModel?.servicePrice,
+            format: (row) => row.customItemHeaderModel?.additional,
         },
         {
             name: (
                 <>
-                    <div>Total $</div>
+                    <div>Net Parts Price</div>
                 </>
             ),
-            selector: (row) => row.customItemBodyModel?.totalPrice,
+            selector: (row) => row.customItemBodyModel?.partsprice,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemBodyModel?.totalPrice,
+            format: (row) => row.customItemBodyModel?.partsprice,
+        },
+        {
+            name: (
+                <>
+                    <div>Total Price</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.netPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.netPrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Comments</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.comments,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.comments,
         },
     ];
     const tempBundleItemColumns1 = [
@@ -4212,7 +4224,7 @@ export function CreateCustomPortfolio() {
         {
             name: (
                 <>
-                    <div>Id3</div>
+                    <div>Item Id</div>
                 </>
             ),
             selector: (row) => row.itemId,
@@ -4226,10 +4238,21 @@ export function CreateCustomPortfolio() {
                     <div>Description</div>
                 </>
             ),
-            selector: (row) => row.itemBodyModel.itemBodyDescription,
+            selector: (row) => row.itemHeaderModel.itemHeaderDescription,
             wrap: true,
             sortable: true,
-            format: (row) => row.itemBodyModel.itemBodyDescription,
+            format: (row) => row.itemHeaderModel.itemHeaderDescription,
+        },
+        {
+            name: (
+                <>
+                    <div>Usage In</div>
+                </>
+            ),
+            selector: (row) => row.itemBodyModel.usageIn,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.itemBodyModel.usageIn,
         },
         {
             name: (
@@ -4237,43 +4260,21 @@ export function CreateCustomPortfolio() {
                     <div>Strategy</div>
                 </>
             ),
-            selector: (row) => row.itemHeaderModel.strategy,
+            selector: (row) => row.itemHeaderModel.itemHeaderStrategy,
             wrap: true,
             sortable: true,
-            format: (row) => row.itemHeaderModel.strategy,
+            format: (row) => row.itemHeaderModel.itemHeaderStrategy,
         },
         {
             name: (
                 <>
-                    <div>Standard Job Id</div>
+                    <div>Task Type</div>
                 </>
             ),
-            selector: (row) => row.itemBodyModel.standardJobId,
+            selector: (row) => row.itemBodyModel.taskType,
             wrap: true,
             sortable: true,
-            format: (row) => row.itemBodyModel.standardJobId,
-        },
-        {
-            name: (
-                <>
-                    <div>Repair Options</div>
-                </>
-            ),
-            selector: (row) => row.itemBodyModel.repairOption,
-            sortable: true,
-            maxWidth: "300px",
-            format: (row) => row.itemBodyModel.repairOption,
-        },
-        {
-            name: (
-                <>
-                    <div>Frequency</div>
-                </>
-            ),
-            selector: (row) => row.itemBodyModel.frequency,
-            wrap: true,
-            sortable: true,
-            format: (row) => row.itemBodyModel.frequency,
+            format: (row) => row.itemBodyModel.taskType,
         },
         {
             name: (
@@ -4289,43 +4290,109 @@ export function CreateCustomPortfolio() {
         {
             name: (
                 <>
-                    <div>Parts $</div>
+                    <div>Recommended Value</div>
                 </>
             ),
-            selector: (row) => row.itemBodyModel.sparePartsPrice,
+            selector: (row) => row.itemBodyModel.recommendedValue,
             wrap: true,
             sortable: true,
-            format: (row) => row.itemBodyModel.sparePartsPrice,
+            format: (row) => row.itemBodyModel.recommendedValue,
         },
         {
             name: (
                 <>
-                    <div>Service $</div>
+                    <div>Template/Kit ID</div>
                 </>
             ),
-            selector: (row) => row.itemBodyModel.servicePrice,
+            selector: (row) => row.itemBodyModel.repairKitId,
             wrap: true,
             sortable: true,
-            format: (row) => row.itemBodyModel.servicePrice,
+            format: (row) => row.itemBodyModel.repairKitId,
         },
-        {
-            name: (
-                <>
-                    <div>Total $</div>
-                </>
-            ),
-            selector: (row) => row.itemBodyModel.totalPrice,
-            wrap: true,
-            sortable: true,
-            format: (row) => row.itemBodyModel.totalPrice,
-        },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Standard Job Id</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.itemBodyModel.standardJobId,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.itemBodyModel.standardJobId,
+        // },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Repair Options</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.itemBodyModel.repairOption,
+        //     sortable: true,
+        //     maxWidth: "300px",
+        //     format: (row) => row.itemBodyModel.repairOption,
+        // },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Frequency</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.itemBodyModel.frequency,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.itemBodyModel.frequency,
+        // },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Quantity</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.itemBodyModel.quantity,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.itemBodyModel.quantity,
+        // },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Parts $</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.itemBodyModel.sparePartsPrice,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.itemBodyModel.sparePartsPrice,
+        // },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Service $</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.itemBodyModel.servicePrice,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.itemBodyModel.servicePrice,
+        // },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Total $</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.itemBodyModel.totalPrice,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.itemBodyModel.totalPrice,
+        // },
     ];
     const tempBundleItemColumns1New = [
 
         {
             name: (
                 <>
-                    <div>Id3</div>
+                    <div>Item Id</div>
                 </>
             ),
             selector: (row) => row.customItemId,
@@ -4336,13 +4403,13 @@ export function CreateCustomPortfolio() {
         {
             name: (
                 <>
-                    <div>Description</div>
+                    <div>Item Description</div>
                 </>
             ),
-            selector: (row) => row.customItemBodyModel.itemBodyDescription,
+            selector: (row) => row.customItemHeaderModel.itemHeaderDescription,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemBodyModel.itemBodyDescription,
+            format: (row) => row.customItemHeaderModel.itemHeaderDescription,
         },
         {
             name: (
@@ -4350,43 +4417,21 @@ export function CreateCustomPortfolio() {
                     <div>Strategy</div>
                 </>
             ),
-            selector: (row) => row.customItemHeaderModel.strategy,
+            selector: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemHeaderModel.strategy,
+            format: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
         },
         {
             name: (
                 <>
-                    <div>Standard Job Id</div>
+                    <div>Task Type</div>
                 </>
             ),
-            selector: (row) => row.customItemBodyModel.standardJobId,
+            selector: (row) => row.customItemBodyModel.taskType,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemBodyModel.standardJobId,
-        },
-        {
-            name: (
-                <>
-                    <div>Repair Options</div>
-                </>
-            ),
-            selector: (row) => row.customItemBodyModel.repairOption,
-            sortable: true,
-            maxWidth: "300px",
-            format: (row) => row.customItemBodyModel.repairOption,
-        },
-        {
-            name: (
-                <>
-                    <div>Frequency</div>
-                </>
-            ),
-            selector: (row) => row.customItemBodyModel.frequency,
-            wrap: true,
-            sortable: true,
-            format: (row) => row.customItemBodyModel.frequency,
+            format: (row) => row.customItemBodyModel.taskType,
         },
         {
             name: (
@@ -4394,32 +4439,65 @@ export function CreateCustomPortfolio() {
                     <div>Quantity</div>
                 </>
             ),
-            selector: (row) => row.customItemBodyModel.quantity,
+            selector: (row) => row.customItemBodyModel?.quantity,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemBodyModel.quantity,
+            format: (row) => row.customItemBodyModel?.quantity,
         },
         {
             name: (
                 <>
-                    <div>Parts $</div>
+                    <div>Net Price</div>
                 </>
             ),
-            selector: (row) => row.customItemBodyModel.sparePartsPrice,
+            selector: (row) => row.customItemHeaderModel?.netPrice,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemBodyModel.sparePartsPrice,
+            format: (row) => row.customItemHeaderModel?.netPrice,
         },
         {
             name: (
                 <>
-                    <div>Service $</div>
+                    <div>Net Additional</div>
                 </>
             ),
-            selector: (row) => row.customItemBodyModel.servicePrice,
+            selector: (row) => row.customItemHeaderModel?.additional,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemBodyModel.servicePrice,
+            format: (row) => row.customItemHeaderModel?.additional,
+        },
+        {
+            name: (
+                <>
+                    <div>Net Parts Price</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel?.partsprice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel?.partsprice,
+        },
+        {
+            name: (
+                <>
+                    <div>Total Price</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.netPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.netPrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Comments</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.comments,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.comments,
         },
         {
             name: (
@@ -6105,11 +6183,10 @@ export function CreateCustomPortfolio() {
                                                 <div>
                                                     <FormGroup>
                                                         <FormControlLabel
-                                                            control={<Switch />}
+                                                            control={<Switch checked={flagTemplate} />}
                                                             label=" FLAG FOR TEMPLATE"
                                                             value={flagTemplate}
-
-
+                                                            onChange={(e) => setFlagTemplate(e.target.checked)}
                                                         />
                                                     </FormGroup>
                                                 </div>
@@ -6132,9 +6209,10 @@ export function CreateCustomPortfolio() {
                                                 <div>
                                                     <FormGroup>
                                                         <FormControlLabel
-                                                            control={<Switch />}
+                                                            control={<Switch checked={flagCommerce} />}
                                                             label=" FLAG FOR COMMERCE"
                                                             value={flagCommerce}
+                                                            onChange={(e) => setFlagCommerce(e.target.checked)}
                                                         />
                                                     </FormGroup>
                                                 </div>
