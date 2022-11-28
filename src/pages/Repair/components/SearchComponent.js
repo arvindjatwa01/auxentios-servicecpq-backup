@@ -108,7 +108,7 @@ const SearchComponent = (props) => {
             <div
               className={
                 props.background === "white"
-                  ? "customselectPortfolio overflow-hidden d-flex align-items-center mr-3 my-2 border-radius-6"
+                  ? "customselectPortfolio d-flex align-items-center mr-3 my-2 border-radius-6"
                   : "customselect border-white d-flex align-items-center mr-3 my-2 border-radius-6"
               }
               style={{ position: "relative", zIndex: 20 - i }}
