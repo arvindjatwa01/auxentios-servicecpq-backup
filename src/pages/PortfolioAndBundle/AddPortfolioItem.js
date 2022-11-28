@@ -964,6 +964,7 @@ const AddPortfolioItem = (props) => {
                   >
                     <input
                       type="number"
+                      // type="text"
                       className="form-control rounded-top-left-0 rounded-bottom-left-0"
                       placeholder="Recommended Value"
                       // defaultValue={props?.priceCalculator?.startUsage}
@@ -971,6 +972,7 @@ const AddPortfolioItem = (props) => {
                       onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
                       value={addPortFolioItem.recommendedValue}
                       name="recommendedValue"
+                      // name="startUsage"
                     // onChange={(e) =>
                     //   setPriceCalculator({
                     //     ...priceCalculator,
