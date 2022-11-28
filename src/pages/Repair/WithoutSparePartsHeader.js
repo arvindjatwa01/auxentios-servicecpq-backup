@@ -45,9 +45,10 @@ import { customerSearch, machineSearch } from "services/searchServices";
 import RepairServiceEstimate from "./RepairServiceEstimate";
 import ModalCreateVersion from "./components/ModalCreateVersion";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import { ERROR_MAX_VERSIONS } from "./CONSTANTS";
+import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "./CONSTANTS";
 import { useAppSelector } from "app/hooks";
 import { selectDropdownOption, selectPricingMethodList } from "./dropdowns/repairSlice";
+import LoadingProgress from "./components/Loader";
 
 function WithoutSparePartsHeader(props) {
   const history = useHistory();
@@ -221,7 +222,7 @@ function WithoutSparePartsHeader(props) {
     setViewOnlyTab({
       custViewOnly: result.customerId ? true : false,
       machineViewOnly: result.serialNo ? true : false,
-      generalViewOnly: result.estimationNumber ? true : false,
+      generalViewOnly: result.estimationDate ? true : false,
       estViewOnly: result.preparedBy ? true : false,
       priceViewOnly: result.priceMethod !== "EMPTY" && result.priceMethod !== null && result.priceMethod !== "" ? true : false,
     });
@@ -261,7 +262,7 @@ function WithoutSparePartsHeader(props) {
     });
     setGeneralData({
       description: result.description,
-      estimationDate: result.estimationDate,
+      estimationDate: result.estimationDate? result.estimationDate : new Date() ,
       estimationNo: state.builderId,
       reference: result.reference,
       validity: validityOptions.find(
@@ -272,15 +273,15 @@ function WithoutSparePartsHeader(props) {
     setEstimationData({
       approvedBy: result.approver,
       preparedBy: result.preparedBy,
-      preparedOn: result.preparedOn,
+      preparedOn: result.preparedOn? result.preparedOn : new Date(),
       revisedBy: result.revisedBy,
-      revisedOn: result.revisedOn,
+      revisedOn: result.revisedOn? result.revisedOn : new Date(),
       salesOffice: salesOfficeOptions.find(
         (element) => element.value === result.salesOffice
       ),
     });
     setPricingData({
-      priceDate: result.priceDate,
+      priceDate: result.priceDate? result.priceDate : new Date(),
       priceMethod: priceMethodOptions.find(
         (element) => element.value === result.priceMethod
       ),
@@ -821,15 +822,7 @@ function WithoutSparePartsHeader(props) {
                   sx={{ width: "100%", typography: "body1" }}
                 >
                   {headerLoading ? (
-                    <div className="d-flex align-items-center justify-content-center">
-                      <Loader
-                        type="spinner-default"
-                        bgColor={"#872ff7"}
-                        title={"spinner-default"}
-                        color={"#FFFFFF"}
-                        size={35}
-                      />
-                    </div>
+                    <LoadingProgress/>
                   ) : (
                     <TabContext value={value}>
                       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -844,7 +837,7 @@ function WithoutSparePartsHeader(props) {
                       <TabPanel value="customer">
                         {!viewOnlyTab.custViewOnly ? (
                           <>
-                            <div className="row">
+                            <div className="row input-fields">
                               <div className="col-md-6 col-sm-6">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
@@ -853,7 +846,7 @@ function WithoutSparePartsHeader(props) {
                                   <input
                                     type="text"
                                     disabled
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     id="customer-src"
                                     placeholder="Required"
                                     value={customerData.source}
@@ -890,7 +883,7 @@ function WithoutSparePartsHeader(props) {
                                     value={customerData.customerName}
                                     name="customerName"
                                     onChange={handleCustomerDataChange}
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     id="customerNameid"
                                     placeholder="Optional"
                                   />
@@ -906,7 +899,7 @@ function WithoutSparePartsHeader(props) {
                                     value={customerData.contactName}
                                     name="contactName"
                                     onChange={handleCustomerDataChange}
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     id="contactNameid"
                                     placeholder="Required"
                                   />
@@ -922,7 +915,7 @@ function WithoutSparePartsHeader(props) {
                                     value={customerData.contactEmail}
                                     name="contactEmail"
                                     onChange={handleCustomerDataChange}
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     id="contatEmail"
                                     aria-describedby="emailHelp"
                                     placeholder="Required"
@@ -936,7 +929,7 @@ function WithoutSparePartsHeader(props) {
                                   </label>
                                   <input
                                     type="tel"
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     onChange={handleCustomerDataChange}
                                     value={customerData.contactPhone}
                                     name="contactPhone"
@@ -954,7 +947,7 @@ function WithoutSparePartsHeader(props) {
                                     value={customerData.customerGroup}
                                     name="customerGroup"
                                     onChange={handleCustomerDataChange}
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     id="custGroup"
                                     placeholder="Required"
                                   />
@@ -1048,7 +1041,7 @@ function WithoutSparePartsHeader(props) {
                       <TabPanel value="machine">
                         {!viewOnlyTab.machineViewOnly ? (
                           <>
-                            <div className="row">
+                            <div className="row input-fields">
                               <div className="col-md-6 col-sm-6">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
@@ -1056,7 +1049,7 @@ function WithoutSparePartsHeader(props) {
                                   </label>
                                   <input
                                     type="text"
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     id="make-id"
                                     name="make"
                                     value={machineData.make}
@@ -1073,7 +1066,7 @@ function WithoutSparePartsHeader(props) {
                                   </label>
                                   <input
                                     type="text"
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     id="family-id"
                                     name="family"
                                     value={machineData.family}
@@ -1130,7 +1123,7 @@ function WithoutSparePartsHeader(props) {
                                   </label>
                                   <input
                                     type="text"
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     id="smu-id"
                                     name="smu"
                                     value={machineData.smu}
@@ -1146,7 +1139,7 @@ function WithoutSparePartsHeader(props) {
                                   </label>
                                   <input
                                     type="text"
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     onChange={handleMachineDataChange}
                                     value={machineData.fleetNo}
                                     name="fleetNo"
@@ -1162,7 +1155,7 @@ function WithoutSparePartsHeader(props) {
                                   </label>
                                   <input
                                     type="text"
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     onChange={handleMachineDataChange}
                                     value={machineData.registrationNo}
                                     name="registrationNo"
@@ -1178,7 +1171,7 @@ function WithoutSparePartsHeader(props) {
                                   </label>
                                   <input
                                     type="text"
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     id="chasis-id"
                                     onChange={handleMachineDataChange}
                                     value={machineData.chasisNo}
@@ -1293,7 +1286,7 @@ function WithoutSparePartsHeader(props) {
                       <TabPanel value="estimation">
                         {!viewOnlyTab.estViewOnly ? (
                           <>
-                            <div className="row">
+                            <div className="row input-fields">
                               <div className="col-md-6 col-sm-6">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
@@ -1301,7 +1294,7 @@ function WithoutSparePartsHeader(props) {
                                   </label>
                                   <input
                                     type="text"
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     placeholder="Required"
                                     value={estimationData.preparedBy}
                                     name="preparedBy"
@@ -1316,7 +1309,7 @@ function WithoutSparePartsHeader(props) {
                                   </label>
                                   <input
                                     type="text"
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     value={estimationData.approvedBy}
                                     name="approvedBy"
                                     onChange={handleEstimationDataChange}
@@ -1334,6 +1327,7 @@ function WithoutSparePartsHeader(props) {
                                     <DatePicker
                                       variant="inline"
                                       format="dd/MM/yyyy"
+                                      inputProps={{ style: FONT_STYLE }}
                                       className="form-controldate border-radius-10"
                                       label=""
                                       value={estimationData.preparedOn}
@@ -1354,7 +1348,7 @@ function WithoutSparePartsHeader(props) {
                                   </label>
                                   <input
                                     type="text"
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     value={estimationData.revisedBy}
                                     name="revisedBy"
                                     onChange={handleEstimationDataChange}
@@ -1371,6 +1365,7 @@ function WithoutSparePartsHeader(props) {
                                     <DatePicker
                                       variant="inline"
                                       format="dd/MM/yyyy"
+                                      inputProps={{ style: FONT_STYLE }}
                                       className="form-controldate border-radius-10"
                                       label=""
                                       value={estimationData.revisedOn}
@@ -1399,6 +1394,7 @@ function WithoutSparePartsHeader(props) {
                                     options={salesOfficeOptions}
                                     placeholder="Required"
                                     value={estimationData.salesOffice}
+                                    styles={FONT_STYLE_SELECT}
                                   />
                                 </div>
                               </div>
@@ -1493,7 +1489,7 @@ function WithoutSparePartsHeader(props) {
                       <TabPanel value="general">
                         {!viewOnlyTab.generalViewOnly ? (
                           <>
-                            <div className="row">
+                            <div className="row input-fields">
                               <div className="col-md-6 col-sm-6">
                                 <div className="align-items-center date-box">
                                   <label className="text-light-dark font-size-12 font-weight-500">
@@ -1507,6 +1503,7 @@ function WithoutSparePartsHeader(props) {
                                     <DatePicker
                                       variant="inline"
                                       format="dd/MM/yyyy"
+                                      inputProps={{ style: FONT_STYLE }}
                                       className="form-controldate border-radius-10"
                                       label=""
                                       value={generalData.estimationDate}
@@ -1529,7 +1526,7 @@ function WithoutSparePartsHeader(props) {
                                   <input
                                     type="text"
                                     disabled
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     id="estNoId"
                                     value={generalData.estimationNo}
                                   />
@@ -1542,7 +1539,7 @@ function WithoutSparePartsHeader(props) {
                                   </label>
                                   <input
                                     type="text"
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     id="desc-id"
                                     placeholder="Required"
                                     maxLength={140}
@@ -1563,7 +1560,7 @@ function WithoutSparePartsHeader(props) {
                                   </label>
                                   <input
                                     type="text"
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     id="desc-id"
                                     placeholder="Required"
                                     maxLength={140}
@@ -1593,6 +1590,7 @@ function WithoutSparePartsHeader(props) {
                                     options={validityOptions}
                                     placeholder="Required"
                                     value={generalData.validity}
+                                    styles={FONT_STYLE_SELECT}
                                   />
                                 </div>
                               </div>
@@ -1603,7 +1601,7 @@ function WithoutSparePartsHeader(props) {
                                   </label>
                                   <input
                                     type="text"
-                                    className="form-control border-radius-10"
+                                    className="form-control border-radius-10 text-primary"
                                     placeholder="Optional"
                                     disabled
                                     value={parseFloat(
@@ -1702,7 +1700,7 @@ function WithoutSparePartsHeader(props) {
                       </TabPanel>
                       <TabPanel value="price">
                       {!viewOnlyTab.priceViewOnly ? 
-                        <><div className="row">
+                        <><div className="row input-fields">
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
@@ -1711,7 +1709,7 @@ function WithoutSparePartsHeader(props) {
                               <input
                                 type="text"
                                 disabled
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 placeholder="Optional"
                                 value={pricingData.netPrice}
                               />
@@ -1726,6 +1724,7 @@ function WithoutSparePartsHeader(props) {
                                 <DatePicker
                                   variant="inline"
                                   format="dd/MM/yyyy"
+                                  inputProps={{ style: FONT_STYLE }}
                                   className="form-controldate border-radius-10"
                                   label=""
                                   disableFuture
@@ -1748,7 +1747,7 @@ function WithoutSparePartsHeader(props) {
                               <input
                                 type="text"
                                 disabled
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 placeholder="Optional"
                                 value={pricingData.}
                               />
@@ -1769,6 +1768,7 @@ function WithoutSparePartsHeader(props) {
                                 }
                                 options={priceMethodOptions}
                                 placeholder="Required"
+                                styles={FONT_STYLE_SELECT}
                               />
                             </div>
                           </div>
@@ -1779,7 +1779,7 @@ function WithoutSparePartsHeader(props) {
                               </label>
                               <input
                                 type="text"
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 placeholder="Optional"
                                 value={pricingData.adjustedPrice}
                                 onChange={e=> setPricingData({...pricingData, adjustedPrice: e.target.value})}
@@ -1796,6 +1796,7 @@ function WithoutSparePartsHeader(props) {
                                 options={currencyOptions}
                                 placeholder="Required"
                                 value={pricingData.currency}
+                                styles={FONT_STYLE_SELECT}
                               />
                             </div>
                           </div>

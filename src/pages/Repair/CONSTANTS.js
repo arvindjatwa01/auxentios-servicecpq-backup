@@ -59,6 +59,31 @@ export const BUILDER_SEARCH_Q_OPTIONS = [
   { label: "SerialNo", value: "serialNo" },
   { label: "Status", value: "status" },
 ];
+export const PARTLIST_BUILDER_SEARCH_Q_OPTIONS = [
+  {
+    label: "ID",
+    value: "estimationNumber",
+  },
+  {
+    label: "Description",
+    value: "description",
+  },
+  {
+    label: "Customer ID",
+    value: "customerId",
+  },
+  { label: "Model", value: "model" },
+  {
+    label: "Make",
+    value: "make",
+  },
+  {
+    label: "Family",
+    value: "family",
+  },
+  { label: "SerialNo", value: "serialNo" },
+  { label: "Status", value: "status" },
+];
 export const CONSUMABLE_SEARCH_Q_OPTIONS = [
   {
     label: "Id",
@@ -107,4 +132,25 @@ export const GRID_STYLE = {
   "& .MuiDataGrid-cellContent": {
     fontSize: 12,
   },  
+}
+export const FONT_STYLE = {
+  color: '#872ff7',
+  fontSize: '17px',
+  fontWeight: '500',
+  padding: 0
+}
+
+export const FONT_STYLE_SELECT = {
+  placeholder: provided => ({
+    ...provided, 
+    ...FONT_STYLE
+  }),
+  control: provided => ({
+    ...provided,
+    borderRadius: 10,
+  }),
+  singleValue: provided => ({
+    ...provided,
+    ...FONT_STYLE
+  })
 }

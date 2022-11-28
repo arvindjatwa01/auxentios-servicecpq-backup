@@ -83,6 +83,8 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 // import logoIcon from '../assets/icons/svg/menu.png'
 import {
   ERROR_MAX_VERSIONS,
+  FONT_STYLE,
+  FONT_STYLE_SELECT,
   GRID_STYLE,
   INITIAL_PAGE_NO,
   INITIAL_PAGE_SIZE,
@@ -100,7 +102,11 @@ import ModalCreateVersion from "./components/ModalCreateVersion";
 import ModalShare from "./components/ModalShare";
 import SearchComponent from "./components/SearchComponent";
 import { useAppSelector } from "app/hooks";
-import { selectDropdownOption, selectPricingMethodList } from "./dropdowns/repairSlice";
+import {
+  selectDropdownOption,
+  selectPricingMethodList,
+} from "./dropdowns/repairSlice";
+import LoadingProgress from "./components/Loader";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -213,7 +219,7 @@ function PartList(props) {
     machineViewOnly: false,
     generalViewOnly: false,
     estViewOnly: false,
-    priceViewOnly: false
+    priceViewOnly: false,
   });
 
   const [customerData, setCustomerData] = useState({
@@ -282,10 +288,10 @@ function PartList(props) {
     { value: "60", label: "2 months" },
   ];
 
-    // Retrieve price methods
-    const priceMethodOptions = useAppSelector(
-      selectDropdownOption(selectPricingMethodList)
-    );
+  // Retrieve price methods
+  const priceMethodOptions = useAppSelector(
+    selectDropdownOption(selectPricingMethodList)
+  );
 
   // TODO: Replace it with tenant details
   const salesOfficeOptions = [
@@ -309,7 +315,6 @@ function PartList(props) {
   };
 
   useEffect(() => {
-    
     if (state && state.type === "new") {
       console.log(state);
       setBuilderId(state.builderId);
@@ -401,9 +406,14 @@ function PartList(props) {
     setViewOnlyTab({
       custViewOnly: result.customerId ? true : false,
       machineViewOnly: result.serialNo ? true : false,
-      generalViewOnly: result.estimationNumber ? true : false,
+      generalViewOnly: result.estimationDate ? true : false,
       estViewOnly: result.preparedBy ? true : false,
-      priceViewOnly: result.priceMethod !== "EMPTY" && result.priceMethod !== null && result.priceMethod !== "" ? true : false,
+      priceViewOnly:
+        result.priceMethod !== "EMPTY" &&
+        result.priceMethod !== null &&
+        result.priceMethod !== ""
+          ? true
+          : false,
     });
     setRating(result.rating);
     setSelBuilderStatus(
@@ -440,7 +450,7 @@ function PartList(props) {
     });
     setGeneralData({
       description: result.description,
-      estimationDate: result.estimationDate,
+      estimationDate: result.estimationDate? result.estimationDate : new Date() ,
       estimationNo: result.estimationNumber,
       reference: result.reference,
       validity: validityOptions.find(
@@ -451,15 +461,15 @@ function PartList(props) {
     setEstimationData({
       approvedBy: result.approver,
       preparedBy: result.preparedBy,
-      preparedOn: result.preparedOn,
+      preparedOn: result.preparedOn? result.preparedOn : new Date(),
       revisedBy: result.revisedBy,
-      revisedOn: result.revisedOn,
+      revisedOn: result.revisedOn? result.revisedOn : new Date(),
       salesOffice: salesOfficeOptions.find(
         (element) => element.value === result.salesOffice
       ),
     });
     setPricingData({
-      priceDate: result.priceDate,
+      priceDate: result.priceDate? result.priceDate : new Date(),
       priceMethod: priceMethodOptions.find(
         (element) => element.value === result.priceMethod
       ),
@@ -468,7 +478,7 @@ function PartList(props) {
       currency: currencyOptions.find(
         (element) => element.value === result.currency
       ),
-    })
+    });
   };
 
   const createVersion = async (versionDesc) => {
@@ -1006,7 +1016,7 @@ function PartList(props) {
     { value: "vanilla", label: "Construction-Medium" },
     { value: "Construction", label: "Construction" },
   ];
-  const currencyOptions = [{ value: "USD", label: "USD" }]
+  const currencyOptions = [{ value: "USD", label: "USD" }];
 
   //Logic to handle status changes
   const disableStatusOptions = (option) => {
@@ -1062,7 +1072,10 @@ function PartList(props) {
     var searchStr = "";
     querySearchSelector.map(function (item, i) {
       if (i === 0 && item.selectCategory.value && item.inputSearch) {
-        searchStr = item.selectCategory.value + ":" + encodeURI('"' + item.inputSearch + '"');
+        searchStr =
+          item.selectCategory.value +
+          ":" +
+          encodeURI('"' + item.inputSearch + '"');
       } else if (
         item.selectCategory.value &&
         item.inputSearch &&
@@ -1133,7 +1146,7 @@ function PartList(props) {
         ...viewOnlyTab,
         generalViewOnly: false,
       });
-      else if (value === "price" && viewOnlyTab.priceViewOnly)
+    else if (value === "price" && viewOnlyTab.priceViewOnly)
       setViewOnlyTab({
         ...viewOnlyTab,
         priceViewOnly: false,
@@ -1480,19 +1493,14 @@ function PartList(props) {
             </h5>
             <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
               {headerLoading ? (
-                <div className="d-flex align-items-center justify-content-center">
-                  <Loader
-                    type="spinner-default"
-                    bgColor={"#872ff7"}
-                    title={"spinner-default"}
-                    color={"#FFFFFF"}
-                    size={35}
-                  />
-                </div>
+                <LoadingProgress />
               ) : (
                 <TabContext value={value}>
                   <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                    <TabList className="custom-tabs-div" onChange={handleChange}>
+                    <TabList
+                      className="custom-tabs-div"
+                      onChange={handleChange}
+                    >
                       <Tab label="Customer" value="customer" />
                       <Tab label="Machine " value="machine" />
                       <Tab label="Estimation Details" value="estimation" />
@@ -1503,7 +1511,7 @@ function PartList(props) {
                   <TabPanel value="customer">
                     {!viewOnlyTab.custViewOnly ? (
                       <>
-                        <div className="row">
+                        <div className="row input-fields">
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
@@ -1512,7 +1520,7 @@ function PartList(props) {
                               <input
                                 type="text"
                                 disabled
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 id="customer-src"
                                 placeholder="Placeholder (Required)"
                                 value={customerData.source}
@@ -1546,7 +1554,7 @@ function PartList(props) {
                                 value={customerData.customerName}
                                 name="customerName"
                                 onChange={handleCustomerDataChange}
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 id="customerNameid"
                                 placeholder="Placeholder (Optional)"
                               />
@@ -1562,7 +1570,7 @@ function PartList(props) {
                                 value={customerData.contactName}
                                 name="contactName"
                                 onChange={handleCustomerDataChange}
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 id="contactNameid"
                                 placeholder="Placeholder (Required)"
                               />
@@ -1578,7 +1586,7 @@ function PartList(props) {
                                 value={customerData.contactEmail}
                                 name="contactEmail"
                                 onChange={handleCustomerDataChange}
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 id="contatEmail"
                                 aria-describedby="emailHelp"
                                 placeholder="Placeholder (Required)"
@@ -1592,7 +1600,7 @@ function PartList(props) {
                               </label>
                               <input
                                 type="tel"
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 onChange={handleCustomerDataChange}
                                 value={customerData.contactPhone}
                                 name="contactPhone"
@@ -1610,7 +1618,7 @@ function PartList(props) {
                                 value={customerData.customerGroup}
                                 name="customerGroup"
                                 onChange={handleCustomerDataChange}
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 id="custGroup"
                                 placeholder="Placeholder (Required)"
                               />
@@ -1706,7 +1714,7 @@ function PartList(props) {
                   <TabPanel value="machine">
                     {!viewOnlyTab.machineViewOnly ? (
                       <>
-                        <div className="row">
+                        <div className="row input-fields">
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
@@ -1714,7 +1722,7 @@ function PartList(props) {
                               </label>
                               <input
                                 type="text"
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 id="make-id"
                                 name="make"
                                 value={machineData.make}
@@ -1731,7 +1739,7 @@ function PartList(props) {
                               </label>
                               <input
                                 type="text"
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 id="family-id"
                                 name="family"
                                 value={machineData.family}
@@ -1785,7 +1793,7 @@ function PartList(props) {
                               </label>
                               <input
                                 type="text"
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 id="smu-id"
                                 name="smu"
                                 value={machineData.smu}
@@ -1801,7 +1809,7 @@ function PartList(props) {
                               </label>
                               <input
                                 type="text"
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 onChange={handleMachineDataChange}
                                 value={machineData.fleetNo}
                                 name="fleetNo"
@@ -1817,7 +1825,7 @@ function PartList(props) {
                               </label>
                               <input
                                 type="text"
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 onChange={handleMachineDataChange}
                                 value={machineData.registrationNo}
                                 name="registrationNo"
@@ -1833,7 +1841,7 @@ function PartList(props) {
                               </label>
                               <input
                                 type="text"
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 id="chasis-id"
                                 onChange={handleMachineDataChange}
                                 value={machineData.chasisNo}
@@ -1950,7 +1958,7 @@ function PartList(props) {
                   <TabPanel value="estimation">
                     {!viewOnlyTab.estViewOnly ? (
                       <>
-                        <div className="row">
+                        <div className="row input-fields">
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
@@ -1958,7 +1966,7 @@ function PartList(props) {
                               </label>
                               <input
                                 type="text"
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 placeholder="Required"
                                 value={estimationData.preparedBy}
                                 name="preparedBy"
@@ -1973,7 +1981,7 @@ function PartList(props) {
                               </label>
                               <input
                                 type="text"
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 value={estimationData.approvedBy}
                                 name="approvedBy"
                                 onChange={handleEstimationDataChange}
@@ -1989,6 +1997,7 @@ function PartList(props) {
 
                               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <DatePicker
+                                  inputProps={{ style: FONT_STYLE }}
                                   variant="inline"
                                   format="dd/MM/yyyy"
                                   className="form-controldate border-radius-10"
@@ -2011,7 +2020,7 @@ function PartList(props) {
                               </label>
                               <input
                                 type="text"
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 value={estimationData.revisedBy}
                                 name="revisedBy"
                                 onChange={handleEstimationDataChange}
@@ -2026,6 +2035,7 @@ function PartList(props) {
                               </label>
                               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <DatePicker
+                                  inputProps={{ style: FONT_STYLE }}
                                   variant="inline"
                                   format="dd/MM/yyyy"
                                   className="form-controldate border-radius-10"
@@ -2056,6 +2066,7 @@ function PartList(props) {
                                 options={salesOfficeOptions}
                                 placeholder="Required"
                                 value={estimationData.salesOffice}
+                                styles={FONT_STYLE_SELECT}
                               />
                             </div>
                           </div>
@@ -2150,7 +2161,7 @@ function PartList(props) {
                   <TabPanel value="general">
                     {!viewOnlyTab.generalViewOnly ? (
                       <>
-                        <div className="row">
+                        <div className="row input-fields">
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
@@ -2159,7 +2170,7 @@ function PartList(props) {
                               <input
                                 type="text"
                                 disabled
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 id="estNoId"
                                 value={generalData.estimationNo}
                               />
@@ -2172,7 +2183,7 @@ function PartList(props) {
                               </label>
                               <input
                                 type="text"
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 id="desc-id"
                                 placeholder="Required"
                                 maxLength={140}
@@ -2193,6 +2204,7 @@ function PartList(props) {
                               </label>
                               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                 <DatePicker
+                                  inputProps={{ style: FONT_STYLE }}
                                   variant="inline"
                                   format="dd/MM/yyyy"
                                   className="form-controldate border-radius-10"
@@ -2215,7 +2227,7 @@ function PartList(props) {
                               </label>
                               <input
                                 type="text"
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 id="desc-id"
                                 placeholder="Required"
                                 maxLength={140}
@@ -2245,6 +2257,7 @@ function PartList(props) {
                                 options={validityOptions}
                                 placeholder="Required"
                                 value={generalData.validity}
+                                styles={FONT_STYLE_SELECT}
                               />
                             </div>
                           </div>
@@ -2255,7 +2268,7 @@ function PartList(props) {
                               </label>
                               <input
                                 type="text"
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 placeholder="Placeholder (Optional)"
                                 disabled
                                 value={parseFloat(
@@ -2353,140 +2366,165 @@ function PartList(props) {
                     )}
                   </TabPanel>
                   <TabPanel value="price">
-                  {!viewOnlyTab.priceViewOnly ? 
-                    <React.Fragment>
-                      
-                      <div className="row">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            NET PRICE
-                          </label>
-                          <input
+                    {!viewOnlyTab.priceViewOnly ? (
+                      <React.Fragment>
+                        <div className="row input-fields">
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                NET PRICE
+                              </label>
+                              <input
                                 type="text"
                                 disabled
-                                className="form-control border-radius-10"
+                                className="form-control border-radius-10 text-primary"
                                 placeholder="Optional"
                                 value={pricingData.netPrice}
                               />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="align-items-center date-box">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            PRICE DATE
-                          </label>
-                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <DatePicker
-                              variant="inline"
-                              format="dd/MM/yyyy"
-                              className="form-controldate border-radius-10"
-                              label=""
-                              disableFuture
-                              value={pricingData.priceDate}
-                              onChange={(e) =>
-                                setPricingData({
-                                  ...pricingData,
-                                  priceDate: e,
-                                })
-                              }
-                            />
-                          </MuiPickersUtilsProvider>
-                        </div>
-                      </div>
-                      {/* <div className="col-md-4 col-sm-4">
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="align-items-center date-box">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                PRICE DATE
+                              </label>
+                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <DatePicker
+                                  inputProps={{ style: FONT_STYLE }}
+                                  variant="inline"
+                                  format="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  label=""
+                                  disableFuture
+                                  value={pricingData.priceDate}
+                                  onChange={(e) =>
+                                    setPricingData({
+                                      ...pricingData,
+                                      priceDate: e,
+                                    })
+                                  }
+                                />
+                              </MuiPickersUtilsProvider>
+                            </div>
+                          </div>
+                          {/* <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <label className="text-light-dark font-size-12 font-weight-500">
                             COST PRICE
                           </label>
                           <input
                             type="email"
-                            className="form-control border-radius-10"
+                            className="form-control border-radius-10 text-primary"
                             id="exampleInputEmail1"
                             aria-describedby="emailHelp"
                             placeholder="Placeholder (Optional)"
                           />
                         </div>
                       </div> */}
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            PRICE METHOD
-                          </label>
-                          <Select
-                            value={pricingData.priceMethod}
-                            onChange={(e) =>
-                              setPricingData({ ...pricingData, priceMethod: e })
-                            }
-                            options={priceMethodOptions}
-                            placeholder="Required"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            ADJUSTED PRICE
-                          </label>
-                          <input
-                              type="text"
-                              className="form-control border-radius-10"
-                              placeholder="Optional"
-                              value={pricingData.adjustedPrice}
-                              onChange={e=> setPricingData({...pricingData, adjustedPrice: e.target.value})}
-                            />
-                        </div>
-                      </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                PRICE METHOD
+                              </label>
+                              <Select
+                                onChange={(e) =>
+                                  setPricingData({
+                                    ...pricingData,
+                                    priceMethod: e,
+                                  })
+                                }
+                                options={priceMethodOptions}
+                                placeholder="Required"
+                                value={pricingData.priceMethod}
+                                styles={FONT_STYLE_SELECT}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                ADJUSTED PRICE
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10 text-primary"
+                                placeholder="Optional"
+                                value={pricingData.adjustedPrice}
+                                onChange={(e) =>
+                                  setPricingData({
+                                    ...pricingData,
+                                    adjustedPrice: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
 
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            CURRENCY
-                          </label>
-                          <Select
-                                onChange={e=> setPricingData({...pricingData, currency: e})}
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                CURRENCY
+                              </label>
+                              <Select
+                                onChange={(e) =>
+                                  setPricingData({
+                                    ...pricingData,
+                                    currency: e,
+                                  })
+                                }
                                 options={currencyOptions}
                                 placeholder="Required"
                                 value={pricingData.currency}
+                                styles={FONT_STYLE_SELECT}
                               />
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div> 
-                    <div className="row" style={{ justifyContent: "right" }}>
-                    <button
-                      type="button"
-                      className="btn btn-light bg-primary text-white"
-                      onClick={updatePriceData}
-                      disabled={
-                        !(pricingData.priceDate && pricingData.priceMethod && pricingData.currency)
-                      }
-                    >
-                      Save
-                    </button>
-                  </div>
-                  </React.Fragment>:
-                    <div className="row mt-3">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            NET PRICE
-                          </p>
-                          <h6 className="font-weight-500">{pricingData.netPrice}</h6>
+                        <div
+                          className="row"
+                          style={{ justifyContent: "right" }}
+                        >
+                          <button
+                            type="button"
+                            className="btn btn-light bg-primary text-white"
+                            onClick={updatePriceData}
+                            disabled={
+                              !(
+                                pricingData.priceDate &&
+                                pricingData.priceMethod &&
+                                pricingData.currency
+                              )
+                            }
+                          >
+                            Save
+                          </button>
                         </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            PRICE DATE
-                          </p>
-                          <h6 className="font-weight-500">
-                            <Moment format="DD/MM/YYYY">
-                              {pricingData.priceDate}
-                            </Moment>
-                          </h6>
+                      </React.Fragment>
+                    ) : (
+                      <div className="row mt-3">
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              NET PRICE
+                            </p>
+                            <h6 className="font-weight-500">
+                              {pricingData.netPrice}
+                            </h6>
+                          </div>
                         </div>
-                      </div>
-                      {/* <div className="col-md-4 col-sm-4">
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              PRICE DATE
+                            </p>
+                            <h6 className="font-weight-500">
+                              <Moment format="DD/MM/YYYY">
+                                {pricingData.priceDate}
+                              </Moment>
+                            </h6>
+                          </div>
+                        </div>
+                        {/* <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="font-size-12 font-weight-500 mb-2">
                             COST PRICE
@@ -2494,33 +2532,39 @@ function PartList(props) {
                           <h6 className="font-weight-500">{01.09.2021}</h6>
                         </div>
                       </div> */}
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            PRICE METHOD
-                          </p>
-                          <h6 className="font-weight-500">{pricingData.priceMethod?.label}</h6>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              PRICE METHOD
+                            </p>
+                            <h6 className="font-weight-500">
+                              {pricingData.priceMethod?.label}
+                            </h6>
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            ADJUSTED PRICE{" "}
-                          </p>
-                          <h6 className="font-weight-500">{pricingData.adjustedPrice}</h6>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              ADJUSTED PRICE{" "}
+                            </p>
+                            <h6 className="font-weight-500">
+                              {pricingData.adjustedPrice}
+                            </h6>
+                          </div>
                         </div>
-                      </div>
 
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            CURRENCY{" "}
-                          </p>
-                          <h6 className="font-weight-500">{pricingData.currency?.label}</h6>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              CURRENCY{" "}
+                            </p>
+                            <h6 className="font-weight-500">
+                              {pricingData.currency?.label}
+                            </h6>
+                          </div>
                         </div>
                       </div>
-                    </div> }
-                    
+                    )}
                   </TabPanel>
                 </TabContext>
               )}

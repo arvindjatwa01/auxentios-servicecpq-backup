@@ -20,6 +20,7 @@ import Moment from "react-moment";
 import { builderSearch, createBuilder } from "services/repairBuilderServices";
 import DynamicSearchComponent from "./components/DynamicSearchComponent";
 import { BUILDER_SEARCH_Q_OPTIONS, GRID_STYLE } from "./CONSTANTS";
+import LoadingProgress from "./components/Loader";
 
 export const RepairWithoutSpareParts = () => {
   const [recentBuilders, setRecentBuilders] = useState([]);
@@ -232,15 +233,7 @@ export const RepairWithoutSpareParts = () => {
                 <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
                 <div className="row">
                   {recentBuildersLoading ? (
-                    <div className="d-flex align-items-center justify-content-center">
-                      <Loader
-                        type="spinner-default"
-                        bgColor={"#872ff7"}
-                        title={"spinner-default"}
-                        color={"#FFFFFF"}
-                        size={35}
-                      />
-                    </div>
+                    <LoadingProgress/>
                   ) : recentBuilders.length > 0 ? (
                     recentBuilders.map((indBuilder) => (
                       <div className="col-md-4">
@@ -340,19 +333,14 @@ export const RepairWithoutSpareParts = () => {
             </div>
           </div>
           <div className="card">
-            <div
-              className=""
-              style={{ width: "100%", backgroundColor: "#fff" }}
-            >
               <DataGrid
                 sx={GRID_STYLE}
                 rows={masterData}
                 columns={searchBuilderColumns}
                 pageSize={5}
                 rowsPerPageOptions={[5]}
-                autoHeight
+                // autoHeight
               />
-            </div>
           </div>
         </div>
       </div>

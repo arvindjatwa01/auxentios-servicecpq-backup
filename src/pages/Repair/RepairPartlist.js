@@ -30,11 +30,12 @@ import {
 import moment from "moment-timezone";
 import Moment from "react-moment";
 import DynamicSearchComponent from "./components/DynamicSearchComponent";
-import { BUILDER_SEARCH_Q_OPTIONS, GRID_STYLE } from "./CONSTANTS";
+import { BUILDER_SEARCH_Q_OPTIONS, GRID_STYLE, PARTLIST_BUILDER_SEARCH_Q_OPTIONS } from "./CONSTANTS";
 import { Typography } from "@mui/material";
 import Loader from "react-js-loader";
 import { useDispatch } from "react-redux";
 import { repairActions } from "./dropdowns/repairSlice";
+import LoadingProgress from "./components/Loader";
 
 export const RepairPartlist = () => {
   const [show, setShow] = React.useState(false);
@@ -79,7 +80,7 @@ export const RepairPartlist = () => {
   };
 
   const searchBuilderColumns = [
-    { field: "builderId", headerName: "ID#", flex: 1, width: 70 },
+    { field: "estimationNumber", headerName: "ID#", flex: 1, width: 70 },
     { field: "description", headerName: "Description", flex: 1, width: 130 },
     { field: "customerId", headerName: "Customer#", flex: 1, width: 130 },
     { field: "make", headerName: "Make", flex: 1, width: 130 },
@@ -271,15 +272,7 @@ export const RepairPartlist = () => {
                 <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
                 <div className="row">
                   {recentBuildersLoading ? (
-                    <div className="d-flex align-items-center justify-content-center">
-                      <Loader
-                        type="spinner-default"
-                        bgColor={"#872ff7"}
-                        title={"spinner-default"}
-                        color={"#FFFFFF"}
-                        size={35}
-                      />
-                    </div>
+                    <LoadingProgress />
                   ) : recentPartlists.length > 0 ? (
                     recentPartlists.map((indBuilder) => (
                       <div className="col-md-4">
@@ -369,7 +362,7 @@ export const RepairPartlist = () => {
                     handleSnack={handleSnack}
                     searchAPI={builderSearch}
                     searchClick={handleQuerySearchClick}
-                    options={BUILDER_SEARCH_Q_OPTIONS}
+                    options={PARTLIST_BUILDER_SEARCH_Q_OPTIONS}
                     color="white"
                     builderType="PARTLIST"
                   />

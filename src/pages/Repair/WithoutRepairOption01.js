@@ -15,6 +15,7 @@ import {
 import SearchBox from "./components/SearchBox";
 import { NEW_OPERATION } from "./CONSTANTS";
 import Loader from "react-js-loader";
+import LoadingProgress from "./components/Loader";
 
 function WithoutRepairOption01(props) {
   const { activeElement, setActiveElement } = props.builderDetails;
@@ -334,15 +335,7 @@ function WithoutRepairOption01(props) {
           <div className="hr"></div>
         </h5>
         {operationLoading ? (
-          <div className="d-flex align-items-center justify-content-center">
-            <Loader
-              type="spinner-default"
-              bgColor={"#872ff7"}
-              title={"spinner-default"}
-              color={"#FFFFFF"}
-              size={35}
-            />
-          </div>
+          <LoadingProgress/>
         ) : !operationViewOnly ? (
           <>
             <div className="row mt-4">

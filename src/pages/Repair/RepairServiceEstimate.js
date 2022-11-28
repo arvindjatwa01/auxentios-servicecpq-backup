@@ -70,11 +70,14 @@ import AddLaborItemModal from "./components/AddLaborItem";
 import {
   CONSUMABLE_SEARCH_Q_OPTIONS,
   EXTWORK_SEARCH_Q_OPTIONS,
+  FONT_STYLE,
+  FONT_STYLE_SELECT,
   GRID_STYLE,
 } from "./CONSTANTS";
 import SearchComponent from "./components/SearchComponent";
 import AddExtWorkItemModal from "./components/AddExtWorkItem";
 import AddConsumableItemModal from "./components/AddConsumableItem";
+import LoadingProgress from "./components/Loader";
 
 function RepairServiceEstimate(props) {
   const { activeElement, setActiveElement } = props.builderDetails;
@@ -137,6 +140,12 @@ function RepairServiceEstimate(props) {
     {
       value: "PER_ON_LABOUR",
       label: "Percentage on Labour",
+    },
+  ];
+  const priceOptionsPercent_NoLabor = [
+    {
+      value: "PER_ON_TOTAL",
+      label: "Percentage on Total",
     },
   ];
   // Retrieve activity Ids
@@ -896,7 +905,10 @@ function RepairServiceEstimate(props) {
       });
     setQueryExtSearchSelector(initialExtWorkQuery);
   };
-
+  const handleAddItemLabor = () => {
+    if (labourData.id) setLaborItemOpen(true);
+    else handleSnack("warning", "Please update the lobor header details!");
+  };
   // Open Labor item to view or edit
   const openLaborRow = (row) => {
     setLabourItemData({
@@ -930,6 +942,11 @@ function RepairServiceEstimate(props) {
         console.log(e);
         handleSnack("error", "Error occurred while removing the labor item");
       });
+  };
+
+  const handleAddItemConsumable = () => {
+    if (consumableData.id) setConsumableItemOpen(true);
+    else handleSnack("warning", "Please update the consumable header details!");
   };
 
   // Open consumable item to view or edit
@@ -1304,35 +1321,35 @@ function RepairServiceEstimate(props) {
         message={snackMessage}
       />
       {serviceEstHeaderLoading ? (
-        <div className="d-flex align-items-center justify-content-center">
-          <Loader
-            type="spinner-default"
-            bgColor={"#872ff7"}
-            title={"spinner-default"}
-            color={"#FFFFFF"}
-            size={35}
-          />
-        </div>
+        <LoadingProgress />
       ) : (
-        <div class="container-fluid">
+        <div>
           <div className="card p-4 mt-5">
-            <h5 className="d-flex align-items-center bg-primary p-2 border-radius-10 mb-0">
-              <div className="" style={{ display: "contents" }}>
-                <span className="mr-3 white-space text-white">
-                  Service Estimation Header
-                </span>
-                <a
-                  href={undefined}
-                  className="ml-3 text-white"
-                  style={{ cursor: "pointer" }}
-                >
-                  <EditOutlinedIcon
-                    onClick={() => makeHeaderEditable("serviceEstHeader")}
-                  />
-                </a>
+            <div className="bg-primary px-3 mb-3 border-radius-6">
+              <div className="row align-items-center">
+                <div className="col-11 mx-2 py-3">
+                  <div className="d-flex align-items-center bg-primary w-100">
+                    <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
+                      <h5 className="mr-2 mb-0 text-white">
+                        <span>Service Estimation Header</span>
+                        <a
+                          href={undefined}
+                          className="ml-3 text-white"
+                          style={{ cursor: "pointer" }}
+                        >
+                          <EditOutlinedIcon
+                            onClick={() =>
+                              makeHeaderEditable("serviceEstHeader")
+                            }
+                          />
+                        </a>
+                      </h5>
+                    </div>
+                  </div>
+                </div>
               </div>
-              {/* <div className="hr"></div> */}
-            </h5>
+            </div>
+
             {!serviceHeaderViewOnly ? (
               <>
                 <div className="row mt-4 input-fields">
@@ -1404,22 +1421,17 @@ function RepairServiceEstimate(props) {
                       </label>
                       <Select
                         value={serviceEstimateData.priceMethod}
+                        class="form-control border-radius-10 text-primary"
                         onChange={(e) =>
                           setServiceEstimateData({
                             ...serviceEstimateData,
                             priceMethod: e,
                           })
                         }
+                        styles={FONT_STYLE_SELECT}
                         options={priceMethodOptions}
                         placeholder="Required"
                       />
-                      {/* <input
-                  type="text"
-                  class="form-control border-radius-10 text-primary"
-                  
-                  placeholder="Required"
-                  value={serviceEstimateData.priceMethod}
-                /> */}
                     </div>
                   </div>
                   <div className="col-md-4 col-sm-4">
@@ -1427,9 +1439,9 @@ function RepairServiceEstimate(props) {
                       <label className="text-light-dark font-size-12 font-weight-500">
                         PRICE DATE
                       </label>
-
                       <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <DatePicker
+                          inputProps={{ style: FONT_STYLE }}
                           variant="inline"
                           format="dd/MM/yyyy"
                           className="form-controldate border-radius-10"
@@ -1766,6 +1778,7 @@ function RepairServiceEstimate(props) {
                                   options={laborCodeList}
                                   placeholder="Required"
                                   value={labourData.laborCode}
+                                  styles={FONT_STYLE_SELECT}
                                 />
                               </div>
                             </div>
@@ -1784,6 +1797,7 @@ function RepairServiceEstimate(props) {
                                   options={priceMethodOptions}
                                   placeholder="Required"
                                   value={labourData.pricingMethod}
+                                  styles={FONT_STYLE_SELECT}
                                 />
                               </div>
                             </div>
@@ -1833,22 +1847,6 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
-                                  NET PRICE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
-                                  value={labourData.totalPrice}
-                                />
-                              </div>
-                            </div>
-                            
-
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
                                   ADJUSTED PRICE
                                 </label>
                                 <input
@@ -1863,6 +1861,20 @@ function RepairServiceEstimate(props) {
                                       adjustedPrice: e.target.value,
                                     })
                                   }
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={labourData.totalPrice}
                                 />
                               </div>
                             </div>
@@ -2020,7 +2032,7 @@ function RepairServiceEstimate(props) {
                               <div className="">
                                 <div className="text-center border-left pl-2 py-3">
                                   <Link
-                                    onClick={() => setLaborItemOpen(true)}
+                                    onClick={() => handleAddItemLabor()}
                                     to="#"
                                     className="p-1 text-white"
                                     data-toggle="modal"
@@ -2042,7 +2054,7 @@ function RepairServiceEstimate(props) {
                         > */}
                           <DataGrid
                             sx={GRID_STYLE}
-                            paginationMode='client'
+                            paginationMode="client"
                             rows={laborItems}
                             columns={laborColumns}
                             pageSize={5}
@@ -2112,7 +2124,7 @@ function RepairServiceEstimate(props) {
                                 </label>
                                 <input
                                   type="text"
-                                  class="form-control border-radius-10 text-primary"
+                                  className="form-control border-radius-10 text-primary"
                                   placeholder="Optional"
                                   value={consumableData.payer}
                                   onChange={(e) =>
@@ -2137,8 +2149,13 @@ function RepairServiceEstimate(props) {
                                     })
                                   }
                                   value={consumableData.pricingMethod}
-                                  options={priceOptionsPercent}
+                                  options={
+                                    flagRequired.labourEnabled
+                                      ? priceOptionsPercent
+                                      : priceOptionsPercent_NoLabor
+                                  }
                                   placeholder="Required"
+                                  styles={FONT_STYLE_SELECT}
                                 />
                               </div>
                             </div>
@@ -2223,22 +2240,6 @@ function RepairServiceEstimate(props) {
                                 </FormGroup>
                               </div>
                             </div>
-
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  NET PRICE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
-                                  value={consumableData.totalPrice}
-                                />
-                              </div>
-                            </div>
-
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
@@ -2259,7 +2260,20 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
-
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={consumableData.totalPrice}
+                                />
+                              </div>
+                            </div>
                             <div className="col-md-12">
                               <div class="form-group mt-3 mb-0 text-right">
                                 <button
@@ -2407,7 +2421,7 @@ function RepairServiceEstimate(props) {
                               <div className="ml-5">
                                 <div className="text-center border-left pl-1 py-3">
                                   <Link
-                                    onClick={() => setConsumableItemOpen(true)}
+                                    onClick={() => handleAddItemConsumable()}
                                     to="#"
                                     className="p-1 text-white"
                                     data-toggle="modal"
@@ -2528,8 +2542,13 @@ function RepairServiceEstimate(props) {
                                     })
                                   }
                                   value={extWorkData.pricingMethod}
-                                  options={priceOptionsPercent}
+                                  options={
+                                    flagRequired.labourEnabled
+                                      ? priceOptionsPercent
+                                      : priceOptionsPercent_NoLabor
+                                  }
                                   placeholder="Required"
+                                  styles={FONT_STYLE_SELECT}
                                 />
                               </div>
                             </div>
@@ -2616,21 +2635,6 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
-                                  NET PRICE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
-                                  value={extWorkData.totalPrice}
-                                />
-                              </div>
-                            </div>
-
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
                                   ADJUSTED PRICE
                                 </label>
                                 <input
@@ -2648,7 +2652,20 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
-
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={extWorkData.totalPrice}
+                                />
+                              </div>
+                            </div>
                             <div className="col-md-12">
                               <div class="form-group mt-3 mb-0 text-right">
                                 <button
@@ -2903,6 +2920,7 @@ function RepairServiceEstimate(props) {
                                   options={miscTypeList}
                                   value={miscData.typeOfMisc}
                                   placeholder="Required"
+                                  styles={FONT_STYLE_SELECT}
                                 />
                               </div>
                             </div>
@@ -2919,9 +2937,14 @@ function RepairServiceEstimate(props) {
                                       pricingMethod: e,
                                     })
                                   }
-                                  options={priceOptionsPercent}
+                                  options={
+                                    flagRequired.labourEnabled
+                                      ? priceOptionsPercent
+                                      : priceOptionsPercent_NoLabor
+                                  }
                                   placeholder="Required"
                                   value={miscData.pricingMethod}
+                                  styles={FONT_STYLE_SELECT}
                                 />
                               </div>
                             </div>
@@ -3007,21 +3030,6 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
-                                  NET PRICE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
-                                  value={miscData.totalPrice}
-                                />
-                              </div>
-                            </div>
-
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
                                   ADJUSTED PRICE
                                 </label>
                                 <input
@@ -3039,7 +3047,20 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
-
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={miscData.totalPrice}
+                                />
+                              </div>
+                            </div>
                             <div className="col-md-12">
                               <div class="form-group mt-3 mb-0 text-right">
                                 <button
@@ -3093,7 +3114,8 @@ function RepairServiceEstimate(props) {
                                   {miscData.payer}
                                 </h6>
                               </div>
-                            </div><div className="col-md-4 col-sm-4">
+                            </div>
+                            <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
                                   TYPE OF MISC.
@@ -3142,7 +3164,7 @@ function RepairServiceEstimate(props) {
                                   {miscData.totalPrice}
                                 </h6>
                               </div>
-                            </div>                                                      
+                            </div>
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">

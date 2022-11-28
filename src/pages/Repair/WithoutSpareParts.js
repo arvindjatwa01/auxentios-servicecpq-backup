@@ -16,6 +16,7 @@ import { NEW_SEGMENT } from "./CONSTANTS";
 import Loader from "react-js-loader";
 import { useDispatch } from "react-redux";
 import { repairActions } from "./dropdowns/repairSlice";
+import LoadingProgress from "./components/Loader";
 
 function WithoutSpareParts(props) {
   // const { state } = props.location;
@@ -308,15 +309,7 @@ function WithoutSpareParts(props) {
           <div className="hr"></div>
         </h5>
         {segmentLoading ? (
-          <div className="d-flex align-items-center justify-content-center">
-            <Loader
-              type="spinner-default"
-              bgColor={"#872ff7"}
-              title={"spinner-default"}
-              color={"#FFFFFF"}
-              size={35}
-            />
-          </div>
+          <LoadingProgress/>
         ) : !segmentViewOnly ? (
           <>
             <div className="row mt-4">
