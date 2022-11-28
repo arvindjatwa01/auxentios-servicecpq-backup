@@ -32,6 +32,7 @@ import Tooltip from "@mui/material/Tooltip";
 import BusinessCenterOutlinedIcon from "@mui/icons-material/BusinessCenterOutlined";
 
 import LayersOutlinedIcon from "@mui/icons-material/LayersOutlined";
+import Validator from "../../utils/validator";
 
 import MenuItem from '@mui/material/MenuItem';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -142,18 +143,42 @@ const customStyles = {
     },
 };
 
-export function PortfolioTemplatesResult(props) {
+const customTableStyles = {
+    rows: {
+        style: {
+            minHeight: "72px", // override the row height
+        },
+    },
+    headCells: {
+        style: {
+            paddingLeft: "8px", // override the cell padding for head cells
+            paddingRight: "8px",
+            backgroundColor: "#872ff7",
+            color: "#fff",
+            borderRight: "1px solid rgba(0,0,0,.12)",
+        },
+    },
+    cells: {
+        style: {
+            paddingLeft: "8px", // override the cell padding for data cells
+            paddingRight: "8px",
+            borderRight: "1px solid rgba(0,0,0,.12)",
+        },
+    },
+};
+
+export function CreatedCustomPortfolioTemplate(props) {
+
 
     const location = useLocation();
 
+    // var CreatedCustomPortfolioDetails = JSON.parse(localStorage.getItem('createdCustomPortfolioData'));
+    var CreatedCustomPortfolioDetails = JSON.parse(localStorage.getItem('createdCustomPortfolioData'));
+
+
+    console.log("Props is --------- : ", CreatedCustomPortfolioDetails);
+
     // console.log("CreatedCustomPortfolioDetails : ", CreatedCustomPortfolioDetails)
-    var selectedTemplateItemsVal = JSON.parse(localStorage.getItem('selectedTemplateItems'));
-    var autocreatedCustomPortfolioDataObj = JSON.parse(localStorage.getItem('autocreatedcustomPortfolioData'));
-    var SolutionValueIs = localStorage.getItem('solutionValueIs');
-
-    console.log("autocreatedCustomPortfolioDataObj is : ", autocreatedCustomPortfolioDataObj);
-
-
     const [makeKeyValue, setMakeKeyValue] = useState([]);
     const [modelKeyValue, setModelKeyValue] = useState([]);
     const [prefixKeyValue, setPrefixKeyValue] = useState([]);
@@ -218,6 +243,8 @@ export function PortfolioTemplatesResult(props) {
     const [openedModelBoxData, setOpenedModelBoxData] = useState([]);
     const [modelIncludedData, setModelIncludedData] = useState([]);
 
+    const [flagTemplate, setFlagTemplate] = useState(false);
+    const [flagCommerce, setFlagCommerce] = useState(false);
 
     const [editAbleCustomPriceData, setEditAbleCustomPriceData] = useState([]);
 
@@ -949,544 +976,301 @@ export function PortfolioTemplatesResult(props) {
     };
 
     const handleNextClick = async (e) => {
+        try {
+            if (e.target.id == "general") {
 
-        if (e.target.id == "general") {
+                if (
+                    generalComponentData.name === "" ||
+                    generalComponentData.name == null ||
+                    generalComponentData.externalReference === "" ||
+                    generalComponentData.externalReference === null
+                ) {
+                    throw "Please fill required field properly";
+                }
+
+                let reqData = {
+                    type: prefilgabelGeneral,
+                    name: generalComponentData.name,
+                    description: generalComponentData.description,
+                    externalReference: generalComponentData.externalReference,
+
+                    strategyTask: "PREVENTIVE_MAINTENANCE",
+                    taskType: "PM1",
+                    usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+                    productHierarchy: "END_PRODUCT",
+                    geographic: "ONSITE",
+                    availability: "AVAILABILITY_GREATER_95",
+                    responseTime: "PROACTIVE",
+                    type: "MACHINE",
+                    application: "HILL",
+                    contractOrSupport: "LEVEL_I",
+                    lifeStageOfMachine: "NEW_BREAKIN",
+                    supportLevel: "PREMIUM",
+                    serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
 
 
-            let reqData = {
-                type: prefilgabelGeneral,
-                name: generalComponentData.name,
-                description: generalComponentData.description,
-                externalReference: generalComponentData.externalReference,
 
-                strategyTask: "PREVENTIVE_MAINTENANCE",
-                taskType: "PM1",
-                usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-                productHierarchy: "END_PRODUCT",
-                geographic: "ONSITE",
-                availability: "AVAILABILITY_GREATER_95",
-                responseTime: "PROACTIVE",
-                type: "MACHINE",
-                application: "HILL",
-                contractOrSupport: "LEVEL_I",
-                lifeStageOfMachine: "NEW_BREAKIN",
-                supportLevel: "PREMIUM",
-                serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
+                    visibleInCommerce: true,
+                    customerId: 0,
+                    lubricant: true,
+                    customerSegment: generalComponentData.customerSegment?.value
+                        ? generalComponentData.customerSegment?.value
+                        : "EMPTY",
+                    machineType: generalComponentData.machineType
+                        ? generalComponentData.machineType
+                        : "EMPTY",
+                    status: generalComponentData.status
+                        ? generalComponentData.status
+                        : "EMPTY",
+                    // strategyTask: generalComponentData.strategyTask
+                    //     ? generalComponentData.strategyTask
+                    //     : "EMPTY",
+                    // taskType: generalComponentData.taskType
+                    //     ? generalComponentData.taskType
+                    //     : "EMPTY",
+                    usageCategory: generalComponentData.usageCategory
+                        ? generalComponentData.usageCategory
+                        : "EMPTY",
+                    // productHierarchy: generalComponentData.productHierarchy
+                    //     ? generalComponentData.productHierarchy
+                    //     : "EMPTY",
+                    // geographic: generalComponentData.geographic
+                    //     ? generalComponentData.geographic
+                    //     : "EMPTY",
+                    availability: generalComponentData.availability
+                        ? generalComponentData.availability
+                        : "EMPTY",
+                    // responseTime: generalComponentData.responseTime
+                    //     ? generalComponentData.responseTime
+                    //     : "EMPTY",
+                    type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                    application: generalComponentData.application
+                        ? generalComponentData.application
+                        : "EMPTY",
+                    contractOrSupport: generalComponentData.contractOrSupport
+                        ? generalComponentData.contractOrSupport
+                        : "EMPTY",
+                    lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                        ? generalComponentData.lifeStageOfMachine
+                        : "EMPTY",
+                    supportLevel: generalComponentData.supportLevel
+                        ? generalComponentData.supportLevel
+                        : "EMPTY",
 
+                    customCoverages: [],
+                    customerGroup: generalComponentData.customerGroup
+                        ? generalComponentData.customerGroup
+                        : "EMPTY",
+                    searchTerm: "EMPTY",
+                    supportLevel: "EMPTY",
+                    portfolioPrice: {},
+                    additionalPrice: {},
+                    escalationPrice: {},
 
+                    // usageCategory: categoryUsageKeyValue1.value,
+                    // taskType: stratgyTaskTypeKeyValue.value,
+                    // strategyTask: stratgyTaskUsageKeyValue.value,
+                    // responseTime: stratgyResponseTimeKeyValue.value,
+                    // productHierarchy: stratgyHierarchyKeyValue.value,
+                    // geographic: stratgyGeographicKeyValue.value,
+                    customItems: selectedCustomItems,
 
-                visibleInCommerce: true,
-                customerId: 0,
-                lubricant: true,
-                customerSegment: generalComponentData.customerSegment.value
-                    ? generalComponentData.customerSegment.value
-                    : "EMPTY",
-                machineType: generalComponentData.machineType
-                    ? generalComponentData.machineType
-                    : "EMPTY",
-                status: generalComponentData.status
-                    ? generalComponentData.status
-                    : "EMPTY",
-                // strategyTask: generalComponentData.strategyTask
-                //     ? generalComponentData.strategyTask
-                //     : "EMPTY",
-                // taskType: generalComponentData.taskType
-                //     ? generalComponentData.taskType
-                //     : "EMPTY",
-                usageCategory: generalComponentData.usageCategory
-                    ? generalComponentData.usageCategory
-                    : "EMPTY",
-                // productHierarchy: generalComponentData.productHierarchy
-                //     ? generalComponentData.productHierarchy
-                //     : "EMPTY",
-                // geographic: generalComponentData.geographic
-                //     ? generalComponentData.geographic
-                //     : "EMPTY",
-                availability: generalComponentData.availability
-                    ? generalComponentData.availability
-                    : "EMPTY",
-                // responseTime: generalComponentData.responseTime
-                //     ? generalComponentData.responseTime
-                //     : "EMPTY",
-                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                application: generalComponentData.application
-                    ? generalComponentData.application
-                    : "EMPTY",
-                contractOrSupport: generalComponentData.contractOrSupport
-                    ? generalComponentData.contractOrSupport
-                    : "EMPTY",
-                lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                    ? generalComponentData.lifeStageOfMachine
-                    : "EMPTY",
-                supportLevel: generalComponentData.supportLevel
-                    ? generalComponentData.supportLevel
-                    : "EMPTY",
+                    template: flagTemplate,
+                    visibleInCommerce: flagCommerce,
 
-                customCoverages: [],
-                customerGroup: generalComponentData.customerGroup
-                    ? generalComponentData.customerGroup
-                    : "EMPTY",
-                searchTerm: "EMPTY",
-                supportLevel: "EMPTY",
-                portfolioPrice: {},
-                additionalPrice: {},
-                escalationPrice: {},
+                };
 
-                // usageCategory: categoryUsageKeyValue1.value,
-                // taskType: stratgyTaskTypeKeyValue.value,
-                // strategyTask: stratgyTaskUsageKeyValue.value,
-                // responseTime: stratgyResponseTimeKeyValue.value,
-                // productHierarchy: stratgyHierarchyKeyValue.value,
-                // geographic: stratgyGeographicKeyValue.value,
-                customItems: selectedCustomItems,
-
-            };
-
-            setGeneralComponentData({
-                ...generalComponentData,
-                usageCategory: categoryUsageKeyValue1.value,
-                taskType: stratgyTaskTypeKeyValue.value,
-                strategyTask: stratgyTaskUsageKeyValue.value,
-                optionals: stratgyOptionalsKeyValue.value,
-                responseTime: stratgyResponseTimeKeyValue.value,
-                productHierarchy: stratgyHierarchyKeyValue.value,
-                geographic: stratgyGeographicKeyValue.value,
-            });
-
-            console.log("reqData is : ", reqData);
-            // if (location.solutionValueIs == 1) {
-            if (SolutionValueIs == 1) {
-                var portfolioRes = await createCustomPortfolio(reqData);
-            } else {
-                var portfolioRes = await updateCustomPortfolio(
-                    // location.autocreatedcustomPortfolioData.customPortfolioId,
-                    autocreatedCustomPortfolioDataObj.customPortfolioId,
-                    reqData
-                )
-                // console.log("My new row");
-            }
-
-            // const portfolioRes = {
-            //     status: 3000
-            // };
-            // const portfolioRes = await createCustomPortfolio(reqData);
-            if (portfolioRes.status === 200) {
-                toast("👏 Portfolio Update Successfully", {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-                setValue("2");
                 setGeneralComponentData({
                     ...generalComponentData,
-                    portfolioId: portfolioRes.data.customPortfolioId,
+                    usageCategory: categoryUsageKeyValue1.value,
+                    taskType: stratgyTaskTypeKeyValue.value,
+                    strategyTask: stratgyTaskUsageKeyValue.value,
+                    optionals: stratgyOptionalsKeyValue.value,
+                    responseTime: stratgyResponseTimeKeyValue.value,
+                    productHierarchy: stratgyHierarchyKeyValue.value,
+                    geographic: stratgyGeographicKeyValue.value,
                 });
-                setPortfolioId(portfolioRes.data.customPortfolioId);
-            } else {
-                throw `${portfolioRes.status}:error in portfolio creation`;
-            }
-            // console.log("req data : ", reqData)
 
-            // setValue("2");
-            // console.log("general Data => ", generalData)
-        } else if (e.target.id == "validity") {
-            setValue("3");
-            let reqData;
-            if (validityData.fromDate && validityData.toDate) {
-                reqData = {
-                    validFrom: validityData.fromDate.toISOString().substring(0, 10),
-                    validTo: validityData.toDate.toISOString().substring(0, 10),
-                };
-            } else if (validityData.fromInput && validityData.toInput) {
-                reqData = {
-                    validFrom: validityData.fromInput + validityData.from,
-                    validTo: validityData.toInput + validityData.from,
-                };
-            }
-            setGeneralComponentData({
-                ...generalComponentData,
-                ...reqData,
-            });
-            // console.log("validityData Data => ", validityData)
-        } else if (e.target.id == "strategy") {
-            setGeneralComponentData({
-                ...generalComponentData,
-                usageCategory: categoryUsageKeyValue1.value,
-                taskType: stratgyTaskTypeKeyValue.value,
-                strategyTask: stratgyTaskUsageKeyValue.value,
-                optionals: stratgyOptionalsKeyValue.value,
-                responseTime: stratgyResponseTimeKeyValue.value,
-                productHierarchy: stratgyHierarchyKeyValue.value,
-                geographic: stratgyGeographicKeyValue.value,
-            });
+                console.log("reqData is : ", reqData);
+                var portfolioRes = await updateCustomPortfolio(
+                    // location.autocreatedcustomPortfolioData.customPortfolioId,
+                    CreatedCustomPortfolioDetails.customPortfolioId,
+                    reqData
+                )
 
-            const { portfolioId, ...res } = generalComponentData;
+                // const portfolioRes = {
+                //     status: 3000
+                // };
+                // const portfolioRes = await createCustomPortfolio(reqData);
+                if (portfolioRes.status === 200) {
+                    toast("👏 Portfolio Update Successfully", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    setValue("2");
+                    setGeneralComponentData({
+                        ...generalComponentData,
+                        portfolioId: portfolioRes.data.customPortfolioId,
+                    });
+                    setPortfolioId(portfolioRes.data.customPortfolioId);
+                } else {
+                    throw `${portfolioRes.status}:error in portfolio creation`;
+                }
+                // console.log("req data : ", reqData)
 
-            let obj = {
-                ...res,
-                visibleInCommerce: true,
-                customerId: 0,
-                lubricant: true,
-                customerSegment: generalComponentData.customerSegment.value
-                    ? generalComponentData.customerSegment.value
-                    : "EMPTY",
-                // machineType: generalComponentData.machineType
-                //     ? generalComponentData.machineType
-                //     : "EMPTY",
-                status: generalComponentData.status
-                    ? generalComponentData.status
-                    : "EMPTY",
-                strategyTask: generalComponentData.strategyTask
-                    ? generalComponentData.strategyTask
-                    : "EMPTY",
-                taskType: generalComponentData.taskType
-                    ? generalComponentData.taskType
-                    : "EMPTY",
-                usageCategory: generalComponentData.usageCategory
-                    ? generalComponentData.usageCategory
-                    : "EMPTY",
-                productHierarchy: generalComponentData.productHierarchy
-                    ? generalComponentData.productHierarchy
-                    : "EMPTY",
-                geographic: generalComponentData.geographic
-                    ? generalComponentData.geographic
-                    : "EMPTY",
-                availability: generalComponentData.availability
-                    ? generalComponentData.availability
-                    : "EMPTY",
-                responseTime: generalComponentData.responseTime
-                    ? generalComponentData.responseTime
-                    : "EMPTY",
-                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                application: generalComponentData.application
-                    ? generalComponentData.application
-                    : "EMPTY",
-                contractOrSupport: generalComponentData.contractOrSupport
-                    ? generalComponentData.contractOrSupport
-                    : "EMPTY",
-                // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                //     ? generalComponentData.lifeStageOfMachine
-                //     : "EMPTY",
-                machineType: machineTypeKeyValue.value,
-                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                supportLevel: generalComponentData.supportLevel
-                    ? generalComponentData.supportLevel
-                    : "EMPTY",
-                customItems: [],
-                customCoverages: [],
-                customerGroup: generalComponentData.customerGroup
-                    ? generalComponentData.customerGroup
-                    : "EMPTY",
-                searchTerm: "EMPTY",
-                supportLevel: "EMPTY",
-                portfolioPrice: {},
-                additionalPrice: {},
-                escalationPrice: {},
-
-                usageCategory: categoryUsageKeyValue1.value,
-                taskType: stratgyTaskTypeKeyValue.value,
-                strategyTask: stratgyTaskUsageKeyValue.value,
-                responseTime: stratgyResponseTimeKeyValue.value,
-                productHierarchy: stratgyHierarchyKeyValue.value,
-                geographic: stratgyGeographicKeyValue.value,
-                customItems: selectedCustomItems,
-                numberOfEvents: 0,
-                rating: "",
-                startUsage: "",
-                endUsage: "",
-                unit: "HOURS",
-                additionals: "",
-                preparedBy: administrative.preparedBy,
-                approvedBy: administrative.approvedBy,
-                preparedOn: administrative.preparedOn,
-                revisedBy: administrative.revisedBy,
-                revisedOn: administrative.revisedOn,
-                salesOffice: administrative.salesOffice,
-                offerValidity: administrative.offerValidity,
-            };
-            // console.log(" res is : ", res);
-            // console.log("obj", obj);
-
-            const strategyRes = await updateCustomPortfolio(
-                generalComponentData.portfolioId,
-                obj
-            );
-            if (strategyRes.status === 200) {
-                toast("👏 Portfolio updated", {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
+                // setValue("2");
+                // console.log("general Data => ", generalData)
+            } else if (e.target.id == "validity") {
+                let reqData;
+                if (
+                    validityData.fromInput &&
+                    validityData.toInput &&
+                    validityData.inputFlag
+                ) {
+                    reqData = {
+                        validFrom: validityData.fromInput + validityData.from,
+                        validTo: validityData.toInput + validityData.from,
+                    };
+                } else if (
+                    validityData.fromDate &&
+                    validityData.toDate &&
+                    validityData.dateFlag
+                ) {
+                    reqData = {
+                        validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                        validTo: validityData.toDate.toISOString().substring(0, 10),
+                    };
+                } else {
+                    throw "Please fill date fields";
+                }
+                setValue("3");
+                // if (validityData.fromDate && validityData.toDate) {
+                //     reqData = {
+                //         validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                //         validTo: validityData.toDate.toISOString().substring(0, 10),
+                //     };
+                // } else if (validityData.fromInput && validityData.toInput) {
+                //     reqData = {
+                //         validFrom: validityData.fromInput + validityData.from,
+                //         validTo: validityData.toInput + validityData.from,
+                //     };
+                // }
+                setGeneralComponentData({
+                    ...generalComponentData,
+                    ...reqData,
                 });
-                setValue("administrative");
-                // setValue("4");
-                console.log("strategy updating", strategyRes.data);
-            } else {
-                throw `${strategyRes.status}:error in update portfolio`;
-            };
-        } else if (e.target.id == "administrative") {
-            setGeneralComponentData({
-                ...generalComponentData,
-                preparedBy: administrative.preparedBy,
-                approvedBy: administrative.approvedBy,
-                preparedOn: administrative.preparedOn,
-                revisedBy: administrative.revisedBy,
-                revisedOn: administrative.revisedOn,
-                salesOffice: administrative.salesOffice,
-                offerValidity: administrative.offerValidity,
-            });
-
-            const { portfolioId, ...res } = generalComponentData;
-
-            let Administryobj = {
-                ...res,
-                visibleInCommerce: true,
-                customerId: 0,
-                lubricant: true,
-                customerSegment: generalComponentData.customerSegment.value
-                    ? generalComponentData.customerSegment.value
-                    : "EMPTY",
-                // machineType: generalComponentData.machineType
-                //     ? generalComponentData.machineType
-                //     : "EMPTY",
-                status: generalComponentData.status
-                    ? generalComponentData.status
-                    : "EMPTY",
-                strategyTask: generalComponentData.strategyTask
-                    ? generalComponentData.strategyTask
-                    : "EMPTY",
-                taskType: generalComponentData.taskType
-                    ? generalComponentData.taskType
-                    : "EMPTY",
-                usageCategory: generalComponentData.usageCategory
-                    ? generalComponentData.usageCategory
-                    : "EMPTY",
-                productHierarchy: generalComponentData.productHierarchy
-                    ? generalComponentData.productHierarchy
-                    : "EMPTY",
-                geographic: generalComponentData.geographic
-                    ? generalComponentData.geographic
-                    : "EMPTY",
-                availability: generalComponentData.availability
-                    ? generalComponentData.availability
-                    : "EMPTY",
-                responseTime: generalComponentData.responseTime
-                    ? generalComponentData.responseTime
-                    : "EMPTY",
-                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                application: generalComponentData.application
-                    ? generalComponentData.application
-                    : "EMPTY",
-                contractOrSupport: generalComponentData.contractOrSupport
-                    ? generalComponentData.contractOrSupport
-                    : "EMPTY",
-                // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                //     ? generalComponentData.lifeStageOfMachine
-                //     : "EMPTY",
-                machineType: machineTypeKeyValue.value,
-                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                supportLevel: generalComponentData.supportLevel
-                    ? generalComponentData.supportLevel
-                    : "EMPTY",
-                customItems: selectedCustomItems,
-                items: [],
-                customCoverages: [],
-                customerGroup: generalComponentData.customerGroup
-                    ? generalComponentData.customerGroup
-                    : "EMPTY",
-                searchTerm: "EMPTY",
-                supportLevel: "EMPTY",
-                // portfolioPrice: {},
-                // additionalPrice: {},
-                // escalationPrice: {},
-
-                usageCategory: categoryUsageKeyValue1.value,
-                taskType: stratgyTaskTypeKeyValue.value,
-                strategyTask: stratgyTaskUsageKeyValue.value,
-                responseTime: stratgyResponseTimeKeyValue.value,
-                productHierarchy: stratgyHierarchyKeyValue.value,
-                geographic: stratgyGeographicKeyValue.value,
-                numberOfEvents: 0,
-                rating: "",
-                startUsage: "",
-                endUsage: "",
-                unit: "HOURS",
-                additionals: "",
-                preparedBy: administrative.preparedBy,
-                approvedBy: administrative.approvedBy,
-                preparedOn: administrative.preparedOn,
-                revisedBy: administrative.revisedBy,
-                revisedOn: administrative.revisedOn,
-                salesOffice: administrative.salesOffice,
-                offerValidity: administrative.offerValidity,
-
-                // preparedBy: generalComponentData.preparedBy
-                // ? generalComponentData.preparedBy
-                // : "",
-                // approvedBy: generalComponentData.approvedBy
-                // ? generalComponentData.approvedBy
-                // : "",
-                // preparedOn: generalComponentData.preparedOn
-                // ? generalComponentData.preparedOn
-                // : "",
-                // revisedBy: generalComponentData.revisedBy
-                // ? generalComponentData.revisedBy
-                // : "",
-                // revisedOn: generalComponentData.revisedOn
-                // ? generalComponentData.revisedOn
-                // : "",
-                // salesOffice: generalComponentData.salesOffice
-                // ? generalComponentData.salesOffice
-                // : "",
-                // offerValidity: generalComponentData.offerValidity
-                // ? generalComponentData.offerValidity
-                // : "",
-            };
-
-            const administryRes = await updateCustomPortfolio(
-                generalComponentData.portfolioId,
-                Administryobj
-            );
-            if (administryRes.status === 200) {
-                toast("👏 Portfolio updated", {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
+                // console.log("validityData Data => ", validityData)
+            } else if (e.target.id == "strategy") {
+                setGeneralComponentData({
+                    ...generalComponentData,
+                    usageCategory: categoryUsageKeyValue1.value,
+                    taskType: stratgyTaskTypeKeyValue.value,
+                    strategyTask: stratgyTaskUsageKeyValue.value,
+                    optionals: stratgyOptionalsKeyValue.value,
+                    responseTime: stratgyResponseTimeKeyValue.value,
+                    productHierarchy: stratgyHierarchyKeyValue.value,
+                    geographic: stratgyGeographicKeyValue.value,
                 });
-                // setValue("administrative");
-                setValue("4");
-                console.log("administryRes updating", administryRes.data);
-            } else {
-                throw `${administryRes.status}:error in update portfolio`;
-            };
 
-            // setValue("4");
+                const { portfolioId, ...res } = generalComponentData;
 
-        } else if (e.target.id == "coverage") {
+                let obj = {
+                    ...res,
+                    visibleInCommerce: true,
+                    customerId: 0,
+                    lubricant: true,
+                    customerSegment: generalComponentData.customerSegment.value
+                        ? generalComponentData.customerSegment.value
+                        : "EMPTY",
+                    // machineType: generalComponentData.machineType
+                    //     ? generalComponentData.machineType
+                    //     : "EMPTY",
+                    status: generalComponentData.status
+                        ? generalComponentData.status
+                        : "EMPTY",
+                    strategyTask: generalComponentData.strategyTask
+                        ? generalComponentData.strategyTask
+                        : "EMPTY",
+                    taskType: generalComponentData.taskType
+                        ? generalComponentData.taskType
+                        : "EMPTY",
+                    usageCategory: generalComponentData.usageCategory
+                        ? generalComponentData.usageCategory
+                        : "EMPTY",
+                    productHierarchy: generalComponentData.productHierarchy
+                        ? generalComponentData.productHierarchy
+                        : "EMPTY",
+                    geographic: generalComponentData.geographic
+                        ? generalComponentData.geographic
+                        : "EMPTY",
+                    availability: generalComponentData.availability
+                        ? generalComponentData.availability
+                        : "EMPTY",
+                    responseTime: generalComponentData.responseTime
+                        ? generalComponentData.responseTime
+                        : "EMPTY",
+                    type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                    application: generalComponentData.application
+                        ? generalComponentData.application
+                        : "EMPTY",
+                    contractOrSupport: generalComponentData.contractOrSupport
+                        ? generalComponentData.contractOrSupport
+                        : "EMPTY",
+                    // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                    //     ? generalComponentData.lifeStageOfMachine
+                    //     : "EMPTY",
+                    machineType: machineTypeKeyValue.value,
+                    lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                    supportLevel: generalComponentData.supportLevel
+                        ? generalComponentData.supportLevel
+                        : "EMPTY",
+                    customItems: [],
+                    customCoverages: [],
+                    customerGroup: generalComponentData.customerGroup
+                        ? generalComponentData.customerGroup
+                        : "EMPTY",
+                    searchTerm: "EMPTY",
+                    supportLevel: "EMPTY",
+                    portfolioPrice: {},
+                    additionalPrice: {},
+                    escalationPrice: {},
 
-
-            let cvgIds = [];
-            setValue("6");
-            for (let i = 0; i < selectedMasterData.length; i++) {
-                let reqObj = {
-                    customCoverageId: 0,
-                    serviceId: 0,
-                    modelNo: selectedMasterData[i].model,
-                    serialNumber: "",
-                    startSerialNumber: "",
-                    endSerialNumber: "",
-                    serialNumberPrefix: "",
-                    family: selectedMasterData[i].family,
-                    make: selectedMasterData[i].make,
-                    fleet: "",
-                    fleetSize: "SMALL",
-                    location: "",
-                    startDate: "",
-                    endDate: "",
-                    actions: "",
-                    createdAt: "",
+                    usageCategory: categoryUsageKeyValue1.value,
+                    taskType: stratgyTaskTypeKeyValue.value,
+                    strategyTask: stratgyTaskUsageKeyValue.value,
+                    responseTime: stratgyResponseTimeKeyValue.value,
+                    productHierarchy: stratgyHierarchyKeyValue.value,
+                    geographic: stratgyGeographicKeyValue.value,
+                    customItems: selectedCustomItems,
+                    numberOfEvents: 0,
+                    rating: "",
+                    startUsage: "",
+                    endUsage: "",
+                    unit: "HOURS",
+                    additionals: "",
+                    preparedBy: administrative.preparedBy,
+                    approvedBy: administrative.approvedBy,
+                    preparedOn: administrative.preparedOn,
+                    revisedBy: administrative.revisedBy,
+                    revisedOn: administrative.revisedOn,
+                    salesOffice: administrative.salesOffice,
+                    offerValidity: administrative.offerValidity,
+                    template: flagTemplate,
+                    visibleInCommerce: flagCommerce,
                 };
-                const res = await createCutomCoverage(reqObj);
-                console.log("createCoverage res:", res);
-                cvgIds.push({ coverageId: res.customCoverageId });
-            }
-            setGeneralComponentData({
-                ...generalComponentData,
-                customCoverages: cvgIds,
-            });
-            const { portfolioId, ...res } = generalComponentData;
-            let obj = {
-                ...res,
-                visibleInCommerce: true,
-                customerId: 0,
-                lubricant: true,
-                customerSegment: generalComponentData.customerSegment
-                    ? generalComponentData.customerSegment.value
-                    : "EMPTY",
-                // machineType: generalComponentData.machineType
-                //     ? generalComponentData.machineType
-                //     : "EMPTY",
-                status: generalComponentData.status
-                    ? generalComponentData.status
-                    : "EMPTY",
-                strategyTask: generalComponentData.strategyTask
-                    ? generalComponentData.strategyTask
-                    : "EMPTY",
-                taskType: generalComponentData.taskType
-                    ? generalComponentData.taskType
-                    : "EMPTY",
-                usageCategory: generalComponentData.usageCategory
-                    ? generalComponentData.usageCategory
-                    : "EMPTY",
-                productHierarchy: generalComponentData.productHierarchy
-                    ? generalComponentData.productHierarchy
-                    : "EMPTY",
-                geographic: generalComponentData.geographic
-                    ? generalComponentData.geographic
-                    : "EMPTY",
-                availability: generalComponentData.availability
-                    ? generalComponentData.availability
-                    : "EMPTY",
-                responseTime: generalComponentData.responseTime
-                    ? generalComponentData.responseTime
-                    : "EMPTY",
-                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                application: generalComponentData.application
-                    ? generalComponentData.application
-                    : "EMPTY",
-                contractOrSupport: generalComponentData.contractOrSupport
-                    ? generalComponentData.contractOrSupport
-                    : "EMPTY",
-                // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                //     ? generalComponentData.lifeStageOfMachine
-                //     : "EMPTY",
-                machineType: machineTypeKeyValue.value,
-                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                supportLevel: generalComponentData.supportLevel
-                    ? generalComponentData.supportLevel
-                    : "EMPTY",
-                customerGroup: generalComponentData.customerGroup
-                    ? generalComponentData.customerGroup
-                    : "EMPTY",
-                searchTerm: "EMPTY",
-                supportLevel: "EMPTY",
-                portfolioPrice: {},
-                additionalPrice: {},
-                escalationPrice: {},
-                customItems: selectedCustomItems,
-                customCoverages: cvgIds,
-                usageCategory: categoryUsageKeyValue1.value,
-                taskType: stratgyTaskTypeKeyValue.value,
-                strategyTask: stratgyTaskUsageKeyValue.value,
-                responseTime: stratgyResponseTimeKeyValue.value,
-                productHierarchy: stratgyHierarchyKeyValue.value,
-                geographic: stratgyGeographicKeyValue.value,
+                // console.log(" res is : ", res);
+                // console.log("obj", obj);
 
-                preparedBy: administrative.preparedBy,
-                approvedBy: administrative.approvedBy,
-                preparedOn: administrative.preparedOn,
-                revisedBy: administrative.revisedBy,
-                revisedOn: administrative.revisedOn,
-                salesOffice: administrative.salesOffice,
-                offerValidity: administrative.offerValidity,
-            };
-            if (generalComponentData.portfolioId) {
-                const updatePortfolioRes = await updateCustomPortfolio(
+                const strategyRes = await updateCustomPortfolio(
                     generalComponentData.portfolioId,
                     obj
                 );
-                if (updatePortfolioRes.status === 200) {
+                if (strategyRes.status === 200) {
                     toast("👏 Portfolio updated", {
                         position: "top-right",
                         autoClose: 5000,
@@ -1496,40 +1280,318 @@ export function PortfolioTemplatesResult(props) {
                         draggable: true,
                         progress: undefined,
                     });
-                    setValue("6");
+                    setValue("administrative");
+                    // setValue("4");
+                    console.log("strategy updating", strategyRes.data);
                 } else {
-                    throw `${updatePortfolioRes.status}:unable to update`;
+                    throw `${strategyRes.status}:error in update portfolio`;
+                };
+            } else if (e.target.id == "administrative") {
+                const validator = new Validator();
+
+                if ((!validator.emailValidation(administrative.preparedBy) ||
+                    administrative.preparedBy == "" ||
+                    administrative.preparedBy == undefined) ||
+                    (administrative.approvedBy != "" &&
+                        administrative.approvedBy != undefined &&
+                        !validator.emailValidation(administrative.approvedBy)) ||
+                    (administrative.revisedBy != "" &&
+                        administrative.revisedBy != undefined &&
+                        !validator.emailValidation(administrative.revisedBy)) ||
+                    (administrative.branch == "" ||
+                        administrative.branch == undefined)
+                    // || (administrative.offerValidity == "" ||
+                    // administrative.offerValidity == undefined)
+                ) {
+                    throw "Please fill mandatory fields with valid data";
+                }
+                setGeneralComponentData({
+                    ...generalComponentData,
+                    preparedBy: administrative.preparedBy,
+                    approvedBy: administrative.approvedBy,
+                    preparedOn: administrative.preparedOn,
+                    revisedBy: administrative.revisedBy,
+                    revisedOn: administrative.revisedOn,
+                    salesOffice: administrative.salesOffice,
+                    offerValidity: administrative.offerValidity,
+                });
+
+                const { portfolioId, ...res } = generalComponentData;
+
+                let Administryobj = {
+                    ...res,
+                    visibleInCommerce: true,
+                    customerId: 0,
+                    lubricant: true,
+                    customerSegment: generalComponentData.customerSegment.value
+                        ? generalComponentData.customerSegment.value
+                        : "EMPTY",
+                    // machineType: generalComponentData.machineType
+                    //     ? generalComponentData.machineType
+                    //     : "EMPTY",
+                    status: generalComponentData.status
+                        ? generalComponentData.status
+                        : "EMPTY",
+                    strategyTask: generalComponentData.strategyTask
+                        ? generalComponentData.strategyTask
+                        : "EMPTY",
+                    taskType: generalComponentData.taskType
+                        ? generalComponentData.taskType
+                        : "EMPTY",
+                    usageCategory: generalComponentData.usageCategory
+                        ? generalComponentData.usageCategory
+                        : "EMPTY",
+                    productHierarchy: generalComponentData.productHierarchy
+                        ? generalComponentData.productHierarchy
+                        : "EMPTY",
+                    geographic: generalComponentData.geographic
+                        ? generalComponentData.geographic
+                        : "EMPTY",
+                    availability: generalComponentData.availability
+                        ? generalComponentData.availability
+                        : "EMPTY",
+                    responseTime: generalComponentData.responseTime
+                        ? generalComponentData.responseTime
+                        : "EMPTY",
+                    type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                    application: generalComponentData.application
+                        ? generalComponentData.application
+                        : "EMPTY",
+                    contractOrSupport: generalComponentData.contractOrSupport
+                        ? generalComponentData.contractOrSupport
+                        : "EMPTY",
+                    // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                    //     ? generalComponentData.lifeStageOfMachine
+                    //     : "EMPTY",
+                    machineType: machineTypeKeyValue.value,
+                    lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                    supportLevel: generalComponentData.supportLevel
+                        ? generalComponentData.supportLevel
+                        : "EMPTY",
+                    customItems: selectedCustomItems,
+                    items: [],
+                    customCoverages: [],
+                    customerGroup: generalComponentData.customerGroup
+                        ? generalComponentData.customerGroup
+                        : "EMPTY",
+                    searchTerm: "EMPTY",
+                    supportLevel: "EMPTY",
+                    // portfolioPrice: {},
+                    // additionalPrice: {},
+                    // escalationPrice: {},
+
+                    usageCategory: categoryUsageKeyValue1.value,
+                    taskType: stratgyTaskTypeKeyValue.value,
+                    strategyTask: stratgyTaskUsageKeyValue.value,
+                    responseTime: stratgyResponseTimeKeyValue.value,
+                    productHierarchy: stratgyHierarchyKeyValue.value,
+                    geographic: stratgyGeographicKeyValue.value,
+                    numberOfEvents: 0,
+                    rating: "",
+                    startUsage: "",
+                    endUsage: "",
+                    unit: "HOURS",
+                    additionals: "",
+                    preparedBy: administrative.preparedBy,
+                    approvedBy: administrative.approvedBy,
+                    preparedOn: administrative.preparedOn,
+                    revisedBy: administrative.revisedBy,
+                    revisedOn: administrative.revisedOn,
+                    salesOffice: administrative.salesOffice,
+                    offerValidity: administrative.offerValidity,
+                    template: flagTemplate,
+                    visibleInCommerce: flagCommerce,
+
+                    // preparedBy: generalComponentData.preparedBy
+                    // ? generalComponentData.preparedBy
+                    // : "",
+                    // approvedBy: generalComponentData.approvedBy
+                    // ? generalComponentData.approvedBy
+                    // : "",
+                    // preparedOn: generalComponentData.preparedOn
+                    // ? generalComponentData.preparedOn
+                    // : "",
+                    // revisedBy: generalComponentData.revisedBy
+                    // ? generalComponentData.revisedBy
+                    // : "",
+                    // revisedOn: generalComponentData.revisedOn
+                    // ? generalComponentData.revisedOn
+                    // : "",
+                    // salesOffice: generalComponentData.salesOffice
+                    // ? generalComponentData.salesOffice
+                    // : "",
+                    // offerValidity: generalComponentData.offerValidity
+                    // ? generalComponentData.offerValidity
+                    // : "",
+                };
+
+                const administryRes = await updateCustomPortfolio(
+                    generalComponentData.portfolioId,
+                    Administryobj
+                );
+                if (administryRes.status === 200) {
+                    toast("👏 Portfolio updated", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    // setValue("administrative");
+                    setValue("4");
+                    console.log("administryRes updating", administryRes.data);
+                } else {
+                    throw `${administryRes.status}:error in update portfolio`;
+                };
+
+                // setValue("4");
+
+            } else if (e.target.id == "coverage") {
+
+
+                let cvgIds = [];
+                setValue("6");
+                for (let i = 0; i < selectedMasterData.length; i++) {
+                    let reqObj = {
+                        customCoverageId: 0,
+                        serviceId: 0,
+                        modelNo: selectedMasterData[i].model,
+                        serialNumber: "",
+                        startSerialNumber: "",
+                        endSerialNumber: "",
+                        serialNumberPrefix: "",
+                        family: selectedMasterData[i].family,
+                        make: selectedMasterData[i].make,
+                        fleet: "",
+                        fleetSize: "SMALL",
+                        location: "",
+                        startDate: "",
+                        endDate: "",
+                        actions: "",
+                        createdAt: "",
+                    };
+                    const res = await createCutomCoverage(reqObj);
+                    console.log("createCoverage res:", res);
+                    cvgIds.push({ coverageId: res.customCoverageId });
+                }
+                setGeneralComponentData({
+                    ...generalComponentData,
+                    customCoverages: cvgIds,
+                });
+                const { portfolioId, ...res } = generalComponentData;
+                let obj = {
+                    ...res,
+                    visibleInCommerce: true,
+                    customerId: 0,
+                    lubricant: true,
+                    customerSegment: generalComponentData.customerSegment
+                        ? generalComponentData.customerSegment.value
+                        : "EMPTY",
+                    // machineType: generalComponentData.machineType
+                    //     ? generalComponentData.machineType
+                    //     : "EMPTY",
+                    status: generalComponentData.status
+                        ? generalComponentData.status
+                        : "EMPTY",
+                    strategyTask: generalComponentData.strategyTask
+                        ? generalComponentData.strategyTask
+                        : "EMPTY",
+                    taskType: generalComponentData.taskType
+                        ? generalComponentData.taskType
+                        : "EMPTY",
+                    usageCategory: generalComponentData.usageCategory
+                        ? generalComponentData.usageCategory
+                        : "EMPTY",
+                    productHierarchy: generalComponentData.productHierarchy
+                        ? generalComponentData.productHierarchy
+                        : "EMPTY",
+                    geographic: generalComponentData.geographic
+                        ? generalComponentData.geographic
+                        : "EMPTY",
+                    availability: generalComponentData.availability
+                        ? generalComponentData.availability
+                        : "EMPTY",
+                    responseTime: generalComponentData.responseTime
+                        ? generalComponentData.responseTime
+                        : "EMPTY",
+                    type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                    application: generalComponentData.application
+                        ? generalComponentData.application
+                        : "EMPTY",
+                    contractOrSupport: generalComponentData.contractOrSupport
+                        ? generalComponentData.contractOrSupport
+                        : "EMPTY",
+                    // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                    //     ? generalComponentData.lifeStageOfMachine
+                    //     : "EMPTY",
+                    machineType: machineTypeKeyValue.value,
+                    lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                    supportLevel: generalComponentData.supportLevel
+                        ? generalComponentData.supportLevel
+                        : "EMPTY",
+                    customerGroup: generalComponentData.customerGroup
+                        ? generalComponentData.customerGroup
+                        : "EMPTY",
+                    searchTerm: "EMPTY",
+                    supportLevel: "EMPTY",
+                    portfolioPrice: {},
+                    additionalPrice: {},
+                    escalationPrice: {},
+                    customItems: selectedCustomItems,
+                    customCoverages: cvgIds,
+                    usageCategory: categoryUsageKeyValue1.value,
+                    taskType: stratgyTaskTypeKeyValue.value,
+                    strategyTask: stratgyTaskUsageKeyValue.value,
+                    responseTime: stratgyResponseTimeKeyValue.value,
+                    productHierarchy: stratgyHierarchyKeyValue.value,
+                    geographic: stratgyGeographicKeyValue.value,
+
+                    preparedBy: administrative.preparedBy,
+                    approvedBy: administrative.approvedBy,
+                    preparedOn: administrative.preparedOn,
+                    revisedBy: administrative.revisedBy,
+                    revisedOn: administrative.revisedOn,
+                    salesOffice: administrative.salesOffice,
+                    offerValidity: administrative.offerValidity,
+                    template: flagTemplate,
+                    visibleInCommerce: flagCommerce,
+                };
+                if (generalComponentData.portfolioId) {
+                    const updatePortfolioRes = await updateCustomPortfolio(
+                        generalComponentData.portfolioId,
+                        obj
+                    );
+                    if (updatePortfolioRes.status === 200) {
+                        toast("👏 Portfolio updated", {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                        });
+                        setValue("6");
+                    } else {
+                        throw `${updatePortfolioRes.status}:unable to update`;
+                    }
                 }
             }
+        } catch (error) {
+            console.log("somehing went wrong:", error);
+            toast("😐" + error, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return;
         }
-        // else if (e.target.id == "coverage") {
-        //     let cvgIds = [];
-
-        //     for (let i = 0; i < selectedMasterData.length; i++) {
-        //         let reqObj = {
-        //           coverageId: 0,
-        //           serviceId: 0,
-        //           modelNo: "992k",
-        //           serialNumber: "",
-        //           startSerialNumber: "",
-        //           endSerialNumber: "",
-        //           serialNumberPrefix: "",
-        //           family: "10",
-        //           make: "RM5",
-        //           fleet: "",
-        //           fleetSize: "SMALL",
-        //           location: "",
-        //           startDate: "",
-        //           endDate: "",
-        //           actions: "",
-        //           createdAt: "",
-        //         };
-        //         const res = await createCoverage(reqObj);
-        //         console.log("createCoverage res:", res);
-        //         cvgIds.push({ coverageId: res.coverageId });
-        //       }
-
-        // }
 
     }
 
@@ -1879,82 +1941,8 @@ export function PortfolioTemplatesResult(props) {
 
         // Solution Templates Auto fill  Data Conditons 
 
-        // if (location.solutionValueIs == 1) {
-        if (SolutionValueIs == 1) {
-
-            // console.log("data are here ", location.selectedTemplateItems)
-            setGeneralComponentData({
-                // name: location.selectedTemplateItems[0].name,
-                // description: location.selectedTemplateItems[0].description,
-                // serviceDescription: "",
-                // externalReference: location.selectedTemplateItems[0].externalReference,
-                // customerSegment: null,
-                // customItems: [],
-                // customCoverages: [],
-
-                name: selectedTemplateItemsVal[0].name,
-                description: selectedTemplateItemsVal[0].description,
-                serviceDescription: "",
-                externalReference: selectedTemplateItemsVal[0].externalReference,
-                customerSegment: null,
-                customItems: [],
-                customCoverages: [],
-            });
-            setValidityData({
-                ...validityData,
-                // fromDate: location.selectedTemplateItems[0].validFrom,
-                // toDate: location.selectedTemplateItems[0].validTo,
-                fromDate: selectedTemplateItemsVal[0].validFrom,
-                toDate: selectedTemplateItemsVal[0].validTo,
-                from: null,
-                to: null,
-                fromInput: "",
-                toInput: "",
-
-            })
-            // stratgyTaskTypeKeyValue({value: location.selectedTemplateItems[0].itemBodyModel.taskType})
-            setStratgyResponseTimeKeyValue([{
-                // "label": location.selectedTemplateItems[0].responseTime,
-                // "value": location.selectedTemplateItems[0].responseTime
-                "label": selectedTemplateItemsVal[0].responseTime,
-                "value": selectedTemplateItemsVal[0].responseTime
-            }])
-            setStratgyHierarchyKeyValue([{
-                // "label": location.selectedTemplateItems[0].productHierarchy,
-                // "value": location.selectedTemplateItems[0].productHierarchy
-                "label": selectedTemplateItemsVal[0].productHierarchy,
-                "value": selectedTemplateItemsVal[0].productHierarchy
-            }])
-
-            setStratgyGeographicKeyValue([{
-                // "label": location.selectedTemplateItems[0].geographic,
-                // "value": location.selectedTemplateItems[0].geographic
-                "label": selectedTemplateItemsVal[0].geographic,
-                "value": selectedTemplateItemsVal[0].geographic
-            }])
-
-            // setPriceMethodKeyValue([{
-            //     "label": location.selectedTemplateItems[0].itemBodyModel.priceMethod,
-            //     "value": location.selectedTemplateItems[0].itemBodyModel.priceMethod
-            // }])
-            // setPriceCalculator({
-            //     ...priceCalculator,
-            //     priceMethod: location.selectedTemplateItems[0].itemBodyModel.priceMethod,
-            //     listPrice: location.selectedTemplateItems[0].itemBodyModel.listPrice,
-            //     priceEscalationInput: location.selectedTemplateItems[0].itemBodyModel.priceEscalation,
-            //     priceAdditionalInput: location.selectedTemplateItems[0].itemBodyModel.additional,
-            //     calculatedPrice: location.selectedTemplateItems[0].itemBodyModel.calculatedPrice,
-            //     flatPrice: location.selectedTemplateItems[0].itemBodyModel.flatPrice,
-            //     discountTypeInput: location.selectedTemplateItems[0].itemBodyModel.discountType,
-            //     year: location.selectedTemplateItems[0].itemBodyModel.year,
-            //     totalPrice: location.selectedTemplateItems[0].itemBodyModel.totalPrice,
-            // })
-
-
-        }
-
         // setCreatedCustomPortfolioItems(location.selectedTemplateItems);
-        setCreatedCustomPortfolioItems(JSON.parse(localStorage.getItem('selectedTemplateItems')));
+        setCreatedCustomPortfolioItems(CreatedCustomPortfolioDetails.customItems);
 
         // console.log("location.selectedTemplateItems 11 : ", location.selectedTemplateItems)
         // console.log("localStorage.getItem('selectedTemplateItems') : ", JSON.parse(localStorage.getItem('selectedTemplateItems')))
@@ -1964,7 +1952,7 @@ export function PortfolioTemplatesResult(props) {
         // itemIdData.push({ "itemId": location.selectedTemplateItems[0].itemId })
 
         // const customItemsId = location.selectedTemplateItems.map((data, i) => {
-        const customItemsId = selectedTemplateItemsVal.map((data, i) => {
+        const customItemsId = CreatedCustomPortfolioDetails.customItems.map((data, i) => {
 
             // console.log("my map data is :=> ", data);
             // console.log("itemHeaderId is :=>  ", data.customItemHeaderModel?.itemHeaderId);
@@ -2194,6 +2182,26 @@ export function PortfolioTemplatesResult(props) {
             setFilterMasterData(updated);
         }
     };
+
+    const handleCoverageCheckBoxData = () => {
+        //   setSelectedMasterData(filterMasterData);
+        //   setMasterData([]);
+        var _selectedCoverageData = [...filterMasterData];
+        // console.log("_selectedBundleServiceItemData : ", _selectedBundleServiceItemData);
+
+        let cloneArr = []
+        filterMasterData.map((data, i) => {
+            console.log("data: ", data)
+            const exist = selectedMasterData.some(item => item.id === data.id)
+            console.log("exist: ", exist)
+            if (!exist) {
+                cloneArr.push(data)
+                // setSelectedMasterData([...selectedMasterData, data])
+            }
+        })
+        setSelectedMasterData([...selectedMasterData, ...cloneArr])
+        setMasterData([])
+    }
 
     useEffect(() => {
         if (masterData.some((masterDataitem) => masterDataitem.check1 === true)) {
@@ -3078,10 +3086,10 @@ export function PortfolioTemplatesResult(props) {
                     <div>Strategy</div>
                 </>
             ),
-            selector: (row) => row.customItemHeaderModel?.strategy,
+            selector: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemHeaderModel?.strategy,
+            format: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
         },
         {
             name: (
@@ -3549,7 +3557,7 @@ export function PortfolioTemplatesResult(props) {
                                 </Box>
                                 <TabPanel value="1">
                                     <div className="row mt-4">
-                                        <div className="col-md-3 col-sm-3">
+                                        {/* <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
                                                     SELECT TYPE
@@ -3564,61 +3572,26 @@ export function PortfolioTemplatesResult(props) {
                                                         headerTypeKeyValue.length > 0 ? false : true
                                                     }
                                                 />
-                                                {/* <div>
-                                                    <ToggleButtonGroup
-                                                        color="primary"
-                                                        value={alignment}
-                                                        exclusive
-                                                        onChange={handleChangeToggle}
-                                                    >
-                                                        <ToggleButton value="Portfolio">Portfolio</ToggleButton>
-                                                        <ToggleButton value="Program">Program</ToggleButton>
-                                                    </ToggleButtonGroup>
-                                                </div> */}
-
-                                                {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponentData.portfolioName} onChange={handleGeneralInputChange} /> */}
                                             </div>
-                                        </div>
-                                        {/* {console.log("error are : ", location.autocreatedcustomPortfolioData.customPortfolioId)} */}
-                                        <div className="col-md-3 col-sm-3">
+                                        </div> */}
+                                        {/* <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
-                                                    {prefilgabelGeneral} ID
+                                                   SOLUTION ID
                                                 </label>
-                                                {/* {location.solutionValueIs == 1 ? <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    placeholder="(Auto-generated11)"
-                                                     {location.solutionValueIs }
-                                                    comment this value={location.autocreatedcustomPortfolioData.customPortfolioId}
-                                                   omment this onChange={handleGeneralInputChange}
-                                                   omment this disabled={true}
-                                                /> :  */}
                                                 <input
                                                     type="text"
                                                     className="form-control border-radius-10"
                                                     placeholder="(Auto-generated)"
-                                                    // {location.solutionValueIs }
-                                                    // value={location?.autocreatedcustomPortfolioData?.customPortfolioId}
-                                                    // onChange={handleGeneralInputChange}
                                                     disabled={true}
                                                 />
-                                                {/* } */}
-                                                {/* <input
-                                                    type="text"
-                                                    className="form-control border-radius-10"
-                                                    placeholder="(Auto-generated)"
-                                                    // {location.solutionValueIs }
-                                                    value={location.autocreatedcustomPortfolioData.customPortfolioId}
-                                                    // onChange={handleGeneralInputChange}
-                                                    disabled={true}
-                                                /> */}
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
-                                                    {prefilgabelGeneral} NAME
+                                                    {/* {prefilgabelGeneral} NAME */}
+                                                    SOLUTION NAME
                                                 </label>
                                                 <input
                                                     type="text"
@@ -3633,7 +3606,8 @@ export function PortfolioTemplatesResult(props) {
                                         <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
-                                                    SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY)
+                                                    {/* SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY) */}
+                                                    SOLUTION DESCRIPTION (IF ANY)
                                                 </label>
                                                 <input
                                                     type="text"
@@ -3672,6 +3646,35 @@ export function PortfolioTemplatesResult(props) {
                                                     defa
                                                 // options={strategyList}
                                                 />
+                                            </div>
+                                        </div>
+
+                                        <div className="col-md-3 col-sm-3 d-flex justify-content-between align-items-center">
+                                            <div className=" d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <FormGroup>
+                                                        <FormControlLabel
+                                                            control={<Switch checked={flagTemplate} />}
+                                                            label=" FLAG FOR TEMPLATE"
+                                                            value={flagTemplate}
+                                                            onChange={(e) => setFlagTemplate(e.target.checked)}
+                                                        />
+                                                    </FormGroup>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-3 col-sm-3 d-flex justify-content-between align-items-center">
+                                            <div className=" d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <FormGroup>
+                                                        <FormControlLabel
+                                                            control={<Switch checked={flagCommerce} />}
+                                                            label=" FLAG FOR COMMERCE"
+                                                            value={flagCommerce}
+                                                            onChange={(e) => setFlagCommerce(e.target.checked)}
+                                                        />
+                                                    </FormGroup>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -3926,7 +3929,7 @@ export function PortfolioTemplatesResult(props) {
                                 </TabPanel>
                                 <TabPanel value="3">
                                     <div className="row">
-                                        <div className="col-md-4 col-sm-4">
+                                        {/* <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
@@ -3939,7 +3942,6 @@ export function PortfolioTemplatesResult(props) {
                                                     value={categoryUsageKeyValue1}
                                                     onChange={(e) => HandleCatUsage(e)}
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -3974,16 +3976,8 @@ export function PortfolioTemplatesResult(props) {
                                                         )
                                                     }
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
-                                        {/* <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500" for="exampleInputEmail1">CATEGORY USAGE</label>
-                                                <Select options={categoryList} />
-                                                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" />
-                                            </div>
-                                        </div> */}
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -3996,11 +3990,9 @@ export function PortfolioTemplatesResult(props) {
                                                     options={strategyOptionals}
                                                     value={stratgyOptionalsKeyValue}
                                                     onChange={(e) => setStratgyOptionalsKeyValue(e)}
-                                                // options={rTimeList}
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Optionais" /> */}
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -4014,7 +4006,6 @@ export function PortfolioTemplatesResult(props) {
                                                     value={stratgyResponseTimeKeyValue}
                                                     onChange={(e) => setStratgyResponseTimeKeyValue(e)}
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Response Time" /> */}
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -4050,7 +4041,7 @@ export function PortfolioTemplatesResult(props) {
                                                 {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
-                                        <div className="col-md-4 col-sm-4">
+                                        {/* <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
@@ -4062,16 +4053,10 @@ export function PortfolioTemplatesResult(props) {
                                                     options={machineTypeKeyValueList}
                                                     value={machineTypeKeyValue}
                                                     onChange={(e) => setMachineTypeKeyValue(e)}
-                                                    // onChange={(e) =>
-                                                    //     handleDropdownChange(ENUM.MACHINE_TYPE, e)
-                                                    // }
-                                                    // isClearable={true}
-                                                    // value={coverageData.machineType}
                                                     isLoading={
                                                         machineTypeKeyValueList.length > 0 ? false : true
                                                     }
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -4083,26 +4068,46 @@ export function PortfolioTemplatesResult(props) {
                                                     LIFE STAGE
                                                 </label>
                                                 <Select
-                                                    // options={geographicList}
-                                                    // value={stratgyGeographicKeyValue}
-                                                    // onChange={(e) => setStratgyGeographicKeyValue(e)}
-                                                    // defaultValue={selectedOption}
-                                                    // onChange={setSelectedOption}
-                                                    // options={options}
-                                                    // placeholder="Life Stage"
                                                     options={lifeStageOfMachineKeyValueList}
                                                     value={lifeStageOfMachineKeyValue}
                                                     onChange={(e) => setLifeStageOfMachineKeyValue(e)}
-                                                    // onChange={(e) =>
-                                                    //     handleDropdownChange(ENUM.LIFE_STAGE_OF_MACHINE, e)
-                                                    // }
-                                                    // isClearable={true}
-                                                    // value={coverageData.lifeStageOfMachine}
                                                     isLoading={
                                                         lifeStageOfMachineKeyValueList.length > 0 ? false : true
                                                     }
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
+                                            </div>
+                                        </div> */}
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    SOLUTION TYPE
+                                                </label>
+                                                <Select
+                                                    options={options}
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                // isLoading={
+                                                //     lifeStageOfMachineKeyValueList.length > 0 ? false : true
+                                                // }
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    SOLUTION LEVEL
+                                                </label>
+                                                <Select
+                                                    options={options}
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                />
                                             </div>
                                         </div>
                                     </div>
@@ -4188,6 +4193,7 @@ export function PortfolioTemplatesResult(props) {
                                                     type="text"
                                                     className="form-control border-radius-10"
                                                     name="preparedBy"
+                                                    placeholder="Required"
                                                     value={administrative.preparedBy}
                                                     onChange={handleAdministrativreChange}
                                                 />
@@ -4257,9 +4263,6 @@ export function PortfolioTemplatesResult(props) {
                                                     </div>
                                                 </div>
                                             </div>
-
-
-
                                         </div>
                                     </div>
                                     <div className="row">
@@ -4704,7 +4707,7 @@ export function PortfolioTemplatesResult(props) {
                                                     title=""
                                                     columns={masterColumns}
                                                     data={masterData}
-                                                    customStyles={customStyles}
+                                                    customStyles={customTableStyles}
                                                     selectableRows
                                                     onSelectedRowsChange={(state) => setFilterMasterData(state.selectedRows)}
                                                     pagination
@@ -4712,10 +4715,11 @@ export function PortfolioTemplatesResult(props) {
                                                 <div>
                                                     <div className="text-right">
                                                         <input
-                                                            onClick={() => {
-                                                                setSelectedMasterData(filterMasterData);
-                                                                setMasterData([]);
-                                                            }}
+                                                            // onClick={() => {
+                                                            //     setSelectedMasterData(filterMasterData);
+                                                            //     setMasterData([]);
+                                                            // }}
+                                                            onClick={handleCoverageCheckBoxData}
                                                             className="btn bg-primary text-white"
                                                             value="+ Add Selected"
                                                             // disabled={!flagIs}
@@ -4748,7 +4752,7 @@ export function PortfolioTemplatesResult(props) {
                                                     title=""
                                                     columns={selectedMasterColumns}
                                                     data={selectedMasterData}
-                                                    customStyles={customStyles}
+                                                    customStyles={customTableStyles}
                                                     pagination
                                                 />
                                             </>
@@ -5015,7 +5019,7 @@ export function PortfolioTemplatesResult(props) {
                     {/* hide portfolio item querySearch */}
                     <div className="card mt-4 px-4">
 
-                        <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
+                        <div className="" style={{ minHeight: 200, height: "auto", width: '100%', backgroundColor: '#fff' }}>
                             {/* <DataGrid
                                 sx={{
                                     '& .MuiDataGrid-columnHeaders': {
@@ -5035,7 +5039,7 @@ export function PortfolioTemplatesResult(props) {
                                 title=""
                                 columns={selectedportfolioTempItemsColumn}
                                 data={createdCustomPortfolioItems}
-                                customStyles={customStyles}
+                                customStyles={customTableStyles}
                                 pagination
                             />
                             {console.log("createdCustomPortfolioItems : ", createdCustomPortfolioItems)}
@@ -5459,3 +5463,5 @@ export function PortfolioTemplatesResult(props) {
         </>
     )
 }
+
+// export default CreatedCustomPortfolioTemplate

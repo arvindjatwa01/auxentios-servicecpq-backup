@@ -8,10 +8,24 @@ import { Link } from "react-router-dom";
 import { Box, Button, Stack, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
+import { useDispatch, useSelector } from "react-redux";
+
 import { PortfolioContext } from "../PortfolioAndBundle/ProtfolioContext";
 import { useAppSelector } from "../../app/hooks";
-import { selectUpdateTaskList, selectStrategyTaskOption, selectCategoryList } from "../PortfolioAndBundle/customerSegment/strategySlice"
+import {
+  selectUpdateTaskList,
+  selectStrategyTaskOption,
+  selectCategoryList,
+  selectUpdateList,
+  taskActions,
+} from "../PortfolioAndBundle/customerSegment/strategySlice";
 
+import {
+  getUsageCategoryKeyValue,
+  getTaskTypeKeyValue,
+  getMachineTypeKeyValue,
+  getTypeKeyValue,
+} from "../../services/index";
 
 const AddCustomPortfolioItem = (props) => {
 
@@ -37,11 +51,25 @@ const AddCustomPortfolioItem = (props) => {
     templateId: "",
     templateDescription: "",
     repairOption: "",
+    strategyTask: "",
   });
+
+  const [typeKeyValue, setTypeKeyValue] = useState([]);
+  const [machineTypeKeyValue, setMachineTypeKeyValue] = useState([]);
+  const [bundleItemTaskTypeKeyValue, setBundleItemTaskTypeKeyValue] = useState(
+    []
+  );
+  const [categoryUsageKeyValue, setCategoryUsageKeyValue] = useState([]);
+
+
+  const [stratgyTaskUsageKeyValue, setStratgyTaskUsageKeyValue] = useState([]);
+  const [stratgyTaskTypeKeyValue, setStratgyTaskTypeKeyValue] = useState([]);
 
   const updatedTaskList = useAppSelector(selectStrategyTaskOption(selectUpdateTaskList));
   const categoryList = useAppSelector(selectStrategyTaskOption(selectCategoryList));
-
+  const updatedList = useAppSelector(
+    selectStrategyTaskOption(selectUpdateList)
+  );
   const frequencyOptions = [
     { label: "Cyclic", value: "Cyclic" },
     { label: "once", value: "once" },
@@ -54,6 +82,59 @@ const AddCustomPortfolioItem = (props) => {
     { value: "vanilla", label: "Construction-Medium" },
     { value: "Construction", label: "Construction" },
   ];
+
+  const initFetch = () => {
+
+    getTaskTypeKeyValue()
+      .then((res) => {
+        const options = res.map((d) => ({
+          value: d.key,
+          label: d.value,
+        }));
+        setBundleItemTaskTypeKeyValue(options);
+      })
+      .catch((err) => {
+        alert(err);
+      });
+
+    getUsageCategoryKeyValue()
+      .then((res) => {
+        const options = res.map((d) => ({
+          value: d.key,
+          label: d.value,
+        }));
+        setCategoryUsageKeyValue(options);
+      })
+      .catch((err) => {
+        alert(err);
+      });
+
+    getTypeKeyValue()
+      .then((res) => {
+        const options = res.map((d) => ({
+          value: d.key,
+          label: d.value,
+        }));
+        setTypeKeyValue(options);
+      })
+      .catch((err) => {
+        alert(err);
+      });
+
+    getMachineTypeKeyValue()
+      .then((res) => {
+        const options = res.map((d) => ({
+          value: d.key,
+          label: d.value,
+        }));
+        setMachineTypeKeyValue(options);
+      })
+      .catch((err) => {
+        alert(err);
+      });
+  };
+  const dispatch = useDispatch();
+
 
   useEffect(() => {
     if (props.passItemEditRowData) {
@@ -92,6 +173,29 @@ const AddCustomPortfolioItem = (props) => {
     }
   }, []);
 
+  useEffect(() => {
+    initFetch();
+    dispatch(taskActions.fetchTaskList());
+  }, [dispatch]);
+
+  const HandleCatUsage = (e) => {
+    setStratgyTaskUsageKeyValue([]);
+    setStratgyTaskTypeKeyValue([]);
+    addPortFolioItem.strategyTask = "";
+    addPortFolioItem.taskType = "";
+    // setCategoryUsageKeyValue1(e);
+    setAddportFolioItem({ ...addPortFolioItem, usageIn: e })
+    dispatch(taskActions.updateList(e.value));
+  };
+
+  const HandleStrategyUsage = (e) => {
+    setStratgyTaskTypeKeyValue([]);
+    addPortFolioItem.taskType = "";
+    // setStratgyTaskUsageKeyValue(e);
+    setAddportFolioItem({ ...addPortFolioItem, strategyTask: e })
+    dispatch(taskActions.updateTask(e.value));
+  };
+
   const handleAddPortfolioSave = () => {
     if (props.compoFlag === "itemEdit") {
       props.handleItemEditSave(addPortFolioItem);
@@ -104,6 +208,8 @@ const AddCustomPortfolioItem = (props) => {
       props.setBundleTabs("3");
     }
   };
+
+
 
   return (
     <>
@@ -199,11 +305,17 @@ const AddCustomPortfolioItem = (props) => {
               >
                 TASK TYPE
               </label>
-              <div className="icon-defold">
+              <Select
+                options={updatedTaskList}
+                // options={props.updatedTaskList}
+                value={addPortFolioItem.taskType}
+                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, taskType: e, })}
+                isDisabled={editable}
+              />
+              {/* <div className="icon-defold">
                 <div className="form-control">
                   <Select
                     options={updatedTaskList}
-                    // options={props.updatedTaskList}
                     value={addPortFolioItem.taskType}
                     onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, taskType: e, })}
                     isDisabled={editable}
@@ -212,7 +324,7 @@ const AddCustomPortfolioItem = (props) => {
                     <SearchOutlinedIcon className="font-size-16" />
                   </span>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="col-md-6 col-sm-6">
@@ -223,7 +335,14 @@ const AddCustomPortfolioItem = (props) => {
               >
                 FREQUENCY
               </label>
-              <div className="icon-defold">
+              <Select
+                options={frequencyOptions}
+                placeholder="FREQUENCY"
+                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, frequency: e, })}
+                value={addPortFolioItem.frequency}
+                isDisabled={editable}
+              />
+              {/* <div className="icon-defold">
                 <div className="form-control">
                   <Select
                     options={frequencyOptions}
@@ -236,7 +355,7 @@ const AddCustomPortfolioItem = (props) => {
                     <SearchOutlinedIcon className="font-size-16" />
                   </span>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="col-md-6 col-sm-6">
@@ -479,13 +598,14 @@ const AddCustomPortfolioItem = (props) => {
               {/* <AccessAlarmOutlinedIcon className=" font-size-16" /> */}
               <Tab label="Related template(s)" value="2" />
               {/* <SellOutlinedIcon className=" font-size-16" /> */}
-              <Tab label="Related repair option" value="3" />
+              {/* <Tab label="Related repair option" value="3" /> */}
+              <Tab label="Related Kit" value="3" />
             </TabList>
           </Box>
           <TabPanel value="1">
             {/* <p className="mt-4">SUMMARY</p> */}
             <div className="row mt-4">
-              <div className="col-md-6 col-sm-6">
+              {/* <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">
                   <label
                     className="text-light-dark font-size-12 font-weight-500"
@@ -501,7 +621,7 @@ const AddCustomPortfolioItem = (props) => {
                     value={addPortFolioItem.id ? addPortFolioItem.id : ""}
                   />
                 </div>
-              </div>
+              </div> */}
               <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">
                   <label
@@ -535,9 +655,10 @@ const AddCustomPortfolioItem = (props) => {
                   <Select
                     options={categoryList}
                     value={addPortFolioItem.usageIn}
-                    onChange={(e) =>
-                      setAddportFolioItem({ ...addPortFolioItem, usageIn: e })
-                    }
+                    // onChange={(e) =>
+                    //   setAddportFolioItem({ ...addPortFolioItem, usageIn: e })
+                    // }
+                    onChange={(e) => HandleCatUsage(e)}
                   />
                 </div>
               </div>
@@ -551,9 +672,34 @@ const AddCustomPortfolioItem = (props) => {
                     className="text-light-dark font-size-14 font-weight-500"
                     for="exampleInputEmail1"
                   >
+                    STRATEGY TASK
+                  </label>
+                  <Select
+                    options={updatedList}
+                    onChange={(e) => HandleStrategyUsage(e)}
+                    value={addPortFolioItem.strategyTask}
+                  />
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                  <label
+                    className="text-light-dark font-size-14 font-weight-500"
+                    for="exampleInputEmail1"
+                  >
                     TASK TYPE
                   </label>
-                  <div className="icon-defold">
+                  <Select
+                    options={updatedTaskList}
+                    onChange={(e) =>
+                      setAddportFolioItem({
+                        ...addPortFolioItem,
+                        taskType: e,
+                      })
+                    }
+                    value={addPortFolioItem.taskType}
+                  />
+                  {/* <div className="icon-defold">
                     <div className="form-control">
                       <Select
                         options={updatedTaskList}
@@ -569,7 +715,7 @@ const AddCustomPortfolioItem = (props) => {
                         <SearchOutlinedIcon className="font-size-16" />
                       </span>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
@@ -580,7 +726,18 @@ const AddCustomPortfolioItem = (props) => {
                   >
                     FREQUENCY
                   </label>
-                  <div className="icon-defold">
+                  <Select
+                    options={frequencyOptions}
+                    placeholder="Optional"
+                    onChange={(e) =>
+                      setAddportFolioItem({
+                        ...addPortFolioItem,
+                        frequency: e,
+                      })
+                    }
+                    value={addPortFolioItem.frequency}
+                  />
+                  {/* <div className="icon-defold">
                     <div className="form-control">
                       <Select
                         options={frequencyOptions}
@@ -597,7 +754,7 @@ const AddCustomPortfolioItem = (props) => {
                         <SearchOutlinedIcon className="font-size-16" />
                       </span>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
@@ -634,7 +791,23 @@ const AddCustomPortfolioItem = (props) => {
                   >
                     RECOMMENDED VALUE
                   </label>
-                  <Select
+                  <div
+                    className=" d-flex form-control-date"
+                    style={{ overflow: "hidden" }}
+                  >
+                    <input
+                      type="number"
+                      className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                      placeholder="Recommended Value"
+                      // defaultValue={props?.priceCalculator?.startUsage}
+                      // value={priceCalculator.startUsage}
+                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
+                      value={addPortFolioItem.recommendedValue}
+                      name="recommendedValue"
+                    />
+                    <span className="hours-div">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                  </div>
+                  {/* <Select
                     onChange={(e) =>
                       setAddportFolioItem({
                         ...addPortFolioItem,
@@ -644,7 +817,7 @@ const AddCustomPortfolioItem = (props) => {
                     value={addPortFolioItem.recommendedValue}
                     options={options}
                     placeholder="RECOMMENDED VALUE"
-                  />
+                  /> */}
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
@@ -705,7 +878,18 @@ const AddCustomPortfolioItem = (props) => {
                   >
                     TEMPLATE ID
                   </label>
-                  <div className="icon-defold">
+                  <Select
+                    options={options}
+                    placeholder="TEMPLATE ID"
+                    onChange={(e) =>
+                      setAddportFolioItem({
+                        ...addPortFolioItem,
+                        templateId: e,
+                      })
+                    }
+                    value={addPortFolioItem.templateId}
+                  />
+                  {/* <div className="icon-defold">
                     <div className="form-control">
                       <Select
                         options={options}
@@ -722,7 +906,7 @@ const AddCustomPortfolioItem = (props) => {
                         <SearchOutlinedIcon className="font-size-16" />
                       </span>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
@@ -733,7 +917,18 @@ const AddCustomPortfolioItem = (props) => {
                   >
                     TEMPLATE DESCRIPTION
                   </label>
-                  <div className="icon-defold">
+                  <Select
+                    options={options}
+                    placeholder="TEMPLATE DESCRIPTION"
+                    onChange={(e) =>
+                      setAddportFolioItem({
+                        ...addPortFolioItem,
+                        templateDescription: e,
+                      })
+                    }
+                    value={addPortFolioItem.templateDescription}
+                  />
+                  {/* <div className="icon-defold">
                     <div className="form-control">
                       <Select
                         options={options}
@@ -750,7 +945,7 @@ const AddCustomPortfolioItem = (props) => {
                         <SearchOutlinedIcon className="font-size-16" />
                       </span>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
@@ -778,7 +973,18 @@ const AddCustomPortfolioItem = (props) => {
                   >
                     REPAIR OPTION
                   </label>
-                  <div className="icon-defold">
+                  <Select
+                    options={options}
+                    placeholder="REPAIR OPTION"
+                    onChange={(e) =>
+                      setAddportFolioItem({
+                        ...addPortFolioItem,
+                        repairOption: e,
+                      })
+                    }
+                    value={addPortFolioItem.repairOption}
+                  />
+                  {/* <div className="icon-defold">
                     <div className="form-control">
                       <Select
                         options={options}
@@ -795,7 +1001,7 @@ const AddCustomPortfolioItem = (props) => {
                         <SearchOutlinedIcon className="font-size-16" />
                       </span>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className="col-md-4 col-sm-4">

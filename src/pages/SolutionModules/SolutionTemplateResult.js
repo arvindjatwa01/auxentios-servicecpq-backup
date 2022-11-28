@@ -32,6 +32,7 @@ import Tooltip from "@mui/material/Tooltip";
 import BusinessCenterOutlinedIcon from "@mui/icons-material/BusinessCenterOutlined";
 
 import LayersOutlinedIcon from "@mui/icons-material/LayersOutlined";
+import Validator from "../../utils/validator";
 
 import MenuItem from '@mui/material/MenuItem';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -140,6 +141,30 @@ const customStyles = {
     },
 };
 
+const customTableStyles = {
+    rows: {
+        style: {
+            minHeight: "72px", // override the row height
+        },
+    },
+    headCells: {
+        style: {
+            paddingLeft: "8px", // override the cell padding for head cells
+            paddingRight: "8px",
+            backgroundColor: "#872ff7",
+            color: "#fff",
+            borderRight: "1px solid rgba(0,0,0,.12)",
+        },
+    },
+    cells: {
+        style: {
+            paddingLeft: "8px", // override the cell padding for data cells
+            paddingRight: "8px",
+            borderRight: "1px solid rgba(0,0,0,.12)",
+        },
+    },
+};
+
 export function SolutionTemplateResult(props) {
 
     const location = useLocation();
@@ -212,6 +237,10 @@ export function SolutionTemplateResult(props) {
     const [openModelRowData, setOpenModelRowData] = useState({});
     const [openedModelBoxData, setOpenedModelBoxData] = useState([]);
     const [modelIncludedData, setModelIncludedData] = useState([]);
+
+    const [flagTemplate, setFlagTemplate] = useState(false);
+    const [flagCommerce, setFlagCommerce] = useState(false);
+
 
     const [selectedSolutionItems, setSelecteSolutionItems] = useState([]);
     const [editAbleCustomPriceData, setEditAbleCustomPriceData] = useState([]);
@@ -381,6 +410,7 @@ export function SolutionTemplateResult(props) {
             setViewOnlyTab({ ...viewOnlyTab, administryViewOnly: false });
         }
     }
+
 
     const handleCustomerSegmentChange = (e) => {
         setGeneralComponentData({
@@ -965,516 +995,303 @@ export function SolutionTemplateResult(props) {
     };
 
     const handleNextClick = async (e) => {
+        try {
 
-        if (e.target.id == "general") {
 
+            if (e.target.id == "general") {
+                if (
+                    generalComponentData.name === "" ||
+                    generalComponentData.name == null ||
+                    generalComponentData.externalReference === "" ||
+                    generalComponentData.externalReference === null ||
+                    prefilgabelGeneral === ""
+                ) {
+                    throw "Please fill required field properly";
+                }
 
-            let reqData = {
-                type: prefilgabelGeneral,
-                name: generalComponentData.name,
-                description: generalComponentData.description,
-                externalReference: generalComponentData.externalReference,
+                let reqData = {
+                    type: prefilgabelGeneral,
+                    name: generalComponentData.name,
+                    description: generalComponentData.description,
+                    externalReference: generalComponentData.externalReference,
 
-                strategyTask: stratgyTaskUsageKeyValue.value,
-                taskType: stratgyTaskTypeKeyValue.value,
-                usageCategory: categoryUsageKeyValue1.value,
-                productHierarchy: stratgyHierarchyKeyValue.value,
-                geographic: stratgyGeographicKeyValue.value,
+                    strategyTask: stratgyTaskUsageKeyValue.value,
+                    taskType: stratgyTaskTypeKeyValue.value,
+                    usageCategory: categoryUsageKeyValue1.value,
+                    productHierarchy: stratgyHierarchyKeyValue.value,
+                    geographic: stratgyGeographicKeyValue.value,
 
-                availability: "AVAILABILITY_GREATER_95",
-                responseTime: stratgyResponseTimeKeyValue.value,
-                type: "MACHINE",
-                application: "HILL",
-                contractOrSupport: "LEVEL_I",
-                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                supportLevel: "PREMIUM",
-                serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
+                    availability: "AVAILABILITY_GREATER_95",
+                    responseTime: stratgyResponseTimeKeyValue.value,
+                    type: "MACHINE",
+                    application: "HILL",
+                    contractOrSupport: "LEVEL_I",
+                    lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                    supportLevel: "PREMIUM",
+                    serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
 
-                machineType: machineTypeKeyValue.value,
-                searchTerm: "EMPTY",
-                lubricant: true,
-                customerId: 0,
-                visibleInCommerce: true,
-                customerGroup: generalComponentData.customerGroup
-                    ? generalComponentData.customerGroup
-                    : "EMPTY",
-                customerSegment: generalComponentData.customerSegment.value
-                    ? generalComponentData.customerSegment.value
-                    : "EMPTY",
-                status: generalComponentData.status
-                    ? generalComponentData.status
-                    : "EMPTY",
+                    machineType: machineTypeKeyValue.value,
+                    searchTerm: "EMPTY",
+                    lubricant: true,
+                    customerId: 0,
+                    visibleInCommerce: true,
+                    customerGroup: generalComponentData.customerGroup
+                        ? generalComponentData.customerGroup
+                        : "EMPTY",
+                    customerSegment: generalComponentData.customerSegment.value
+                        ? generalComponentData.customerSegment.value
+                        : "EMPTY",
+                    status: generalComponentData.status
+                        ? generalComponentData.status
+                        : "EMPTY",
 
-                items: [],
-                customCoverages: [],
-                customItems: [],
-                preparedBy: administrative.preparedBy,
-                approvedBy: administrative.approvedBy,
-                preparedOn: administrative.preparedOn,
-                revisedBy: administrative.revisedBy,
-                revisedOn: administrative.revisedOn,
-                salesOffice: administrative.salesOffice,
-                offerValidity: administrative.offerValidity,
-                // portfolioPrice: {},
-                // additionalPrice: {},
-                // escalationPrice: {},
+                    items: [],
+                    customCoverages: [],
+                    customItems: [],
+                    preparedBy: administrative.preparedBy,
+                    approvedBy: administrative.approvedBy,
+                    preparedOn: administrative.preparedOn,
+                    revisedBy: administrative.revisedBy,
+                    revisedOn: administrative.revisedOn,
+                    salesOffice: administrative.salesOffice,
+                    offerValidity: administrative.offerValidity,
+                    template: flagTemplate,
+                    visibleInCommerce: flagCommerce,
+                    // portfolioPrice: {},
+                    // additionalPrice: {},
+                    // escalationPrice: {},
 
-            };
+                };
 
-            console.log("req dat : ", reqData);
+                console.log("req dat : ", reqData);
 
-            setGeneralComponentData({
-                ...generalComponentData,
-                usageCategory: categoryUsageKeyValue1.value,
-                taskType: stratgyTaskTypeKeyValue.value,
-                strategyTask: stratgyTaskUsageKeyValue.value,
-                optionals: stratgyOptionalsKeyValue.value,
-                responseTime: stratgyResponseTimeKeyValue.value,
-                productHierarchy: stratgyHierarchyKeyValue.value,
-                geographic: stratgyGeographicKeyValue.value,
-                machineType: machineTypeKeyValue.value,
-                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                preparedBy: administrative.preparedBy,
-                approvedBy: administrative.approvedBy,
-                preparedOn: administrative.preparedOn,
-                revisedBy: administrative.revisedBy,
-                revisedOn: administrative.revisedOn,
-                salesOffice: administrative.salesOffice,
-                offerValidity: administrative.offerValidity,
-            });
-
-            // const portfolioRes = await createCustomPortfolio(reqData);
-            // console.log("reqData is : ", reqData);
-            // if (location.solutionValueIs == 1) {
-            //     // var portfolioRes = await createCustomPortfolio(reqData);
-            //     // var portfolioRes = {
-            //     //     status: 2000
-            //     // };
-            //     setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
-            // } else {
-            //     // var portfolioRes = await updateCustomPortfolio(
-            //     //     location.autocreatedcustomPortfolioData.customPortfolioId,
-            //     //     reqData
-            //     // )
-            //     var portfolioRes = {
-            //         status: 2000
-            //     };
-
-            // }
-            const portfolioRes = await updateCustomPortfolio(
-                portfolioId,
-                reqData
-            );
-
-            if (portfolioRes.status === 200) {
-                toast("👏 Portfolio Update Successfully", {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                });
-                setValue("2");
-                setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
                 setGeneralComponentData({
                     ...generalComponentData,
-                    portfolioId: portfolioRes.data.customPortfolioId,
+                    usageCategory: categoryUsageKeyValue1.value,
+                    taskType: stratgyTaskTypeKeyValue.value,
+                    strategyTask: stratgyTaskUsageKeyValue.value,
+                    optionals: stratgyOptionalsKeyValue.value,
+                    responseTime: stratgyResponseTimeKeyValue.value,
+                    productHierarchy: stratgyHierarchyKeyValue.value,
+                    geographic: stratgyGeographicKeyValue.value,
+                    machineType: machineTypeKeyValue.value,
+                    lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                    preparedBy: administrative.preparedBy,
+                    approvedBy: administrative.approvedBy,
+                    preparedOn: administrative.preparedOn,
+                    revisedBy: administrative.revisedBy,
+                    revisedOn: administrative.revisedOn,
+                    salesOffice: administrative.salesOffice,
+                    offerValidity: administrative.offerValidity,
+                    template: flagTemplate,
+                    visibleInCommerce: flagCommerce,
                 });
-                setPortfolioId(portfolioRes.data.customPortfolioId);
-            } else {
-                throw `${portfolioRes.status}:error in portfolio creation`;
-            }
 
-        } else if (e.target.id == "validity") {
-            setValue("3");
-            let reqData;
-            if (validityData.fromDate && validityData.toDate) {
-                reqData = {
-                    validFrom: validityData.fromDate.toISOString().substring(0, 10),
-                    validTo: validityData.toDate.toISOString().substring(0, 10),
-                };
-            } else if (validityData.fromInput && validityData.toInput) {
-                reqData = {
-                    validFrom: validityData.fromInput + validityData.from,
-                    validTo: validityData.toInput + validityData.from,
-                };
-            }
-            setGeneralComponentData({
-                ...generalComponentData,
-                ...reqData,
-            });
-            // console.log("validityData Data => ", validityData)
-        } else if (e.target.id == "strategy") {
-            setGeneralComponentData({
-                ...generalComponentData,
-                usageCategory: categoryUsageKeyValue1.value,
-                taskType: stratgyTaskTypeKeyValue.value,
-                strategyTask: stratgyTaskUsageKeyValue.value,
-                optionals: stratgyOptionalsKeyValue.value,
-                responseTime: stratgyResponseTimeKeyValue.value,
-                productHierarchy: stratgyHierarchyKeyValue.value,
-                geographic: stratgyGeographicKeyValue.value,
-                machineType: machineTypeKeyValue.value,
-                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-            });
+                // const portfolioRes = await createCustomPortfolio(reqData);
+                // console.log("reqData is : ", reqData);
+                // if (location.solutionValueIs == 1) {
+                //     // var portfolioRes = await createCustomPortfolio(reqData);
+                //     // var portfolioRes = {
+                //     //     status: 2000
+                //     // };
+                //     setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
+                // } else {
+                //     // var portfolioRes = await updateCustomPortfolio(
+                //     //     location.autocreatedcustomPortfolioData.customPortfolioId,
+                //     //     reqData
+                //     // )
+                //     var portfolioRes = {
+                //         status: 2000
+                //     };
 
-            const { portfolioId, ...res } = generalComponentData;
+                // }
+                const portfolioRes = await updateCustomPortfolio(
+                    portfolioId,
+                    reqData
+                );
 
-            let obj = {
-                ...res,
-                visibleInCommerce: true,
-                customerId: 0,
-                lubricant: true,
-                customerSegment: generalComponentData.customerSegment.value
-                    ? generalComponentData.customerSegment.value
-                    : "EMPTY",
-                // machineType: generalComponentData.machineType
-                //     ? generalComponentData.machineType
-                //     : "EMPTY",
-                machineType: machineTypeKeyValue.value,
-                status: generalComponentData.status
-                    ? generalComponentData.status
-                    : "EMPTY",
-                strategyTask: generalComponentData.strategyTask
-                    ? generalComponentData.strategyTask
-                    : "EMPTY",
-                taskType: generalComponentData.taskType
-                    ? generalComponentData.taskType
-                    : "EMPTY",
-                usageCategory: generalComponentData.usageCategory
-                    ? generalComponentData.usageCategory
-                    : "EMPTY",
-                productHierarchy: generalComponentData.productHierarchy
-                    ? generalComponentData.productHierarchy
-                    : "EMPTY",
-                geographic: generalComponentData.geographic
-                    ? generalComponentData.geographic
-                    : "EMPTY",
-                availability: generalComponentData.availability
-                    ? generalComponentData.availability
-                    : "EMPTY",
-                responseTime: generalComponentData.responseTime
-                    ? generalComponentData.responseTime
-                    : "EMPTY",
-                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                application: generalComponentData.application
-                    ? generalComponentData.application
-                    : "EMPTY",
-                contractOrSupport: generalComponentData.contractOrSupport
-                    ? generalComponentData.contractOrSupport
-                    : "EMPTY",
-                // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                //     ? generalComponentData.lifeStageOfMachine
-                //     : "EMPTY",
-                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                supportLevel: generalComponentData.supportLevel
-                    ? generalComponentData.supportLevel
-                    : "EMPTY",
-                items: [],
-                customCoverages: [],
-                customerGroup: generalComponentData.customerGroup
-                    ? generalComponentData.customerGroup
-                    : "EMPTY",
-                searchTerm: "EMPTY",
-                supportLevel: "EMPTY",
-                // portfolioPrice: {},
-                // additionalPrice: {},
-                // escalationPrice: {},
+                if (portfolioRes.status === 200) {
+                    toast("👏 Portfolio Update Successfully", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    setValue("2");
+                    setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
+                    setGeneralComponentData({
+                        ...generalComponentData,
+                        portfolioId: portfolioRes.data.customPortfolioId,
+                    });
+                    setPortfolioId(portfolioRes.data.customPortfolioId);
+                } else {
+                    throw `${portfolioRes.status}:error in portfolio creation`;
+                }
 
-                usageCategory: categoryUsageKeyValue1.value,
-                taskType: stratgyTaskTypeKeyValue.value,
-                strategyTask: stratgyTaskUsageKeyValue.value,
-                responseTime: stratgyResponseTimeKeyValue.value,
-                productHierarchy: stratgyHierarchyKeyValue.value,
-                geographic: stratgyGeographicKeyValue.value,
-                customItems: selectedCustomItems,
-
-                preparedBy: administrative.preparedBy,
-                approvedBy: administrative.approvedBy,
-                preparedOn: administrative.preparedOn,
-                revisedBy: administrative.revisedBy,
-                revisedOn: administrative.revisedOn,
-                salesOffice: administrative.salesOffice,
-                offerValidity: administrative.offerValidity,
-            };
-            console.log(" res is : ", res);
-            // console.log("obj", obj);
-
-            // if (location.solutionValueIs == 1) {
-            //     // var portfolioRes = await createCustomPortfolio(reqData);
-            //     // var portfolioRes = {
-            //     //     status: 2000
-            //     // };
-            //     setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: true });
-            // } else {
-            //     // var portfolioRes = await updateCustomPortfolio(
-            //     //     location.autocreatedcustomPortfolioData.customPortfolioId,
-            //     //     reqData
-            //     // )
-            //     var strategyRes = {
-            //         status: 2000
-            //     };
-
-            // }
-
-            const strategyRes = await updateCustomPortfolio(
-                portfolioId,
-                obj
-            );
-            if (strategyRes.status === 200) {
-                toast("👏 Portfolio updated", {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
+            } else if (e.target.id == "validity") {
+                let reqData;
+                if (
+                    validityData.fromInput &&
+                    validityData.toInput &&
+                    validityData.inputFlag
+                ) {
+                    reqData = {
+                        validFrom: validityData.fromInput + validityData.from,
+                        validTo: validityData.toInput + validityData.from,
+                    };
+                } else if (
+                    validityData.fromDate &&
+                    validityData.toDate &&
+                    validityData.dateFlag
+                ) {
+                    reqData = {
+                        validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                        validTo: validityData.toDate.toISOString().substring(0, 10),
+                    };
+                } else {
+                    throw "Please fill date fields";
+                }
+                setValue("3");
+                // let reqData;
+                // if (validityData.fromDate && validityData.toDate) {
+                //     reqData = {
+                //         validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                //         validTo: validityData.toDate.toISOString().substring(0, 10),
+                //     };
+                // } else if (validityData.fromInput && validityData.toInput) {
+                //     reqData = {
+                //         validFrom: validityData.fromInput + validityData.from,
+                //         validTo: validityData.toInput + validityData.from,
+                //     };
+                // }
+                setGeneralComponentData({
+                    ...generalComponentData,
+                    ...reqData,
                 });
-                setValue("administrative");
-                setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: true });
-                // setValue("4");
-                console.log("strategy updating", strategyRes.data);
-            } else {
-                throw `${strategyRes.status}:error in update portfolio`;
-            };
-        } else if (e.target.id == "administrative") {
-            setGeneralComponentData({
-                ...generalComponentData,
-                preparedBy: administrative.preparedBy,
-                approvedBy: administrative.approvedBy,
-                preparedOn: administrative.preparedOn,
-                revisedBy: administrative.revisedBy,
-                revisedOn: administrative.revisedOn,
-                salesOffice: administrative.salesOffice,
-                offerValidity: administrative.offerValidity,
-            });
-
-            const { portfolioId, ...res } = generalComponentData;
-
-            let Administryobj = {
-                ...res,
-                visibleInCommerce: true,
-                customerId: 0,
-                lubricant: true,
-                customerSegment: generalComponentData.customerSegment.value
-                    ? generalComponentData.customerSegment.value
-                    : "EMPTY",
-                machineType: generalComponentData.machineType
-                    ? generalComponentData.machineType
-                    : "EMPTY",
-                status: generalComponentData.status
-                    ? generalComponentData.status
-                    : "EMPTY",
-                strategyTask: generalComponentData.strategyTask
-                    ? generalComponentData.strategyTask
-                    : "EMPTY",
-                taskType: generalComponentData.taskType
-                    ? generalComponentData.taskType
-                    : "EMPTY",
-                usageCategory: generalComponentData.usageCategory
-                    ? generalComponentData.usageCategory
-                    : "EMPTY",
-                productHierarchy: generalComponentData.productHierarchy
-                    ? generalComponentData.productHierarchy
-                    : "EMPTY",
-                geographic: generalComponentData.geographic
-                    ? generalComponentData.geographic
-                    : "EMPTY",
-                availability: generalComponentData.availability
-                    ? generalComponentData.availability
-                    : "EMPTY",
-                responseTime: generalComponentData.responseTime
-                    ? generalComponentData.responseTime
-                    : "EMPTY",
-                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                application: generalComponentData.application
-                    ? generalComponentData.application
-                    : "EMPTY",
-                contractOrSupport: generalComponentData.contractOrSupport
-                    ? generalComponentData.contractOrSupport
-                    : "EMPTY",
-                // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                //     ? generalComponentData.lifeStageOfMachine
-                //     : "EMPTY",
-                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                supportLevel: generalComponentData.supportLevel
-                    ? generalComponentData.supportLevel
-                    : "EMPTY",
-                customItems: [],
-                items: [],
-                customCoverages: [],
-                customerGroup: generalComponentData.customerGroup
-                    ? generalComponentData.customerGroup
-                    : "EMPTY",
-                searchTerm: "EMPTY",
-                supportLevel: "EMPTY",
-                // portfolioPrice: {},
-                // additionalPrice: {},
-                // escalationPrice: {},
-
-                usageCategory: categoryUsageKeyValue1.value,
-                taskType: stratgyTaskTypeKeyValue.value,
-                strategyTask: stratgyTaskUsageKeyValue.value,
-                responseTime: stratgyResponseTimeKeyValue.value,
-                productHierarchy: stratgyHierarchyKeyValue.value,
-                geographic: stratgyGeographicKeyValue.value,
-                numberOfEvents: 0,
-                rating: "",
-                startUsage: "",
-                endUsage: "",
-                unit: "HOURS",
-                additionals: "",
-                preparedBy: administrative.preparedBy,
-                approvedBy: administrative.approvedBy,
-                preparedOn: administrative.preparedOn,
-                revisedBy: administrative.revisedBy,
-                revisedOn: administrative.revisedOn,
-                salesOffice: administrative.salesOffice,
-                offerValidity: administrative.offerValidity,
-
-            };
-
-            const administryRes = await updateCustomPortfolio(
-                portfolioId,
-                Administryobj
-            );
-            if (administryRes.status === 200) {
-                toast("👏 Portfolio updated", {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
+                // console.log("validityData Data => ", validityData)
+            } else if (e.target.id == "strategy") {
+                setGeneralComponentData({
+                    ...generalComponentData,
+                    usageCategory: categoryUsageKeyValue1.value,
+                    taskType: stratgyTaskTypeKeyValue.value,
+                    strategyTask: stratgyTaskUsageKeyValue.value,
+                    optionals: stratgyOptionalsKeyValue.value,
+                    responseTime: stratgyResponseTimeKeyValue.value,
+                    productHierarchy: stratgyHierarchyKeyValue.value,
+                    geographic: stratgyGeographicKeyValue.value,
+                    machineType: machineTypeKeyValue.value,
+                    lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
                 });
-                // setValue("administrative");
-                setValue("4");
-                setViewOnlyTab({ ...viewOnlyTab, administryViewOnly: true });
-                console.log("administryRes updating", administryRes.data);
-            } else {
-                throw `${administryRes.status}:error in update portfolio`;
-            };
 
-            // setValue("4");
+                const { portfolioId, ...res } = generalComponentData;
 
-        } else if (e.target.id == "coverage") {
+                let obj = {
+                    ...res,
+                    visibleInCommerce: true,
+                    customerId: 0,
+                    lubricant: true,
+                    customerSegment: generalComponentData.customerSegment.value
+                        ? generalComponentData.customerSegment.value
+                        : "EMPTY",
+                    // machineType: generalComponentData.machineType
+                    //     ? generalComponentData.machineType
+                    //     : "EMPTY",
+                    machineType: machineTypeKeyValue.value,
+                    status: generalComponentData.status
+                        ? generalComponentData.status
+                        : "EMPTY",
+                    strategyTask: generalComponentData.strategyTask
+                        ? generalComponentData.strategyTask
+                        : "EMPTY",
+                    taskType: generalComponentData.taskType
+                        ? generalComponentData.taskType
+                        : "EMPTY",
+                    usageCategory: generalComponentData.usageCategory
+                        ? generalComponentData.usageCategory
+                        : "EMPTY",
+                    productHierarchy: generalComponentData.productHierarchy
+                        ? generalComponentData.productHierarchy
+                        : "EMPTY",
+                    geographic: generalComponentData.geographic
+                        ? generalComponentData.geographic
+                        : "EMPTY",
+                    availability: generalComponentData.availability
+                        ? generalComponentData.availability
+                        : "EMPTY",
+                    responseTime: generalComponentData.responseTime
+                        ? generalComponentData.responseTime
+                        : "EMPTY",
+                    type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                    application: generalComponentData.application
+                        ? generalComponentData.application
+                        : "EMPTY",
+                    contractOrSupport: generalComponentData.contractOrSupport
+                        ? generalComponentData.contractOrSupport
+                        : "EMPTY",
+                    // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                    //     ? generalComponentData.lifeStageOfMachine
+                    //     : "EMPTY",
+                    lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                    supportLevel: generalComponentData.supportLevel
+                        ? generalComponentData.supportLevel
+                        : "EMPTY",
+                    items: [],
+                    customCoverages: [],
+                    customerGroup: generalComponentData.customerGroup
+                        ? generalComponentData.customerGroup
+                        : "EMPTY",
+                    searchTerm: "EMPTY",
+                    supportLevel: "EMPTY",
+                    // portfolioPrice: {},
+                    // additionalPrice: {},
+                    // escalationPrice: {},
 
+                    usageCategory: categoryUsageKeyValue1.value,
+                    taskType: stratgyTaskTypeKeyValue.value,
+                    strategyTask: stratgyTaskUsageKeyValue.value,
+                    responseTime: stratgyResponseTimeKeyValue.value,
+                    productHierarchy: stratgyHierarchyKeyValue.value,
+                    geographic: stratgyGeographicKeyValue.value,
+                    customItems: selectedCustomItems,
 
-            let cvgIds = [];
-            setValue("6");
-            for (let i = 0; i < selectedMasterData.length; i++) {
-                let reqObj = {
-                    coverageId: 0,
-                    serviceId: 0,
-                    modelNo: selectedMasterData[i].model,
-                    serialNumber: "",
-                    startSerialNumber: "",
-                    endSerialNumber: "",
-                    serialNumberPrefix: "",
-                    family: selectedMasterData[i].family,
-                    make: selectedMasterData[i].make,
-                    fleet: "",
-                    fleetSize: "SMALL",
-                    location: "",
-                    startDate: "",
-                    endDate: "",
-                    actions: "",
-                    createdAt: "",
+                    preparedBy: administrative.preparedBy,
+                    approvedBy: administrative.approvedBy,
+                    preparedOn: administrative.preparedOn,
+                    revisedBy: administrative.revisedBy,
+                    revisedOn: administrative.revisedOn,
+                    salesOffice: administrative.salesOffice,
+                    offerValidity: administrative.offerValidity,
+                    template: flagTemplate,
+                    visibleInCommerce: flagCommerce,
                 };
-                const res = await createCutomCoverage(reqObj);
-                console.log("createCoverage res:", res);
-                cvgIds.push({ coverageId: res.customCoverageId });
-            }
-            setGeneralComponentData({
-                ...generalComponentData,
-                customCoverages: cvgIds,
-            });
-            const { portfolioId, ...res } = generalComponentData;
-            let obj = {
-                ...res,
-                visibleInCommerce: true,
-                customerId: 0,
-                lubricant: true,
-                customerSegment: generalComponentData.customerSegment
-                    ? generalComponentData.customerSegment.value
-                    : "EMPTY",
-                machineType: generalComponentData.machineType
-                    ? generalComponentData.machineType
-                    : "EMPTY",
-                status: generalComponentData.status
-                    ? generalComponentData.status
-                    : "EMPTY",
-                strategyTask: generalComponentData.strategyTask
-                    ? generalComponentData.strategyTask
-                    : "EMPTY",
-                taskType: generalComponentData.taskType
-                    ? generalComponentData.taskType
-                    : "EMPTY",
-                usageCategory: generalComponentData.usageCategory
-                    ? generalComponentData.usageCategory
-                    : "EMPTY",
-                productHierarchy: generalComponentData.productHierarchy
-                    ? generalComponentData.productHierarchy
-                    : "EMPTY",
-                geographic: generalComponentData.geographic
-                    ? generalComponentData.geographic
-                    : "EMPTY",
-                availability: generalComponentData.availability
-                    ? generalComponentData.availability
-                    : "EMPTY",
-                responseTime: generalComponentData.responseTime
-                    ? generalComponentData.responseTime
-                    : "EMPTY",
-                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                application: generalComponentData.application
-                    ? generalComponentData.application
-                    : "EMPTY",
-                contractOrSupport: generalComponentData.contractOrSupport
-                    ? generalComponentData.contractOrSupport
-                    : "EMPTY",
-                // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                //     ? generalComponentData.lifeStageOfMachine
-                //     : "EMPTY",
-                lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                supportLevel: generalComponentData.supportLevel
-                    ? generalComponentData.supportLevel
-                    : "EMPTY",
-                customerGroup: generalComponentData.customerGroup
-                    ? generalComponentData.customerGroup
-                    : "EMPTY",
-                searchTerm: "EMPTY",
-                supportLevel: "EMPTY",
-                // portfolioPrice: {},
-                // additionalPrice: {},
-                // escalationPrice: {},
-                items: [],
-                customItems: [],
-                customCoverages: cvgIds,
-                usageCategory: categoryUsageKeyValue1.value,
-                taskType: stratgyTaskTypeKeyValue.value,
-                strategyTask: stratgyTaskUsageKeyValue.value,
-                responseTime: stratgyResponseTimeKeyValue.value,
-                productHierarchy: stratgyHierarchyKeyValue.value,
-                geographic: stratgyGeographicKeyValue.value,
+                console.log(" res is : ", res);
+                // console.log("obj", obj);
 
-                preparedBy: administrative.preparedBy,
-                approvedBy: administrative.approvedBy,
-                preparedOn: administrative.preparedOn,
-                revisedBy: administrative.revisedBy,
-                revisedOn: administrative.revisedOn,
-                salesOffice: administrative.salesOffice,
-                offerValidity: administrative.offerValidity,
-            };
-            if (generalComponentData.portfolioId) {
-                const updatePortfolioRes = await updateCustomPortfolio(
+                // if (location.solutionValueIs == 1) {
+                //     // var portfolioRes = await createCustomPortfolio(reqData);
+                //     // var portfolioRes = {
+                //     //     status: 2000
+                //     // };
+                //     setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: true });
+                // } else {
+                //     // var portfolioRes = await updateCustomPortfolio(
+                //     //     location.autocreatedcustomPortfolioData.customPortfolioId,
+                //     //     reqData
+                //     // )
+                //     var strategyRes = {
+                //         status: 2000
+                //     };
+
+                // }
+
+                const strategyRes = await updateCustomPortfolio(
                     portfolioId,
                     obj
                 );
-                if (updatePortfolioRes.status === 200) {
+                if (strategyRes.status === 200) {
                     toast("👏 Portfolio updated", {
                         position: "top-right",
                         autoClose: 5000,
@@ -1484,41 +1301,326 @@ export function SolutionTemplateResult(props) {
                         draggable: true,
                         progress: undefined,
                     });
-                    setValue("6");
+                    setValue("administrative");
+                    setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: true });
+                    // setValue("4");
+                    console.log("strategy updating", strategyRes.data);
                 } else {
-                    throw `${updatePortfolioRes.status}:unable to update`;
+                    throw `${strategyRes.status}:error in update portfolio`;
+                };
+            } else if (e.target.id == "administrative") {
+                const validator = new Validator();
+
+                if ((!validator.emailValidation(administrative.preparedBy) ||
+                    administrative.preparedBy == "" ||
+                    administrative.preparedBy == undefined) ||
+                    (administrative.approvedBy != "" &&
+                        administrative.approvedBy != undefined &&
+                        !validator.emailValidation(administrative.approvedBy)) ||
+                    (administrative.revisedBy != "" &&
+                        administrative.revisedBy != undefined &&
+                        !validator.emailValidation(administrative.revisedBy)) ||
+                    (administrative.branch == "" ||
+                        administrative.branch == undefined)
+                    // || (administrative.offerValidity == "" ||
+                    // administrative.offerValidity == undefined)
+                ) {
+                    throw "Please fill mandatory fields with valid data";
+                }
+                setGeneralComponentData({
+                    ...generalComponentData,
+                    preparedBy: administrative.preparedBy,
+                    approvedBy: administrative.approvedBy,
+                    preparedOn: administrative.preparedOn,
+                    revisedBy: administrative.revisedBy,
+                    revisedOn: administrative.revisedOn,
+                    salesOffice: administrative.salesOffice,
+                    offerValidity: administrative.offerValidity,
+                });
+
+                const { portfolioId, ...res } = generalComponentData;
+
+                let Administryobj = {
+                    ...res,
+                    visibleInCommerce: true,
+                    customerId: 0,
+                    lubricant: true,
+                    customerSegment: generalComponentData.customerSegment.value
+                        ? generalComponentData.customerSegment.value
+                        : "EMPTY",
+                    machineType: generalComponentData.machineType
+                        ? generalComponentData.machineType
+                        : "EMPTY",
+                    status: generalComponentData.status
+                        ? generalComponentData.status
+                        : "EMPTY",
+                    strategyTask: generalComponentData.strategyTask
+                        ? generalComponentData.strategyTask
+                        : "EMPTY",
+                    taskType: generalComponentData.taskType
+                        ? generalComponentData.taskType
+                        : "EMPTY",
+                    usageCategory: generalComponentData.usageCategory
+                        ? generalComponentData.usageCategory
+                        : "EMPTY",
+                    productHierarchy: generalComponentData.productHierarchy
+                        ? generalComponentData.productHierarchy
+                        : "EMPTY",
+                    geographic: generalComponentData.geographic
+                        ? generalComponentData.geographic
+                        : "EMPTY",
+                    availability: generalComponentData.availability
+                        ? generalComponentData.availability
+                        : "EMPTY",
+                    responseTime: generalComponentData.responseTime
+                        ? generalComponentData.responseTime
+                        : "EMPTY",
+                    type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                    application: generalComponentData.application
+                        ? generalComponentData.application
+                        : "EMPTY",
+                    contractOrSupport: generalComponentData.contractOrSupport
+                        ? generalComponentData.contractOrSupport
+                        : "EMPTY",
+                    // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                    //     ? generalComponentData.lifeStageOfMachine
+                    //     : "EMPTY",
+                    lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                    supportLevel: generalComponentData.supportLevel
+                        ? generalComponentData.supportLevel
+                        : "EMPTY",
+                    customItems: [],
+                    items: [],
+                    customCoverages: [],
+                    customerGroup: generalComponentData.customerGroup
+                        ? generalComponentData.customerGroup
+                        : "EMPTY",
+                    searchTerm: "EMPTY",
+                    supportLevel: "EMPTY",
+                    // portfolioPrice: {},
+                    // additionalPrice: {},
+                    // escalationPrice: {},
+
+                    usageCategory: categoryUsageKeyValue1.value,
+                    taskType: stratgyTaskTypeKeyValue.value,
+                    strategyTask: stratgyTaskUsageKeyValue.value,
+                    responseTime: stratgyResponseTimeKeyValue.value,
+                    productHierarchy: stratgyHierarchyKeyValue.value,
+                    geographic: stratgyGeographicKeyValue.value,
+                    numberOfEvents: 0,
+                    rating: "",
+                    startUsage: "",
+                    endUsage: "",
+                    unit: "HOURS",
+                    additionals: "",
+                    preparedBy: administrative.preparedBy,
+                    approvedBy: administrative.approvedBy,
+                    preparedOn: administrative.preparedOn,
+                    revisedBy: administrative.revisedBy,
+                    revisedOn: administrative.revisedOn,
+                    salesOffice: administrative.salesOffice,
+                    offerValidity: administrative.offerValidity,
+                    template: flagTemplate,
+                    visibleInCommerce: flagCommerce,
+
+                };
+
+                const administryRes = await updateCustomPortfolio(
+                    portfolioId,
+                    Administryobj
+                );
+                if (administryRes.status === 200) {
+                    toast("👏 Portfolio updated", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    // setValue("administrative");
+                    setValue("4");
+                    setViewOnlyTab({ ...viewOnlyTab, administryViewOnly: true });
+                    console.log("administryRes updating", administryRes.data);
+                } else {
+                    throw `${administryRes.status}:error in update portfolio`;
+                };
+
+                // setValue("4");
+
+            } else if (e.target.id == "coverage") {
+
+
+                let cvgIds = [];
+                setValue("6");
+                for (let i = 0; i < selectedMasterData.length; i++) {
+                    let reqObj = {
+                        coverageId: 0,
+                        serviceId: 0,
+                        modelNo: selectedMasterData[i].model,
+                        serialNumber: "",
+                        startSerialNumber: "",
+                        endSerialNumber: "",
+                        serialNumberPrefix: "",
+                        family: selectedMasterData[i].family,
+                        make: selectedMasterData[i].make,
+                        fleet: "",
+                        fleetSize: "SMALL",
+                        location: "",
+                        startDate: "",
+                        endDate: "",
+                        actions: "",
+                        createdAt: "",
+                    };
+                    const res = await createCutomCoverage(reqObj);
+                    console.log("createCoverage res:", res);
+                    cvgIds.push({ coverageId: res.customCoverageId });
+                }
+                setGeneralComponentData({
+                    ...generalComponentData,
+                    customCoverages: cvgIds,
+                });
+                const { portfolioId, ...res } = generalComponentData;
+                let obj = {
+                    ...res,
+                    visibleInCommerce: true,
+                    customerId: 0,
+                    lubricant: true,
+                    customerSegment: generalComponentData.customerSegment
+                        ? generalComponentData.customerSegment.value
+                        : "EMPTY",
+                    machineType: generalComponentData.machineType
+                        ? generalComponentData.machineType
+                        : "EMPTY",
+                    status: generalComponentData.status
+                        ? generalComponentData.status
+                        : "EMPTY",
+                    strategyTask: generalComponentData.strategyTask
+                        ? generalComponentData.strategyTask
+                        : "EMPTY",
+                    taskType: generalComponentData.taskType
+                        ? generalComponentData.taskType
+                        : "EMPTY",
+                    usageCategory: generalComponentData.usageCategory
+                        ? generalComponentData.usageCategory
+                        : "EMPTY",
+                    productHierarchy: generalComponentData.productHierarchy
+                        ? generalComponentData.productHierarchy
+                        : "EMPTY",
+                    geographic: generalComponentData.geographic
+                        ? generalComponentData.geographic
+                        : "EMPTY",
+                    availability: generalComponentData.availability
+                        ? generalComponentData.availability
+                        : "EMPTY",
+                    responseTime: generalComponentData.responseTime
+                        ? generalComponentData.responseTime
+                        : "EMPTY",
+                    type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                    application: generalComponentData.application
+                        ? generalComponentData.application
+                        : "EMPTY",
+                    contractOrSupport: generalComponentData.contractOrSupport
+                        ? generalComponentData.contractOrSupport
+                        : "EMPTY",
+                    // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                    //     ? generalComponentData.lifeStageOfMachine
+                    //     : "EMPTY",
+                    lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                    supportLevel: generalComponentData.supportLevel
+                        ? generalComponentData.supportLevel
+                        : "EMPTY",
+                    customerGroup: generalComponentData.customerGroup
+                        ? generalComponentData.customerGroup
+                        : "EMPTY",
+                    searchTerm: "EMPTY",
+                    supportLevel: "EMPTY",
+                    // portfolioPrice: {},
+                    // additionalPrice: {},
+                    // escalationPrice: {},
+                    items: [],
+                    customItems: [],
+                    customCoverages: cvgIds,
+                    usageCategory: categoryUsageKeyValue1.value,
+                    taskType: stratgyTaskTypeKeyValue.value,
+                    strategyTask: stratgyTaskUsageKeyValue.value,
+                    responseTime: stratgyResponseTimeKeyValue.value,
+                    productHierarchy: stratgyHierarchyKeyValue.value,
+                    geographic: stratgyGeographicKeyValue.value,
+
+                    preparedBy: administrative.preparedBy,
+                    approvedBy: administrative.approvedBy,
+                    preparedOn: administrative.preparedOn,
+                    revisedBy: administrative.revisedBy,
+                    revisedOn: administrative.revisedOn,
+                    salesOffice: administrative.salesOffice,
+                    offerValidity: administrative.offerValidity,
+                    template: flagTemplate,
+                    visibleInCommerce: flagCommerce,
+                };
+                if (generalComponentData.portfolioId) {
+                    const updatePortfolioRes = await updateCustomPortfolio(
+                        portfolioId,
+                        obj
+                    );
+                    if (updatePortfolioRes.status === 200) {
+                        toast("👏 Portfolio updated", {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                        });
+                        setValue("6");
+                    } else {
+                        throw `${updatePortfolioRes.status}:unable to update`;
+                    }
                 }
             }
+            // else if (e.target.id == "coverage") {
+            //     let cvgIds = [];
+
+            //     for (let i = 0; i < selectedMasterData.length; i++) {
+            //         let reqObj = {
+            //           coverageId: 0,
+            //           serviceId: 0,
+            //           modelNo: "992k",
+            //           serialNumber: "",
+            //           startSerialNumber: "",
+            //           endSerialNumber: "",
+            //           serialNumberPrefix: "",
+            //           family: "10",
+            //           make: "RM5",
+            //           fleet: "",
+            //           fleetSize: "SMALL",
+            //           location: "",
+            //           startDate: "",
+            //           endDate: "",
+            //           actions: "",
+            //           createdAt: "",
+            //         };
+            //         const res = await createCoverage(reqObj);
+            //         console.log("createCoverage res:", res);
+            //         cvgIds.push({ coverageId: res.coverageId });
+            //       }
+
+            // }
+        } catch (error) {
+            console.log("somehing went wrong:", error);
+            toast("😐" + error, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return;
         }
-        // else if (e.target.id == "coverage") {
-        //     let cvgIds = [];
-
-        //     for (let i = 0; i < selectedMasterData.length; i++) {
-        //         let reqObj = {
-        //           coverageId: 0,
-        //           serviceId: 0,
-        //           modelNo: "992k",
-        //           serialNumber: "",
-        //           startSerialNumber: "",
-        //           endSerialNumber: "",
-        //           serialNumberPrefix: "",
-        //           family: "10",
-        //           make: "RM5",
-        //           fleet: "",
-        //           fleetSize: "SMALL",
-        //           location: "",
-        //           startDate: "",
-        //           endDate: "",
-        //           actions: "",
-        //           createdAt: "",
-        //         };
-        //         const res = await createCoverage(reqObj);
-        //         console.log("createCoverage res:", res);
-        //         cvgIds.push({ coverageId: res.coverageId });
-        //       }
-
-        // }
-
     }
 
     const handleGeneralInputChange = (e) => {
@@ -3106,7 +3208,7 @@ export function SolutionTemplateResult(props) {
         {
             name: (
                 <>
-                    <div>ID</div>
+                    <div>Item ID </div>
                 </>
             ),
             selector: (row) => row.customItemId,
@@ -3117,7 +3219,7 @@ export function SolutionTemplateResult(props) {
         {
             name: (
                 <>
-                    <div>Description</div>
+                    <div>Item Description</div>
                 </>
             ),
             selector: (row) => row.customItemHeaderModel.itemHeaderDescription,
@@ -3125,28 +3227,16 @@ export function SolutionTemplateResult(props) {
             sortable: true,
             format: (row) => row.customItemHeaderModel.itemHeaderDescription,
         },
-        // {
-        //     name: (
-        //         <>
-        //             <div>Strategy</div>
-        //         </>
-        //     ),
-        //     selector: (row) => row.description,
-        //     wrap: true,
-        //     sortable: true,
-        //     format: (row) => row.description,
-        // },
-
         {
             name: (
                 <>
-                    <div>Geographic</div>
+                    <div>Strategy</div>
                 </>
             ),
-            selector: (row) => row.customItemHeaderModel.itemHeaderGeographic,
+            selector: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemHeaderModel.itemHeaderGeographic,
+            format: (row) => row.customItemHeaderModel?.itemHeaderStrategy,
         },
         {
             name: (
@@ -3162,24 +3252,13 @@ export function SolutionTemplateResult(props) {
         {
             name: (
                 <>
-                    <div>Response Time</div>
+                    <div>Quantity</div>
                 </>
             ),
-            selector: (row) => row.customItemHeaderModel.responseTime,
+            selector: (row) => row.customItemBodyModel?.quantity,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemHeaderModel.responseTime,
-        },
-        {
-            name: (
-                <>
-                    <div>Type</div>
-                </>
-            ),
-            selector: (row) => row.customItemHeaderModel.type,
-            wrap: true,
-            sortable: true,
-            format: (row) => row.customItemHeaderModel.type,
+            format: (row) => row.customItemBodyModel?.quantity,
         },
         {
             name: (
@@ -3187,10 +3266,54 @@ export function SolutionTemplateResult(props) {
                     <div>Net Price</div>
                 </>
             ),
-            selector: (row) => row.customItemHeaderModel.netPrice,
+            selector: (row) => row.customItemHeaderModel?.netPrice,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemHeaderModel.netPrice,
+            format: (row) => row.customItemHeaderModel?.netPrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Net Additional</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.additional,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.additional,
+        },
+        {
+            name: (
+                <>
+                    <div>Net Parts Price</div>
+                </>
+            ),
+            selector: (row) => row.customItemBodyModel?.partsprice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemBodyModel?.partsprice,
+        },
+        {
+            name: (
+                <>
+                    <div>Total Price</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.netPrice,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.netPrice,
+        },
+        {
+            name: (
+                <>
+                    <div>Comments</div>
+                </>
+            ),
+            selector: (row) => row.customItemHeaderModel?.comments,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.customItemHeaderModel?.comments,
         },
         {
             name: (
@@ -3559,7 +3682,7 @@ export function SolutionTemplateResult(props) {
                                     {!viewOnlyTab.generalViewOnly ? (
                                         <>
                                             <div className="row mt-4">
-                                                <div className="col-md-3 col-sm-3">
+                                                {/* <div className="col-md-3 col-sm-3">
                                                     <div className="form-group">
                                                         <label className="text-light-dark font-size-12 font-weight-500">
                                                             SELECT TYPE
@@ -3574,43 +3697,26 @@ export function SolutionTemplateResult(props) {
                                                                 headerTypeKeyValue.length > 0 ? false : true
                                                             }
                                                         />
-                                                        {/* <div>
-                                                    <ToggleButtonGroup
-                                                        color="primary"
-                                                        value={alignment}
-                                                        exclusive
-                                                        onChange={handleChangeToggle}
-                                                    >
-                                                        <ToggleButton value="Portfolio">Portfolio</ToggleButton>
-                                                        <ToggleButton value="Program">Program</ToggleButton>
-                                                    </ToggleButtonGroup>
-                                                </div> */}
-
-                                                        {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponentData.portfolioName} onChange={handleGeneralInputChange} /> */}
                                                     </div>
                                                 </div>
                                                 <div className="col-md-3 col-sm-3">
                                                     <div className="form-group">
                                                         <label className="text-light-dark font-size-12 font-weight-500">
-                                                            {/* {prefilgabelGeneral} ID */}
                                                             SOLUTION ID
                                                         </label>
                                                         <input
                                                             type="text"
                                                             className="form-control border-radius-10"
                                                             placeholder="(Auto-generated)"
-                                                            // {location.solutionValueIs }
                                                             value={portfolioId}
-                                                            // onChange={handleGeneralInputChange}
                                                             disabled={true}
                                                         />
 
                                                     </div>
-                                                </div>
+                                                </div> */}
                                                 <div className="col-md-3 col-sm-3">
                                                     <div className="form-group">
                                                         <label className="text-light-dark font-size-12 font-weight-500">
-                                                            {/* {prefilgabelGeneral} NAME */}
                                                             SOLUTION NAME
                                                         </label>
                                                         <input
@@ -3626,7 +3732,6 @@ export function SolutionTemplateResult(props) {
                                                 <div className="col-md-3 col-sm-3">
                                                     <div className="form-group">
                                                         <label className="text-light-dark font-size-12 font-weight-500">
-                                                            {/* SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY) */}
                                                             SOLUTION DESCRIPTION
                                                         </label>
                                                         <input
@@ -3667,6 +3772,34 @@ export function SolutionTemplateResult(props) {
                                                         />
                                                     </div>
                                                 </div>
+                                                <div className="col-md-3 col-sm-3 d-flex justify-content-between align-items-center">
+                                                    <div className=" d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <FormGroup>
+                                                                <FormControlLabel
+                                                                    control={<Switch checked={flagTemplate} />}
+                                                                    label=" FLAG FOR TEMPLATE"
+                                                                    value={flagTemplate}
+                                                                    onChange={(e) => setFlagTemplate(e.target.checked)}
+                                                                />
+                                                            </FormGroup>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-3 col-sm-3 d-flex justify-content-between align-items-center">
+                                                    <div className=" d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <FormGroup>
+                                                                <FormControlLabel
+                                                                    control={<Switch checked={flagCommerce} />}
+                                                                    label=" FLAG FOR COMMERCE"
+                                                                    value={flagCommerce}
+                                                                    onChange={(e) => setFlagCommerce(e.target.checked)}
+                                                                />
+                                                            </FormGroup>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div className="row" style={{ justifyContent: "right" }}>
                                                 <button
@@ -3680,7 +3813,7 @@ export function SolutionTemplateResult(props) {
                                             </div>
                                         </>
                                     ) : (<div className="row mt-4">
-                                        <div className="col-md-4 col-sm-3">
+                                        {/* <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
                                                 <p className="font-size-12 font-weight-500 mb-2">
                                                     PORTFOLIO ID
@@ -3689,7 +3822,7 @@ export function SolutionTemplateResult(props) {
                                                     {portfolioId}
                                                 </h6>
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
                                                 <p className="font-size-12 font-weight-500 mb-2">
@@ -3704,7 +3837,7 @@ export function SolutionTemplateResult(props) {
                                         <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
                                                 <p className="font-size-12 font-weight-500 mb-2">
-                                                    SERVICE PROGRAM DESCRIPTION (IF ANY)
+                                                    PORTFOLIO DESCRIPTION (IF ANY)
                                                 </p>
                                                 <h6 className="font-weight-500">
                                                     {(generalComponentData.description)}
@@ -3733,6 +3866,26 @@ export function SolutionTemplateResult(props) {
                                                     {/* {console.log("generalComponentData.customerSegment ", generalComponentData.customerSegment)} */}
                                                     {/* {generalComponentData.customerSegment} */}
                                                     {/* {location.selectedTemplateItems[0].customerSegment} */}
+                                                </h6>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-3">
+                                            <div className="form-group">
+                                                <p className="font-size-12 font-weight-500 mb-2">
+                                                    TEMPLATE FLAG
+                                                </p>
+                                                <h6 className="font-weight-500">
+                                                    {flagTemplate ? "True" : "False"}
+                                                </h6>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-3">
+                                            <div className="form-group">
+                                                <p className="font-size-12 font-weight-500 mb-2">
+                                                    COMMERCE FLAG
+                                                </p>
+                                                <h6 className="font-weight-500">
+                                                    {flagCommerce ? "True" : "False"}
                                                 </h6>
                                             </div>
                                         </div>
@@ -3978,7 +4131,7 @@ export function SolutionTemplateResult(props) {
                                 </TabPanel>
                                 <TabPanel value="3">
                                     {!viewOnlyTab.strategyViewOnly ? (<><div className="row">
-                                        <div className="col-md-4 col-sm-4">
+                                        {/* <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
@@ -3991,7 +4144,6 @@ export function SolutionTemplateResult(props) {
                                                     value={categoryUsageKeyValue1}
                                                     onChange={(e) => HandleCatUsage(e)}
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -4026,16 +4178,8 @@ export function SolutionTemplateResult(props) {
                                                         )
                                                     }
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
-                                        {/* <div className="col-md-4 col-sm-4">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">CATEGORY USAGE</label>
-                                                <Select options={categoryList} />
-                                                <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" />
-                                            </div>
-                                        </div> */}
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -4048,11 +4192,9 @@ export function SolutionTemplateResult(props) {
                                                     options={strategyOptionals}
                                                     value={stratgyOptionalsKeyValue}
                                                     onChange={(e) => setStratgyOptionalsKeyValue(e)}
-                                                // options={rTimeList}
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Optionais" /> */}
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -4066,7 +4208,6 @@ export function SolutionTemplateResult(props) {
                                                     value={stratgyResponseTimeKeyValue}
                                                     onChange={(e) => setStratgyResponseTimeKeyValue(e)}
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Response Time" /> */}
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -4105,6 +4246,39 @@ export function SolutionTemplateResult(props) {
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    SOLUTION TYPE
+                                                </label>
+                                                <Select
+                                                    options={options}
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                // isLoading={
+                                                //     lifeStageOfMachineKeyValueList.length > 0 ? false : true
+                                                // }
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    for="exampleInputEmail1"
+                                                >
+                                                    SOLUTION LEVEL
+                                                </label>
+                                                <Select
+                                                    options={options}
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                />
+                                            </div>
+                                        </div>
+                                        {/* <div className="col-md-4 col-sm-4">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
                                                     htmlFor="exampleInputEmail1"
                                                 >
                                                     MACHINE TYPE
@@ -4113,16 +4287,10 @@ export function SolutionTemplateResult(props) {
                                                     options={machineTypeKeyValueList}
                                                     value={machineTypeKeyValue}
                                                     onChange={(e) => setMachineTypeKeyValue(e)}
-                                                    // onChange={(e) =>
-                                                    //     handleDropdownChange(ENUM.MACHINE_TYPE, e)
-                                                    // }
-                                                    // isClearable={true}
-                                                    // value={coverageData.machineType}
                                                     isLoading={
                                                         machineTypeKeyValueList.length > 0 ? false : true
                                                     }
                                                 />
-                                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
                                         </div>
                                         <div className="col-md-4 col-sm-4">
@@ -4137,17 +4305,12 @@ export function SolutionTemplateResult(props) {
                                                     options={lifeStageOfMachineKeyValueList}
                                                     value={lifeStageOfMachineKeyValue}
                                                     onChange={(e) => setLifeStageOfMachineKeyValue(e)}
-                                                    // onChange={(e) =>
-                                                    //     handleDropdownChange(ENUM.LIFE_STAGE_OF_MACHINE, e)
-                                                    // }
-                                                    // isClearable={true}
-                                                    // value={coverageData.lifeStageOfMachine}
                                                     isLoading={
                                                         lifeStageOfMachineKeyValueList.length > 0 ? false : true
                                                     }
                                                 />
                                             </div>
-                                        </div>
+                                        </div> */}
                                     </div>
                                         <div className="row" style={{ justifyContent: "right" }}>
                                             <button
@@ -4161,16 +4324,14 @@ export function SolutionTemplateResult(props) {
                                         </div>
                                     </>) :
                                         (<div className="row">
-                                            <div className="col-md-4 col-sm-4">
+                                            {/* <div className="col-md-4 col-sm-4">
                                                 <div className="form-group">
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         CATEGORY USAGE
-                                                        {/* {console.log("new dataa : ", coverageData.machineType)} */}
                                                     </p>
                                                     <h6 className="font-weight-500">
                                                         {(console.log("categoryUsageKeyValue1 : ", categoryUsageKeyValue1))}
                                                         {(categoryUsageKeyValue1.label)}
-                                                        {/* {Object.keys(categoryUsageKeyValue1).length > 0 ? (categoryUsageKeyValue1.label) : (location.selectedTemplateItems[0].usageCategory)} */}
                                                     </h6>
                                                 </div>
                                             </div>
@@ -4181,7 +4342,6 @@ export function SolutionTemplateResult(props) {
                                                     </p>
                                                     <h6 className="font-weight-500">
                                                         {(stratgyTaskUsageKeyValue.label)}
-                                                        {/* {Object.keys(stratgyTaskUsageKeyValue).length > 0 ? (stratgyTaskUsageKeyValue.label) : (location.selectedTemplateItems[0].strategyTask)} */}
                                                     </h6>
                                                 </div>
                                             </div>
@@ -4192,7 +4352,6 @@ export function SolutionTemplateResult(props) {
                                                     </p>
                                                     <h6 className="font-weight-500">
                                                         {(stratgyTaskTypeKeyValue.label)}
-                                                        {/* {Object.keys(stratgyTaskTypeKeyValue).length > 0 ? (stratgyTaskTypeKeyValue.label) : (location.selectedTemplateItems[0].taskType)} */}
                                                     </h6>
                                                 </div>
                                             </div>
@@ -4203,7 +4362,7 @@ export function SolutionTemplateResult(props) {
                                                     </p>
                                                     <h6 className="font-weight-500">Misc</h6>
                                                 </div>
-                                            </div>
+                                            </div> */}
                                             <div className="col-md-4 col-sm-4">
                                                 <div className="form-group">
                                                     <p className="font-size-12 font-weight-500 mb-2">
@@ -4211,7 +4370,6 @@ export function SolutionTemplateResult(props) {
                                                     </p>
                                                     <h6 className="font-weight-500">
                                                         {(stratgyResponseTimeKeyValue.label)}
-                                                        {/* {Object.keys(stratgyResponseTimeKeyValue).length > 0 ? (stratgyResponseTimeKeyValue.label) : (location.selectedTemplateItems[0].responseTime)} */}
                                                     </h6>
                                                 </div>
                                             </div>
@@ -4222,7 +4380,6 @@ export function SolutionTemplateResult(props) {
                                                     </p>
                                                     <h6 className="font-weight-500">
                                                         {(stratgyHierarchyKeyValue.label)}
-                                                        {/* {Object.keys(stratgyHierarchyKeyValue).length > 0 ? (stratgyHierarchyKeyValue.label) : (location.selectedTemplateItems[0].productHierarchy)} */}
                                                     </h6>
                                                 </div>
                                             </div>
@@ -4233,19 +4390,36 @@ export function SolutionTemplateResult(props) {
                                                     </p>
                                                     <h6 className="font-weight-500">
                                                         {(stratgyGeographicKeyValue.label)}
-                                                        {/* {Object.keys(stratgyGeographicKeyValue).length > 0 ? (stratgyGeographicKeyValue.label) : (location.selectedTemplateItems[0].geographic)} */}
                                                     </h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-4">
                                                 <div className="form-group">
                                                     <p className="font-size-12 font-weight-500 mb-2">
+                                                        SOLUTION TYPE
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        Solution Type
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        SOLUTION LEVEL
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        Solution Level
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            {/* <div className="col-md-4 col-sm-4">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
                                                         MACHINE TYPE
                                                     </p>
                                                     <h6 className="font-weight-500">
-                                                        {/* {Object.keys(machineTypeKeyValue).length > 0 ? (machineTypeKeyValue.label) : (location.selectedTemplateItems[0].machineType)} */}
                                                         {(machineTypeKeyValue.label)}
-
                                                     </h6>
                                                 </div>
                                             </div>
@@ -4255,12 +4429,11 @@ export function SolutionTemplateResult(props) {
                                                         LIFE STAGE
                                                     </p>
                                                     <h6 className="font-weight-500">
-                                                        {/* {Object.keys(lifeStageOfMachineKeyValue).length > 0 ? (lifeStageOfMachineKeyValue.label) : location.selectedTemplateItems[0].lifeStageOfMachine} */}
                                                         {(lifeStageOfMachineKeyValue.label)}
                                                         {console.log("object123")}
                                                     </h6>
                                                 </div>
-                                            </div>
+                                            </div> */}
                                         </div>)
                                     }
 
@@ -4338,6 +4511,7 @@ export function SolutionTemplateResult(props) {
                                                             type="text"
                                                             className="form-control border-radius-10"
                                                             name="preparedBy"
+                                                            placeholder="Required"
                                                             value={administrative.preparedBy}
                                                             onChange={handleAdministrativreChange}
                                                         />
@@ -4928,7 +5102,7 @@ export function SolutionTemplateResult(props) {
                                                     title=""
                                                     columns={masterColumns}
                                                     data={masterData}
-                                                    customStyles={customStyles}
+                                                    customStyles={customTableStyles}
                                                     selectableRows
                                                     onSelectedRowsChange={(state) => setFilterMasterData(state.selectedRows)}
                                                     pagination
@@ -4972,7 +5146,7 @@ export function SolutionTemplateResult(props) {
                                                     title=""
                                                     columns={selectedMasterColumns}
                                                     data={selectedMasterData}
-                                                    customStyles={customStyles}
+                                                    customStyles={customTableStyles}
                                                     pagination
                                                 />
                                             </>
@@ -5239,7 +5413,7 @@ export function SolutionTemplateResult(props) {
                     {/* hide portfolio item querySearch */}
                     <div className="card mt-4 px-4">
 
-                        <div className="" style={{ height: 400, width: '100%', backgroundColor: '#fff' }}>
+                        <div className="" style={{ minHeight: 200, height: "auto", width: '100%', backgroundColor: '#fff' }}>
                             {/* <DataGrid
                                 sx={{
                                     '& .MuiDataGrid-columnHeaders': {
@@ -5259,7 +5433,7 @@ export function SolutionTemplateResult(props) {
                                 title=""
                                 columns={selectedportfolioTempItemsColumn}
                                 data={location.selectedTemplateItems}
-                                customStyles={customStyles}
+                                customStyles={customTableStyles}
                                 pagination
                             /> */}
                             <DataTable
@@ -5267,7 +5441,7 @@ export function SolutionTemplateResult(props) {
                                 title=""
                                 columns={selectedCustomItemsColumn}
                                 data={selectedSolutionItems}
-                                customStyles={customStyles}
+                                customStyles={customTableStyles}
                                 pagination
                             />
                             {console.log("selectedSolutionItems data : ", selectedSolutionItems)}
