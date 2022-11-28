@@ -725,14 +725,14 @@ export const PortfolioSummary = () => {
         { label: "Model", value: "model", id: i },
         { label: "Prefix", value: "prefix", id: i },
         { label: "Name", value: "itemName", id: i },
-        { label: "Description", value: "description", id: i },])
+        { label: "Description", value: "itemHeaderDescription", id: i },])
       } else if (e.value === "SERVICE") {
         setFamilySelectOption([{ label: "Make", value: "make", id: i },
         { label: "Family", value: "family", id: i },
         { label: "Model", value: "model", id: i },
         { label: "Prefix", value: "prefix", id: i },
         { label: "Name", value: "itemName", id: i },
-        { label: "Description", value: "description", id: i },])
+        { label: "Description", value: "itemHeaderDescription", id: i },])
       }
     },
     [],
@@ -1010,7 +1010,8 @@ export const PortfolioSummary = () => {
           validTo: "",
           estimatedTime: "",
           servicePrice: 0,
-          status: "NEW"
+          status: "NEW",
+          itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask : "PREVENTIVE_MAINTENANCE",
         },
         itemBodyModel: {
           itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
@@ -1024,7 +1025,7 @@ export const PortfolioSummary = () => {
           spareParts: ["WITH_SPARE_PARTS"],
           labours: ["WITH_LABOUR"],
           miscellaneous: ["LUBRICANTS"],
-          taskType: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.taskType?.value : ["PM1"],
+          taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["PM1"],
           solutionCode: "",
           usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
           recommendedValue: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.recommendedValue) : 0,
@@ -1163,10 +1164,10 @@ export const PortfolioSummary = () => {
           <div>Description</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.itemBodyDescription,
+      selector: (row) => row.itemHeaderModel.itemHeaderDescription,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.itemBodyDescription,
+      format: (row) => row.itemHeaderModel.itemHeaderDescription,
     },
     {
       name: (
@@ -1442,7 +1443,7 @@ export const PortfolioSummary = () => {
                       <div className="d-flex justify-content-between align-items-center mt-2">
                         {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
                         <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(data.createdAt)}</p>
-                        <p className="font-size-12 mb-0">{data.itemHeaderModel.bundleFlag == "SSERVICE" ? "Service" : data.itemHeaderModel.bundleFlag == "BUNDLE_ITEM" ? "Bundle" : "Portfolio"}</p>
+                        <p className="font-size-12 mb-0">{data.itemHeaderModel.bundleFlag == "SERVICE" ? "Service" : data.itemHeaderModel.bundleFlag == "BUNDLE_ITEM" ? "Bundle" : "Portfolio"}</p>
                       </div>
                     </div>)}
 
@@ -2161,7 +2162,7 @@ export const PortfolioSummary = () => {
                     pagination
                   />
                 </> : <></>}
-              {selectedItemType == "BUNDLE_ITEM" || selectedItemType == "SERVICE" && bundleServiceItemData.length > 0 ?
+              {(selectedItemType == "BUNDLE_ITEM" || selectedItemType == "SERVICE") && bundleServiceItemData.length > 0 ?
                 <>
                   <DataTable
                     className=""

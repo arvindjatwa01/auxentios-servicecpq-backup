@@ -40,6 +40,7 @@ export const PRICING_COMMON_CONFIG = PRICING_URI + "common-config/";
 //Soltion Builder URLS
 export const GET_ALL_SOLUTION_PORTFOLIOS = () =>
 SOLUTION_BUILDER_URI + `portfolio?orderBY=ASC`;
+
 // export const SOLUTION_BUILDER_PRICE_CONFIG = PRICING_URI + "common-config/";
 
 //User Service
@@ -81,9 +82,12 @@ export const PORTFOLIO_ITEM_PRICE_BY_ITEM_ID = () => CREATE_PORTFOLIO_ITEM()+ "/
 
 export const CUSTOM_PORTFOLIO_URL = () => SOLUTION_BUILDER_URI + "portfolio/custom";
 export const CUSTOM_PORTFOLIO_SEARCH_QUERY = SOLUTION_BUILDER_URI +"portfolio/custom/search?search=";
+export const GET_RECENT_SOLUTION_PORTFOLIO_LIST = SOLUTION_BUILDER_URI + "portfolio/custom";
 
 // Custom Portfolio Item
 export const CREATE_CUSTOM_PORTFOLIO_ITEM = () => SOLUTION_BUILDER_URI + "item/custom";
+export const COPY_PORTFOLIO_ITEMS_TO_CUSTOM_PORTFOLIO = SOLUTION_BUILDER_URI + "portfolio/custom/copy-portfolios-items-to-custom-portfolio?portfolioIds="
+export const GET_RECENT_SOLUTION_BUNDLE_SERVICE_URL = SOLUTION_BUILDER_URI + "item/custom";
 export const CUSTOM_PORTFOLIO_ITEM_PRICE_RKID = () => CREATE_CUSTOM_PORTFOLIO_ITEM() + "/get-RB-price-update-item-rkid";
 export const CUSTOM_PORTFOLIO_ITEM_PRICE_SJID = () => CREATE_CUSTOM_PORTFOLIO_ITEM() + "/get-RB-price-update-item-sjid";
 export const CREATE_CUSTOM_PRICE = () => CREATE_CUSTOM_PORTFOLIO_ITEM() + "/price";

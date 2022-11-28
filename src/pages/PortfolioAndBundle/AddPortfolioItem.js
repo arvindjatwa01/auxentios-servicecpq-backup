@@ -385,8 +385,8 @@ const AddPortfolioItem = (props) => {
                 RECOMMENDED VALUE
               </label>
               <input
-                type="text"
-                placeholder="RECOMMENDED VALUE"
+                type="number"
+                placeholder="Recommended Value"
                 className="form-control border-radius-10"
                 // options={options}
 
@@ -752,7 +752,8 @@ const AddPortfolioItem = (props) => {
               {/* <AccessAlarmOutlinedIcon className=" font-size-16" /> */}
               <Tab label="Related template(s)" value="2" />
               {/* <SellOutlinedIcon className=" font-size-16" /> */}
-              <Tab label="Related repair option" value="3" />
+              {/* <Tab label="Related repair option" value="3" /> */}
+              <Tab label="Related Kit" value="3" />
             </TabList>
           </Box>
           <TabPanel value="1">
@@ -962,12 +963,16 @@ const AddPortfolioItem = (props) => {
                     style={{ overflow: "hidden" }}
                   >
                     <input
-                      type="text"
+                      type="number"
+                      // type="text"
                       className="form-control rounded-top-left-0 rounded-bottom-left-0"
                       placeholder="Recommended Value"
                       // defaultValue={props?.priceCalculator?.startUsage}
                       // value={priceCalculator.startUsage}
-                      name="startUsage"
+                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
+                      value={addPortFolioItem.recommendedValue}
+                      name="recommendedValue"
+                      // name="startUsage"
                     // onChange={(e) =>
                     //   setPriceCalculator({
                     //     ...priceCalculator,

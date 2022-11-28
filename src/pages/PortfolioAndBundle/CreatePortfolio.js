@@ -3816,10 +3816,10 @@ export function CreatePortfolio() {
           <div>Description</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.itemBodyDescription,
+      selector: (row) => row.itemHeaderModel.itemHeaderDescription,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.itemBodyDescription,
+      format: (row) => row.itemHeaderModel.itemHeaderDescription,
     },
     {
       name: (
@@ -5668,7 +5668,8 @@ export function CreatePortfolio() {
                     <div className="col-md-3 col-sm-3">
                       <div className="form-group">
                         <label className="text-light-dark font-size-12 font-weight-500">
-                          SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY)
+                          {/* SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY) */}
+                          {prefilgabelGeneral} DESCRIPTION (IF ANY)
                         </label>
                         <input
                           type="text"
