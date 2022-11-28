@@ -126,7 +126,10 @@ export const RepairPartlist = () => {
     var searchStr = "";
     querySearchSelector.map(function (item, i) {
       if (i === 0 && item.selectCategory.value && item.inputSearch) {
-        searchStr = item.selectCategory.value + ":" + encodeURI('"' + item.inputSearch + '"');
+        searchStr =
+          item.selectCategory.value +
+          ":" +
+          encodeURI('"' + item.inputSearch + '"');
       } else if (
         item.selectCategory.value &&
         item.inputSearch &&
@@ -146,7 +149,9 @@ export const RepairPartlist = () => {
 
     try {
       if (searchStr) {
-        const res = await builderSearch(`builderType:PARTLIST AND ${searchStr}`);
+        const res = await builderSearch(
+          `builderType:PARTLIST AND ${searchStr}`
+        );
         setMasterData(res);
       } else {
         handleSnack("info", "Please fill the search criteria!");
@@ -373,19 +378,14 @@ export const RepairPartlist = () => {
             </div>
           </div>
           <div className="card">
-            <div
-              className=""
-              style={{ width: "100%", backgroundColor: "#fff" }}
-            >
-              <DataGrid
-                sx={GRID_STYLE}
-                rows={masterData}
-                columns={searchBuilderColumns}
-                pageSize={5}
-                rowsPerPageOptions={[5]}
-                autoHeight
-              />
-            </div>
+            <DataGrid
+              sx={GRID_STYLE}
+              rows={masterData}
+              columns={searchBuilderColumns}
+              pageSize={5}
+              rowsPerPageOptions={[5]}
+              // autoHeight
+            />
           </div>
         </div>
       </div>
