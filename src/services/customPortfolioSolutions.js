@@ -2,16 +2,16 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, PORTFOLIO_URL, CUSTOM_PORTFOLIO_URL, PRICING_COMMON_CONFIG } from "./CONSTANTS";
+import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, PORTFOLIO_URL, CUSTOM_PORTFOLIO_URL, PRICING_COMMON_CONFIG, CUSTOM_PORTFOLIO_SEARCH_QUERY, GET_RECENT_SOLUTION_PORTFOLIO_LIST, GET_RECENT_SOLUTION_BUNDLE_SERVICE_URL, COPY_PORTFOLIO_ITEMS_TO_CUSTOM_PORTFOLIO } from "./CONSTANTS";
 
 /* ----------------- Authorization ------------------- */
 
 var accessToken = localStorage.getItem("access_token");
 const headersdata = {
-  'content-type': 'application/json',
-  'Accept': 'application/json',
-  'Authorization': accessToken != undefined ? accessToken : ''
-  // 'Authorization': url.Auth_Token
+    'content-type': 'application/json',
+    'Accept': 'application/json',
+    'Authorization': accessToken != undefined ? accessToken : ''
+    // 'Authorization': url.Auth_Token
 }
 
 /* ------------------------------------------------------------ */
@@ -20,7 +20,7 @@ const headersdata = {
  * Function to create the Portfolios.
  */
 export const createCustomPortfolio = (data) => {
-    console.log("Custom portfolio > createCustomPortfolio called...");
+    console.log("customPortfolioSolutions > createCustomPortfolio called...");
     return new Promise((resolve, reject) => {
         try {
             axios
@@ -43,7 +43,7 @@ export const createCustomPortfolio = (data) => {
  * Function to update the Portfolio.
  */
 export const updateCustomPortfolio = (portfolioId, data) => {
-    console.log("service Service Portfolio > updatePortfolio called...");
+    console.log("customPortfolioSolutions > updatePortfolio called...");
     return new Promise((resolve, reject) => {
         try {
             axios
@@ -68,7 +68,7 @@ export const updateCustomPortfolio = (portfolioId, data) => {
 
 
 export const getCustomPortfolio = (portfolioId) => {
-    console.log("service Service Portfolio > getPortfolio called...");
+    console.log("customPortfolioSolutions > getPortfolio called...");
     return new Promise((resolve, reject) => {
         try {
             axios
@@ -91,7 +91,7 @@ export const getCustomPortfolio = (portfolioId) => {
  * Function to update the Portfolios.
  */
 export const getAllPortfolios = () => {
-    console.log("userServices > getAllUsers called...");
+    console.log("customPortfolioSolutions > getAllUsers called...");
     return new Promise((resolve, reject) => {
         try {
             axios
@@ -156,6 +156,109 @@ export const getUserDetails1 = (id) => {
             })
         } catch (error) {
             console.error("in userServices > getUserDetails1, Err===", error);
+            reject(SYSTEM_ERROR);
+        }
+    });
+};
+
+/**
+ * Function to get the solution Portfolios Search.
+ */
+
+export const solutionPortfolioSearch = (searchStr) => {
+    console.log("customPortfolioSolutions > solutionPortfolioSearch called...");
+    console.log("PAth is : ", CUSTOM_PORTFOLIO_SEARCH_QUERY + searchStr);
+    return new Promise((resolve, reject) => {
+        try {
+            axios
+                .get(CUSTOM_PORTFOLIO_SEARCH_QUERY + searchStr, { headers: headersdata })
+                .then((res) => {
+                    console.log("solutionPortfolioSearch > axios res=", res);
+                    resolve(res.data);
+                })
+                .catch((err) => {
+                    console.log("solutionPortfolioSearch > axios err=", err);
+                    reject("Error in solutionPortfolioSearch axios!");
+                });
+        } catch (error) {
+            console.error("in customPortfolioSolutions > solutionPortfolioSearch, Err===", error);
+            reject(SYSTEM_ERROR);
+        }
+    });
+};
+
+
+/**
+ * Function to get the Recent solution Portfolios List.
+ */
+
+export const getSearchForRecentSolutionPortfolio = () => {
+    console.log("customPortfolioSolutions > getSearchForRecentSolutionPortfolio called...");
+    return new Promise((resolve, reject) => {
+        // pageSize=10&sortColumn=updatedAt&orderBY=DESC
+        // console.log("GET_RECENT_SOLUTION_PORTFOLIO_LIST", `${PORTFOLIO_SEARCH_URL}${family}~${familyValue}`)
+        try {
+            axios
+                .get(GET_RECENT_SOLUTION_PORTFOLIO_LIST + "?pageSize=10&sortColumn=updatedAt&orderBY=DESC", { headers: headersdata })
+                .then((res) => {
+                    console.log("getSearchForRecentSolutionPortfolio > axios res=", res);
+                    resolve(res.data);
+                })
+                .catch((err) => {
+                    console.log("getSearchForRecentSolutionPortfolio > axios err=", err);
+                    reject("Error in getSearchForRecentSolutionPortfolio axios!");
+                });
+        } catch (error) {
+            console.error("in Query coverageService > getSearchForRecentSolutionPortfolio, Err===", error);
+            reject(SYSTEM_ERROR);
+        }
+    });
+}
+
+/**
+ * Function to get the Recent Bundle/Service Item List.
+ */
+
+export const getSearchForRecentSolutionBundleService = () => {
+    console.log("customPortfolioSolutions > getSearchForRecentSolutionBundleService called...");
+    return new Promise((resolve, reject) => {
+        // pageSize=10&sortColumn=updatedAt&orderBY=DESC
+        // console.log("RECENT_PORTFOLIO_URL", `${PORTFOLIO_SEARCH_URL}${family}~${familyValue}`)
+        try {
+            axios
+                .get(GET_RECENT_SOLUTION_BUNDLE_SERVICE_URL + "?pageSize=10&sortColumn=updatedAt&orderBY=DESC", { headers: headersdata })
+                .then((res) => {
+                    console.log("getSearchForRecentSolutionBundleService > axios res=", res);
+                    resolve(res.data);
+                })
+                .catch((err) => {
+                    console.log("getSearchForRecentSolutionBundleService > axios err=", err);
+                    reject("Error in getSearchForRecentSolutionBundleService axios!");
+                });
+        } catch (error) {
+            console.error("in Query coverageService > getSearchForRecentSolutionBundleService, Err===", error);
+            reject(SYSTEM_ERROR);
+        }
+    });
+}
+
+
+export const copyPortfolioICustomPortfolio = (data) => {
+    console.log("customPortfolioSolutions > copyPortfolioICustomPortfolio called...");
+    return new Promise((resolve, reject) => {
+        try {
+            axios
+                .get(COPY_PORTFOLIO_ITEMS_TO_CUSTOM_PORTFOLIO + data, { headers: headersdata })
+                .then((res) => {
+                    console.log("copyPortfolioICustomPortfolio > axios res=", res);
+                    resolve(res);
+                })
+                .catch((err) => {
+                    console.log("copyPortfolioICustomPortfolio > axios err=", err);
+                    reject("Error in copyPortfolioICustomPortfolio axios!");
+                });
+        } catch (error) {
+            console.error("in customPortfolioSolutions > copyPortfolioICustomPortfolio, Err===", error);
             reject(SYSTEM_ERROR);
         }
     });

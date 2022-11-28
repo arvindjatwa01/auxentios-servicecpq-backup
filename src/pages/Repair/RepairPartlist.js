@@ -30,9 +30,11 @@ import {
 import moment from "moment-timezone";
 import Moment from "react-moment";
 import DynamicSearchComponent from "./components/DynamicSearchComponent";
-import { BUILDER_SEARCH_Q_OPTIONS } from "./CONSTANTS";
+import { BUILDER_SEARCH_Q_OPTIONS, GRID_STYLE } from "./CONSTANTS";
 import { Typography } from "@mui/material";
 import Loader from "react-js-loader";
+import { useDispatch } from "react-redux";
+import { repairActions } from "./dropdowns/repairSlice";
 
 export const RepairPartlist = () => {
   const [show, setShow] = React.useState(false);
@@ -49,7 +51,9 @@ export const RepairPartlist = () => {
     setOpenSnack(false);
   };
 
+  const dispatch = useDispatch();
   useEffect(() => {
+    dispatch(repairActions.fetchDropdowns());
     fetcheRecentPartlists();
   }, []);
 
@@ -122,7 +126,10 @@ export const RepairPartlist = () => {
     var searchStr = "";
     querySearchSelector.map(function (item, i) {
       if (i === 0 && item.selectCategory.value && item.inputSearch) {
-        searchStr = item.selectCategory.value + ":" + item.inputSearch;
+        searchStr =
+          item.selectCategory.value +
+          ":" +
+          encodeURI('"' + item.inputSearch + '"');
       } else if (
         item.selectCategory.value &&
         item.inputSearch &&
@@ -135,14 +142,16 @@ export const RepairPartlist = () => {
           " " +
           item.selectCategory.value +
           ":" +
-          item.inputSearch;
+          encodeURI('"' + item.inputSearch + '"');
       }
       return searchStr;
     });
 
     try {
       if (searchStr) {
-        const res = await builderSearch(`builderType:PARTLIST&${searchStr}`);
+        const res = await builderSearch(
+          `builderType:PARTLIST AND ${searchStr}`
+        );
         setMasterData(res);
       } else {
         handleSnack("info", "Please fill the search criteria!");
@@ -369,27 +378,14 @@ export const RepairPartlist = () => {
             </div>
           </div>
           <div className="card">
-            <div
-              className=""
-              style={{ width: "100%", backgroundColor: "#fff" }}
-            >
-              <DataGrid
-                sx={{
-                  "& .MuiDataGrid-columnHeaders": {
-                    backgroundColor: "#872ff7",
-                    color: "#fff",
-                  },
-                  "& .MuiDataGrid-cellContent": {
-                    fontSize: 12,
-                  },
-                }}
-                rows={masterData}
-                columns={searchBuilderColumns}
-                pageSize={5}
-                rowsPerPageOptions={[5]}
-                autoHeight
-              />
-            </div>
+            <DataGrid
+              sx={GRID_STYLE}
+              rows={masterData}
+              columns={searchBuilderColumns}
+              pageSize={5}
+              rowsPerPageOptions={[5]}
+              // autoHeight
+            />
           </div>
         </div>
       </div>

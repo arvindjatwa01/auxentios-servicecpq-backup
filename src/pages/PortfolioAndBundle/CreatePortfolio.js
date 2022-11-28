@@ -1689,7 +1689,7 @@ export function CreatePortfolio() {
           categoryUsageKeyValue1.value == undefined ||
           stratgyTaskUsageKeyValue.value == undefined
         ) {
-          throw "Please fill manditory fields properly";
+          throw "Please fill mandatory fields properly";
         }
         setGeneralComponentData({
           ...generalComponentData,
@@ -1802,7 +1802,7 @@ export function CreatePortfolio() {
             administrative.revisedBy != undefined &&
             !validator.emailValidation(administrative.revisedBy)) ||
           (administrative.branch == "" ||
-            administrative.branch == undefined) 
+            administrative.branch == undefined)
           //   ||
           // (administrative.offerValidity == "" ||
           //   administrative.offerValidity == undefined)
@@ -3799,11 +3799,10 @@ export function CreatePortfolio() {
     // },
   ];
   const tempBundleItemColumns1 = [
-
     {
       name: (
         <>
-          <div>Id3</div>
+          <div>Item Id</div>
         </>
       ),
       selector: (row) => row.itemId,
@@ -3817,10 +3816,21 @@ export function CreatePortfolio() {
           <div>Description</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.itemBodyDescription,
+      selector: (row) => row.itemHeaderModel.itemHeaderDescription,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.itemBodyDescription,
+      format: (row) => row.itemHeaderModel.itemHeaderDescription,
+    },
+    {
+      name: (
+        <>
+          <div>Usage In</div>
+        </>
+      ),
+      selector: (row) => row.itemBodyModel.usageIn,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemBodyModel.usageIn,
     },
     {
       name: (
@@ -3828,43 +3838,21 @@ export function CreatePortfolio() {
           <div>Strategy</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel.strategy,
+      selector: (row) => row.itemHeaderModel.itemHeaderStrategy,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel.strategy,
+      format: (row) => row.itemHeaderModel.itemHeaderStrategy,
     },
     {
       name: (
         <>
-          <div>Standard Job Id</div>
+          <div>Task Type</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.standardJobId,
+      selector: (row) => row.itemBodyModel.taskType,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.standardJobId,
-    },
-    {
-      name: (
-        <>
-          <div>Repair Options</div>
-        </>
-      ),
-      selector: (row) => row.itemBodyModel.repairOption,
-      sortable: true,
-      maxWidth: "300px",
-      format: (row) => row.itemBodyModel.repairOption,
-    },
-    {
-      name: (
-        <>
-          <div>Frequency</div>
-        </>
-      ),
-      selector: (row) => row.itemBodyModel.frequency,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemBodyModel.frequency,
+      format: (row) => row.itemBodyModel.taskType,
     },
     {
       name: (
@@ -3880,36 +3868,206 @@ export function CreatePortfolio() {
     {
       name: (
         <>
-          <div>Parts $</div>
+          <div>Recommended Value</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.sparePartsPrice,
+      selector: (row) => row.itemBodyModel.recommendedValue,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.sparePartsPrice,
+      format: (row) => row.itemBodyModel.recommendedValue,
     },
     {
       name: (
         <>
-          <div>Service $</div>
+          <div>Template/Kit ID</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.servicePrice,
+      selector: (row) => row.itemBodyModel.repairKitId,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.servicePrice,
+      format: (row) => row.itemBodyModel.repairKitId,
     },
-    {
-      name: (
-        <>
-          <div>Total $</div>
-        </>
-      ),
-      selector: (row) => row.itemBodyModel.totalPrice,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemBodyModel.totalPrice,
-    },
+    // ---------------------- To do Portfolio Items --------------------//
+
+    // {
+    //   name: (
+    //     <>
+    //       <div>Net Price</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemHeaderModel.netPrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemHeaderModel.netPrice,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Net Additional</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemHeaderModel.additional,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemHeaderModel.additional,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Net Parts Price</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.sparePartsPrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.sparePartsPrice,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Net Service Price</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.servicePrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.servicePrice,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Total Price</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.totalPrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.totalPrice,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Comments</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.standardJobId,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.standardJobId,
+    // },
+
+    // ---------------------- To do Portfolio Items End--------------------//
+    
+    // {
+    //   name: (
+    //     <>
+    //       <div>Id31</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemId,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemId,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Description</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.itemBodyDescription,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.itemBodyDescription,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Strategy</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemHeaderModel.strategy,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemHeaderModel.strategy,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Standard Job Id</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.standardJobId,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.standardJobId,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Repair Options</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.repairOption,
+    //   sortable: true,
+    //   maxWidth: "300px",
+    //   format: (row) => row.itemBodyModel.repairOption,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Frequency</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.frequency,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.frequency,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Quantity</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.quantity,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.quantity,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Parts $</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.sparePartsPrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.sparePartsPrice,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Service $</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.servicePrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.servicePrice,
+    // },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Total $</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemBodyModel.totalPrice,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemBodyModel.totalPrice,
+    // },
   ];
 
 
@@ -5510,7 +5668,8 @@ export function CreatePortfolio() {
                     <div className="col-md-3 col-sm-3">
                       <div className="form-group">
                         <label className="text-light-dark font-size-12 font-weight-500">
-                          SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY)
+                          {/* SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY) */}
+                          {prefilgabelGeneral} DESCRIPTION (IF ANY)
                         </label>
                         <input
                           type="text"

@@ -146,11 +146,14 @@ export function PortfolioTemplatesResult(props) {
 
     const location = useLocation();
 
+    // var CreatedCustomPortfolioDetails = JSON.parse(localStorage.getItem('createdCustomPortfolioData'));
+
+    // console.log("CreatedCustomPortfolioDetails : ", CreatedCustomPortfolioDetails)
     var selectedTemplateItemsVal = JSON.parse(localStorage.getItem('selectedTemplateItems'));
     var autocreatedCustomPortfolioDataObj = JSON.parse(localStorage.getItem('autocreatedcustomPortfolioData'));
     var SolutionValueIs = localStorage.getItem('solutionValueIs');
 
-    console.log("selectedTemplateItemsVal is : ", selectedTemplateItemsVal);
+    console.log("autocreatedCustomPortfolioDataObj is : ", autocreatedCustomPortfolioDataObj);
 
 
     const [makeKeyValue, setMakeKeyValue] = useState([]);

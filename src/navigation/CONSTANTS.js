@@ -59,7 +59,12 @@ export const COMMERCE_GUIDED ="/CommerceGuided";
 export const COMMERCE_GUIDED_QUESTIONS ="/CommerceGuidedQuestions";
 export const SHOPPING_CART_LIST ="/ShoppingCartList";
 export const COMMERCE_PROFILE ="/CommerceProfile";
-
+export const PRICE_SETTING ="/PriceSetting";
+export const PRICE_CONFIGURATION ="/PriceConfiguration";
+export const PRICE_GLOBAL_SETTING ="/PriceGlobalSetting";
+export const PRICE_DETERMINATION ="/PriceDetermination";
+export const PRICE_MAINTENANCE ="/PriceMaintenance";
+export const PRICE_COMPUTATION ="/PriceComputation";
 export const VERIFY_EMAIL = "/verify-email/:id";
 
 //Solution Builder Module
@@ -79,3 +84,4 @@ export const SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO = SOLUTION_BUILDER + "/custo
 export const SOLUTION_BUILDER_PORRTFOLIO_TEMP = SOLUTION_BUILDER + "/portfolioTemplates";
 export const SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT = SOLUTION_BUILDER + "/solutionTemplate";
 export const SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE = SOLUTION_BUILDER + "/create";
+export const CREATED_CUSTOM_PORTFOLIO_DETAILS = SOLUTION_BUILDER + "/customPortfolioTemplate";

@@ -59,3 +59,52 @@ export const BUILDER_SEARCH_Q_OPTIONS = [
   { label: "SerialNo", value: "serialNo" },
   { label: "Status", value: "status" },
 ];
+export const CONSUMABLE_SEARCH_Q_OPTIONS = [
+  {
+    label: "Id",
+    value: "consumableId",
+  },
+  {
+    label: "Name",
+    value: "name",
+  },
+  {
+    label: "Vendor",
+    value: "sourceOrVendor",
+  },
+];
+
+export const EXTWORK_SEARCH_Q_OPTIONS = [
+  {
+    label: "Id",
+    value: "activityId",
+  },
+  {
+    label: "Activity Name",
+    value: "activityDescription",
+  },
+  {
+    label: "Supplying Vendor",
+    value: "supplyingVendorName",
+  },
+];
+
+export const GRID_STYLE = {
+  "& .MuiDataGrid-columnHeaders": {
+    backgroundColor: "#872ff7",
+    color: "#fff",
+    fontSize: 12,
+  },
+  '& .MuiDataGrid-columnHeader, .MuiDataGrid-cell': {
+    borderRight: `1px solid rgba(0,0,0,.12)`,
+    paddingLeft: "8px",
+    paddingRight: "8px"
+  },
+  '& .MuiDataGrid-iconSeparator': {
+    display: 'none',
+  },                              
+  minHeight: 300,
+  "& .MuiDataGrid-cellContent": {
+    fontSize: 12,
+  },  
+}

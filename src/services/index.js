@@ -11,11 +11,11 @@ export { getGuidedSolution } from './guidedSolutionServices';
 export { getUserDetails, signup, signIn } from './userServices';
 export { getAllPortfolios } from './solutionBuilderServices'
 export { createPortfolio, getPortfolio, updatePortfolio, portfolioSearch} from './servicePortfolioServices'
-export { createCustomPortfolio, updateCustomPortfolio, getCustomPortfolio} from './customPortfolioSolutions'
+export { createCustomPortfolio, updateCustomPortfolio, getCustomPortfolio, solutionPortfolioSearch, getSearchForRecentSolutionPortfolio, getSearchForRecentSolutionBundleService, copyPortfolioICustomPortfolio} from './customPortfolioSolutions'
 export { getPortfolioCommonConfig } from './pricingCommonConfig'
 export { getMakeKeyValue, getModelKeyValue, getPrefixKeyValue,createCoverage,createCutomCoverage} from './coverageService'
 export { getUsageCategoryKeyValue, getStrategyTaskKeyValue, getTaskTypeKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getLifeStageKeyValue, getTypeKeyValue, getResponseTimeTaskKeyValue, getValidityKeyValue } from './commonSolutionBuilderServices'
-export {getSearchQueryCoverage,getSearchCoverageForFamily} from "./searchQueryService"
+export {getSearchQueryCoverage,getSearchCoverageForFamily, getSearchForPortfolio, getSearchForRecentPortfolio, getSearchForRecentBundleService} from "./searchQueryService"
 export { itemCreation,itemSearchSuggestion,itemSearch,getItemPrice,updateItemData,deleteItem, itemPriceDataId, updateItemPriceData } from './portFolioItemService';
 export { getComponentCodeSuggetions } from './masterComponentCode';
 export { customitemCreation,getcustomItemPrice,updateCustomItemData,deleteCustomItem,customPriceCreation,getSearchCustomPortfolio,getCustomItemData,getcustomItemPriceById,updateCustomPriceData } from './customPortfolioItemService'

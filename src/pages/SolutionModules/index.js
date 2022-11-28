@@ -3,6 +3,7 @@ export { Analytics } from "./Analytics";
 export { CustomizedPortfolio } from "./CustomizedPortfolio";
 export { CreateCustomPortfolio } from "./CreateCustomPortfolio";
 export { PortfolioTemplatesResult } from "./PortfolioTemplatesResult";
+export { CreatedCustomPortfolioTemplate } from "./CreatedCustomPortfolioTemplate";
 export { SolutionTemplateResult } from './SolutionTemplateResult';
 export { SolutionSelector } from "./SolutionSelector";
 export { ServicePortfolio } from "./ServicePortfolio";

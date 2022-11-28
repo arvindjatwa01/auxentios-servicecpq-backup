@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import {
   ADD_REPAIR_BUILDER_PARTLIST,
   ADD_REPAIR_MULTI_PARTS_TO_PARTLIST,
-  ADD_REPAIR_PART_TO_PARTLIST,
+  REPAIR_PART_OF_PARTLIST,
   SEGMENT_OPERATION,
   BUILDER_SEGMENT,
   CREATE_BUILDER_VERSION,
@@ -29,6 +29,8 @@ import {
   EXTWORK_SERVICE,
   MISC_SERVICE,
   LABOR_ITEM,
+  EXTWORK_ITEM,
+  CONSUMABLE_ITEM,
 } from "./CONSTANTS";
 const accessToken = localStorage.getItem("access_token");
 
@@ -252,6 +254,59 @@ export const RemoveLaborItem = (laborId, laborItemId) => {
   });
 };
 
+
+//Remove consumable item
+export const RemoveConsumableItem = (consumableId, consumableItemId) => {
+  console.log("service repairbuilder > RemoveConsumableItem called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .delete(CONSUMABLE_ITEM(consumableId)+`/${consumableItemId}`, config)
+        .then((res) => {
+          console.log("repairbuilder -> RemoveConsumableItem response: ", res);
+          if (res.status === 200) {
+            resolve("Successfully removed the item!");
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("RemoveConsumableItem > axios err=", err);
+          reject("Error in RemoveConsumableItem axios!");
+        });
+    } catch (error) {
+      console.error("RemoveConsumableItem general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Remove labor item
+export const RemoveExtWorkItem = (extWorkId, extWorkItemId) => {
+  console.log("service repairbuilder > RemoveExtWorkItem called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .delete(EXTWORK_ITEM(extWorkId)+`/${extWorkItemId}`, config)
+        .then((res) => {
+          console.log("repairbuilder -> RemoveExtWorkItem response: ", res);
+          if (res.status === 200) {
+            resolve("Successfully removed the item!");
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("RemoveExtWorkItem > axios err=", err);
+          reject("Error in RemoveExtWorkItem axios!");
+        });
+    } catch (error) {
+      console.error("RemoveExtWorkItem general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 //fetch consumable from service estimate
 export const FetchConsumableforService = (serviceId) => {
   console.log("service repairbuilder > FetchConsumableforService called...");
@@ -278,6 +333,32 @@ export const FetchConsumableforService = (serviceId) => {
   });
 };
 
+//fetch consumable items
+export const FetchConsumableItems = (consumableId) => {
+  console.log("service repairbuilder > FetchConsumableItems called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(CONSUMABLE_ITEM(consumableId), config)
+        .then((res) => {
+          console.log("repairbuilder -> FetchConsumableItems response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("FetchConsumableItems > axios err=", err);
+          reject("Error in FetchConsumableItems axios!");
+        });
+    } catch (error) {
+      console.error("FetchConsumableItems general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 //fetch ext work from service estimate
 export const FetchExtWorkforService = (serviceId) => {
   console.log("service repairbuilder > FetchExtWorkforService called...");
@@ -299,6 +380,33 @@ export const FetchExtWorkforService = (serviceId) => {
         });
     } catch (error) {
       console.error("FetchExtWorkforService general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//fetch ext work items
+export const FetchExtWorkItems = (extWorkId) => {
+  console.log("service repairbuilder > FetchExtWorkItems called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(EXTWORK_ITEM(extWorkId), config)
+        .then((res) => {
+          console.log("repairbuilder -> FetchExtWorkItems response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("FetchExtWorkItems > axios err=", err);
+          reject("Error in FetchExtWorkItems axios!");
+        });
+    } catch (error) {
+      console.error("FetchExtWorkItems general exception", error);
       reject(SYSTEM_ERROR);
     }
   });
@@ -433,6 +541,32 @@ export const AddConsumableToService = (serviceId, data) => {
   });
 };
 
+//Add consumable item to the consumables of a builder
+export const AddConsumableItem = (consumableId, data) => {
+  console.log("service repairbuilder > AddConsumableItem called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(CONSUMABLE_ITEM(consumableId), data, config)
+        .then((res) => {
+          console.log("repairbuilder -> AddConsumableItem response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("AddConsumableItem > axios err=", err);
+          reject("Error in AddConsumableItem axios!");
+        });
+    } catch (error) {
+      console.error("AddConsumableItem general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
 //Add Ext Work to the service estimate of a builder
 export const AddExtWorkToService = (serviceId, data) => {
   console.log("service repairbuilder > AddExtWorkToService called...");
@@ -454,6 +588,32 @@ export const AddExtWorkToService = (serviceId, data) => {
         });
     } catch (error) {
       console.error("AddExtWorkToService general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+//Add ext work item to the ext work of a builder
+export const AddExtWorkItem = (extWorkId, data) => {
+  console.log("service repairbuilder > AddExtWorkItem called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(EXTWORK_ITEM(extWorkId), data, config)
+        .then((res) => {
+          console.log("repairbuilder -> AddExtWorkItem response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("AddExtWorkItem > axios err=", err);
+          reject("Error in AddExtWorkItem axios!");
+        });
+    } catch (error) {
+      console.error("AddExtWorkItem general exception", error);
       reject(SYSTEM_ERROR);
     }
   });
@@ -679,7 +839,7 @@ export const addPartToPartList = (partListId, data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(ADD_REPAIR_PART_TO_PARTLIST(partListId), data, config)
+        .post(REPAIR_PART_OF_PARTLIST(partListId), data, config)
         .then((res) => {
           console.log("repairbuilder -> addPartToPartList response: ", res);
           if (res.status === 200) {
@@ -700,6 +860,31 @@ export const addPartToPartList = (partListId, data) => {
   });
 };
 
+//Remove spare part from partlist
+export const RemoveSparepart = (partlistId, sparePartId) => {
+  console.log("service repairbuilder > RemoveSparepart called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .delete(REPAIR_PART_OF_PARTLIST(partlistId)+`/${sparePartId}`, config)
+        .then((res) => {
+          console.log("repairbuilder -> RemoveSparepart response: ", res);
+          if (res.status === 200) {
+            resolve("Successfully removed the item!");
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("RemoveSparepart > axios err=", err);
+          reject("Error in RemoveSparepart axios!");
+        });
+    } catch (error) {
+      console.error("RemoveSparepart general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
 
 //Add multiple spareparts to the partlist builder
 export const addMultiPartsToPartList = (partListId, data) => {

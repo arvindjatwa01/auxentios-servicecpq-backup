@@ -17,7 +17,6 @@ import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { default as Select, default as SelectFilter } from "react-select";
-import { getSearchCoverageForFamily } from "../../services/index";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { useEffect } from "react";
@@ -33,6 +32,14 @@ import {
   AddLaborItemToLabor,
   FetchLaborItems,
   RemoveLaborItem,
+  FetchExtWorkforService,
+  FetchExtWorkItems,
+  FetchConsumableItems,
+  AddConsumableItem,
+  AddExtWorkItem,
+  RemoveConsumableItem,
+  RemoveExtWorkItem,
+  FetchMiscforService,
 } from "services/repairBuilderServices";
 import Moment from "react-moment";
 import { useAppSelector } from "app/hooks";
@@ -46,24 +53,102 @@ import {
   selectPricingMethodList,
   selectMiscTypeList,
   selectActivityIdList,
+  selectDimensionList,
+  selectConsumableTypeList,
 } from "pages/Repair/dropdowns/repairSlice";
 
 import Loader from "react-js-loader";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import SearchBox from "./components/SearchBox";
-import { getVendors } from "services/searchServices";
+import {
+  getConsumables,
+  getExtWork,
+  getVendors,
+} from "services/searchServices";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
 import AddLaborItemModal from "./components/AddLaborItem";
+import {
+  CONSUMABLE_SEARCH_Q_OPTIONS,
+  EXTWORK_SEARCH_Q_OPTIONS,
+  GRID_STYLE,
+} from "./CONSTANTS";
+import SearchComponent from "./components/SearchComponent";
+import AddExtWorkItemModal from "./components/AddExtWorkItem";
+import AddConsumableItemModal from "./components/AddConsumableItem";
 
 function RepairServiceEstimate(props) {
   const { activeElement, setActiveElement } = props.builderDetails;
   const [serviceEstHeaderLoading, setServiceEstHeaderLoading] = useState(true);
+  const [searchResultConsOpen, setSearchResultConsOpen] = useState(false);
+  const [searchResultExtWorkOpen, setSearchResultExtWorkOpen] = useState(false);
+  // Close consumable search modal
+  const handleSearchResConsClose = () => {
+    setSearchResultConsOpen(false);
+    setSelectedMasterData([]);
+  };
+
+  // Close ext work search modal
+  const handleSearchResExtClose = () => {
+    setSearchResultExtWorkOpen(false);
+    setSelectedMasterData([]);
+  };
+
+  // Retrieve charge codes
+  const chargeCodeList = useAppSelector(
+    selectDropdownOption(selectChargeCodeList)
+  );
+
+  // Retrieve labor types
+  const laborTypeList = useAppSelector(
+    selectDropdownOption(selectLaborTypeList)
+  );
+
+  // Retrieve service types
+  const serviceTypeList = useAppSelector(
+    selectDropdownOption(selectServiceTypeList)
+  );
+
+  // Retrieve labor codes
+  const laborCodeList = useAppSelector(
+    selectDropdownOption(selectLaborCodeList)
+  );
+
+  // Retrieve misc types
+  const miscTypeList = useAppSelector(selectDropdownOption(selectMiscTypeList));
+
+  // Retrieve dimensions
+  const dimensionList = useAppSelector(
+    selectDropdownOption(selectDimensionList)
+  );
+  // Retrieve consumables
+  const consumableTypeList = useAppSelector(
+    selectDropdownOption(selectConsumableTypeList)
+  );
+  // Retrieve price methods
+  const priceMethodOptions = useAppSelector(
+    selectDropdownOption(selectPricingMethodList)
+  );
+  // Price methods for consumables, ext work, misc
+  const priceOptionsPercent = [
+    {
+      value: "PER_ON_TOTAL",
+      label: "Percentage on Total",
+    },
+    {
+      value: "PER_ON_LABOUR",
+      label: "Percentage on Labour",
+    },
+  ];
+  // Retrieve activity Ids
+  const activityIdList = useAppSelector(
+    selectDropdownOption(selectActivityIdList)
+  );
 
   const [flagRequired, setFlagRequired] = useState({
-    flagLaborReq: true,
-    flagConsumableReq: true,
-    flagExtWorkReq: true,
-    flagMiscReq: true,
+    labourEnabled: true,
+    consumableEnabled: true,
+    externalWorkEnabled: true,
+    miscEnabled: true,
   });
   const [serviceEstimateData, setServiceEstimateData] = useState({
     reference: "",
@@ -73,7 +158,7 @@ function RepairServiceEstimate(props) {
     priceMethod: null,
     priceDate: new Date(),
     currency: "USD",
-    netPrice: "",
+    netPrice: 0.0,
     jobCode: "",
   });
   const initialLaborItemData = {
@@ -92,6 +177,31 @@ function RepairServiceEstimate(props) {
     inspectionIncluded: true,
     inspectionCharge: 0.0,
   };
+  const initialExtWorkItemData = {
+    activityId: "",
+    activityName: "",
+    description: "",
+    supplyingVendorCode: "",
+    supplyingVendorName: "",
+    unitPrice: 0.0,
+    extendedPrice: 0.0,
+    totalPrice: 0.0,
+    estimatedHours: "",
+    adjustedPrice: 0.0,
+    dimensions: "",
+  };
+  const initialConsumableItemData = {
+    consumableType: "",
+    consumableCode: "",
+    description: "",
+    quantity: "",
+    unitOfMeasure: "",
+    vendor: "",
+    unitPrice: 0.0,
+    extendedPrice: 0.0,
+    totalPrice: 0.0,
+    currency: serviceEstimateData.currency,
+  };
   const [labourData, setLabourData] = useState({
     jobCode: "",
     jobCodeDescription: "",
@@ -101,93 +211,163 @@ function RepairServiceEstimate(props) {
     totalPrice: 0.0,
     payer: "",
     adjustedPrice: 0.0,
+    flatRateIndicator: false,
+    totalHours: 0,
   });
   const [labourItemData, setLabourItemData] = useState(initialLaborItemData);
+  const [extWorkItemData, setExtWorkItemData] = useState(
+    initialExtWorkItemData
+  );
+  const [consumableItemData, setConsumableItemData] = useState(
+    initialConsumableItemData
+  );
+  // Consumable Header
   const [consumableData, setConsumableData] = useState({
     jobCode: "",
     jobCodeDescription: "",
     pricingMethod: "",
     totalPrice: 0.0,
     payer: "",
+    flatRateIndicator: false,
     adjustedPrice: 0.0,
+    totalBase: 0.0,
+    percentagePrice: 0,
   });
+  // Ext Work Header
   const [extWorkData, setExtWorkData] = useState({
     jobCode: "",
     jobCodeDescription: "",
     pricingMethod: "",
     totalPrice: 0.0,
     payer: "",
+    flatRateIndicator: false,
     adjustedPrice: 0.0,
-    supplyingVendor: "",
+    totalBase: 0.0,
+    percentagePrice: 0,
   });
+  // Misc Header
   const [miscData, setMiscData] = useState({
     jobCode: "",
     jobCodeDescription: "",
     pricingMethod: "",
     totalPrice: 0.0,
     payer: "",
+    flatRateIndicator: false,
     adjustedPrice: 0.0,
     typeOfMisc: "",
+    totalBase: 0.0,
+    percentagePrice: 0,
   });
+  // In case there are no options from search result set the flag
   const [noOptionsVendor, setNoOptionsVendor] = useState(false);
+  const [noOptionsConsumable, setNoOptionsConsumable] = useState(false);
+  // To store search API results
   const [searchVenodrResults, setSearchVendorResults] = useState([]);
-  // const [priceMethodOptions, setPriceMethodOptions] = useState([]);
+  const [searchConsumableResult, setSearchConsumableResult] = useState([]);
+  // to handle snack messages
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
+  // Make the headers viewonly after storing the data
   const [laborViewOnly, setLaborViewOnly] = useState(false);
   const [consumableViewOnly, setConsumableViewOnly] = useState(false);
   const [extWorkViewOnly, setExtWorkViewOnly] = useState(false);
   const [miscViewOnly, setMiscViewOnly] = useState(false);
   const [serviceHeaderViewOnly, setServiceHeaderViewOnly] = useState(false);
+  //Open the snack message
+  const handleSnack = (snackSeverity, snackMessage) => {
+    setSnackMessage(snackMessage);
+    setSeverity(snackSeverity);
+    setOpenSnack(true);
+  };
+  // To close snack message
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
     setOpenSnack(false);
   };
-  const handleSnack = (snackSeverity, snackMessage) => {
-    setSnackMessage(snackMessage);
-    setSeverity(snackSeverity);
-    setOpenSnack(true);
+  // Consumable Search
+  const handleQuerySearchClick = async (type) => {
+    $(".scrollbar").css("display", "none");
+    // console.log("handleQuerySearchClick", querySearchSelector);
+    var searchStr = "";
+    var querySearchSelector =
+      type === "consumables" ? queryConsSearchSelector : queryExtSearchSelector;
+    querySearchSelector.map(function (item, i) {
+      if (i === 0 && item.selectCategory?.value && item.inputSearch) {
+        searchStr =
+          item.selectCategory.value +
+          ":" +
+          encodeURI('"' + item.inputSearch + '"');
+      } else if (
+        item.selectCategory?.value &&
+        item.inputSearch &&
+        item.selectOperator?.value
+      ) {
+        searchStr =
+          searchStr +
+          " " +
+          item.selectOperator.value +
+          " " +
+          item.selectCategory.value +
+          ":" +
+          encodeURI('"' + item.inputSearch + '"');
+      } else {
+        searchStr = "";
+      }
+      return searchStr;
+    });
+
+    try {
+      if (searchStr) {
+        if (type === "consumables") {
+          const res = await getConsumables(searchStr);
+          // console.log("search Query Result :", res);
+          setMasterData(res);
+          setSearchResultConsOpen(true);
+        } else if (type === "extwork") {
+          const res = await getExtWork(searchStr);
+          // console.log("search Query Result :", res);
+          setMasterData(res);
+          setSearchResultExtWorkOpen(true);
+        }
+      } else {
+        handleSnack("info", "Please fill the search criteria!");
+      }
+    } catch (err) {
+      handleSnack("error", "Error occurred while fetching results!");
+    }
   };
-  const handleChangeSwitch = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+  // Header fields are required or not (Labor, ext work, misc etc)
+  const handleChangeSwitch = (event) => {
     setFlagRequired({
       ...flagRequired,
       [event.target.name]: event.target.checked,
     });
+    AddServiceHeader(activeElement.oId, {
+      id: serviceEstimateData.id,
+      [event.target.name]: event.target.checked,
+    })
+      .then((result) => {
+        handleSnack("success", "Please fill the corresponding header details!");
+      })
+      .catch((e) => {
+        handleSnack("error", "Error occured while updating the details!");
+      });
   };
-  const chargeCodeList = useAppSelector(
-    selectDropdownOption(selectChargeCodeList)
-  );
-  const laborTypeList = useAppSelector(
-    selectDropdownOption(selectLaborTypeList)
-  );
-  const serviceTypeList = useAppSelector(
-    selectDropdownOption(selectServiceTypeList)
-  );
 
-  const laborCodeList = useAppSelector(
-    selectDropdownOption(selectLaborCodeList)
-  );
-  const miscTypeList = useAppSelector(selectDropdownOption(selectMiscTypeList));
-
-  const priceMethodOptions = useAppSelector(
-    selectDropdownOption(selectPricingMethodList)
-  );
   const unitOfMeasureOptions = [
     { label: "Hours", value: "Hours" },
     { label: "Days", value: "Days" },
   ];
-  const activityIdList = useAppSelector(
-    selectDropdownOption(selectActivityIdList)
-  );
-
-  const [selectedOption, setSelectedOption] = useState(null);
+  // Sets the value for the tab (labor, consumable, misc, extWork)
   const [value, setValue] = useState("labor");
+
+  //fetches the service headers if already saved or sets the appropriate values
   useEffect(() => {
     setServiceEstHeaderLoading(true);
-    console.log(activityIdList);
     if (activeElement.oId) {
       FetchServiceHeader(activeElement.oId)
         .then((result) => {
@@ -195,31 +375,52 @@ function RepairServiceEstimate(props) {
             ...serviceEstimateData,
             reference: result.reference,
             id: result.id,
-            currency: result.currency, //TODO: Uncomment this once currecy is updated.
+            currency: result.currency ? result.currency : "USD",
             description: result.description,
             jobCode: result.jobCode,
             jobOperation: result.jobOperation,
-            netPrice: result.netPrice,
+            netPrice: result.netPrice ? result.netPrice : 0.0,
             priceDate: result.priceDate,
             priceMethod: priceMethodOptions.find(
               (element) => element.value === result.priceMethod
             ),
             segmentTitle: result.segmentTitle,
           });
+          setFlagRequired({
+            labourEnabled: result.labourEnabled,
+            consumableEnabled: result.consumableEnabled,
+            externalWorkEnabled: result.externalWorkEnabled,
+            miscEnabled: result.miscEnabled,
+          });
+          //if service header exists then mark it view only
           setServiceHeaderViewOnly(result.id ? true : false);
-          populateLaborData(result);
-          populateConsumableData(result);
-
-          setExtWorkData({
-            ...extWorkData,
-            jobCode: result.jobCode,
-            jobCodeDescription: result.jobOperation,
-          });
-          setMiscData({
-            ...miscData,
-            jobCode: result.jobCode,
-            jobCodeDescription: result.jobOperation,
-          });
+          if (result.id) {
+            populateLaborData(result);
+            populateConsumableData(result);
+            populateExtWorkData(result);
+            populateMiscData(result);
+          } else {
+            setLabourData({
+              ...labourData,
+              jobCode: result.jobCode,
+              jobCodeDescription: result.jobOperation,
+            });
+            setConsumableData({
+              ...consumableData,
+              jobCode: result.jobCode,
+              jobCodeDescription: result.jobOperation,
+            });
+            setExtWorkData({
+              ...extWorkData,
+              jobCode: result.jobCode,
+              jobCodeDescription: result.jobOperation,
+            });
+            setMiscData({
+              ...miscData,
+              jobCode: result.jobCode,
+              jobCodeDescription: result.jobOperation,
+            });
+          }
           setServiceEstHeaderLoading(false);
         })
         .catch((e) => {
@@ -244,9 +445,6 @@ function RepairServiceEstimate(props) {
             ),
             laborCode: laborCodeList.find(
               (element) => element.value === resultLabour.laborCode
-            ),
-            payer: options.find(
-              (element) => element.value === resultLabour.payer
             ),
           });
           populateLaborItems(resultLabour);
@@ -280,23 +478,97 @@ function RepairServiceEstimate(props) {
     FetchConsumableforService(result.id)
       .then((resultConsumable) => {
         if (resultConsumable && resultConsumable.id) {
-          setConsumableViewOnly(true);
-
           setConsumableData({
             ...resultConsumable,
             id: resultConsumable.id,
-            pricingMethod: priceMethodOptions.find(
+            pricingMethod: priceOptionsPercent.find(
               (element) => element.value === resultConsumable.pricingMethod
             ),
-            payer: options.find(
-              (element) => element.value === resultConsumable.payer
-            ),
           });
+          populateConsItems(resultConsumable);
+          setConsumableViewOnly(true);
         }
       })
       .catch((e) => {
         setConsumableData({
           ...consumableData,
+          jobCode: result.jobCode,
+          jobCodeDescription: result.jobOperation,
+        });
+      });
+  }
+
+  function populateConsItems(result) {
+    FetchConsumableItems(result.id)
+      .then((resultConsumableItems) => {
+        if (resultConsumableItems && resultConsumableItems.result.length > 0) {
+          setConsumableItems(resultConsumableItems.result);
+          console.log(resultConsumableItems.result);
+        }
+      })
+      .catch((e) => {
+        handleSnack("error", "Error occurred while fetching consumable items");
+      });
+  }
+
+  // Populate Ext work header
+  function populateExtWorkData(result) {
+    FetchExtWorkforService(result.id)
+      .then((resultExtWork) => {
+        if (resultExtWork && resultExtWork.id) {
+          setExtWorkData({
+            ...resultExtWork,
+            id: resultExtWork.id,
+            pricingMethod: priceOptionsPercent.find(
+              (element) => element.value === resultExtWork.pricingMethod
+            ),
+          });
+          populateExtWorkItems(resultExtWork);
+          setExtWorkViewOnly(true);
+        }
+      })
+      .catch((e) => {
+        setExtWorkData({
+          ...extWorkData,
+          jobCode: result.jobCode,
+          jobCodeDescription: result.jobOperation,
+        });
+      });
+  }
+  function populateExtWorkItems(result) {
+    FetchExtWorkItems(result.id)
+      .then((resultExtWorkItems) => {
+        if (resultExtWorkItems && resultExtWorkItems.result.length > 0) {
+          setExtWorkItems(resultExtWorkItems.result);
+          console.log(resultExtWorkItems.result);
+        }
+      })
+      .catch((e) => {
+        handleSnack(
+          "error",
+          "Error occurred while fetching external work items"
+        );
+      });
+  }
+
+  // Populate misc header
+  function populateMiscData(result) {
+    FetchMiscforService(result.id)
+      .then((resultMisc) => {
+        if (resultMisc && resultMisc.id) {
+          setExtWorkData({
+            ...resultMisc,
+            id: resultMisc.id,
+            pricingMethod: priceOptionsPercent.find(
+              (element) => element.value === resultMisc.pricingMethod
+            ),
+          });
+          setMiscViewOnly(true);
+        }
+      })
+      .catch((e) => {
+        setMiscData({
+          ...miscData,
           jobCode: result.jobCode,
           jobCodeDescription: result.jobOperation,
         });
@@ -308,14 +580,14 @@ function RepairServiceEstimate(props) {
     if (value === "labor" && laborViewOnly) setLaborViewOnly(false);
     else if (value === "consumables" && consumableViewOnly)
       setConsumableViewOnly(false);
-    else if (value === "extWork" && extWorkViewOnly) setExtWorkViewOnly(false);
-    else if (value === "misc" && miscViewOnly) setMiscViewOnly(false);
+    else if (value === "extwork" && extWorkViewOnly) setExtWorkViewOnly(false);
+    else if (value === "othrMisc" && miscViewOnly) setMiscViewOnly(false);
   };
   // Search Vendors
   const handleVendorSearch = async (searchVendorfieldName, searchText) => {
     // console.log("clear data", searchText);
     setSearchVendorResults([]);
-    extWorkData.supplyingVendor = searchText;
+    extWorkItemData.supplyingVendorName = searchText;
     if (searchText) {
       await getVendors("fullName~" + searchText)
         .then((result) => {
@@ -332,14 +604,55 @@ function RepairServiceEstimate(props) {
     }
   };
 
-  // Select the customer from search result
+  // Search Consumable
+  const handleConsumableSearch = async (
+    searchConsumablefieldName,
+    searchText
+  ) => {
+    // console.log("clear data", searchText);
+    setSearchConsumableResult([]);
+    consumableItemData.consumableCode = searchText;
+    if (searchText) {
+      await getConsumables("consumableId~" + searchText)
+        .then((result) => {
+          if (result && result.length > 0) {
+            setSearchConsumableResult(result);
+            setNoOptionsConsumable(false);
+          } else {
+            setNoOptionsConsumable(true);
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+          handleSnack(
+            "error",
+            "Error occurred while searching the Consumable!"
+          );
+        });
+    }
+  };
+
+  // Select the vendor from search result
   const handleVendorSelect = (type, currentItem) => {
-    setExtWorkData({
-      ...extWorkData,
-      supplyingVendor: currentItem.fullName,
+    setExtWorkItemData({
+      ...extWorkItemData,
+      supplyingVendorName: currentItem.fullName,
     });
     setSearchVendorResults([]);
   };
+
+  // Select the consumable from search result
+  const handleConsumableSelect = (type, currentItem) => {
+    setConsumableItemData({
+      ...consumableItemData,
+      consumableCode: currentItem.consumableId,
+      description: currentItem.name,
+      unitOfMeasure: currentItem.unit,
+    });
+    setSearchConsumableResult([]);
+  };
+
+  //Add or update Service Est Header
   const updateServiceEstHeader = () => {
     let data = {
       ...serviceEstimateData,
@@ -366,10 +679,20 @@ function RepairServiceEstimate(props) {
   };
   const updateLabourEstHeader = () => {
     let data = {
-      ...labourData,
+      // ...labourData,
+      ...(labourData.id && { id: labourData.id }),
+      jobCode: labourData.jobCode,
+      jobCodeDescription: labourData.jobCodeDescription,
       pricingMethod: labourData.pricingMethod?.value,
       laborCode: labourData.laborCode?.value,
-      payer: labourData.payer?.value,
+      totalHours: labourData.totalHours,
+      flatRateIndicator: labourData.flatRateIndicator,
+      // ratePerHourOrDay: labourData.ratePerHourOrDay, //TODO - Remove once API modifies to consider price at backend
+      // totalPrice: labourData.totalPrice, //TODO - Remove once API modifies to consider price at backend
+      adjustedPrice: labourData.flatRateIndicator
+        ? labourData.adjustedPrice
+        : 0.0,
+      payer: labourData.payer,
     };
     AddLaborToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -382,35 +705,38 @@ function RepairServiceEstimate(props) {
           laborCode: laborCodeList.find(
             (element) => element.value === result.laborCode
           ),
-          payer: options.find((element) => element.value === result.payer),
         });
         handleSnack("success", "Labour details updated!");
         setLaborViewOnly(true);
       })
       .catch((err) => {
-        handleSnack(
-          "error",
-          "Error occurred while updating service estimate header!"
-        );
+        handleSnack("error", "Error occurred while updating labor details!");
       });
   };
 
   // Add or Update consumable data
   const updateConsumableHeader = () => {
     let data = {
-      ...consumableData,
+      // ...consumableData,
+      ...(consumableData.id && { id: consumableData.id }),
+      jobCode: consumableData.jobCode,
+      jobCodeDescription: consumableData.jobCodeDescription,
+      percentagePrice: consumableData.percentagePrice,
+      flatRateIndicator: consumableData.flatRateIndicator,
+      adjustedPrice: consumableData.flatRateIndicator
+        ? consumableData.adjustedPrice
+        : 0.0,
       pricingMethod: consumableData.pricingMethod?.value,
-      payer: consumableData.payer?.value,
+      payer: consumableData.payer,
     };
     AddConsumableToService(serviceEstimateData.id, data)
       .then((result) => {
         setConsumableData({
           ...result,
           id: result.id,
-          pricingMethod: priceMethodOptions.find(
+          pricingMethod: priceOptionsPercent.find(
             (element) => element.value === result.pricingMethod
           ),
-          payer: options.find((element) => element.value === result.payer),
         });
         handleSnack("success", "Consumable details updated!");
         setConsumableViewOnly(true);
@@ -423,19 +749,26 @@ function RepairServiceEstimate(props) {
   // Add or Update ext work data
   const updateExtWorkHeader = () => {
     let data = {
-      ...extWorkData,
-      pricingMethod: consumableData.pricingMethod?.value,
-      payer: consumableData.payer?.value,
+      // ...extWorkData,
+      ...(extWorkData.id && { id: extWorkData.id }),
+      jobCode: extWorkData.jobCode,
+      jobCodeDescription: extWorkData.jobCodeDescription,
+      percentagePrice: extWorkData.percentagePrice,
+      flatRateIndicator: extWorkData.flatRateIndicator,
+      adjustedPrice: extWorkData.flatRateIndicator
+        ? extWorkData.adjustedPrice
+        : 0.0,
+      payer: extWorkData.payer,
+      pricingMethod: extWorkData.pricingMethod?.value,
     };
     AddExtWorkToService(serviceEstimateData.id, data)
       .then((result) => {
         setConsumableData({
           ...result,
           id: result.id,
-          pricingMethod: priceMethodOptions.find(
+          pricingMethod: priceOptionsPercent.find(
             (element) => element.value === result.pricingMethod
           ),
-          payer: options.find((element) => element.value === result.payer),
         });
         handleSnack("success", "External work details updated!");
         setExtWorkViewOnly(true);
@@ -452,22 +785,26 @@ function RepairServiceEstimate(props) {
   const updateMiscHeader = () => {
     let data = {
       ...miscData,
+      jobCode: miscData.jobCode,
+      jobCodeDescription: miscData.jobCodeDescription,
+      percentagePrice: miscData.percentagePrice,
+      flatRateIndicator: miscData.flatRateIndicator,
+      adjustedPrice: miscData.flatRateIndicator ? miscData.adjustedPrice : 0.0,
+      payer: miscData.payer,
       pricingMethod: miscData.pricingMethod?.value,
       typeOfMisc: miscData.typeOfMisc?.value,
-      payer: consumableData.payer?.value,
     };
     AddMiscToService(serviceEstimateData.id, data)
       .then((result) => {
         setMiscData({
           ...result,
           id: result.id,
-          pricingMethod: priceMethodOptions.find(
+          pricingMethod: priceOptionsPercent.find(
             (element) => element.value === result.pricingMethod
           ),
           typeOfMisc: miscTypeList.find(
             (element) => element.value === result.typeOfMisc
           ),
-          payer: options.find((element) => element.value === result.payer),
         });
         handleSnack("success", "Misc details updated!");
         setMiscViewOnly(true);
@@ -480,21 +817,23 @@ function RepairServiceEstimate(props) {
   // Add or Update Labor Item
   const addLaborItem = () => {
     let data = {
-      ...labourItemData,
+      // ...labourItemData,
+      ...(labourItemData.id && { id: labourItemData.id }),
       chargeCode: labourItemData.chargeCode?.value,
       laborType: labourItemData.laborType?.value,
       serviceType: labourItemData.serviceType?.value,
       unitOfMeasure: labourItemData.unitOfMeasure?.value,
+      estimatedHours: labourItemData.estimatedHours,
+      comment: labourItemData.comment,
+      travelIncluded: labourItemData.travelIncluded,
+      travelCharge: labourItemData.travelCharge,
+      inspectionIncluded: labourItemData.inspectionIncluded,
+      inspectionCharge: labourItemData.inspectionCharge,
+      currency: labourItemData.currency,
     };
-    //TODO: Remove this once these fields are added.
-    delete data.travelCharge;
-    delete data.travelIncluded;
-    delete data.inspectionIncluded;
-    delete data.inspectionCharge;
 
     AddLaborItemToLabor(labourData.id, data)
       .then((result) => {
-        console.log(result);
         setLabourItemData(initialLaborItemData);
         populateLaborItems(labourData);
         handleSnack("success", "Added labor item successfully");
@@ -502,6 +841,60 @@ function RepairServiceEstimate(props) {
       .catch((err) => {
         handleSnack("error", "Error occurred while adding labor item!");
       });
+    handleLaborItemClose();
+  };
+
+  // Add or Update Consumable Item
+  const addConsumableItem = () => {
+    let data = {
+      // ...consumableItemData,
+      ...(consumableItemData.id && { id: consumableItemData.id }),
+      consumableType: consumableItemData.consumableType?.value,
+      consumableCode: consumableItemData.consumableCode,
+      description: consumableItemData.description,
+      quantity: consumableItemData.quantity,
+      unitOfMeasure: consumableItemData.unitOfMeasure,
+      vendor: consumableItemData.vendor,
+      currency: consumableItemData.currency,
+    };
+
+    AddConsumableItem(consumableData.id, data)
+      .then((result) => {
+        setConsumableItemData(initialConsumableItemData);
+        populateConsItems(consumableData);
+        handleSnack("success", "Added consumable item successfully");
+      })
+      .catch((err) => {
+        handleSnack("error", "Error occurred while adding consumable item!");
+      });
+    setQueryConsSearchSelector(initialConsQuery);
+  };
+
+  // Add or Update Consumable Item
+  const addExtWorkItem = () => {
+    let data = {
+      // ...extWorkItemData,
+      ...(extWorkItemData.id && { id: extWorkItemData.id }),
+      activityId: extWorkItemData.activityId?.value,
+      activityName: extWorkItemData.activityName,
+      description: extWorkItemData.description,
+      supplyingVendorCode: extWorkItemData.supplyingVendorCode,
+      supplyingVendorName: extWorkItemData.supplyingVendorName,
+      estimatedHours: extWorkItemData.estimatedHours,
+      dimensions: extWorkItemData.dimensions?.value,
+      adjustedPrice: extWorkItemData.adjustedPrice,
+    };
+
+    AddExtWorkItem(extWorkData.id, data)
+      .then((result) => {
+        setExtWorkItemData(initialExtWorkItemData);
+        populateExtWorkItems(extWorkData);
+        handleSnack("success", "Added ext work item successfully");
+      })
+      .catch((err) => {
+        handleSnack("error", "Error occurred while adding external work item!");
+      });
+    setQueryExtSearchSelector(initialExtWorkQuery);
   };
 
   // Open Labor item to view or edit
@@ -525,6 +918,7 @@ function RepairServiceEstimate(props) {
     // setPartFieldViewonly(true);
     setLaborItemOpen(true);
   };
+
   //Remove Labor Item
   const handleDeleteLaborItem = (laborItemId) => {
     RemoveLaborItem(labourData.id, laborItemId)
@@ -537,62 +931,86 @@ function RepairServiceEstimate(props) {
         handleSnack("error", "Error occurred while removing the labor item");
       });
   };
+
+  // Open consumable item to view or edit
+  const openConsumableRow = (row) => {
+    setConsumableItemData({
+      ...row,
+      consumableType: consumableTypeList.find(
+        (element) => element.value === row.consumableType
+      ),
+    });
+    // setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
+    setConsumableItemOpen(true);
+  };
+
+  //Remove Consumable Item
+  const handleDeleteConsumableItem = (consItemId) => {
+    RemoveConsumableItem(consumableData.id, consItemId)
+      .then((res) => {
+        handleSnack("success", res);
+        populateConsItems(consumableData);
+      })
+      .catch((e) => {
+        console.log(e);
+        handleSnack(
+          "error",
+          "Error occurred while removing the consumable item"
+        );
+      });
+  };
+
+  // Open ext work item to view or edit
+  const openExtWorkRow = (row) => {
+    setExtWorkItemData({
+      ...row,
+      activityId: activityIdList.find(
+        (element) => element.label === row.activityId
+      ),
+      dimensions: dimensionList.find(
+        (element) => element.value === row.dimensions
+      ),
+    });
+    // setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
+    // setPartFieldViewonly(true);
+    setExtWorkItemOpen(true);
+  };
+  //Remove Ext work Item
+  const handleDeleteExtWorkItem = (extWorkItemId) => {
+    RemoveExtWorkItem(extWorkData.id, extWorkItemId)
+      .then((res) => {
+        handleSnack("success", res);
+        populateExtWorkItems(extWorkData);
+      })
+      .catch((e) => {
+        console.log(e);
+        handleSnack(
+          "error",
+          "Error occurred while removing the ext work item!"
+        );
+      });
+  };
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
   const [laborItemOpen, setLaborItemOpen] = React.useState(false);
-  const [open3, setOpen3] = React.useState(false);
-  const [open4, setOpen4] = React.useState(false);
-  const handleClose4 = () => setOpen4(false);
-  const handleClose3 = () => setOpen3(false);
+  const [consumableItemOpen, setConsumableItemOpen] = React.useState(false);
+  const [extWorkItemOpen, setExtWorkItemOpen] = React.useState(false);
+  const handleExtWorkItemClose = () => {
+    setExtWorkItemOpen(false);
+    setExtWorkItemData(initialExtWorkItemData);
+  };
+  const handleConsumableItemClose = () => {
+    setConsumableItemOpen(false);
+    setConsumableItemData(initialConsumableItemData);
+  };
   const handleLaborItemClose = () => {
     setLaborItemOpen(false);
     setLabourItemData(initialLaborItemData);
   };
 
-  const [show, setShow] = React.useState(false);
-  const [count, setCount] = useState(1);
-  const options = [
-    { value: "chocolate", label: "Construction-Heavy" },
-    { value: "strawberry", label: "Construction-Low" },
-    { value: "vanilla", label: "Construction-Medium" },
-    { value: "Construction", label: "Construction" },
-  ];
-  const handleRowClick = (e) => {
-    setShow(true);
-  };
-
-  const handleSearchListClick = (e, currentItem, obj1, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.inputSearch = currentItem;
-    obj.selectedOption = currentItem;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-    $(`.scrollbar-${id}`).css("display", "none");
-  };
-  const addSearchQuerryHtml = () => {
-    setQuerySearchSelector([
-      ...querySearchSelector,
-      {
-        id: count,
-        selectOperator: "",
-        selectFamily: "",
-        inputSearch: "",
-        selectOptions: [],
-        selectedOption: "",
-      },
-    ]);
-    setCount(count + 1);
-  };
-  const handleOperator = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.selectOperator = e;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-  };
-  const [querySearchSelector, setQuerySearchSelector] = useState([
+  const initialConsQuery = [
     {
       id: 0,
       selectFamily: "",
@@ -601,104 +1019,34 @@ function RepairServiceEstimate(props) {
       selectOptions: [],
       selectedOption: "",
     },
-  ]);
-  const handleFamily = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    console.log("handleFamily e:", e);
-    let obj = tempArray[id];
-    obj.selectFamily = e;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
+  ];
+  const initialExtWorkQuery = [
+    {
+      id: 0,
+      selectFamily: "",
+      selectOperator: "",
+      inputSearch: "",
+      selectOptions: [],
+      selectedOption: "",
+    },
+  ];
+  const [queryConsSearchSelector, setQueryConsSearchSelector] =
+    useState(initialConsQuery);
+  const [queryExtSearchSelector, setQueryExtSearchSelector] =
+    useState(initialExtWorkQuery);
+
+  // Once parts are selected to add clear the search results
+  const clearFilteredData = () => {
+    setMasterData([]);
+    setSelectedMasterData([]);
   };
-  const handleMasterCheck = (e, row) => {
-    if (e.target.checked) {
-      var _masterData = [...masterData];
-      const updated = _masterData.map((currentItem, i) => {
-        if (row.id == currentItem.id) {
-          return { ...currentItem, ["check1"]: e.target.checked };
-        } else return currentItem;
-      });
-      setMasterData([...updated]);
-      setFilterMasterData([...filterMasterData, { ...row }]);
-    } else {
-      var _filterMasterData = [...filterMasterData];
-      const updated = _filterMasterData.filter((currentItem, i) => {
-        if (row.id !== currentItem.id) return currentItem;
-      });
-      setFilterMasterData(updated);
-    }
-  };
+
   const [filterMasterData, setFilterMasterData] = useState([]);
   const [selectedMasterData, setSelectedMasterData] = useState([]);
   const [masterData, setMasterData] = useState([]);
-  const handleDeletQuerySearch = () => {
-    setQuerySearchSelector([]);
-    setCount(0);
-    setMasterData([]);
-    setFilterMasterData([]);
-    setSelectedMasterData([]);
-  };
-  const handleInputSearch = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
-      .then((res) => {
-        obj.selectOptions = res;
-        tempArray[id] = obj;
-        setQuerySearchSelector([...tempArray]);
-        $(`.scrollbar-${id}`).css("display", "block");
-      })
-      .catch((err) => {
-        console.log("err in api call", err);
-      });
-    obj.inputSearch = e.target.value;
-  };
-
   let [laborItems, setLaborItems] = useState([]);
-  // let rows = [
-  //   {
-  //     id: 1,
-  //     chargeCode: "Snow",
-  //     laborType: "Jon",
-  //     serviceType: 35,
-  //     unitOfMeasure: "pending",
-  //     estimatedHours: "Open",
-  //     unitPrice: "Inconsistent",
-  //     extendedPrice: "Inconsistent",
-  //     comments: "Inconsistent",
-  //     currency: "Created On",
-  //     totalPrice: "25",
-  //     Actions: "Action",
-  //   },
-  //   {
-  //     id: 2,
-  //     chargeCode: "Snow",
-  //     laborType: "Jon",
-  //     serviceType: 35,
-  //     unitOfMeasure: "pending",
-  //     estimatedHours: "Open",
-  //     unitPrice: "Inconsistent",
-  //     extendedPrice: "Inconsistent",
-  //     comments: "Inconsistent",
-  //     currency: "Created On",
-  //     totalPrice: "25",
-  //     Actions: "Action",
-  //   },
-  //   {
-  //     id: 3,
-  //     chargeCode: "Snow",
-  //     laborType: "Jon",
-  //     serviceType: 35,
-  //     unitOfMeasure: "pending",
-  //     estimatedHours: "Open",
-  //     unitPrice: "Inconsistent",
-  //     extendedPrice: "Inconsistent",
-  //     comments: "Inconsistent",
-  //     currency: "Created On",
-  //     totalPrice: "25",
-  //     Actions: "Action",
-  //   },
-  // ];
+  let [consumableItems, setConsumableItems] = useState([]);
+  let [extWorkItems, setExtWorkItems] = useState([]);
 
   const laborColumns = [
     { field: "chargeCode", headerName: "Charge Code", flex: 1, width: 70 },
@@ -753,169 +1101,199 @@ function RepairServiceEstimate(props) {
     },
   ];
 
-  const rowsConsumables = [
+  // Search table column for consumable
+  const columnsConsumableSearch = [
+    { headerName: "Consumable Id", field: "consumableId", flex: 1, width: 70 },
+    { headerName: "Name", field: "name", flex: 1, width: 130 },
     {
-      id: 1,
-      ConsumableId: "Snow",
-      ConsumableType: "Type",
-      Description: 34,
-      Quantity: "4",
-      UnitMeasures: "5",
-      Vendor: "Consistent",
-      UnitPrice: "Inconsistent",
-      ExtendedPrice: "Consistent",
-      Currency: "$",
-      TotalPrice: "37",
-      Actions: "Action",
+      headerName: "Supplying Vendor",
+      field: "sourceOrVendor",
+      flex: 1,
+      width: 130,
     },
     {
-      id: 2,
-      ConsumableId: "Lannister",
-      ConsumableType: "Cersei",
-      Description: 34,
-      Quantity: "4",
-      UnitMeasures: "5",
-      Vendor: "Consistent",
-      UnitPrice: "Inconsistent",
-      ExtendedPrice: "Consistent",
-      Currency: "$",
-      TotalPrice: "37",
-      Actions: "Action",
+      headerName: "Unit Price",
+      field: "unitPrice",
+      flex: 1,
+      width: 130,
+    },
+  ];
+  // Search table column for consumable
+  const columnsExtWorkSearch = [
+    { headerName: "Activity Id", field: "activityId", flex: 1, width: 70 },
+    {
+      headerName: "Activity Name",
+      field: "activityDescription",
+      flex: 1,
+      width: 130,
     },
     {
-      id: 3,
-      ConsumableId: "Lannister",
-      ConsumableType: "Jaime",
-      Description: 34,
-      Quantity: "4",
-      UnitMeasures: "5",
-      Vendor: "Consistent",
-      UnitPrice: "Inconsistent",
-      ExtendedPrice: "Consistent",
-      Currency: "$",
-      TotalPrice: "37",
-      Actions: "Action",
+      headerName: "Supplying Vendor",
+      field: "supplyingVendorName",
+      flex: 1,
+      width: 130,
+    },
+    {
+      headerName: "Quoted Price",
+      field: "contractedPrice",
+      flex: 1,
+      width: 130,
     },
   ];
 
+  // Add the selected parts from search result to partlist
+  const selectConsumableItem = async (selectedData) => {
+    setSearchResultConsOpen(false);
+    setConsumableItemData({
+      ...consumableItemData,
+      consumableCode: selectedData.consumableId,
+      description: selectedData.name,
+      consumableType: "",
+      vendor: selectedData.sourceOrVendor,
+      unitOfMeasure: selectedData.unit,
+    });
+    console.log(selectedData);
+    setConsumableItemOpen(true);
+  };
+
+  // Select the external work item
+  const selectExtWorkItem = async (selectedData) => {
+    setSearchResultExtWorkOpen(false);
+    setExtWorkItemData({
+      ...extWorkItemData,
+      activityId: activityIdList.find(
+        (element) => element.value === selectedData.activityId
+      ),
+      activityName: selectedData.activityDescription,
+      // activityType: selectedData.activityType,
+      supplyingVendorCode: selectedData.supplyingVendorCode,
+      supplyingVendorName: selectedData.supplyingVendorName,
+      // unitOfMeasure: selectedData.unit,
+      // dimension:
+    });
+    console.log(selectedData);
+    setExtWorkItemOpen(true);
+  };
+
   const columnsConsumables = [
-    { field: "ConsumableId", headerName: "Consumable ID", flex: 1, width: 70 },
     {
-      field: "ConsumableType",
-      headerName: "Consumable Type",
+      field: "consumableCode",
+      headerName: "Consumable ID",
       flex: 1,
       width: 70,
     },
     {
-      field: "Description",
-      headerName: "Consumable Description",
+      field: "consumableType",
+      headerName: "Type",
+      flex: 1,
+      width: 70,
+    },
+    {
+      field: "description",
+      headerName: "Description",
       flex: 1,
       width: 130,
     },
-    { field: "Quantity", headerName: " Quantity", flex: 1, width: 130 },
+    { field: "quantity", headerName: " Quantity", flex: 1, width: 130 },
     {
-      field: "UnitMeasures",
+      field: "unitOfMeasure",
       headerName: "Unit of measure",
       flex: 1,
       width: 130,
     },
-    { field: "Vendor", headerName: "Vendor", flex: 1, width: 130 },
-    { field: "UnitPrice", headerName: "Unit Price", flex: 1, width: 130 },
+    { field: "vendor", headerName: "Vendor", flex: 1, width: 130 },
+    { field: "unitPrice", headerName: "Unit Price", flex: 1, width: 130 },
     {
-      field: "ExtendedPrice",
+      field: "extendedPrice",
       headerName: "Extended price",
       flex: 1,
       width: 130,
     },
-    { field: "Currency", headerName: "Currency", flex: 1, width: 130 },
-    { field: "TotalPrice", headerName: "Total price", flex: 1, width: 130 },
-    { field: "Actions", headerName: "Action", flex: 1, width: 130 },
-  ];
-
-  const rowsExternal = [
+    { field: "currency", headerName: "Currency", flex: 1, width: 130 },
+    { field: "totalPrice", headerName: "Total price", flex: 1, width: 130 },
     {
-      id: 1,
-      ActivityId: "Snow",
-      ActivityName: "Jon",
-      Description: 35,
-      Quantity: "24",
-      UnitMeasures: "24",
-      UnitPrice: "Inconsistent",
-      ExtendedPrice: "Consistent",
-      Currency: "$",
-      TotalPrice: "37",
-      Dimensions: "Inconsistent",
-      SupplyingVendor: "Created On",
-      Actions: "Action",
-    },
-    {
-      id: 2,
-      ActivityId: "Lannister",
-      ActivityName: "Cersei",
-      Description: 35,
-      Quantity: "24",
-      UnitMeasures: "24",
-      UnitPrice: "Inconsistent",
-      ExtendedPrice: "Consistent",
-      Currency: "$",
-      TotalPrice: "37",
-      Dimensions: "Inconsistent",
-      SupplyingVendor: "Created On",
-      Actions: "Action",
-    },
-    {
-      id: 3,
-      ActivityId: "Lannister",
-      ActivityName: "Jaime",
-      Description: 35,
-      Quantity: "24",
-      UnitMeasures: "24",
-      UnitPrice: "Inconsistent",
-      ExtendedPrice: "Consistent",
-      Currency: "$",
-      TotalPrice: "37",
-      Dimensions: "Inconsistent",
-      SupplyingVendor: "Created On",
-      Actions: "Action",
+      field: "Actions",
+      headerName: "Actions",
+      type: "actions",
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={<EditOutlinedIcon />}
+            label="Edit"
+            className="textPrimary"
+            onClick={() => openConsumableRow(params.row)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={<DeleteIcon />}
+            label="Delete"
+            onClick={() => handleDeleteConsumableItem(params.row.id)}
+            color="inherit"
+          />,
+        ];
+      },
+      flex: 1,
+      width: 130,
     },
   ];
 
   const columnsExternal = [
-    { field: "ActivityId", headerName: "Activity ID", flex: 1, width: 70 },
-    { field: "ActivityName", headerName: "Activity Name", flex: 1, width: 70 },
+    { field: "activityId", headerName: "Activity ID", flex: 1, width: 70 },
+    { field: "activityName", headerName: "Activity Name", flex: 1, width: 70 },
     {
-      field: "Description",
-      headerName: "Short Description",
+      field: "description",
+      headerName: "Description",
       flex: 1,
       width: 70,
     },
-    { field: "Quantity", headerName: "Quantity", flex: 1, width: 70 },
     {
-      field: "UnitMeasures",
-      headerName: "Unit of measure",
+      field: "estimatedHours",
+      headerName: "Estimated Effort",
       flex: 1,
       width: 130,
     },
-    { field: "UnitPrice", headerName: "Unit Price", flex: 1, width: 130 },
+    { field: "unitPrice", headerName: "Unit Price", flex: 1, width: 130 },
     {
-      field: "ExtendedPrice",
+      field: "extendedPrice",
       headerName: "Extended price",
       flex: 1,
       width: 130,
     },
-    { field: "Currency", headerName: "Currency", flex: 1, width: 130 },
-    { field: "TotalPrice", headerName: "Total price", flex: 1, width: 130 },
-    { field: "Dimensions", headerName: "Dimension", flex: 1, width: 130 },
+    { field: "totalPrice", headerName: "Total price", flex: 1, width: 130 },
+    { field: "dimensions", headerName: "Dimension", flex: 1, width: 130 },
     {
-      field: "SupplyingVendor",
+      field: "supplyingVendorName",
       headerName: "Supplying Vendor",
       flex: 1,
       width: 130,
     },
-    { field: "Actions", headerName: "Action", flex: 1, width: 130 },
+    {
+      field: "Actions",
+      headerName: "Actions",
+      type: "actions",
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={<EditOutlinedIcon />}
+            label="Edit"
+            className="textPrimary"
+            onClick={() => openExtWorkRow(params.row)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={<DeleteIcon />}
+            label="Delete"
+            onClick={() => handleDeleteExtWorkItem(params.row.id)}
+            color="inherit"
+          />,
+        ];
+      },
+      flex: 1,
+      width: 130,
+    },
   ];
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
 
   return (
     <>
@@ -967,7 +1345,6 @@ function RepairServiceEstimate(props) {
                         type="text"
                         disabled
                         class="form-control border-radius-10 text-primary"
-                        id="exampleInputEmail1"
                         placeholder="Required"
                         value={serviceEstimateData.reference}
                       />
@@ -981,12 +1358,11 @@ function RepairServiceEstimate(props) {
                       <input
                         type="text"
                         class="form-control border-radius-10 text-primary"
-                        id="exampleInputEmail1"
                         placeholder="Required"
                         value={serviceEstimateData.description}
                         onChange={(e) =>
                           setServiceEstimateData({
-                            ...serviceEstimateData.currency,
+                            ...serviceEstimateData,
                             description: e.target.value,
                           })
                         }
@@ -1002,7 +1378,6 @@ function RepairServiceEstimate(props) {
                         type="text"
                         disabled
                         class="form-control border-radius-10 text-primary"
-                        id="exampleInputEmail1"
                         placeholder="Required"
                         value={serviceEstimateData.segmentTitle}
                       />
@@ -1017,7 +1392,6 @@ function RepairServiceEstimate(props) {
                         type="text"
                         disabled
                         class="form-control border-radius-10 text-primary"
-                        id="exampleInputEmail1"
                         placeholder="Required"
                         value={serviceEstimateData.jobOperation}
                       />
@@ -1029,7 +1403,6 @@ function RepairServiceEstimate(props) {
                         PRICE METHOD
                       </label>
                       <Select
-                        defaultValue={selectedOption}
                         value={serviceEstimateData.priceMethod}
                         onChange={(e) =>
                           setServiceEstimateData({
@@ -1043,7 +1416,7 @@ function RepairServiceEstimate(props) {
                       {/* <input
                   type="text"
                   class="form-control border-radius-10 text-primary"
-                  id="exampleInputEmail1"
+                  
                   placeholder="Required"
                   value={serviceEstimateData.priceMethod}
                 /> */}
@@ -1081,7 +1454,7 @@ function RepairServiceEstimate(props) {
                 <input
                   type="text"
                   class="form-control border-radius-10 text-primary"
-                  id="exampleInputEmail1"
+                  
                   
                   placeholder="Required"
                 />
@@ -1096,7 +1469,6 @@ function RepairServiceEstimate(props) {
                         type="text"
                         disabled
                         class="form-control border-radius-10 text-primary"
-                        id="exampleInputEmail1"
                         placeholder="Required"
                         value={serviceEstimateData.currency}
                       />
@@ -1109,16 +1481,16 @@ function RepairServiceEstimate(props) {
                       </label>
                       <input
                         type="text"
+                        disabled
                         class="form-control border-radius-10 text-primary"
-                        id="exampleInputEmail1"
-                        placeholder="Required"
+                        // placeholder="Required"
                         value={serviceEstimateData.netPrice}
-                        onChange={(e) =>
-                          setServiceEstimateData({
-                            ...serviceEstimateData,
-                            netPrice: e.target.value,
-                          })
-                        }
+                        // onChange={(e) =>
+                        //   setServiceEstimateData({
+                        //     ...serviceEstimateData,
+                        //     netPrice: e.target.value,
+                        //   })
+                        // }
                       />
                     </div>
                   </div>
@@ -1130,7 +1502,6 @@ function RepairServiceEstimate(props) {
                       <input
                         type="text"
                         class="form-control border-radius-10 text-primary"
-                        id="exampleInputEmail1"
                         placeholder="Optional"
                         value={serviceEstimateData.jobCode}
                         onChange={(e) =>
@@ -1160,7 +1531,7 @@ function RepairServiceEstimate(props) {
                         serviceEstimateData.jobOperation &&
                         serviceEstimateData.description &&
                         serviceEstimateData.currency &&
-                        serviceEstimateData.netPrice &&
+                        // serviceEstimateData.netPrice &&
                         serviceEstimateData.priceDate &&
                         serviceEstimateData.priceMethod?.value &&
                         serviceEstimateData.reference &&
@@ -1222,7 +1593,7 @@ function RepairServiceEstimate(props) {
                         PRICE METHOD
                       </p>
                       <h6 className="font-weight-600">
-                        {serviceEstimateData.priceMethod?.value}
+                        {serviceEstimateData.priceMethod?.label}
                       </h6>
                     </div>
                   </div>
@@ -1282,31 +1653,34 @@ function RepairServiceEstimate(props) {
               </>
             )}
           </div>
-          <div className="card p-4 mt-5">
-            <h5 className="d-flex align-items-center mb-2">
-              <div className="" style={{ display: "contents" }}>
-                <span className="mr-3">Header</span>
-                <a
-                  href={undefined}
-                  className="ml-3"
-                  style={{ cursor: "pointer" }}
-                >
-                  <EditOutlinedIcon onClick={() => makeHeaderEditable()} />
-                </a>
-              </div>
-            </h5>
-            <Box sx={{ width: "100%", typography: "body1" }}>
-              <TabContext value={value}>
-                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                  <TabList className="custom-tabs-div" onChange={handleChange}>
-                    <Tab label="Labor" value="labor" />
-                    <Tab label="Consumables" value="consumables" />
-                    <Tab label="External Work" value="extwork" />
-                    <Tab label="Other misc." value="othrMisc" />
-                  </TabList>
-                </Box>
-                <TabPanel value="labor">
-                  {!labourData.id && (
+          {serviceEstimateData.id && (
+            <div className="card p-4 mt-5">
+              <h5 className="d-flex align-items-center mb-2">
+                <div className="" style={{ display: "contents" }}>
+                  <span className="mr-3">Header</span>
+                  <a
+                    href={undefined}
+                    className="ml-3"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <EditOutlinedIcon onClick={() => makeHeaderEditable()} />
+                  </a>
+                </div>
+              </h5>
+              <Box sx={{ width: "100%", typography: "body1" }}>
+                <TabContext value={value}>
+                  <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                    <TabList
+                      className="custom-tabs-div"
+                      onChange={handleChange}
+                    >
+                      <Tab label="Labor" value="labor" />
+                      <Tab label="Consumables" value="consumables" />
+                      <Tab label="External Work" value="extwork" />
+                      <Tab label="Other misc." value="othrMisc" />
+                    </TabList>
+                  </Box>
+                  <TabPanel value="labor">
                     <div className="col-md-12 col-sm-12">
                       <div className=" d-flex justify-content-between align-items-center">
                         <div>
@@ -1314,9 +1688,9 @@ function RepairServiceEstimate(props) {
                             <FormControlLabel
                               control={
                                 <Switch
-                                  checked={flagRequired.flagLaborReq}
+                                  checked={flagRequired.labourEnabled}
                                   onChange={handleChangeSwitch}
-                                  name="flagLaborReq"
+                                  name="labourEnabled"
                                 />
                               }
                               label="REQUIRED"
@@ -1325,287 +1699,340 @@ function RepairServiceEstimate(props) {
                         </div>
                       </div>
                     </div>
-                  )}
-                  {flagRequired.flagLaborReq && (
-                    <React.Fragment>
-                      {!laborViewOnly ? (
-                        <div className="row mt-2 input-fields">
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                JOB CODE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Required"
-                                value={labourData.jobCode}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                JOB CODE DESCRIPTION
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Required"
-                                value={labourData.jobCodeDescription}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group  mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                LABOR CODE
-                              </label>
-                              <Select
-                                defaultValue={selectedOption}
-                                onChange={(e) =>
-                                  setLabourData({ ...labourData, laborCode: e })
-                                }
-                                options={laborCodeList}
-                                placeholder="Required"
-                                value={labourData.laborCode}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group  mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                PRICE METHOD
-                              </label>
-                              <Select
-                                defaultValue={selectedOption}
-                                onChange={(e) =>
-                                  setLabourData({
-                                    ...labourData,
-                                    pricingMethod: e,
-                                  })
-                                }
-                                options={priceMethodOptions}
-                                placeholder="Required"
-                                value={labourData.pricingMethod}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                RATE PER HOUR / DAY
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Required"
-                                value={labourData.ratePerHourOrDay}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                NET PRICE - LABOR
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Required"
-                                value={labourData.totalPrice}
-                              />
-                            </div>
-                          </div>
 
-                          {/* <div className="col-md-4 col-sm-4">
-                    <div class="form-group mt-3">
-                      <label className="text-light-dark font-size-12 font-weight-600">
-                        SUPPLYING VENDOR
-                      </label>
-                      <input
-                        type="text"
-                        class="form-control border-radius-10 text-primary"
-                        id="exampleInputEmail1"
-                        
-                        placeholder="Placeholder (Optional)"
-                      />
-                    </div>
-                  </div> */}
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                PAYER
-                              </label>
-                              <Select
-                                defaultValue={selectedOption}
-                                onChange={(e) =>
-                                  setLabourData({ ...labourData, payer: e })
-                                }
-                                options={options}
-                                placeholder="Required"
-                                value={labourData.payer}
-                              />
+                    {flagRequired.labourEnabled && (
+                      <React.Fragment>
+                        {!laborViewOnly ? (
+                          <div className="row mt-2 input-fields">
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  JOB CODE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={labourData.jobCode}
+                                />
+                              </div>
                             </div>
-                          </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  JOB CODE DESCRIPTION
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={labourData.jobCodeDescription}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PAYER
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={labourData.payer}
+                                  onChange={(e) =>
+                                    setLabourData({
+                                      ...labourData,
+                                      payer: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div className="form-group  mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-500">
+                                  LABOR CODE
+                                </label>
+                                <Select
+                                  onChange={(e) =>
+                                    setLabourData({
+                                      ...labourData,
+                                      laborCode: e,
+                                    })
+                                  }
+                                  options={laborCodeList}
+                                  placeholder="Required"
+                                  value={labourData.laborCode}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div className="form-group  mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-500">
+                                  PRICE METHOD
+                                </label>
+                                <Select
+                                  onChange={(e) =>
+                                    setLabourData({
+                                      ...labourData,
+                                      pricingMethod: e,
+                                    })
+                                  }
+                                  options={priceMethodOptions}
+                                  placeholder="Required"
+                                  value={labourData.pricingMethod}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  RATE PER HOUR / DAY
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={labourData.ratePerHourOrDay}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <FormGroup>
+                                  <FormControlLabel
+                                    style={{
+                                      alignItems: "start",
+                                      marginLeft: 0,
+                                    }}
+                                    control={
+                                      <Switch
+                                        checked={labourData.flatRateIndicator}
+                                        onChange={(e) =>
+                                          setLabourData({
+                                            ...labourData,
+                                            flatRateIndicator: e.target.checked,
+                                          })
+                                        }
+                                      />
+                                    }
+                                    labelPlacement="top"
+                                    label={
+                                      <span className="text-light-dark font-size-12 font-weight-600">
+                                        FLAT RATE INDICATOR
+                                      </span>
+                                    }
+                                  />
+                                </FormGroup>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={labourData.totalPrice}
+                                />
+                              </div>
+                            </div>
+                            
 
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                ADJUSTED PRICE
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Optional"
-                                value={labourData.adjustedPrice}
-                                onChange={(e) =>
-                                  setLabourData({
-                                    ...labourData,
-                                    adjustedPrice: e.target.value,
-                                  })
-                                }
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  ADJUSTED PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled={!labourData.flatRateIndicator}
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={labourData.adjustedPrice}
+                                  onChange={(e) =>
+                                    setLabourData({
+                                      ...labourData,
+                                      adjustedPrice: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-12">
-                            <div class="form-group mt-3 mb-0 text-right">
-                              <button
-                                type="button"
-                                className="btn btn-light bg-primary text-white"
-                                onClick={updateLabourEstHeader}
-                              >
-                                Save
-                              </button>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  TOTAL HOURS (PLANNED/RECOMMENDED)
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={labourData.totalHours}
+                                  onChange={(e) =>
+                                    setLabourData({
+                                      ...labourData,
+                                      totalHours: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="row mt-4">
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                JOB CODE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {labourData.jobCode}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                JOB CODE DESCRIPTION{" "}
-                              </p>
-                              <h6 className="font-weight-600">
-                                {labourData.jobCodeDescription}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                LABOR CODE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {labourData.laborCode?.value}{" "}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                PRICE METHOD
-                              </p>
-                              <h6 className="font-weight-600">
-                                {labourData.pricingMethod?.value}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                RATE PER HOUR / DAY
-                              </p>
-                              <h6 className="font-weight-600">
-                                {labourData.ratePerHourOrDay}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                NET PRICE - LABOR
-                              </p>
-                              <h6 className="font-weight-600">
-                                {labourData.totalPrice}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                PAYER
-                              </p>
-                              <h6 className="font-weight-600">
-                                {labourData.payer?.value}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                ADJUSTED PRICE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {labourData.adjustedPrice}
-                              </h6>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      <hr />
-
-                      <div className="">
-                        <div className="bg-primary px-3 mb-3">
-                          <div className="row align-items-center">
-                            <div className="col-11 mx-2">
-                              <div className="d-flex align-items-center bg-primary w-100">
-                                <div
-                                  className="d-flex mr-3"
-                                  style={{ whiteSpace: "pre" }}
+                            <div className="col-md-12">
+                              <div class="form-group mt-3 mb-0 text-right">
+                                <button
+                                  type="button"
+                                  className="btn btn-light bg-primary text-white"
+                                  onClick={updateLabourEstHeader}
+                                  disabled={
+                                    !(
+                                      labourData.laborCode &&
+                                      labourData.pricingMethod &&
+                                      (labourData.flatRateIndicator
+                                        ? labourData.adjustedPrice
+                                        : true)
+                                    )
+                                  }
                                 >
-                                  <h5 className="mr-2 mb-0 text-white">
-                                    <span>Labor</span>
-                                  </h5>
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="row mt-4">
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  JOB CODE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.jobCode}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  JOB CODE DESCRIPTION{" "}
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.jobCodeDescription}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PAYER
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.payer}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  LABOR CODE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.laborCode?.label}{" "}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PRICE METHOD
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.pricingMethod?.label}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  RATE PER HOUR / DAY
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.ratePerHourOrDay}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  NET PRICE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.totalPrice}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  ADJUSTED PRICE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.adjustedPrice}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  TOTAL HOURS (PLANNED / RECOMMENDED)
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {labourData.totalHours}
+                                </h6>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        <hr />
+
+                        <div className="">
+                          <div className="bg-primary px-3 mb-3 border-radius-6">
+                            <div className="row align-items-center">
+                              <div className="col-11 mx-2">
+                                <div className="d-flex align-items-center bg-primary w-100">
+                                  <div
+                                    className="d-flex mr-3"
+                                    style={{ whiteSpace: "pre" }}
+                                  >
+                                    <h5 className="mr-2 mb-0 text-white">
+                                      <span>Labor</span>
+                                    </h5>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="">
+                                <div className="text-center border-left pl-2 py-3">
+                                  <Link
+                                    onClick={() => setLaborItemOpen(true)}
+                                    to="#"
+                                    className="p-1 text-white"
+                                    data-toggle="modal"
+                                    data-target="#Datatable"
+                                  >
+                                    <span className="ml-1">Add Items</span>
+                                  </Link>
                                 </div>
                               </div>
                             </div>
-                            <div className="">
-                              <div className="text-center border-left pl-2 py-3">
-                                <Link
-                                  onClick={() => setLaborItemOpen(true)}
-                                  to="#"
-                                  className="p-1 text-white"
-                                  data-toggle="modal"
-                                  data-target="#Datatable"
-                                >
-                                  <span className="ml-1">Add Items</span>
-                                </Link>
-                              </div>
-                            </div>
                           </div>
-                        </div>
-                        {/* <div
+                          {/* <div
                           className=""
                           style={{
                             height: 300,
@@ -1613,482 +2040,410 @@ function RepairServiceEstimate(props) {
                             backgroundColor: "#fff",
                           }}
                         > */}
-                        <DataGrid
-                          sx={{
-                            "& .MuiDataGrid-columnHeaders": {
-                              backgroundColor: "#872ff7",
-                              color: "#fff",
-                              fontSize: 12,
-                            },
-                            minHeight: 300,
-                            "& .MuiDataGrid-cellContent": {
-                              fontSize: 12,
-                            },
-                          }}
-                          rows={laborItems}
-                          columns={laborColumns}
-                          pageSize={5}
-                          rowsPerPageOptions={[5]}
-                          onCellClick={(e) => handleRowClick(e)}
-                        />
-                        {/* </div> */}
-                        <div className=" text-right mt-3">
-                          <a
-                            href="#"
-                            className="btn border bg-primary text-white"
-                          >
-                            Save
-                          </a>
+                          <DataGrid
+                            sx={GRID_STYLE}
+                            paginationMode='client'
+                            rows={laborItems}
+                            columns={laborColumns}
+                            pageSize={5}
+                            rowsPerPageOptions={[5]}
+                          />
+                        </div>
+                      </React.Fragment>
+                    )}
+                  </TabPanel>
+                  <TabPanel value="consumables">
+                    {!consumableData.id && (
+                      <div className="col-md-12 col-sm-12">
+                        <div className=" d-flex justify-content-between align-items-center">
+                          <div>
+                            <FormGroup>
+                              <FormControlLabel
+                                control={
+                                  <Switch
+                                    checked={flagRequired.consumableEnabled}
+                                    onChange={handleChangeSwitch}
+                                    name="consumableEnabled"
+                                  />
+                                }
+                                label="REQUIRED"
+                              />
+                            </FormGroup>
+                          </div>
                         </div>
                       </div>
-                    </React.Fragment>
-                  )}
-                </TabPanel>
-                <TabPanel value="consumables">
-                  {!consumableData.id && (
-                    <div className="col-md-12 col-sm-12">
-                      <div className=" d-flex justify-content-between align-items-center">
-                        <div>
-                          <FormGroup>
-                            <FormControlLabel
-                              control={
-                                <Switch
-                                  checked={flagRequired.flagConsumableReq}
-                                  onChange={handleChangeSwitch}
-                                  name="flagConsumableReq"
+                    )}
+                    {flagRequired.consumableEnabled && (
+                      <React.Fragment>
+                        {!consumableViewOnly ? (
+                          <div className="row mt-2 input-fields">
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  JOB CODE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={consumableData.jobCode}
                                 />
-                              }
-                              label="REQUIRED"
-                            />
-                          </FormGroup>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {flagRequired.flagConsumableReq && (
-                    <React.Fragment>
-                      {!consumableViewOnly ? (
-                        <div className="row mt-2 input-fields">
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                JOB CODE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Required"
-                                value={consumableData.jobCode}
-                              />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                JOB CODE DESCRIPTION
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Required"
-                                value={consumableData.jobCodeDescription}
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  JOB CODE DESCRIPTION
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={consumableData.jobCodeDescription}
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group  mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                PRICE METHOD
-                              </label>
-                              <Select
-                                defaultValue={selectedOption}
-                                onChange={(e) =>
-                                  setConsumableData({
-                                    ...consumableData,
-                                    pricingMethod: e,
-                                  })
-                                }
-                                value={consumableData.pricingMethod}
-                                options={priceMethodOptions}
-                                placeholder="Required"
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PAYER
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={consumableData.payer}
+                                  onChange={(e) =>
+                                    setConsumableData({
+                                      ...consumableData,
+                                      payer: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                NET PRICE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Required"
-                                value={consumableData.totalPrice}
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div className="form-group  mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-500">
+                                  PRICE METHOD
+                                </label>
+                                <Select
+                                  onChange={(e) =>
+                                    setConsumableData({
+                                      ...consumableData,
+                                      pricingMethod: e,
+                                    })
+                                  }
+                                  value={consumableData.pricingMethod}
+                                  options={priceOptionsPercent}
+                                  placeholder="Required"
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                PAYER
-                              </label>
-                              <Select
-                                defaultValue={selectedOption}
-                                onChange={(e) =>
-                                  setConsumableData({
-                                    ...consumableData,
-                                    payer: e,
-                                  })
-                                }
-                                options={options}
-                                placeholder="Required"
-                                value={consumableData.payer}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                ADJUSTED PRICE
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Optional"
-                                value={consumableData.adjustedPrice}
-                                onChange={(e) =>
-                                  setConsumableData({
-                                    ...consumableData,
-                                    adjustedPrice: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-12">
-                            <div class="form-group mt-3 mb-0 text-right">
-                              <button
-                                type="button"
-                                className="btn btn-light bg-primary text-white"
-                                onClick={updateConsumableHeader}
-                              >
-                                Save
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="row mt-4">
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                JOB CODE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {consumableData.jobCode}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                JOB CODE DESCRIPTION{" "}
-                              </p>
-                              <h6 className="font-weight-600">
-                                {consumableData.jobCodeDescription}
-                              </h6>
-                            </div>
-                          </div>
-
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                PRICE METHOD
-                              </p>
-                              <h6 className="font-weight-600">
-                                {consumableData.pricingMethod?.value}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                NET PRICE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {consumableData.totalPrice}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                PAYER
-                              </p>
-                              <h6 className="font-weight-600">
-                                {consumableData.payer?.value}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                ADJUSTED PRICE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {consumableData.adjustedPrice}
-                              </h6>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      <hr />
-
-                      <div className="">
-                        <div className="bg-primary px-3 mb-3">
-                          <div className="row align-items-center">
-                            <div className="col-10 mx-5">
-                              <div className="d-flex align-items-center bg-primary w-100">
+                            <div className="col-md-4 col-sm-4">
+                              <div className="form-group mt-3 date-box">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PERCENTAGE
+                                </label>
                                 <div
-                                  className="d-flex mr-3"
-                                  style={{ whiteSpace: "pre" }}
+                                  className=" d-flex form-control-date"
+                                  style={{ overflow: "hidden" }}
                                 >
-                                  <h5 className="mr-2 mb-0 text-white">
-                                    <span>Consumables</span>
-                                  </h5>
-                                  <p className="ml-4 mb-0">
+                                  <input
+                                    type="text"
+                                    className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                    // style={{width: '64%'}}
+                                    placeholder="Required"
+                                    value={consumableData.percentagePrice}
+                                    onChange={(e) =>
+                                      setConsumableData({
+                                        ...consumableData,
+                                        percentagePrice: e.target.value,
+                                      })
+                                    }
+                                  />
+                                  <span
+                                    className="hours-div"
+                                    style={{ float: "left", width: "40%" }}
+                                  >
+                                    {consumableData.pricingMethod?.label
+                                      ? consumableData.pricingMethod?.label?.replace(
+                                          "Percentage",
+                                          "%"
+                                        )
+                                      : "%"}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  TOTAL BASE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={consumableData.totalBase}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <FormGroup>
+                                  <FormControlLabel
+                                    style={{
+                                      alignItems: "start",
+                                      marginLeft: 0,
+                                    }}
+                                    control={
+                                      <Switch
+                                        checked={
+                                          consumableData.flatRateIndicator
+                                        }
+                                        onChange={(e) =>
+                                          setConsumableData({
+                                            ...consumableData,
+                                            flatRateIndicator: e.target.checked,
+                                          })
+                                        }
+                                      />
+                                    }
+                                    labelPlacement="top"
+                                    label={
+                                      <span className="text-light-dark font-size-12 font-weight-600">
+                                        FLAT RATE INDICATOR
+                                      </span>
+                                    }
+                                  />
+                                </FormGroup>
+                              </div>
+                            </div>
+
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={consumableData.totalPrice}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  ADJUSTED PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled={!consumableData.flatRateIndicator}
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={consumableData.adjustedPrice}
+                                  onChange={(e) =>
+                                    setConsumableData({
+                                      ...consumableData,
+                                      adjustedPrice: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-md-12">
+                              <div class="form-group mt-3 mb-0 text-right">
+                                <button
+                                  type="button"
+                                  className="btn btn-light bg-primary text-white"
+                                  onClick={updateConsumableHeader}
+                                  disabled={
+                                    !(
+                                      consumableData.percentagePrice &&
+                                      consumableData.pricingMethod &&
+                                      (consumableData.flatRateIndicator
+                                        ? consumableData.adjustedPrice
+                                        : true)
+                                    )
+                                  }
+                                >
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="row mt-4">
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  JOB CODE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {consumableData.jobCode}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  JOB CODE DESCRIPTION{" "}
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {consumableData.jobCodeDescription}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PAYER
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {consumableData.payer}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PRICE METHOD
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {consumableData.pricingMethod?.label}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PERCENTAGE PRICE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {consumableData.percentagePrice}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  TOTAL BASE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {consumableData.totalBase}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  NET PRICE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {consumableData.totalPrice}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  ADJUSTED PRICE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {consumableData.adjustedPrice}
+                                </h6>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        <hr />
+                        <div className="">
+                          <div className="bg-primary px-3 mb-3 border-radius-6">
+                            <div className="row align-items-center">
+                              <div className="col-10 mr-5">
+                                <div className="d-flex align-items-center bg-primary w-100">
+                                  <div
+                                    className="d-flex mr-3"
+                                    style={{ whiteSpace: "pre" }}
+                                  >
+                                    <h5 className="mr-2 mb-0 text-white">
+                                      <span>Consumables</span>
+                                    </h5>
+                                    {/* <p className="ml-4 mb-0">
                                     <a href="#" className="ml-3 text-white">
                                       <EditOutlinedIcon />
                                     </a>
                                     <a href="#" className="ml-3 text-white">
                                       <ShareOutlinedIcon />
                                     </a>
-                                  </p>
-                                </div>
-                                <div className="d-flex justify-content-between align-items-center w-100 ">
-                                  <div className="row align-items-center m-0">
-                                    {querySearchSelector.map((obj, i) => {
-                                      return (
-                                        <>
-                                          <div className="customselect d-flex align-items-center mr-3 my-2">
-                                            {i > 0 ? (
-                                              <SelectFilter
-                                                isClearable={true}
-                                                defaultValue={{
-                                                  label: "And",
-                                                  value: "AND",
-                                                }}
-                                                options={[
-                                                  {
-                                                    label: "And",
-                                                    value: "AND",
-                                                    id: i,
-                                                  },
-                                                  {
-                                                    label: "Or",
-                                                    value: "OR",
-                                                    id: i,
-                                                  },
-                                                ]}
-                                                placeholder="Search By.."
-                                                onChange={(e) =>
-                                                  handleOperator(e, i)
-                                                }
-                                                // value={querySearchOperator[i]}
-                                                value={obj.selectOperator}
-                                              />
-                                            ) : (
-                                              <></>
-                                            )}
-
-                                            <div>
-                                              <SelectFilter
-                                                // isClearable={true}
-                                                options={[
-                                                  {
-                                                    label: "Make",
-                                                    value: "make",
-                                                    id: i,
-                                                  },
-                                                  {
-                                                    label: "Family",
-                                                    value: "family",
-                                                    id: i,
-                                                  },
-                                                  {
-                                                    label: "Model",
-                                                    value: "model",
-                                                    id: i,
-                                                  },
-                                                  {
-                                                    label: "Prefix",
-                                                    value: "prefix",
-                                                    id: i,
-                                                  },
-                                                ]}
-                                                placeholder="Search By.."
-                                                onChange={(e) =>
-                                                  handleFamily(e, i)
-                                                }
-                                                value={obj.selectFamily}
-                                              />
-                                            </div>
-                                            <div className="customselectsearch customize">
-                                              <span className="search-icon-postn">
-                                                <SearchIcon />
-                                              </span>
-                                              <input
-                                                className="custom-input-sleact "
-                                                style={{ position: "relative" }}
-                                                type="text"
-                                                placeholder="Search Parts"
-                                                value={obj.inputSearch}
-                                                onChange={(e) =>
-                                                  handleInputSearch(e, i)
-                                                }
-                                                id={"inputSearch-" + i}
-                                                autoComplete="off"
-                                              />
-                                              <div className="btn border">
-                                                <span className="mr-2">
-                                                  <AddIcon />
-                                                </span>
-                                                Add Part
-                                              </div>
-
-                                              {
-                                                <ul
-                                                  className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
-                                                >
-                                                  {obj.selectOptions.map(
-                                                    (currentItem, j) => (
-                                                      <li
-                                                        className="list-group-item"
-                                                        key={j}
-                                                        onClick={(e) =>
-                                                          handleSearchListClick(
-                                                            e,
-                                                            currentItem,
-                                                            obj,
-                                                            i
-                                                          )
-                                                        }
-                                                      >
-                                                        {currentItem}
-                                                      </li>
-                                                    )
-                                                  )}
-                                                </ul>
-                                              }
-                                            </div>
-                                          </div>
-                                        </>
-                                      );
-                                    })}
-                                    <div
-                                      onClick={(e) => addSearchQuerryHtml(e)}
-                                    >
-                                      <Link
-                                        to="#"
-                                        className="btn-sm text-white border mr-2"
-                                        style={{ border: "1px solid #872FF7" }}
-                                      >
-                                        +
-                                      </Link>
-                                    </div>
-                                    <div onClick={handleDeletQuerySearch}>
-                                      <Link to="#" className="btn-sm border">
-                                        <svg
-                                          data-name="Layer 41"
-                                          id="Layer_41"
-                                          fill="#ffffff"
-                                          viewBox="0 0 50 50"
-                                          xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                          <title />
-                                          <path
-                                            className="cls-1"
-                                            d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                                          />
-                                          <path
-                                            className="cls-1"
-                                            d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                                          />
-                                          <path
-                                            className="cls-1"
-                                            d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                                          />
-                                        </svg>
-                                      </Link>
-                                    </div>
+                                  </p> */}
                                   </div>
+                                  <SearchComponent
+                                    querySearchSelector={
+                                      queryConsSearchSelector
+                                    }
+                                    setQuerySearchSelector={
+                                      setQueryConsSearchSelector
+                                    }
+                                    clearFilteredData={clearFilteredData}
+                                    handleSnack={handleSnack}
+                                    searchAPI={getConsumables}
+                                    type={"consumables"}
+                                    searchClick={handleQuerySearchClick}
+                                    options={CONSUMABLE_SEARCH_Q_OPTIONS}
+                                    color={"white"}
+                                  />
                                 </div>
-                                {/* <div className="px-3">
-          <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
-            <SearchIcon /><span className="ml-1">Search</span>
-          </Link>
-        </div> */}
                               </div>
-                            </div>
-                            <div className="">
-                              <div className="text-center border-left pl-1 py-3">
-                                <Link
-                                  onClick={() => setOpen3(true)}
-                                  to="#"
-                                  className="p-1 text-white"
-                                  data-toggle="modal"
-                                  data-target="#Datatableconsumables"
-                                >
-                                  <span className="ml-1">Add Items</span>
-                                </Link>
+                              <div className="ml-5">
+                                <div className="text-center border-left pl-1 py-3">
+                                  <Link
+                                    onClick={() => setConsumableItemOpen(true)}
+                                    to="#"
+                                    className="p-1 text-white"
+                                    data-toggle="modal"
+                                    data-target="#Datatableconsumables"
+                                  >
+                                    <span className="ml-3">Add Items</span>
+                                  </Link>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div
-                          className=""
-                          style={{
-                            height: 400,
-                            width: "100%",
-                            backgroundColor: "#fff",
-                          }}
-                        >
                           <DataGrid
-                            sx={{
-                              "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#872ff7",
-                                color: "#fff",
-                              },
-                            }}
-                            rows={rowsConsumables}
+                            sx={GRID_STYLE}
+                            rows={consumableItems}
                             columns={columnsConsumables}
                             pageSize={5}
                             rowsPerPageOptions={[5]}
-                            checkboxSelection
-                            onCellClick={(e) => handleRowClick(e)}
+                            // checkboxSelection
+                            // onCellClick={(e) => handleRowClick(e)}
                           />
-                        </div>
-                        <div className=" text-right mt-3">
-                          <a
-                            href="#"
+                          {/* </div> */}
+                          {/* <div className=" text-right mt-3">
+                          <button
+                            type="button"
                             className="btn border bg-primary text-white"
+                            // onClick={updateLabourEstHeader}
                           >
                             Save
-                          </a>
+                          </button>
+                        </div> */}
                         </div>
-                      </div>
-                    </React.Fragment>
-                  )}
-                </TabPanel>
-                <TabPanel value="extwork">
-                  {!extWorkData.id && (
+                      </React.Fragment>
+                    )}
+                  </TabPanel>
+                  <TabPanel value="extwork">
+                    {/* {!extWorkData.id && ( */}
                     <div className="col-md-12 col-sm-12">
                       <div className=" d-flex justify-content-between align-items-center">
                         <div>
@@ -2096,463 +2451,377 @@ function RepairServiceEstimate(props) {
                             <FormControlLabel
                               control={
                                 <Switch
-                                  checked={flagRequired.flagExtWorkReq}
+                                  checked={flagRequired.externalWorkEnabled}
                                   onChange={handleChangeSwitch}
-                                  name="flagExtWorkReq"
+                                  name="externalWorkEnabled"
                                 />
                               }
                               label="REQUIRED"
-                              value={flagRequired.flagExtWorkReq}
+                              value={flagRequired.externalWorkEnabled}
                             />
                           </FormGroup>
                         </div>
                       </div>
                     </div>
-                  )}
-                  {flagRequired.flagExtWorkReq && (
-                    <React.Fragment>
-                      {!extWorkViewOnly ? (
-                        <div className="row mt-2 input-fields">
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                JOB CODE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Required"
-                                value={extWorkData.jobCode}
-                              />
+                    {/* )} */}
+                    {flagRequired.externalWorkEnabled && (
+                      <React.Fragment>
+                        {!extWorkViewOnly ? (
+                          <div className="row mt-2 input-fields">
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  JOB CODE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={extWorkData.jobCode}
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                JOB CODE DESCRIPTION
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Required"
-                                value={extWorkData.jobCodeDescription}
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  JOB CODE DESCRIPTION
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={extWorkData.jobCodeDescription}
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                SUPPLYING VENDOR
-                              </label>
-                              <SearchBox
-                                value={extWorkData.supplyingVendor}
-                                onChange={(e) =>
-                                  handleVendorSearch("vendor", e.target.value)
-                                }
-                                type="fullName"
-                                result={searchVenodrResults}
-                                onSelect={handleVendorSelect}
-                                noOptions={noOptionsVendor}
-                              />
-                              {/* <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="Required"
-                        /> */}
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PAYER
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={extWorkData.payer}
+                                  onChange={(e) =>
+                                    setExtWorkData({
+                                      ...extWorkData,
+                                      payer: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                PRICE METHOD
-                              </label>
-                              <Select
-                                defaultValue={selectedOption}
-                                onChange={(e) =>
-                                  setExtWorkData({
-                                    ...extWorkData,
-                                    pricingMethod: e,
-                                  })
-                                }
-                                value={extWorkData.pricingMethod}
-                                options={priceMethodOptions}
-                                placeholder="Required"
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PRICE METHOD
+                                </label>
+                                <Select
+                                  onChange={(e) =>
+                                    setExtWorkData({
+                                      ...extWorkData,
+                                      pricingMethod: e,
+                                    })
+                                  }
+                                  value={extWorkData.pricingMethod}
+                                  options={priceOptionsPercent}
+                                  placeholder="Required"
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                NET PRICE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Required"
-                                value={extWorkData.totalPrice}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                PAYER
-                              </label>
-                              <Select
-                                defaultValue={selectedOption}
-                                onChange={(e) =>
-                                  setExtWorkData({ ...extWorkData, payer: e })
-                                }
-                                options={options}
-                                placeholder="Required"
-                                value={extWorkData.payer}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                ADJUSTED PRICE
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Optional"
-                                value={extWorkData.adjustedPrice}
-                                onChange={(e) =>
-                                  setExtWorkData({
-                                    ...extWorkData,
-                                    adjustedPrice: e.target.value,
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-12">
-                            <div class="form-group mt-3 mb-0 text-right">
-                              <button
-                                type="button"
-                                className="btn btn-light bg-primary text-white"
-                                onClick={updateExtWorkHeader}
-                              >
-                                Save
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="row mt-4">
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                JOB CODE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {extWorkData.jobCode}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                JOB CODE DESCRIPTION{" "}
-                              </p>
-                              <h6 className="font-weight-600">
-                                {extWorkData.jobCodeDescription}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                PRICE METHOD
-                              </p>
-                              <h6 className="font-weight-600">
-                                {extWorkData.pricingMethod?.value}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                NET PRICE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {extWorkData.totalPrice}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                SUPPLYING VENDOR
-                              </p>
-                              <h6 className="font-weight-600">
-                                {extWorkData.supplyingVendor}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                PAYER
-                              </p>
-                              <h6 className="font-weight-600">
-                                {extWorkData.payer?.value}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                ADJUSTED PRICE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {extWorkData.adjustedPrice}
-                              </h6>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      <hr />
-
-                      <div className="">
-                        <div className="bg-primary px-3 mb-3">
-                          <div className="row align-items-center">
-                            <div className="col-10 mx-5">
-                              <div className="d-flex align-items-center bg-primary w-100">
+                            <div className="col-md-4 col-sm-4">
+                              <div className="form-group mt-3 date-box">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PERCENTAGE
+                                </label>
                                 <div
-                                  className="d-flex mr-3"
-                                  style={{ whiteSpace: "pre" }}
+                                  className=" d-flex form-control-date"
+                                  style={{ overflow: "hidden" }}
                                 >
-                                  <h5 className="mr-2 mb-0 text-white">
-                                    <span>External Work</span>
-                                  </h5>
-                                  <p className="ml-4 mb-0">
+                                  <input
+                                    type="text"
+                                    className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                    // style={{width: '64%'}}
+                                    placeholder="Required"
+                                    value={extWorkData.percentagePrice}
+                                    onChange={(e) =>
+                                      setExtWorkData({
+                                        ...extWorkData,
+                                        percentagePrice: e.target.value,
+                                      })
+                                    }
+                                  />
+                                  <span
+                                    className="hours-div"
+                                    style={{ float: "left", width: "40%" }}
+                                  >
+                                    {extWorkData.pricingMethod?.label
+                                      ? extWorkData.pricingMethod?.label?.replace(
+                                          "Percentage",
+                                          "%"
+                                        )
+                                      : "%"}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  TOTAL BASE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={extWorkData.totalBase}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <FormGroup>
+                                  <FormControlLabel
+                                    style={{
+                                      alignItems: "start",
+                                      marginLeft: 0,
+                                    }}
+                                    control={
+                                      <Switch
+                                        checked={extWorkData.flatRateIndicator}
+                                        onChange={(e) =>
+                                          setExtWorkData({
+                                            ...extWorkData,
+                                            flatRateIndicator: e.target.checked,
+                                          })
+                                        }
+                                      />
+                                    }
+                                    labelPlacement="top"
+                                    label={
+                                      <span className="text-light-dark font-size-12 font-weight-600">
+                                        FLAT RATE INDICATOR
+                                      </span>
+                                    }
+                                  />
+                                </FormGroup>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={extWorkData.totalPrice}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  ADJUSTED PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled={!extWorkData.flatRateIndicator}
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={extWorkData.adjustedPrice}
+                                  onChange={(e) =>
+                                    setExtWorkData({
+                                      ...extWorkData,
+                                      adjustedPrice: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-md-12">
+                              <div class="form-group mt-3 mb-0 text-right">
+                                <button
+                                  type="button"
+                                  className="btn btn-light bg-primary text-white"
+                                  onClick={updateExtWorkHeader}
+                                  disabled={
+                                    !(
+                                      extWorkData.percentagePrice &&
+                                      extWorkData.pricingMethod &&
+                                      (extWorkData.flatRateIndicator
+                                        ? extWorkData.adjustedPrice
+                                        : true)
+                                    )
+                                  }
+                                >
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="row mt-4">
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  JOB CODE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {extWorkData.jobCode}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  JOB CODE DESCRIPTION{" "}
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {extWorkData.jobCodeDescription}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PAYER
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {extWorkData.payer}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PRICE METHOD
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {extWorkData.pricingMethod?.label}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PERCENTAGE PRICE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {extWorkData.percentagePrice}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  TOTAL BASE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {extWorkData.totalBase}
+                                </h6>
+                              </div>
+                            </div>
+
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  NET PRICE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {extWorkData.totalPrice}
+                                </h6>
+                              </div>
+                            </div>
+
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  ADJUSTED PRICE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {extWorkData.adjustedPrice}
+                                </h6>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        <hr />
+
+                        <div className="">
+                          <div className="bg-primary px-3 mb-3 border-radius-6">
+                            <div className="row align-items-center">
+                              <div className="col-10 mr-5">
+                                <div className="d-flex align-items-center bg-primary w-100">
+                                  <div
+                                    className="d-flex mr-3"
+                                    style={{ whiteSpace: "pre" }}
+                                  >
+                                    <h5 className="mr-2 mb-0 text-white">
+                                      <span>External Work</span>
+                                    </h5>
+                                    {/* <p className="ml-4 mb-0">
                                     <a href="#" className="ml-3 text-white">
                                       <EditOutlinedIcon />
                                     </a>
                                     <a href="#" className="ml-3 text-white">
                                       <ShareOutlinedIcon />
                                     </a>
-                                  </p>
-                                </div>
-                                <div className="d-flex justify-content-between align-items-center w-100 ">
-                                  <div className="row align-items-center m-0">
-                                    {querySearchSelector.map((obj, i) => {
-                                      return (
-                                        <>
-                                          <div className="customselect d-flex align-items-center mr-3 my-2">
-                                            {i > 0 ? (
-                                              <SelectFilter
-                                                isClearable={true}
-                                                defaultValue={{
-                                                  label: "And",
-                                                  value: "AND",
-                                                }}
-                                                options={[
-                                                  {
-                                                    label: "And",
-                                                    value: "AND",
-                                                    id: i,
-                                                  },
-                                                  {
-                                                    label: "Or",
-                                                    value: "OR",
-                                                    id: i,
-                                                  },
-                                                ]}
-                                                placeholder="Search By.."
-                                                onChange={(e) =>
-                                                  handleOperator(e, i)
-                                                }
-                                                // value={querySearchOperator[i]}
-                                                value={obj.selectOperator}
-                                              />
-                                            ) : (
-                                              <></>
-                                            )}
-
-                                            <div>
-                                              <SelectFilter
-                                                // isClearable={true}
-                                                options={[
-                                                  {
-                                                    label: "ID",
-                                                    value: "ID",
-                                                    id: i,
-                                                  },
-                                                  {
-                                                    label: "NAME",
-                                                    value: "name",
-                                                    id: i,
-                                                  },
-                                                  {
-                                                    label: "SUPPLYING VENDOR",
-                                                    value: "supplyingVendor",
-                                                    id: i,
-                                                  },                                                  
-                                                ]}
-                                                placeholder="Search By.."
-                                                onChange={(e) =>
-                                                  handleFamily(e, i)
-                                                }
-                                                value={obj.selectFamily}
-                                              />
-                                            </div>
-                                            <div className="customselectsearch customize">
-                                              <span className="search-icon-postn">
-                                                <SearchIcon />
-                                              </span>
-                                              <input
-                                                className="custom-input-sleact "
-                                                style={{ position: "relative" }}
-                                                type="text"
-                                                placeholder="Search Parts"
-                                                value={obj.inputSearch}
-                                                onChange={(e) =>
-                                                  handleInputSearch(e, i)
-                                                }
-                                                id={"inputSearch-" + i}
-                                                autoComplete="off"
-                                              />
-                                              <div className="btn border">
-                                                <span className="mr-2">
-                                                  <AddIcon />
-                                                </span>
-                                                Add Part
-                                              </div>
-
-                                              {
-                                                <ul
-                                                  className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
-                                                >
-                                                  {obj.selectOptions.map(
-                                                    (currentItem, j) => (
-                                                      <li
-                                                        className="list-group-item"
-                                                        key={j}
-                                                        onClick={(e) =>
-                                                          handleSearchListClick(
-                                                            e,
-                                                            currentItem,
-                                                            obj,
-                                                            i
-                                                          )
-                                                        }
-                                                      >
-                                                        {currentItem}
-                                                      </li>
-                                                    )
-                                                  )}
-                                                </ul>
-                                              }
-                                            </div>
-                                          </div>
-                                        </>
-                                      );
-                                    })}
-                                    <div
-                                      onClick={(e) => addSearchQuerryHtml(e)}
-                                    >
-                                      <Link
-                                        to="#"
-                                        className="btn-sm text-white border mr-2"
-                                        style={{ border: "1px solid #872FF7" }}
-                                      >
-                                        +
-                                      </Link>
-                                    </div>
-                                    <div onClick={handleDeletQuerySearch}>
-                                      <Link to="#" className="btn-sm border">
-                                        <svg
-                                          data-name="Layer 41"
-                                          id="Layer_41"
-                                          fill="#ffffff"
-                                          viewBox="0 0 50 50"
-                                          xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                          <title />
-                                          <path
-                                            className="cls-1"
-                                            d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                                          />
-                                          <path
-                                            className="cls-1"
-                                            d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                                          />
-                                          <path
-                                            className="cls-1"
-                                            d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                                          />
-                                        </svg>
-                                        {/* <DeleteIcon className="font-size-16" /> */}
-                                      </Link>
-                                    </div>
+                                  </p> */}
                                   </div>
+                                  <SearchComponent
+                                    querySearchSelector={queryExtSearchSelector}
+                                    setQuerySearchSelector={
+                                      setQueryExtSearchSelector
+                                    }
+                                    clearFilteredData={clearFilteredData}
+                                    handleSnack={handleSnack}
+                                    searchAPI={getExtWork}
+                                    type={"extwork"}
+                                    searchClick={handleQuerySearchClick}
+                                    options={EXTWORK_SEARCH_Q_OPTIONS}
+                                    color={"white"}
+                                  />
                                 </div>
                               </div>
-                            </div>
-                            <div className="">
-                              <div className="text-center border-left pl-3 py-3">
-                                <Link
-                                  onClick={() => setOpen4(true)}
-                                  to="#"
-                                  className="p-1 text-white"
-                                  data-toggle="modal"
-                                  data-target="#Datatable"
-                                >
-                                  <span className="ml-1">Add Items</span>
-                                </Link>
+                              <div className="ml-5">
+                                <div className="text-center border-left pl-3 py-3">
+                                  <Link
+                                    onClick={() => setExtWorkItemOpen(true)}
+                                    to="#"
+                                    className="p-1 text-white"
+                                    data-toggle="modal"
+                                    data-target="#Datatable"
+                                  >
+                                    <span className="ml-1">Add Items</span>
+                                  </Link>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div
-                          className=""
-                          style={{
-                            height: 400,
-                            width: "100%",
-                            backgroundColor: "#fff",
-                          }}
-                        >
                           <DataGrid
-                            sx={{
-                              "& .MuiDataGrid-columnHeaders": {
-                                backgroundColor: "#872ff7",
-                                color: "#fff",
-                              },
-                            }}
-                            rows={rowsExternal}
+                            sx={GRID_STYLE}
+                            rows={extWorkItems}
                             columns={columnsExternal}
                             pageSize={5}
                             rowsPerPageOptions={[5]}
-                            checkboxSelection
-                            onCellClick={(e) => handleRowClick(e)}
+                            // onCellClick={(e) => handleRowClick(e)}
                           />
                         </div>
-                        <div className=" text-right mt-3">
-                          <a
-                            href="#"
-                            className="btn border bg-primary text-white"
-                          >
-                            Save
-                          </a>
-                        </div>
-                      </div>
-                    </React.Fragment>
-                  )}
-                </TabPanel>
-                <TabPanel value="othrMisc">
-                  {!miscData.id && (
+                      </React.Fragment>
+                    )}
+                  </TabPanel>
+                  <TabPanel value="othrMisc">
                     <div className="col-md-12 col-sm-12">
                       <div className=" d-flex justify-content-between align-items-center">
                         <div>
@@ -2560,223 +2829,339 @@ function RepairServiceEstimate(props) {
                             <FormControlLabel
                               control={
                                 <Switch
-                                  checked={flagRequired.flagMiscReq}
+                                  checked={flagRequired.miscEnabled}
                                   onChange={handleChangeSwitch}
-                                  name="flagMiscReq"
+                                  name="miscEnabled"
                                 />
                               }
                               label="REQUIRED"
-                              value={flagRequired.flagMiscReq}
                             />
                           </FormGroup>
                         </div>
                       </div>
                     </div>
-                  )}
-                  {flagRequired.flagMiscReq && (
-                    <React.Fragment>
-                      {!miscViewOnly ? (
-                        <div className="row mt-2 input-fields">
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                JOB CODE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Required"
-                                value={miscData.jobCode}
-                              />
+                    {flagRequired.miscEnabled && (
+                      <React.Fragment>
+                        {!miscViewOnly ? (
+                          <div className="row mt-2 input-fields">
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  JOB CODE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={miscData.jobCode}
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                JOB CODE DESCRIPTION
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Required"
-                                value={miscData.jobCodeDescription}
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  JOB CODE DESCRIPTION
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={miscData.jobCodeDescription}
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                PRICE METHOD
-                              </label>
-                              <Select
-                                defaultValue={selectedOption}
-                                onChange={(e) =>
-                                  setMiscData({ ...miscData, pricingMethod: e })
-                                }
-                                options={priceMethodOptions}
-                                placeholder="Required"
-                                value={miscData.pricingMethod}
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PAYER
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={miscData.payer}
+                                  onChange={(e) =>
+                                    setMiscData({
+                                      ...miscData,
+                                      payer: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                NET PRICE - MISC.
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Required"
-                                value={miscData.totalPrice}
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  TYPE OF MISC.{" "}
+                                </label>
+                                <Select
+                                  onChange={(e) =>
+                                    setMiscData({ ...miscData, typeOfMisc: e })
+                                  }
+                                  options={miscTypeList}
+                                  value={miscData.typeOfMisc}
+                                  placeholder="Required"
+                                />
+                              </div>
                             </div>
-                          </div>
+                            <div className="col-md-8 col-sm-4"></div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PRICE METHOD
+                                </label>
+                                <Select
+                                  onChange={(e) =>
+                                    setMiscData({
+                                      ...miscData,
+                                      pricingMethod: e,
+                                    })
+                                  }
+                                  options={priceOptionsPercent}
+                                  placeholder="Required"
+                                  value={miscData.pricingMethod}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div className="form-group mt-3 date-box">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PERCENTAGE
+                                </label>
+                                <div
+                                  className=" d-flex form-control-date"
+                                  style={{ overflow: "hidden" }}
+                                >
+                                  <input
+                                    type="text"
+                                    className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                    placeholder="Required"
+                                    value={miscData.percentagePrice}
+                                    onChange={(e) =>
+                                      setMiscData({
+                                        ...miscData,
+                                        percentagePrice: e.target.value,
+                                      })
+                                    }
+                                  />
+                                  <span
+                                    className="hours-div"
+                                    style={{ float: "left", width: "40%" }}
+                                  >
+                                    {miscData.pricingMethod?.label
+                                      ? miscData.pricingMethod?.label?.replace(
+                                          "Percentage",
+                                          "%"
+                                        )
+                                      : "%"}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  TOTAL BASE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={miscData.totalBase}
+                                />
+                              </div>
+                            </div>
 
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                TYPE OF MISC.{" "}
-                              </label>
-                              <Select
-                                defaultValue={selectedOption}
-                                onChange={(e) =>
-                                  setMiscData({ ...miscData, typeOfMisc: e })
-                                }
-                                options={miscTypeList}
-                                value={miscData.typeOfMisc}
-                                placeholder="Required"
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <FormGroup>
+                                  <FormControlLabel
+                                    style={{
+                                      alignItems: "start",
+                                      marginLeft: 0,
+                                    }}
+                                    control={
+                                      <Switch
+                                        checked={miscData.flatRateIndicator}
+                                        onChange={(e) =>
+                                          setMiscData({
+                                            ...miscData,
+                                            flatRateIndicator: e.target.checked,
+                                          })
+                                        }
+                                      />
+                                    }
+                                    labelPlacement="top"
+                                    label={
+                                      <span className="text-light-dark font-size-12 font-weight-600">
+                                        FLAT RATE INDICATOR
+                                      </span>
+                                    }
+                                  />
+                                </FormGroup>
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                PAYER
-                              </label>
-                              <Select
-                                defaultValue={selectedOption}
-                                onChange={(e) =>
-                                  setMiscData({ ...miscData, payer: e })
-                                }
-                                options={options}
-                                placeholder="Required"
-                                value={miscData.payer}
-                              />
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  NET PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Required"
+                                  value={miscData.totalPrice}
+                                />
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <label className="text-light-dark font-size-12 font-weight-600">
-                                ADJUSTED PRICE
-                              </label>
-                              <input
-                                type="text"
-                                class="form-control border-radius-10 text-primary"
-                                id="exampleInputEmail1"
-                                placeholder="Optional"
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-12">
-                            <div class="form-group mt-3 mb-0 text-right">
-                              <button
-                                type="button"
-                                className="btn btn-light bg-primary text-white"
-                                onClick={updateMiscHeader}
-                              >
-                                Save
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="row mt-4">
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                JOB CODE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {miscData.jobCode}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                JOB CODE DESCRIPTION{" "}
-                              </p>
-                              <h6 className="font-weight-600">
-                                {miscData.jobCodeDescription}
-                              </h6>
-                            </div>
-                          </div>
 
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                PRICE METHOD
-                              </p>
-                              <h6 className="font-weight-600">
-                                {miscData.pricingMethod?.value}
-                              </h6>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  ADJUSTED PRICE
+                                </label>
+                                <input
+                                  type="text"
+                                  disabled={!miscData.flatRateIndicator}
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={miscData.adjustedPrice}
+                                  onChange={(e) =>
+                                    setMiscData({
+                                      ...miscData,
+                                      adjustedPrice: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-md-12">
+                              <div class="form-group mt-3 mb-0 text-right">
+                                <button
+                                  type="button"
+                                  className="btn btn-light bg-primary text-white"
+                                  onClick={updateMiscHeader}
+                                  disabled={
+                                    !(
+                                      miscData.percentagePrice &&
+                                      miscData.typeOfMisc &&
+                                      miscData.pricingMethod &&
+                                      (miscData.flatRateIndicator
+                                        ? miscData.adjustedPrice
+                                        : true)
+                                    )
+                                  }
+                                >
+                                  Save
+                                </button>
+                              </div>
                             </div>
                           </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                NET PRICE - MISC
-                              </p>
-                              <h6 className="font-weight-600">
-                                {miscData.totalPrice}
-                              </h6>
+                        ) : (
+                          <div className="row mt-4">
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  JOB CODE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.jobCode}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  JOB CODE DESCRIPTION{" "}
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.jobCodeDescription}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PAYER
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.payer}
+                                </h6>
+                              </div>
+                            </div><div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  TYPE OF MISC.
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.typeOfMisc?.label}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PRICE METHOD
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.pricingMethod?.label}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  PERCENTAGE PRICE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.percentagePrice}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  TOTAL BASE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.totalBase}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  NET PRICE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.totalPrice}
+                                </h6>
+                              </div>
+                            </div>                                                      
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <p className="font-size-12 font-weight-600 mb-2">
+                                  ADJUSTED PRICE
+                                </p>
+                                <h6 className="font-weight-600">
+                                  {miscData.adjustedPrice}
+                                </h6>
+                              </div>
                             </div>
                           </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                TYPE OF MISC.
-                              </p>
-                              <h6 className="font-weight-600">
-                                {miscData.typeOfMisc}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                PAYER
-                              </p>
-                              <h6 className="font-weight-600">
-                                {miscData.payer?.value}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div class="form-group mt-3">
-                              <p className="font-size-12 font-weight-600 mb-2">
-                                ADJUSTED PRICE
-                              </p>
-                              <h6 className="font-weight-600">
-                                {miscData.adjustedPrice}
-                              </h6>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </React.Fragment>
-                  )}
-                </TabPanel>
-              </TabContext>
-            </Box>
-          </div>
+                        )}
+                      </React.Fragment>
+                    )}
+                  </TabPanel>
+                </TabContext>
+              </Box>
+            </div>
+          )}
           <AddLaborItemModal
             laborItemOpen={laborItemOpen}
             handleLaborItemClose={handleLaborItemClose}
@@ -2785,426 +3170,122 @@ function RepairServiceEstimate(props) {
             serviceEstimateData={serviceEstimateData}
             unitOfMeasureOptions={unitOfMeasureOptions}
             chargeCodeList={chargeCodeList}
-            // title={addPartModalTitle}
             addLaborItem={addLaborItem}
             laborTypeList={laborTypeList}
             serviceTypeList={serviceTypeList}
           />
-         
+
+          <AddConsumableItemModal
+            consumableItemOpen={consumableItemOpen}
+            handleConsumableItemClose={handleConsumableItemClose}
+            setConsumableItemData={setConsumableItemData}
+            consumableItemData={consumableItemData}
+            consumableTypeList={consumableTypeList}
+            handleConsumableSearch={handleConsumableSearch}
+            searchConsumableResult={searchConsumableResult}
+            handleConsumableSelect={handleConsumableSelect}
+            noOptionsConsumable={noOptionsConsumable}
+            addConsumableItem={addConsumableItem}
+            serviceEstimateData={serviceEstimateData}
+          />
+
+          <AddExtWorkItemModal
+            extWorkItemOpen={extWorkItemOpen}
+            handleExtWorkItemClose={handleExtWorkItemClose}
+            setExtWorkItemData={setExtWorkItemData}
+            searchVenodrResults={searchVenodrResults}
+            handleVendorSelect={handleVendorSelect}
+            noOptionsVendor={noOptionsVendor}
+            extWorkItemData={extWorkItemData}
+            serviceEstimateData={serviceEstimateData}
+            handleVendorSearch={handleVendorSearch}
+            dimensionList={dimensionList}
+            addExtWorkItem={addExtWorkItem}
+            activityIdList={activityIdList}
+          />
           <Modal
-            show={open3}
-            onHide={handleClose3}
+            show={searchResultConsOpen}
+            onHide={handleSearchResConsClose}
             size="lg"
             aria-labelledby="contained-modal-title-vcenter"
             centered
           >
-            <Modal.Header closeButton>
-              <Modal.Title>
-                1000-Engine|23-Replace Engine|Replace Engine
-              </Modal.Title>
+            <Modal.Header>
+              <Modal.Title>Search Results</Modal.Title>
             </Modal.Header>
             <Modal.Body className="p-0 bg-white">
-              <div className="ligt-greey-bg p-3">
-                <div>
-                  <span className="mr-3">
-                    <i class="fa fa-pencil font-size-12" aria-hidden="true"></i>
-                    <span className="ml-2">Edit</span>
-                  </span>
-                  <span className="mr-3">
-                    <DeleteIcon className=" font-size-16" />
-                    <span className="ml-2">Delete</span>
-                  </span>
-                  <span className="mr-3">
-                    <MonetizationOnOutlinedIcon className=" font-size-16" />
-                    <span className="ml-2"> Adjust price</span>
-                  </span>
-                  <span className="mr-3">
-                    <SettingsBackupRestoreIcon className=" font-size-16" />
-                    <span className="ml-2">Go back to operations</span>
-                  </span>
-                  <span className="mr-3">
-                    <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                    <span className="ml-2">Related part list(s)</span>
-                  </span>
+              <div className="card w-100 p-2">
+                <div
+                  className=""
+                  style={{
+                    height: 400,
+                    width: "100%",
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  <DataGrid
+                    sx={GRID_STYLE}
+                    rows={masterData}
+                    columns={columnsConsumableSearch}
+                    pageSize={5}
+                    rowsPerPageOptions={[5]}
+                    checkboxSelection
+                    // onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
+                    onRowClick={(e) => selectConsumableItem(e.row)}
+                  />
                 </div>
               </div>
-              <div>
-                <div className="p-3">
-                  <div className="row mt-4">
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          CONSUMABLE TYPE
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="1000 ENGINE"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          CONSUMABLE ID
-                        </label>
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="Required"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          CONSUMABLE DESCRIPTION
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="0123 REPLACE"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          QUANTITY
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="Replace left side of the Engine"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          UNIT OF MEASURES
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="List Price"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          VENDOR
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$10000"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          UNIT PRICE
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$5000"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          EXTENDED PRICE
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="EA"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          CURRENCY
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$480000"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          TOTAL PRICE
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$480000"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          ACTION
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$480000"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="m-3 text-right">
-                  <a
-                    href="#"
-                    onClick={handleClose3}
-                    className="btn border mr-3 "
-                  >
-                    {" "}
-                    Cancel
-                  </a>
-                  <a href="#" className="btn text-white bg-primary">
-                    Save
-                  </a>
-                </div>
-              </div>
+              {/* <div className="m-2 text-right">
+                <button
+                  className="btn text-white bg-primary"
+                  // onClick={addSelectedPartsToPartList}
+                >
+                  + Add Selected
+                </button>
+              </div> */}
             </Modal.Body>
           </Modal>
 
           <Modal
-            show={open4}
-            onHide={handleClose4}
+            show={searchResultExtWorkOpen}
+            onHide={handleSearchResExtClose}
             size="lg"
             aria-labelledby="contained-modal-title-vcenter"
             centered
           >
-            <Modal.Header closeButton>
-              <Modal.Title>
-                1000-Engine|23-Replace Engine|Replace Engine
-              </Modal.Title>
+            <Modal.Header>
+              <Modal.Title>Search Results</Modal.Title>
             </Modal.Header>
             <Modal.Body className="p-0 bg-white">
-              <div className="ligt-greey-bg p-3">
-                <div>
-                  <span className="mr-3">
-                    <i class="fa fa-pencil font-size-12" aria-hidden="true"></i>
-                    <span className="ml-2">Edit</span>
-                  </span>
-                  <span className="mr-3">
-                    <DeleteIcon className=" font-size-16" />
-                    <span className="ml-2">Delete</span>
-                  </span>
-                  <span className="mr-3">
-                    <MonetizationOnOutlinedIcon className=" font-size-16" />
-                    <span className="ml-2"> Adjust price</span>
-                  </span>
-                  <span className="mr-3">
-                    <SettingsBackupRestoreIcon className=" font-size-16" />
-                    <span className="ml-2">Go back to operations</span>
-                  </span>
-                  <span className="mr-3">
-                    <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                    <span className="ml-2">Related part list(s)</span>
-                  </span>
+              <div className="card w-100 p-2">
+                <div
+                  className=""
+                  style={{
+                    height: 400,
+                    width: "100%",
+                    backgroundColor: "#fff",
+                  }}
+                >
+                  <DataGrid
+                    sx={GRID_STYLE}
+                    rows={masterData}
+                    columns={columnsExtWorkSearch}
+                    pageSize={5}
+                    rowsPerPageOptions={[5]}
+                    checkboxSelection
+                    // onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
+                    onRowClick={(e) => selectExtWorkItem(e.row)}
+                  />
                 </div>
               </div>
-              <div>
-                <div className="p-3">
-                  <div className="row mt-4">
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          ACTIVITY ID
-                        </label>
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={activityIdList}
-                          placeholder="Required"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          ACTIVITY NAME
-                        </label>
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="Required"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          SHORT DESCRIPTION
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="List Price"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          QUANTITY
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$35000"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          UNIT OF MEASURE
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$10000"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          UNIT PRICE
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$10000"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          EXTENDED PRICE
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$5000"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          CURRENCY
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="EA"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          TOTAL PRICE
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$480000"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          DIMENSIONS
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$480000"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          SUPPLYING VENDOR
-                        </label>
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="Required"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          ACTION
-                        </label>
-                        <input
-                          type="text"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          placeholder="$480000"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="m-3 text-right">
-                  <a
-                    href="#"
-                    onClick={handleClose4}
-                    className="btn border mr-3 "
-                  >
-                    {" "}
-                    Cancel
-                  </a>
-                  <a href="#" className="btn text-white bg-primary">
-                    Save
-                  </a>
-                </div>
-              </div>
+              {/* <div className="m-2 text-right">
+                <button
+                  className="btn text-white bg-primary"
+                  // onClick={addSelectedPartsToPartList}
+                >
+                  + Add Selected
+                </button>
+              </div> */}
             </Modal.Body>
           </Modal>
         </div>
