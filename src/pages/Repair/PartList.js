@@ -352,6 +352,7 @@ function PartList(props) {
   // };
 
   const fetchAllDetails = (builderId, versionNumber) => {
+    console.log(builderId, versionNumber)
     if (builderId && versionNumber) {
       setHeaderLoading(true);
       fetchBuilderVersionDet(builderId, versionNumber)
@@ -373,7 +374,6 @@ function PartList(props) {
   const filterOperators = getGridStringOperators().filter(({ value }) =>
     ["equals", "contains"].includes(value)
   );
-
   const fetchPartsOfPartlist = async (partlistId, pageNo, rowsPerPage) => {
     setPartsLoading(true);
     setPage(pageNo);
@@ -387,6 +387,12 @@ function PartList(props) {
     await fetchPartsFromPartlist(partlistId, query)
       .then((partsResult) => {
         setTotalPartsCount(partsResult.totalRows);
+        // partsResult.result.map((element, i) => {
+        //   // setSlPart((pageNo*rowsPerPage - rowsPerPage) + i)
+        //   console.log(pageNo,rowsPerPage, i)
+        //   element.rowNum = (((pageNo+1)*rowsPerPage - rowsPerPage) + (i+1)) * 10
+          
+        // })
         setSpareparts(partsResult.result);
       })
       .catch((err) => {
@@ -473,8 +479,8 @@ function PartList(props) {
       priceMethod: priceMethodOptions.find(
         (element) => element.value === result.priceMethod
       ),
-      netPrice: result.netPrice,
-      adjustedPrice: result.adjustedPrice,
+      netPrice: result.netPrice ? result.netPrice : 0.0,
+      adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
       currency: currencyOptions.find(
         (element) => element.value === result.currency
       ),
@@ -797,8 +803,11 @@ function PartList(props) {
     updateBuilderPrice(bId, data)
       .then((result) => {
         // setValue("price");
+        fetchAllDetails(builderId, generalData.version);
         setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
+        
         handleSnack("success", "Pricing details updated!");
+        
       })
       .catch((err) => {
         handleSnack(
@@ -819,11 +828,11 @@ function PartList(props) {
       partNumber: sparePart.partNumber,
       partType: sparePart.partType,
       quantity: sparePart.quantity,
-      unitPrice: sparePart.unitPrice,
-      extendedPrice: sparePart.extendedPrice,
+      // unitPrice: sparePart.unitPrice,
+      // extendedPrice: sparePart.extendedPrice,
       currency: sparePart.currency,
       usagePercentage: sparePart.usagePercentage,
-      totalPrice: sparePart.totalPrice,
+      // totalPrice: sparePart.totalPrice,
       comment: sparePart.comment,
       description: sparePart.description,
       unitOfMeasure: sparePart.unitOfMeasure,
@@ -911,6 +920,7 @@ function PartList(props) {
 
   //Columns to display spare parts for the partlist
   const columnsPartList = [
+    // { headerName: 'Sl#', field: 'rowNum', flex: 1, },
     { headerName: "GroupNumber", field: "groupNumber", flex: 1 },
     { headerName: "Type", field: "partType", flex: 1 },
     { headerName: "Desc", field: "description", flex: 1 },
@@ -938,7 +948,6 @@ function PartList(props) {
       headerName: "Extended Price",
       field: "extendedPrice",
       flex: 1,
-      editable: true,
       filterable: false,
     },
     { headerName: "Currency", field: "currency", flex: 1, filterable: false },
@@ -1225,7 +1234,6 @@ function PartList(props) {
       new Promise((resolve, reject) => {
         if (
           newRow.quantity !== oldRow.quantity ||
-          newRow.extendedPrice !== oldRow.extendedPrice ||
           newRow.usagePercentage !== oldRow.usagePercentage ||
           newRow.comment !== oldRow.comment
         ) {
@@ -1233,6 +1241,7 @@ function PartList(props) {
           const index = rowsToUpdate.findIndex(
             (object) => object.id === newRow.id
           );
+          newRow.extendedPrice  = newRow.quantity * newRow.unitPrice;
           newRow.totalPrice =
             newRow.usagePercentage > 0
               ? parseFloat(
@@ -1588,11 +1597,10 @@ function PartList(props) {
                                 onChange={handleCustomerDataChange}
                                 className="form-control border-radius-10 text-primary"
                                 id="contatEmail"
-                                aria-describedby="emailHelp"
                                 placeholder="Placeholder (Required)"
                               />
                             </div>
-                          </div>
+                          </div>                          
                           <div className="col-md-6 col-sm-6">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
@@ -1685,6 +1693,16 @@ function PartList(props) {
                             </p>
                             <h6 className="font-weight-500">
                               {customerData.contactEmail}
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              CONTACT NAME
+                            </p>
+                            <h6 className="font-weight-500">
+                              {customerData.contactName}
                             </h6>
                           </div>
                         </div>
@@ -2613,12 +2631,12 @@ function PartList(props) {
                   >
                     Upload
                   </button>
-                  <button
+                  {/* <button
                     onClick={() => setAddPartOpen(true)}
                     className="btn bg-primary text-white "
                   >
                     + Add Part
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>

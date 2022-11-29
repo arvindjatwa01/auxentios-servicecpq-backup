@@ -299,7 +299,6 @@ function RepairServiceEstimate(props) {
   // Consumable Search
   const handleQuerySearchClick = async (type) => {
     $(".scrollbar").css("display", "none");
-    // console.log("handleQuerySearchClick", querySearchSelector);
     var searchStr = "";
     var querySearchSelector =
       type === "consumables" ? queryConsSearchSelector : queryExtSearchSelector;
@@ -332,12 +331,10 @@ function RepairServiceEstimate(props) {
       if (searchStr) {
         if (type === "consumables") {
           const res = await getConsumables(searchStr);
-          // console.log("search Query Result :", res);
           setMasterData(res);
           setSearchResultConsOpen(true);
         } else if (type === "extwork") {
           const res = await getExtWork(searchStr);
-          // console.log("search Query Result :", res);
           setMasterData(res);
           setSearchResultExtWorkOpen(true);
         }
@@ -387,6 +384,9 @@ function RepairServiceEstimate(props) {
             currency: result.currency ? result.currency : "USD",
             description: result.description,
             jobCode: result.jobCode,
+            jobCodeDescription: result.jobCodeDescription,
+            componentCode: result.componentCode,
+            componentCodeDescription: result.componentCodeDescription,
             jobOperation: result.jobOperation,
             netPrice: result.netPrice ? result.netPrice : 0.0,
             priceDate: result.priceDate,
@@ -474,8 +474,6 @@ function RepairServiceEstimate(props) {
       .then((resultLabourItems) => {
         if (resultLabourItems && resultLabourItems.result.length > 0) {
           setLaborItems(resultLabourItems.result);
-
-          console.log(resultLabourItems.result);
         }
       })
       .catch((e) => {
@@ -512,7 +510,6 @@ function RepairServiceEstimate(props) {
       .then((resultConsumableItems) => {
         if (resultConsumableItems && resultConsumableItems.result.length > 0) {
           setConsumableItems(resultConsumableItems.result);
-          console.log(resultConsumableItems.result);
         }
       })
       .catch((e) => {
@@ -549,7 +546,6 @@ function RepairServiceEstimate(props) {
       .then((resultExtWorkItems) => {
         if (resultExtWorkItems && resultExtWorkItems.result.length > 0) {
           setExtWorkItems(resultExtWorkItems.result);
-          console.log(resultExtWorkItems.result);
         }
       })
       .catch((e) => {
@@ -594,7 +590,6 @@ function RepairServiceEstimate(props) {
   };
   // Search Vendors
   const handleVendorSearch = async (searchVendorfieldName, searchText) => {
-    // console.log("clear data", searchText);
     setSearchVendorResults([]);
     extWorkItemData.supplyingVendorName = searchText;
     if (searchText) {
@@ -618,7 +613,6 @@ function RepairServiceEstimate(props) {
     searchConsumablefieldName,
     searchText
   ) => {
-    // console.log("clear data", searchText);
     setSearchConsumableResult([]);
     consumableItemData.consumableCode = searchText;
     if (searchText) {
@@ -855,6 +849,7 @@ function RepairServiceEstimate(props) {
 
   // Add or Update Consumable Item
   const addConsumableItem = () => {
+    if(consumableData.id){
     let data = {
       // ...consumableItemData,
       ...(consumableItemData.id && { id: consumableItemData.id }),
@@ -877,6 +872,9 @@ function RepairServiceEstimate(props) {
         handleSnack("error", "Error occurred while adding consumable item!");
       });
     setQueryConsSearchSelector(initialConsQuery);
+    } else {
+      handleSnack('warning', "Please update the consumable header details!")
+    }
   };
 
   // Add or Update Consumable Item
@@ -925,6 +923,9 @@ function RepairServiceEstimate(props) {
       unitOfMeasure: unitOfMeasureOptions.find(
         (element) => element.value === row.unitOfMeasure
       ),
+      unitPrice: row.unitPrice ? row.unitPrice : 0,
+      extendedPrice: row.extendedPrice ? row.extendedPrice : 0,
+      totalPrice: row.totalPrice ? row.totalPrice : 0
     });
     // setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
     // setPartFieldViewonly(true);
@@ -956,6 +957,9 @@ function RepairServiceEstimate(props) {
       consumableType: consumableTypeList.find(
         (element) => element.value === row.consumableType
       ),
+      unitPrice: row.unitPrice ? row.unitPrice : 0,
+      extendedPrice: row.extendedPrice ? row.extendedPrice : 0,
+      totalPrice: row.totalPrice ? row.totalPrice : 0
     });
     // setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
     setConsumableItemOpen(true);
@@ -987,9 +991,10 @@ function RepairServiceEstimate(props) {
       dimensions: dimensionList.find(
         (element) => element.value === row.dimensions
       ),
+      unitPrice: row.unitPrice ? row.unitPrice : 0,
+      extendedPrice: row.extendedPrice ? row.extendedPrice : 0,
+      totalPrice: row.totalPrice ? row.totalPrice : 0
     });
-    // setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
-    // setPartFieldViewonly(true);
     setExtWorkItemOpen(true);
   };
   //Remove Ext work Item
@@ -1030,7 +1035,7 @@ function RepairServiceEstimate(props) {
   const initialConsQuery = [
     {
       id: 0,
-      selectFamily: "",
+      selectCategory: "",
       selectOperator: "",
       inputSearch: "",
       selectOptions: [],
@@ -1040,7 +1045,7 @@ function RepairServiceEstimate(props) {
   const initialExtWorkQuery = [
     {
       id: 0,
-      selectFamily: "",
+      selectCategory: "",
       selectOperator: "",
       inputSearch: "",
       selectOptions: [],
@@ -1081,16 +1086,17 @@ function RepairServiceEstimate(props) {
       flex: 1,
       width: 130,
     },
-    { field: "unitPrice", headerName: "Unit Price", flex: 1, width: 130 },
+    { field: "unitPrice", headerName: "Unit Price", flex: 1, width: 130, renderCell: params => params.value ? params.value : 0 },
     {
       field: "extendedPrice",
       headerName: "Extended Price",
       flex: 1,
       width: 130,
+      renderCell: params => params.value ? params.value : 0
     },
     { field: "comment", headerName: "Comments", flex: 1, width: 130 },
     { field: "currency", headerName: "Currency", flex: 1, width: 130 },
-    { field: "totalPrice", headerName: "Total Price", flex: 1, width: 130 },
+    { field: "totalPrice", headerName: "Total Price", flex: 1, width: 130, renderCell: params => params.value ? params.value : 0 },
     {
       field: "Actions",
       headerName: "Actions",
@@ -1169,7 +1175,6 @@ function RepairServiceEstimate(props) {
       vendor: selectedData.sourceOrVendor,
       unitOfMeasure: selectedData.unit,
     });
-    console.log(selectedData);
     setConsumableItemOpen(true);
   };
 
@@ -1188,7 +1193,6 @@ function RepairServiceEstimate(props) {
       // unitOfMeasure: selectedData.unit,
       // dimension:
     });
-    console.log(selectedData);
     setExtWorkItemOpen(true);
   };
 
@@ -2889,25 +2893,7 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  PAYER
-                                </label>
-                                <input
-                                  type="text"
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={miscData.payer}
-                                  onChange={(e) =>
-                                    setMiscData({
-                                      ...miscData,
-                                      payer: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>
+                            
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
@@ -2924,7 +2910,7 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
-                            <div className="col-md-8 col-sm-4"></div>
+                            {/* <div className="col-md-8 col-sm-4"></div> */}
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
@@ -3058,6 +3044,25 @@ function RepairServiceEstimate(props) {
                                   class="form-control border-radius-10 text-primary"
                                   placeholder="Required"
                                   value={miscData.totalPrice}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div class="form-group mt-3">
+                                <label className="text-light-dark font-size-12 font-weight-600">
+                                  PAYER
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control border-radius-10 text-primary"
+                                  placeholder="Optional"
+                                  value={miscData.payer}
+                                  onChange={(e) =>
+                                    setMiscData({
+                                      ...miscData,
+                                      payer: e.target.value,
+                                    })
+                                  }
                                 />
                               </div>
                             </div>

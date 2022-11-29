@@ -62,12 +62,10 @@ function WithoutRepairOption01(props) {
           if (result?.length > 0) {
             setOperations(result);
             setOperationViewOnly(true);
-
-            console.log("Active Element" , activeElement);
+            // Default last operation or selected operation for back traverse from service estimate
             let opToLoad = activeElement.oId ? result.filter(
               (x) => x.id === activeElement.oId
             )[0] : result[result.length - 1];
-            console.log("OpToLoad" , opToLoad);
               
               setOperationData({
                 ...opToLoad,
@@ -81,10 +79,8 @@ function WithoutRepairOption01(props) {
             
           } else {
             loadNewOperationUI();
-            // setOperationData(newOperation);
           }
           setOperationLoading(false);
-          // console.log(operationData);
         })
         .catch((err) => {
           loadNewOperationUI();
@@ -172,7 +168,6 @@ function WithoutRepairOption01(props) {
   };
 
   const handleAnchors = (direction) => {
-    console.log("entered handle anchors");
     if (direction === "backward") {
       let operationToLoad = [];
       if (operationData.header === NEW_OPERATION) {
@@ -338,7 +333,7 @@ function WithoutRepairOption01(props) {
           <LoadingProgress/>
         ) : !operationViewOnly ? (
           <>
-            <div className="row mt-4">
+            <div className="row mt-4 input-fields">
               <div className="col-md-4 col-sm-4">
                 <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-600">
