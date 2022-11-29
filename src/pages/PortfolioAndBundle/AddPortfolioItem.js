@@ -61,6 +61,8 @@ const AddPortfolioItem = (props) => {
     templateDescription: "",
     repairOption: "",
     strategyTask: "",
+    year: "",
+    noOfYear: "",
   });
 
   const frequencyOptions = [
@@ -198,6 +200,31 @@ const AddPortfolioItem = (props) => {
   };
 
   // console.log("categoryList --- ", categoryList)
+
+  const TabsEnableDisabledFun = () => {
+    // console.log("Hello");
+    console.log("tabs : ", tabs)
+    console.log("props.compoFlag : ", props.compoFlag);
+    console.log("addPortFolioItem.templateId : ", addPortFolioItem.templateId === "");
+
+    if (tabs == 1) {
+      setTabs((prev) => `${parseInt(prev) + 1}`)
+      setAddportFolioItem({ ...addPortFolioItem, templateId: "", repairOption: "" });
+    } else if (tabs == 2 && addPortFolioItem.templateId == "") {
+      // if(&& props.compoFlag === "ITEM")
+      setTabs((prev) => `${parseInt(prev) + 1}`)
+    } else if (tabs == 2 && addPortFolioItem.templateId !== "") {
+      if (props.compoFlag === "ITEM") {
+        props.setTabs("2");
+        props.getAddportfolioItemDataFun(addPortFolioItem);
+      } else {
+        props.getAddportfolioItemData(addPortFolioItem)
+        props.setBundleTabs("3");
+      }
+    }
+
+    // tabs < 3 && setTabs((prev) => `${parseInt(prev) + 1}`);
+  }
 
   const handleAddPortfolioSave = () => {
     if (props.compoFlag === "itemEdit") {
@@ -750,10 +777,10 @@ const AddPortfolioItem = (props) => {
               {/* <Tab label="Related part list(s)" value="1" /> */}
               <Tab label="Item Summary(s)" value="1" />
               {/* <AccessAlarmOutlinedIcon className=" font-size-16" /> */}
-              <Tab label="Related template(s)" value="2" />
+              <Tab label="Related template(s)" value="2" disabled={addPortFolioItem.repairOption != ""} />
               {/* <SellOutlinedIcon className=" font-size-16" /> */}
               {/* <Tab label="Related repair option" value="3" /> */}
-              <Tab label="Related Kit" value="3" />
+              <Tab label="Related Kit" value="3" disabled={addPortFolioItem.templateId != ""} />
             </TabList>
           </Box>
           <TabPanel value="1">
@@ -972,7 +999,7 @@ const AddPortfolioItem = (props) => {
                       onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
                       value={addPortFolioItem.recommendedValue}
                       name="recommendedValue"
-                      // name="startUsage"
+                    // name="startUsage"
                     // onChange={(e) =>
                     //   setPriceCalculator({
                     //     ...priceCalculator,
@@ -1039,6 +1066,54 @@ const AddPortfolioItem = (props) => {
                   />
                 </div>
               </div>
+              {props.compoFlag == "ITEM" ?
+                <>
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group w-100">
+                      <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        YEAR
+                      </label>
+                      <input
+                        type="email"
+                        className="form-control border-radius-10"
+                        placeholder="Year"
+                        onChange={(e) =>
+                          setAddportFolioItem({
+                            ...addPortFolioItem,
+                            year: e.target.value,
+                          })
+                        }
+                        value={addPortFolioItem.year}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group w-100">
+                      <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        NO. OF YEAR
+                      </label>
+                      <input
+                        type="email"
+                        className="form-control border-radius-10"
+                        placeholder="No of Year"
+                        onChange={(e) =>
+                          setAddportFolioItem({
+                            ...addPortFolioItem,
+                            noOfYear: e.target.value,
+                          })
+                        }
+                        value={addPortFolioItem.noOfYear}
+                      />
+                    </div>
+                  </div>
+                </> : <></>}
+
             </div>
           </TabPanel>
           <TabPanel value="2">
@@ -1210,9 +1285,10 @@ const AddPortfolioItem = (props) => {
             <Link
               to="#"
               className="btn border mr-4"
-              onClick={() => {
-                tabs < 3 && setTabs((prev) => `${parseInt(prev) + 1}`);
-              }}
+              // onClick={() => {
+              //   tabs < 3 && setTabs((prev) => `${parseInt(prev) + 1}`);
+              // }}
+              onClick={TabsEnableDisabledFun}
             >
               Next
             </Link>

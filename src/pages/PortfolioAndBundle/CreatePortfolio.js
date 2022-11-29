@@ -205,6 +205,10 @@ export function CreatePortfolio() {
   const [responseTimeTaskKeyValue, setResponseTimeTaskKeyValue] = useState([]);
   const [taskTypeKeyValue, setTaskTypeKeyValue] = useState([]);
 
+  const [currentExpendBundleServiceRow, setCurrentExpendBundleServiceRow] = useState(null);
+  const [currentExpendModelComponentRow, setCurrentExpendModelComponentRow] = useState(null);
+  const [currentExpendPortfolioItemRow, setCurrentExpendPortfolioItemRow] = useState(null)
+
   const [value1, setValue1] = useState({
     value: "Archived",
     label: "Archived",
@@ -3810,6 +3814,17 @@ export function CreatePortfolio() {
       sortable: true,
       format: (row) => row.itemId,
     },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Item Name</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.itemName,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.itemName,
+    // },
     {
       name: (
         <>
@@ -3957,7 +3972,7 @@ export function CreatePortfolio() {
     // },
 
     // ---------------------- To do Portfolio Items End--------------------//
-    
+
     // {
     //   name: (
     //     <>
@@ -4396,6 +4411,7 @@ export function CreatePortfolio() {
     handleSavePrices()
   };
   const handleExpandRowForPriceCalculator = (bool, row) => {
+    console.log("expended true/false ---- ", bool);
     setExpandedPriceCalculator({
       ...expandedPriceCalculator,
       itemId: row.itemId,
@@ -4403,6 +4419,8 @@ export function CreatePortfolio() {
       recommendedValue: row.itemBodyModel.recommendedValue,
       frequency: row.itemBodyModel.frequency
     })
+
+    setCurrentExpendBundleServiceRow(row)
 
   }
 
@@ -7031,7 +7049,11 @@ export function CreatePortfolio() {
                     data={bundleItems}
                     customStyles={customStyles}
                     expandableRows
+                    expandableRowExpanded={(row) => (row === currentExpendPortfolioItemRow)}
+                    expandOnRowClicked
+                    onRowClicked={(row) => setCurrentExpendPortfolioItemRow(row)}
                     expandableRowsComponent={ExpandedComponent}
+                    onRowExpandToggled={(bool, row) => setCurrentExpendPortfolioItemRow(row)}
                     pagination
                   />
                 </div>
@@ -9940,8 +9962,12 @@ export function CreatePortfolio() {
                     customStyles={customStyles}
                     expandableRows
                     // expandableRowsComponent={ExpandedPriceCalculator}
+                    expandableRowExpanded={(row) => (row === currentExpendBundleServiceRow)}
+                    expandOnRowClicked
+                    onRowClicked={(row) => setCurrentExpendBundleServiceRow(row)}
                     expandableRowsComponent={ExpendTablePopup}
                     onRowExpandToggled={handleExpandRowForPriceCalculator}
+                    //onRowExpandToggled={(bool, row) => setCurrentRow(row)}
                     pagination
                   />
                   <div className="row mt-5" style={{ justifyContent: "right" }}>
@@ -10436,11 +10462,15 @@ export function CreatePortfolio() {
                     <DataTable
                       title=""
                       columns={tempBundleItemColumns}
+                      expandableRowExpanded={(row) => (row === currentExpendModelComponentRow)}
+                      expandOnRowClicked
+                      onRowClicked={(row) => setCurrentExpendModelComponentRow(row)}
                       data={tempBundleItems}
                       customStyles={customStyles}
                       expandableRows
                       // expandableRowsComponent={ExpandedComponent}
                       expandableRowsComponent={ExpendedModelComponent}
+                      onRowExpandToggled={(bool, row) => setCurrentExpendModelComponentRow(row)}
                       pagination
                     />
                   </div>

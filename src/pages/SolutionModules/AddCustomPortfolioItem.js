@@ -196,6 +196,30 @@ const AddCustomPortfolioItem = (props) => {
     dispatch(taskActions.updateTask(e.value));
   };
 
+  const TabsEnableDisabledFun = () => {
+    // console.log("Hello");
+    console.log("tabs : ", tabs)
+    console.log("props.compoFlag : ", props.compoFlag);
+    console.log("addPortFolioItem.templateId : ", addPortFolioItem.templateId === "");
+
+    if (tabs == 1) {
+      setTabs((prev) => `${parseInt(prev) + 1}`)
+    } else if (tabs == 2 && addPortFolioItem.templateId == "") {
+      // if(&& props.compoFlag === "ITEM")
+      setTabs((prev) => `${parseInt(prev) + 1}`)
+    } else if (tabs == 2 && addPortFolioItem.templateId !== "") {
+      if (props.compoFlag === "ITEM") {
+        props.setTabs("2");
+        props.getAddportfolioItemDataFun(addPortFolioItem);
+      } else {
+        props.getAddportfolioItemData(addPortFolioItem)
+        props.setBundleTabs("3");
+      }
+    }
+
+    // tabs < 3 && setTabs((prev) => `${parseInt(prev) + 1}`);
+  }
+
   const handleAddPortfolioSave = () => {
     if (props.compoFlag === "itemEdit") {
       props.handleItemEditSave(addPortFolioItem);
@@ -599,7 +623,7 @@ const AddCustomPortfolioItem = (props) => {
               <Tab label="Related template(s)" value="2" />
               {/* <SellOutlinedIcon className=" font-size-16" /> */}
               {/* <Tab label="Related repair option" value="3" /> */}
-              <Tab label="Related Kit" value="3" />
+              <Tab label="Related Kit" value="3" disabled={addPortFolioItem.templateId != ""} />
             </TabList>
           </Box>
           <TabPanel value="1">
@@ -1035,9 +1059,10 @@ const AddCustomPortfolioItem = (props) => {
             <Link
               to="#"
               className="btn border mr-4"
-              onClick={() => {
-                tabs < 3 && setTabs((prev) => `${parseInt(prev) + 1}`);
-              }}
+              // onClick={() => {
+              //   tabs < 3 && setTabs((prev) => `${parseInt(prev) + 1}`);
+              // }}
+              onClick={TabsEnableDisabledFun}
             >
               Next
             </Link>
