@@ -81,7 +81,7 @@ function PriceComputation(){
   ];
     return(
       <>
-       <CommanComponents/>
+       {/* <CommanComponents/> */}
       <div className="content-body" style={{ minHeight: '884px' }}>
         <div class="container-fluid mt-3">
            <div className="d-flex align-items-center justify-content-between mt-2">
