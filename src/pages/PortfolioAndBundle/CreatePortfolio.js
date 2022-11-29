@@ -9895,7 +9895,8 @@ export function CreatePortfolio() {
                     { label: "Family", value: "itemHeaderFamily" },
                     { label: "Model", value: "model" },
                     { label: "Prefix", value: "prefix" },
-                    { label: "Item Id", value: "itemId" },
+                    // { label: "Item Id", value: "itemId" },
+                    { label: "Item Name", value: "itemName" },
                     { label: "Description", value: "description" },
                   ]}
                   setTempBundleService1={setTempBundleService1}
