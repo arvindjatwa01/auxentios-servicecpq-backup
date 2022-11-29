@@ -1938,7 +1938,7 @@ export const PortfolioSummary = () => {
               </div>
             </div>
           </div>
-          <div className="bg-primary px-3 mb-3">
+          <div className="bg-primary px-3 mb-3 border-radius-10 ">
             <div className="d-block d-md-flex justify-content-between align-items-center">
               <div className="mx-2">
                 <div className="d-flex align-items-center bg-primary w-100">
@@ -1955,7 +1955,7 @@ export const PortfolioSummary = () => {
                       </a>
                     </p>
                   </div>
-                  <div className="d-flex justify-content-between align-items-center w-100 ">
+                  <div className="d-flex justify-content-between align-items-center w-100 mr-5">
                     <div className="row align-items-center m-0">
                       {querySearchSelector.map((obj, i) => {
                         return (
@@ -2091,11 +2091,11 @@ export const PortfolioSummary = () => {
                       </div>
                     </div>
                   </div>
-                  {/* <div className="px-3">
-                           <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
+                  <div className="pl-3 py-3">
+                           <Link to="#" className="btn bg-primary text-white" onClick={handleLandingPageQuerySearchClick}>
                              <SearchIcon /><span className="ml-1">Search</span>
                            </Link>
-                         </div> */}
+                         </div>
                 </div>
               </div>
               <div className="">
@@ -2110,14 +2110,14 @@ export const PortfolioSummary = () => {
                     <span className="ml-1">Search</span>
                   </Link> */}
 
-                  <Link
+                  {/* <Link
                     to="#"
                     className="btn bg-primary text-white"
                     onClick={handleLandingPageQuerySearchClick}
                   >
                     <SearchIcon />
                     <span className="ml-1">Search</span>
-                  </Link>
+                  </Link> */}
                 </div>
               </div>
               {/* <div className="col-auto">

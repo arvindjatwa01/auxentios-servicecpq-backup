@@ -138,6 +138,15 @@ const ExpendTablePopup = ({ data, ...props }) => {
 
     }
 
+    const optionsusage = [
+        { value: "chocolate", label: "/Hour" },
+        { value: "strawberry", label: "/Km" },
+        { value: "vanilla", label: "/Miles" },
+        { value: "Construction", label: "/Year" },
+        { value: "Construction", label: "/Month" },
+        { value: "Construction", label: "/Day" },
+        { value: "Construction", label: "/Quarter" },
+    ];
     const options = [
         { value: "chocolate", label: "Construction-Heavy" },
         { value: "strawberry", label: "Construction-Low" },
@@ -164,7 +173,7 @@ const ExpendTablePopup = ({ data, ...props }) => {
                 </div>
             </div>
             <div className="row mt-3">
-                <div className="col-md-6 col-sm-6">
+                {/* <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                         <label
                             className="text-light-dark font-size-12 font-weight-500"
@@ -175,6 +184,23 @@ const ExpendTablePopup = ({ data, ...props }) => {
                             className="form-control border-radius-10"
                             type="text"
                             defaultValue={data.itemId}
+                            value={expandedPriceCalculator.itemId}
+                            placeholder="Service/Bundle ID"
+                            disabled
+                        />
+                    </div>
+                </div> */}
+                <div className="col-md-6 col-sm-6">
+                    <div className="form-group">
+                        <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                        >
+                            Name
+                        </label>
+                        <input
+                            className="form-control border-radius-10"
+                            type="text"
+                            defaultValue={data.itemName}
                             // value={expandedPriceCalculator.itemId}
                             placeholder="Service/Bundle ID"
                             disabled
@@ -245,13 +271,27 @@ const ExpendTablePopup = ({ data, ...props }) => {
                         >
                             Start Usage
                         </label>
-                        <input
-                            className="form-control border-radius-10"
+                        <div className=" d-flex form-control-date border left-select-div" style={{borderRadius: "5px"}}>
+                            
+                            <input
+                            className="form-control border-none "
                             type="text"
                             id="startUsage"
                         // value={expandedPriceCalculator.startUsage}
                         // onChange={handleExpandePriceChange}
                         />
+                       
+                                <Select
+                                    isClearable={true}
+                                    id=""
+                                    options={optionsusage}
+                                    placeholder="Select"
+                                // value={expandedPriceCalculator.priceAdditionalSelect}
+                                // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceAdditionalSelect: e })}
+                                />
+                            
+                        </div>
+                        
                     </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -261,13 +301,21 @@ const ExpendTablePopup = ({ data, ...props }) => {
                         >
                             End Usage
                         </label>
-                        <input
+                       
+                        <div
+                    className=" d-flex form-control-date"
+                    style={{ overflow: "hidden" }}
+                  >
+                   <input
                             className="form-control border-radius-10"
                             type="text"
                             id="endUsage"
                         // value={expandedPriceCalculator.endUsage}
                         // onChange={handleExpandePriceChange}
                         />
+                    
+                    <span className="hours-div">hours</span>
+                  </div>
                     </div>
                 </div>
 
@@ -436,8 +484,19 @@ const ExpendTablePopup = ({ data, ...props }) => {
                 </div>
 
             </div>
-            <div className="text-right">
+            <div className="text-right mb-4">
                 <button type="button" className="btn btn-light" onClick={(e) => handleExpandedPriceSave(e, data)}>Save</button>
+            </div>
+            <div className='p-3 d-flex align-items-center justify-content-between table-header-div'>
+                <div className=''></div>
+                <div className='text-white'>Item ID</div>
+                <div className='text-white'>Description</div>
+                <div className='text-white'>Usage In</div>
+                <div className='text-white'>Strategy</div>
+                <div className='text-white'>Task Type</div>
+                <div className='text-white'>Quantity</div>
+                <div className='text-white'>Recommended Value</div>
+                <div className='text-white'>Template/Kit ID</div>
             </div>
         </>
     )

@@ -2491,6 +2491,13 @@ export function CreatePortfolio() {
     { value: "vanilla", label: "Construction-Medium" },
     { value: "Construction", label: "Construction" },
   ];
+  const additionaloptions = [
+    { value: "LIST_PRICE", label: "List Price" },
+    { value: "OPTION_PRICE", label: "Option Price" },
+    { value: "SPECIAL_PRICE", label: "Special Price" },
+    { value: "FLAT_PRICE", label: "Flat Price" },
+    { value: "EMPTY", label: "" },
+  ];
   const options2 = [
     { value: "chocolate", label: "Archived" },
     { value: "strawberry", label: "Draft" },
@@ -6451,8 +6458,6 @@ export function CreatePortfolio() {
                         />
                       </div>
                     </div>
-                  </div>
-                  <div className="row">
                     <div className="col-md-4 col-sm-4">
                       <div className="form-group date-box">
                         <label
@@ -6473,7 +6478,7 @@ export function CreatePortfolio() {
                               onChange={setSelectedOption}
                               isClearable={true}
                               // value={options}
-                              options={options}
+                              options={additionaloptions}
                               placeholder="Select"
                             />
                           </div>
@@ -6500,8 +6505,8 @@ export function CreatePortfolio() {
                             className="select-input"
                             defaultValue={selectedOption}
                             onChange={setSelectedOption}
-                            options={options}
-                            placeholder="placeholder "
+                            options={additionaloptions}
+                            placeholder="Select "
                           />
                           <input
                             type="text"
@@ -6514,6 +6519,8 @@ export function CreatePortfolio() {
                       </div>
                     </div>
                   </div>
+                    
+                    
                   <hr />
                   <div className="row">
                     <div className="col-md-4 col-sm-4">
@@ -9915,10 +9922,10 @@ export function CreatePortfolio() {
                         selectableRows
                         onSelectedRowsChange={(state) => setTempBundleService2(state.selectedRows)}
                         pagination
-                      />{tempBundleService2.length > 0 && (<div className="row mt-5" style={{ justifyContent: "right" }}>
+                      />{tempBundleService2.length > 0 && (<div className="row" style={{ justifyContent: "right" }}>
                         <button
                           type="button"
-                          className="btn btn-light"
+                          className="btn btn-light mt-3 mb-4"
                           // onClick={() => {
                           //   setTempBundleService3(tempBundleService2)
                           //   setTempBundleService1([])
