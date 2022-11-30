@@ -570,7 +570,7 @@ export function SideBarComponent(props) {
         </ul>
         <ul className="metismenu scrollbamenu" id="menu">
         <li className="has-subnav sub-li">
-            <Link className="border-radius-50" href="/" aria-expanded="false">
+            <Link to="/" className="border-radius-50" aria-expanded="false">
               <span className="span-icon">
                 <svg style={{width:"30px"}}
                   id="uuid-c284ff3d-7bb4-40a6-aa03-9e912e189278"

@@ -3417,3 +3417,10 @@ button.bg-primary:hover {
 .border-radius-50 {
   border-radius: 50px !important;
 }
+.table-header-div{background: #872ff7;
+border-radius: 6px;
+font-size: 12px;}
+.left-select-div .css-1s2u09g-control{border: none !important; background: #F5F5F5 !important;}
+.left-select-div .css-b62m3t-container{border-left: 1px solid #EEEEEE !important;}
+.left-select-div .css-1pahdxg-control{border: none !important; background: #F5F5F5 !important;}
+.left-select-div .css-6j8wv5-Input{min-width: 80px !important;}
