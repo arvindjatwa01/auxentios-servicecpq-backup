@@ -158,7 +158,7 @@ export const PortfolioSummary = () => {
   const [selectedItemType, setSelectedItemType] = useState("");
   const [familySelectOption, setFamilySelectOption] = useState([]);
 
-  const histoy = useHistory()
+  const history = useHistory()
   const options = [
     { value: "chocolate", label: "Construction-Heavy" },
     { value: "strawberry", label: "Construction-Low" },
@@ -807,6 +807,20 @@ export const PortfolioSummary = () => {
     setSelectedMasterData(updated);
   };
 
+
+  // Portfolio EditAble
+  const makePortfolioEditableEditable = (portfolioData) => {
+    // console.log("----------", PortfolioData);
+    let portfolioDetails = {
+      portfolioId: portfolioData.portfolioId,
+      type: "fetch",
+    };
+    history.push({
+      pathname: "/portfolioBuilder/new",
+      state: portfolioDetails,
+    });
+  }
+
   // const columns2 = [
   //   { field: "GroupNumber", headerName: "ID#", flex: 1, width: 70 },
   //   { field: "Type", headerName: "Description", flex: 1, width: 130 },
@@ -1013,7 +1027,7 @@ export const PortfolioSummary = () => {
           estimatedTime: "",
           servicePrice: 0,
           status: "NEW",
-          itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask : "PREVENTIVE_MAINTENANCE",
+          itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
         },
         itemBodyModel: {
           itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
@@ -1097,7 +1111,7 @@ export const PortfolioSummary = () => {
 
   const handleAddNewServiceOrBundle = () => {
     if (serviceOrBundlePrefix === "BUNDLE") {
-      if (createServiceOrBundle.name == "" || createServiceOrBundle.description == "") {
+      if (createServiceOrBundle.name == "" || createServiceOrBundle.description == "" || createServiceOrBundle.model == "") {
         toast("😐" + "Please fill mandatory Fields.", {
           position: "top-right",
           autoClose: 3000,
@@ -1130,7 +1144,15 @@ export const PortfolioSummary = () => {
 
   const handleCreateChange = (e) => {
     if (e.value === "PORTFOLIO") {
-      histoy.push("/portfolioBuilder/new")
+      let portfolioDetails = {
+        portfolioId: "",
+        type: "new",
+      };
+      // history.push("/portfolioBuilder/new")
+      history.push({
+        pathname: "/portfolioBuilder/new",
+        state: portfolioDetails,
+      });
     } else if (e.value === "SERVICE") {
       setServiceOrBundlePrefix("SERVICE");
       setBundleTabs("1")
@@ -1389,14 +1411,27 @@ export const PortfolioSummary = () => {
                               </span>
                             </p>
                             <div className="d-flex align-items-center">
-                              <div className="white-space custom-checkbox">
+                              {/* <div className="white-space custom-checkbox">
                                 <FormGroup>
                                   <FormControlLabel
                                     control={index == 0 ? <Checkbox defaultChecked /> : <Checkbox />}
                                     label=""
                                   />
                                 </FormGroup>
-                              </div>
+                              </div> */}
+                              <a
+                                href={undefined}
+                                className="btn-sm"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <i
+                                  className="fa fa-pencil"
+                                  aria-hidden="true"
+                                  onClick={() =>
+                                    makePortfolioEditableEditable(data)
+                                  }
+                                ></i>
+                              </a>
                               <a href="#" className="ml-3 font-size-14">
                                 <FontAwesomeIcon icon={faShareAlt} />
                               </a>
@@ -1433,14 +1468,27 @@ export const PortfolioSummary = () => {
                             </span>
                           </p>
                           <div className="d-flex align-items-center">
-                            <div className="white-space custom-checkbox">
+                            {/* <div className="white-space custom-checkbox">
                               <FormGroup>
                                 <FormControlLabel
                                   control={<Checkbox />}
                                   label=""
                                 />
                               </FormGroup>
-                            </div>
+                            </div> */}
+                            <a
+                              href={undefined}
+                              className="btn-sm"
+                              style={{ cursor: "pointer" }}
+                            >
+                              <i
+                                className="fa fa-pencil"
+                                aria-hidden="true"
+                              // onClick={() =>
+                              //   makePortfolioEditableEditable(data)
+                              // }
+                              ></i>
+                            </a>
                             <a href="#" className="ml-3 font-size-14">
                               <FontAwesomeIcon icon={faShareAlt} />
                             </a>
@@ -2108,10 +2156,10 @@ export const PortfolioSummary = () => {
                     </div>
                   </div>
                   <div className="pl-3 py-3">
-                           <Link to="#" className="btn bg-primary text-white" onClick={handleLandingPageQuerySearchClick}>
-                             <SearchIcon /><span className="ml-1">Search</span>
-                           </Link>
-                         </div>
+                    <Link to="#" className="btn bg-primary text-white" onClick={handleLandingPageQuerySearchClick}>
+                      <SearchIcon /><span className="ml-1">Search</span>
+                    </Link>
+                  </div>
                 </div>
               </div>
               <div className="">
@@ -2490,7 +2538,7 @@ export const PortfolioSummary = () => {
                             type="text"
                             className="form-control text-primary border-radius-10"
                             name="make"
-                            placeholder="Search Model...."
+                            placeholder="Auto Fill Search Model...."
                             value={createServiceOrBundle.make}
                             onChange={handleAddServiceBundleChange}
                             disabled
@@ -2506,7 +2554,7 @@ export const PortfolioSummary = () => {
                             type="text"
                             className="form-control text-primary border-radius-10"
                             name="make"
-                            placeholder="Search Model...."
+                            placeholder="Auto Fill Search Model...."
                             value={createServiceOrBundle.family}
                             // onChange={handleAddServiceBundleChange}
                             disabled
@@ -2522,7 +2570,7 @@ export const PortfolioSummary = () => {
                             type="text"
                             className="form-control text-primary border-radius-10"
                             name="model"
-                            placeholder="Model(S)"
+                            placeholder="Model(Required*)"
                             value={createServiceOrBundle.model}
                             // onChange={handleAddServiceBundleChange}
                             onChange={(e) => handleModelInputSearch(e)}

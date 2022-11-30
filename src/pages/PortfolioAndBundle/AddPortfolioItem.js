@@ -9,6 +9,8 @@ import { Box, Button, Stack, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { useDispatch, useSelector } from "react-redux";
 
+import { ToastContainer, toast } from 'react-toastify';
+
 import { PortfolioContext } from "./ProtfolioContext";
 import { useAppSelector } from "../../app/hooks";
 import {
@@ -47,6 +49,7 @@ const AddPortfolioItem = (props) => {
   // const {stratgyTaskTypeKeyValue,categoryUsageKeyValue1} = useContext(PortfolioContext);
   const [addPortFolioItem, setAddportFolioItem] = useState({
     id: 0,
+    name: "",
     description: "",
     // usageIn:{label:categoryUsageKeyValue1.label,value:categoryUsageKeyValue1.value},
     // taskType: {label:stratgyTaskTypeKeyValue.label,value:stratgyTaskTypeKeyValue.value},
@@ -63,6 +66,7 @@ const AddPortfolioItem = (props) => {
     strategyTask: "",
     year: "",
     noOfYear: "",
+    headerdescription: "",
   });
 
   const frequencyOptions = [
@@ -203,13 +207,30 @@ const AddPortfolioItem = (props) => {
 
   const TabsEnableDisabledFun = () => {
     // console.log("Hello");
-    console.log("tabs : ", tabs)
-    console.log("props.compoFlag : ", props.compoFlag);
-    console.log("addPortFolioItem.templateId : ", addPortFolioItem.templateId === "");
+    // console.log("tabs : ", tabs)
+    // console.log("props.compoFlag : ", props.compoFlag);
+    // console.log("addPortFolioItem.templateId : ", addPortFolioItem.templateId === "");
 
     if (tabs == 1) {
-      setTabs((prev) => `${parseInt(prev) + 1}`)
-      setAddportFolioItem({ ...addPortFolioItem, templateId: "", repairOption: "" });
+      if ((props.compoFlag === "ITEM") &&
+        (addPortFolioItem.name == "" ||
+          addPortFolioItem.headerdescription == "" ||
+          addPortFolioItem.usageIn == "" ||
+          addPortFolioItem.taskType == "" ||
+          addPortFolioItem.quantity == "")) {
+        toast("😐" + "Please fill mandatory fields", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        setTabs((prev) => `${parseInt(prev) + 1}`)
+        setAddportFolioItem({ ...addPortFolioItem, templateId: "", repairOption: "" });
+      }
     } else if (tabs == 2 && addPortFolioItem.templateId == "") {
       // if(&& props.compoFlag === "ITEM")
       setTabs((prev) => `${parseInt(prev) + 1}`)
@@ -803,6 +824,31 @@ const AddPortfolioItem = (props) => {
                   />
                 </div>
               </div> */}
+              {props.compoFlag == "ITEM" ?
+                <>
+                  <div className="col-md-6 col-sm-6">
+                    <div className="form-group w-100">
+                      <label
+                        className="text-light-dark font-size-12 font-weight-500"
+                        for="exampleInputEmail1"
+                      >
+                        NAME
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control border-radius-10"
+                        placeholder="Required*"
+                        onChange={(e) =>
+                          setAddportFolioItem({
+                            ...addPortFolioItem,
+                            name: e.target.value,
+                          })
+                        }
+                        value={addPortFolioItem.name}
+                      />
+                    </div>
+                  </div>
+                </> : <></>}
               <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">
                   <label
@@ -811,7 +857,34 @@ const AddPortfolioItem = (props) => {
                   >
                     DESCRIPTION
                   </label>
-                  <input
+                  {props.compoFlag == "ITEM" ?
+                    <>
+                      <input
+                        type="text"
+                        className="form-control border-radius-10"
+                        placeholder="Required*"
+                        onChange={(e) =>
+                          setAddportFolioItem({
+                            ...addPortFolioItem,
+                            headerdescription: e.target.value,
+                          })
+                        }
+                        value={addPortFolioItem.headerdescription}
+                      />
+                    </> : <>
+                      <input
+                        type="text"
+                        className="form-control border-radius-10"
+                        placeholder="Optional"
+                        onChange={(e) =>
+                          setAddportFolioItem({
+                            ...addPortFolioItem,
+                            description: e.target.value,
+                          })
+                        }
+                        value={addPortFolioItem.description}
+                      /></>}
+                  {/* <input
                     type="text"
                     className="form-control border-radius-10 text-primary"
                     placeholder="Optional"
@@ -822,7 +895,7 @@ const AddPortfolioItem = (props) => {
                       })
                     }
                     value={addPortFolioItem.description}
-                  />
+                  /> */}
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
@@ -840,6 +913,7 @@ const AddPortfolioItem = (props) => {
                     // onChange={(e) =>
                     //   setAddportFolioItem({ ...addPortFolioItem, usageIn: e })
                     // }
+                    placeholder="Select(Required*)"
                     onChange={(e) => HandleCatUsage(e)}
                   />
                 </div>
@@ -864,6 +938,7 @@ const AddPortfolioItem = (props) => {
                     //     strategyTask: e,
                     //   })
                     // }
+                    placeholder="Select(Required*)"
                     onChange={(e) => HandleStrategyUsage(e)}
                     value={addPortFolioItem.strategyTask}
                     className="text-primary"
@@ -934,7 +1009,18 @@ const AddPortfolioItem = (props) => {
                   >
                     FREQUENCY
                   </label>
-                  <div className="icon-defold">
+                  <Select
+                    options={frequencyOptions}
+                    placeholder="Select....."
+                    onChange={(e) =>
+                      setAddportFolioItem({
+                        ...addPortFolioItem,
+                        frequency: e,
+                      })
+                    }
+                    value={addPortFolioItem.frequency}
+                  />
+                  {/* <div className="icon-defold">
                     <div className="form-control">
                       <Select
                         options={frequencyOptions}
@@ -948,11 +1034,11 @@ const AddPortfolioItem = (props) => {
                         }
                         value={addPortFolioItem.frequency}
                       />
-                      {/* <span className="search-icon searchIcon">
+                      <span className="search-icon searchIcon">
                         <SearchOutlinedIcon className="font-size-16" />
-                      </span> */}
+                      </span>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
@@ -1303,6 +1389,7 @@ const AddPortfolioItem = (props) => {
           </div>
         )}
       </div>
+      {/* <ToastContainer /> */}
     </>
   );
 };
