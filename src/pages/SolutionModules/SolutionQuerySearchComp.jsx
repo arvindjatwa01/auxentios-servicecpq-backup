@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 
 const SolutionQuerySearchComp = (props) => {
     const [count, setCount] = useState(1)
+    const [searchFor, setSearchFor] = useState(0);
     const [querySearchSelector, setQuerySearchSelector] = useState([
         {
             id: 0,
@@ -177,10 +178,10 @@ const SolutionQuerySearchComp = (props) => {
             //   querySearchSelector[0]?.inputSearch;
 
             if (props.compoFlag === "solutionTempItemSearch") {
-                var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:${querySearchSelector[0]?.inputSearch}`;
+                var searchStr = `${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
 
             } else {
-                var searchStr = `bundleFlag:PORTFOLIO AND ${querySearchSelector[0]?.selectFamily?.value}:${querySearchSelector[0]?.inputSearch}`;
+                var searchStr = `bundleFlag:PORTFOLIO AND ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
             }
             console.log("searchStr  try : ", searchStr);
             // var searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
@@ -338,6 +339,29 @@ const SolutionQuerySearchComp = (props) => {
             });
         }
     }
+
+    useEffect(() => {
+        if (props.compoFlag === "portfolioTempItemSearch") {
+            setSearchFor(1);
+        } else {
+            setSearchFor(2);
+        }
+
+    })
+    useEffect(() => {
+        setQuerySearchSelector([
+            {
+                id: 0,
+                selectFamily: "",
+                selectOperator: "",
+                inputSearch: "",
+                selectOptions: [],
+                selectedOption: "",
+                itemType: { label: '', value: '' },
+                itemTypeOperator: ""
+            },
+        ]);
+    }, [searchFor])
 
     // useEffect(() => {
     //     // setQuerySearchSelector([]);

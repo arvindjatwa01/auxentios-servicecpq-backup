@@ -33,7 +33,7 @@ const PriceCalculator = (props) => {
   });
 
   useEffect(() => {
-    if(props.priceCalculator){
+    if (props.priceCalculator) {
       setPriceCalculator(props.priceCalculator);
     }
   }, [props]);
@@ -119,6 +119,7 @@ const PriceCalculator = (props) => {
                       listPrice: e.target.value,
                     })
                   }
+                  disabled
                 />
               </div>
             </div>
@@ -202,7 +203,7 @@ const PriceCalculator = (props) => {
                 </div>
               </div>
             </div>
-            <div className="col-md-4 col-sm-4">
+            <div className="col-md-6 col-sm-6">
               <div className="form-group">
                 <label
                   className="text-light-dark font-size-12 font-weight-500"
@@ -223,10 +224,11 @@ const PriceCalculator = (props) => {
                     })
                   }
                   placeholder="$100"
+                  disabled
                 />
               </div>
             </div>
-            <div className="col-md-4 col-sm-4">
+            <div className="col-md-6 col-sm-6">
               <div className="form-group">
                 <label
                   className="text-light-dark font-size-12 font-weight-500"
@@ -310,14 +312,37 @@ const PriceCalculator = (props) => {
                   }
                   options={options}
                   placeholder="Year"
+                  isDisabled={true}
+                />
+              </div>
+            </div>
+            <div className="col-md-6 col-sm-6">
+              <div className="form-group">
+                <label
+                  className="text-light-dark font-size-12 font-weight-500"
+                  for="exampleInputEmail1"
+                >
+                  USAGE TYPE
+                </label>
+                <Select
+                  options={options}
+                  defaultValue={props?.priceCalculator?.usageType}
+                  value={priceCalculator.usageType}
+                  name="usageType"
+                  onChange={(e) =>
+                    setPriceCalculator({ ...priceCalculator, usageType: e })
+                  }
+                  placeholder="placeholder (Optional)"
+
+                  isDisabled={true}
                 />
               </div>
             </div>
           </div>
 
-          <h6 className="text-light-dark font-size-12 font-weight-500">
+          {/* <h6 className="text-light-dark font-size-12 font-weight-500">
             USAGE
-          </h6>
+          </h6> */}
           <div className="row">
             <div className="col-md-6 col-sm-6">
               <div className="form-group date-box">
@@ -344,6 +369,7 @@ const PriceCalculator = (props) => {
                         startUsage: e.target.value,
                       })
                     }
+                    disabled
                   />
                   <span className="hours-div">hours</span>
                 </div>
@@ -374,12 +400,13 @@ const PriceCalculator = (props) => {
                         endUsage: e.target.value,
                       })
                     }
+                    disabled
                   />
                   <span className="hours-div">hours</span>
                 </div>
               </div>
             </div>
-            <div className="col-md-6 col-sm-6">
+            {/* <div className="col-md-6 col-sm-6">
               <div className="form-group">
                 <label
                   className="text-light-dark font-size-12 font-weight-500"
@@ -396,14 +423,16 @@ const PriceCalculator = (props) => {
                     setPriceCalculator({ ...priceCalculator, usageType: e })
                   }
                   placeholder="placeholder (Optional)"
+
+                  isDisabled={true}
                 />
               </div>
-            </div>
+            </div> */}
           </div>
 
-          <h6 className="text-light-dark font-size-12 font-weight-500">
+          {/* <h6 className="text-light-dark font-size-12 font-weight-500">
             QUANTITY
-          </h6>
+          </h6> */}
           <div className="row">
             <div className="col-md-6 col-sm-6">
               <div className="form-group">
@@ -422,6 +451,8 @@ const PriceCalculator = (props) => {
                     setPriceCalculator({ ...priceCalculator, frequency: e })
                   }
                   placeholder="Cyclical"
+
+                  isDisabled={true}
                 />
               </div>
             </div>
@@ -449,29 +480,45 @@ const PriceCalculator = (props) => {
                         cycle: e.target.value,
                       })
                     }
+                    disabled
                   />
                   <span className="hours-div">hours</span>
                 </div>
               </div>
             </div>
           </div>
-
-          <div className="d-flex align-items-center">
-            <div>
-              <h6 className="text-light-dark font-size-12 font-weight-500 mr-4">
-                NET PRICE
-              </h6>
-              ${priceCalculator.netPrice}
+          <hr />
+          <div className="d-flex align-items-center justify-content-between">
+            <div className="d-flex">
+              <div>
+                <h6 className="text-light-dark font-size-12 font-weight-500 mr-4">
+                  NET PRICE
+                </h6>
+                ${priceCalculator.netPrice}
+              </div>
+              <div>
+                <h6 className="text-light-dark font-size-12 font-weight-500">
+                  TOTAL PRICE
+                </h6>
+                ${priceCalculator.totalPrice}
+              </div>
             </div>
-            <div>
-              <h6 className="text-light-dark font-size-12 font-weight-500">
-                TOTAL PRICE
-              </h6>
-              ${priceCalculator.totalPrice}
+            <div className="my-3 text-right">
+              <a
+                href="#"
+                className="btn text-white bg-primary"
+                onClick={
+                  props.serviceOrBundlePrefix === ""
+                    ? handleItemPriceSave
+                    : handleBundlePriceSave
+                }
+              >
+                Save
+              </a>
             </div>
           </div>
         </div>
-        <div className="m-3 text-right">
+        {/* <div className="m-3 text-right">
           <a
             href="#"
             className="btn text-white bg-primary"
@@ -483,7 +530,7 @@ const PriceCalculator = (props) => {
           >
             Save
           </a>
-        </div>
+        </div> */}
       </div>
     </>
   );
