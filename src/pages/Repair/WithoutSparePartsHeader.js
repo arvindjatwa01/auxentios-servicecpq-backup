@@ -124,7 +124,7 @@ function WithoutSparePartsHeader(props) {
     netPrice: 0.0,
     priceDate: new Date(),
     adjustedPrice: 0.0,
-    currency: "USD",
+    currency: "",
   });
 
   const validityOptions = [
@@ -173,9 +173,6 @@ function WithoutSparePartsHeader(props) {
       setBuilderId(state.builderId);
       setBId(state.bId);
       setGeneralData({ ...generalData, estimationNo: state.builderId });
-      if (state.type === "new") {
-        console.log("Created a new builder");
-      }
     } else if (state) {
       setBuilderId(state.builderId);
       setBId(state.bId);
@@ -285,8 +282,8 @@ function WithoutSparePartsHeader(props) {
       priceMethod: priceMethodOptions.find(
         (element) => element.value === result.priceMethod
       ),
-      netPrice: result.netPrice,
-      adjustedPrice: result.adjustedPrice,
+      netPrice: result.netPrice ? result.netPrice : 0.0,
+      adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
       currency: currencyOptions.find(
         (element) => element.value === result.currency
       ),
@@ -305,7 +302,6 @@ function WithoutSparePartsHeader(props) {
 
   // Search Customer with customer ID
   const handleCustSearch = async (searchCustfieldName, searchText) => {
-    // console.log("clear data", searchText);
     setSearchCustResults([]);
     customerData.customerID = searchText;
     if (searchText) {
@@ -349,7 +345,6 @@ function WithoutSparePartsHeader(props) {
 
   // Machine search based on model and serial number
   const handleMachineSearch = async (searchMachinefieldName, searchText) => {
-    // console.log("cleared the result", searchText);
     let searchQueryMachine = "";
     setSearchModelResults([]);
     setSearchSerialResults([]);
@@ -367,7 +362,6 @@ function WithoutSparePartsHeader(props) {
           : "equipmentNumber~" + searchText
         : "";
     }
-    // console.log("search query", searchQueryMachine);
     if (searchQueryMachine) {
       await machineSearch(searchQueryMachine)
         .then((result) => {
@@ -1012,6 +1006,16 @@ function WithoutSparePartsHeader(props) {
                                 </p>
                                 <h6 className="font-weight-500">
                                   {customerData.contactEmail}
+                                </h6>
+                              </div>
+                            </div>
+                            <div className="col-md-4 col-sm-4">
+                              <div className="form-group">
+                                <p className="font-size-12 font-weight-500 mb-2">
+                                  CONTACT NAME
+                                </p>
+                                <h6 className="font-weight-500">
+                                  {customerData.contactName}
                                 </h6>
                               </div>
                             </div>

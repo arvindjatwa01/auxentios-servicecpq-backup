@@ -123,7 +123,6 @@ export const RepairPartlist = () => {
 
   const handleQuerySearchClick = async () => {
     $(".scrollbar").css("display", "none");
-    // console.log("handleQuerySearchClick", querySearchSelector);
     var searchStr = "";
     querySearchSelector.map(function (item, i) {
       if (i === 0 && item.selectCategory.value && item.inputSearch) {

@@ -13,9 +13,6 @@ import {
 } from "services/searchServices";
 import SearchBox from "./components/SearchBox";
 import { NEW_SEGMENT } from "./CONSTANTS";
-import Loader from "react-js-loader";
-import { useDispatch } from "react-redux";
-import { repairActions } from "./dropdowns/repairSlice";
 import LoadingProgress from "./components/Loader";
 
 function WithoutSpareParts(props) {
@@ -49,9 +46,7 @@ function WithoutSpareParts(props) {
     id: "",
   };
   const [segmentData, setSegmentData] = useState(newSegment);
-  const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(repairActions.fetchDropdowns());
     fetchSegmentsOfBuilder();
   }, []);
 
@@ -63,14 +58,16 @@ function WithoutSpareParts(props) {
           if (result?.length > 0) {
             setSegments(result);
             setSegmentViewOnly(true);
-            let lastSegment = result[result.length - 1];
+            let segmentToLoad = activeElement.sId ? result.filter(
+              (x) => x.id === activeElement.sId
+            )[0] : result[result.length - 1];
             setSegmentData({
-              ...lastSegment,
+              ...segmentToLoad,
               header:
                 "Segment " +
-                lastSegment.segmentNumber +
+                segmentToLoad.segmentNumber +
                 " - " +
-                lastSegment.description,
+                segmentToLoad.description,
             });
           } else {
             loadNewSegmentUI();
@@ -153,7 +150,6 @@ function WithoutSpareParts(props) {
   };
 
   const handleAnchors = (direction) => {
-    console.log("entered handle anchors");
     setSegmentViewOnly(true);
     if (direction === "backward") {
       let segmentToLoad = [];
@@ -219,7 +215,6 @@ function WithoutSpareParts(props) {
         // fetchSegmentsOfBuilder();
         segments[segments.length - 1] = result;
         setShowAddNewButton(true);
-        console.log(segments);
         setSegmentViewOnly(true);
         handleSnack(
           "success",
@@ -312,7 +307,7 @@ function WithoutSpareParts(props) {
           <LoadingProgress/>
         ) : !segmentViewOnly ? (
           <>
-            <div className="row mt-4">
+            <div className="row mt-4 input-fields">
               <div className="col-md-6 col-sm-6">
                 <div class="form-group mt-3">
                   <label className="text-light-dark font-size-12 font-weight-500">
@@ -466,9 +461,9 @@ function WithoutSpareParts(props) {
                   <FontAwesomeIcon icon={faPlus} />
                 </span>
                 Add Operation
-                <span className="ml-2">
+                {/* <span className="ml-2">
                   <FontAwesomeIcon icon={faAngleDown} />
-                </span>
+                </span> */}
               </button>
             </div>
           </React.Fragment>

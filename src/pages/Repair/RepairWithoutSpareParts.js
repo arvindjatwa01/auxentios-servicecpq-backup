@@ -21,12 +21,15 @@ import { builderSearch, createBuilder } from "services/repairBuilderServices";
 import DynamicSearchComponent from "./components/DynamicSearchComponent";
 import { BUILDER_SEARCH_Q_OPTIONS, GRID_STYLE } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
+import { useDispatch } from "react-redux";
+import { repairActions } from "./dropdowns/repairSlice";
 
 export const RepairWithoutSpareParts = () => {
   const [recentBuilders, setRecentBuilders] = useState([]);
   const [recentBuildersLoading, setRecentBuildersLoading] = useState(false);
-
+  const dispatch = useDispatch();
   useEffect(() => {
+    dispatch(repairActions.fetchDropdowns());
     fetchRecentBuilders(
       `builderType:BUILDER_WITHOUT_SPAREPART&pageSize=10&sortColumn=updatedAt&orderBY=DESC`
     );
@@ -88,7 +91,6 @@ export const RepairWithoutSpareParts = () => {
 
   const handleQuerySearchClick = async () => {
     $(".scrollbar").css("display", "none");
-    // console.log("handleQuerySearchClick", querySearchSelector);
     var searchStr = "";
     querySearchSelector.map(function (item, i) {
       if (i === 0 && item.selectCategory.value && item.inputSearch) {
