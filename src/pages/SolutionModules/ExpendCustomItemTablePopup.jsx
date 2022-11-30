@@ -388,7 +388,7 @@ const ExpendCustomItemTablePopup = ({ data, ...props }) => {
                             className="text-light-dark font-size-12 font-weight-500"
                             for="exampleInputEmail1"
                         >
-                            FLAT PRICE / ADJUSTED PRICE
+                            FLAT PRICE / ADJUSTED PRIC
                         </label>
                         <input
                             type="text"

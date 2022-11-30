@@ -3826,7 +3826,7 @@ export function CustomizedPortfolio(props) {
                     <label
                         className="text-light-dark font-size-12 font-weight-500"
                     >
-                        PRICE METHOD
+                        PRICE METHO
                     </label>
                     <Select
                         options={priceMethodKeyValue}

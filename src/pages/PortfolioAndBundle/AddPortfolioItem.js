@@ -806,7 +806,7 @@ const AddPortfolioItem = (props) => {
           </Box>
           <TabPanel value="1">
             {/* <p className="mt-4">SUMMARY</p> */}
-            <div className="row mt-4">
+            <div className="row mt-4 input-fields">
               {/* <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">
                   <label
@@ -886,7 +886,7 @@ const AddPortfolioItem = (props) => {
                       /></>}
                   {/* <input
                     type="text"
-                    className="form-control border-radius-10"
+                    className="form-control border-radius-10 text-primary"
                     placeholder="Optional"
                     onChange={(e) =>
                       setAddportFolioItem({
@@ -908,6 +908,7 @@ const AddPortfolioItem = (props) => {
                   </label>
                   <Select
                     options={categoryList}
+                    className="text-primary"
                     value={addPortFolioItem.usageIn}
                     // onChange={(e) =>
                     //   setAddportFolioItem({ ...addPortFolioItem, usageIn: e })
@@ -920,7 +921,7 @@ const AddPortfolioItem = (props) => {
             </div>
 
             <p className="mt-4">STRATEGY</p>
-            <div className="row mt-4">
+            <div className="row mt-4 input-fields">
               <div className="col-md-6 col-sm-6">
                 <div className="form-group">
                   <label
@@ -940,6 +941,7 @@ const AddPortfolioItem = (props) => {
                     placeholder="Select(Required*)"
                     onChange={(e) => HandleStrategyUsage(e)}
                     value={addPortFolioItem.strategyTask}
+                    className="text-primary"
                   />
                   {/* <div className="icon-defold">
                     <div className="form-control">
@@ -971,6 +973,7 @@ const AddPortfolioItem = (props) => {
                   </label>
                   <Select
                     options={updatedTaskList}
+                    className="text-primary"
                     onChange={(e) =>
                       setAddportFolioItem({
                         ...addPortFolioItem,
@@ -1021,6 +1024,7 @@ const AddPortfolioItem = (props) => {
                     <div className="form-control">
                       <Select
                         options={frequencyOptions}
+                        className="text-primary"
                         placeholder="Select....."
                         onChange={(e) =>
                           setAddportFolioItem({
@@ -1056,6 +1060,7 @@ const AddPortfolioItem = (props) => {
                       { value: "per quarter", label: "per quarter" },
                     ]}
                     placeholder="Select..."
+                    className="text-primary"
                     onChange={(e) =>
                       setAddportFolioItem({ ...addPortFolioItem, unit: e })
                     }
@@ -1078,7 +1083,7 @@ const AddPortfolioItem = (props) => {
                     <input
                       type="number"
                       // type="text"
-                      className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                      className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                       placeholder="Recommended Value"
                       // defaultValue={props?.priceCalculator?.startUsage}
                       // value={priceCalculator.startUsage}
@@ -1118,7 +1123,7 @@ const AddPortfolioItem = (props) => {
                   </label>
                   <input
                     type="text"
-                    className="form-control border-radius-10"
+                    className="form-control border-radius-10 text-primary"
                     placeholder="QUANTITY"
                     onChange={(e) =>
                       setAddportFolioItem({
@@ -1140,7 +1145,7 @@ const AddPortfolioItem = (props) => {
                   </label>
                   <input
                     type="email"
-                    className="form-control border-radius-10"
+                    className="form-control border-radius-10 text-primary"
                     placeholder="NO. OF EVENTS"
                     onChange={(e) =>
                       setAddportFolioItem({
@@ -1205,7 +1210,7 @@ const AddPortfolioItem = (props) => {
           <TabPanel value="2">
             {" "}
             <p className="mt-4">TEMPLATES</p>
-            <div className="row">
+            <div className="row input-fields">
               <div className="col-md-6 col-sm-6">
                 <div className="form-group">
                   <label
@@ -1215,6 +1220,7 @@ const AddPortfolioItem = (props) => {
                     TEMPLATE ID
                   </label>
                   <Select
+                  className="text-primary"
                     options={options}
                     placeholder="TEMPLATE ID"
                     onChange={(e) =>
@@ -1256,6 +1262,7 @@ const AddPortfolioItem = (props) => {
                   <Select
                     options={options}
                     placeholder="TEMPLATE DESCRIPTION"
+                    className="text-primary"
                     onChange={(e) =>
                       setAddportFolioItem({
                         ...addPortFolioItem,
@@ -1300,7 +1307,7 @@ const AddPortfolioItem = (props) => {
           </TabPanel>
           <TabPanel value="3">
             <p className="mt-4">REPAIR OPTIONS</p>
-            <div className="row">
+            <div className="row input-fields">
               <div className="col-md-4 col-sm-4">
                 <div className="form-group">
                   <label
@@ -1311,6 +1318,7 @@ const AddPortfolioItem = (props) => {
                   </label>
                   <Select
                     options={options}
+                    className="text-primary"
                     placeholder="REPAIR OPTION"
                     onChange={(e) =>
                       setAddportFolioItem({

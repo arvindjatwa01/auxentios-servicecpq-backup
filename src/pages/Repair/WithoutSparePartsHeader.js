@@ -91,6 +91,9 @@ function WithoutSparePartsHeader(props) {
     contactName: "",
     contactPhone: "",
     customerGroup: "",
+    customerSegment: "",
+    regionOrState: "",
+    country:""
   });
   const [machineData, setMachineData] = useState({
     make: "",
@@ -101,6 +104,8 @@ function WithoutSparePartsHeader(props) {
     fleetNo: "",
     registrationNo: "",
     chasisNo: "",
+    productSegment: "",
+    productGroup: ""
   });
   const [generalData, setGeneralData] = useState({
     estimationDate: new Date(),
@@ -246,6 +251,9 @@ function WithoutSparePartsHeader(props) {
       customerGroup: result.customerGroup,
       customerName: result.customerName,
       source: result.source ? result.source : "User Generated",
+      customerSegment: result.customerSegment,
+      country: result.country,
+      regionOrState: result.regionOrState
     });
     setMachineData({
       make: result.make,
@@ -256,6 +264,8 @@ function WithoutSparePartsHeader(props) {
       smu: result.smu,
       registrationNo: result.registrationNo,
       chasisNo: result.chasisNo,
+      productGroup: result.productGroup,
+      productSegment: result.productSegment
     });
     setGeneralData({
       description: result.description,
@@ -327,9 +337,13 @@ function WithoutSparePartsHeader(props) {
       customerID: currentItem.customerId,
       contactEmail: currentItem.email,
       contactName: currentItem.contactName,
-      customerGroup: currentItem.priceGroup,
+      customerGroup: currentItem.customerGroup,
       customerName: currentItem.fullName,
+      customerSegment: currentItem.customerSegment,
+      country: currentItem.addressDTO?.country,
+      regionOrState: currentItem.addressDTO?.regionOrState
     });
+    console.log(currentItem);
     setSearchCustResults([]);
   };
 
@@ -410,6 +424,8 @@ function WithoutSparePartsHeader(props) {
         smu: currentItem.sensorId,
         make: currentItem.maker,
         family: currentItem.market,
+        productGroup: currentItem.productGroup,
+        productSegment: currentItem.productSegment
       });
       setSearchSerialResults([]);
     }
@@ -445,7 +461,11 @@ function WithoutSparePartsHeader(props) {
       contactEmail: customerData.contactEmail,
       customerGroup: customerData.customerGroup,
       contactPhone: customerData.contactPhone,
+      customerSegment: customerData.customerSegment,
+      regionOrState: customerData.regionOrState,
+      country: customerData.country
     };
+    console.log(data);
     const validator = new Validator();
     if (!validator.emailValidation(customerData.contactEmail)) {
       alert("Please enter the email address in correct format");
@@ -479,6 +499,8 @@ function WithoutSparePartsHeader(props) {
       registrationNo: machineData.registrationNo,
       chasisNo: machineData.chasisNo,
       serialNo: machineData.serialNo,
+      productGroup: machineData.productGroup,
+      productSegment: machineData.productSegment
     };
     updateBuilderMachine(bId, data)
       .then((result) => {

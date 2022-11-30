@@ -62,7 +62,7 @@ export const RepairPartlist = () => {
     setRecentBuildersLoading(true);
 
     builderSearch(
-      `builderType:PARTLIST&pageSize=10&sortColumn=updatedAt&orderBY=DESC`
+      `builderType:PARTLIST AND saved:true&pageSize=10&sortColumn=updatedAt&orderBY=DESC`
     )
       .then((result) => {
         setRecentPartlists(result);
@@ -150,7 +150,7 @@ export const RepairPartlist = () => {
     try {
       if (searchStr) {
         const res = await builderSearch(
-          `builderType:PARTLIST AND ${searchStr}`
+          `builderType:PARTLIST AND saved:true AND ${searchStr}`
         );
         setMasterData(res);
       } else {
@@ -376,7 +376,7 @@ export const RepairPartlist = () => {
               columns={searchBuilderColumns}
               pageSize={5}
               rowsPerPageOptions={[5]}
-              // autoHeight
+              autoHeight
             />
           </div>
         </div>
