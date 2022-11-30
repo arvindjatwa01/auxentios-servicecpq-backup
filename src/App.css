@@ -3291,6 +3291,8 @@ button.bg-primary:hover {
   color: #872ff7 !important;
   font-size: 17px !important;
 }
+.input-fields .css-14el2xx-placeholder{color: #872ff7 !important; font-size: 17px !important; font-weight: 500 !important;}
+.input-fields .css-qc6sy-singleValue{color: #872ff7 !important; font-size: 17px !important; font-weight: 500 !important;}
 
 .input-fields .form-control {
   font-size: 17px !important;
@@ -3424,3 +3426,9 @@ font-size: 12px;}
 .left-select-div .css-b62m3t-container{border-left: 1px solid #EEEEEE !important;}
 .left-select-div .css-1pahdxg-control{border: none !important; background: #F5F5F5 !important;}
 .left-select-div .css-6j8wv5-Input{min-width: 80px !important;}
+.cls-1{fill:#fff;}
+.cls-2{fill:#872ff7;}
+.st0{fill:#FFFFFF;}
+	.st1{fill:#872FF7;}
+	.st2{fill:none;stroke:#872FF7;stroke-width:2.5;stroke-linecap:round;stroke-miterlimit:10;}
+	.st3{fill:#72BF44;}

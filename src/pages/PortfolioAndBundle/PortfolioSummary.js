@@ -8,6 +8,8 @@ import "react-toastify/dist/ReactToastify.css";
 // import Select from "@mui/material/Select";
 
 import DataTable from "react-data-table-component";
+import DateFnsUtils from "@date-io/date-fns";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 
 import { FileUploader } from "react-drag-drop-files";
 import { MuiMenuComponent } from "../Operational/index";
@@ -1320,7 +1322,21 @@ export const PortfolioSummary = () => {
     var finalDateString = hour + ":" + minutes + "" + format + ", " + day + " " + monthName[month] + " " + year;
     return finalDateString;
   }
-
+  const [administrative, setAdministrative] = useState({
+    preparedBy: null,
+    approvedBy: null,
+    preparedOn: new Date(),
+    revisedBy: null,
+    revisedOn: new Date(),
+    branch: null,
+    offerValidity: null,
+  });
+  const handleAdministrativreChange = (e) => {
+    console.log("handleAdministrativreChange", administrative);
+    var value = e.target.value;
+    var name = e.target.name;
+    setAdministrative({ ...administrative, [name]: value });
+  };
   // console.log("--------=-- ", recentBundleService);
   return (
     <>
@@ -2273,7 +2289,8 @@ export const PortfolioSummary = () => {
                   {serviceOrBundlePrefix === "BUNDLE" && (
                     <Tab label={`${serviceOrBundlePrefix} ITEMS`} value="2" />
                   )}
-                  <Tab label="PRICE CALCULATOR" value="3" />
+                  <Tab label="ADMINISTRATIVE" value="3" />
+                  <Tab label="PRICE CALCULATOR" value="4" />
                 </TabList>
               </Box>
               <TabPanel value="1">
@@ -2345,7 +2362,7 @@ export const PortfolioSummary = () => {
                         />
                       </div>
                     </h5>
-                    <div className="row mt-4">
+                    <div className="row mt-4 input-fields">
                       <div className="col-md-4 col-sm-3">
                         <div className="form-group">
                           <label className="text-light-dark font-size-12 font-weight-500">
@@ -2365,7 +2382,7 @@ export const PortfolioSummary = () => {
                           /> */}
                           <input
                             type="text"
-                            className="form-control border-radius-10"
+                            className="form-control text-primary border-radius-10"
                             name="name"
                             placeholder="Name (Required*)"
                             onChange={handleAddServiceBundleChange}
@@ -2380,7 +2397,7 @@ export const PortfolioSummary = () => {
                           </label>
                           <input
                             type="text"
-                            className="form-control border-radius-10"
+                            className="form-control text-primary border-radius-10"
                             name="description"
                             placeholder="Description (Required*)"
                             value={createServiceOrBundle.description}
@@ -2395,7 +2412,7 @@ export const PortfolioSummary = () => {
                           </label>
                           <input
                             type="text"
-                            className="form-control border-radius-10"
+                            className="form-control text-primary border-radius-10"
                             name="bundleFlag"
                             placeholder="Bundle Flag"
                             value={
@@ -2418,7 +2435,7 @@ export const PortfolioSummary = () => {
                           </label>
                           <input
                             type="text"
-                            className="form-control border-radius-10"
+                            className="form-control text-primary border-radius-10"
                             name="reference"
                             placeholder="Reference"
                             value={createServiceOrBundle.reference}
@@ -2434,6 +2451,7 @@ export const PortfolioSummary = () => {
                           <Select
                             // options={options}
                             options={customerSegmentKeyValue}
+                            className="text-primary"
                             onChange={(e) => setCreateServiceOrBundle({ ...createServiceOrBundle, customerSegment: e, })}
                             value={createServiceOrBundle.customerSegment}
                             placeholder="Customer Segment"
@@ -2450,6 +2468,7 @@ export const PortfolioSummary = () => {
                           </label>
                           <Select
                             isClearable={true}
+                            className="text-primary"
                             value={createServiceOrBundle.machineComponent}
                             onChange={(e) =>
                               setCreateServiceOrBundle({
@@ -2469,7 +2488,7 @@ export const PortfolioSummary = () => {
                           </label>
                           <input
                             type="text"
-                            className="form-control border-radius-10"
+                            className="form-control text-primary border-radius-10"
                             name="make"
                             placeholder="Search Model...."
                             value={createServiceOrBundle.make}
@@ -2485,7 +2504,7 @@ export const PortfolioSummary = () => {
                           </label>
                           <input
                             type="text"
-                            className="form-control border-radius-10"
+                            className="form-control text-primary border-radius-10"
                             name="make"
                             placeholder="Search Model...."
                             value={createServiceOrBundle.family}
@@ -2501,7 +2520,7 @@ export const PortfolioSummary = () => {
                           </label>
                           <input
                             type="text"
-                            className="form-control border-radius-10"
+                            className="form-control text-primary border-radius-10"
                             name="model"
                             placeholder="Model(S)"
                             value={createServiceOrBundle.model}
@@ -2542,6 +2561,7 @@ export const PortfolioSummary = () => {
                           </label>
                           <Select
                             onChange={(e) => selectPrefixOption(e)}
+                            className="text-primary"
                             value={selectedPrefixOption}
                             options={querySearchModelPrefixOption}
                             placeholder="select....."
@@ -2599,6 +2619,176 @@ export const PortfolioSummary = () => {
                 />
               </TabPanel>
               <TabPanel value="3">
+              <div className="row mt-4 input-fields">
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          PREPARED BY
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control text-primary border-radius-10"
+                          name="preparedBy"
+                          value={administrative.preparedBy}
+                          onChange={handleAdministrativreChange}
+                          placeholder="Required"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          APPROVED BY
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control text-primary border-radius-10"
+                          placeholder="Optional"
+                          name="approvedBy"
+                          value={administrative.approvedBy}
+                          onChange={handleAdministrativreChange}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      {/* <div className="form-group"> */}
+                      <label
+                        className="text-light-dark font-size-14 font-weight-500"
+                        htmlFor="exampleInputEmail1"
+                      >
+                        PREPARED ON
+                      </label>
+                      {/* <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="Optional"
+                          name="preparedOn"
+                          value={administrative.preparedOn}
+                          onChange={handleAdministrativreChange}
+                        /> */}
+                      <div className="d-flex align-items-center date-box w-100">
+                        <div className="form-group w-100">
+                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <DatePicker
+                              variant="inline"
+                              format="dd/MM/yyyy"
+                              className="form-controldate border-radius-10"
+                              label=""
+                              name="preparedOn"
+                              value={administrative.preparedOn}
+                              onChange={(e) =>
+                                setAdministrative({
+                                  ...administrative,
+                                  preparedOn: e,
+                                })
+                              }
+                            />
+                          </MuiPickersUtilsProvider>
+                        </div>
+                      </div>
+                      {/* </div> */}
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          REVISED BY
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10 text-primary"
+                          placeholder="Optional"
+                          name="revisedBy"
+                          value={administrative.revisedBy}
+                          onChange={handleAdministrativreChange}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          REVISED ON
+                        </label>
+                        {/* <input
+                          type="text"
+                          className="form-control border-radius-10"
+                          placeholder="Optional"
+                          name="revisedOn"
+                          value={administrative.revisedOn}
+                          onChange={handleAdministrativreChange}
+                        /> */}
+                        <div className="d-flex align-items-center date-box w-100">
+                          <div className="form-group w-100 m-0">
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                              <DatePicker
+                                variant="inline"
+                                format="dd/MM/yyyy"
+                                className="form-controldate border-radius-10"
+                                label=""
+                                name="revisedOn"
+                                value={administrative.revisedOn}
+                                onChange={(e) =>
+                                  setAdministrative({
+                                    ...administrative,
+                                    revisedOn: e,
+                                  })
+                                }
+                              />
+                            </MuiPickersUtilsProvider>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          SALSE OFFICE/BRANCH
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10 text-primary"
+                          name="branch"
+                          value={administrative.branch}
+                          onChange={handleAdministrativreChange}
+                          placeholder="Required"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-4 col-sm-4">
+                      <div className="form-group">
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          OFFER VALIDITY
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10 text-primary"
+                          placeholder="Optional"
+                          name="offerValidity"
+                          value={administrative.offerValidity}
+                          onChange={handleAdministrativreChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+              </TabPanel>
+              <TabPanel value="4">
                 <PriceCalculator
                   serviceOrBundlePrefix={serviceOrBundlePrefix}
                   setBundleTabs={setBundleTabs}

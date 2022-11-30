@@ -3166,7 +3166,7 @@ export const Analytics = () => {
                      </div> */}
                   </div>
                </div>
-               <div className="bg-primary px-3 mb-3">
+               <div className="bg-primary px-3 mb-3 border-radius-10">
                   <div className="d-block d-md-flex justify-content-between align-items-center">
 
                      <div className=" mx-2">
@@ -3179,7 +3179,7 @@ export const Analytics = () => {
                                  <a href="#" className="ml-3 text-white"><ShareOutlinedIcon /></a>
                               </p>
                            </div>
-                           <div className="d-flex justify-content-between align-items-center w-100 ">
+                           <div className="d-flex justify-content-between align-items-center w-100 mr-5">
                               <div className="row align-items-center m-0">
                                  {
                                     querySearchSelector.map((obj, i) => {
@@ -3262,11 +3262,11 @@ export const Analytics = () => {
 
                               </div>
                            </div>
-                           {/* <div className="px-3">
+                           <div className="pl-3 py-3">
                               <Link to="#" className="btn bg-primary text-white" onClick={handleQuerySearchClick}>
                                  <SearchIcon /><span className="ml-1">Search</span>
                               </Link>
-                           </div> */}
+                           </div>
                         </div>
 
                      </div>
@@ -3275,9 +3275,9 @@ export const Analytics = () => {
                            {/* <Link to="#" className="p-1 text-white" data-toggle="modal" data-target="#Datatable"  >
                               <SearchIcon /><span className="ml-1">Search</span>
                            </Link> */}
-                           <Link to="#" className="p-1 text-white" onClick={handleQuerySearchClick}>
+                           {/* <Link to="#" className="p-1 text-white" onClick={handleQuerySearchClick}>
                               <SearchIcon /><span className="ml-1">Search</span>
-                           </Link>
+                           </Link> */}
 
                         </div>
 

@@ -76,7 +76,7 @@ const PriceCalculator = (props) => {
     <>
       <div className="">
         <div className="p-3">
-          <div className="row">
+          <div className="row input-fields">
             <div className="col-md-6 col-sm-6">
               <div className="form-group">
                 <label
@@ -87,6 +87,7 @@ const PriceCalculator = (props) => {
                 </label>
                 <Select
                   options={options}
+                  className="text-primary"
                   defaultValue={props?.priceCalculator?.priceMethod}
                   value={priceCalculator.priceMethod}
                   name="priceMethod"
@@ -107,7 +108,7 @@ const PriceCalculator = (props) => {
                 </label>
                 <input
                   type="text"
-                  className="form-control border-radius-10"
+                  className="form-control border-radius-10 text-primary"
                   aria-describedby="emailHelp"
                   placeholder="$100"
                   defaultValue={props?.priceCalculator?.listPrice}
@@ -135,6 +136,7 @@ const PriceCalculator = (props) => {
                   <div className="">
                     <Select
                       isClearable={true}
+                      className="text-primary"
                       value={priceCalculator.priceAdditionalSelect}
                       name="priceAdditionalSelect"
                       onChange={(e) =>
@@ -149,7 +151,7 @@ const PriceCalculator = (props) => {
                   </div>
                   <input
                     type="text"
-                    className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                    className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
                     placeholder="10%"
                     defaultValue={props?.priceCalculator?.priceAdditionalInput}
                     value={priceCalculator.priceAdditionalInput}
@@ -174,7 +176,7 @@ const PriceCalculator = (props) => {
                 </label>
                 <div className=" d-flex align-items-center form-control-date">
                   <Select
-                    className="select-input"
+                    className="select-input text-primary"
                     value={priceCalculator.priceEscalationSelect}
                     name="priceEscalationSelect"
                     onChange={(e) =>
@@ -188,7 +190,7 @@ const PriceCalculator = (props) => {
                   />
                   <input
                     type="text"
-                    className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                     placeholder="20%"
                     defaultValue={props?.priceCalculator?.priceEscalationInput}
                     value={priceCalculator.priceEscalationInput}
@@ -213,7 +215,7 @@ const PriceCalculator = (props) => {
                 </label>
                 <input
                   type="text"
-                  className="form-control border-radius-10"
+                  className="form-control border-radius-10 text-primary"
                   defaultValue={props?.priceCalculator?.calculatedPrice}
                   value={priceCalculator.calculatedPrice}
                   name="calculatedPrice"
@@ -238,7 +240,7 @@ const PriceCalculator = (props) => {
                 </label>
                 <input
                   type="text"
-                  className="form-control border-radius-10"
+                  className="form-control border-radius-10 text-primary"
                   value={priceCalculator.flatPrice}
                   name="flatPrice"
                   onChange={(e) =>
@@ -252,7 +254,7 @@ const PriceCalculator = (props) => {
               </div>
             </div>
           </div>
-          <div className="row">
+          <div className="row input-fields">
             <div className="col-md-6 col-sm-6">
               <div className="form-group date-box">
                 <label
@@ -266,6 +268,7 @@ const PriceCalculator = (props) => {
                     <Select
                       value={priceCalculator.discountTypeSelect}
                       name="discountTypeSelect"
+                      className="text-primary"
                       onChange={(e) =>
                         setPriceCalculator({
                           ...priceCalculator,
@@ -279,7 +282,7 @@ const PriceCalculator = (props) => {
                   </div>
                   <input
                     type="text"
-                    className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                    className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
                     value={priceCalculator.discountTypeInput}
                     name="discountTypeInput"
                     onChange={(e) =>
@@ -294,7 +297,7 @@ const PriceCalculator = (props) => {
               </div>
             </div>
           </div>
-          <div className="row">
+          <div className="row input-fields">
             <div className="col-md-6 col-sm-6">
               <div className="form-group">
                 <label
@@ -305,6 +308,7 @@ const PriceCalculator = (props) => {
                 </label>
                 <Select
                   defaultValue={props?.priceCalculator?.priceYear}
+                  className="text-primary"
                   value={priceCalculator.priceYear}
                   name="priceYear"
                   onChange={(e) =>
@@ -326,6 +330,7 @@ const PriceCalculator = (props) => {
                 </label>
                 <Select
                   options={options}
+                  className="text-primary"
                   defaultValue={props?.priceCalculator?.usageType}
                   value={priceCalculator.usageType}
                   name="usageType"
@@ -343,7 +348,7 @@ const PriceCalculator = (props) => {
           {/* <h6 className="text-light-dark font-size-12 font-weight-500">
             USAGE
           </h6> */}
-          <div className="row">
+          <div className="row input-fields">
             <div className="col-md-6 col-sm-6">
               <div className="form-group date-box">
                 <label
@@ -358,7 +363,7 @@ const PriceCalculator = (props) => {
                 >
                   <input
                     type="text"
-                    className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                     placeholder="per hour"
                     defaultValue={props?.priceCalculator?.startUsage}
                     value={priceCalculator.startUsage}
@@ -389,7 +394,7 @@ const PriceCalculator = (props) => {
                 >
                   <input
                     type="text"
-                    className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                     placeholder="10%"
                     defaultValue={props?.priceCalculator?.endUsage}
                     value={priceCalculator.endUsage}
@@ -433,7 +438,7 @@ const PriceCalculator = (props) => {
           {/* <h6 className="text-light-dark font-size-12 font-weight-500">
             QUANTITY
           </h6> */}
-          <div className="row">
+          <div className="row input-fields">
             <div className="col-md-6 col-sm-6">
               <div className="form-group">
                 <label
@@ -444,6 +449,7 @@ const PriceCalculator = (props) => {
                 </label>
                 <Select
                   defaultValue={props?.priceCalculator?.frequency}
+                  className="text-primary"
                   options={frequencyOptions}
                   value={priceCalculator.frequency}
                   name="frequency"
@@ -470,7 +476,7 @@ const PriceCalculator = (props) => {
                 >
                   <input
                     type="text"
-                    className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                    className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                     placeholder="250"
                     value={priceCalculator.cycle}
                     name="cycle"
