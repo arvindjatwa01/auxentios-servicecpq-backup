@@ -230,6 +230,9 @@ function PartList(props) {
     contactName: "",
     contactPhone: "",
     customerGroup: "",
+    customerSegment: "",
+    regionOrState: "",
+    country:""
   });
   const [machineData, setMachineData] = useState({
     make: "",
@@ -240,6 +243,8 @@ function PartList(props) {
     fleetNo: "",
     registrationNo: "",
     chasisNo: "",
+    productSegment: "",
+    productGroup: ""
   });
   const [generalData, setGeneralData] = useState({
     estimationDate: new Date(),
@@ -308,10 +313,6 @@ function PartList(props) {
   const handleVersion = (e) => {
     setSelectedVersion(e);
     fetchAllDetails(builderId, e.value);
-    // fetchBuilderVersionDet(builderId, e.value).then((result) => {
-    //   populateHeader(result);
-    //   fetchPartlist(result.id);
-    // });
   };
 
   useEffect(() => {
@@ -335,21 +336,6 @@ function PartList(props) {
       fetchAllDetails(state.builderId, state.versionNumber);
     }
   }, []);
-
-  // const fetchAllDetails = async (builderId, partlistId) => {
-  //   if (builderId && partlistId) {
-  //     setHeaderLoading(true);
-  //     await fetchBuilderDetails(builderId)
-  //       .then((result) => {
-  //         populateHeader(result);
-  //       })
-  //       .catch((err) => {
-  //         handleSnack("error", "Error occured while fetching header details");
-  //       });
-  //     setHeaderLoading(false);
-  //     fetchPartsOfPartlist(partlistId, INITIAL_PAGE_NO, INITIAL_PAGE_SIZE);
-  //   }
-  // };
 
   const fetchAllDetails = (builderId, versionNumber) => {
     console.log(builderId, versionNumber)
@@ -383,7 +369,6 @@ function PartList(props) {
       : "";
     let filter = filterQuery ? `&search=${filterQuery}` : "";
     const query = `pageNumber=${pageNo}&pageSize=${rowsPerPage}${sort}${filter}`;
-    // console.log(page, pageSize, pageNo, rowsPerPage);
     await fetchPartsFromPartlist(partlistId, query)
       .then((partsResult) => {
         setTotalPartsCount(partsResult.totalRows);
@@ -443,6 +428,9 @@ function PartList(props) {
       customerGroup: result.customerGroup,
       customerName: result.customerName,
       source: result.source ? result.source : "User Generated",
+      customerSegment: result.customerSegment,
+      country: result.country,
+      regionOrState: result.regionOrState
     });
     setMachineData({
       make: result.make,
@@ -453,6 +441,8 @@ function PartList(props) {
       smu: result.smu,
       registrationNo: result.registrationNo,
       chasisNo: result.chasisNo,
+      productSegment: result.productSegment,
+      productGroup: result.productGroup
     });
     setGeneralData({
       description: result.description,
@@ -574,8 +564,11 @@ function PartList(props) {
       customerID: currentItem.customerId,
       contactEmail: currentItem.email,
       contactName: currentItem.contactName,
-      customerGroup: currentItem.priceGroup,
+      customerGroup: currentItem.customerGroup,
       customerName: currentItem.fullName,
+      customerSegment: currentItem.customerSegment,
+      country: currentItem.addressDTO?.country,
+      regionOrState: currentItem.addressDTO?.regionOrState
     });
     setSearchCustResults([]);
   };
@@ -659,6 +652,8 @@ function PartList(props) {
         smu: currentItem.sensorId,
         make: currentItem.maker,
         family: currentItem.market,
+        productSegment: currentItem.productSegment,
+        productGroup: currentItem.productGroup
       });
       setSearchSerialResults([]);
     }
@@ -694,6 +689,9 @@ function PartList(props) {
       contactEmail: customerData.contactEmail,
       customerGroup: customerData.customerGroup,
       contactPhone: customerData.contactPhone,
+      customerSegment: customerData.customerSegment,
+      regionOrState: customerData.regionOrState,
+      country: customerData.country
     };
     const validator = new Validator();
     if (!validator.emailValidation(customerData.contactEmail)) {
@@ -733,6 +731,8 @@ function PartList(props) {
       registrationNo: machineData.registrationNo,
       chasisNo: machineData.chasisNo,
       serialNo: machineData.serialNo,
+      productGroup: machineData.productGroup,
+      productSegment: machineData.productSegment
     };
     updateBuilderMachine(bId, data)
       .then((result) => {
@@ -867,6 +867,12 @@ function PartList(props) {
     setAddPartOpen(true);
   };
 
+  const handleUploadClick = () => {
+    if(viewOnlyTab.custViewOnly && viewOnlyTab.estViewOnly && viewOnlyTab.generalViewOnly && viewOnlyTab.machineViewOnly && viewOnlyTab.priceViewOnly)
+      setFileUploadOpen(true);
+    else
+      handleSnack("info", "Please save all the header details!")
+  }
   //Uplaod spare parts through excel sheet
   const handleUploadFile = async () => {
     // console.log("Upload");
@@ -1189,10 +1195,10 @@ function PartList(props) {
         partNumber: item.partNumber,
         partType: item.partType,
         quantity: 1,
-        unitPrice: item.listPrice,
-        extendedPrice: 0,
-        currency: item.currency,
-        totalPrice: 0,
+        // unitPrice: item.listPrice,
+        // extendedPrice: 0,
+        currency: pricingData.currency?.value,
+        // totalPrice: 0,
         comment: "",
         description: item.partDescription,
         unitOfMeasure: item.salesUnit,
@@ -2616,16 +2622,8 @@ function PartList(props) {
               </div>
               <div className="col-4">
                 <div className="text-right pl-3 py-3">
-                  {/* <button
-                    type="button"
-                    className="btn bg-primary text-white"
-                    onClick={handleQuerySearchClick}
-                  >
-                    <SearchIcon />
-                    <span className="ml-1">Search</span>
-                  </button> */}
                   <button
-                    onClick={() => setFileUploadOpen(true)}
+                    onClick={handleUploadClick}
                     style={{ cursor: "pointer" }}
                     className="btn bg-primary text-white mx-2"
                   >
@@ -2644,6 +2642,7 @@ function PartList(props) {
             <DataGrid
               sx={GRID_STYLE}
               rows={spareparts}
+              autoHeight
               columns={columnsPartList.map((column) => ({
                 ...column,
                 filterOperators,

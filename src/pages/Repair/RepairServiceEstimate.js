@@ -2048,14 +2048,6 @@ function RepairServiceEstimate(props) {
                               </div>
                             </div>
                           </div>
-                          {/* <div
-                          className=""
-                          style={{
-                            height: 300,
-                            width: "100%",
-                            backgroundColor: "#fff",
-                          }}
-                        > */}
                           <DataGrid
                             sx={GRID_STYLE}
                             paginationMode="client"
@@ -2063,6 +2055,7 @@ function RepairServiceEstimate(props) {
                             columns={laborColumns}
                             pageSize={5}
                             rowsPerPageOptions={[5]}
+                            autoHeight
                           />
                         </div>
                       </React.Fragment>
@@ -2443,6 +2436,7 @@ function RepairServiceEstimate(props) {
                             columns={columnsConsumables}
                             pageSize={5}
                             rowsPerPageOptions={[5]}
+                            autoHeight
                             // checkboxSelection
                             // onCellClick={(e) => handleRowClick(e)}
                           />
@@ -2835,6 +2829,7 @@ function RepairServiceEstimate(props) {
                             rows={extWorkItems}
                             columns={columnsExternal}
                             pageSize={5}
+                            autoHeight
                             rowsPerPageOptions={[5]}
                             // onCellClick={(e) => handleRowClick(e)}
                           />
@@ -3255,6 +3250,7 @@ function RepairServiceEstimate(props) {
                     rows={masterData}
                     columns={columnsConsumableSearch}
                     pageSize={5}
+                    autoHeight
                     rowsPerPageOptions={[5]}
                     checkboxSelection
                     // onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
@@ -3298,6 +3294,7 @@ function RepairServiceEstimate(props) {
                     rows={masterData}
                     columns={columnsExtWorkSearch}
                     pageSize={5}
+                    autoHeight
                     rowsPerPageOptions={[5]}
                     checkboxSelection
                     // onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}

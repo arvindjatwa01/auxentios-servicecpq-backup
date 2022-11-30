@@ -31,7 +31,7 @@ export const RepairWithoutSpareParts = () => {
   useEffect(() => {
     dispatch(repairActions.fetchDropdowns());
     fetchRecentBuilders(
-      `builderType:BUILDER_WITHOUT_SPAREPART&pageSize=10&sortColumn=updatedAt&orderBY=DESC`
+      `builderType:BUILDER_WITHOUT_SPAREPART AND saved:true&pageSize=10&sortColumn=updatedAt&orderBY=DESC`
     );
   }, []);
 
@@ -115,7 +115,7 @@ export const RepairWithoutSpareParts = () => {
     try {
       if (searchStr) {
         const res = await builderSearch(
-          `builderType:BUILDER_WITHOUT_SPAREPART AND ${searchStr}`
+          `builderType:BUILDER_WITHOUT_SPAREPART AND saved:true AND ${searchStr}`
         );
         setMasterData(res);
       } else {
@@ -341,7 +341,7 @@ export const RepairWithoutSpareParts = () => {
                 columns={searchBuilderColumns}
                 pageSize={5}
                 rowsPerPageOptions={[5]}
-                // autoHeight
+                autoHeight
               />
           </div>
         </div>

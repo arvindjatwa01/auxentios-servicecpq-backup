@@ -268,7 +268,11 @@ const AddNewSparepartModal = (props) => {
                     <input
                       type="Number"
                       className="form-control border-radius-10"
-                      value={parseFloat(props.sparePart.unitPrice).toFixed(2)}
+                      value={
+                        props.sparePart.unitPrice
+                          ? parseFloat(props.sparePart.unitPrice).toFixed(2)
+                          : 0.0
+                      }
                       disabled
                       placeholder="Required"
                     />
@@ -284,9 +288,11 @@ const AddNewSparepartModal = (props) => {
                       className="form-control border-radius-10"
                       disabled
                       // onChange={(e) => props.setSparePart({...props.sparePart, extendedPrice: e.target.value})}
-                      value={parseFloat(props.sparePart.extendedPrice).toFixed(
-                        2
-                      )}
+                      value={
+                        props.sparePart.extendedPrice
+                          ? parseFloat(props.sparePart.extendedPrice).toFixed(2)
+                          : 0.0
+                      }
                       placeholder="Optional"
                     />
                   </div>
@@ -323,12 +329,14 @@ const AddNewSparepartModal = (props) => {
                         props.setSparePart({
                           ...props.sparePart,
                           usagePercentage: e.target.value,
-                          totalPrice: parseFloat(
-                            calculateTotalPrice(
-                              props.sparePart.extendedPrice,
-                              e.target.value
-                            )
-                          ).toFixed(2),
+                          totalPrice: props.sparePart.extendedPrice
+                            ? parseFloat(
+                                calculateTotalPrice(
+                                  props.sparePart.extendedPrice,
+                                  e.target.value
+                                )
+                              ).toFixed(2)
+                            : 0.0,
                         })
                       }
                       value={props.sparePart.usagePercentage}
@@ -344,7 +352,11 @@ const AddNewSparepartModal = (props) => {
                     <input
                       type="Number"
                       className="form-control border-radius-10"
-                      value={parseFloat(props.sparePart.totalPrice).toFixed(2)}
+                      value={
+                        props.sparePart.totalPrice
+                          ? parseFloat(props.sparePart.totalPrice).toFixed(2)
+                          : 0.0
+                      }
                       disabled
                       placeholder="Required"
                     />
@@ -407,10 +419,10 @@ const AddNewSparepartModal = (props) => {
                   !props.sparePart.partType ||
                   !props.sparePart.partNumber ||
                   !props.sparePart.quantity ||
-                  !props.sparePart.unitPrice ||
-                  !props.sparePart.extendedPrice ||
-                  !props.sparePart.currency ||
-                  !props.sparePart.totalPrice
+                  // !props.sparePart.unitPrice ||
+                  // !props.sparePart.extendedPrice ||
+                  !props.sparePart.currency
+                  // !props.sparePart.totalPrice
                 }
               >
                 Save
@@ -472,7 +484,9 @@ const AddNewSparepartModal = (props) => {
                     UNIT PRICE
                   </p>
                   <h6 className="font-weight-500">
-                    {parseFloat(props.sparePart.unitPrice).toFixed(2)}
+                    {props.sparePart.unitPrice
+                      ? parseFloat(props.sparePart.unitPrice).toFixed(2)
+                      : 0.0}
                   </h6>
                 </div>
               </div>
@@ -482,7 +496,9 @@ const AddNewSparepartModal = (props) => {
                     EXTENDED PRICE
                   </p>
                   <h6 className="font-weight-500">
-                    {parseFloat(props.sparePart.extendedPrice).toFixed(2)}
+                    {props.sparePart.extendedPrice
+                      ? parseFloat(props.sparePart.extendedPrice).toFixed(2)
+                      : 0.0}
                   </h6>
                 </div>
               </div>
@@ -508,7 +524,9 @@ const AddNewSparepartModal = (props) => {
                     TOTAL PRICE
                   </p>
                   <h6 className="font-weight-500">
-                    {props.sparePart.totalPrice}
+                    {props.sparePart.totalPrice
+                      ? props.sparePart.totalPrice
+                      : 0.0}
                   </h6>
                 </div>
               </div>
@@ -536,4 +554,4 @@ const AddNewSparepartModal = (props) => {
   );
 };
 
-export default AddNewSparepartModal
+export default AddNewSparepartModal;

@@ -128,7 +128,7 @@ export const GRID_STYLE = {
   '& .MuiDataGrid-iconSeparator': {
     display: 'none',
   },                              
-  minHeight: 300,
+  // minHeight: 300,
   "& .MuiDataGrid-cellContent": {
     fontSize: 12,
   },  
