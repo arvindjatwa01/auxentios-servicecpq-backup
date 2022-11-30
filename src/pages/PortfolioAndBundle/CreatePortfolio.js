@@ -62,6 +62,8 @@ import deleticon from "../../assets/images/delete.png";
 import link1Icon from "../../assets/images/link1.png";
 import penIcon from "../../assets/images/pen.png";
 
+import SearchBox from "../Repair/components/SearchBox";
+import { customerSearch, machineSearch } from "services/searchServices";
 import { ReactTableNested } from "../Test/ReactTableNested";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
@@ -191,8 +193,12 @@ const customStyles = {
   },
 };
 
-export function CreatePortfolio() {
+export function CreatePortfolio(props) {
 
+  const history = useHistory();
+  const { state } = props.location;
+
+  console.log("state data ------- : ", state)
   const [disable, setDisable] = useState(true);
   const [quoteDataShow, setQuoteDataShow] = useState(false)
 
@@ -266,6 +272,16 @@ export function CreatePortfolio() {
   const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
   const [customerSegmentKeyValue, setCustomerSegmentKeyValue] = useState([]);
   const [strategyOptionals, setStrategyOptionals] = useState([]);
+
+  const [searchModelResults, setSearchModelResults] = useState([]);
+  const [searchSerialResults, setSearchSerialResults] = useState([]);
+
+  const [noOptionsModel, setNoOptionsModel] = useState(false);
+  const [noOptionsSerial, setNoOptionsSerial] = useState(false);
+
+  const [severity, setSeverity] = useState("");
+  const [openSnack, setOpenSnack] = useState(false);
+  const [snackMessage, setSnackMessage] = useState("");
 
   const [categoryUsageKeyValue1, setCategoryUsageKeyValue1] = useState([]);
   const [stratgyTaskTypeKeyValue, setStratgyTaskTypeKeyValue] = useState([]);
@@ -352,6 +368,16 @@ export function CreatePortfolio() {
     inputFlag: false,
   });
 
+  const [viewOnlyTab, setViewOnlyTab] = useState({
+    generalViewOnly: false,
+    validityViewOnly: false,
+    strategyViewOnly: false,
+    administrativeViewOnly: false,
+    priceViewOnly: false,
+    priceAgreementViewOnly: false,
+    coverageViewOnly: false,
+  });
+
   const [generalComponentData, setGeneralComponentData] = useState({
     name: "",
     description: "",
@@ -392,6 +418,7 @@ export function CreatePortfolio() {
 
   const [addPortFolioItem, setAddportFolioItem] = useState({
     id: 0,
+    name: "",
     description: "",
     usageIn: categoryUsageKeyValue1,
     taskType: "",
@@ -403,6 +430,10 @@ export function CreatePortfolio() {
     templateId: "",
     templateDescription: "",
     repairOption: "",
+    strategyTask: "",
+    year: "",
+    noOfYear: "",
+    headerdescription: "",
   });
   const [addMiniPortFolioItem, setAddMiniportFolioItem] = useState({
     id: "",
@@ -510,7 +541,9 @@ export function CreatePortfolio() {
     priceMethod: "",
     priceAdditionalSelect: "",
     priceEscalationSelect: "",
-    discountTypeSelect: ""
+    discountTypeSelect: "",
+    make: "",
+    family: "",
   });
 
   const [itemPriceCalculator, setItemPriceCalculator] = useState({
@@ -688,15 +721,87 @@ export function CreatePortfolio() {
     }
   };
 
-  const handleBundleItemSaveAndContinue = async () => {
+  const handleBundleItemSaveAndContinue = async (data) => {
     try {
+      // let reqObj = {
+      //   itemId: 0,
+      //   itemName: addPortFolioItem.name,
+      //   itemHeaderModel: {
+      //     itemHeaderId: 0,
+      //     // itemHeaderId: parseInt(generalComponentData.portfolioId),
+      //     // itemHeaderDescription: generalComponentData.description,
+      //     itemHeaderDescription: addPortFolioItem.headerdescription,
+      //     bundleFlag: "PORTFOLIO",
+      //     reference: generalComponentData.externalReference,
+      //     itemHeaderMake: "",
+      //     itemHeaderFamily: "",
+      //     model: "",
+      //     prefix: "",
+      //     type: "MACHINE",
+      //     additional: "",
+      //     currency: "",
+      //     netPrice: 0,
+      //     itemProductHierarchy: generalComponentData.productHierarchy,
+      //     itemHeaderGeographic: generalComponentData.geographic,
+      //     responseTime: generalComponentData.responseTime,
+      //     usage: "",
+      //     validFrom: generalComponentData.validFrom,
+      //     validTo: generalComponentData.validTo,
+      //     estimatedTime: "",
+      //     servicePrice: 0,
+      //     status: "NEW",
+      //   },
+      //   itemBodyModel: {
+      //     itemBodyId: parseInt(addPortFolioItem.id),
+      //     itemBodyDescription: addPortFolioItem.description,
+      //     quantity: parseInt(addPortFolioItem.quantity),
+      //     startUsage: priceCalculator.startUsage,
+      //     endUsage: priceCalculator.endUsage,
+      //     standardJobId: "",
+      //     frequency: addPortFolioItem.frequency.value,
+      //     additional: "",
+      //     spareParts: ["WITH_SPARE_PARTS"],
+      //     labours: ["WITH_LABOUR"],
+      //     miscellaneous: ["LUBRICANTS"],
+      //     taskType: [addPortFolioItem.taskType.value],
+      //     solutionCode: "",
+      //     usageIn: addPortFolioItem.usageIn.value,
+      //     recommendedValue: 0,
+      //     usage: "",
+      //     repairKitId: "",
+      //     templateDescription: addPortFolioItem.description.value,
+      //     partListId: "",
+      //     serviceEstimateId: "",
+      //     numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
+      //     repairOption: addPortFolioItem.repairOption.value,
+      //     priceMethod: "LIST_PRICE",
+      //     listPrice: parseInt(priceCalculator.listPrice),
+      //     priceEscalation: "",
+      //     calculatedPrice: parseInt(priceCalculator.calculatedPrice),
+      //     flatPrice: parseInt(priceCalculator.flatPrice),
+      //     discountType: "",
+      //     // year: priceCalculator.priceYear.value,
+      //     year: addPortFolioItem.year,
+      //     avgUsage: 0,
+      //     unit: addPortFolioItem.unit.value,
+      //     sparePartsPrice: 0,
+      //     sparePartsPriceBreakDownPercentage: 0,
+      //     servicePrice: 0,
+      //     servicePriceBreakDownPercentage: 0,
+      //     miscPrice: 0,
+      //     miscPriceBreakDownPercentage: 0,
+      //     totalPrice: 0,
+      //   },
+      // };
+
       let reqObj = {
         itemId: 0,
-        itemName: "",
+        itemName: data.name,
         itemHeaderModel: {
           itemHeaderId: 0,
           // itemHeaderId: parseInt(generalComponentData.portfolioId),
-          itemHeaderDescription: generalComponentData.description,
+          // itemHeaderDescription: generalComponentData.description,
+          itemHeaderDescription: data.headerdescription,
           bundleFlag: "PORTFOLIO",
           reference: generalComponentData.externalReference,
           itemHeaderMake: "",
@@ -718,37 +823,38 @@ export function CreatePortfolio() {
           status: "NEW",
         },
         itemBodyModel: {
-          itemBodyId: parseInt(addPortFolioItem.id),
-          itemBodyDescription: addPortFolioItem.description,
-          quantity: parseInt(addPortFolioItem.quantity),
+          itemBodyId: parseInt(data.id),
+          itemBodyDescription: data.description,
+          quantity: parseInt(data.quantity),
           startUsage: priceCalculator.startUsage,
           endUsage: priceCalculator.endUsage,
           standardJobId: "",
-          frequency: addPortFolioItem.frequency.value,
+          frequency: data.frequency.value,
           additional: "",
           spareParts: ["WITH_SPARE_PARTS"],
           labours: ["WITH_LABOUR"],
           miscellaneous: ["LUBRICANTS"],
-          taskType: [addPortFolioItem.taskType.value],
+          taskType: [data.taskType.value],
           solutionCode: "",
-          usageIn: addPortFolioItem.usageIn.value,
+          usageIn: data.usageIn.value,
           recommendedValue: 0,
           usage: "",
           repairKitId: "",
-          templateDescription: addPortFolioItem.description.value,
+          templateDescription: data.description.value,
           partListId: "",
           serviceEstimateId: "",
-          numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
-          repairOption: addPortFolioItem.repairOption.value,
+          numberOfEvents: parseInt(data.numberOfEvents),
+          repairOption: data.repairOption.value,
           priceMethod: "LIST_PRICE",
           listPrice: parseInt(priceCalculator.listPrice),
           priceEscalation: "",
           calculatedPrice: parseInt(priceCalculator.calculatedPrice),
           flatPrice: parseInt(priceCalculator.flatPrice),
           discountType: "",
-          year: priceCalculator.priceYear.value,
+          // year: priceCalculator.priceYear.value,
+          year: data.year,
           avgUsage: 0,
-          unit: addPortFolioItem.unit.value,
+          unit: data.unit.value,
           sparePartsPrice: 0,
           sparePartsPriceBreakDownPercentage: 0,
           servicePrice: 0,
@@ -758,6 +864,9 @@ export function CreatePortfolio() {
           totalPrice: 0,
         },
       };
+
+      // console.log("requested obj : ", reqObj);
+      // console.log("requested obj 2 : ", addPortFolioItem);
       const itemRes = await itemCreation(reqObj);
       if (itemRes.status !== 200) {
         throw "Something went wrong/Item not created"
@@ -2131,6 +2240,28 @@ export function CreatePortfolio() {
 
   }
 
+  const populateHeader = (result) => {
+    console.log("result ----", result);
+    setViewOnlyTab({
+      generalViewOnly: true,
+      validityViewOnly: true,
+      strategyViewOnly: true,
+      administrativeViewOnly: true,
+      priceViewOnly: true,
+      priceAgreementViewOnly: true,
+      coverageViewOnly: true,
+    });
+    setGeneralComponentData({
+      name: result.name,
+      description: result.description,
+      serviceDescription: "",
+      externalReference: result.externalReference,
+      customerSegment: result.customerSegment,
+      items: result.items,
+      coverages: result.coverages,
+    })
+  }
+
 
   const handleWithSparePartsCheckBox = (e) => {
     setPartsRequired(e.target.checked)
@@ -2416,6 +2547,30 @@ export function CreatePortfolio() {
     initFetch();
     dispatch(taskActions.fetchTaskList());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (state && state.type === "new") {
+      // setPortfolioId(state.portfolioId);
+      // setGeneralData({ ...generalData, estimationNo: state.builderId });
+    } else if (state) {
+      setPortfolioId(state.portfolioId);
+      fetchAllDetails(state.portfolioId);
+    }
+  }, []);
+
+  const fetchAllDetails = async (PortfolioId) => {
+    if (PortfolioId) {
+      // setHeaderLoading(true);
+      await getPortfolio(PortfolioId)
+        .then((result) => {
+          populateHeader(result);
+        })
+        .catch((err) => {
+          handleSnack("error", "Error occured while fetching header details");
+        });
+      // setHeaderLoading(false);
+    }
+  };
 
   const strategyList = useAppSelector(
     selectStrategyTaskOption(selectStrategyTaskList)
@@ -3810,28 +3965,28 @@ export function CreatePortfolio() {
     // },
   ];
   const tempBundleItemColumns1 = [
-    {
-      name: (
-        <>
-          <div>Item Id</div>
-        </>
-      ),
-      selector: (row) => row.itemId,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.itemId,
-    },
     // {
     //   name: (
     //     <>
-    //       <div>Item Name</div>
+    //       <div>Item Id</div>
     //     </>
     //   ),
-    //   selector: (row) => row.itemName,
+    //   selector: (row) => row.itemId,
     //   wrap: true,
     //   sortable: true,
-    //   format: (row) => row.itemName,
+    //   format: (row) => row.itemId,
     // },
+    {
+      name: (
+        <>
+          <div>Item Name</div>
+        </>
+      ),
+      selector: (row) => row.itemName,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemName,
+    },
     {
       name: (
         <>
@@ -4407,7 +4562,8 @@ export function CreatePortfolio() {
 
   const getAddportfolioItemDataFun = (data) => {
     setAddportFolioItem(data);
-    handleBundleItemSaveAndContinue();
+    // console.log("data------ : ", data)
+    handleBundleItemSaveAndContinue(data);
     setTempBundleService1([]);
     setTempBundleService2([]);
     setTempBundleService3([]);
@@ -5195,7 +5351,6 @@ export function CreatePortfolio() {
     // console.log("quote Data 2 : ", quoteData)
     // history.push("/quoteTemplate");
   };
-  const history = useHistory();
 
   const handleComponentChange = async (e) => {
 
@@ -5252,12 +5407,100 @@ export function CreatePortfolio() {
 
   }
 
+  const handleSnack = (snackSeverity, snackMessage) => {
+    setSnackMessage(snackMessage);
+    setSeverity(snackSeverity);
+    setOpenSnack(true);
+  };
 
+  // Machine search based on model and serial number
+  const handleMachineSearch = async (searchMachinefieldName, searchText) => {
+    let searchQueryMachine = "";
+    setSearchModelResults([]);
+    setSearchSerialResults([]);
+
+    if (searchMachinefieldName === "model") {
+      componentData.model = searchText;
+      searchQueryMachine = searchText
+        ? searchMachinefieldName + "~" + searchText
+        : "";
+    } else if (searchMachinefieldName === "serialNo") {
+      componentData.serialNo = searchText;
+      searchQueryMachine = searchText
+        ? componentData.model
+          ? `model:${componentData.model} AND equipmentNumber~` + searchText
+          : "equipmentNumber~" + searchText
+        : "";
+    }
+    if (searchQueryMachine) {
+      await machineSearch(searchQueryMachine)
+        .then((result) => {
+          if (result) {
+            if (searchMachinefieldName === "model") {
+              if (result && result.length > 0) {
+                setSearchModelResults(result);
+                setNoOptionsModel(false);
+              } else {
+                setNoOptionsModel(true);
+              }
+            } else if (searchMachinefieldName === "serialNo") {
+              if (result && result.length > 0) {
+                setSearchSerialResults(result);
+                setNoOptionsSerial(false);
+              } else {
+                setNoOptionsSerial(true);
+              }
+            }
+          }
+        })
+        .catch((e) => {
+          handleSnack("error", "Error occurred while searching the machine!");
+        });
+    } else {
+      searchMachinefieldName === "model"
+        ? setSearchModelResults([])
+        : setSearchSerialResults([]);
+    }
+  };
+
+  // Select machine from the search result
+  const handleModelSelect = (type, currentItem) => {
+    if (type === "model") {
+      setComponentData({
+        ...componentData,
+        model: currentItem.model,
+        make: currentItem.maker,
+        family: currentItem.family,
+        prefix: currentItem.prefix,
+      });
+      setSearchModelResults([]);
+    } else if (type === "equipmentNumber") {
+      setComponentData({
+        ...componentData,
+        model: currentItem.model,
+        serialNo: currentItem.equipmentNumber,
+        make: currentItem.maker,
+        // family: currentItem.market,
+      });
+      setSearchSerialResults([]);
+    }
+  };
+
+  //Individual machine field value change
+  const handleMachineDataChange = (e) => {
+    var value = e.target.value;
+    var name = e.target.name;
+    setComponentData({
+      ...componentData,
+      [name]: value,
+    });
+  };
 
   const handleComponentDataSave = async () => {
     try {
       // call put API for portfolio item to get price calculator data
       let reqObj = {}
+      let itemReqObj = {};
       for (let i = 0; i < tempBundleItems.length; i++) {
         if (tempBundleItems[i].itemId === currentItemId) {
           reqObj = {
@@ -5265,10 +5508,75 @@ export function CreatePortfolio() {
             standardJobId: tempBundleItems[i].itemBodyModel.standardJobId,
             repairKitId: tempBundleItems[i].itemBodyModel.repairKitId,
           }
+          itemReqObj = tempBundleItems[i];
           break;
         }
       }
+
+      let UpdateItemreqObj = {
+        itemId: itemReqObj.itemId,
+        itemName: itemReqObj.itemName,
+        itemHeaderModel: {
+          itemHeaderId: itemReqObj.itemHeaderModel.itemHeaderId,
+          itemHeaderDescription: itemReqObj.itemHeaderModel.itemHeaderDescription,
+          bundleFlag: itemReqObj.itemHeaderModel.bundleFlag,
+          portfolioItemId: itemReqObj.itemHeaderModel.portfolioItemId,
+          reference: itemReqObj.itemHeaderModel.reference,
+          itemHeaderMake: componentData.make,
+          itemHeaderFamily: componentData.family,
+          model: componentData.model,
+          prefix: componentData.prefix,
+          type: itemReqObj.itemHeaderModel.type,
+          additional: itemReqObj.itemHeaderModel.additional,
+          currency: itemReqObj.itemHeaderModel.currency,
+          netPrice: itemReqObj.itemHeaderModel.netPrice,
+          itemProductHierarchy: itemReqObj.itemHeaderModel.itemProductHierarchy,
+          itemHeaderGeographic: itemReqObj.itemHeaderModel.itemHeaderGeographic,
+          responseTime: itemReqObj.itemHeaderModel.responseTime,
+          usage: itemReqObj.itemHeaderModel.usage,
+          validFrom: itemReqObj.itemHeaderModel.validFrom,
+          validTo: itemReqObj.itemHeaderModel.validTo,
+          estimatedTime: itemReqObj.itemHeaderModel.estimatedTime,
+          servicePrice: itemReqObj.itemHeaderModel.servicePrice,
+          status: itemReqObj.itemHeaderModel.status,
+          componentCode: componentData.componentCode,
+          componentDescription: componentData.description,
+          serialNumber: itemReqObj.itemHeaderModel.serialNumber,
+          itemHeaderStrategy: itemReqObj.itemHeaderModel.itemHeaderStrategy,
+          variant: itemReqObj.itemHeaderModel.variant,
+          itemHeaderCustomerSegment: itemReqObj.itemHeaderModel.itemHeaderCustomerSegment,
+          jobCode: itemReqObj.itemHeaderModel.jobCode,
+          preparedBy: itemReqObj.itemHeaderModel.preparedBy,
+          approvedBy: itemReqObj.itemHeaderModel.approvedBy,
+          preparedOn: itemReqObj.itemHeaderModel.preparedOn,
+          revisedBy: itemReqObj.itemHeaderModel.revisedBy,
+          revisedOn: itemReqObj.itemHeaderModel.revisedOn,
+          salesOffice: itemReqObj.itemHeaderModel.salesOffice,
+          offerValidity: itemReqObj.itemHeaderModel.offerValidity,
+        },
+        itemBodyModel: {
+          avgUsage: 0,
+          frequency: itemReqObj.itemBodyModel.frequency,
+          itemBodyDescription: itemReqObj.itemBodyModel.itemBodyDescription,
+          itemBodyId: parseInt(itemReqObj.itemBodyModel.itemBodyId),
+          itemPrices: itemReqObj.itemBodyModel.itemPrices,
+          labours: itemReqObj.itemBodyModel.labours,
+          miscellaneous: itemReqObj.itemBodyModel.miscellaneous,
+          recommendedValue: itemReqObj.itemBodyModel.recommendedValue,
+          solutionCode: itemReqObj.itemBodyModel.solutionCode,
+          spareParts: itemReqObj.itemBodyModel.spareParts,
+          taskType: itemReqObj.itemBodyModel.taskType,
+          unit: itemReqObj.itemBodyModel.unit,
+          usage: itemReqObj.itemBodyModel.usage,
+          usageIn: itemReqObj.itemBodyModel.usageIn,
+          year: itemReqObj.itemBodyModel.year,
+        },
+      };
+
+      console.log("Adminstartuve res : ", UpdateItemreqObj);
+      const updateItem = await updateItemData(currentItemId, UpdateItemreqObj);
       const itemPriceRes = await getItemPrice(reqObj)
+      // console.log("updateItem ------ : ", updateItem);
       setItemPriceCalculator({
         netParts: "11",
         netService: "11",
@@ -5630,22 +5938,23 @@ export function CreatePortfolio() {
                   </TabList>
                 </Box>
                 <TabPanel value={"general"}>
-                  <div className="row mt-4">
-                    <div className="col-md-3 col-sm-3">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          SELECT TYPE
-                        </label>
-                        <Select
-                          placeholder="Select"
-                          options={headerTypeKeyValue}
-                          value={headerType}
-                          onChange={handleHeaderTypeChange}
-                          isLoading={
-                            headerTypeKeyValue.length > 0 ? false : true
-                          }
-                        />
-                        {/* <div>
+                  {!viewOnlyTab.generalViewOnly ? <>
+                    <div className="row mt-4">
+                      <div className="col-md-3 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            SELECT TYPE
+                          </label>
+                          <Select
+                            placeholder="Select"
+                            options={headerTypeKeyValue}
+                            value={headerType}
+                            onChange={handleHeaderTypeChange}
+                            isLoading={
+                              headerTypeKeyValue.length > 0 ? false : true
+                            }
+                          />
+                          {/* <div>
                                                     <ToggleButtonGroup
                                                         color="primary"
                                                         value={alignment}
@@ -5657,94 +5966,147 @@ export function CreatePortfolio() {
                                                     </ToggleButtonGroup>
                                                 </div> */}
 
-                        {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponentData.portfolioName} onChange={handleGeneralInputChange} /> */}
+                          {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponentData.portfolioName} onChange={handleGeneralInputChange} /> */}
+                        </div>
+                      </div>
+                      <div className="col-md-3 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            {prefilgabelGeneral} ID
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            placeholder="(Auto-generated)"
+                            // value={portfolioId}
+                            // onChange={handleGeneralInputChange}
+                            disabled={true}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-3 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            {prefilgabelGeneral} NAME
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="name"
+                            placeholder="Name"
+                            value={generalComponentData.name}
+                            onChange={handleGeneralInputChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-3 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            {/* SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY) */}
+                            {prefilgabelGeneral} DESCRIPTION (IF ANY)
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="description"
+                            placeholder="Optional"
+                            value={generalComponentData.description}
+                            onChange={handleGeneralInputChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-3 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            REFERENCE
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10"
+                            name="externalReference"
+                            placeholder="Reference"
+                            value={generalComponentData.externalReference}
+                            onChange={handleGeneralInputChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-3 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            CUSTOMER SEGMENT
+                          </label>
+                          <Select
+                            onChange={handleCustomerSegmentChange}
+                            value={generalComponentData.customerSegment}
+                            options={customerSegmentKeyValue}
+                            placeholder="Optionals"
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div className="col-md-3 col-sm-3">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          {prefilgabelGeneral} ID
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          placeholder="(Auto-generated)"
-                          // value={portfolioId}
-                          // onChange={handleGeneralInputChange}
-                          disabled={true}
-                        />
+                    <div className="row" style={{ justifyContent: "right" }}>
+                      <button
+                        type="button"
+                        onClick={handleNextClick}
+                        className="btn btn-light"
+                        id="general"
+                      >
+                        Save & Next
+                      </button>
+                    </div>
+                  </> : <>
+                    <div className="row mt-4">
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            PORTFOLIO NAME
+                          </p>
+                          <h6 className="font-weight-500">
+                            {generalComponentData.name}
+                          </h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            PORTFOLIO DESCRIPTION
+                          </p>
+                          <h6 className="font-weight-500">
+                            {generalComponentData.description}
+                          </h6>
+                        </div>
+                      </div>
+                      {/* <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                             PROGRAM DESCRIPTION (IF ANY)
+                          </p>
+                          <h6 className="font-weight-500">NA</h6>
+                        </div>
+                      </div> */}
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            REFERENCE
+                          </p>
+                          <h6 className="font-weight-500">
+                            {generalComponentData.externalReference}
+                          </h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            CUSTOMER SEGMENT
+                          </p>
+                          <h6 className="font-weight-500">
+                            {generalComponentData.customerSegment}
+                          </h6>
+                        </div>
                       </div>
                     </div>
-                    <div className="col-md-3 col-sm-3">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          {prefilgabelGeneral} NAME
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          name="name"
-                          placeholder="Name"
-                          value={generalComponentData.name}
-                          onChange={handleGeneralInputChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-3 col-sm-3">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          {/* SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY) */}
-                          {prefilgabelGeneral} DESCRIPTION (IF ANY)
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          name="description"
-                          placeholder="Optional"
-                          value={generalComponentData.description}
-                          onChange={handleGeneralInputChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-3 col-sm-3">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          REFERENCE
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          name="externalReference"
-                          placeholder="Reference"
-                          value={generalComponentData.externalReference}
-                          onChange={handleGeneralInputChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-3 col-sm-3">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          CUSTOMER SEGMENT
-                        </label>
-                        <Select
-                          onChange={handleCustomerSegmentChange}
-                          value={generalComponentData.customerSegment}
-                          options={customerSegmentKeyValue}
-                          placeholder="Optionals"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row" style={{ justifyContent: "right" }}>
-                    <button
-                      type="button"
-                      onClick={handleNextClick}
-                      className="btn btn-light"
-                      id="general"
-                    >
-                      Save & Next
-                    </button>
-                  </div>
+                  </>}
+
                   {isView ? (
                     <div className="row mt-4">
                       <div className="col-md-4 col-sm-3">
@@ -6019,123 +6381,180 @@ export function CreatePortfolio() {
                   </div>
                 </TabPanel>
                 <TabPanel value={"strategy"}>
-                  <div className="row">
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          CATEGORY USAGE
-                        </label>
-                        <Select
-                          options={categoryList}
-                          value={categoryUsageKeyValue1}
-                          onChange={(e) => HandleCatUsage(e)}
-                        />
-                        {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
+                  {!viewOnlyTab.strategyViewOnly ? <>
+                    <div className="row">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            CATEGORY USAGE
+                          </label>
+                          <Select
+                            options={categoryList}
+                            value={categoryUsageKeyValue1}
+                            onChange={(e) => HandleCatUsage(e)}
+                          />
+                          {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            STRATEGY TASK
+                          </label>
+                          <Select
+                            options={updatedList}
+                            value={stratgyTaskUsageKeyValue}
+                            onChange={(e) => HandleStrategyUsage(e)}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            TASK TYPE
+                          </label>
+                          <Select
+                            options={updatedTaskList}
+                            value={stratgyTaskTypeKeyValue}
+                            placeholder="Optional"
+                            onChange={(e) => {
+                              setStratgyTaskTypeKeyValue(e);
+                              addPortFolioItem.taskType = "";
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            OPTIONALS
+                          </label>
+                          <Select
+                            placeholder="Optional"
+                            options={strategyOptionals}
+                            value={stratgyOptionalsKeyValue}
+                            onChange={(e) => setStratgyOptionalsKeyValue(e)}
+                          // options={rTimeList}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            RESPONSE TIME
+                          </label>
+                          <Select
+                            placeholder="Optional"
+                            options={rTimeList}
+                            value={stratgyResponseTimeKeyValue}
+                            onChange={(e) => setStratgyResponseTimeKeyValue(e)}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            PRODUCT HIERARCHY
+                          </label>
+                          <Select
+                            placeholder="Optional"
+                            options={productList}
+                            value={stratgyHierarchyKeyValue}
+                            onChange={(e) => setStratgyHierarchyKeyValue(e)}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            GEOGRAPHIC
+                          </label>
+                          <Select
+                            placeholder="Optional"
+                            options={geographicList}
+                            value={stratgyGeographicKeyValue}
+                            onChange={(e) => setStratgyGeographicKeyValue(e)}
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          STRATEGY TASK
-                        </label>
-                        <Select
-                          options={updatedList}
-                          value={stratgyTaskUsageKeyValue}
-                          onChange={(e) => HandleStrategyUsage(e)}
-                        />
+                  </> : <>
+                    <div className="row">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            STRATEGY TASK
+                          </p>
+                          <h6 className="font-weight-500">PM</h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            CATEGORY USAGE
+                          </p>
+                          <h6 className="font-weight-500">Contract</h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            OPTIONALS
+                          </p>
+                          <h6 className="font-weight-500">Misc</h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            RESPONSE TIME
+                          </p>
+                          <h6 className="font-weight-500">
+                            Fast - 24x7 available,response within 4 hours of
+                            call
+                          </h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            PRODUCT HIERARCHY
+                          </p>
+                          <h6 className="font-weight-500">End Product</h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="font-size-12 font-weight-500 mb-2">
+                            GEOGRAPHIC
+                          </p>
+                          <h6 className="font-weight-500">Field Support</h6>
+                        </div>
                       </div>
                     </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          TASK TYPE
-                        </label>
-                        <Select
-                          options={updatedTaskList}
-                          value={stratgyTaskTypeKeyValue}
-                          placeholder="Optional"
-                          onChange={(e) => {
-                            setStratgyTaskTypeKeyValue(e);
-                            addPortFolioItem.taskType = "";
-                          }}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          OPTIONALS
-                        </label>
-                        <Select
-                          placeholder="Optional"
-                          options={strategyOptionals}
-                          value={stratgyOptionalsKeyValue}
-                          onChange={(e) => setStratgyOptionalsKeyValue(e)}
-                        // options={rTimeList}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          RESPONSE TIME
-                        </label>
-                        <Select
-                          placeholder="Optional"
-                          options={rTimeList}
-                          value={stratgyResponseTimeKeyValue}
-                          onChange={(e) => setStratgyResponseTimeKeyValue(e)}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          PRODUCT HIERARCHY
-                        </label>
-                        <Select
-                          placeholder="Optional"
-                          options={productList}
-                          value={stratgyHierarchyKeyValue}
-                          onChange={(e) => setStratgyHierarchyKeyValue(e)}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          GEOGRAPHIC
-                        </label>
-                        <Select
-                          placeholder="Optional"
-                          options={geographicList}
-                          value={stratgyGeographicKeyValue}
-                          onChange={(e) => setStratgyGeographicKeyValue(e)}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                  </>}
+
                   {isView ? (
                     <div className="row">
                       <div className="col-md-4 col-sm-4">
@@ -6537,8 +6956,8 @@ export function CreatePortfolio() {
                       </div>
                     </div>
                   </div>
-                    
-                    
+
+
                   <hr />
                   <div className="row">
                     <div className="col-md-4 col-sm-4">
@@ -8363,7 +8782,7 @@ export function CreatePortfolio() {
         </Modal.Body>
       </Modal> */}
 
-      <Modal
+      {/* <Modal
         show={open2}
         onHide={() => setOpen2(false)}
         size="lg"
@@ -8497,7 +8916,6 @@ export function CreatePortfolio() {
                     <div className=" d-flex align-items-center form-control-date">
                       <Select
                         className="select-input"
-                        // defaultValue={selectedOption}
                         value={priceCalculator.priceEscalationSelect}
                         onChange={(e) =>
                           setPriceCalculator({
@@ -8608,7 +9026,6 @@ export function CreatePortfolio() {
                   </div>
                 </div>
               </div>
-              {/* <div className="card"> */}
               <div className="row">
                 <div className="col-md-6 col-sm-6">
                   <div className="form-group">
@@ -8619,7 +9036,6 @@ export function CreatePortfolio() {
                       YEAR
                     </label>
                     <Select
-                      // defaultValue={selectedOption}
                       value={priceCalculator.priceYear}
                       onChange={(e) =>
                         setPriceCalculator({ ...priceCalculator, priceYear: e })
@@ -8726,7 +9142,6 @@ export function CreatePortfolio() {
                     </label>
                     <Select
                       defaultValue={addPortFolioItem.frequency}
-                      // selectedValue={addPortFolioItem.frequency}
                       options={frequencyOptions}
                       value={priceCalculator.frequency}
                       onChange={(e) =>
@@ -8766,7 +9181,6 @@ export function CreatePortfolio() {
                 </div>
               </div>
 
-              {/* </div> */}
               <div className="d-flex align-items-center">
                 <div>
                   <h6 className="text-light-dark font-size-12 font-weight-500 mr-4">
@@ -8781,74 +9195,6 @@ export function CreatePortfolio() {
                   ${priceCalculator.netPrice}
                 </div>
               </div>
-              {/* <div className="row mt-4">
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">GROUP NUMBER</label>
-                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="1000 ENGINE"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">TYPE</label>
-                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="0123 REPLACE"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">PART NUMBER</label>
-                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Replace left side of the Engine"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">QTY</label>
-                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="List Price"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">UNIT PRICE</label>
-                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$35000"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">EXTENDED PRICE</label>
-                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$10000"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">CURRENCY</label>
-                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$5000"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">% USAGE</label>
-                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="EA"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">TOTAL PRICE</label>
-                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="$480000"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">COMMENTS</label>
-                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE"/>
-                </div>
-                </div>
-                <div className="col-md-6 col-sm-6">
-                <div className="form-group w-100">
-                <label className="text-light-dark font-size-12 font-weight-500" htmlFor="exampleInputEmail1">DESCRIPTION</label>
-                  <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="PAYER TYPE"/>
-                </div>
-                </div>
-              </div> */}
             </div>
             <div className="m-3 text-right">
               <a
@@ -8873,7 +9219,7 @@ export function CreatePortfolio() {
             </div>
           </div>
         </Modal.Body>
-      </Modal>
+      </Modal> */}
 
       <Modal
         show={showAddSolutionModal}
@@ -10066,10 +10412,11 @@ export function CreatePortfolio() {
                           value={componentData.description}
                           onChange={handleComponentChange}
                           placeholder="Optional"
+                          disabled
                         />
                       </div>
                     </div>
-                    <div className="col-md-6 col-sm-6">
+                    {/* <div className="col-md-6 col-sm-6">
                       <div className="form-group">
                         <label className="text-light-dark font-size-14 font-weight-500">
                           Make
@@ -10147,6 +10494,63 @@ export function CreatePortfolio() {
                             )}
                           </ul>}
                         </div>
+                      </div>
+                    </div> */}
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          Make
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control border-radius-10 text-primary"
+                          id="make-id"
+                          name="make"
+                          value={componentData.make}
+                          onChange={handleMachineDataChange}
+                          placeholder="Auto Filled"
+                          disabled
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          MODEL
+                        </label>
+                        <SearchBox
+                          value={componentData.model}
+                          onChange={(e) =>
+                            handleMachineSearch(
+                              "model",
+                              e.target.value
+                            )
+                          }
+                          type="model"
+                          result={searchModelResults}
+                          onSelect={handleModelSelect}
+                          noOptions={noOptionsModel}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 col-sm-6">
+                      <div className="form-group">
+                        <label className="text-light-dark font-size-12 font-weight-500">
+                          SERIAL #
+                        </label>
+                        <SearchBox
+                          value={componentData.serialNo}
+                          onChange={(e) =>
+                            handleMachineSearch(
+                              "serialNo",
+                              e.target.value
+                            )
+                          }
+                          type="equipmentNumber"
+                          result={searchSerialResults}
+                          onSelect={handleModelSelect}
+                          noOptions={noOptionsSerial}
+                        />
                       </div>
                     </div>
                   </div>
@@ -10244,6 +10648,7 @@ export function CreatePortfolio() {
                           name="calculatedPrice"
                           onChange={handleComponentChange}
                           placeholder="$100"
+                          disabled
                         />
                       </div>
                     </div>
