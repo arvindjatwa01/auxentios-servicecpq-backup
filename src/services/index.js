@@ -14,7 +14,7 @@ export { createPortfolio, getPortfolio, updatePortfolio, portfolioSearch} from '
 export { createCustomPortfolio, updateCustomPortfolio, getCustomPortfolio, solutionPortfolioSearch, getSearchForRecentSolutionPortfolio, getSearchForRecentSolutionBundleService, copyPortfolioICustomPortfolio} from './customPortfolioSolutions'
 export { getPortfolioCommonConfig } from './pricingCommonConfig'
 export { getMakeKeyValue, getModelKeyValue, getPrefixKeyValue,createCoverage,createCutomCoverage} from './coverageService'
-export { getUsageCategoryKeyValue, getStrategyTaskKeyValue, getTaskTypeKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getLifeStageKeyValue, getTypeKeyValue, getResponseTimeTaskKeyValue, getValidityKeyValue } from './commonSolutionBuilderServices'
+export { getUsageCategoryKeyValue, getStrategyTaskKeyValue, getTaskTypeKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getLifeStageKeyValue, getTypeKeyValue, getResponseTimeTaskKeyValue, getValidityKeyValue, getSolutionTypeKeyValue, getSolutionLevelKeyValue } from './commonSolutionBuilderServices'
 export {getSearchQueryCoverage,getSearchCoverageForFamily, getSearchForPortfolio, getSearchForRecentPortfolio, getSearchForRecentBundleService} from "./searchQueryService"
 export { itemCreation,itemSearchSuggestion,itemSearch,getItemPrice,updateItemData,deleteItem, itemPriceDataId, updateItemPriceData } from './portFolioItemService';
 export { getComponentCodeSuggetions } from './masterComponentCode';

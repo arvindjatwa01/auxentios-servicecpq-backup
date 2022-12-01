@@ -28,8 +28,8 @@ const REPAIR_BUILDER_URI = "http://35.200.157.237/repair-builder-svc/v1/";
 
 // search for coverage
 
-export const GET_SEARCH_COVERAGE=SEARCH_COVERAGE+"search?search="
-export const GET_SEARCH_FAMILY_COVERAGE=SEARCH_COVERAGE
+export const GET_SEARCH_COVERAGE = SEARCH_COVERAGE + "search?search="
+export const GET_SEARCH_FAMILY_COVERAGE = SEARCH_COVERAGE
 // Local endpoints. Uncomment below section to use dummy local data.
 export const GET_ALL_USERS = () => `/data/users`;
 export const GET_USER_DETAILS = (id) => `/data/user`;
@@ -39,7 +39,7 @@ export const PRICING_COMMON_CONFIG = PRICING_URI + "common-config/";
 
 //Soltion Builder URLS
 export const GET_ALL_SOLUTION_PORTFOLIOS = () =>
-SOLUTION_BUILDER_URI + `portfolio?orderBY=ASC`;
+  SOLUTION_BUILDER_URI + `portfolio?orderBY=ASC`;
 
 // export const SOLUTION_BUILDER_PRICE_CONFIG = PRICING_URI + "common-config/";
 
@@ -70,18 +70,22 @@ export const GET_PRODUCT_HIERARCHY = () =>
   SOLUTION_BUILDER_URI + "common-config/product-hierarchy";
 export const GET_GEOGRAPHIC = () =>
   SOLUTION_BUILDER_URI + "common-config/geographic";
+export const GET_SOLUTION_TYPE = () =>
+  SOLUTION_BUILDER_URI + "common-config/solution-type";
+export const GET_SOLUTION_LEVEL = () =>
+  SOLUTION_BUILDER_URI + "common-config/solution-level";
 
 export const CREATE_PORTFOLIO_ITEM = () => SOLUTION_BUILDER_URI + "item";
 export const GET_RECENT_BUNDLE_SERVICE_URL = SOLUTION_BUILDER_URI + "item";
 export const PORTFOLIO_ITEM_PRICE_RKID = () => CREATE_PORTFOLIO_ITEM() + "/get-RB-price-update-item-rkid";
 export const PORTFOLIO_ITEM_PRICE_SJID = () => CREATE_PORTFOLIO_ITEM() + "/get-RB-price-update-item-sjid";
-export const PORTFOLIO_ITEM_SEARCH = () => CREATE_PORTFOLIO_ITEM()+ "/search?search=";
-export const PORTFOLIO_ITEM_PRICE_BY_ITEM_ID = () => CREATE_PORTFOLIO_ITEM()+ "/price";
+export const PORTFOLIO_ITEM_SEARCH = () => CREATE_PORTFOLIO_ITEM() + "/search?search=";
+export const PORTFOLIO_ITEM_PRICE_BY_ITEM_ID = () => CREATE_PORTFOLIO_ITEM() + "/price";
 
 // Custom Portfolio 
 
 export const CUSTOM_PORTFOLIO_URL = () => SOLUTION_BUILDER_URI + "portfolio/custom";
-export const CUSTOM_PORTFOLIO_SEARCH_QUERY = SOLUTION_BUILDER_URI +"portfolio/custom/search?search=";
+export const CUSTOM_PORTFOLIO_SEARCH_QUERY = SOLUTION_BUILDER_URI + "portfolio/custom/search?search=";
 export const GET_RECENT_SOLUTION_PORTFOLIO_LIST = SOLUTION_BUILDER_URI + "portfolio/custom";
 
 // Custom Portfolio Item
@@ -162,4 +166,4 @@ export const SEARCH_Builder = (query) => REPAIR_BUILDER_URI + `builder/search?se
 /* ===================== Quote Service ============================= */
 
 export const QUOTE_CREATION = () => SOLUTION_BUILDER_URI + "/quote";
-export const  SEARCH_QUOTE_URL = () => SOLUTION_BUILDER_URI + "/quote/search?search=";
+export const SEARCH_QUOTE_URL = () => SOLUTION_BUILDER_URI + "/quote/search?search=";

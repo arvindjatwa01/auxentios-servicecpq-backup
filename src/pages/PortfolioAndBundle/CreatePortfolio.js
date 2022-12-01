@@ -145,6 +145,7 @@ import PriceCalculator from "./PriceCalculator";
 import { PortfolioContext } from "./ProtfolioContext";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import Solution from "./Solution";
+import LoadingProgress from "../Repair/components/Loader";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 // const customStyles = {
@@ -198,7 +199,6 @@ export function CreatePortfolio(props) {
   const history = useHistory();
   const { state } = props.location;
 
-  console.log("state data ------- : ", state)
   const [disable, setDisable] = useState(true);
   const [quoteDataShow, setQuoteDataShow] = useState(false)
 
@@ -367,6 +367,8 @@ export function CreatePortfolio(props) {
     dateFlag: false,
     inputFlag: false,
   });
+
+  const [headerLoading, setHeaderLoading] = useState(false);
 
   const [viewOnlyTab, setViewOnlyTab] = useState({
     generalViewOnly: false,
@@ -1720,49 +1722,140 @@ export function CreatePortfolio(props) {
         ) {
           throw "Please fill required field properly";
         }
-        let reqData = {
-          type: prefilgabelGeneral,
-          name: generalComponentData.name,
-          description: generalComponentData.description,
-          externalReference: generalComponentData.externalReference,
-          customerSegment: generalComponentData.customerSegment
-            ? generalComponentData.customerSegment.value
-            : "",
+        if (state && state.type === "new") {
+          let reqData = {
+            type: prefilgabelGeneral,
+            name: generalComponentData.name,
+            description: generalComponentData.description,
+            externalReference: generalComponentData.externalReference,
+            customerSegment: generalComponentData.customerSegment
+              ? generalComponentData.customerSegment.value
+              : "",
 
-          strategyTask: "PREVENTIVE_MAINTENANCE",
-          taskType: "PM1",
-          usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-          productHierarchy: "END_PRODUCT",
-          geographic: "ONSITE",
-          availability: "AVAILABILITY_GREATER_95",
-          responseTime: "PROACTIVE",
-          type: "MACHINE",
-          application: "HILL",
-          contractOrSupport: "LEVEL_I",
-          lifeStageOfMachine: "NEW_BREAKIN",
-          supportLevel: "PREMIUM",
-          serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
-        };
-        const portfolioRes = await createPortfolio(reqData);
-        if (portfolioRes.status === 200) {
-          toast("👏 Portfolio Created", {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          setValue("validity");
-          setGeneralComponentData({
-            ...generalComponentData,
-            portfolioId: portfolioRes.data.portfolioId,
-          });
-          setPortfolioId(portfolioRes.data.portfolioId);
+            strategyTask: "PREVENTIVE_MAINTENANCE",
+            taskType: "PM1",
+            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+            productHierarchy: "END_PRODUCT",
+            geographic: "ONSITE",
+            availability: "AVAILABILITY_GREATER_95",
+            responseTime: "PROACTIVE",
+            type: "MACHINE",
+            application: "HILL",
+            contractOrSupport: "LEVEL_I",
+            lifeStageOfMachine: "NEW_BREAKIN",
+            supportLevel: "PREMIUM",
+            serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
+          };
+          const portfolioRes = await createPortfolio(reqData);
+          if (portfolioRes.status === 200) {
+            toast("👏 Portfolio Created", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            setValue("validity");
+            setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
+            setGeneralComponentData({
+              ...generalComponentData,
+              portfolioId: portfolioRes.data.portfolioId,
+            });
+            setPortfolioId(portfolioRes.data.portfolioId);
+          } else {
+            throw `${portfolioRes.status}:error in portfolio creation`;
+          }
         } else {
-          throw `${portfolioRes.status}:error in portfolio creation`;
+          let reqObj = {
+            portfolioId: portfolioId,
+            // type: prefilgabelGeneral,
+            type: "MACHINE",
+            name: generalComponentData.name,
+            description: generalComponentData.description,
+            customerSegment: generalComponentData.customerSegment?.value,
+            externalReference: generalComponentData.externalReference,
+
+            validFrom: validityData.fromDate.toISOString().substring(0, 10),
+            validTo: validityData.fromDate.toISOString().substring(0, 10),
+
+            usageCategory: categoryUsageKeyValue1.value,
+            taskType: stratgyTaskTypeKeyValue.value,
+            strategyTask: stratgyTaskUsageKeyValue.value,
+            responseTime: stratgyResponseTimeKeyValue.value,
+            productHierarchy: stratgyHierarchyKeyValue.value,
+            geographic: stratgyGeographicKeyValue.value,
+
+            preparedBy: administrative.preparedBy,
+            approvedBy: administrative.approvedBy,
+            preparedOn: administrative.preparedOn,
+            revisedBy: administrative.revisedBy,
+            revisedOn: administrative.revisedOn,
+            offerValidity: administrative.offerValidity,
+            salesOffice: administrative.salesOffice,
+
+            machineType: generalComponentData?.machineType
+              ? generalComponentData?.machineType
+              : "EMPTY",
+            searchTerm: "EMPTY",
+            lubricant: true,
+            customerId: 0,
+            customerGroup: generalComponentData?.customerGroup
+              ? generalComponentData?.customerGroup
+              : "EMPTY",
+            status: generalComponentData?.status
+              ? generalComponentData?.status
+              : "EMPTY",
+            availability: generalComponentData?.availability
+              ? generalComponentData?.availability
+              : "EMPTY",
+            application: generalComponentData?.application
+              ? generalComponentData?.application
+              : "EMPTY",
+            contractOrSupport: generalComponentData?.contractOrSupport
+              ? generalComponentData?.contractOrSupport
+              : "EMPTY",
+            lifeStageOfMachine: "NEW_BREAKIN",
+            supportLevel: "PREMIUM",
+            numberOfEvents: 0,
+            itemRelations: [],
+            rating: "string",
+            startUsage: 0,
+            endUsage: 0,
+            unit: "HOURS",
+            additionals: "string",
+            portfolioPrice: null,
+            additionalPrice: null,
+            escalationPrice: null,
+            saveState: false,
+            userId: null,
+            visibleInCommerce: true,
+            template: true,
+          }
+
+          const exitsPortfolioUpdate = await updatePortfolio(
+            portfolioId,
+            reqObj
+          );
+          if (exitsPortfolioUpdate.status === 200) {
+            toast("👏 Portfolio updated", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            // setValue("administrative");
+            setValue("validity");
+            setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
+          } else {
+            throw `${exitsPortfolioUpdate.status}:error in update portfolio`;
+          };
         }
+
       } else if (e.target.id == "validity") {
         let reqData;
         if (
@@ -1897,6 +1990,7 @@ export function CreatePortfolio(props) {
             progress: undefined,
           });
           setValue("administrative");
+          setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: true });
           console.log("strategy updating", strategyRes.data);
         } else {
           throw `${strategyRes.status}:error in update portfolio`;
@@ -2032,6 +2126,7 @@ export function CreatePortfolio(props) {
           });
           // setValue("administrative");
           setValue("price");
+          setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: true });
           console.log("administryRes updating", administryRes.data);
         } else {
           throw `${administryRes.status}:error in update portfolio`;
@@ -2256,12 +2351,34 @@ export function CreatePortfolio(props) {
       description: result.description,
       serviceDescription: "",
       externalReference: result.externalReference,
-      customerSegment: result.customerSegment,
+      customerSegment: { label: result.customerSegment, value: result.customerSegment },
+      // customerSegment: null,
       items: result.items,
       coverages: result.coverages,
     })
-  }
+    setPortfolioCoverage(result.coverages);
 
+    // categoryUsageKeyValue1
+    setCategoryUsageKeyValue1({ label: result.usageCategory, value: result.usageCategory })
+    setStratgyTaskUsageKeyValue({ label: result.strategyTask, value: result.strategyTask })
+    setStratgyTaskTypeKeyValue({ label: result.taskType, value: result.taskType })
+    setStratgyResponseTimeKeyValue({ label: result.responseTime, value: result.responseTime })
+    setStratgyHierarchyKeyValue({ label: result.productHierarchy, value: result.productHierarchy })
+    setStratgyGeographicKeyValue({ label: result.geographic, value: result.geographic })
+
+    setAdministrative({
+      preparedBy: result.preparedBy,
+      approvedBy: result.approvedBy,
+      preparedOn: result.preparedOn,
+      revisedBy: result.revisedBy,
+      revisedOn: result.revisedOn,
+      branch: result.salesOffice,
+      offerValidity: result.offerValidity,
+    });
+    setSelectedMasterData(result.coverages);
+
+  }
+  console.log("generalComponentData ---- : ", generalComponentData)
 
   const handleWithSparePartsCheckBox = (e) => {
     setPartsRequired(e.target.checked)
@@ -2560,7 +2677,7 @@ export function CreatePortfolio(props) {
 
   const fetchAllDetails = async (PortfolioId) => {
     if (PortfolioId) {
-      // setHeaderLoading(true);
+      setHeaderLoading(true);
       await getPortfolio(PortfolioId)
         .then((result) => {
           populateHeader(result);
@@ -2568,7 +2685,7 @@ export function CreatePortfolio(props) {
         .catch((err) => {
           handleSnack("error", "Error occured while fetching header details");
         });
-      // setHeaderLoading(false);
+      setHeaderLoading(false);
     }
   };
 
@@ -3029,6 +3146,18 @@ export function CreatePortfolio(props) {
     setLoadingItem(false);
     setTabs("1");
   };
+
+  const makeHeaderEditable = () => {
+    console.log("Data is : ", "helloooooo")
+    if (value === "general" && viewOnlyTab.generalViewOnly)
+      setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: false });
+    else if (value === "strategy" && viewOnlyTab.strategyViewOnly) {
+      setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: false });
+    }
+    else if (value === "administrative" && viewOnlyTab.administrativeViewOnly) {
+      setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: false });
+    }
+  }
 
   const columns = [
     {
@@ -5891,8 +6020,8 @@ export function CreatePortfolio(props) {
                 <span className="mr-3" style={{ whiteSpace: "pre" }}>
                   {portfolioId ? "Portfolio Details" : "New Portfolio*"}
                 </span>
-                <a href="#" className="btn-sm">
-                  <i className="fa fa-pencil" aria-hidden="true"></i>
+                <a href={undefined} className="btn-sm" style={{ cursor: "pointer" }}>
+                  <i className="fa fa-pencil" aria-hidden="true" onClick={makeHeaderEditable}></i>
                 </a>
                 <a href="#" className="btn-sm">
                   <i className="fa fa-bookmark-o" aria-hidden="true"></i>
@@ -5918,45 +6047,48 @@ export function CreatePortfolio(props) {
               </div>
             </h5>
             <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
-              <TabContext value={value}>
-                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                  <TabList className="custom-tabs-div"
-                    onChange={handleChange}
-                    aria-label="lab API tabs example"
-                  >
-                    <Tab label="General" value={"general"} />
-                    <Tab label="Validity " value={"validity"} />
-                    <Tab label="Strategy" value={"strategy"} />
-                    <Tab label="Administrative" value={"administrative"} />
-                    <Tab label="Price" value={"price"} />
-                    <Tab
-                      label="Price Agreement"
-                      disabled={!priceAgreementOption}
-                      value={"priceAgreement"}
-                    />
-                    <Tab label="Coverage" value={"coverage"} />
-                  </TabList>
-                </Box>
-                <TabPanel value={"general"}>
+              {headerLoading ? (
+                <LoadingProgress />
+              ) : (
+                <TabContext value={value}>
+                  <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                    <TabList className="custom-tabs-div"
+                      onChange={handleChange}
+                      aria-label="lab API tabs example"
+                    >
+                      <Tab label="General" value={"general"} />
+                      <Tab label="Validity " value={"validity"} />
+                      <Tab label="Strategy" value={"strategy"} />
+                      <Tab label="Administrative" value={"administrative"} />
+                      <Tab label="Price" value={"price"} />
+                      <Tab
+                        label="Price Agreement"
+                        disabled={!priceAgreementOption}
+                        value={"priceAgreement"}
+                      />
+                      <Tab label="Coverage" value={"coverage"} />
+                    </TabList>
+                  </Box>
+                  <TabPanel value={"general"}>
 
-                  {!viewOnlyTab.generalViewOnly ? <>
-                    <div className="row mt-4 input-fields">
-                      <div className="col-md-3 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            SELECT TYPE
-                          </label>
-                          <Select
-                            placeholder="Select"
-                            className="text-primary"
-                            options={headerTypeKeyValue}
-                            value={headerType}
-                            onChange={handleHeaderTypeChange}
-                            isLoading={
-                              headerTypeKeyValue.length > 0 ? false : true
-                            }
-                          />
-                          {/* <div>
+                    {!viewOnlyTab.generalViewOnly ? <>
+                      <div className="row mt-4 input-fields">
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              SELECT TYPE
+                            </label>
+                            <Select
+                              placeholder="Select"
+                              className="text-primary"
+                              options={headerTypeKeyValue}
+                              value={headerType}
+                              onChange={handleHeaderTypeChange}
+                              isLoading={
+                                headerTypeKeyValue.length > 0 ? false : true
+                              }
+                            />
+                            {/* <div>
 
                                                     <ToggleButtonGroup
                                                         color="primary"
@@ -5969,10 +6101,10 @@ export function CreatePortfolio(props) {
                                                     </ToggleButtonGroup>
                                                 </div> */}
 
-                          {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponentData.portfolioName} onChange={handleGeneralInputChange} /> */}
+                            {/* <input type="email" className="form-control border-radius-10" name="portfolioName" placeholder="Placeholder" value={generalComponentData.portfolioName} onChange={handleGeneralInputChange} /> */}
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-md-3 col-sm-3">
+                        {/* <div className="col-md-3 col-sm-3">
                         <div className="form-group">
                           <label className="text-light-dark font-size-12 font-weight-500">
                             {prefilgabelGeneral} ID
@@ -5981,106 +6113,104 @@ export function CreatePortfolio(props) {
                             type="text"
                             className="form-control border-radius-10"
                             placeholder="(Auto-generated)"
-                            // value={portfolioId}
-                            // onChange={handleGeneralInputChange}
-                            disabled={true}
+                           disabled={true}
                           />
                         </div>
-                      </div>
-					<div className="col-md-3 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            {prefilgabelGeneral} NAME
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control text-primary border-radius-10"
-                            name="name"
-                            placeholder="Name"
-                            value={generalComponentData.name}
-                            onChange={handleGeneralInputChange}
-                          />
+                      </div> */}
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              {prefilgabelGeneral} NAME
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control text-primary border-radius-10"
+                              name="name"
+                              placeholder="Name"
+                              value={generalComponentData.name}
+                              onChange={handleGeneralInputChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              {/* SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY) */}
+                              {prefilgabelGeneral} DESCRIPTION (IF ANY)
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control text-primary border-radius-10"
+                              name="description"
+                              placeholder="Optional"
+                              value={generalComponentData.description}
+                              onChange={handleGeneralInputChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              REFERENCE
+                            </label>
+                            <input
+                              type="text"
+                              className="form-control text-primary border-radius-10"
+                              name="externalReference"
+                              placeholder="Reference"
+                              value={generalComponentData.externalReference}
+                              onChange={handleGeneralInputChange}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-3 col-sm-3">
+                          <div className="form-group">
+                            <label className="text-light-dark font-size-12 font-weight-500">
+                              CUSTOMER SEGMENT
+                            </label>
+                            <Select
+                              onChange={handleCustomerSegmentChange}
+                              className="text-primary"
+                              value={generalComponentData.customerSegment}
+                              options={customerSegmentKeyValue}
+                              placeholder="Optionals"
+                            />
+                          </div>
                         </div>
                       </div>
-                      <div className="col-md-3 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            {/* SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY) */}
-                            {prefilgabelGeneral} DESCRIPTION (IF ANY)
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control text-primary border-radius-10"
-                            name="description"
-                            placeholder="Optional"
-                            value={generalComponentData.description}
-                            onChange={handleGeneralInputChange}
-                          />
-                        </div>
+                      <div className="row" style={{ justifyContent: "right" }}>
+                        <button
+                          type="button"
+                          onClick={handleNextClick}
+                          className="btn btn-light"
+                          id="general"
+                        >
+                          Save & Next
+                        </button>
                       </div>
-                      <div className="col-md-3 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            REFERENCE
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control text-primary border-radius-10"
-                            name="externalReference"
-                            placeholder="Reference"
-                            value={generalComponentData.externalReference}
-                            onChange={handleGeneralInputChange}
-                          />
+                    </> : <>
+                      <div className="row mt-4">
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              PORTFOLIO NAME
+                            </p>
+                            <h6 className="font-weight-500">
+                              {generalComponentData.name}
+                            </h6>
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-md-3 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            CUSTOMER SEGMENT
-                          </label>
-                          <Select
-                            onChange={handleCustomerSegmentChange}
-							className="text-primary"
-                            value={generalComponentData.customerSegment}
-                            options={customerSegmentKeyValue}
-                            placeholder="Optionals"
-                          />
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              PORTFOLIO DESCRIPTION
+                            </p>
+                            <h6 className="font-weight-500">
+                              {generalComponentData.description}
+                            </h6>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                    <div className="row" style={{ justifyContent: "right" }}>
-                      <button
-                        type="button"
-                        onClick={handleNextClick}
-                        className="btn btn-light"
-                        id="general"
-                      >
-                        Save & Next
-                      </button>
-                    </div>
-                  </> : <>
-                    <div className="row mt-4">
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            PORTFOLIO NAME
-                          </p>
-                          <h6 className="font-weight-500">
-                            {generalComponentData.name}
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            PORTFOLIO DESCRIPTION
-                          </p>
-                          <h6 className="font-weight-500">
-                            {generalComponentData.description}
-                          </h6>
-                        </div>
-                      </div>
-                      {/* <div className="col-md-4 col-sm-3">
+                        {/* <div className="col-md-4 col-sm-3">
                         <div className="form-group">
                           <p className="font-size-12 font-weight-500 mb-2">
                              PROGRAM DESCRIPTION (IF ANY)
@@ -6088,232 +6218,233 @@ export function CreatePortfolio(props) {
                           <h6 className="font-weight-500">NA</h6>
                         </div>
                       </div> */}
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            REFERENCE
-                          </p>
-                          <h6 className="font-weight-500">
-                            {generalComponentData.externalReference}
-                          </h6>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              REFERENCE
+                            </p>
+                            <h6 className="font-weight-500">
+                              {generalComponentData.externalReference}
+                            </h6>
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            CUSTOMER SEGMENT
-                          </p>
-                          <h6 className="font-weight-500">
-                            {generalComponentData.customerSegment}
-                          </h6>
-                        </div>
-                      </div>
-                    </div>
-                  </>}
-
-                  {isView ? (
-                    <div className="row mt-4">
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            PORTFOLIO ID
-                          </p>
-                          <h6 className="font-weight-500">
-                            CVA - Premium plan
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            PORTFOLIO DESCRIPTION
-                          </p>
-                          <h6 className="font-weight-500">
-                            Premium Customer Value Agreement D8T and D6T
-                          </h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            SERVICE PROGRAM DESCRIPTION (IF ANY)
-                          </p>
-                          <h6 className="font-weight-500">NA</h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            REFERENCE
-                          </p>
-                          <h6 className="font-weight-500">NA</h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            CUSTOMER SEGMENT
-                          </p>
-                          <h6 className="font-weight-500">Construction</h6>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <></>
-                  )}
-                </TabPanel>
-                <TabPanel value={"validity"}>
-                  <div className="row mt-4 input-fields">
-                    <div className="col-md-12">
-                      <div className="row">
-                        <div className="col-md-6 col-sm-6">
-                          <div className="d-flex align-items-center date-box">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
-                              htmlFor="exampleInputEmail1"
-                            >
-                              <span className=" mr-2">FROM</span>
-                            </label>
-                            <div className="form-group w-100">
-                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <DatePicker
-                                  variant="inline"
-                                  format="dd/MM/yyyy"
-                                  className="form-controldate text-primary border-radius-10"
-                                  label=""
-                                  value={validityData.fromDate}
-                                  onChange={(e) =>
-                                    setValidityData({
-                                      ...validityData,
-                                      fromDate: e,
-                                      inputFlag: false,
-                                    })
-                                  }
-                                />
-                              </MuiPickersUtilsProvider>
-                              {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
-                            </div>
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
-                              htmlFor="exampleInputEmail1"
-                            >
-                              TO
-                            </label>
-                            <div className="form-group w-100">
-                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <DatePicker
-                                  variant="inline"
-                                  className="form-controldate text-primary border-radius-10"
-                                  label=""
-                                  format="dd/MM/yyyy"
-                                  value={validityData.toDate}
-                                  onChange={(e) =>
-                                    setValidityData({
-                                      ...validityData,
-                                      toDate: e,
-                                      dateFlag: true,
-                                      inputFlag: false,
-                                    })
-                                  }
-                                />
-                              </MuiPickersUtilsProvider>
-                            </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              CUSTOMER SEGMENT
+                            </p>
+                            <h6 className="font-weight-500">
+                              {generalComponentData?.customerSegment?.label}
+                            </h6>
                           </div>
                         </div>
                       </div>
-                      <div
-                        className="row"
-                        style={{ textAlign: "center", margin: "8px" }}
-                      >
-                        <div className="col-6">
-                          <h6 className="font-weight-500">OR</h6>
+                    </>}
+
+                    {isView ? (
+                      <div className="row mt-4">
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              PORTFOLIO ID
+                            </p>
+                            <h6 className="font-weight-500">
+                              CVA - Premium plan
+                            </h6>
+                          </div>
                         </div>
-                        <div className="col-6"></div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              PORTFOLIO DESCRIPTION
+                            </p>
+                            <h6 className="font-weight-500">
+                              Premium Customer Value Agreement D8T and D6T
+                            </h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              SERVICE PROGRAM DESCRIPTION (IF ANY)
+                            </p>
+                            <h6 className="font-weight-500">NA</h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              REFERENCE
+                            </p>
+                            <h6 className="font-weight-500">NA</h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-3">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              CUSTOMER SEGMENT
+                            </p>
+                            <h6 className="font-weight-500">Construction</h6>
+                          </div>
+                        </div>
                       </div>
-                      <div className="row">
-                        <div className="col-md-6 col-sm-6">
-                          <div className="d-flex align-items-center">
-                            <div className="d-flex align-items-center date-box w-100">
+                    ) : (
+                      <></>
+                    )}
+                  </TabPanel>
+                  <TabPanel value={"validity"}>
+                    <div className="row mt-4 input-fields">
+                      <div className="col-md-12">
+                        <div className="row">
+                          <div className="col-md-6 col-sm-6">
+                            <div className="d-flex align-items-center date-box">
                               <label
                                 className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
                                 htmlFor="exampleInputEmail1"
                               >
-                                <span className="mr-2">FROM</span>
+                                <span className=" mr-2">FROM</span>
                               </label>
                               <div className="form-group w-100">
-                                <div className=" d-flex form-control-date ">
-                                  <Select
-                                    className="select-input text-primary"
-                                    value={validityData.from}
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                  <DatePicker
+                                    variant="inline"
+                                    format="dd/MM/yyyy"
+                                    className="form-controldate text-primary border-radius-10"
+                                    label=""
+                                    value={validityData.fromDate}
                                     onChange={(e) =>
                                       setValidityData({
                                         ...validityData,
-                                        from: e,
+                                        fromDate: e,
+                                        inputFlag: false,
                                       })
                                     }
-                                    options={validityKeyValue}
-                                    placeholder="Select "
                                   />
-                                  <div>
-                                    <input
-                                      type="text"
-                                      className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                                      id="fromInput"
-                                      aria-describedby="emailHelp"
-                                      placeholder="From"
-                                      value={validityData.fromInput}
-                                      onChange={(e) =>
-                                        setValidityData({
-                                          ...validityData,
-                                          fromInput: e.target.value,
-                                          dateFlag: false,
-                                        })
-                                      }
-                                    />
-                                  </div>
-                                </div>
+                                </MuiPickersUtilsProvider>
+                                {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
                               </div>
-                            </div>
-                            <div className="d-flex align-items-center date-box w-100">
                               <label
                                 className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
                                 htmlFor="exampleInputEmail1"
                               >
-                                <span className="">TO</span>
+                                TO
                               </label>
                               <div className="form-group w-100">
-                                <div className=" d-flex form-control-date">
-                                  <Select
-                                    className="select-input"
-                                    value={validityData.from}
-                                    defaultValue={selectedOption}
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                  <DatePicker
+                                    variant="inline"
+                                    className="form-controldate text-primary border-radius-10"
+                                    label=""
+                                    format="dd/MM/yyyy"
+                                    value={validityData.toDate}
                                     onChange={(e) =>
                                       setValidityData({
                                         ...validityData,
-                                        to: e,
+                                        toDate: e,
+                                        dateFlag: true,
+                                        inputFlag: false,
                                       })
                                     }
-                                    isDisabled={true}
-                                    options={validityKeyValue}
-                                    placeholder="Select "
                                   />
-                                  <div>
-                                    <input
-                                      type="email"
-                                      className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                                      id="exampleInputEmail1"
-                                      aria-describedby="emailHelp"
-                                      placeholder=""
-                                      value={validityData.toInput}
+                                </MuiPickersUtilsProvider>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          className="row"
+                          style={{ textAlign: "center", margin: "8px" }}
+                        >
+                          <div className="col-6">
+                            <h6 className="font-weight-500">OR</h6>
+                          </div>
+                          <div className="col-6"></div>
+                        </div>
+                        <div className="row">
+                          <div className="col-md-6 col-sm-6">
+                            <div className="d-flex align-items-center">
+                              <div className="d-flex align-items-center date-box w-100">
+                                <label
+                                  className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
+                                  htmlFor="exampleInputEmail1"
+                                >
+                                  <span className="mr-2">FROM</span>
+                                </label>
+                                <div className="form-group w-100">
+                                  <div className=" d-flex form-control-date ">
+                                    <Select
+                                      className="select-input text-primary"
+                                      value={validityData.from}
                                       onChange={(e) =>
                                         setValidityData({
                                           ...validityData,
-                                          toInput: e.target.value,
-                                          dateFlag: false,
-                                          inputFlag: true,
+                                          from: e,
                                         })
                                       }
+                                      options={validityKeyValue}
+                                      placeholder="Select "
                                     />
+                                    <div>
+                                      <input
+                                        type="text"
+                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                        id="fromInput"
+                                        aria-describedby="emailHelp"
+                                        placeholder="From"
+                                        value={validityData.fromInput}
+                                        onChange={(e) =>
+                                          setValidityData({
+                                            ...validityData,
+                                            fromInput: e.target.value,
+                                            dateFlag: false,
+                                          })
+                                        }
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="d-flex align-items-center date-box w-100">
+                                <label
+                                  className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
+                                  htmlFor="exampleInputEmail1"
+                                >
+                                  <span className="">TO</span>
+                                </label>
+                                <div className="form-group w-100">
+                                  <div className=" d-flex form-control-date">
+                                    <Select
+                                      className="select-input"
+                                      value={validityData.from}
+                                      defaultValue={selectedOption}
+                                      onChange={(e) =>
+                                        setValidityData({
+                                          ...validityData,
+                                          to: e,
+                                        })
+                                      }
+                                      isDisabled={true}
+                                      options={validityKeyValue}
+                                      placeholder="Select "
+                                    />
+                                    <div>
+                                      <input
+                                        type="email"
+                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                        id="exampleInputEmail1"
+                                        aria-describedby="emailHelp"
+                                        placeholder=""
+                                        value={validityData.toInput}
+                                        onChange={(e) =>
+                                          setValidityData({
+                                            ...validityData,
+                                            toInput: e.target.value,
+                                            dateFlag: false,
+                                            inputFlag: true,
+                                          })
+                                        }
+                                      />
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -6321,9 +6452,8 @@ export function CreatePortfolio(props) {
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* <div className="col-md-6 col-sm-6">
+                      {/* <div className="col-md-6 col-sm-6">
                                             <div className="d-flex align-items-center">
                                                 <label className="text-light-dark font-size-12 font-weight-500  mx-2 form-group" htmlFor="exampleInputEmail1">FROM</label>
                                                 <div className="form-group w-100">
@@ -6335,15 +6465,15 @@ export function CreatePortfolio(props) {
                                                 </div>
                                             </div>
                                         </div> */}
-                    {/* <div className="col-md-12 col-sm-12">
+                      {/* <div className="col-md-12 col-sm-12">
                 <div className="form-group">
                   <Link to={"/repairOption"} className="btn bg-primary text-white">
                  Next
                   </Link>
                 </div>
                 </div> */}
-                  </div>
-                  {/* <div className="row mt-4">
+                    </div>
+                    {/* <div className="row mt-4">
                                         <div className="col-md-6 col-sm-6">
 
                                             <div className="d-flex align-items-center">
@@ -6373,202 +6503,220 @@ export function CreatePortfolio(props) {
                                             </div>
                                         </div>
                                     </div> */}
-                  <div className="row" style={{ justifyContent: "right" }}>
-                    <button
-                      type="button"
-                      onClick={handleNextClick}
-                      className="btn btn-light"
-                      id="validity"
-                    >
-                      Save & Next
-                    </button>
-                  </div>
-                </TabPanel>
-                <TabPanel value={"strategy"}>
-
-                  {!viewOnlyTab.strategyViewOnly ? <>
-                    <div className="row input-fields">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            CATEGORY USAGE
-                          </label>
-                          <Select
-                            options={categoryList}
-							className="text-primary"
-                            value={categoryUsageKeyValue1}
-                            onChange={(e) => HandleCatUsage(e)}
-                          />
-                          {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            STRATEGY TASK
-                          </label>
-                          <Select
-                            options={updatedList}
-							className="text-primary"
-                            value={stratgyTaskUsageKeyValue}
-                            onChange={(e) => HandleStrategyUsage(e)}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            TASK TYPE
-                          </label>
-                          <Select
-                            options={updatedTaskList}
-							className="text-primary"
-                            value={stratgyTaskTypeKeyValue}
-                            placeholder="Optional"
-                            onChange={(e) => {
-                              setStratgyTaskTypeKeyValue(e);
-                              addPortFolioItem.taskType = "";
-                            }}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            OPTIONALS
-                          </label>
-                          <Select
-                            placeholder="Optional"
-                            options={strategyOptionals}
-							className="text-primary"
-                            value={stratgyOptionalsKeyValue}
-                            onChange={(e) => setStratgyOptionalsKeyValue(e)}
-                          // options={rTimeList}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            RESPONSE TIME
-                          </label>
-                          <Select
-                            placeholder="Optional"
-                            options={rTimeList}
-							className="text-primary"
-                            value={stratgyResponseTimeKeyValue}
-                            onChange={(e) => setStratgyResponseTimeKeyValue(e)}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PRODUCT HIERARCHY
-                          </label>
-                          <Select
-                            placeholder="Optional"
-                            options={productList}
-							className="text-primary"
-                            value={stratgyHierarchyKeyValue}
-                            onChange={(e) => setStratgyHierarchyKeyValue(e)}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            GEOGRAPHIC
-                          </label>
-                          <Select
-                            placeholder="Optional"
-                            options={geographicList}
-							className="text-primary"
-                            value={stratgyGeographicKeyValue}
-                            onChange={(e) => setStratgyGeographicKeyValue(e)}
-                          />
-                        </div>
-                      </div>
+                    <div className="row" style={{ justifyContent: "right" }}>
+                      <button
+                        type="button"
+                        onClick={handleNextClick}
+                        className="btn btn-light"
+                        id="validity"
+                      >
+                        Save & Next
+                      </button>
                     </div>
-                  </> : <>
-                    <div className="row">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            STRATEGY TASK
-                          </p>
-                          <h6 className="font-weight-500">PM</h6>
+                  </TabPanel>
+                  <TabPanel value={"strategy"}>
+
+                    {!viewOnlyTab.strategyViewOnly ? <>
+                      <div className="row input-fields">
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              CATEGORY USAGE
+                            </label>
+                            <Select
+                              options={categoryList}
+                              className="text-primary"
+                              value={categoryUsageKeyValue1}
+                              onChange={(e) => HandleCatUsage(e)}
+                            />
+                            {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              STRATEGY TASK
+                            </label>
+                            <Select
+                              options={updatedList}
+                              className="text-primary"
+                              value={stratgyTaskUsageKeyValue}
+                              onChange={(e) => HandleStrategyUsage(e)}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              TASK TYPE
+                            </label>
+                            <Select
+                              options={updatedTaskList}
+                              className="text-primary"
+                              value={stratgyTaskTypeKeyValue}
+                              placeholder="Optional"
+                              onChange={(e) => {
+                                setStratgyTaskTypeKeyValue(e);
+                                addPortFolioItem.taskType = "";
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              OPTIONALS
+                            </label>
+                            <Select
+                              placeholder="Optional"
+                              options={strategyOptionals}
+                              className="text-primary"
+                              value={stratgyOptionalsKeyValue}
+                              onChange={(e) => setStratgyOptionalsKeyValue(e)}
+                            // options={rTimeList}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              RESPONSE TIME
+                            </label>
+                            <Select
+                              placeholder="Optional"
+                              options={rTimeList}
+                              className="text-primary"
+                              value={stratgyResponseTimeKeyValue}
+                              onChange={(e) => setStratgyResponseTimeKeyValue(e)}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              PRODUCT HIERARCHY
+                            </label>
+                            <Select
+                              placeholder="Optional"
+                              options={productList}
+                              className="text-primary"
+                              value={stratgyHierarchyKeyValue}
+                              onChange={(e) => setStratgyHierarchyKeyValue(e)}
+                            />
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <label
+                              className="text-light-dark font-size-12 font-weight-500"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              GEOGRAPHIC
+                            </label>
+                            <Select
+                              placeholder="Optional"
+                              options={geographicList}
+                              className="text-primary"
+                              value={stratgyGeographicKeyValue}
+                              onChange={(e) => setStratgyGeographicKeyValue(e)}
+                            />
+                          </div>
                         </div>
                       </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            CATEGORY USAGE
-                          </p>
-                          <h6 className="font-weight-500">Contract</h6>
-                        </div>
+                      <div className="row" style={{ justifyContent: "right" }}>
+                        <button
+                          type="button"
+                          onClick={handleNextClick}
+                          className="btn btn-light"
+                          id="strategy"
+                        >
+                          Save & Next
+                        </button>
                       </div>
-                      <div className="col-md-4 col-sm-4">
+                    </> : <>
+                      <div className="row">
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              CATEGORY USAGE
+                            </p>
+                            <h6 className="font-weight-500">{categoryUsageKeyValue1.value}</h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              STRATEGY TASK
+                            </p>
+                            <h6 className="font-weight-500">{stratgyTaskUsageKeyValue.value}</h6>
+                          </div>
+                        </div>
+
+                        {/* <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="font-size-12 font-weight-500 mb-2">
                             OPTIONALS
                           </p>
                           <h6 className="font-weight-500">Misc</h6>
                         </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            RESPONSE TIME
-                          </p>
-                          <h6 className="font-weight-500">
-                            Fast - 24x7 available,response within 4 hours of
-                            call
-                          </h6>
+                      </div> */}
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              TASK TYPE
+                            </p>
+                            <h6 className="font-weight-500">{stratgyTaskTypeKeyValue.value}</h6>
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            PRODUCT HIERARCHY
-                          </p>
-                          <h6 className="font-weight-500">End Product</h6>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              RESPONSE TIME
+                            </p>
+                            <h6 className="font-weight-500">
+                              {stratgyResponseTimeKeyValue.value}
+                            </h6>
+                          </div>
                         </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            GEOGRAPHIC
-                          </p>
-                          <h6 className="font-weight-500">Field Support</h6>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              PRODUCT HIERARCHY
+                            </p>
+                            <h6 className="font-weight-500">{stratgyHierarchyKeyValue.value}</h6>
+                          </div>
                         </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              GEOGRAPHIC
+                            </p>
+                            <h6 className="font-weight-500">{stratgyGeographicKeyValue.value}</h6>
+                          </div>
 
+                        </div>
                       </div>
-                    </div>
-                  </>}
+                    </>}
 
-                  {isView ? (
+                    {/* {isView ? (
                     <div className="row">
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
@@ -6624,66 +6772,59 @@ export function CreatePortfolio(props) {
                     </div>
                   ) : (
                     <></>
-                  )}
+                  )} */}
 
-                  <div className="row" style={{ justifyContent: "right" }}>
-                    <button
-                      type="button"
-                      onClick={handleNextClick}
-                      className="btn btn-light"
-                      id="strategy"
-                    >
-                      Save & Next
-                    </button>
-                  </div>
-                </TabPanel>
-                <TabPanel value={"administrative"}>
-                  <div className="row input-fields">
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          PREPARED BY
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control text-primary border-radius-10"
-                          name="preparedBy"
-                          value={administrative.preparedBy}
-                          onChange={handleAdministrativreChange}
-                          placeholder="Required"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          APPROVED BY
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control text-primary border-radius-10"
-                          placeholder="Optional"
-                          name="approvedBy"
-                          value={administrative.approvedBy}
-                          onChange={handleAdministrativreChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      {/* <div className="form-group"> */}
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        PREPARED ON
-                      </label>
-                      {/* <input
+
+                  </TabPanel>
+                  <TabPanel value={"administrative"}>
+                    {!viewOnlyTab.administrativeViewOnly ?
+                      <>
+                        <div className="row input-fields">
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                PREPARED BY
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control text-primary border-radius-10"
+                                name="preparedBy"
+                                value={administrative.preparedBy}
+                                onChange={handleAdministrativreChange}
+                                placeholder="Required"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                APPROVED BY
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control text-primary border-radius-10"
+                                placeholder="Optional"
+                                name="approvedBy"
+                                value={administrative.approvedBy}
+                                onChange={handleAdministrativreChange}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            {/* <div className="form-group"> */}
+                            <label
+                              className="text-light-dark font-size-14 font-weight-500"
+                              htmlFor="exampleInputEmail1"
+                            >
+                              PREPARED ON
+                            </label>
+                            {/* <input
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
@@ -6691,57 +6832,57 @@ export function CreatePortfolio(props) {
                           value={administrative.preparedOn}
                           onChange={handleAdministrativreChange}
                         /> */}
-                      <div className="d-flex align-items-center date-box w-100">
-                        <div className="form-group w-100">
-                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <DatePicker
-                              variant="inline"
-                              format="dd/MM/yyyy"
-                              className="form-controldate border-radius-10"
-                              label=""
-                              name="preparedOn"
-                              value={administrative.preparedOn}
-                              onChange={(e) =>
-                                setAdministrative({
-                                  ...administrative,
-                                  preparedOn: e,
-                                })
-                              }
-                            />
-                          </MuiPickersUtilsProvider>
+                            <div className="d-flex align-items-center date-box w-100">
+                              <div className="form-group w-100">
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                  <DatePicker
+                                    variant="inline"
+                                    format="dd/MM/yyyy"
+                                    className="form-controldate border-radius-10"
+                                    label=""
+                                    name="preparedOn"
+                                    value={administrative.preparedOn}
+                                    onChange={(e) =>
+                                      setAdministrative({
+                                        ...administrative,
+                                        preparedOn: e,
+                                      })
+                                    }
+                                  />
+                                </MuiPickersUtilsProvider>
+                              </div>
+                            </div>
+                            {/* </div> */}
+                          </div>
                         </div>
-                      </div>
-                      {/* </div> */}
-                    </div>
-                  </div>
-                  <div className="row input-fields">
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          REVISED BY
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10 text-primary"
-                          placeholder="Optional"
-                          name="revisedBy"
-                          value={administrative.revisedBy}
-                          onChange={handleAdministrativreChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          REVISED ON
-                        </label>
-                        {/* <input
+                        <div className="row input-fields">
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                REVISED BY
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10 text-primary"
+                                placeholder="Optional"
+                                name="revisedBy"
+                                value={administrative.revisedBy}
+                                onChange={handleAdministrativreChange}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                REVISED ON
+                              </label>
+                              {/* <input
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
@@ -6749,278 +6890,358 @@ export function CreatePortfolio(props) {
                           value={administrative.revisedOn}
                           onChange={handleAdministrativreChange}
                         /> */}
-                        <div className="d-flex align-items-center date-box w-100">
-                          <div className="form-group w-100 m-0">
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                              <DatePicker
-                                variant="inline"
-                                format="dd/MM/yyyy"
-                                className="form-controldate border-radius-10"
-                                label=""
-                                name="revisedOn"
-                                value={administrative.revisedOn}
-                                onChange={(e) =>
-                                  setAdministrative({
-                                    ...administrative,
-                                    revisedOn: e,
-                                  })
-                                }
-                              />
-                            </MuiPickersUtilsProvider>
+                              <div className="d-flex align-items-center date-box w-100">
+                                <div className="form-group w-100 m-0">
+                                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <DatePicker
+                                      variant="inline"
+                                      format="dd/MM/yyyy"
+                                      className="form-controldate border-radius-10"
+                                      label=""
+                                      name="revisedOn"
+                                      value={administrative.revisedOn}
+                                      onChange={(e) =>
+                                        setAdministrative({
+                                          ...administrative,
+                                          revisedOn: e,
+                                        })
+                                      }
+                                    />
+                                  </MuiPickersUtilsProvider>
+                                </div>
+                              </div>
+                            </div>
                           </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                SALSE OFFICE/BRANCH
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10 text-primary"
+                                name="branch"
+                                value={administrative.branch}
+                                onChange={handleAdministrativreChange}
+                                placeholder="Required"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="row input-fields">
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                OFFER VALIDITY
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10 text-primary"
+                                placeholder="Optional"
+                                name="offerValidity"
+                                value={administrative.offerValidity}
+                                onChange={handleAdministrativreChange}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="row" style={{ justifyContent: "right" }}>
+                          <button
+                            type="button"
+                            onClick={handleNextClick}
+                            className="btn btn-light"
+                            id="administrative"
+                          >
+                            Save & Next
+                          </button>
+                        </div>
+                      </> :
+                      <>
+                        <div className="row">
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                PREPARED BY
+                                {/* {console.log("new dataa : ", coverageData.machineType)} */}
+                              </p>
+                              <h6 className="font-weight-500">
+                                {(administrative.preparedBy)}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                APPROVED BY
+                              </p>
+                              <h6 className="font-weight-500">
+                                {(administrative.approvedBy)}
+                                {/* {Object.keys(stratgyTaskUsageKeyValue).length > 0 ? (stratgyTaskUsageKeyValue.label) : (location.selectedTemplateItems[0].strategyTask)} */}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                PREPARED ON
+                              </p>
+                              <h6 className="font-weight-500">
+                                {(administrative.preparedOn)}
+                                {/* {Object.keys(stratgyTaskTypeKeyValue).length > 0 ? (stratgyTaskTypeKeyValue.label) : (location.selectedTemplateItems[0].taskType)} */}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                REVISED BY
+                              </p>
+                              <h6 className="font-weight-500">
+                                {administrative.revisedBy}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                REVISED  ON
+                              </p>
+                              <h6 className="font-weight-500">
+                                {administrative.revisedOn}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                SALSE OFFICE/BRANCH
+                              </p>
+                              <h6 className="font-weight-500">
+                                {administrative.salesOffice}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                OFFER VALIDITY
+                              </p>
+                              <h6 className="font-weight-500">
+                                {administrative.offerValidity}
+                              </h6>
+                            </div>
+                          </div>
+                        </div>
+                      </>}
+
+
+                  </TabPanel>
+                  <TabPanel value={"price"}>
+                    <div className="row input-fields">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            PRICE LIST
+                          </label>
+                          <Select
+                            defaultValue={selectedOption}
+                            onChange={setSelectedOption}
+                            className="text-primary"
+                            options={options}
+                            placeholder="placeholder (Optional)"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            PRICE METHOD
+                          </label>
+                          <Select
+                            defaultValue={selectedOption}
+                            className="text-primary"
+                            onChange={setSelectedOption}
+                            options={priceMethodKeyValue}
+                            placeholder="required"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            PRICE DATE
+                          </label>
+                          <Select
+                            defaultValue={selectedOption}
+                            onChange={setSelectedOption}
+                            className="text-primary"
+                            options={options}
+                            placeholder="placeholder (Optional)"
+                          />
                         </div>
                       </div>
                     </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          SALSE OFFICE/BRANCH
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10 text-primary"
-                          name="branch"
-                          value={administrative.branch}
-                          onChange={handleAdministrativreChange}
-                          placeholder="Required"
-                        />
+                    <hr />
+                    <h6>PRICES</h6>
+                    <div className="row input-fields">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            PRICE TYPE
+                          </label>
+                          <Select
+                            defaultValue={selectedOption}
+                            className="text-primary"
+                            onChange={setSelectedOption}
+                            options={options}
+                            placeholder="placeholder (Optional)"
+                          />
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="row input-fields">
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          OFFER VALIDITY
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10 text-primary"
-                          placeholder="Optional"
-                          name="offerValidity"
-                          value={administrative.offerValidity}
-                          onChange={handleAdministrativreChange}
-                        />
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            PRICE{" "}
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control text-primary border-radius-10"
+                            id="exampleInputEmail1"
+                            aria-describedby="emailHelp"
+                            placeholder="Optional"
+                          />
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="row" style={{ justifyContent: "right" }}>
-                    <button
-                      type="button"
-                      onClick={handleNextClick}
-                      className="btn btn-light"
-                      id="administrative"
-                    >
-                      Save & Next
-                    </button>
-                  </div>
-                </TabPanel>
-                <TabPanel value={"price"}>
-                  <div className="row input-fields">
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          PRICE LIST
-                        </label>
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          className="text-primary"
-                          options={options}
-                          placeholder="placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          PRICE METHOD
-                        </label>
-                        <Select
-                          defaultValue={selectedOption}
-                          className="text-primary"
-                          onChange={setSelectedOption}
-                          options={priceMethodKeyValue}
-                          placeholder="required"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          PRICE DATE
-                        </label>
-                        <Select
-                          defaultValue={selectedOption}
-                          onChange={setSelectedOption}
-                          className="text-primary"
-                          options={options}
-                          placeholder="placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <hr />
-                  <h6>PRICES</h6>
-                  <div className="row input-fields">
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          PRICE TYPE
-                        </label>
-                        <Select
-                          defaultValue={selectedOption}
-                          className="text-primary"
-                          onChange={setSelectedOption}
-                          options={options}
-                          placeholder="placeholder (Optional)"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          PRICE{" "}
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control text-primary border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Optional"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group date-box">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          ADDITIONAL
-                        </label>
-                        <div className=" d-flex form-control-date">
-                          {/* <Select className="select-input"
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group date-box">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            ADDITIONAL
+                          </label>
+                          <div className=" d-flex form-control-date">
+                            {/* <Select className="select-input"
                             defaultValue={selectedOption}
                             onChange={setSelectedOption}
                             options={options}
                             placeholder="placeholder "
                           /> */}
-                          <div className="">
-                            <Select
-                              onChange={setSelectedOption}
-                              className="text-primary"
-                              isClearable={true}
-                              // value={options}
-                              options={additionaloptions}
-                              placeholder="Select"
+                            <div className="">
+                              <Select
+                                onChange={setSelectedOption}
+                                className="text-primary"
+                                isClearable={true}
+                                // value={options}
+                                options={additionaloptions}
+                                placeholder="Select"
+                              />
+                            </div>
+                            <input
+                              type="text"
+                              className="form-control rounded-top-left-0 text-primary rounded-bottom-left-0"
+                              id="exampleInputEmail1"
+                              aria-describedby="emailHelp"
+                              placeholder="optional"
                             />
                           </div>
-                          <input
-                            type="text"
-                            className="form-control rounded-top-left-0 text-primary rounded-bottom-left-0"
-                            id="exampleInputEmail1"
-                            aria-describedby="emailHelp"
-                            placeholder="optional"
-                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group date-box">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            PRICE ESCALATON
+                          </label>
+                          <div className=" d-flex align-items-center form-control-date">
+                            <Select
+                              className="select-input text-primary"
+                              defaultValue={selectedOption}
+                              onChange={setSelectedOption}
+                              options={additionaloptions}
+                              placeholder="Select "
+                            />
+                            <input
+                              type="text"
+                              className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                              id="exampleInputEmail1"
+                              aria-describedby="emailHelp"
+                              placeholder="optional"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group date-box">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          PRICE ESCALATON
-                        </label>
-                        <div className=" d-flex align-items-center form-control-date">
-                          <Select
-                            className="select-input text-primary"
-                            defaultValue={selectedOption}
-                            onChange={setSelectedOption}
-                            options={additionaloptions}
-                            placeholder="Select "
-                          />
-                          <input
-                            type="text"
-                            className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
-                            id="exampleInputEmail1"
-                            aria-describedby="emailHelp"
-                            placeholder="optional"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
 
 
-                  <hr />
-                  <div className="row input-fields">
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          CALCULATED PRICE
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10 text-primary"
-                          id="exampleInputEmail1"
-                          placeholder="required"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group date-box">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          PRICE BREAK DOWN
-                        </label>
-                        <div className=" d-flex form-control-date">
-                          <Select
-                            className="select-input text-primary"
-                            defaultValue={selectedOption}
-                            onChange={setSelectedOption}
-                            options={options}
-                            placeholder="placeholder "
-                          />
+                    <hr />
+                    <div className="row input-fields">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            CALCULATED PRICE
+                          </label>
                           <input
                             type="text"
-                            className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                            className="form-control border-radius-10 text-primary"
                             id="exampleInputEmail1"
-                            aria-describedby="emailHelp"
-                            placeholder="optional"
+                            placeholder="required"
                           />
                         </div>
                       </div>
-                    </div>
-                    {/* <div className="col-md-4 col-sm-4">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group date-box">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            PRICE BREAK DOWN
+                          </label>
+                          <div className=" d-flex form-control-date">
+                            <Select
+                              className="select-input text-primary"
+                              defaultValue={selectedOption}
+                              onChange={setSelectedOption}
+                              options={options}
+                              placeholder="placeholder "
+                            />
+                            <input
+                              type="text"
+                              className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                              id="exampleInputEmail1"
+                              aria-describedby="emailHelp"
+                              placeholder="optional"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      {/* <div className="col-md-4 col-sm-4">
                       <div className="form-group date-box">
                         <label
                           className="text-light-dark font-size-12 font-weight-500"
@@ -7046,425 +7267,426 @@ export function CreatePortfolio(props) {
                         </div>
                       </div>
                     </div> */}
-                  </div>
-                  <div className="row" style={{ justifyContent: "right" }}>
-                    <button
-                      type="button"
-                      onClick={handleNextClick}
-                      className="btn btn-light"
-                      id="price"
-                    >
-                      {" "}
-                      Save & Next
-                    </button>
-                  </div>
-                </TabPanel>
+                    </div>
+                    <div className="row" style={{ justifyContent: "right" }}>
+                      <button
+                        type="button"
+                        onClick={handleNextClick}
+                        className="btn btn-light"
+                        id="price"
+                      >
+                        {" "}
+                        Save & Next
+                      </button>
+                    </div>
+                  </TabPanel>
 
-                <TabPanel value={"priceAgreement"} className="customTabPanel">
-                  <div className="card border">
-                    <div className="d-flex align-items-center justify-content-between px-3">
-                      <div className="">
-                        <div className="d-flex ">
-                          <h5 className=" mb-0">
-                            <span>Price Agreement</span>
-                          </h5>
-                          <p className=" mb-0">
-                            <a href="#" className="ml-3 ">
-                              <img src={editIcon}></img>
+                  <TabPanel value={"priceAgreement"} className="customTabPanel">
+                    <div className="card border">
+                      <div className="d-flex align-items-center justify-content-between px-3">
+                        <div className="">
+                          <div className="d-flex ">
+                            <h5 className=" mb-0">
+                              <span>Price Agreement</span>
+                            </h5>
+                            <p className=" mb-0">
+                              <a href="#" className="ml-3 ">
+                                <img src={editIcon}></img>
+                              </a>
+                              <a href="#" className="ml-3 ">
+                                <img src={shareIcon}></img>
+                              </a>
+                            </p>
+                          </div>
+                        </div>
+                        <div className="d-flex align-items-center ">
+                          <div className=" text-center border-left py-4 pl-3">
+                            <a
+                              className="cursor"
+                              onClick={handleAddNewRowPriceAgreement}
+                            >
+                              + Add
                             </a>
-                            <a href="#" className="ml-3 ">
-                              <img src={shareIcon}></img>
-                            </a>
-                          </p>
+                          </div>
                         </div>
                       </div>
-                      <div className="d-flex align-items-center ">
-                        <div className=" text-center border-left py-4 pl-3">
-                          <a
-                            className="cursor"
-                            onClick={handleAddNewRowPriceAgreement}
-                          >
-                            + Add
-                          </a>
-                        </div>
+                      <div className="table-responsive custometable">
+                        <table className="table">
+                          <thead>
+                            <tr>
+                              <th scope="col">#</th>
+                              <th scope="col">Item Type</th>
+                              <th scope="col">Item Number</th>
+                              <th scope="col">Special Price</th>
+                              <th scope="col">Discount%</th>
+                              <th scope="col">Absolute discount</th>
+                              <th scope="col">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>{priceAgreementRows}</tbody>
+                        </table>
                       </div>
                     </div>
-                    <div className="table-responsive custometable">
-                      <table className="table">
-                        <thead>
-                          <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Item Type</th>
-                            <th scope="col">Item Number</th>
-                            <th scope="col">Special Price</th>
-                            <th scope="col">Discount%</th>
-                            <th scope="col">Absolute discount</th>
-                            <th scope="col">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>{priceAgreementRows}</tbody>
-                      </table>
+                    <div className="row" style={{ justifyContent: "right" }}>
+                      <button
+                        type="button"
+                        onClick={() => setValue("coverage")}
+                        className="btn btn-light"
+                      >
+                        Save & Next
+                      </button>
                     </div>
-                  </div>
-                  <div className="row" style={{ justifyContent: "right" }}>
-                    <button
-                      type="button"
-                      onClick={() => setValue("coverage")}
-                      className="btn btn-light"
-                    >
-                      Save & Next
-                    </button>
-                  </div>
-                </TabPanel>
+                  </TabPanel>
 
-                <TabPanel value="coverage">
-                  <ul class="submenu templateResultheading accordion" style={{ display: 'block' }}>
-                    <li><a className="cursor result" >Search Coverage</a></li>
-                  </ul>
-                  <div
-                    className="custom-table card p-3"
-                    style={{ width: "100%", backgroundColor: "#fff" }}
-                  >
-
+                  <TabPanel value="coverage">
+                    <ul class="submenu templateResultheading accordion" style={{ display: 'block' }}>
+                      <li><a className="cursor result" >Search Coverage</a></li>
+                    </ul>
                     <div
-                      className="row align-items-center m-0"
-                      style={{ flexFlow: "unset" }}
+                      className="custom-table card p-3"
+                      style={{ width: "100%", backgroundColor: "#fff" }}
                     >
 
-                      <QuerySearchComp
-                        setMasterData={setMasterData}
-                        setFilterMasterData={setFilterMasterData}
-                        setSelectedMasterData={setSelectedMasterData}
-                        setFlagIs={setFlagIs}
-                        compoFlag="coverage"
-                        options={[
-                          { label: "Make", value: "make" },
-                          { label: "Model", value: "model" },
-                          { label: "Prefix", value: "prefix" },
-                          { label: "Family", value: "family" },
-                        ]}
-                      />
-                      <div className=" ml-3">
-                        <Link to="#" onClick={() => setOpen3(true)} className="btn bg-primary text-white">
-                          <FileUploadOutlinedIcon />{" "}
-                          <span className="ml-1">Upload</span>
-                        </Link>
-                      </div>
-                    </div>
-                    {masterData.length > 0 ? (
-                      <>
-                        <hr />
-                        <DataTable
-                          className=""
-                          title=""
-                          columns={masterColumns}
-                          data={masterData}
-                          customStyles={customStyles}
-                          selectableRows
-                          onSelectedRowsChange={(state) => setFilterMasterData(state.selectedRows)}
-                          pagination
-                        />
-                        <div>
-                          <div className="text-right">
-                            <input
-                              // onClick={() => {
-                              //   setSelectedMasterData(filterMasterData);
-                              //   setMasterData([]);
-                              // }}
-                              onClick={handleCoverageCheckBoxData}
-                              className="btn bg-primary text-white"
-                              value="+ Add Selected"
-                              // disabled={!flagIs}
-                              disabled={filterMasterData.length == 0}
-                            />
+                      <div
+                        className="row align-items-center m-0"
+                        style={{ flexFlow: "unset" }}
+                      >
 
-                            {/* <Link to="#"
+                        <QuerySearchComp
+                          setMasterData={setMasterData}
+                          setFilterMasterData={setFilterMasterData}
+                          setSelectedMasterData={setSelectedMasterData}
+                          setFlagIs={setFlagIs}
+                          compoFlag="coverage"
+                          options={[
+                            { label: "Make", value: "make" },
+                            { label: "Model", value: "model" },
+                            { label: "Prefix", value: "prefix" },
+                            { label: "Family", value: "family" },
+                          ]}
+                        />
+                        <div className=" ml-3">
+                          <Link to="#" onClick={() => setOpen3(true)} className="btn bg-primary text-white">
+                            <FileUploadOutlinedIcon />{" "}
+                            <span className="ml-1">Upload</span>
+                          </Link>
+                        </div>
+                      </div>
+                      {masterData.length > 0 ? (
+                        <>
+                          <hr />
+                          <DataTable
+                            className=""
+                            title=""
+                            columns={masterColumns}
+                            data={masterData}
+                            customStyles={customStyles}
+                            selectableRows
+                            onSelectedRowsChange={(state) => setFilterMasterData(state.selectedRows)}
+                            pagination
+                          />
+                          <div>
+                            <div className="text-right">
+                              <input
+                                // onClick={() => {
+                                //   setSelectedMasterData(filterMasterData);
+                                //   setMasterData([]);
+                                // }}
+                                onClick={handleCoverageCheckBoxData}
+                                className="btn bg-primary text-white"
+                                value="+ Add Selected"
+                                // disabled={!flagIs}
+                                disabled={filterMasterData.length == 0}
+                              />
+
+                              {/* <Link to="#"
                           onClick={() => {
                             setSelectedMasterData(filterMasterData)
                             setMasterData([])
                           }}
                           className="btn bg-primary text-white"
                         >+ Add Selected</Link> */}
+                            </div>
                           </div>
+                        </>
+                      ) : (
+                        <></>
+                      )}
+                      {selectedMasterData.length > 0 ? (
+                        <>
+                          <hr />
+                          <label htmlFor="Included-model">
+                            <h5 className="font-weight-400 text-black mb-2 mt-1">
+                              Included models
+                            </h5>
+                          </label>
+                          <DataTable
+                            className="mt-3"
+                            title=""
+                            columns={selectedMasterColumns}
+                            data={selectedMasterData}
+                            customStyles={customStyles}
+                            pagination
+                          />
+                        </>
+                      ) : (
+                        <></>
+                      )}
+                    </div>
+
+                    <div className="row" style={{ display: "none" }}>
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            <Checkbox className="text-white" {...label} />
+                          </label>
+                          {makeKeyValue.length > 0 ? (
+                            <Select
+                              onChange={(e) => handleDropdownChange(ENUM.MAKE, e)}
+                              isClearable={true}
+                              value={coverageData.makeSelect}
+                              isLoading={makeKeyValue.length > 0 ? false : true}
+                              options={makeKeyValue}
+                            />
+                          ) : (
+                            <input
+                              type="email"
+                              className="form-control border-radius-10"
+                              name="make"
+                              placeholder=""
+                              value={coverageData.make}
+                              onChange={handleCoverageInputChange}
+                            />
+                          )}
+
+                          {/* <input type="email" className="form-control border-radius-10" name="make" placeholder="" value={coverageData.make} onChange={handleCoverageInputChange} /> */}
                         </div>
-                      </>
-                    ) : (
-                      <></>
-                    )}
-                    {selectedMasterData.length > 0 ? (
-                      <>
-                        <hr />
-                        <label htmlFor="Included-model">
-                          <h5 className="font-weight-400 text-black mb-2 mt-1">
-                            Included models
-                          </h5>
-                        </label>
-                        <DataTable
-                          className="mt-3"
-                          title=""
-                          columns={selectedMasterColumns}
-                          data={selectedMasterData}
-                          customStyles={customStyles}
-                          pagination
-                        />
-                      </>
-                    ) : (
-                      <></>
-                    )}
-                  </div>
-
-                  <div className="row" style={{ display: "none" }}>
-                    <div className="col-md-4 col-sm-3">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          <Checkbox className="text-white" {...label} />
-                        </label>
-                        {makeKeyValue.length > 0 ? (
-                          <Select
-                            onChange={(e) => handleDropdownChange(ENUM.MAKE, e)}
-                            isClearable={true}
-                            value={coverageData.makeSelect}
-                            isLoading={makeKeyValue.length > 0 ? false : true}
-                            options={makeKeyValue}
-                          />
-                        ) : (
-                          <input
-                            type="email"
-                            className="form-control border-radius-10"
-                            name="make"
-                            placeholder=""
-                            value={coverageData.make}
-                            onChange={handleCoverageInputChange}
-                          />
-                        )}
-
-                        {/* <input type="email" className="form-control border-radius-10" name="make" placeholder="" value={coverageData.make} onChange={handleCoverageInputChange} /> */}
                       </div>
-                    </div>
-                    <div className="col-md-4 col-sm-3">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          MAKE
-                        </label>
-                        {makeKeyValue.length > 0 ? (
-                          <Select
-                            onChange={(e) => handleDropdownChange(ENUM.MAKE, e)}
-                            isClearable={true}
-                            value={coverageData.makeSelect}
-                            isLoading={makeKeyValue.length > 0 ? false : true}
-                            options={makeKeyValue}
-                          />
-                        ) : (
-                          <input
-                            type="text"
-                            className="form-control border-radius-10"
-                            name="make"
-                            placeholder=""
-                            value={coverageData.make}
-                            onChange={handleCoverageInputChange}
-                          />
-                        )}
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            MAKE
+                          </label>
+                          {makeKeyValue.length > 0 ? (
+                            <Select
+                              onChange={(e) => handleDropdownChange(ENUM.MAKE, e)}
+                              isClearable={true}
+                              value={coverageData.makeSelect}
+                              isLoading={makeKeyValue.length > 0 ? false : true}
+                              options={makeKeyValue}
+                            />
+                          ) : (
+                            <input
+                              type="text"
+                              className="form-control border-radius-10"
+                              name="make"
+                              placeholder=""
+                              value={coverageData.make}
+                              onChange={handleCoverageInputChange}
+                            />
+                          )}
 
-                        {/* <input type="email" className="form-control border-radius-10" name="make" placeholder="" value={coverageData.make} onChange={handleCoverageInputChange} /> */}
+                          {/* <input type="email" className="form-control border-radius-10" name="make" placeholder="" value={coverageData.make} onChange={handleCoverageInputChange} /> */}
+                        </div>
                       </div>
-                    </div>
-                    <div className="col-md-4 col-sm-3">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          MODEL(S)
-                        </label>
-                        {/* <Select
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            MODEL(S)
+                          </label>
+                          {/* <Select
                                                     onChange={(e) => handleDropdownChange(ENUM.MACHINE_COMPONENT, e)}
                                                     isClearable={true}
                                                     value={coverageData.machineComponent}
                                                     isLoading={typeKeyValue.length > 0 ? false : true}
                                                     options={typeKeyValue}
                                                 /> */}
-                        {modelKeyValue.length > 0 ? (
-                          <Select
-                            onChange={(e) =>
-                              handleDropdownChange(ENUM.MODEL, e)
-                            }
-                            isClearable={true}
-                            value={coverageData.modelSelect}
-                            isLoading={modelKeyValue.length > 0 ? false : true}
-                            options={modelKeyValue}
-                          />
-                        ) : (
-                          <input
-                            type="email"
-                            className="form-control border-radius-10"
-                            name="modal"
-                            placeholder=""
-                            value={coverageData.modal}
-                            onChange={handleCoverageInputChange}
-                          />
-                        )}
+                          {modelKeyValue.length > 0 ? (
+                            <Select
+                              onChange={(e) =>
+                                handleDropdownChange(ENUM.MODEL, e)
+                              }
+                              isClearable={true}
+                              value={coverageData.modelSelect}
+                              isLoading={modelKeyValue.length > 0 ? false : true}
+                              options={modelKeyValue}
+                            />
+                          ) : (
+                            <input
+                              type="email"
+                              className="form-control border-radius-10"
+                              name="modal"
+                              placeholder=""
+                              value={coverageData.modal}
+                              onChange={handleCoverageInputChange}
+                            />
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    <div className="col-md-4 col-sm-3">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          PREFIX(S)
-                        </label>
-                        {prefixKeyValue.length > 0 ? (
-                          <Select
-                            onChange={(e) =>
-                              handleDropdownChange(ENUM.PREFIX, e)
-                            }
-                            isClearable={true}
-                            value={coverageData.prefixSelect}
-                            isLoading={prefixKeyValue.length > 0 ? false : true}
-                            options={prefixKeyValue}
-                          />
-                        ) : (
-                          <input
-                            type="email"
-                            className="form-control border-radius-10"
-                            name="prefix"
-                            placeholder=""
-                            value={coverageData.prefix}
-                            onChange={handleCoverageInputChange}
-                          />
-                        )}
+                      <div className="col-md-4 col-sm-3">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            PREFIX(S)
+                          </label>
+                          {prefixKeyValue.length > 0 ? (
+                            <Select
+                              onChange={(e) =>
+                                handleDropdownChange(ENUM.PREFIX, e)
+                              }
+                              isClearable={true}
+                              value={coverageData.prefixSelect}
+                              isLoading={prefixKeyValue.length > 0 ? false : true}
+                              options={prefixKeyValue}
+                            />
+                          ) : (
+                            <input
+                              type="email"
+                              className="form-control border-radius-10"
+                              name="prefix"
+                              placeholder=""
+                              value={coverageData.prefix}
+                              onChange={handleCoverageInputChange}
+                            />
+                          )}
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          MACHINE/COMPOMENT
-                        </label>
-                        <Select
-                          onChange={(e) =>
-                            handleDropdownChange(ENUM.MACHINE_COMPONENT, e)
-                          }
-                          isClearable={true}
-                          value={coverageData.machineComponent}
-                          isLoading={typeKeyValue.length > 0 ? false : true}
-                          options={typeKeyValue}
-                        />
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            MACHINE/COMPOMENT
+                          </label>
+                          <Select
+                            onChange={(e) =>
+                              handleDropdownChange(ENUM.MACHINE_COMPONENT, e)
+                            }
+                            isClearable={true}
+                            value={coverageData.machineComponent}
+                            isLoading={typeKeyValue.length > 0 ? false : true}
+                            options={typeKeyValue}
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          MACHINE TYPE
-                        </label>
-                        <Select
-                          onChange={(e) =>
-                            handleDropdownChange(ENUM.MACHINE_TYPE, e)
-                          }
-                          isClearable={true}
-                          value={coverageData.machineType}
-                          isLoading={
-                            machineTypeKeyValue.length > 0 ? false : true
-                          }
-                          options={machineTypeKeyValue}
-                        />
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-12 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            MACHINE TYPE
+                          </label>
+                          <Select
+                            onChange={(e) =>
+                              handleDropdownChange(ENUM.MACHINE_TYPE, e)
+                            }
+                            isClearable={true}
+                            value={coverageData.machineType}
+                            isLoading={
+                              machineTypeKeyValue.length > 0 ? false : true
+                            }
+                            options={machineTypeKeyValue}
+                          />
+                        </div>
                       </div>
-                    </div>
-                    {/* <div className="col-md-4 col-sm-4"> */}
-                    {/* <div className="form-group">
+                      {/* <div className="col-md-4 col-sm-4"> */}
+                      {/* <div className="form-group">
                                                 <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">COVERAGE DATA</label>
                                             </div> */}
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          COVERAGE DATA
-                        </label>
-                        <h6>
-                          Coverage123
-                          <span
-                            className="ml-3 cursor"
-                            onClick={() => setShowAvailableCoverage(true)}
-                          >
-                            <i className="fa fa-external-link"></i>
-                          </span>
-                        </h6>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label className="text-light-dark font-size-12 font-weight-500">
+                            COVERAGE DATA
+                          </label>
+                          <h6>
+                            Coverage123
+                            <span
+                              className="ml-3 cursor"
+                              onClick={() => setShowAvailableCoverage(true)}
+                            >
+                              <i className="fa fa-external-link"></i>
+                            </span>
+                          </h6>
+                        </div>
                       </div>
+                      {/* <a href="#" className="btn btn-primary w-100" onClick={() => setShowAvailableCoverage(true)}> Create New</a> */}
+                      {/* </div> */}
                     </div>
-                    {/* <a href="#" className="btn btn-primary w-100" onClick={() => setShowAvailableCoverage(true)}> Create New</a> */}
-                    {/* </div> */}
-                  </div>
 
-                  {isView ? (
-                    <div className="row">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            MAKE
-                          </p>
-                          <h6 className="font-weight-600">Caterpillar</h6>
+                    {isView ? (
+                      <div className="row">
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              MAKE
+                            </p>
+                            <h6 className="font-weight-600">Caterpillar</h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              MODEL(S)
+                            </p>
+                            <h6 className="font-weight-600">D8T,D6T</h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              PREFIX(S)
+                            </p>
+                            <h6 className="font-weight-600">MBB</h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              MACHINE/COMPOMENT
+                            </p>
+                            <h6 className="font-weight-600">Machine</h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              MACHINE TYPE
+                            </p>
+                            <h6 className="font-weight-600">New</h6>
+                          </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                          <div className="form-group">
+                            <p className="font-size-12 font-weight-500 mb-2">
+                              MACHINE DATE
+                            </p>
+                            <h6 className="font-weight-600">Coverrage123</h6>
+                          </div>
                         </div>
                       </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            MODEL(S)
-                          </p>
-                          <h6 className="font-weight-600">D8T,D6T</h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            PREFIX(S)
-                          </p>
-                          <h6 className="font-weight-600">MBB</h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            MACHINE/COMPOMENT
-                          </p>
-                          <h6 className="font-weight-600">Machine</h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            MACHINE TYPE
-                          </p>
-                          <h6 className="font-weight-600">New</h6>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            MACHINE DATE
-                          </p>
-                          <h6 className="font-weight-600">Coverrage123</h6>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <></>
-                  )}
-
-                  <div className="row" style={{ justifyContent: "right" }}>
-                    {selectedMasterData.length > 0 ? (
-                      <button
-                        type="button"
-                        onClick={handleNextClick}
-                        className="btn btn-light"
-                        id="coverage"
-                      >
-                        Save
-                      </button>
                     ) : (
                       <></>
                     )}
-                  </div>
-                </TabPanel>
-              </TabContext>
+
+                    <div className="row" style={{ justifyContent: "right" }}>
+                      {selectedMasterData.length > 0 ? (
+                        <button
+                          type="button"
+                          onClick={handleNextClick}
+                          className="btn btn-light"
+                          id="coverage"
+                        >
+                          Save
+                        </button>
+                      ) : (
+                        <></>
+                      )}
+                    </div>
+                  </TabPanel>
+                </TabContext>
+              )}
             </Box>
           </div>
 

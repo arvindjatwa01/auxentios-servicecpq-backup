@@ -1,7 +1,7 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type {ListResponse, StrategyTask} from "../../../models";
-import type {RootState} from "../../../app/store";
-import {frequencyDropDownList, unitDropDownList} from "./dropDownArray";
+import type { ListResponse, StrategyTask } from "../../../models";
+import type { RootState } from "../../../app/store";
+import { frequencyDropDownList, unitDropDownList } from "./dropDownArray";
 
 export interface TaskState {
   loading: boolean;
@@ -11,13 +11,15 @@ export interface TaskState {
 const initialState: TaskState = {
   loading: false,
   list: [],
-  taskList:[],
-  categoryList:[],
-  rTimeList:[],
-  productList:[],
-  geographicList:[],
-  update:[],
-  updateTask:[],
+  taskList: [],
+  categoryList: [],
+  rTimeList: [],
+  productList: [],
+  geographicList: [],
+  update: [],
+  updateTask: [],
+  solutionTaskList: [],
+  solutionLevelList: [],
 };
 
 const strategySlice = createSlice({
@@ -29,17 +31,23 @@ const strategySlice = createSlice({
     },
     fetchTaskListSuccess(state, action: PayloadAction) {
       state.loading = false;
-      console.log("strategySlice",action.payload.category.data);
       state.list = action.payload.users.data;
       state.taskList = action.payload.tasks.data;
       state.categoryList = action.payload.category.data;
       state.rTimeList = action.payload.rTime.data;
       state.productList = action.payload.product.data;
       state.geographicList = action.payload.geographic.data;
+      state.solutionTaskList = action.payload.solutionType.data;
+      state.solutionLevelList = action.payload.solutionLevel.data;
     },
     updateList(state, action: PayloadAction) {
       // updateList.push(action.payload)
-      console.log("action update list",action.payload)
+      console.log("action update list", action.payload)
+
+    },
+    updateSolution(state, action: PayloadAction) {
+      // updateList.push(action.payload)
+      console.log("action solution update list", action.payload)
 
     },
     updateTask(state, action: PayloadAction) {
@@ -48,10 +56,17 @@ const strategySlice = createSlice({
     updateListSuccess(state, action: PayloadAction) {
       state.update = action.payload.update;
     },
+    updateSolutionSuccess(state, action: PayloadAction) {
+      state.solutionLevelList = action.payload.update;
+    },
     updateTaskSuccess(state, action: PayloadAction) {
       state.updateTask = action.payload.update;
     },
     fetchTaskListFailed(state, action: PayloadAction<string>) {
+      state.loading = false;
+      console.log(action);
+    },
+    fetchSolutionFailed(state, action: PayloadAction<string>) {
       state.loading = false;
       console.log(action);
     },
@@ -73,12 +88,14 @@ export const selectUnitList = (state: RootState) => unitDropDownList;
 export const selectFrequencyList = (state: RootState) => frequencyDropDownList;
 export const selectUpdateList = (state: RootState) => state.task.update;
 export const selectUpdateTaskList = (state: RootState) => state.task.updateTask;
+export const selectSolutionTaskList = (state: RootState) => state.task.solutionTaskList;
+export const selectSolutionLevelList = (state: RootState) => state.task.solutionLevelList;
 
-export const selectStrategyTaskOption = (option)=>createSelector(option, (taskList) =>
-    taskList.map((task) => ({
-      label: task.value,
-      value: task.key,
-    }))
+export const selectStrategyTaskOption = (option) => createSelector(option, (taskList) =>
+  taskList.map((task) => ({
+    label: task.value,
+    value: task.key,
+  }))
 );
 
 
