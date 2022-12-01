@@ -247,3 +247,51 @@ export const getLifeStageKeyValue = () => {
     }
   });
 };
+
+/**
+ * Function to fetch Solution Level keyvalue.
+ */
+export const getSolutionTypeKeyValue = () => {
+  // console.log("commonSolutionBuilder > getSolutionTypeKeyValue called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(Common_SOLUTION_BUILDER_URL() + "/solution-type", { headers: headersdata })
+        .then((res) => {
+          // console.log("getSolutionTypeKeyValue > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          // console.log("getSolutionTypeKeyValue > axios err=", err);
+          reject("Error in getSolutionTypeKeyValue axios!");
+        });
+    } catch (error) {
+      // console.error("in userServices > getSolutionTypeKeyValue, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+/**
+ * Function to fetch Solution Level keyvalue.
+ */
+export const getSolutionLevelKeyValue = () => {
+  // console.log("commonSolutionBuilder > getSolutionLevelKeyValue called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(Common_SOLUTION_BUILDER_URL() + "/solution-level", { headers: headersdata })
+        .then((res) => {
+          // console.log("getSolutionLevelKeyValue > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          // console.log("getSolutionLevelKeyValue > axios err=", err);
+          reject("Error in getSolutionLevelKeyValue axios!");
+        });
+    } catch (error) {
+      // console.error("in userServices > getSolutionLevelKeyValue, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};

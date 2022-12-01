@@ -1123,12 +1123,24 @@ export const PortfolioSummary = () => {
         });
       } else {
         setBundleTabs("2");
-        console.log("createServiceOrBundle : ", createServiceOrBundle);
+        // console.log("createServiceOrBundle : ", createServiceOrBundle);
       }
     }
     if (serviceOrBundlePrefix === "SERVICE") {
-      setBundleTabs("3");
-      // saveAddNewServiceOrBundle();
+      if (createServiceOrBundle.name == "" || createServiceOrBundle.description == "" || createServiceOrBundle.model == "") {
+        toast("😐" + "Please fill mandatory Fields.", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        setBundleTabs("4");
+        // saveAddNewServiceOrBundle();
+      }
     }
     // setTabs("4") //moving to component Data tab in create Item model
   };
@@ -1315,7 +1327,8 @@ export const PortfolioSummary = () => {
     var year = date.getFullYear();
     // var m = date.getMonth() + 1;
     var m = date.getMonth();
-    var month = m < 10 ? '0' + m : m;
+    // var month = m < 10 ? '0' + m : m;
+    var month = m;
     var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
     var format = "AM";
     var hour = date.getHours();
@@ -1397,7 +1410,7 @@ export const PortfolioSummary = () => {
                 <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
                 <div className="row">
                   {recentPortfolio.map((data, index) =>
-                    index < 3 ?
+                    index < 7 ?
                       <div className="col-md-4">
                         <div className="recent-items mt-3">
                           <div className="d-flex justify-content-between align-items-center ">
@@ -1441,9 +1454,9 @@ export const PortfolioSummary = () => {
                               <a href="#" className="ml-3 font-size-14">
                                 <FontAwesomeIcon icon={faUpload} />
                               </a>
-                              <a href="#" className="ml-2">
+                              {/* <a href="#" className="ml-2">
                                 <MuiMenuComponent options={activityOptions} />
-                              </a>
+                              </a> */}
                             </div>
                           </div>
                         </div>
@@ -1454,21 +1467,23 @@ export const PortfolioSummary = () => {
                         </div>
                       </div> : <></>
                   )}
-                  {recentBundleService.map((data, sIndex) =>
-                    <div className="col-md-4">
-                      <div className="recent-items mt-3">
-                        <div className="d-flex justify-content-between align-items-center ">
-                          <p className="mb-0 ">
-                            <FontAwesomeIcon
-                              className=" font-size-14"
-                              icon={faFileAlt}
-                            />
-                            <span className="font-weight-500 ml-2">
-                              {/* Portfolio{" "} {data.name} */} {data.itemName}
-                            </span>
-                          </p>
-                          <div className="d-flex align-items-center">
-                            {/* <div className="white-space custom-checkbox">
+                  {recentBundleService.map((data, sIndex) => {
+                    (data.itemHeaderModel.bundleFlag != "SERVICE" || data.itemHeaderModel.bundleFlag != "BUNDLE_ITEM") ? <></> :
+                      (
+                        <div className="col-md-4">
+                          <div className="recent-items mt-3">
+                            <div className="d-flex justify-content-between align-items-center ">
+                              <p className="mb-0 ">
+                                <FontAwesomeIcon
+                                  className=" font-size-14"
+                                  icon={faFileAlt}
+                                />
+                                <span className="font-weight-500 ml-2">
+                                  {/* Portfolio{" "} {data.name} */} {data.itemName}
+                                </span>
+                              </p>
+                              <div className="d-flex align-items-center">
+                                {/* <div className="white-space custom-checkbox">
                               <FormGroup>
                                 <FormControlLabel
                                   control={<Checkbox />}
@@ -1476,40 +1491,43 @@ export const PortfolioSummary = () => {
                                 />
                               </FormGroup>
                             </div> */}
-                            <a
-                              href={undefined}
-                              className="btn-sm"
-                              style={{ cursor: "pointer" }}
-                            >
-                              <i
-                                className="fa fa-pencil"
-                                aria-hidden="true"
-                              // onClick={() =>
-                              //   makePortfolioEditableEditable(data)
-                              // }
-                              ></i>
-                            </a>
-                            <a href="#" className="ml-3 font-size-14">
-                              <FontAwesomeIcon icon={faShareAlt} />
-                            </a>
-                            <a href="#" className="ml-3 font-size-14">
-                              <FontAwesomeIcon icon={faFolderPlus} />
-                            </a>
-                            <a href="#" className="ml-3 font-size-14">
-                              <FontAwesomeIcon icon={faUpload} />
-                            </a>
-                            <a href="#" className="ml-2">
+                                <a
+                                  href={undefined}
+                                  className="btn-sm"
+                                  style={{ cursor: "pointer" }}
+                                >
+                                  <i
+                                    className="fa fa-pencil"
+                                    aria-hidden="true"
+                                  // onClick={() =>
+                                  //   makePortfolioEditableEditable(data)
+                                  // }
+                                  ></i>
+                                </a>
+                                <a href="#" className="ml-3 font-size-14">
+                                  <FontAwesomeIcon icon={faShareAlt} />
+                                </a>
+                                <a href="#" className="ml-3 font-size-14">
+                                  <FontAwesomeIcon icon={faFolderPlus} />
+                                </a>
+                                <a href="#" className="ml-3 font-size-14">
+                                  <FontAwesomeIcon icon={faUpload} />
+                                </a>
+                                {/* <a href="#" className="ml-2">
                               <MuiMenuComponent options={activityOptions} />
-                            </a>
+                            </a> */}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="d-flex justify-content-between align-items-center mt-2">
+                            {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
+                            <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(data.createdAt)}</p>
+                            <p className="font-size-12 mb-0">{data.itemHeaderModel.bundleFlag == "SERVICE" ? "Service" : data.itemHeaderModel.bundleFlag == "BUNDLE_ITEM" ? "Bundle" : "Portfolio"}</p>
                           </div>
                         </div>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center mt-2">
-                        {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
-                        <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(data.createdAt)}</p>
-                        <p className="font-size-12 mb-0">{data.itemHeaderModel.bundleFlag == "SERVICE" ? "Service" : data.itemHeaderModel.bundleFlag == "BUNDLE_ITEM" ? "Bundle" : "Portfolio"}</p>
-                      </div>
-                    </div>)}
+                      )
+                  }
+                  )}
 
                   {/* <div className="col-md-4">
                     <div className="recent-items mt-3">
@@ -2337,7 +2355,9 @@ export const PortfolioSummary = () => {
                   {serviceOrBundlePrefix === "BUNDLE" && (
                     <Tab label={`${serviceOrBundlePrefix} ITEMS`} value="2" />
                   )}
-                  <Tab label="ADMINISTRATIVE" value="3" />
+                  {serviceOrBundlePrefix === "BUNDLE" && (
+                    <Tab label="ADMINISTRATIVE" value="3" />
+                  )}
                   <Tab label="PRICE CALCULATOR" value="4" />
                 </TabList>
               </Box>
@@ -2667,52 +2687,52 @@ export const PortfolioSummary = () => {
                 />
               </TabPanel>
               <TabPanel value="3">
-              <div className="row mt-4 input-fields">
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          PREPARED BY
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control text-primary border-radius-10"
-                          name="preparedBy"
-                          value={administrative.preparedBy}
-                          onChange={handleAdministrativreChange}
-                          placeholder="Required"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          APPROVED BY
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control text-primary border-radius-10"
-                          placeholder="Optional"
-                          name="approvedBy"
-                          value={administrative.approvedBy}
-                          onChange={handleAdministrativreChange}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      {/* <div className="form-group"> */}
+                <div className="row mt-4 input-fields">
+                  <div className="col-md-4 col-sm-4">
+                    <div className="form-group">
                       <label
                         className="text-light-dark font-size-14 font-weight-500"
                         htmlFor="exampleInputEmail1"
                       >
-                        PREPARED ON
+                        PREPARED BY
                       </label>
-                      {/* <input
+                      <input
+                        type="text"
+                        className="form-control text-primary border-radius-10"
+                        name="preparedBy"
+                        value={administrative.preparedBy}
+                        onChange={handleAdministrativreChange}
+                        placeholder="Required"
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div className="form-group">
+                      <label
+                        className="text-light-dark font-size-14 font-weight-500"
+                        htmlFor="exampleInputEmail1"
+                      >
+                        APPROVED BY
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control text-primary border-radius-10"
+                        placeholder="Optional"
+                        name="approvedBy"
+                        value={administrative.approvedBy}
+                        onChange={handleAdministrativreChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    {/* <div className="form-group"> */}
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      PREPARED ON
+                    </label>
+                    {/* <input
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
@@ -2720,55 +2740,55 @@ export const PortfolioSummary = () => {
                           value={administrative.preparedOn}
                           onChange={handleAdministrativreChange}
                         /> */}
-                      <div className="d-flex align-items-center date-box w-100">
-                        <div className="form-group w-100">
-                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <DatePicker
-                              variant="inline"
-                              format="dd/MM/yyyy"
-                              className="form-controldate border-radius-10"
-                              label=""
-                              name="preparedOn"
-                              value={administrative.preparedOn}
-                              onChange={(e) =>
-                                setAdministrative({
-                                  ...administrative,
-                                  preparedOn: e,
-                                })
-                              }
-                            />
-                          </MuiPickersUtilsProvider>
-                        </div>
-                      </div>
-                      {/* </div> */}
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          REVISED BY
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10 text-primary"
-                          placeholder="Optional"
-                          name="revisedBy"
-                          value={administrative.revisedBy}
-                          onChange={handleAdministrativreChange}
-                        />
+                    <div className="d-flex align-items-center date-box w-100">
+                      <div className="form-group w-100">
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                          <DatePicker
+                            variant="inline"
+                            format="dd/MM/yyyy"
+                            className="form-controldate border-radius-10"
+                            label=""
+                            name="preparedOn"
+                            value={administrative.preparedOn}
+                            onChange={(e) =>
+                              setAdministrative({
+                                ...administrative,
+                                preparedOn: e,
+                              })
+                            }
+                          />
+                        </MuiPickersUtilsProvider>
                       </div>
                     </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          REVISED ON
-                        </label>
-                        {/* <input
+                    {/* </div> */}
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div className="form-group">
+                      <label
+                        className="text-light-dark font-size-14 font-weight-500"
+                        htmlFor="exampleInputEmail1"
+                      >
+                        REVISED BY
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control border-radius-10 text-primary"
+                        placeholder="Optional"
+                        name="revisedBy"
+                        value={administrative.revisedBy}
+                        onChange={handleAdministrativreChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div className="form-group">
+                      <label
+                        className="text-light-dark font-size-14 font-weight-500"
+                        htmlFor="exampleInputEmail1"
+                      >
+                        REVISED ON
+                      </label>
+                      {/* <input
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
@@ -2776,65 +2796,74 @@ export const PortfolioSummary = () => {
                           value={administrative.revisedOn}
                           onChange={handleAdministrativreChange}
                         /> */}
-                        <div className="d-flex align-items-center date-box w-100">
-                          <div className="form-group w-100 m-0">
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                              <DatePicker
-                                variant="inline"
-                                format="dd/MM/yyyy"
-                                className="form-controldate border-radius-10"
-                                label=""
-                                name="revisedOn"
-                                value={administrative.revisedOn}
-                                onChange={(e) =>
-                                  setAdministrative({
-                                    ...administrative,
-                                    revisedOn: e,
-                                  })
-                                }
-                              />
-                            </MuiPickersUtilsProvider>
-                          </div>
+                      <div className="d-flex align-items-center date-box w-100">
+                        <div className="form-group w-100 m-0">
+                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <DatePicker
+                              variant="inline"
+                              format="dd/MM/yyyy"
+                              className="form-controldate border-radius-10"
+                              label=""
+                              name="revisedOn"
+                              value={administrative.revisedOn}
+                              onChange={(e) =>
+                                setAdministrative({
+                                  ...administrative,
+                                  revisedOn: e,
+                                })
+                              }
+                            />
+                          </MuiPickersUtilsProvider>
                         </div>
                       </div>
                     </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          SALSE OFFICE/BRANCH
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10 text-primary"
-                          name="branch"
-                          value={administrative.branch}
-                          onChange={handleAdministrativreChange}
-                          placeholder="Required"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-4 col-sm-4">
-                      <div className="form-group">
-                        <label
-                          className="text-light-dark font-size-14 font-weight-500"
-                          htmlFor="exampleInputEmail1"
-                        >
-                          OFFER VALIDITY
-                        </label>
-                        <input
-                          type="text"
-                          className="form-control border-radius-10 text-primary"
-                          placeholder="Optional"
-                          name="offerValidity"
-                          value={administrative.offerValidity}
-                          onChange={handleAdministrativreChange}
-                        />
-                      </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div className="form-group">
+                      <label
+                        className="text-light-dark font-size-14 font-weight-500"
+                        htmlFor="exampleInputEmail1"
+                      >
+                        SALSE OFFICE/BRANCH
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control border-radius-10 text-primary"
+                        name="branch"
+                        value={administrative.branch}
+                        onChange={handleAdministrativreChange}
+                        placeholder="Required"
+                      />
                     </div>
                   </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div className="form-group">
+                      <label
+                        className="text-light-dark font-size-14 font-weight-500"
+                        htmlFor="exampleInputEmail1"
+                      >
+                        OFFER VALIDITY
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control border-radius-10 text-primary"
+                        placeholder="Optional"
+                        name="offerValidity"
+                        value={administrative.offerValidity}
+                        onChange={handleAdministrativreChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row" style={{ justifyContent: "right" }}>
+                  <button
+                    type="button"
+                    onClick={handleAddNewServiceOrBundle}
+                    className="btn btn-light"
+                  >
+                    Save
+                  </button>
+                </div>
               </TabPanel>
               <TabPanel value="4">
                 <PriceCalculator

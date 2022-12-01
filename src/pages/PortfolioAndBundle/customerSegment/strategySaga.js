@@ -6,21 +6,25 @@ import {
   GET_PRODUCT_HIERARCHY,
   GET_RESPONSE_TIME,
   GET_STRATEGY_TASK,
-  GET_TASK_TYPE
+  GET_TASK_TYPE,
+  GET_SOLUTION_TYPE,
+  GET_SOLUTION_LEVEL
 } from "../../../services/CONSTANTS";
 import type {ListResponse, StrategyTask} from "../../../models";
 
 function* fetchTaskList() {
   try {
-    const [users, tasks,category,rTime,product,geographic]:[ListResponse<StrategyTask>,ListResponse<StrategyTask>] = yield all([
+    const [users, tasks,category,rTime,product,geographic, solutionType, solutionLevel]:[ListResponse<StrategyTask>,ListResponse<StrategyTask>] = yield all([
       call(HttpService, 'get',GET_STRATEGY_TASK()),
       call(HttpService, 'get',GET_TASK_TYPE()),
       call(HttpService, 'get',GET_CATEGORY_USAGE()) ,
       call(HttpService, 'get',GET_RESPONSE_TIME()) ,
       call(HttpService, 'get',GET_PRODUCT_HIERARCHY()) ,
       call(HttpService, 'get',GET_GEOGRAPHIC()) ,
+      call(HttpService, 'get',GET_SOLUTION_TYPE()) ,
+      call(HttpService, 'get',GET_SOLUTION_LEVEL()) ,
     ])
-    yield put(taskActions.fetchTaskListSuccess({users,tasks,category,rTime,product,geographic}));
+    yield put(taskActions.fetchTaskListSuccess({users,tasks,category,rTime,product,geographic,solutionType,solutionLevel}));
   } catch (error) {
     console.log(`Failed to fetch city list`, error);
     yield put(taskActions.fetchTaskListFailed(error.message));

@@ -81,6 +81,7 @@ import Tooltip from "@mui/material/Tooltip";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import Loader from "react-js-loader";
 
+import LoadingProgress from "../Repair/components/Loader";
 import ExpendCustomItemTablePopup from "./ExpendCustomItemTablePopup";
 
 import {
@@ -112,6 +113,7 @@ import {
     itemPriceDataId,
     updateItemPriceData,
     updateCustomPortfolio,
+    getCustomPortfolio,
     customitemCreation,
     createCustomPortfolio,
     createCutomCoverage,
@@ -123,7 +125,9 @@ import {
     getQuoteMasterData,
     getSearchQuoteData,
     updateMasterQuoteData,
-    deleteMasterQuote
+    deleteMasterQuote,
+    getSolutionLevelKeyValue,
+    getSolutionTypeKeyValue,
 } from "../../services/index";
 import {
     selectCategoryList,
@@ -138,6 +142,8 @@ import {
     selectUpdateList,
     selectUpdateTaskList,
     taskActions,
+    selectSolutionTaskList,
+    selectSolutionLevelList,
 } from "pages/PortfolioAndBundle/customerSegment/strategySlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useAppSelector } from "../../app/hooks";
@@ -160,7 +166,6 @@ import CustomSolution from "./CustomSolution";
 import Validator from "../../utils/validator";
 
 import Solution from "pages/PortfolioAndBundle/Solution";
-
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 const customStyles = {
     rows: {
@@ -186,7 +191,10 @@ const customStyles = {
     },
 };
 
-export function CreateCustomPortfolio() {
+export function CreateCustomPortfolio(props) {
+
+    const history = useHistory();
+    const { state } = props.location;
 
     const [disable, setDisable] = useState(true);
     const [quoteDataShow, setQuoteDataShow] = useState(false)
@@ -198,6 +206,11 @@ export function CreateCustomPortfolio() {
     const [headerTypeKeyValue, setHeaderTypeKeyValue] = useState([]);
     const [responseTimeTaskKeyValue, setResponseTimeTaskKeyValue] = useState([]);
     const [taskTypeKeyValue, setTaskTypeKeyValue] = useState([]);
+
+    const [severity, setSeverity] = useState("");
+    const [openSnack, setOpenSnack] = useState(false);
+    const [snackMessage, setSnackMessage] = useState("");
+
 
     const [value1, setValue1] = useState({
         value: "Archived",
@@ -223,6 +236,8 @@ export function CreateCustomPortfolio() {
     const [productHierarchyKeyValue, setProductHierarchyKeyValue] = useState([]);
     const [geographicKeyValue, setGeographicKeyValue] = useState([]);
     const [typeKeyValue, setTypeKeyValue] = useState([]);
+    const [solutionTypeListKeyValue, setSolutionTypeListKeyValue] = useState([]);
+    const [solutionLevelListKeyValue, setSolutionLevelListKeyValue] = useState([]);
     // const [machineTypeKeyValue, setMachineTypeKeyValue] = useState([]);
     const [age, setAge] = useState("5");
 
@@ -338,6 +353,18 @@ export function CreateCustomPortfolio() {
         contact: "",
         description: "",
         reference: "",
+    });
+
+    const [headerLoading, setHeaderLoading] = useState(false);
+
+    const [viewOnlyTab, setViewOnlyTab] = useState({
+        generalViewOnly: false,
+        validityViewOnly: false,
+        strategyViewOnly: false,
+        administrativeViewOnly: false,
+        priceViewOnly: false,
+        priceAgreementViewOnly: false,
+        coverageViewOnly: false,
     });
 
     const [validityData, setValidityData] = useState({
@@ -1100,6 +1127,14 @@ export function CreateCustomPortfolio() {
             });
             return;
         }
+    };
+
+    const HandleSolutionType = (e) => {
+        setSolutionLevelListKeyValue([]);
+        // setSolutionLevelKeyValue([]);
+        addPortFolioItem.taskType = "";
+        setSolutionTypeListKeyValue(e);
+        dispatch(taskActions.updateSolution(e.value));
     };
 
     const handleSavePrices = async () => {
@@ -2138,6 +2173,58 @@ export function CreateCustomPortfolio() {
 
     }
 
+    const populateHeader = (result) => {
+        console.log("result ----", result);
+        setViewOnlyTab({
+            generalViewOnly: true,
+            validityViewOnly: true,
+            strategyViewOnly: true,
+            administrativeViewOnly: true,
+            priceViewOnly: true,
+            priceAgreementViewOnly: true,
+            coverageViewOnly: true,
+        });
+        setGeneralComponentData({
+            name: result.name,
+            description: result.description,
+            serviceDescription: "",
+            externalReference: result.externalReference,
+            customerSegment: { label: result.customerSegment, value: result.customerSegment },
+            // customerSegment: null,
+            items: result.customItems,
+            coverages: result.customCoverages,
+        })
+        // setPortfolioCoverage(result.coverages);
+
+        // // categoryUsageKeyValue1
+        setCategoryUsageKeyValue1({ label: result.usageCategory, value: result.usageCategory })
+        setStratgyTaskUsageKeyValue({ label: result.strategyTask, value: result.strategyTask })
+        setStratgyTaskTypeKeyValue({ label: result.taskType, value: result.taskType })
+            ({ label: result.responseTime, value: result.responseTime })
+        setStratgyHierarchyKeyValue({ label: result.productHierarchy, value: result.productHierarchy })
+        setStratgyGeographicKeyValue({ label: result.geographic, value: result.geographic })
+
+        setAdministrative({
+            preparedBy: result.preparedBy,
+            approvedBy: result.approvedBy,
+            preparedOn: result.preparedOn,
+            revisedBy: result.revisedBy,
+            revisedOn: result.revisedOn,
+            branch: result.salesOffice,
+            offerValidity: result.offerValidity,
+        });
+        setFlagCommerce(result.visibleInCommerce);
+        setFlagTemplate(result.template);
+        // setSelectedMasterData(result.coverages);
+
+    }
+
+
+    const handleSnack = (snackSeverity, snackMessage) => {
+        setSnackMessage(snackMessage);
+        setSeverity(snackSeverity);
+        setOpenSnack(true);
+    };
 
     const handleWithSparePartsCheckBox = (e) => {
         setPartsRequired(e.target.checked)
@@ -2365,6 +2452,28 @@ export function CreateCustomPortfolio() {
             .catch((err) => {
                 alert(err);
             });
+        // getSolutionLevelKeyValue()
+        //     .then((res) => {
+        //         const options = res.map((d) => ({
+        //             value: d.key,
+        //             label: d.value,
+        //         }));
+        //         setSolutionLevelListKeyValue(options);
+        //     })
+        //     .catch((err) => {
+        //         alert(err);
+        //     });
+        // getSolutionTypeKeyValue()
+        //     .then((res) => {
+        //         const options = res.map((d) => ({
+        //             value: d.key,
+        //             label: d.value,
+        //         }));
+        //         setSolutionTypeListKeyValue(options);
+        //     })
+        //     .catch((err) => {
+        //         alert(err);
+        //     });
         getMachineTypeKeyValue()
             .then((res) => {
                 const options = res.map((d) => ({
@@ -2424,6 +2533,30 @@ export function CreateCustomPortfolio() {
         dispatch(taskActions.fetchTaskList());
     }, [dispatch]);
 
+    useEffect(() => {
+        if (state && state.type === "new") {
+            // setPortfolioId(state.portfolioId);
+            // setGeneralData({ ...generalData, estimationNo: state.builderId });
+        } else if (state) {
+            setPortfolioId(state.portfolioId);
+            fetchAllDetails(state.portfolioId);
+        }
+    }, []);
+
+    const fetchAllDetails = async (PortfolioId) => {
+        if (PortfolioId) {
+            setHeaderLoading(true);
+            await getCustomPortfolio(PortfolioId)
+                .then((result) => {
+                    populateHeader(result);
+                })
+                .catch((err) => {
+                    handleSnack("error", "Error occured while fetching header details");
+                });
+            setHeaderLoading(false);
+        }
+    };
+
     const strategyList = useAppSelector(
         selectStrategyTaskOption(selectStrategyTaskList)
     );
@@ -2443,10 +2576,24 @@ export function CreateCustomPortfolio() {
     const geographicList = useAppSelector(
         selectStrategyTaskOption(selectGeographicalList)
     );
+
     const unitList = useAppSelector(selectStrategyTaskOption(selectUnitList));
+
     const frequencyList = useAppSelector(
         selectStrategyTaskOption(selectFrequencyList)
     );
+
+    const solutionTypeList = useAppSelector(
+        selectStrategyTaskOption(selectSolutionTaskList)
+    );
+
+
+    const solutionLevelList = useAppSelector(
+        selectStrategyTaskOption(selectSolutionLevelList)
+    );
+
+
+    console.log("solutionLevelList -- : ", solutionLevelList)
 
     const updatedList = useAppSelector(
         selectStrategyTaskOption(selectUpdateList)
@@ -5651,7 +5798,6 @@ export function CreateCustomPortfolio() {
         console.log("quoteData : ", quoteData);
         setQuoteDataShow(true);
     }
-    const history = useHistory();
 
     const handleComponentChange = async (e) => {
 
@@ -6056,26 +6202,31 @@ export function CreateCustomPortfolio() {
                         <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
                             <TabContext value={value}>
                                 <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                                    <TabList className="custom-tabs-div"
-                                        onChange={handleChange}
-                                        aria-label="lab API tabs example"
-                                    >
-                                        <Tab label="General" value={"general"} />
-                                        <Tab label="Validity " value={"validity"} />
-                                        <Tab label="Strategy" value={"strategy"} />
-                                        <Tab label="Administrative" value={"administrative"} />
-                                        <Tab label="Price" value={"price"} />
-                                        <Tab
-                                            label="Price Agreement"
-                                            // disabled={!priceAgreementOption}
-                                            value={"priceAgreement"}
-                                        />
-                                        <Tab label="Coverage" value={"coverage"} />
-                                    </TabList>
+                                    {headerLoading ? (
+                                        <LoadingProgress />
+                                    ) : (
+                                        <TabList className="custom-tabs-div"
+                                            onChange={handleChange}
+                                            aria-label="lab API tabs example"
+                                        >
+                                            <Tab label="General" value={"general"} />
+                                            <Tab label="Validity " value={"validity"} />
+                                            <Tab label="Strategy" value={"strategy"} />
+                                            <Tab label="Administrative" value={"administrative"} />
+                                            <Tab label="Price" value={"price"} />
+                                            <Tab
+                                                label="Price Agreement"
+                                                // disabled={!priceAgreementOption}
+                                                value={"priceAgreement"}
+                                            />
+                                            <Tab label="Coverage" value={"coverage"} />
+                                        </TabList>
+                                    )}
                                 </Box>
                                 <TabPanel value={"general"}>
-                                    <div className="row mt-4 input-fields">
-                                        {/* <div className="col-md-3 col-sm-3">
+                                    {!viewOnlyTab.generalViewOnly ? <>
+                                        <div className="row mt-4 input-fields">
+                                            {/* <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
                                                     SELECT TYPE
@@ -6091,85 +6242,82 @@ export function CreateCustomPortfolio() {
                                                 />
                                             </div>
                                         </div> */}
-                                        <div className="col-md-3 col-sm-3">
+                                            {/* <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
-                                                    {/* {prefilgabelGeneral} ID */}
                                                     SOLUTION ID
                                                 </label>
                                                 <input
                                                     type="text"
                                                     className="form-control border-radius-10 text-primary"
                                                     placeholder="(Auto-generated)"
-                                                    // value={portfolioId}
-                                                    // onChange={handleGeneralInputChange}
                                                     disabled={true}
                                                 />
                                             </div>
-                                        </div>
-                                        <div className="col-md-3 col-sm-3">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500">
-                                                    {/* {prefilgabelGeneral} NAME */}
-                                                    SOLUTION NAME
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10 text-primary"
-                                                    name="name"
-                                                    placeholder="Name"
-                                                    value={generalComponentData.name}
-                                                    onChange={handleGeneralInputChange}
-                                                />
+                                        </div> */}
+                                            <div className="col-md-3 col-sm-3">
+                                                <div className="form-group">
+                                                    <label className="text-light-dark font-size-12 font-weight-500">
+                                                        {/* {prefilgabelGeneral} NAME */}
+                                                        SOLUTION NAME
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control border-radius-10 text-primary"
+                                                        name="name"
+                                                        placeholder="Name"
+                                                        value={generalComponentData.name}
+                                                        onChange={handleGeneralInputChange}
+                                                    />
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="col-md-3 col-sm-3">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500">
-                                                    {/* SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY) */}
-                                                    SOLUTION DESCRIPTION
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10 text-primary"
-                                                    name="description"
-                                                    placeholder="Optional"
-                                                    value={generalComponentData.description}
-                                                    onChange={handleGeneralInputChange}
-                                                />
+                                            <div className="col-md-3 col-sm-3">
+                                                <div className="form-group">
+                                                    <label className="text-light-dark font-size-12 font-weight-500">
+                                                        {/* SERVICE {prefilgabelGeneral} DESCRIPTION (IF ANY) */}
+                                                        SOLUTION DESCRIPTION
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control border-radius-10 text-primary"
+                                                        name="description"
+                                                        placeholder="Optional"
+                                                        value={generalComponentData.description}
+                                                        onChange={handleGeneralInputChange}
+                                                    />
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="col-md-3 col-sm-3">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500">
-                                                    REFERENCE
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control border-radius-10 text-primary"
-                                                    name="externalReference"
-                                                    placeholder="Reference"
-                                                    value={generalComponentData.externalReference}
-                                                    onChange={handleGeneralInputChange}
-                                                />
+                                            <div className="col-md-3 col-sm-3">
+                                                <div className="form-group">
+                                                    <label className="text-light-dark font-size-12 font-weight-500">
+                                                        REFERENCE
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control border-radius-10 text-primary"
+                                                        name="externalReference"
+                                                        placeholder="Reference"
+                                                        value={generalComponentData.externalReference}
+                                                        onChange={handleGeneralInputChange}
+                                                    />
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="col-md-3 col-sm-3">
-                                            <div className="form-group">
-                                                <label className="text-light-dark font-size-12 font-weight-500">
-                                                    CUSTOMER
-                                                </label>
-                                                <Select
-                                                    onChange={handleCustomerSegmentChange}
-                                                    className="text-primary"
-                                                    value={generalComponentData.customerSegment}
-                                                    options={customerSegmentKeyValue}
-                                                    placeholder="Optionals"
-                                                />
+                                            <div className="col-md-3 col-sm-3">
+                                                <div className="form-group">
+                                                    <label className="text-light-dark font-size-12 font-weight-500">
+                                                        CUSTOMER
+                                                    </label>
+                                                    <Select
+                                                        onChange={handleCustomerSegmentChange}
+                                                        className="text-primary"
+                                                        value={generalComponentData.customerSegment}
+                                                        options={customerSegmentKeyValue}
+                                                        placeholder="Optionals"
+                                                    />
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="col-md-3 col-sm-3 d-flex justify-content-between align-items-center">
-                                            {/* <div className="form-group">
+                                            <div className="col-md-3 col-sm-3 d-flex justify-content-between align-items-center">
+                                                {/* <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
                                                     FLAG FOR TEMPLATE
                                                 </label>
@@ -6180,21 +6328,21 @@ export function CreateCustomPortfolio() {
                                                 // options={strategyList}
                                                 />
                                             </div> */}
-                                            <div className=" d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <FormGroup>
-                                                        <FormControlLabel
-                                                            control={<Switch checked={flagTemplate} />}
-                                                            label=" FLAG FOR TEMPLATE"
-                                                            value={flagTemplate}
-                                                            onChange={(e) => setFlagTemplate(e.target.checked)}
-                                                        />
-                                                    </FormGroup>
+                                                <div className=" d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <FormGroup>
+                                                            <FormControlLabel
+                                                                control={<Switch checked={flagTemplate} />}
+                                                                label=" FLAG FOR TEMPLATE"
+                                                                value={flagTemplate}
+                                                                onChange={(e) => setFlagTemplate(e.target.checked)}
+                                                            />
+                                                        </FormGroup>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="col-md-3 col-sm-3 d-flex justify-content-between align-items-center">
-                                            {/* <div className="form-group">
+                                            <div className="col-md-3 col-sm-3 d-flex justify-content-between align-items-center">
+                                                {/* <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
                                                     FLAG FOR COMMERCE
                                                 </label>
@@ -6206,30 +6354,102 @@ export function CreateCustomPortfolio() {
                                                 />
                                                 
                                             </div> */}
-                                            <div className=" d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <FormGroup>
-                                                        <FormControlLabel
-                                                            control={<Switch checked={flagCommerce} />}
-                                                            label=" FLAG FOR COMMERCE"
-                                                            value={flagCommerce}
-                                                            onChange={(e) => setFlagCommerce(e.target.checked)}
-                                                        />
-                                                    </FormGroup>
+                                                <div className=" d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <FormGroup>
+                                                            <FormControlLabel
+                                                                control={<Switch checked={flagCommerce} />}
+                                                                label=" FLAG FOR COMMERCE"
+                                                                value={flagCommerce}
+                                                                onChange={(e) => setFlagCommerce(e.target.checked)}
+                                                            />
+                                                        </FormGroup>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="row" style={{ justifyContent: "right" }}>
-                                        <button
-                                            type="button"
-                                            onClick={handleNextClick}
-                                            className="btn btn-light"
-                                            id="general"
-                                        >
-                                            Save & Next
-                                        </button>
-                                    </div>
+                                        <div className="row" style={{ justifyContent: "right" }}>
+                                            <button
+                                                type="button"
+                                                onClick={handleNextClick}
+                                                className="btn btn-light"
+                                                id="general"
+                                            >
+                                                Save & Next
+                                            </button>
+                                        </div>
+                                    </> : <>
+                                        <div className="row mt-4">
+                                            <div className="col-md-4 col-sm-3">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        SOLUTION NAME
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        {generalComponentData.name}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-3">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        SOLUTION DESCRIPTION
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        {generalComponentData.description}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            {/* <div className="col-md-4 col-sm-3">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        SERVICE PROGRAM DESCRIPTION (IF ANY)
+                                                    </p>
+                                                    <h6 className="font-weight-500">NA</h6>
+                                                </div>
+                                            </div> */}
+                                            <div className="col-md-4 col-sm-3">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        REFERENCE
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        {generalComponentData.externalReference}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-3">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        CUSTOMER SEGMENT
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        {generalComponentData?.customerSegment?.label}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-3">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        FLAG FOR TEMPLATE
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        {flagTemplate ? "True" : "False"}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div className="col-md-4 col-sm-3">
+                                                <div className="form-group">
+                                                    <p className="font-size-12 font-weight-500 mb-2">
+                                                        CUSTOMER SEGMENT
+                                                    </p>
+                                                    <h6 className="font-weight-500">
+                                                        {flagCommerce ? "True" : "False"}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>}
                                     {isView ? (
                                         <div className="row mt-4">
                                             <div className="col-md-4 col-sm-3">
@@ -6666,10 +6886,12 @@ export function CreateCustomPortfolio() {
                                                     SOLUTION TYPE
                                                 </label>
                                                 <Select
-                                                    options={options}
+                                                    options={solutionTypeList}
                                                     className="text-primary"
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
+                                                    // defaultValue={selectedOption}
+                                                    value={solutionTypeListKeyValue}
+                                                    // onChange={(e) => setSelectedOption(e)}
+                                                    onChange={(e) => HandleSolutionType(e)}
                                                 // isLoading={
                                                 //     lifeStageOfMachineKeyValueList.length > 0 ? false : true
                                                 // }
@@ -6685,10 +6907,11 @@ export function CreateCustomPortfolio() {
                                                     SOLUTION LEVEL
                                                 </label>
                                                 <Select
-                                                    options={options}
+                                                    options={solutionLevelList}
                                                     className="text-primary"
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
+                                                    // defaultValue={selectedOption}
+                                                    value={solutionLevelListKeyValue}
+                                                    onChange={(e) => setSolutionLevelListKeyValue(e)}
                                                 />
                                             </div>
                                         </div>

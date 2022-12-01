@@ -39,6 +39,8 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 
+import LoadingProgress from "../Repair/components/Loader";
+
 import { SolutionBuilderModal } from "../../pages/SolutionModules/index"
 import { SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO, SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE, CREATED_CUSTOM_PORTFOLIO_DETAILS } from '../../navigation/CONSTANTS'
 import { SOLUTION_BUILDER_PORRTFOLIO_TEMP } from "../../navigation/CONSTANTS";
@@ -159,6 +161,8 @@ export const Analytics = () => {
    const [columnSearchText, setColumnSearchText] = useState('');
    const [typeOfSolutionBuild, setTypeOfSolutionBuild] = useState(-1)
    const [buildSolutionValue, setBuildSolutionValue] = useState(-1)
+
+   const [headerLoading, setHeaderLoading] = useState(false);
 
    const [columnTextSearch, setColumnTextSearch] = useState([])
    const [loadingStatus, setLoadingStatus] = useState("")
@@ -1631,6 +1635,7 @@ export const Analytics = () => {
    }, [portfolioTempMasterData]);
 
    useEffect(() => {
+      setHeaderLoading(true)
       //    getTypeKeyValue()
       //       .then((res) => {
       //          const options = res.map((d) => ({
@@ -1655,10 +1660,13 @@ export const Analytics = () => {
       //       .catch((err) => {
       //          alert(err);
       //       });
+
+     
       getSearchForRecentSolutionPortfolio()
          .then((res) => {
             setRecentPortfolioSolution(res);
          })
+      setHeaderLoading(false)
 
       // getSearchForRecentSolutionBundleService()
       //    .then((res) => {
@@ -1714,6 +1722,32 @@ export const Analytics = () => {
          });
          return
       }
+   }
+
+   // Create New Custom Portfolio
+   const handleCreateNewPortfolio = () => {
+      let portfolioDetails = {
+         portfolioId: "",
+         type: "new",
+      };
+      // history.push("/portfolioBuilder/new")
+      history.push({
+         pathname: "/solutionBuilder/create",
+         state: portfolioDetails,
+      });
+   }
+
+   // Portfolio EditAble
+   const makePortfolioEditableEditable = (portfolioData) => {
+      // console.log("----------", PortfolioData);
+      let portfolioDetails = {
+         portfolioId: portfolioData.customPortfolioId,
+         type: "fetch",
+      };
+      history.push({
+         pathname: "/solutionBuilder/create",
+         state: portfolioDetails,
+      });
    }
 
    // useEffect(() => {
@@ -2914,41 +2948,59 @@ export const Analytics = () => {
                      <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6>
                      <div className="recent-div p-3">
                         <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
-                        <div className="row">
-                           {recentPortfolioSolution.map((solutionData, index) =>
-                              <div className="col-md-4">
-                                 <div className="recent-items mt-3">
-                                    <div className="d-flex justify-content-between align-items-center ">
-                                       <p className="mb-0 ">
-                                          <FontAwesomeIcon className=" font-size-14" icon={faFileAlt} />
-                                          <span className="font-weight-500 ml-2">
-                                             {/* Portfolio Solution */}{solutionData.name}
-                                          </span>
-                                       </p>
-                                       <div className="d-flex align-items-center">
-                                          <div className="white-space custom-checkbox">
+                        {headerLoading ? (
+                           <LoadingProgress />
+                        ) : (
+
+                           <div className="row">
+
+                              {recentPortfolioSolution.map((solutionData, index) =>
+                                 <div className="col-md-4">
+                                    <div className="recent-items mt-3">
+                                       <div className="d-flex justify-content-between align-items-center ">
+                                          <p className="mb-0 ">
+                                             <FontAwesomeIcon className=" font-size-14" icon={faFileAlt} />
+                                             <span className="font-weight-500 ml-2">
+                                                {/* Portfolio Solution */}{solutionData.name}
+                                             </span>
+                                          </p>
+                                          <div className="d-flex align-items-center">
+                                             {/* <div className="white-space custom-checkbox">
                                              <FormGroup>
                                                 <FormControlLabel control={index === 0 ? <Checkbox defaultChecked /> : <Checkbox />} label="" />
                                              </FormGroup>
+                                          </div> */}
+                                             <a
+                                                href={undefined}
+                                                className="btn-sm"
+                                                style={{ cursor: "pointer" }}
+                                             >
+                                                <i
+                                                   className="fa fa-pencil"
+                                                   aria-hidden="true"
+                                                   onClick={() =>
+                                                      makePortfolioEditableEditable(solutionData)
+                                                   }
+                                                ></i>
+                                             </a>
+                                             <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                             <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                             <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                             {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
                                           </div>
-                                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                          <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
                                        </div>
+
                                     </div>
-
+                                    <div className="d-flex justify-content-between align-items-center mt-2">
+                                       {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
+                                       <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(solutionData.createdAt)} </p>
+                                       <p className="font-size-12 mb-0">Portfolio Solution</p>
+                                    </div>
                                  </div>
-                                 <div className="d-flex justify-content-between align-items-center mt-2">
-                                    {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
-                                    <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(solutionData.createdAt)} </p>
-                                    <p className="font-size-12 mb-0">Portfolio Solution</p>
-                                 </div>
-                              </div>
 
 
-                           )}
-                           {/* <div className="col-md-4">
+                              )}
+                              {/* <div className="col-md-4">
                               <div className="recent-items mt-3">
                                  <div className="d-flex justify-content-between align-items-center ">
                                     <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Portfolio Solution </span></p>
@@ -3087,7 +3139,7 @@ export const Analytics = () => {
                               </div>
                            </div> */}
 
-                        </div>
+                           </div>)}
 
                      </div>
                      {/* <div className="recent-div p-3">
@@ -3731,7 +3783,7 @@ export const Analytics = () => {
                               </p>
                               <div className=''>
                                  {/* <a onClick={() => history.push(SOLUTION_BUILDER_CUSTOMIZED_PORRTFOLIO)} className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></a> */}
-                                 <a onClick={() => history.push(SOLUTION_BUILDER_CUSTOM_PORTFOLIO_CREATE)} className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></a>
+                                 <a onClick={handleCreateNewPortfolio} className='btn bg-primary text-white'>Continue <img className='ml-2' src={Buttonarrow}></img></a>
                               </div>
 
                            </div>
