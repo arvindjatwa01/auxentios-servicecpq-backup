@@ -3556,7 +3556,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                     </TabList>
                                 </Box>
                                 <TabPanel value="1">
-                                    <div className="row mt-4">
+                                    <div className="row mt-4 input-fields">
                                         {/* <div className="col-md-3 col-sm-3">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-12 font-weight-500">
@@ -3595,7 +3595,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <input
                                                     type="text"
-                                                    className="form-control border-radius-10"
+                                                    className="form-control border-radius-10 text-primary"
                                                     name="name"
                                                     placeholder="Name"
                                                     value={generalComponentData.name}
@@ -3611,7 +3611,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <input
                                                     type="text"
-                                                    className="form-control border-radius-10"
+                                                    className="form-control border-radius-10 text-primary"
                                                     name="description"
                                                     placeholder="Description"
                                                     value={generalComponentData.description}
@@ -3626,7 +3626,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <input
                                                     type="text"
-                                                    className="form-control border-radius-10"
+                                                    className="form-control border-radius-10 text-primary"
                                                     name="externalReference"
                                                     placeholder="Reference"
                                                     value={generalComponentData.externalReference}
@@ -3641,6 +3641,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <Select
                                                     onChange={handleCustomerSegmentChange}
+                                                    className="text-primary"
                                                     value={generalComponentData.customerSegment}
                                                     options={customerSegmentKeyValue}
                                                     defa
@@ -3741,7 +3742,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                 </TabPanel>
                                 <TabPanel value="2">
 
-                                    <div className="row mt-4">
+                                    <div className="row mt-4 input-fields">
                                         <div className="col-md-12">
                                             <div className="row">
                                                 <div className="col-md-6 col-sm-6">
@@ -3757,7 +3758,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                 <DatePicker
                                                                     variant="inline"
                                                                     format="dd/MM/yyyy"
-                                                                    className="form-controldate border-radius-10"
+                                                                    className="form-controldate border-radius-10 text-primary"
                                                                     label=""
                                                                     value={validityData.fromDate}
                                                                     onChange={(e) =>
@@ -3780,7 +3781,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                                                 <DatePicker
                                                                     variant="inline"
-                                                                    className="form-controldate border-radius-10"
+                                                                    className="form-controldate border-radius-10 text-primary"
                                                                     label=""
                                                                     format="dd/MM/yyyy"
                                                                     value={validityData.toDate}
@@ -3806,7 +3807,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </div>
                                                 <div className="col-6"></div>
                                             </div>
-                                            <div className="row">
+                                            <div className="row input-fields">
                                                 <div className="col-md-6 col-sm-6">
                                                     <div className="d-flex align-items-center">
                                                         <div className="d-flex align-items-center date-box w-100">
@@ -3819,7 +3820,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                             <div className="form-group w-100">
                                                                 <div className=" d-flex form-control-date ">
                                                                     <Select
-                                                                        className="select-input"
+                                                                        className="select-input text-primary"
                                                                         value={validityData.from}
                                                                         onChange={(e) =>
                                                                             setValidityData({
@@ -3833,7 +3834,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                     <div>
                                                                         <input
                                                                             type="text"
-                                                                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                                            className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
                                                                             id="fromInput"
                                                                             aria-describedby="emailHelp"
                                                                             placeholder="From"
@@ -3859,7 +3860,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                             <div className="form-group w-100">
                                                                 <div className=" d-flex form-control-date">
                                                                     <Select
-                                                                        className="select-input"
+                                                                        className="select-input text-primary"
                                                                         value={validityData.from}
                                                                         defaultValue={selectedOption}
                                                                         onChange={(e) =>
@@ -3875,7 +3876,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                                     <div>
                                                                         <input
                                                                             type="email"
-                                                                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                                            className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
                                                                             id="exampleInputEmail1"
                                                                             aria-describedby="emailHelp"
                                                                             placeholder=""
@@ -3928,7 +3929,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="3">
-                                    <div className="row">
+                                    <div className="row input-fields">
                                         {/* <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -4003,6 +4004,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <Select
                                                     options={rTimeList}
+                                                    className="text-primary"
                                                     value={stratgyResponseTimeKeyValue}
                                                     onChange={(e) => setStratgyResponseTimeKeyValue(e)}
                                                 />
@@ -4018,6 +4020,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <Select
                                                     options={productList}
+                                                    className="text-primary"
                                                     value={stratgyHierarchyKeyValue}
                                                     onChange={(e) => setStratgyHierarchyKeyValue(e)}
                                                 />
@@ -4034,6 +4037,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <Select
                                                     options={geographicList}
+                                                    className="text-primary"
                                                     value={stratgyGeographicKeyValue}
                                                     onChange={(e) => setStratgyGeographicKeyValue(e)}
                                                     placeholder="Geographic"
@@ -4087,6 +4091,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <Select
                                                     options={options}
+                                                    className="text-primary"
                                                     defaultValue={selectedOption}
                                                     onChange={setSelectedOption}
                                                 // isLoading={
@@ -4105,6 +4110,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <Select
                                                     options={options}
+                                                    className="text-primary"
                                                     defaultValue={selectedOption}
                                                     onChange={setSelectedOption}
                                                 />
@@ -4180,7 +4186,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value={"administrative"}>
-                                    <div className="row">
+                                    <div className="row input-fields">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -4191,7 +4197,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <input
                                                     type="text"
-                                                    className="form-control border-radius-10"
+                                                    className="form-control border-radius-10 text-primary"
                                                     name="preparedBy"
                                                     placeholder="Required"
                                                     value={administrative.preparedBy}
@@ -4209,7 +4215,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <input
                                                     type="text"
-                                                    className="form-control border-radius-10"
+                                                    className="form-control border-radius-10 text-primary"
                                                     placeholder="Optional"
                                                     name="approvedBy"
                                                     value={administrative.approvedBy}
@@ -4265,7 +4271,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="row">
+                                    <div className="row input-fields">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -4276,7 +4282,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <input
                                                     type="text"
-                                                    className="form-control border-radius-10"
+                                                    className="form-control border-radius-10 text-primary"
                                                     placeholder="Optional"
                                                     name="revisedBy"
                                                     value={administrative.revisedBy}
@@ -4339,7 +4345,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <input
                                                     type="text"
-                                                    className="form-control border-radius-10"
+                                                    className="form-control border-radius-10 text-primary"
                                                     name="salesOffice"
                                                     value={administrative.salesOffice}
                                                     onChange={handleAdministrativreChange}
@@ -4347,7 +4353,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="row">
+                                    <div className="row input-fields">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -4358,7 +4364,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <input
                                                     type="text"
-                                                    className="form-control border-radius-10"
+                                                    className="form-control border-radius-10 text-primary"
                                                     placeholder="Optional"
                                                     name="offerValidity"
                                                     value={administrative.offerValidity}
@@ -4379,7 +4385,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="4">
-                                    <div className="row">
+                                    <div className="row input-fields">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -4390,6 +4396,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <Select
                                                     defaultValue={selectedOption}
+                                                    className="text-primary"
                                                     onChange={setSelectedOption}
                                                     options={options}
                                                     placeholder="placeholder (Optional)"
@@ -4407,6 +4414,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 <Select
                                                     defaultValue={selectedOption}
                                                     onChange={setSelectedOption}
+                                                    className="text-primary"
                                                     options={priceMethodKeyValue}
                                                     //   options={options}
                                                     placeholder="placeholder (Optional)"
@@ -4424,6 +4432,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 <Select
                                                     defaultValue={selectedOption}
                                                     onChange={setSelectedOption}
+                                                    className="text-primary"
                                                     options={options}
                                                     placeholder="placeholder (Optional)"
                                                 />
@@ -4432,7 +4441,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                     </div>
                                     <hr />
                                     <h6>PRICES</h6>
-                                    <div className="row">
+                                    <div className="row input-fields">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -4443,6 +4452,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <Select
                                                     defaultValue={selectedOption}
+                                                    className="text-primary"
                                                     onChange={setSelectedOption}
                                                     options={options}
                                                     placeholder="placeholder (Optional)"
@@ -4459,7 +4469,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <input
                                                     type="email"
-                                                    className="form-control border-radius-10"
+                                                    className="form-control border-radius-10 text-primary"
                                                     id="exampleInputEmail1"
                                                     aria-describedby="emailHelp"
                                                     placeholder="$100"
@@ -4467,7 +4477,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="row">
+                                    <div className="row input-fields">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group date-box">
                                                 <label
@@ -4486,6 +4496,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     <div className="">
                                                         <Select
                                                             onChange={setSelectedOption}
+                                                            className="text-primary"
                                                             isClearable={true}
                                                             // value={options}
                                                             options={options}
@@ -4494,7 +4505,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     </div>
                                                     <input
                                                         type="email"
-                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                        className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
                                                         id="exampleInputEmail1"
                                                         aria-describedby="emailHelp"
                                                         placeholder="10%"
@@ -4512,7 +4523,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <div className=" d-flex align-items-center form-control-date">
                                                     <Select
-                                                        className="select-input"
+                                                        className="select-input text-primary"
                                                         defaultValue={selectedOption}
                                                         onChange={setSelectedOption}
                                                         options={options}
@@ -4520,7 +4531,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     />
                                                     <input
                                                         type="email"
-                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                        className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
                                                         id="exampleInputEmail1"
                                                         aria-describedby="emailHelp"
                                                         placeholder="20%"
@@ -4530,7 +4541,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                         </div>
                                     </div>
                                     <hr />
-                                    <div className="row">
+                                    <div className="row input-fields">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -4541,7 +4552,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <input
                                                     type="email"
-                                                    className="form-control border-radius-10"
+                                                    className="form-control border-radius-10 text-primary"
                                                     id="exampleInputEmail1"
                                                     aria-describedby="emailHelp"
                                                     placeholder="$100"
@@ -4558,7 +4569,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <div className=" d-flex form-control-date">
                                                     <Select
-                                                        className="select-input"
+                                                        className="select-input text-primary"
                                                         defaultValue={selectedOption}
                                                         onChange={setSelectedOption}
                                                         options={options}
@@ -4566,7 +4577,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     />
                                                     <input
                                                         type="email"
-                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                        className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
                                                         id="exampleInputEmail1"
                                                         aria-describedby="emailHelp"
                                                         placeholder="20%"
@@ -4584,7 +4595,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 </label>
                                                 <div className=" d-flex form-control-date">
                                                     <Select
-                                                        className="select-input"
+                                                        className="select-input text-primary"
                                                         defaultValue={selectedOption}
                                                         onChange={setSelectedOption}
                                                         options={options}
@@ -4592,7 +4603,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     />
                                                     <input
                                                         type="email"
-                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                        className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
                                                         id="exampleInputEmail1"
                                                         aria-describedby="emailHelp"
                                                         placeholder="20%"
