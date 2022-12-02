@@ -78,7 +78,7 @@ const SearchComponent = (props) => {
       tempArray[id].selectCategory.value + "~" + e.target.value;
     if (tempArray[id].selectCategory.value && e.target.value) {
       if (props.builderType) {
-        searchString = `builderType:${props.builderType}&${searchString}`;
+        searchString = `builderType:${props.builderType} AND saved:true AND ${searchString}`;
       }
       props
         .searchAPI(searchString)
@@ -159,9 +159,9 @@ const SearchComponent = (props) => {
                     onClick={() => props.searchClick(props.type)}
                   >
                     <span className="mr-2">
-                      <AddIcon />
+                      {props.buttonText === "SEARCH" ? <SearchIcon/> : <AddIcon />}
                     </span>
-                    Add Item
+                    {props.buttonText? props.buttonText : "Add Item"}
                   </div>
                 ) : (
                   <div className="btn" style={{ height: 40, width: 70 }}></div>

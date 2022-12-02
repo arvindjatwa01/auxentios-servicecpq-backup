@@ -31,6 +31,7 @@ import {
   LABOR_ITEM,
   EXTWORK_ITEM,
   CONSUMABLE_ITEM,
+  CREATE_KIT,
 } from "./CONSTANTS";
 const accessToken = localStorage.getItem("access_token");
 
@@ -64,6 +65,33 @@ export const createBuilder = (data) => {
         });
     } catch (error) {
       console.error("CreateBuilder general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//Create Kit
+export const createKIT = (builderId) => {
+  console.log("service repairbuilder > createKIT called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(CREATE_KIT(builderId),null, config)
+        .then((res) => {
+          console.log("repairbuilder -> createKIT response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("createKIT > axios err=", err);
+          reject("Error in createKIT axios!");
+        });
+    } catch (error) {
+      console.error("createKIT general exception", error);
       reject(SYSTEM_ERROR);
     }
   });

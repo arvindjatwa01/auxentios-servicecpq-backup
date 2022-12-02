@@ -23,6 +23,7 @@ import { BUILDER_SEARCH_Q_OPTIONS, GRID_STYLE } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
 import { useDispatch } from "react-redux";
 import { repairActions } from "./dropdowns/repairSlice";
+import SearchComponent from "./components/SearchComponent";
 
 export const RepairWithoutSpareParts = () => {
   const [recentBuilders, setRecentBuilders] = useState([]);
@@ -319,7 +320,7 @@ export const RepairWithoutSpareParts = () => {
                       <span>Search</span>
                     </h5>
                   </div>
-                  <DynamicSearchComponent
+                  <SearchComponent
                     querySearchSelector={querySearchSelector}
                     setQuerySearchSelector={setQuerySearchSelector}
                     clearFilteredData={clearFilteredData}
@@ -329,6 +330,7 @@ export const RepairWithoutSpareParts = () => {
                     options={BUILDER_SEARCH_Q_OPTIONS}
                     color="white"
                     builderType="BUILDER_WITHOUT_SPAREPART"
+                    buttonText="SEARCH"
                   />
                 </div>
               </div>

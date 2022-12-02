@@ -30,12 +30,12 @@ import {
 import moment from "moment-timezone";
 import Moment from "react-moment";
 import DynamicSearchComponent from "./components/DynamicSearchComponent";
-import { BUILDER_SEARCH_Q_OPTIONS, GRID_STYLE, PARTLIST_BUILDER_SEARCH_Q_OPTIONS } from "./CONSTANTS";
+import { GRID_STYLE, PARTLIST_BUILDER_SEARCH_Q_OPTIONS } from "./CONSTANTS";
 import { Typography } from "@mui/material";
-import Loader from "react-js-loader";
 import { useDispatch } from "react-redux";
 import { repairActions } from "./dropdowns/repairSlice";
 import LoadingProgress from "./components/Loader";
+import SearchComponent from "./components/SearchComponent";
 
 export const RepairPartlist = () => {
   const [show, setShow] = React.useState(false);
@@ -354,7 +354,7 @@ export const RepairPartlist = () => {
                       <span>Search</span>
                     </h5>
                   </div>
-                  <DynamicSearchComponent
+                  <SearchComponent
                     querySearchSelector={querySearchSelector}
                     setQuerySearchSelector={setQuerySearchSelector}
                     clearFilteredData={clearFilteredData}
@@ -364,6 +364,7 @@ export const RepairPartlist = () => {
                     options={PARTLIST_BUILDER_SEARCH_Q_OPTIONS}
                     color="white"
                     builderType="PARTLIST"
+                    buttonText={"SEARCH"}
                   />
                 </div>
               </div>

@@ -8,6 +8,7 @@ const SearchBox = (props) => {
         value={props.value}
         autoComplete="off"
         onChange={props.onChange}
+        disabled={props.disabled}
       />
       {props.result && props.result.length > 0 && (
         <ul

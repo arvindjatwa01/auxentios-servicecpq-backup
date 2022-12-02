@@ -2412,6 +2412,7 @@ function RepairServiceEstimate(props) {
                                     searchClick={handleQuerySearchClick}
                                     options={CONSUMABLE_SEARCH_Q_OPTIONS}
                                     color={"white"}
+                                    buttonText={"ADD ITEM"}
                                   />
                                 </div>
                               </div>
@@ -2806,6 +2807,7 @@ function RepairServiceEstimate(props) {
                                     searchClick={handleQuerySearchClick}
                                     options={EXTWORK_SEARCH_Q_OPTIONS}
                                     color={"white"}
+                                    buttonText="ADD ITEM"
                                   />
                                 </div>
                               </div>

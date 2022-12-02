@@ -170,6 +170,7 @@ const AddNewSparepartModal = (props) => {
                       type="groupNumber"
                       result={searchGroupNoResults}
                       onSelect={handleSparePartSelect}
+                      disabled={true}
                     />
                   </div>
                 </div>
@@ -206,6 +207,7 @@ const AddNewSparepartModal = (props) => {
                       type="partNumber"
                       result={searchPartNoResults}
                       onSelect={handleSparePartSelect}
+                      disabled={true}
                     />
                   </div>
                 </div>
@@ -248,6 +250,7 @@ const AddNewSparepartModal = (props) => {
                     </label>
                     <input
                       type="text"
+                      disabled
                       className="form-control border-radius-10"
                       value={props.sparePart.unitOfMeasure}
                       onChange={(e) =>

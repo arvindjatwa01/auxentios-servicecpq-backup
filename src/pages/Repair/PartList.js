@@ -49,6 +49,7 @@ import {
   addMultiPartsToPartList,
   addPartToPartList,
   createBuilderVersion,
+  createKIT,
   fetchBuilderDetails,
   fetchBuilderPricingMethods,
   fetchBuilderVersionDet,
@@ -868,7 +869,7 @@ function PartList(props) {
   };
 
   const handleUploadClick = () => {
-    if(viewOnlyTab.custViewOnly && viewOnlyTab.estViewOnly && viewOnlyTab.generalViewOnly && viewOnlyTab.machineViewOnly && viewOnlyTab.priceViewOnly)
+    if(Object.values(viewOnlyTab).every(item => item === true))
       setFileUploadOpen(true);
     else
       handleSnack("info", "Please save all the header details!")
@@ -1080,6 +1081,18 @@ function PartList(props) {
   const handleCreate = () => {
     history.push("/quoteTemplate");
   };
+
+  const handleCreateKIT = () => {
+    if(selBuilderStatus?.value === 'ACTIVE'){
+      createKIT(bId).then(res => {
+        handleSnack("success", `KIT ${res.kitId} has been successfully created!`);
+      }).catch(e => {
+        handleSnack('error', "Conversion to KIt has been failed!");
+      })
+    } else {
+      handleSnack('warning', 'Partlist is not active yet!')
+    }
+  }
 
   const handleQuerySearchClick = async () => {
     $(".scrollbar").css("display", "none");
@@ -1423,9 +1436,9 @@ function PartList(props) {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    <MenuItem className="custommenu">Kit</MenuItem>
+                    <MenuItem className="custommenu ml-1 mr-5" style={{ borderBottom: '1px black'}} onClick={handleCreateKIT}>Kit</MenuItem>
                     <MenuItem
-                      className="custommenu"
+                      className="custommenu ml-1 mr-5"
                       data-toggle="modal"
                       data-target="#quotecreat"
                     >
@@ -1490,8 +1503,8 @@ function PartList(props) {
                   <i
                     className="fa fa-pencil"
                     aria-hidden="true"
-                    onClick={makeHeaderEditable}
-                  ></i>
+                    onClick={() => (selBuilderStatus?.value === 'DRAFT' || selBuilderStatus?.value === 'REVISED') ? makeHeaderEditable() : handleSnack('info', 'Builder is active!')}
+                    ></i>
                 </a>{" "}
                 <a
                   href={undefined}
@@ -2617,10 +2630,11 @@ function PartList(props) {
                     options={SPAREPART_SEARCH_Q_OPTIONS}
                     background={"white"}
                     type=""
+                    buttonText="ADD PART"
                   />
                 </div>
               </div>
-              <div className="col-4">
+              {(selBuilderStatus?.value === 'DRAFT' || selBuilderStatus?.value === 'REVISED') && <div className="col-4">
                 <div className="text-right pl-3 py-3">
                   <button
                     onClick={handleUploadClick}
@@ -2636,7 +2650,7 @@ function PartList(props) {
                     + Add Part
                   </button> */}
                 </div>
-              </div>
+              </div>}
             </div>
 
             <DataGrid
@@ -2677,13 +2691,14 @@ function PartList(props) {
               onProcessRowUpdateError={(error) => console.log(error)}
             />
             <div className=" my-3 text-right">
+            {(selBuilderStatus?.value === 'DRAFT' || selBuilderStatus?.value === 'REVISED') &&
               <button
                 className="btn text-white bg-primary"
                 onClick={() => setConfirmationOpen(true)}
                 disabled={bulkUpdateProgress}
               >
                 Save
-              </button>
+              </button>}
             </div>
           </div>
           {/* Open Modal to add individual spare part to the part list */}
@@ -3275,6 +3290,12 @@ function PartList(props) {
               </div>
             </div>
             <div className="m-2 text-right">
+            <button
+                className="btn text-white bg-primary mr-2"
+                onClick={handleSearchResClose}
+              >
+                Cancel
+              </button>
               <button
                 className="btn text-white bg-primary"
                 onClick={addSelectedPartsToPartList}

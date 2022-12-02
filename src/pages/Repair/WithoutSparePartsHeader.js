@@ -821,7 +821,7 @@ function WithoutSparePartsHeader(props) {
                       <i
                         className="fa fa-pencil"
                         aria-hidden="true"
-                        onClick={makeHeaderEditable}
+                        onClick={() => (selBuilderStatus?.value === 'DRAFT' || selBuilderStatus?.value === 'REVISED') ? makeHeaderEditable() : handleSnack('info', 'Builder is active!')}
                       ></i>
                     </a>{" "}
                     <a href="#" className="btn-sm">
@@ -1915,6 +1915,7 @@ function WithoutSparePartsHeader(props) {
                 <button
                   onClick={() => setActiveElement({ name: "segment", bId })}
                   className="btn bg-primary text-white"
+                  disabled={!Object.values(viewOnlyTab).every(item => item === true)}
                 >
                   <span className="mr-2">
                     <FontAwesomeIcon icon={faPlus} />
