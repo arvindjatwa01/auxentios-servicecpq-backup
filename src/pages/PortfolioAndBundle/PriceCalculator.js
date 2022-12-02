@@ -7,9 +7,18 @@ import SellOutlinedIcon from "@mui/icons-material/SellOutlined";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { itemCreation, updatePortfolio } from "../../services/index";
+import { useDispatch, useSelector } from "react-redux";
+
+import { itemCreation, updatePortfolio, getPortfolioCommonConfig, } from "../../services/index";
+
+import {
+  taskActions,
+} from "./customerSegment/strategySlice";
+
 
 const PriceCalculator = (props) => {
+
+  const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
   const [priceCalculator, setPriceCalculator] = useState({
     priceMethod: "",
     listPrice: "",
@@ -32,11 +41,33 @@ const PriceCalculator = (props) => {
     totalPrice: 1200,
   });
 
+  const dispatch = useDispatch();
   useEffect(() => {
     if (props.priceCalculator) {
       setPriceCalculator(props.priceCalculator);
     }
   }, [props]);
+
+  useEffect(() => {
+    // const portfolioId1=location.state
+    initFetch();
+    dispatch(taskActions.fetchTaskList());
+  }, [dispatch]);
+
+  const initFetch = () => {
+
+    getPortfolioCommonConfig("price-method")
+      .then((res) => {
+        const options = res.map((d) => ({
+          value: d.key,
+          label: d.value,
+        }));
+        setPriceMethodKeyValue(options);
+      })
+      .catch((err) => {
+        alert(err);
+      });
+  };
 
 
   const frequencyOptions = [
@@ -86,7 +117,7 @@ const PriceCalculator = (props) => {
                   PRICE METHOD
                 </label>
                 <Select
-                  options={options}
+                  options={priceMethodKeyValue}
                   className="text-primary"
                   defaultValue={props?.priceCalculator?.priceMethod}
                   value={priceCalculator.priceMethod}
@@ -147,6 +178,7 @@ const PriceCalculator = (props) => {
                       }
                       options={options}
                       placeholder="Select"
+                      isDisabled
                     />
                   </div>
                   <input
@@ -162,6 +194,7 @@ const PriceCalculator = (props) => {
                         priceAdditionalInput: e.target.value,
                       })
                     }
+                    disabled
                   />
                 </div>
               </div>
@@ -187,6 +220,7 @@ const PriceCalculator = (props) => {
                     }
                     options={options}
                     placeholder="placeholder "
+                    isDisabled
                   />
                   <input
                     type="text"
@@ -201,6 +235,7 @@ const PriceCalculator = (props) => {
                         priceEscalationInput: e.target.value,
                       })
                     }
+                    disabled
                   />
                 </div>
               </div>

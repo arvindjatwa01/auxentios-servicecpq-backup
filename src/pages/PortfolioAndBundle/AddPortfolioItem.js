@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { Box, Button, Stack, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { useDispatch, useSelector } from "react-redux";
+import $ from "jquery";
 
 import { ToastContainer, toast } from 'react-toastify';
 
@@ -18,6 +19,8 @@ import {
   getTaskTypeKeyValue,
   getMachineTypeKeyValue,
   getTypeKeyValue,
+  getSearchStandardJobId,
+  getSearchKitId
 } from "../../services/index";
 import {
   selectUpdateTaskList,
@@ -46,6 +49,8 @@ const AddPortfolioItem = (props) => {
   );
   const [categoryUsageKeyValue, setCategoryUsageKeyValue] = useState([]);
 
+  const [querySearchStandardJobResult, setQuerySearchStandardJobResult] = useState([])
+  // const [querySearchStandardJobDescriptionResult, setQuerySearchStandardJobDescriptionResult] = useState()
   // const {stratgyTaskTypeKeyValue,categoryUsageKeyValue1} = useContext(PortfolioContext);
   const [addPortFolioItem, setAddportFolioItem] = useState({
     id: 0,
@@ -67,6 +72,13 @@ const AddPortfolioItem = (props) => {
     year: "",
     noOfYear: "",
     headerdescription: "",
+    preparedBy: "",
+    approvedBy: "",
+    preparedOn: new Date(),
+    revisedBy: "",
+    revisedOn: new Date(),
+    branch: "",
+    offerValidity: "",
   });
 
   const frequencyOptions = [
@@ -203,6 +215,41 @@ const AddPortfolioItem = (props) => {
     dispatch(taskActions.updateTask(e.value));
   };
 
+  const handleStandardJobInputSearch = (e) => {
+
+    setAddportFolioItem({
+      ...addPortFolioItem,
+      templateId: e.target.value,
+    })
+    var searchStr = e.target.value;
+    getSearchStandardJobId(searchStr)
+      .then((res) => {
+        // console.log("search Query Result --------- :", res);
+        // setMasterData(res);
+        $(`.scrollbar-model`).css("display", "block");
+        setQuerySearchStandardJobResult(res)
+        var preArr = [];
+        for (var n = 0; n < res.length; n++) {
+          preArr.push({ label: res[n].prefix, value: res[n].prefix })
+        }
+        // setQuerySearchModelPrefixOption(preArr);
+      })
+      .catch((err) => {
+        console.log("error in getSearchQueryCoverage", err);
+      });
+  }
+
+  const handleSearchStandardJobListClick = (e, currentItem) => {
+
+    console.log("currentItem : ", currentItem);
+    // templateDescription
+    // setAddportFolioItem({
+    //   ...addPortFolioItem,
+    //   templateId: e.target.value,
+    // })
+    $(`.scrollbar-model`).css("display", "none");
+  }
+
   // console.log("categoryList --- ", categoryList)
 
   const TabsEnableDisabledFun = () => {
@@ -250,6 +297,7 @@ const AddPortfolioItem = (props) => {
   const handleAddPortfolioSave = () => {
     if (props.compoFlag === "itemEdit") {
       props.handleItemEditSave(addPortFolioItem);
+      // props.setTabs("2");
     } else if (props.compoFlag === "ITEM") {
       props.setTabs("2");
       props.getAddportfolioItemDataFun(addPortFolioItem);
@@ -628,7 +676,16 @@ const AddPortfolioItem = (props) => {
               >
                 TEMPLATE ID
               </label>
-              <Select
+              <input
+                type="text"
+                className="form-control text-primary border-radius-10"
+                name="model"
+                placeholder="TEMPLATE ID"
+                value={addPortFolioItem.templateId}
+                // onChange={handleAddServiceBundleChange}
+                onChange={(e) => handleStandardJobInputSearch(e)}
+              />
+              {/* <Select
                 options={options}
                 placeholder="TEMPLATE ID"
                 onChange={(e) =>
@@ -639,7 +696,32 @@ const AddPortfolioItem = (props) => {
                 }
                 value={addPortFolioItem.templateId}
                 isDisabled={editable}
-              />
+              /> */}
+              {
+                <ul
+                  className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
+                  id="style"
+                >
+                  {querySearchStandardJobResult.map((currentItem, j) => (
+                    <li
+                      className="list-group-item"
+                      key={j}
+                      onClick={(e) => handleSearchStandardJobListClick(
+                        e,
+                        currentItem
+                      )}
+                    // onClick={(e) =>
+                    //   handleSearchListClick(
+                    //     e,
+                    //     currentItem,
+                    //   )
+                    // }
+                    >
+                      {currentItem.model}
+                    </li>
+                  ))}
+                </ul>
+              }
               {/* <div className="icon-defold">
                 <div className="form-control">
                   <Select
@@ -1219,8 +1301,42 @@ const AddPortfolioItem = (props) => {
                   >
                     TEMPLATE ID
                   </label>
-                  <Select
-                  className="text-primary"
+                  <input
+                    type="text"
+                    className="form-control text-primary border-radius-10"
+                    name="model"
+                    placeholder="TEMPLATE ID"
+                    value={addPortFolioItem.templateId}
+                    // onChange={handleAddServiceBundleChange}
+                    onChange={(e) => handleStandardJobInputSearch(e)}
+                  />
+                  {
+                    <ul
+                      className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
+                      id="style"
+                    >
+                      {querySearchStandardJobResult.map((currentItem, j) => (
+                        <li
+                          className="list-group-item"
+                          key={j}
+                          onClick={(e) => handleSearchStandardJobListClick(
+                            e,
+                            currentItem
+                          )}
+                        // onClick={(e) =>
+                        //   handleSearchListClick(
+                        //     e,
+                        //     currentItem,
+                        //   )
+                        // }
+                        >
+                          {currentItem.model}
+                        </li>
+                      ))}
+                    </ul>
+                  }
+                  {/* <Select
+                    className="text-primary"
                     options={options}
                     placeholder="TEMPLATE ID"
                     onChange={(e) =>
@@ -1230,7 +1346,7 @@ const AddPortfolioItem = (props) => {
                       })
                     }
                     value={addPortFolioItem.templateId}
-                  />
+                  /> */}
                   {/* <div className="icon-defold">
                     <div className="form-control">
                       <Select
@@ -1270,6 +1386,7 @@ const AddPortfolioItem = (props) => {
                       })
                     }
                     value={addPortFolioItem.templateDescription}
+                    isDisabled
                   />
                   {/* <div className="icon-defold">
                     <div className="form-control">

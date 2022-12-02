@@ -1635,43 +1635,13 @@ export const Analytics = () => {
    }, [portfolioTempMasterData]);
 
    useEffect(() => {
+
       setHeaderLoading(true)
-      //    getTypeKeyValue()
-      //       .then((res) => {
-      //          const options = res.map((d) => ({
-      //             value: d.key,
-      //             label: d.value,
-      //          }));
-      //          setTypeKeyValue(options);
-      //       })
-      //       .catch((err) => {
-      //          alert(err);
-      //       });
-
-
-      //    getPortfolioCommonConfig("customer-segment")
-      //       .then((res) => {
-      //          const options = res.map((d) => ({
-      //             value: d.key,
-      //             label: d.value,
-      //          }));
-      //          setCustomerSegmentKeyValue(options);
-      //       })
-      //       .catch((err) => {
-      //          alert(err);
-      //       });
-
-     
       getSearchForRecentSolutionPortfolio()
          .then((res) => {
             setRecentPortfolioSolution(res);
          })
       setHeaderLoading(false)
-
-      // getSearchForRecentSolutionBundleService()
-      //    .then((res) => {
-      //       setRecentBundleService(res);
-      //    })
 
    }, []);
 
@@ -2474,17 +2444,17 @@ export const Analytics = () => {
    // selected POrtfolio Template Table Data 
 
    const SelectedPortfolioMasterDataColumn = [
-      {
-         name: (
-            <>
-               <div>ID</div>
-            </>
-         ),
-         selector: (row) => row.portfolioId,
-         wrap: true,
-         sortable: true,
-         format: (row) => row.portfolioId,
-      },
+      // {
+      //    name: (
+      //       <>
+      //          <div>ID</div>
+      //       </>
+      //    ),
+      //    selector: (row) => row.portfolioId,
+      //    wrap: true,
+      //    sortable: true,
+      //    format: (row) => row.portfolioId,
+      // },
       {
          name: (
             <>
@@ -2665,17 +2635,17 @@ export const Analytics = () => {
             />
          ),
       },
-      {
-         name: (
-            <>
-               <div>ID</div>
-            </>
-         ),
-         selector: (row) => row.customPortfolioId,
-         wrap: true,
-         sortable: true,
-         format: (row) => row.customPortfolioId,
-      },
+      // {
+      //    name: (
+      //       <>
+      //          <div>ID</div>
+      //       </>
+      //    ),
+      //    selector: (row) => row.customPortfolioId,
+      //    wrap: true,
+      //    sortable: true,
+      //    format: (row) => row.customPortfolioId,
+      // },
       {
          name: (
             <>
@@ -2948,7 +2918,7 @@ export const Analytics = () => {
                      <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6>
                      <div className="recent-div p-3">
                         <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
-                        {headerLoading ? (
+                        {recentPortfolioSolution.length === 0 ? (
                            <LoadingProgress />
                         ) : (
 
