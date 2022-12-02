@@ -565,12 +565,16 @@ function RepairServiceEstimate(props) {
     FetchMiscforService(result.id)
       .then((resultMisc) => {
         if (resultMisc && resultMisc.id) {
-          setExtWorkData({
+          setMiscData({
             ...resultMisc,
             id: resultMisc.id,
             pricingMethod: priceOptionsPercent.find(
               (element) => element.value === resultMisc.pricingMethod
             ),
+            type: miscTypeList.find(
+              (element) => element.value === resultMisc.type
+            ),
+            totalPrice: resultMisc.totalPrice? resultMisc.totalPrice : 0
           });
           setMiscViewOnly(true);
         }
