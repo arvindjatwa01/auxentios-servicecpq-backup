@@ -65,6 +65,7 @@ const AddConsumableItemModal = (props) => {
                         consumableType: e,
                       })
                     }
+                    isDisabled={true}
                     value={props.consumableItemData.consumableType}
                     options={props.consumableTypeList}
                     placeholder="Required"
@@ -77,6 +78,7 @@ const AddConsumableItemModal = (props) => {
                     CONSUMABLE ID
                   </label>
                   <SearchBox
+                    disabled={true}
                     value={props.consumableItemData.consumableCode}
                     onChange={(e) =>
                       props.handleConsumableSearch("consumable", e.target.value)
@@ -128,6 +130,7 @@ const AddConsumableItemModal = (props) => {
                   </label>
                   <input
                     type="text"
+                    disabled
                     value={props.consumableItemData.unitOfMeasure}
                     onChange={(e) =>
                       props.setConsumableItemData({

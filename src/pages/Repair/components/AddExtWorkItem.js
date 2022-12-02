@@ -59,6 +59,7 @@ const AddExtWorkItemModal = (props) => {
                     ACTIVITY ID
                   </label>
                   <Select
+                    isDisabled={true}
                     onChange={(e) =>
                       props.setExtWorkItemData({
                         ...props.extWorkItemData,

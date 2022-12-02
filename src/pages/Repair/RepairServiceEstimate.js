@@ -1161,12 +1161,12 @@ function RepairServiceEstimate(props) {
       flex: 1,
       width: 130,
     },
-    {
-      headerName: "Unit Price",
-      field: "unitPrice",
-      flex: 1,
-      width: 130,
-    },
+    // {
+    //   headerName: "Unit Price",
+    //   field: "unitPrice",
+    //   flex: 1,
+    //   width: 130,
+    // },
   ];
   // Search table column for consumable
   const columnsExtWorkSearch = [
@@ -1183,12 +1183,12 @@ function RepairServiceEstimate(props) {
       flex: 1,
       width: 130,
     },
-    {
-      headerName: "Quoted Price",
-      field: "contractedPrice",
-      flex: 1,
-      width: 130,
-    },
+    // {
+    //   headerName: "Quoted Price",
+    //   field: "contractedPrice",
+    //   flex: 1,
+    //   width: 130,
+    // },
   ];
 
   // Add the selected parts from search result to consumable
@@ -3288,7 +3288,7 @@ function RepairServiceEstimate(props) {
                     pageSize={5}
                     autoHeight
                     rowsPerPageOptions={[5]}
-                    checkboxSelection
+                    // checkboxSelection
                     // onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
                     onRowClick={(e) => selectConsumableItem(e.row)}
                   />
@@ -3332,7 +3332,7 @@ function RepairServiceEstimate(props) {
                     pageSize={5}
                     autoHeight
                     rowsPerPageOptions={[5]}
-                    checkboxSelection
+                    // checkboxSelection
                     // onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
                     onRowClick={(e) => selectExtWorkItem(e.row)}
                   />

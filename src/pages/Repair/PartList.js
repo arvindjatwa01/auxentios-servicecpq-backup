@@ -921,7 +921,7 @@ function PartList(props) {
       width: 130,
     },
     { headerName: "Currency", field: "currency", flex: 1, width: 130 },
-    { headerName: "Unit Price", field: "listPrice", flex: 1, width: 130 },
+    // { headerName: "Unit Price", field: "listPrice", flex: 1, width: 130 },
     { headerName: "Status", field: "status", flex: 1, width: 130 },
   ];
 
