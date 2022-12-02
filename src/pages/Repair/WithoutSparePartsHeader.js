@@ -190,6 +190,7 @@ function WithoutSparePartsHeader(props) {
       setHeaderLoading(true);
       await fetchBuilderDetails(builderId)
         .then((result) => {
+          setBuilderId(result.builderId);
           populateHeader(result);
         })
         .catch((err) => {
@@ -1927,7 +1928,7 @@ function WithoutSparePartsHeader(props) {
           )}
           {activeElement.name === "segment" && (
             <WithoutSpareParts
-              builderDetails={{ activeElement, setActiveElement }}
+              builderDetails={{ activeElement, setActiveElement, fetchAllDetails }}
             />
           )}
           {activeElement.name === "operation" && (

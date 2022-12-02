@@ -146,20 +146,52 @@ const AddExtWorkItemModal = (props) => {
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
                   <label className="text-light-dark font-size-12 font-weight-500">
-                    ESTIMATED HOURS / DAYS
+                    UNIT OF MEASURES
                   </label>
-                  <input
-                    type="text"
-                    value={props.extWorkItemData.estimatedHours}
+                  <Select
                     onChange={(e) =>
                       props.setExtWorkItemData({
                         ...props.extWorkItemData,
-                        estimatedHours: e.target.value,
+                        unitOfMeasure: e,
                       })
                     }
-                    class="form-control border-radius-10"
-                    placeholder="Optional"
+                    options={props.unitOfMeasureOptions}
+                    placeholder="Required"
+                    value={props.extWorkItemData.unitOfMeasure}
                   />
+                </div>
+              </div>
+                  <div className="col-md-6 col-sm-6">
+                <div className="form-group w-100 date-box">
+                  <label className="text-light-dark font-size-12 font-weight-600">
+                    ESTIMATED HOURS / DAYS
+                  </label>
+                  <div
+                    className=" d-flex form-control-date"
+                    style={{ overflow: "hidden" }}
+                  >
+                    <input
+                      type="text"
+                      className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                      // style={{width: '64%'}}
+                      placeholder="Required"
+                      onChange={(e) =>
+                        props.setExtWorkItemData({
+                          ...props.extWorkItemData,
+                          estimatedHours: e.target.value,
+                        })
+                      }
+                      value={props.extWorkItemData.estimatedHours}
+                    />
+                    <span
+                      className="hours-div"
+                      style={{ float: "left", width: "60%" }}
+                    >
+                      {props.extWorkItemData.unitOfMeasure?.label
+                        ? props.extWorkItemData.unitOfMeasure?.label
+                        : "Unit Of Measure"}
+                    </span>
+                    </div>
                 </div>
               </div>
 

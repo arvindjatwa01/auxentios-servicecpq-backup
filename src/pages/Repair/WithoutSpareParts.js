@@ -17,7 +17,7 @@ import LoadingProgress from "./components/Loader";
 
 function WithoutSpareParts(props) {
   // const { state } = props.location;
-  const { activeElement, setActiveElement } = props.builderDetails;
+  const { activeElement, setActiveElement, fetchAllDetails } = props.builderDetails;
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -442,7 +442,7 @@ function WithoutSpareParts(props) {
               <button
                 className="btn bg-primary text-white"
                 onClick={() =>
-                  setActiveElement({ ...activeElement, name: "header" })
+                  {setActiveElement({ ...activeElement, name: "header" }); fetchAllDetails(activeElement.bId);}
                 }
               >
                 Back

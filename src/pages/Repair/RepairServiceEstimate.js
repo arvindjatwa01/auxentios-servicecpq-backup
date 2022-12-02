@@ -87,13 +87,11 @@ function RepairServiceEstimate(props) {
   // Close consumable search modal
   const handleSearchResConsClose = () => {
     setSearchResultConsOpen(false);
-    setSelectedMasterData([]);
   };
 
   // Close ext work search modal
   const handleSearchResExtClose = () => {
     setSearchResultExtWorkOpen(false);
-    setSelectedMasterData([]);
   };
 
   // Retrieve charge codes
@@ -138,7 +136,7 @@ function RepairServiceEstimate(props) {
       label: "Percentage on Total",
     },
     {
-      value: "PER_ON_LABOUR",
+      value: "PER_ON_LABOR",
       label: "Percentage on Labour",
     },
   ];
@@ -192,6 +190,7 @@ function RepairServiceEstimate(props) {
     description: "",
     supplyingVendorCode: "",
     supplyingVendorName: "",
+    unitOfMeasure: "",
     unitPrice: 0.0,
     extendedPrice: 0.0,
     totalPrice: 0.0,
@@ -205,6 +204,8 @@ function RepairServiceEstimate(props) {
     description: "",
     quantity: "",
     unitOfMeasure: "",
+    supplyingVendorCode: "",
+    supplyingVendorName: "",
     vendor: "",
     unitPrice: 0.0,
     extendedPrice: 0.0,
@@ -223,6 +224,9 @@ function RepairServiceEstimate(props) {
     flatRateIndicator: false,
     totalHours: 0,
   });
+  const [laborItemOpen, setLaborItemOpen] = React.useState(false);
+  const [consumableItemOpen, setConsumableItemOpen] = React.useState(false);
+  const [extWorkItemOpen, setExtWorkItemOpen] = React.useState(false);
   const [labourItemData, setLabourItemData] = useState(initialLaborItemData);
   const [extWorkItemData, setExtWorkItemData] = useState(
     initialExtWorkItemData
@@ -240,7 +244,7 @@ function RepairServiceEstimate(props) {
     flatRateIndicator: false,
     adjustedPrice: 0.0,
     totalBase: 0.0,
-    percentagePrice: 0,
+    percentageOfBase: 0,
   });
   // Ext Work Header
   const [extWorkData, setExtWorkData] = useState({
@@ -252,7 +256,7 @@ function RepairServiceEstimate(props) {
     flatRateIndicator: false,
     adjustedPrice: 0.0,
     totalBase: 0.0,
-    percentagePrice: 0,
+    percentageOfBase: 0,
   });
   // Misc Header
   const [miscData, setMiscData] = useState({
@@ -263,9 +267,9 @@ function RepairServiceEstimate(props) {
     payer: "",
     flatRateIndicator: false,
     adjustedPrice: 0.0,
-    typeOfMisc: "",
+    type: "",
     totalBase: 0.0,
-    percentagePrice: 0,
+    percentageOfBase: 0,
   });
   // In case there are no options from search result set the flag
   const [noOptionsVendor, setNoOptionsVendor] = useState(false);
@@ -591,7 +595,12 @@ function RepairServiceEstimate(props) {
   // Search Vendors
   const handleVendorSearch = async (searchVendorfieldName, searchText) => {
     setSearchVendorResults([]);
-    extWorkItemData.supplyingVendorName = searchText;
+    if (searchVendorfieldName === "consVendor") {
+      consumableItemData.supplyingVendorName = searchText;
+    }
+    else {
+      extWorkItemData.supplyingVendorName = searchText;
+    }
     if (searchText) {
       await getVendors("fullName~" + searchText)
         .then((result) => {
@@ -640,7 +649,16 @@ function RepairServiceEstimate(props) {
     setExtWorkItemData({
       ...extWorkItemData,
       supplyingVendorName: currentItem.fullName,
-    });
+      supplyingVendorCode: currentItem.customerId,
+    });      
+    setSearchVendorResults([]);
+  };
+  const handleVendorConsSelect = (type, currentItem) => {    
+    setConsumableItemData({
+      ...consumableItemData,
+      supplyingVendorName: currentItem.fullName,
+      supplyingVendorCode: currentItem.customerId,
+    });      
     setSearchVendorResults([]);
   };
 
@@ -724,7 +742,7 @@ function RepairServiceEstimate(props) {
       ...(consumableData.id && { id: consumableData.id }),
       jobCode: consumableData.jobCode,
       jobCodeDescription: consumableData.jobCodeDescription,
-      percentagePrice: consumableData.percentagePrice,
+      percentageOfBase: consumableData.percentageOfBase,
       flatRateIndicator: consumableData.flatRateIndicator,
       adjustedPrice: consumableData.flatRateIndicator
         ? consumableData.adjustedPrice
@@ -756,7 +774,7 @@ function RepairServiceEstimate(props) {
       ...(extWorkData.id && { id: extWorkData.id }),
       jobCode: extWorkData.jobCode,
       jobCodeDescription: extWorkData.jobCodeDescription,
-      percentagePrice: extWorkData.percentagePrice,
+      percentageOfBase: extWorkData.percentageOfBase,
       flatRateIndicator: extWorkData.flatRateIndicator,
       adjustedPrice: extWorkData.flatRateIndicator
         ? extWorkData.adjustedPrice
@@ -787,15 +805,15 @@ function RepairServiceEstimate(props) {
   // Add or Update misc data
   const updateMiscHeader = () => {
     let data = {
-      ...miscData,
+      // ...miscData,
       jobCode: miscData.jobCode,
       jobCodeDescription: miscData.jobCodeDescription,
-      percentagePrice: miscData.percentagePrice,
+      percentageOfBase: miscData.percentageOfBase,
       flatRateIndicator: miscData.flatRateIndicator,
       adjustedPrice: miscData.flatRateIndicator ? miscData.adjustedPrice : 0.0,
       payer: miscData.payer,
       pricingMethod: miscData.pricingMethod?.value,
-      typeOfMisc: miscData.typeOfMisc?.value,
+      type: miscData.type?.value,
     };
     AddMiscToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -805,8 +823,8 @@ function RepairServiceEstimate(props) {
           pricingMethod: priceOptionsPercent.find(
             (element) => element.value === result.pricingMethod
           ),
-          typeOfMisc: miscTypeList.find(
-            (element) => element.value === result.typeOfMisc
+          type: miscTypeList.find(
+            (element) => element.value === result.type
           ),
         });
         handleSnack("success", "Misc details updated!");
@@ -838,7 +856,8 @@ function RepairServiceEstimate(props) {
     AddLaborItemToLabor(labourData.id, data)
       .then((result) => {
         setLabourItemData(initialLaborItemData);
-        populateLaborItems(labourData);
+        // populateLaborItems(labourData);
+        populateLaborData(serviceEstimateData);
         handleSnack("success", "Added labor item successfully");
       })
       .catch((err) => {
@@ -854,24 +873,28 @@ function RepairServiceEstimate(props) {
       // ...consumableItemData,
       ...(consumableItemData.id && { id: consumableItemData.id }),
       consumableType: consumableItemData.consumableType?.value,
+      supplyingVendorCode: consumableItemData.supplyingVendorCode,
+      supplyingVendorName: consumableItemData.supplyingVendorName,
       consumableCode: consumableItemData.consumableCode,
       description: consumableItemData.description,
       quantity: consumableItemData.quantity,
       unitOfMeasure: consumableItemData.unitOfMeasure,
-      vendor: consumableItemData.vendor,
+      // vendor: consumableItemData.vendor,
       currency: consumableItemData.currency,
     };
 
     AddConsumableItem(consumableData.id, data)
       .then((result) => {
         setConsumableItemData(initialConsumableItemData);
-        populateConsItems(consumableData);
+        // populateConsItems(consumableData);
+        populateConsumableData(serviceEstimateData);
         handleSnack("success", "Added consumable item successfully");
       })
       .catch((err) => {
         handleSnack("error", "Error occurred while adding consumable item!");
       });
-    setQueryConsSearchSelector(initialConsQuery);
+      handleConsumableItemClose();
+      setQueryConsSearchSelector(initialConsQuery);
     } else {
       handleSnack('warning', "Please update the consumable header details!")
     }
@@ -890,18 +913,21 @@ function RepairServiceEstimate(props) {
       estimatedHours: extWorkItemData.estimatedHours,
       dimensions: extWorkItemData.dimensions?.value,
       adjustedPrice: extWorkItemData.adjustedPrice,
+      unitOfMeasure: extWorkItemData.unitOfMeasure?.value,
     };
 
     AddExtWorkItem(extWorkData.id, data)
       .then((result) => {
         setExtWorkItemData(initialExtWorkItemData);
-        populateExtWorkItems(extWorkData);
+        // populateExtWorkItems(extWorkData);
+        populateExtWorkData(serviceEstimateData);
         handleSnack("success", "Added ext work item successfully");
       })
       .catch((err) => {
         handleSnack("error", "Error occurred while adding external work item!");
       });
     setQueryExtSearchSelector(initialExtWorkQuery);
+    handleExtWorkItemClose();
   };
   const handleAddItemLabor = () => {
     if (labourData.id) setLaborItemOpen(true);
@@ -983,13 +1009,17 @@ function RepairServiceEstimate(props) {
 
   // Open ext work item to view or edit
   const openExtWorkRow = (row) => {
+    console.log(row.activityId);
     setExtWorkItemData({
       ...row,
       activityId: activityIdList.find(
-        (element) => element.label === row.activityId
+        (element) => element.value === row.activityId
       ),
       dimensions: dimensionList.find(
         (element) => element.value === row.dimensions
+      ),
+      unitOfMeasure: unitOfMeasureOptions.find(
+        (element) => element.value === row.unitOfMeasure
       ),
       unitPrice: row.unitPrice ? row.unitPrice : 0,
       extendedPrice: row.extendedPrice ? row.extendedPrice : 0,
@@ -1016,15 +1046,15 @@ function RepairServiceEstimate(props) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  const [laborItemOpen, setLaborItemOpen] = React.useState(false);
-  const [consumableItemOpen, setConsumableItemOpen] = React.useState(false);
-  const [extWorkItemOpen, setExtWorkItemOpen] = React.useState(false);
+ 
   const handleExtWorkItemClose = () => {
     setExtWorkItemOpen(false);
+    setSearchVendorResults([]);
     setExtWorkItemData(initialExtWorkItemData);
   };
   const handleConsumableItemClose = () => {
     setConsumableItemOpen(false);
+    setSearchVendorResults([]);
     setConsumableItemData(initialConsumableItemData);
   };
   const handleLaborItemClose = () => {
@@ -1060,11 +1090,8 @@ function RepairServiceEstimate(props) {
   // Once parts are selected to add clear the search results
   const clearFilteredData = () => {
     setMasterData([]);
-    setSelectedMasterData([]);
   };
 
-  const [filterMasterData, setFilterMasterData] = useState([]);
-  const [selectedMasterData, setSelectedMasterData] = useState([]);
   const [masterData, setMasterData] = useState([]);
   let [laborItems, setLaborItems] = useState([]);
   let [consumableItems, setConsumableItems] = useState([]);
@@ -1164,15 +1191,18 @@ function RepairServiceEstimate(props) {
     },
   ];
 
-  // Add the selected parts from search result to partlist
+  // Add the selected parts from search result to consumable
   const selectConsumableItem = async (selectedData) => {
     setSearchResultConsOpen(false);
     setConsumableItemData({
       ...consumableItemData,
       consumableCode: selectedData.consumableId,
       description: selectedData.name,
-      consumableType: "",
-      vendor: selectedData.sourceOrVendor,
+      consumableType: consumableTypeList.find(
+        (element) => element.value === selectedData.stockItem
+      ),
+      supplyingVendorCode: selectedData.sourceOrVendor,
+      supplyingVendorName: selectedData.sourceOrVendor,
       unitOfMeasure: selectedData.unit,
     });
     setConsumableItemOpen(true);
@@ -1187,7 +1217,6 @@ function RepairServiceEstimate(props) {
         (element) => element.value === selectedData.activityId
       ),
       activityName: selectedData.activityDescription,
-      // activityType: selectedData.activityType,
       supplyingVendorCode: selectedData.supplyingVendorCode,
       supplyingVendorName: selectedData.supplyingVendorName,
       // unitOfMeasure: selectedData.unit,
@@ -2170,11 +2199,11 @@ function RepairServiceEstimate(props) {
                                     className="form-control rounded-top-left-0 rounded-bottom-left-0"
                                     // style={{width: '64%'}}
                                     placeholder="Required"
-                                    value={consumableData.percentagePrice}
+                                    value={consumableData.percentageOfBase}
                                     onChange={(e) =>
                                       setConsumableData({
                                         ...consumableData,
-                                        percentagePrice: e.target.value,
+                                        percentageOfBase: e.target.value,
                                       })
                                     }
                                   />
@@ -2279,7 +2308,7 @@ function RepairServiceEstimate(props) {
                                   onClick={updateConsumableHeader}
                                   disabled={
                                     !(
-                                      consumableData.percentagePrice &&
+                                      consumableData.percentageOfBase &&
                                       consumableData.pricingMethod &&
                                       (consumableData.flatRateIndicator
                                         ? consumableData.adjustedPrice
@@ -2340,7 +2369,7 @@ function RepairServiceEstimate(props) {
                                   PERCENTAGE PRICE
                                 </p>
                                 <h6 className="font-weight-600">
-                                  {consumableData.percentagePrice}
+                                  {consumableData.percentageOfBase}
                                 </h6>
                               </div>
                             </div>
@@ -2416,7 +2445,7 @@ function RepairServiceEstimate(props) {
                                   />
                                 </div>
                               </div>
-                              <div className="ml-5">
+                              {/* <div className="ml-5">
                                 <div className="text-center border-left pl-1 py-3">
                                   <Link
                                     onClick={() => handleAddItemConsumable()}
@@ -2428,7 +2457,7 @@ function RepairServiceEstimate(props) {
                                     <span className="ml-3">Add Items</span>
                                   </Link>
                                 </div>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                           <DataGrid
@@ -2565,11 +2594,11 @@ function RepairServiceEstimate(props) {
                                     className="form-control rounded-top-left-0 rounded-bottom-left-0"
                                     // style={{width: '64%'}}
                                     placeholder="Required"
-                                    value={extWorkData.percentagePrice}
+                                    value={extWorkData.percentageOfBase}
                                     onChange={(e) =>
                                       setExtWorkData({
                                         ...extWorkData,
-                                        percentagePrice: e.target.value,
+                                        percentageOfBase: e.target.value,
                                       })
                                     }
                                   />
@@ -2673,7 +2702,7 @@ function RepairServiceEstimate(props) {
                                   onClick={updateExtWorkHeader}
                                   disabled={
                                     !(
-                                      extWorkData.percentagePrice &&
+                                      extWorkData.percentageOfBase &&
                                       extWorkData.pricingMethod &&
                                       (extWorkData.flatRateIndicator
                                         ? extWorkData.adjustedPrice
@@ -2734,7 +2763,7 @@ function RepairServiceEstimate(props) {
                                   PERCENTAGE PRICE
                                 </p>
                                 <h6 className="font-weight-600">
-                                  {extWorkData.percentagePrice}
+                                  {extWorkData.percentageOfBase}
                                 </h6>
                               </div>
                             </div>
@@ -2811,7 +2840,7 @@ function RepairServiceEstimate(props) {
                                   />
                                 </div>
                               </div>
-                              <div className="ml-5">
+                              {/* <div className="ml-5">
                                 <div className="text-center border-left pl-3 py-3">
                                   <Link
                                     onClick={() => setExtWorkItemOpen(true)}
@@ -2823,7 +2852,7 @@ function RepairServiceEstimate(props) {
                                     <span className="ml-1">Add Items</span>
                                   </Link>
                                 </div>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                           <DataGrid
@@ -2898,10 +2927,10 @@ function RepairServiceEstimate(props) {
                                 </label>
                                 <Select
                                   onChange={(e) =>
-                                    setMiscData({ ...miscData, typeOfMisc: e })
+                                    setMiscData({ ...miscData, type: e })
                                   }
                                   options={miscTypeList}
-                                  value={miscData.typeOfMisc}
+                                  value={miscData.type}
                                   placeholder="Required"
                                   styles={FONT_STYLE_SELECT}
                                 />
@@ -2944,11 +2973,11 @@ function RepairServiceEstimate(props) {
                                     type="text"
                                     className="form-control rounded-top-left-0 rounded-bottom-left-0"
                                     placeholder="Required"
-                                    value={miscData.percentagePrice}
+                                    value={miscData.percentageOfBase}
                                     onChange={(e) =>
                                       setMiscData({
                                         ...miscData,
-                                        percentagePrice: e.target.value,
+                                        percentageOfBase: e.target.value,
                                       })
                                     }
                                   />
@@ -3071,8 +3100,8 @@ function RepairServiceEstimate(props) {
                                   onClick={updateMiscHeader}
                                   disabled={
                                     !(
-                                      miscData.percentagePrice &&
-                                      miscData.typeOfMisc &&
+                                      miscData.percentageOfBase &&
+                                      miscData.type &&
                                       miscData.pricingMethod &&
                                       (miscData.flatRateIndicator
                                         ? miscData.adjustedPrice
@@ -3123,7 +3152,7 @@ function RepairServiceEstimate(props) {
                                   TYPE OF MISC.
                                 </p>
                                 <h6 className="font-weight-600">
-                                  {miscData.typeOfMisc?.label}
+                                  {miscData.type?.label}
                                 </h6>
                               </div>
                             </div>
@@ -3143,7 +3172,7 @@ function RepairServiceEstimate(props) {
                                   PERCENTAGE PRICE
                                 </p>
                                 <h6 className="font-weight-600">
-                                  {miscData.percentagePrice}
+                                  {miscData.percentageOfBase}
                                 </h6>
                               </div>
                             </div>
@@ -3211,6 +3240,10 @@ function RepairServiceEstimate(props) {
             noOptionsConsumable={noOptionsConsumable}
             addConsumableItem={addConsumableItem}
             serviceEstimateData={serviceEstimateData}
+            handleVendorSearch={handleVendorSearch}
+            searchVenodrResults={searchVenodrResults}
+            handleVendorSelect={handleVendorConsSelect}
+            noOptionsVendor={noOptionsVendor}
           />
 
           <AddExtWorkItemModal
@@ -3226,6 +3259,7 @@ function RepairServiceEstimate(props) {
             dimensionList={dimensionList}
             addExtWorkItem={addExtWorkItem}
             activityIdList={activityIdList}
+            unitOfMeasureOptions={unitOfMeasureOptions}
           />
           <Modal
             show={searchResultConsOpen}

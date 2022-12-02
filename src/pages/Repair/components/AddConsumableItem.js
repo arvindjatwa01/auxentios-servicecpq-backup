@@ -145,7 +145,17 @@ const AddConsumableItemModal = (props) => {
                   <label className="text-light-dark font-size-12 font-weight-500">
                     VENDOR
                   </label>
-                  <input
+                  <SearchBox
+                    value={props.consumableItemData.supplyingVendorName}
+                    onChange={(e) =>
+                      props.handleVendorSearch("consVendor", e.target.value)
+                    }
+                    type="fullName"
+                    result={props.searchVenodrResults}
+                    onSelect={props.handleVendorSelect}
+                    noOptions={props.noOptionsVendor}
+                  />
+                  {/* <input
                     type="text"
                     value={props.consumableItemData.vendor}
                     onChange={(e) =>
@@ -156,7 +166,7 @@ const AddConsumableItemModal = (props) => {
                     }
                     class="form-control border-radius-10"
                     placeholder="Optional"
-                  />
+                  /> */}
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
