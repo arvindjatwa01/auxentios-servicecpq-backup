@@ -194,6 +194,7 @@ function WithoutSparePartsHeader(props) {
           populateHeader(result);
         })
         .catch((err) => {
+          console.log(err);
           handleSnack("error", "Error occured while fetching header details");
         });
       setHeaderLoading(false);
@@ -271,7 +272,7 @@ function WithoutSparePartsHeader(props) {
     setGeneralData({
       description: result.description,
       estimationDate: result.estimationDate? result.estimationDate : new Date() ,
-      estimationNo: state.builderId,
+      estimationNo: result.builderId? result.builderId : state.builderId,
       reference: result.reference,
       validity: validityOptions.find(
         (element) => element.value == result.validityDays

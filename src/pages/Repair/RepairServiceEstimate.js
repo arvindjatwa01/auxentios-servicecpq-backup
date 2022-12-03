@@ -378,6 +378,10 @@ function RepairServiceEstimate(props) {
   //fetches the service headers if already saved or sets the appropriate values
   useEffect(() => {
     setServiceEstHeaderLoading(true);
+    populateServiceEstimation('all');
+  }, []);
+
+  const populateServiceEstimation = (fetchType) => {
     if (activeElement.oId) {
       FetchServiceHeader(activeElement.oId)
         .then((result) => {
@@ -408,10 +412,10 @@ function RepairServiceEstimate(props) {
           //if service header exists then mark it view only
           setServiceHeaderViewOnly(result.id ? true : false);
           if (result.id) {
-            populateLaborData(result);
-            populateConsumableData(result);
-            populateExtWorkData(result);
-            populateMiscData(result);
+            if(fetchType === 'all' || fetchType === 'labor') populateLaborData(result);
+            if(fetchType === 'all' || fetchType === 'consumable') populateConsumableData(result);
+            if(fetchType === 'all' || fetchType === 'extwork') populateExtWorkData(result);
+            if(fetchType === 'all' || fetchType === 'misc') populateMiscData(result);
           } else {
             setLabourData({
               ...labourData,
@@ -444,8 +448,7 @@ function RepairServiceEstimate(props) {
           setServiceEstHeaderLoading(false);
         });
     }
-  }, []);
-
+  }
   function populateLaborData(result) {
     FetchLaborforService(result.id)
       .then((resultLabour) => {
@@ -459,6 +462,7 @@ function RepairServiceEstimate(props) {
             laborCode: laborCodeList.find(
               (element) => element.value === resultLabour.laborCode
             ),
+            totalPrice: resultLabour.totalPrice? resultLabour.totalPrice : 0
           });
           populateLaborItems(resultLabour);
           setLaborViewOnly(true);
@@ -495,6 +499,7 @@ function RepairServiceEstimate(props) {
             pricingMethod: priceOptionsPercent.find(
               (element) => element.value === resultConsumable.pricingMethod
             ),
+            totalPrice: resultConsumable.totalPrice ? resultConsumable.totalPrice : 0
           });
           populateConsItems(resultConsumable);
           setConsumableViewOnly(true);
@@ -532,6 +537,7 @@ function RepairServiceEstimate(props) {
             pricingMethod: priceOptionsPercent.find(
               (element) => element.value === resultExtWork.pricingMethod
             ),
+            totalPrice: resultExtWork.totalPrice? resultExtWork.totalPrice: 0
           });
           populateExtWorkItems(resultExtWork);
           setExtWorkViewOnly(true);
@@ -727,6 +733,7 @@ function RepairServiceEstimate(props) {
           pricingMethod: priceMethodOptions.find(
             (element) => element.value === result.pricingMethod
           ),
+          totalPrice: result.totalPrice ? result.totalPrice : 0,
           laborCode: laborCodeList.find(
             (element) => element.value === result.laborCode
           ),
@@ -831,6 +838,7 @@ function RepairServiceEstimate(props) {
             (element) => element.value === result.type
           ),
         });
+        populateServiceEstimation('misc');
         handleSnack("success", "Misc details updated!");
         setMiscViewOnly(true);
       })
@@ -861,7 +869,8 @@ function RepairServiceEstimate(props) {
       .then((result) => {
         setLabourItemData(initialLaborItemData);
         // populateLaborItems(labourData);
-        populateLaborData(serviceEstimateData);
+        // populateLaborData(serviceEstimateData);
+        populateServiceEstimation('labor');
         handleSnack("success", "Added labor item successfully");
       })
       .catch((err) => {
@@ -891,7 +900,8 @@ function RepairServiceEstimate(props) {
       .then((result) => {
         setConsumableItemData(initialConsumableItemData);
         // populateConsItems(consumableData);
-        populateConsumableData(serviceEstimateData);
+        // populateConsumableData(serviceEstimateData);
+        populateServiceEstimation('consumable');
         handleSnack("success", "Added consumable item successfully");
       })
       .catch((err) => {
@@ -924,7 +934,8 @@ function RepairServiceEstimate(props) {
       .then((result) => {
         setExtWorkItemData(initialExtWorkItemData);
         // populateExtWorkItems(extWorkData);
-        populateExtWorkData(serviceEstimateData);
+        // populateExtWorkData(serviceEstimateData);
+        populateServiceEstimation('extwork');
         handleSnack("success", "Added ext work item successfully");
       })
       .catch((err) => {

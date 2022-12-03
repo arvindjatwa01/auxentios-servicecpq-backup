@@ -23,7 +23,7 @@ const repairSlice = createSlice({
     },
     fetchDropdownsSuccess(state, action) {
       state.loading = false;
-      console.log("RepairSlice", action.payload.laborCodes.data);
+      // console.log("RepairSlice", action.payload.laborCodes.data);
       state.chargeCodeList = action.payload.chargeCodes.data;
       state.laborCodeList = action.payload.laborCodes.data;
       state.serviceTypeList = action.payload.serviceTypes.data;
@@ -37,7 +37,7 @@ const repairSlice = createSlice({
 
     fetchDropdownsFailed(state, action) {
       state.loading = false;
-      console.log(action);
+      // console.log(action);
     },
   },
 });

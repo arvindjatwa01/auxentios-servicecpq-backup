@@ -120,6 +120,14 @@ export const GRID_STYLE = {
     color: "#fff",
     fontSize: 12,
   },
+  "& .MuiTablePagination-displayedRows, .MuiTablePagination-selectLabel": {
+    marginTop: "1em",
+    marginBottom: "1em"
+  },
+  "& .MuiTablePagination-select":{
+    marginTop: "1.5em",
+    marginBottom: "1.5em"
+  },
   '& .MuiDataGrid-columnHeader, .MuiDataGrid-cell': {
     borderRight: `1px solid rgba(0,0,0,.12)`,
     paddingLeft: "8px",

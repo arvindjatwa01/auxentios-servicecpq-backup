@@ -1232,7 +1232,8 @@ function PartList(props) {
             "success",
             `👏 New parts have been added with default quantity as 1!`
           );
-          fetchPartsOfPartlist(partListNo, page, pageSize);
+          fetchAllDetails(builderId, generalData.version);
+          // fetchPartsOfPartlist(partListNo, page, pageSize);
         })
         .catch((err) => {
           console.log(err);
@@ -2700,7 +2701,7 @@ function PartList(props) {
               onFilterModelChange={onPartsFilterChange}
               onRowEditStop={(e) => setBulkUpdateProgress(false)}
               paginationMode="server"
-              // autoHeight
+              autoHeight
               loading={partsLoading}
               rowsPerPageOptions={[5, 10, 20]}
               pagination
