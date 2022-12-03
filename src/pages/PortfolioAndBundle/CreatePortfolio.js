@@ -104,6 +104,7 @@ import {
   getMachineTypeKeyValue,
   getTypeKeyValue,
   getPortfolioCommonConfig,
+  getSolutionPriceCommonConfig,
   getSearchQueryCoverage,
   getSearchCoverageForFamily,
   itemCreation,
@@ -114,7 +115,10 @@ import {
   getComponentCodeSuggetions,
   itemPriceDataId,
   quoteCreation,
-  updateItemPriceData
+  updateItemPriceData,
+  escalationPriceCreation,
+  additionalPriceCreation,
+  portfolioPriceCreation,
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -270,6 +274,10 @@ export function CreatePortfolio(props) {
   const [categoryItem, setCategoryItem] = useState(null);
 
   const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
+  const [priceListKeyValue, setPriceListKeyValue] = useState([]);
+  const [priceTypeKeyValue, setPriceTypeKeyValue] = useState([]);
+  const [priceHeadTypeKeyValue, setPriceHeadTypeKeyValue] = useState([]);
+
   const [customerSegmentKeyValue, setCustomerSegmentKeyValue] = useState([]);
   const [strategyOptionals, setStrategyOptionals] = useState([]);
 
@@ -347,6 +355,27 @@ export function CreatePortfolio(props) {
     branch: null,
     offerValidity: null,
   });
+
+  const [priceListKeyValue1, setPriceListKeyValue1] = useState([]);
+  const [priceMethodKeyValue1, setPriceMethodKeyValue1] = useState([]);
+
+  const [portfolioPriceDataId, setPortfolioPriceDataId] = useState({})
+  const [portfolioAdditionalPriceDataId, setPortfolioAdditionalPriceDataId] = useState({})
+  const [portfolioEscalationPriceDataId, setPortfolioEscalationPriceDataId] = useState({})
+
+  const [priceDetails, setPriceDetails] = useState({
+    priceDate: new Date()
+  })
+  const [priceTypeKeyValue1, setPriceTypeKeyValue1] = useState([]);
+  const [priceAdditionalHeadKeyValue1, setPriceAdditionalHeadKeyValue1] = useState([]);
+  const [priceEscalationHeadKeyValue1, setPriceEscalationKeyValue1] = useState([]);
+  const [escalationPriceValue, setEscalationPriceValue] = useState()
+  const [additionalPriceValue, setAdditionalPriceValue] = useState()
+  // const [priceData, setPriceListKeyValue1] = useState([]);
+  // const [priceListKeyValue1, setPriceListKeyValue1] = useState([]);
+  // const [priceListKeyValue1, setPriceListKeyValue1] = useState([]);
+
+
   const handleOption = (e) => {
     setValue1(e);
   };
@@ -1897,104 +1926,196 @@ export function CreatePortfolio(props) {
         ) {
           throw "Please fill mandatory fields properly";
         }
-        setGeneralComponentData({
-          ...generalComponentData,
-          usageCategory: categoryUsageKeyValue1.value,
-          taskType: stratgyTaskTypeKeyValue.value,
-          strategyTask: stratgyTaskUsageKeyValue.value,
-          optionals: stratgyOptionalsKeyValue.value,
-          responseTime: stratgyResponseTimeKeyValue.value,
-          productHierarchy: stratgyHierarchyKeyValue.value,
-          geographic: stratgyGeographicKeyValue.value,
-        });
 
-        const { portfolioId, ...res } = generalComponentData;
-        let obj = {
-          ...res,
-          visibleInCommerce: true,
-          customerId: 0,
-          lubricant: true,
-          customerSegment: generalComponentData.customerSegment.value
-            ? generalComponentData.customerSegment.value
-            : "EMPTY",
-          machineType: generalComponentData.machineType
-            ? generalComponentData.machineType
-            : "EMPTY",
-          status: generalComponentData.status
-            ? generalComponentData.status
-            : "EMPTY",
-          strategyTask: generalComponentData.strategyTask
-            ? generalComponentData.strategyTask
-            : "EMPTY",
-          taskType: generalComponentData.taskType
-            ? generalComponentData.taskType
-            : "EMPTY",
-          usageCategory: generalComponentData.usageCategory
-            ? generalComponentData.usageCategory
-            : "EMPTY",
-          productHierarchy: generalComponentData.productHierarchy
-            ? generalComponentData.productHierarchy
-            : "EMPTY",
-          geographic: generalComponentData.geographic
-            ? generalComponentData.geographic
-            : "EMPTY",
-          availability: generalComponentData.availability
-            ? generalComponentData.availability
-            : "EMPTY",
-          responseTime: generalComponentData.responseTime
-            ? generalComponentData.responseTime
-            : "EMPTY",
-          type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-          application: generalComponentData.application
-            ? generalComponentData.application
-            : "EMPTY",
-          contractOrSupport: generalComponentData.contractOrSupport
-            ? generalComponentData.contractOrSupport
-            : "EMPTY",
-          lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-            ? generalComponentData.lifeStageOfMachine
-            : "EMPTY",
-          supportLevel: generalComponentData.supportLevel
-            ? generalComponentData.supportLevel
-            : "EMPTY",
-          items: [],
-          coverages: [],
-          customerGroup: generalComponentData.customerGroup
-            ? generalComponentData.customerGroup
-            : "EMPTY",
-          searchTerm: "EMPTY",
-          supportLevel: "EMPTY",
-          portfolioPrice: { "portfolioPriceId": 92 },
-          additionalPrice: { "additionalPriceId": 1 },
-          escalationPrice: { "escalationPriceId": 1 },
-
-          usageCategory: categoryUsageKeyValue1.value,
-          taskType: stratgyTaskTypeKeyValue.value,
-          strategyTask: stratgyTaskUsageKeyValue.value,
-          responseTime: stratgyResponseTimeKeyValue.value,
-          productHierarchy: stratgyHierarchyKeyValue.value,
-          geographic: stratgyGeographicKeyValue.value,
-        };
-        const strategyRes = await updatePortfolio(
-          generalComponentData.portfolioId,
-          obj
-        );
-        if (strategyRes.status === 200) {
-          toast("👏 Portfolio updated", {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
+        if (state && state.type === "new") {
+          setGeneralComponentData({
+            ...generalComponentData,
+            usageCategory: categoryUsageKeyValue1.value,
+            taskType: stratgyTaskTypeKeyValue.value,
+            strategyTask: stratgyTaskUsageKeyValue.value,
+            optionals: stratgyOptionalsKeyValue.value,
+            responseTime: stratgyResponseTimeKeyValue.value,
+            productHierarchy: stratgyHierarchyKeyValue.value,
+            geographic: stratgyGeographicKeyValue.value,
           });
-          setValue("administrative");
-          setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: true });
-          console.log("strategy updating", strategyRes.data);
+
+          const { portfolioId, ...res } = generalComponentData;
+          let obj = {
+            ...res,
+            visibleInCommerce: true,
+            customerId: 0,
+            lubricant: true,
+            customerSegment: generalComponentData.customerSegment.value
+              ? generalComponentData.customerSegment.value
+              : "EMPTY",
+            machineType: generalComponentData.machineType
+              ? generalComponentData.machineType
+              : "EMPTY",
+            status: generalComponentData.status
+              ? generalComponentData.status
+              : "EMPTY",
+            strategyTask: generalComponentData.strategyTask
+              ? generalComponentData.strategyTask
+              : "EMPTY",
+            taskType: generalComponentData.taskType
+              ? generalComponentData.taskType
+              : "EMPTY",
+            usageCategory: generalComponentData.usageCategory
+              ? generalComponentData.usageCategory
+              : "EMPTY",
+            productHierarchy: generalComponentData.productHierarchy
+              ? generalComponentData.productHierarchy
+              : "EMPTY",
+            geographic: generalComponentData.geographic
+              ? generalComponentData.geographic
+              : "EMPTY",
+            availability: generalComponentData.availability
+              ? generalComponentData.availability
+              : "EMPTY",
+            responseTime: generalComponentData.responseTime
+              ? generalComponentData.responseTime
+              : "EMPTY",
+            type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+            application: generalComponentData.application
+              ? generalComponentData.application
+              : "EMPTY",
+            contractOrSupport: generalComponentData.contractOrSupport
+              ? generalComponentData.contractOrSupport
+              : "EMPTY",
+            lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+              ? generalComponentData.lifeStageOfMachine
+              : "EMPTY",
+            supportLevel: generalComponentData.supportLevel
+              ? generalComponentData.supportLevel
+              : "EMPTY",
+            items: [],
+            coverages: [],
+            customerGroup: generalComponentData.customerGroup
+              ? generalComponentData.customerGroup
+              : "EMPTY",
+            searchTerm: "EMPTY",
+            supportLevel: "EMPTY",
+            portfolioPrice: { "portfolioPriceId": 92 },
+            additionalPrice: { "additionalPriceId": 1 },
+            escalationPrice: { "escalationPriceId": 1 },
+
+            usageCategory: categoryUsageKeyValue1.value,
+            taskType: stratgyTaskTypeKeyValue.value,
+            strategyTask: stratgyTaskUsageKeyValue.value,
+            responseTime: stratgyResponseTimeKeyValue.value,
+            productHierarchy: stratgyHierarchyKeyValue.value,
+            geographic: stratgyGeographicKeyValue.value,
+          };
+          const strategyRes = await updatePortfolio(
+            generalComponentData.portfolioId,
+            obj
+          );
+          if (strategyRes.status === 200) {
+            toast("👏 Portfolio updated", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            setValue("administrative");
+            setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: true });
+            console.log("strategy updating", strategyRes.data);
+          } else {
+            throw `${strategyRes.status}:error in update portfolio`;
+          }
         } else {
-          throw `${strategyRes.status}:error in update portfolio`;
+          let reqObj = {
+            portfolioId: portfolioId,
+            // type: prefilgabelGeneral,
+            type: "MACHINE",
+            name: generalComponentData.name,
+            description: generalComponentData.description,
+            customerSegment: generalComponentData.customerSegment?.value,
+            externalReference: generalComponentData.externalReference,
+
+            validFrom: validityData.fromDate.toISOString().substring(0, 10),
+            validTo: validityData.fromDate.toISOString().substring(0, 10),
+
+            usageCategory: categoryUsageKeyValue1.value,
+            taskType: stratgyTaskTypeKeyValue.value,
+            strategyTask: stratgyTaskUsageKeyValue.value,
+            responseTime: stratgyResponseTimeKeyValue.value,
+            productHierarchy: stratgyHierarchyKeyValue.value,
+            geographic: stratgyGeographicKeyValue.value,
+
+            preparedBy: administrative.preparedBy,
+            approvedBy: administrative.approvedBy,
+            preparedOn: administrative.preparedOn,
+            revisedBy: administrative.revisedBy,
+            revisedOn: administrative.revisedOn,
+            offerValidity: administrative.offerValidity,
+            salesOffice: administrative.salesOffice,
+
+            machineType: generalComponentData?.machineType
+              ? generalComponentData?.machineType
+              : "EMPTY",
+            searchTerm: "EMPTY",
+            lubricant: true,
+            customerId: 0,
+            customerGroup: generalComponentData?.customerGroup
+              ? generalComponentData?.customerGroup
+              : "EMPTY",
+            status: generalComponentData?.status
+              ? generalComponentData?.status
+              : "EMPTY",
+            availability: generalComponentData?.availability
+              ? generalComponentData?.availability
+              : "EMPTY",
+            application: generalComponentData?.application
+              ? generalComponentData?.application
+              : "EMPTY",
+            contractOrSupport: generalComponentData?.contractOrSupport
+              ? generalComponentData?.contractOrSupport
+              : "EMPTY",
+            lifeStageOfMachine: "NEW_BREAKIN",
+            supportLevel: "PREMIUM",
+            numberOfEvents: 0,
+            itemRelations: [],
+            rating: "string",
+            startUsage: 0,
+            endUsage: 0,
+            unit: "HOURS",
+            additionals: "string",
+            portfolioPrice: null,
+            additionalPrice: null,
+            escalationPrice: null,
+            saveState: false,
+            userId: null,
+            visibleInCommerce: true,
+            template: true,
+          }
+
+          const exitsPortfolioUpdate = await updatePortfolio(
+            portfolioId,
+            reqObj
+          );
+          if (exitsPortfolioUpdate.status === 200) {
+            toast("👏 Portfolio updated", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            // setValue("administrative");
+            setValue("administrative");
+            setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: true });
+            // console.log("strategy updating", strategyRes.data);
+          } else {
+            throw `${exitsPortfolioUpdate.status}:error in update portfolio`;
+          };
         }
+
       } else if (e.target.id == "administrative") {
 
         const validator = new Validator();
@@ -2016,129 +2137,489 @@ export function CreatePortfolio(props) {
         ) {
           throw "Please fill manditory fields with valid data";
         }
-        setGeneralComponentData({
-          ...generalComponentData,
-          preparedBy: administrative.preparedBy,
-          approvedBy: administrative.approvedBy,
-          preparedOn: administrative.preparedOn,
-          revisedBy: administrative.revisedBy,
-          revisedOn: administrative.revisedOn,
-          salesOffice: administrative.salesOffice,
-          offerValidity: administrative.offerValidity,
-        });
-
-        const { portfolioId, ...res } = generalComponentData;
-
-        let Administryobj = {
-          ...res,
-          visibleInCommerce: true,
-          customerId: 0,
-          lubricant: true,
-          customerSegment: generalComponentData.customerSegment.value
-            ? generalComponentData.customerSegment.value
-            : "EMPTY",
-          // machineType: generalComponentData.machineType
-          //     ? generalComponentData.machineType
-          //     : "EMPTY",
-          status: generalComponentData.status
-            ? generalComponentData.status
-            : "EMPTY",
-          strategyTask: generalComponentData.strategyTask
-            ? generalComponentData.strategyTask
-            : "EMPTY",
-          taskType: generalComponentData.taskType
-            ? generalComponentData.taskType
-            : "EMPTY",
-          usageCategory: generalComponentData.usageCategory
-            ? generalComponentData.usageCategory
-            : "EMPTY",
-          productHierarchy: generalComponentData.productHierarchy
-            ? generalComponentData.productHierarchy
-            : "EMPTY",
-          geographic: generalComponentData.geographic
-            ? generalComponentData.geographic
-            : "EMPTY",
-          availability: generalComponentData.availability
-            ? generalComponentData.availability
-            : "EMPTY",
-          responseTime: generalComponentData.responseTime
-            ? generalComponentData.responseTime
-            : "EMPTY",
-          type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-          application: generalComponentData.application
-            ? generalComponentData.application
-            : "EMPTY",
-          contractOrSupport: generalComponentData.contractOrSupport
-            ? generalComponentData.contractOrSupport
-            : "EMPTY",
-          // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-          //     ? generalComponentData.lifeStageOfMachine
-          //     : "EMPTY",
-          supportLevel: generalComponentData.supportLevel
-            ? generalComponentData.supportLevel
-            : "EMPTY",
-          customItems: [],
-          items: [],
-          customCoverages: [],
-          customerGroup: generalComponentData.customerGroup
-            ? generalComponentData.customerGroup
-            : "EMPTY",
-          searchTerm: "EMPTY",
-          supportLevel: "EMPTY",
-          // portfolioPrice: {},
-          // additionalPrice: {},
-          // escalationPrice: {},
-
-          usageCategory: categoryUsageKeyValue1.value,
-          taskType: stratgyTaskTypeKeyValue.value,
-          strategyTask: stratgyTaskUsageKeyValue.value,
-          responseTime: stratgyResponseTimeKeyValue.value,
-          productHierarchy: stratgyHierarchyKeyValue.value,
-          geographic: stratgyGeographicKeyValue.value,
-          numberOfEvents: 0,
-          rating: "",
-          startUsage: "",
-          endUsage: "",
-          unit: "HOURS",
-          additionals: "",
-          preparedBy: administrative.preparedBy,
-          approvedBy: administrative.approvedBy,
-          preparedOn: administrative.preparedOn,
-          revisedBy: administrative.revisedBy,
-          revisedOn: administrative.revisedOn,
-          salesOffice: administrative.salesOffice,
-          offerValidity: administrative.offerValidity,
-        };
-
-        const administryRes = await updatePortfolio(
-          generalComponentData.portfolioId,
-          Administryobj
-        );
-        if (administryRes.status === 200) {
-          toast("👏 Portfolio updated", {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
+        if (state && state.type === "new") {
+          setGeneralComponentData({
+            ...generalComponentData,
+            preparedBy: administrative.preparedBy,
+            approvedBy: administrative.approvedBy,
+            preparedOn: administrative.preparedOn,
+            revisedBy: administrative.revisedBy,
+            revisedOn: administrative.revisedOn,
+            salesOffice: administrative.salesOffice,
+            offerValidity: administrative.offerValidity,
           });
-          // setValue("administrative");
-          setValue("price");
-          setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: true });
-          console.log("administryRes updating", administryRes.data);
+
+          const { portfolioId, ...res } = generalComponentData;
+
+          let Administryobj = {
+            ...res,
+            visibleInCommerce: true,
+            customerId: 0,
+            lubricant: true,
+            customerSegment: generalComponentData.customerSegment.value
+              ? generalComponentData.customerSegment.value
+              : "EMPTY",
+            // machineType: generalComponentData.machineType
+            //     ? generalComponentData.machineType
+            //     : "EMPTY",
+            status: generalComponentData.status
+              ? generalComponentData.status
+              : "EMPTY",
+            strategyTask: generalComponentData.strategyTask
+              ? generalComponentData.strategyTask
+              : "EMPTY",
+            taskType: generalComponentData.taskType
+              ? generalComponentData.taskType
+              : "EMPTY",
+            usageCategory: generalComponentData.usageCategory
+              ? generalComponentData.usageCategory
+              : "EMPTY",
+            productHierarchy: generalComponentData.productHierarchy
+              ? generalComponentData.productHierarchy
+              : "EMPTY",
+            geographic: generalComponentData.geographic
+              ? generalComponentData.geographic
+              : "EMPTY",
+            availability: generalComponentData.availability
+              ? generalComponentData.availability
+              : "EMPTY",
+            responseTime: generalComponentData.responseTime
+              ? generalComponentData.responseTime
+              : "EMPTY",
+            type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+            application: generalComponentData.application
+              ? generalComponentData.application
+              : "EMPTY",
+            contractOrSupport: generalComponentData.contractOrSupport
+              ? generalComponentData.contractOrSupport
+              : "EMPTY",
+            // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+            //     ? generalComponentData.lifeStageOfMachine
+            //     : "EMPTY",
+            supportLevel: generalComponentData.supportLevel
+              ? generalComponentData.supportLevel
+              : "EMPTY",
+            customItems: [],
+            items: [],
+            customCoverages: [],
+            customerGroup: generalComponentData.customerGroup
+              ? generalComponentData.customerGroup
+              : "EMPTY",
+            searchTerm: "EMPTY",
+            supportLevel: "EMPTY",
+            // portfolioPrice: {},
+            // additionalPrice: {},
+            // escalationPrice: {},
+
+            usageCategory: categoryUsageKeyValue1.value,
+            taskType: stratgyTaskTypeKeyValue.value,
+            strategyTask: stratgyTaskUsageKeyValue.value,
+            responseTime: stratgyResponseTimeKeyValue.value,
+            productHierarchy: stratgyHierarchyKeyValue.value,
+            geographic: stratgyGeographicKeyValue.value,
+            numberOfEvents: 0,
+            rating: "",
+            startUsage: "",
+            endUsage: "",
+            unit: "HOURS",
+            additionals: "",
+            preparedBy: administrative.preparedBy,
+            approvedBy: administrative.approvedBy,
+            preparedOn: administrative.preparedOn,
+            revisedBy: administrative.revisedBy,
+            revisedOn: administrative.revisedOn,
+            salesOffice: administrative.salesOffice,
+            offerValidity: administrative.offerValidity,
+          };
+
+          const administryRes = await updatePortfolio(
+            generalComponentData.portfolioId,
+            Administryobj
+          );
+          if (administryRes.status === 200) {
+            toast("👏 Portfolio updated", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            // setValue("administrative");
+            setValue("price");
+            setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: true });
+            console.log("administryRes updating", administryRes.data);
+          } else {
+            throw `${administryRes.status}:error in update portfolio`;
+          };
+
+
+          console.log("administrative", administrative);
+          // setValue("price");
         } else {
-          throw `${administryRes.status}:error in update portfolio`;
-        };
+          let reqObj = {
+            portfolioId: portfolioId,
+            // type: prefilgabelGeneral,
+            type: "MACHINE",
+            name: generalComponentData.name,
+            description: generalComponentData.description,
+            customerSegment: generalComponentData.customerSegment?.value,
+            externalReference: generalComponentData.externalReference,
 
+            validFrom: validityData.fromDate.toISOString().substring(0, 10),
+            validTo: validityData.fromDate.toISOString().substring(0, 10),
 
-        console.log("administrative", administrative);
-        // setValue("price");
+            usageCategory: categoryUsageKeyValue1.value,
+            taskType: stratgyTaskTypeKeyValue.value,
+            strategyTask: stratgyTaskUsageKeyValue.value,
+            responseTime: stratgyResponseTimeKeyValue.value,
+            productHierarchy: stratgyHierarchyKeyValue.value,
+            geographic: stratgyGeographicKeyValue.value,
+
+            preparedBy: administrative.preparedBy,
+            approvedBy: administrative.approvedBy,
+            preparedOn: administrative.preparedOn,
+            revisedBy: administrative.revisedBy,
+            revisedOn: administrative.revisedOn,
+            offerValidity: administrative.offerValidity,
+            salesOffice: administrative.salesOffice,
+
+            machineType: generalComponentData?.machineType
+              ? generalComponentData?.machineType
+              : "EMPTY",
+            searchTerm: "EMPTY",
+            lubricant: true,
+            customerId: 0,
+            customerGroup: generalComponentData?.customerGroup
+              ? generalComponentData?.customerGroup
+              : "EMPTY",
+            status: generalComponentData?.status
+              ? generalComponentData?.status
+              : "EMPTY",
+            availability: generalComponentData?.availability
+              ? generalComponentData?.availability
+              : "EMPTY",
+            application: generalComponentData?.application
+              ? generalComponentData?.application
+              : "EMPTY",
+            contractOrSupport: generalComponentData?.contractOrSupport
+              ? generalComponentData?.contractOrSupport
+              : "EMPTY",
+            lifeStageOfMachine: "NEW_BREAKIN",
+            supportLevel: "PREMIUM",
+            numberOfEvents: 0,
+            itemRelations: [],
+            rating: "string",
+            startUsage: 0,
+            endUsage: 0,
+            unit: "HOURS",
+            additionals: "string",
+            portfolioPrice: null,
+            additionalPrice: null,
+            escalationPrice: null,
+            saveState: false,
+            userId: null,
+            visibleInCommerce: true,
+            template: true,
+          }
+
+          const exitsPortfolioUpdate = await updatePortfolio(
+            portfolioId,
+            reqObj
+          );
+          if (exitsPortfolioUpdate.status === 200) {
+            toast("👏 Portfolio updated", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            // setValue("administrative");
+            setValue("price");
+            setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: true });
+          } else {
+            throw `${exitsPortfolioUpdate.status}:error in update portfolio`;
+          };
+        }
+
       } else if (e.target.id == "price") {
-        priceAgreementOption
-          ? setValue("priceAgreement")
-          : setValue("coverage");
+
+        if (state && state.type === "new") {
+
+          let priceEscalation = {
+            priceMethod: priceMethodKeyValue1.value,
+            priceHeadType: priceEscalationHeadKeyValue1.value,
+            escalationPercentage: parseInt(escalationPriceValue),
+            validFrom: validityData.fromDate.toISOString().substring(0, 10),
+            validTo: validityData.toDate.toISOString().substring(0, 10),
+            userId: "string"
+          }
+
+          let priceAdditional = {
+            priceMethod: priceMethodKeyValue1.value,
+            priceHeadType: priceAdditionalHeadKeyValue1.value,
+            additionalPercentage: parseInt(additionalPriceValue),
+            validFrom: validityData.fromDate.toISOString().substring(0, 10),
+            validTo: validityData.toDate.toISOString().substring(0, 10),
+            userId: "string"
+          }
+
+          let portfolioPriceCreate = {
+            priceMethod: priceMethodKeyValue1.value,
+            priceType: priceTypeKeyValue1.value,
+            priceList: priceListKeyValue1.value,
+            priceDate: priceDetails.priceDate,
+          }
+
+          console.log("portfolioPriceCreate --- : ", portfolioPriceCreate)
+
+          const escalationPrice = await escalationPriceCreation(priceEscalation);
+
+
+          const additionalPrice = await additionalPriceCreation(priceAdditional);
+
+          const portfolioPriceAPIData = await portfolioPriceCreation(portfolioPriceCreate);
+
+          setPortfolioEscalationPriceDataId({
+            escalationPriceId: escalationPrice.data.escalationPriceId,
+          })
+          setPortfolioAdditionalPriceDataId({
+            additionalPriceId: additionalPrice.data.additionalPriceId,
+          })
+          setPortfolioPriceDataId({
+            portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
+          })
+          const { portfolioId, ...res } = generalComponentData;
+
+          let priceobjData = {
+            ...res,
+            visibleInCommerce: true,
+            customerId: 0,
+            lubricant: true,
+            customerSegment: generalComponentData.customerSegment.value
+              ? generalComponentData.customerSegment.value
+              : "EMPTY",
+            // machineType: generalComponentData.machineType
+            //     ? generalComponentData.machineType
+            //     : "EMPTY",
+            status: generalComponentData.status
+              ? generalComponentData.status
+              : "EMPTY",
+            strategyTask: generalComponentData.strategyTask
+              ? generalComponentData.strategyTask
+              : "EMPTY",
+            taskType: generalComponentData.taskType
+              ? generalComponentData.taskType
+              : "EMPTY",
+            usageCategory: generalComponentData.usageCategory
+              ? generalComponentData.usageCategory
+              : "EMPTY",
+            productHierarchy: generalComponentData.productHierarchy
+              ? generalComponentData.productHierarchy
+              : "EMPTY",
+            geographic: generalComponentData.geographic
+              ? generalComponentData.geographic
+              : "EMPTY",
+            availability: generalComponentData.availability
+              ? generalComponentData.availability
+              : "EMPTY",
+            responseTime: generalComponentData.responseTime
+              ? generalComponentData.responseTime
+              : "EMPTY",
+            type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+            application: generalComponentData.application
+              ? generalComponentData.application
+              : "EMPTY",
+            contractOrSupport: generalComponentData.contractOrSupport
+              ? generalComponentData.contractOrSupport
+              : "EMPTY",
+            // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+            //     ? generalComponentData.lifeStageOfMachine
+            //     : "EMPTY",
+            supportLevel: generalComponentData.supportLevel
+              ? generalComponentData.supportLevel
+              : "EMPTY",
+            customItems: [],
+            items: [],
+            customCoverages: [],
+            customerGroup: generalComponentData.customerGroup
+              ? generalComponentData.customerGroup
+              : "EMPTY",
+            searchTerm: "EMPTY",
+            supportLevel: "EMPTY",
+            portfolioPrice: {
+              portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
+            },
+            additionalPrice: {
+              additionalPriceId: additionalPrice.data.additionalPriceId,
+            },
+            escalationPrice: {
+              escalationPriceId: escalationPrice.data.escalationPriceId,
+            },
+
+            usageCategory: categoryUsageKeyValue1.value,
+            taskType: stratgyTaskTypeKeyValue.value,
+            strategyTask: stratgyTaskUsageKeyValue.value,
+            responseTime: stratgyResponseTimeKeyValue.value,
+            productHierarchy: stratgyHierarchyKeyValue.value,
+            geographic: stratgyGeographicKeyValue.value,
+            numberOfEvents: 0,
+            rating: "",
+            startUsage: "",
+            endUsage: "",
+            unit: "HOURS",
+            additionals: "",
+            preparedBy: administrative.preparedBy,
+            approvedBy: administrative.approvedBy,
+            preparedOn: administrative.preparedOn,
+            revisedBy: administrative.revisedBy,
+            revisedOn: administrative.revisedOn,
+            salesOffice: administrative.salesOffice,
+            offerValidity: administrative.offerValidity,
+          };
+
+          const priceObjRes = await updatePortfolio(
+            generalComponentData.portfolioId,
+            priceobjData
+          );
+          if (priceObjRes.status === 200) {
+            toast("👏 Portfolio updated", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            // setValue("administrative");
+            priceAgreementOption
+              ? setValue("priceAgreement")
+              : setValue("coverage");
+            // setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: true });
+            // console.log("administryRes updating", administryRes.data);
+          } else {
+            throw `${priceObjRes.status}:error in update portfolio`;
+          };
+
+
+          console.log("administrative", administrative);
+          // setValue("price");
+        } else {
+          let reqObj = {
+            portfolioId: portfolioId,
+            // type: prefilgabelGeneral,
+            type: "MACHINE",
+            name: generalComponentData.name,
+            description: generalComponentData.description,
+            customerSegment: generalComponentData.customerSegment?.value,
+            externalReference: generalComponentData.externalReference,
+
+            validFrom: validityData.fromDate.toISOString().substring(0, 10),
+            validTo: validityData.fromDate.toISOString().substring(0, 10),
+
+            usageCategory: categoryUsageKeyValue1.value,
+            taskType: stratgyTaskTypeKeyValue.value,
+            strategyTask: stratgyTaskUsageKeyValue.value,
+            responseTime: stratgyResponseTimeKeyValue.value,
+            productHierarchy: stratgyHierarchyKeyValue.value,
+            geographic: stratgyGeographicKeyValue.value,
+
+            preparedBy: administrative.preparedBy,
+            approvedBy: administrative.approvedBy,
+            preparedOn: administrative.preparedOn,
+            revisedBy: administrative.revisedBy,
+            revisedOn: administrative.revisedOn,
+            offerValidity: administrative.offerValidity,
+            salesOffice: administrative.salesOffice,
+
+            machineType: generalComponentData?.machineType
+              ? generalComponentData?.machineType
+              : "EMPTY",
+            searchTerm: "EMPTY",
+            lubricant: true,
+            customerId: 0,
+            customerGroup: generalComponentData?.customerGroup
+              ? generalComponentData?.customerGroup
+              : "EMPTY",
+            status: generalComponentData?.status
+              ? generalComponentData?.status
+              : "EMPTY",
+            availability: generalComponentData?.availability
+              ? generalComponentData?.availability
+              : "EMPTY",
+            application: generalComponentData?.application
+              ? generalComponentData?.application
+              : "EMPTY",
+            contractOrSupport: generalComponentData?.contractOrSupport
+              ? generalComponentData?.contractOrSupport
+              : "EMPTY",
+            lifeStageOfMachine: "NEW_BREAKIN",
+            supportLevel: "PREMIUM",
+            numberOfEvents: 0,
+            itemRelations: [],
+            rating: "string",
+            startUsage: 0,
+            endUsage: 0,
+            unit: "HOURS",
+            additionals: "string",
+            portfolioPrice: null,
+            additionalPrice: null,
+            escalationPrice: null,
+            saveState: false,
+            userId: null,
+            visibleInCommerce: true,
+            template: true,
+          }
+
+          const exitsPortfolioUpdate = await updatePortfolio(
+            portfolioId,
+            reqObj
+          );
+          if (exitsPortfolioUpdate.status === 200) {
+            toast("👏 Portfolio updated", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            // setValue("administrative");
+            priceAgreementOption
+              ? setValue("priceAgreement")
+              : setValue("coverage");
+            // setValue("price");
+            // setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: true });
+          } else {
+            throw `${exitsPortfolioUpdate.status}:error in update portfolio`;
+          };
+        }
+
+
+        // if (portfolioPriceAPIData.status === 200) {
+        //   toast("👏 Escalation Price Created", {
+        //     position: "top-right",
+        //     autoClose: 3000,
+        //     hideProgressBar: false,
+        //     closeOnClick: true,
+        //     pauseOnHover: true,
+        //     draggable: true,
+        //     progress: undefined,
+        //   });
+        // }
+
+
+        // escalationPriceCreation
+
+        // priceAgreementOption
+        //   ? setValue("priceAgreement")
+        //   : setValue("coverage");
       } else if (e.target.id == "priceAgreement") {
         setValue("coverage");
       } else if (e.target.id == "coverage") {
@@ -2236,9 +2717,9 @@ export function CreatePortfolio(props) {
           // portfolioPrice: {},
           // additionalPrice: {},
           // escalationPrice: {},
-          portfolioPrice: { "portfolioPriceId": 92 },
-          additionalPrice: { "additionalPriceId": 1 },
-          escalationPrice: { "escalationPriceId": 1 },
+          portfolioPrice: portfolioPriceDataId,
+          additionalPrice: portfolioAdditionalPriceDataId,
+          escalationPrice: portfolioEscalationPriceDataId,
           items: portfolioItems,
           coverages: cvgIds,
           usageCategory: categoryUsageKeyValue1.value,
@@ -2376,6 +2857,8 @@ export function CreatePortfolio(props) {
       offerValidity: result.offerValidity,
     });
     setSelectedMasterData(result.coverages);
+
+    setBundleItems(result.items)
 
   }
   console.log("generalComponentData ---- : ", generalComponentData)
@@ -2640,13 +3123,62 @@ export function CreatePortfolio(props) {
       .catch((err) => {
         alert(err);
       });
-    getPortfolioCommonConfig("price-method")
+    // getPortfolioCommonConfig("price-method")
+    //   .then((res) => {
+    //     const options = res.map((d) => ({
+    //       value: d.key,
+    //       label: d.value,
+    //     }));
+    //     setPriceMethodKeyValue(options);
+    //   })
+    //   .catch((err) => {
+    //     alert(err);
+    //   });
+
+    getSolutionPriceCommonConfig("price-method")
       .then((res) => {
         const options = res.map((d) => ({
           value: d.key,
           label: d.value,
         }));
         setPriceMethodKeyValue(options);
+      })
+      .catch((err) => {
+        alert(err);
+      });
+
+    getSolutionPriceCommonConfig("price-type")
+      .then((res) => {
+        console.log("res ------", res)
+        const options = res.map((d) => ({
+          value: d.key,
+          label: d.value,
+        }));
+        setPriceTypeKeyValue(options);
+      })
+      .catch((err) => {
+        alert(err);
+      });
+
+    getSolutionPriceCommonConfig("price-list")
+      .then((res) => {
+        const options = res.map((d) => ({
+          value: d.key,
+          label: d.value,
+        }));
+        setPriceListKeyValue(options);
+      })
+      .catch((err) => {
+        alert(err);
+      });
+
+    getSolutionPriceCommonConfig("price-head-type")
+      .then((res) => {
+        const options = res.map((d) => ({
+          value: d.key,
+          label: d.value,
+        }));
+        setPriceHeadTypeKeyValue(options);
       })
       .catch((err) => {
         alert(err);
@@ -3148,7 +3680,7 @@ export function CreatePortfolio(props) {
   };
 
   const makeHeaderEditable = () => {
-    console.log("Data is : ", "helloooooo")
+    // console.log("Data is : ", "helloooooo")
     if (value === "general" && viewOnlyTab.generalViewOnly)
       setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: false });
     else if (value === "strategy" && viewOnlyTab.strategyViewOnly) {
@@ -5379,6 +5911,8 @@ export function CreatePortfolio(props) {
               className="form-control rounded-top-left-0 rounded-bottom-left-0"
               placeholder="20%"
               id="priceEscalationInput"
+            // value={escalationPriceValue}
+            // onchange={(e) = setEscalationPriceValue(e.target.value)}
             // defaultValue={data.itemBodyModel.priceEscalation}
             // value={expandedPriceCalculator.priceEscalationInput}
             // onChange={handleExpandePriceChange}
@@ -6794,7 +7328,7 @@ export function CreatePortfolio(props) {
                                 name="preparedBy"
                                 value={administrative.preparedBy}
                                 onChange={handleAdministrativreChange}
-                                placeholder="Required"
+                                placeholder="Required (ex-abc@gmail.com)"
                               />
                             </div>
                           </div>
@@ -6809,7 +7343,7 @@ export function CreatePortfolio(props) {
                               <input
                                 type="text"
                                 className="form-control text-primary border-radius-10"
-                                placeholder="Optional"
+                                placeholder="Optional (ex-abc@gmail.com)"
                                 name="approvedBy"
                                 value={administrative.approvedBy}
                                 onChange={handleAdministrativreChange}
@@ -6867,7 +7401,7 @@ export function CreatePortfolio(props) {
                               <input
                                 type="text"
                                 className="form-control border-radius-10 text-primary"
-                                placeholder="Optional"
+                                placeholder="Optional (ex-abc@gmail.com)"
                                 name="revisedBy"
                                 value={administrative.revisedBy}
                                 onChange={handleAdministrativreChange}
@@ -7053,10 +7587,10 @@ export function CreatePortfolio(props) {
                             PRICE LIST
                           </label>
                           <Select
-                            defaultValue={selectedOption}
-                            onChange={setSelectedOption}
+                            // defaultValue={priceListKeyValue}
+                            onChange={(e) => setPriceListKeyValue1(e)}
                             className="text-primary"
-                            options={options}
+                            options={priceListKeyValue}
                             placeholder="placeholder (Optional)"
                           />
                         </div>
@@ -7070,9 +7604,9 @@ export function CreatePortfolio(props) {
                             PRICE METHOD
                           </label>
                           <Select
-                            defaultValue={selectedOption}
+                            // defaultValue={selectedOption}
                             className="text-primary"
-                            onChange={setSelectedOption}
+                            onChange={(e) => setPriceMethodKeyValue1(e)}
                             options={priceMethodKeyValue}
                             placeholder="required"
                           />
@@ -7086,18 +7620,38 @@ export function CreatePortfolio(props) {
                           >
                             PRICE DATE
                           </label>
-                          <Select
+                          <div className="d-flex align-items-center date-box w-100">
+                            <div className="form-group w-100">
+                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <DatePicker
+                                  variant="inline"
+                                  format="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  label=""
+                                  name="preparedOn"
+                                  value={setPriceDetails.priceDate}
+                                  onChange={(e) =>
+                                    setPriceDetails({
+                                      ...priceDetails,
+                                      priceDate: e,
+                                    })
+                                  }
+                                />
+                              </MuiPickersUtilsProvider>
+                            </div>
+                          </div>
+                          {/* <Select
                             defaultValue={selectedOption}
                             onChange={setSelectedOption}
                             className="text-primary"
                             options={options}
                             placeholder="placeholder (Optional)"
-                          />
+                          /> */}
                         </div>
                       </div>
                     </div>
                     <hr />
-                    <h6>PRICES</h6>
+                    {/* <h6>PRICES</h6> */}
                     <div className="row input-fields">
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
@@ -7108,10 +7662,10 @@ export function CreatePortfolio(props) {
                             PRICE TYPE
                           </label>
                           <Select
-                            defaultValue={selectedOption}
+                            // defaultValue={priceTypeKeyValue}
                             className="text-primary"
-                            onChange={setSelectedOption}
-                            options={options}
+                            onChange={(e) => setPriceTypeKeyValue1(e)}
+                            options={priceTypeKeyValue}
                             placeholder="placeholder (Optional)"
                           />
                         </div>
@@ -7150,11 +7704,11 @@ export function CreatePortfolio(props) {
                           /> */}
                             <div className="">
                               <Select
-                                onChange={setSelectedOption}
+                                onChange={(e) => setPriceAdditionalHeadKeyValue1(e)}
                                 className="text-primary"
                                 isClearable={true}
                                 // value={options}
-                                options={additionaloptions}
+                                options={priceHeadTypeKeyValue}
                                 placeholder="Select"
                               />
                             </div>
@@ -7164,6 +7718,8 @@ export function CreatePortfolio(props) {
                               id="exampleInputEmail1"
                               aria-describedby="emailHelp"
                               placeholder="optional"
+                              value={additionalPriceValue}
+                              onChange={(e) => setAdditionalPriceValue(e.target.value)}
                             />
                           </div>
                         </div>
@@ -7179,9 +7735,9 @@ export function CreatePortfolio(props) {
                           <div className=" d-flex align-items-center form-control-date">
                             <Select
                               className="select-input text-primary"
-                              defaultValue={selectedOption}
-                              onChange={setSelectedOption}
-                              options={additionaloptions}
+                              // defaultValue={selectedOption}
+                              onChange={(e) => setPriceEscalationKeyValue1(e)}
+                              options={priceHeadTypeKeyValue}
                               placeholder="Select "
                             />
                             <input
@@ -7190,6 +7746,8 @@ export function CreatePortfolio(props) {
                               id="exampleInputEmail1"
                               aria-describedby="emailHelp"
                               placeholder="optional"
+                              value={escalationPriceValue}
+                              onChange={(e) => setEscalationPriceValue(e.target.value)}
                             />
                           </div>
                         </div>

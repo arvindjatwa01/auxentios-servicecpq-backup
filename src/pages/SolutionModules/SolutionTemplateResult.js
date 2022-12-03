@@ -113,6 +113,8 @@ import {
     selectUpdateList,
     selectUpdateTaskList,
     taskActions,
+    selectSolutionTaskList,
+    selectSolutionLevelList,
 } from "../PortfolioAndBundle/customerSegment/strategySlice";
 
 import QuerySearchComp from '../PortfolioAndBundle/QuerySearchComp';
@@ -180,6 +182,9 @@ export function SolutionTemplateResult(props) {
     const [headerTypeKeyValue, setHeaderTypeKeyValue] = useState([]);
     const [responseTimeTaskKeyValue, setResponseTimeTaskKeyValue] = useState([]);
     const [taskTypeKeyValue, setTaskTypeKeyValue] = useState([]);
+
+    const [solutionTypeListKeyValue, setSolutionTypeListKeyValue] = useState([]);
+    const [solutionLevelListKeyValue, setSolutionLevelListKeyValue] = useState([]);
 
     const [bundleItemTaskTypeKeyValue, setBundleItemTaskTypeKeyValue] = useState(
         []
@@ -1044,6 +1049,10 @@ export function SolutionTemplateResult(props) {
                     status: generalComponentData.status
                         ? generalComponentData.status
                         : "EMPTY",
+                    solutionType: solutionTypeListKeyValue.value ?
+                        solutionTypeListKeyValue.value : "EMPTY",
+                    solutionLevel: solutionLevelListKeyValue.value ?
+                        solutionLevelListKeyValue.value : "EMPTY",
 
                     items: [],
                     customCoverages: [],
@@ -1184,6 +1193,8 @@ export function SolutionTemplateResult(props) {
                     geographic: stratgyGeographicKeyValue.value,
                     machineType: machineTypeKeyValue.value,
                     lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                    solutionType: solutionTypeListKeyValue.value,
+                    solutionLevel: solutionLevelListKeyValue.value,
                 });
 
                 const { portfolioId, ...res } = generalComponentData;
@@ -1245,6 +1256,10 @@ export function SolutionTemplateResult(props) {
                         : "EMPTY",
                     searchTerm: "EMPTY",
                     supportLevel: "EMPTY",
+                    solutionType: solutionTypeListKeyValue.value ?
+                        solutionTypeListKeyValue.value : "EMPTY",
+                    solutionLevel: solutionLevelListKeyValue.value ?
+                        solutionLevelListKeyValue.value : "EMPTY",
                     // portfolioPrice: {},
                     // additionalPrice: {},
                     // escalationPrice: {},
@@ -1382,6 +1397,10 @@ export function SolutionTemplateResult(props) {
                     contractOrSupport: generalComponentData.contractOrSupport
                         ? generalComponentData.contractOrSupport
                         : "EMPTY",
+                    solutionType: solutionTypeListKeyValue.value ?
+                        solutionTypeListKeyValue.value : "EMPTY",
+                    solutionLevel: solutionLevelListKeyValue.value ?
+                        solutionLevelListKeyValue.value : "EMPTY",
                     // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
                     //     ? generalComponentData.lifeStageOfMachine
                     //     : "EMPTY",
@@ -1502,6 +1521,10 @@ export function SolutionTemplateResult(props) {
                     taskType: generalComponentData.taskType
                         ? generalComponentData.taskType
                         : "EMPTY",
+                    solutionType: solutionTypeListKeyValue.value ?
+                        solutionTypeListKeyValue.value : "EMPTY",
+                    solutionLevel: solutionLevelListKeyValue.value ?
+                        solutionLevelListKeyValue.value : "EMPTY",
                     usageCategory: generalComponentData.usageCategory
                         ? generalComponentData.usageCategory
                         : "EMPTY",
@@ -2126,6 +2149,15 @@ export function SolutionTemplateResult(props) {
         selectStrategyTaskOption(selectUpdateList)
     );
 
+    const solutionTypeList = useAppSelector(
+        selectStrategyTaskOption(selectSolutionTaskList)
+    );
+
+
+    const solutionLevelList = useAppSelector(
+        selectStrategyTaskOption(selectSolutionLevelList)
+    );
+
     const updatedTaskList = useAppSelector(
         selectStrategyTaskOption(selectUpdateTaskList)
     );
@@ -2338,6 +2370,14 @@ export function SolutionTemplateResult(props) {
         setBundleItems(temp);
         setLoadingItem(false);
         setTabs("1");
+    };
+
+    const HandleSolutionType = (e) => {
+        setSolutionLevelListKeyValue([]);
+        // setSolutionLevelKeyValue([]);
+        addPortFolioItem.taskType = "";
+        setSolutionTypeListKeyValue(e);
+        dispatch(taskActions.updateSolution(e.value));
     };
 
     const columns = [
@@ -3681,7 +3721,7 @@ export function SolutionTemplateResult(props) {
                                 <TabPanel value="1">
                                     {!viewOnlyTab.generalViewOnly ? (
                                         <>
-                                            <div className="row mt-4">
+                                            <div className="row mt-4 input-fields">
                                                 {/* <div className="col-md-3 col-sm-3">
                                                     <div className="form-group">
                                                         <label className="text-light-dark font-size-12 font-weight-500">
@@ -3721,7 +3761,7 @@ export function SolutionTemplateResult(props) {
                                                         </label>
                                                         <input
                                                             type="text"
-                                                            className="form-control border-radius-10"
+                                                            className="form-control border-radius-10 text-primary"
                                                             name="name"
                                                             placeholder="Name"
                                                             value={generalComponentData.name}
@@ -3736,7 +3776,7 @@ export function SolutionTemplateResult(props) {
                                                         </label>
                                                         <input
                                                             type="text"
-                                                            className="form-control border-radius-10"
+                                                            className="form-control border-radius-10 text-primary"
                                                             name="description"
                                                             placeholder="Description"
                                                             value={generalComponentData.description}
@@ -3751,7 +3791,7 @@ export function SolutionTemplateResult(props) {
                                                         </label>
                                                         <input
                                                             type="text"
-                                                            className="form-control border-radius-10"
+                                                            className="form-control border-radius-10 text-primary"
                                                             name="externalReference"
                                                             placeholder="Reference"
                                                             value={generalComponentData.externalReference}
@@ -3812,7 +3852,7 @@ export function SolutionTemplateResult(props) {
                                                 </button>
                                             </div>
                                         </>
-                                    ) : (<div className="row mt-4">
+                                    ) : (<div className="row mt-4 ">
                                         {/* <div className="col-md-4 col-sm-3">
                                             <div className="form-group">
                                                 <p className="font-size-12 font-weight-500 mb-2">
@@ -3943,9 +3983,9 @@ export function SolutionTemplateResult(props) {
                                 </TabPanel>
                                 <TabPanel value="2">
 
-                                    <div className="row mt-4">
+                                    <div className="row mt-4 input-fields">
                                         <div className="col-md-12">
-                                            <div className="row">
+                                            <div className="row input-fields">
                                                 <div className="col-md-6 col-sm-6">
                                                     <div className="d-flex align-items-center date-box">
                                                         <label
@@ -3959,7 +3999,7 @@ export function SolutionTemplateResult(props) {
                                                                 <DatePicker
                                                                     variant="inline"
                                                                     format="dd/MM/yyyy"
-                                                                    className="form-controldate border-radius-10"
+                                                                    className="form-controldate border-radius-10 text-primary"
                                                                     label=""
                                                                     value={validityData.fromDate}
                                                                     onChange={(e) =>
@@ -3982,7 +4022,7 @@ export function SolutionTemplateResult(props) {
                                                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                                                 <DatePicker
                                                                     variant="inline"
-                                                                    className="form-controldate border-radius-10"
+                                                                    className="form-controldate border-radius-10 text-primary"
                                                                     label=""
                                                                     format="dd/MM/yyyy"
                                                                     value={validityData.toDate}
@@ -4008,7 +4048,7 @@ export function SolutionTemplateResult(props) {
                                                 </div>
                                                 <div className="col-6"></div>
                                             </div>
-                                            <div className="row">
+                                            <div className="row input-fields">
                                                 <div className="col-md-6 col-sm-6">
                                                     <div className="d-flex align-items-center">
                                                         <div className="d-flex align-items-center date-box w-100">
@@ -4021,7 +4061,7 @@ export function SolutionTemplateResult(props) {
                                                             <div className="form-group w-100">
                                                                 <div className=" d-flex form-control-date ">
                                                                     <Select
-                                                                        className="select-input"
+                                                                        className="select-input text-primary"
                                                                         value={validityData.from}
                                                                         onChange={(e) =>
                                                                             setValidityData({
@@ -4035,7 +4075,7 @@ export function SolutionTemplateResult(props) {
                                                                     <div>
                                                                         <input
                                                                             type="text"
-                                                                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                                            className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                                                                             id="fromInput"
                                                                             aria-describedby="emailHelp"
                                                                             placeholder="From"
@@ -4061,7 +4101,7 @@ export function SolutionTemplateResult(props) {
                                                             <div className="form-group w-100">
                                                                 <div className=" d-flex form-control-date">
                                                                     <Select
-                                                                        className="select-input"
+                                                                        className="select-input text-primary"
                                                                         value={validityData.from}
                                                                         defaultValue={selectedOption}
                                                                         onChange={(e) =>
@@ -4077,7 +4117,7 @@ export function SolutionTemplateResult(props) {
                                                                     <div>
                                                                         <input
                                                                             type="email"
-                                                                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                                            className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                                                                             id="exampleInputEmail1"
                                                                             aria-describedby="emailHelp"
                                                                             placeholder=""
@@ -4130,7 +4170,7 @@ export function SolutionTemplateResult(props) {
                                     </div>
                                 </TabPanel>
                                 <TabPanel value="3">
-                                    {!viewOnlyTab.strategyViewOnly ? (<><div className="row">
+                                    {!viewOnlyTab.strategyViewOnly ? (<><div className="row input-fields">
                                         {/* <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -4207,6 +4247,7 @@ export function SolutionTemplateResult(props) {
                                                     options={rTimeList}
                                                     value={stratgyResponseTimeKeyValue}
                                                     onChange={(e) => setStratgyResponseTimeKeyValue(e)}
+                                                    className="text-primary"
                                                 />
                                             </div>
                                         </div>
@@ -4222,6 +4263,7 @@ export function SolutionTemplateResult(props) {
                                                     options={productList}
                                                     value={stratgyHierarchyKeyValue}
                                                     onChange={(e) => setStratgyHierarchyKeyValue(e)}
+                                                    className="text-primary"
                                                 />
                                                 {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder" /> */}
                                             </div>
@@ -4239,6 +4281,7 @@ export function SolutionTemplateResult(props) {
                                                     value={stratgyGeographicKeyValue}
                                                     onChange={(e) => setStratgyGeographicKeyValue(e)}
                                                     placeholder="Geographic"
+                                                    className="text-primary"
                                                 />
                                             </div>
                                         </div>
@@ -4251,9 +4294,11 @@ export function SolutionTemplateResult(props) {
                                                     SOLUTION TYPE
                                                 </label>
                                                 <Select
-                                                    options={options}
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
+                                                    options={solutionTypeList}
+                                                    value={solutionTypeListKeyValue}
+                                                    // onChange={(e) => setSelectedOption(e)}
+                                                    onChange={(e) => HandleSolutionType(e)}
+                                                    className="text-primary"
                                                 // isLoading={
                                                 //     lifeStageOfMachineKeyValueList.length > 0 ? false : true
                                                 // }
@@ -4269,9 +4314,11 @@ export function SolutionTemplateResult(props) {
                                                     SOLUTION LEVEL
                                                 </label>
                                                 <Select
-                                                    options={options}
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
+                                                    options={solutionLevelList}
+                                                    className="text-primary"
+                                                    // defaultValue={selectedOption}
+                                                    value={solutionLevelListKeyValue}
+                                                    onChange={(e) => setSolutionLevelListKeyValue(e)}
                                                 />
                                             </div>
                                         </div>
@@ -4498,7 +4545,7 @@ export function SolutionTemplateResult(props) {
                                 <TabPanel value={"administrative"}>
                                     {!viewOnlyTab.administryViewOnly ?
                                         <>
-                                            <div className="row">
+                                            <div className="row input-fields">
                                                 <div className="col-md-4 col-sm-4">
                                                     <div className="form-group">
                                                         <label
@@ -4509,9 +4556,9 @@ export function SolutionTemplateResult(props) {
                                                         </label>
                                                         <input
                                                             type="text"
-                                                            className="form-control border-radius-10"
+                                                            className="form-control border-radius-10 text-primary"
                                                             name="preparedBy"
-                                                            placeholder="Required"
+                                                            placeholder="Required (ex-abc@gmail.com)"
                                                             value={administrative.preparedBy}
                                                             onChange={handleAdministrativreChange}
                                                         />
@@ -4527,8 +4574,8 @@ export function SolutionTemplateResult(props) {
                                                         </label>
                                                         <input
                                                             type="text"
-                                                            className="form-control border-radius-10"
-                                                            placeholder="Optional"
+                                                            className="form-control border-radius-10 text-primary"
+                                                            placeholder="Optional (ex-abc@gmail.com)"
                                                             name="approvedBy"
                                                             value={administrative.approvedBy}
                                                             onChange={handleAdministrativreChange}
@@ -4566,7 +4613,7 @@ export function SolutionTemplateResult(props) {
                                                                     <DatePicker
                                                                         variant="inline"
                                                                         format="dd/MM/yyyy"
-                                                                        className="form-controldate border-radius-10"
+                                                                        className="form-controldate border-radius-10 text-primary"
                                                                         label=""
                                                                         name="preparedOn"
                                                                         value={administrative.preparedOn}
@@ -4583,7 +4630,7 @@ export function SolutionTemplateResult(props) {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="row">
+                                            <div className="row input-fields">
                                                 <div className="col-md-4 col-sm-4">
                                                     <div className="form-group">
                                                         <label
@@ -4594,8 +4641,8 @@ export function SolutionTemplateResult(props) {
                                                         </label>
                                                         <input
                                                             type="text"
-                                                            className="form-control border-radius-10"
-                                                            placeholder="Optional"
+                                                            className="form-control border-radius-10 text-primary"
+                                                            placeholder="Optional (ex-abc@gmail.com)"
                                                             name="revisedBy"
                                                             value={administrative.revisedBy}
                                                             onChange={handleAdministrativreChange}
@@ -4631,7 +4678,7 @@ export function SolutionTemplateResult(props) {
                                                                     <DatePicker
                                                                         variant="inline"
                                                                         format="dd/MM/yyyy"
-                                                                        className="form-controldate border-radius-10"
+                                                                        className="form-controldate border-radius-10 text-primary"
                                                                         label=""
                                                                         name="revisedOn"
                                                                         value={administrative.revisedOn}
@@ -4657,7 +4704,7 @@ export function SolutionTemplateResult(props) {
                                                         </label>
                                                         <input
                                                             type="text"
-                                                            className="form-control border-radius-10"
+                                                            className="form-control border-radius-10 text-primary"
                                                             name="salesOffice"
                                                             value={administrative.salesOffice}
                                                             onChange={handleAdministrativreChange}
@@ -4665,7 +4712,7 @@ export function SolutionTemplateResult(props) {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="row">
+                                            <div className="row input-fields">
                                                 <div className="col-md-4 col-sm-4">
                                                     <div className="form-group">
                                                         <label
@@ -4676,7 +4723,7 @@ export function SolutionTemplateResult(props) {
                                                         </label>
                                                         <input
                                                             type="text"
-                                                            className="form-control border-radius-10"
+                                                            className="form-control border-radius-10 text-primary"
                                                             placeholder="Optional"
                                                             name="offerValidity"
                                                             value={administrative.offerValidity}
@@ -4774,7 +4821,7 @@ export function SolutionTemplateResult(props) {
 
                                 </TabPanel>
                                 <TabPanel value="4">
-                                    <div className="row">
+                                    <div className="row input-fields">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -4787,6 +4834,7 @@ export function SolutionTemplateResult(props) {
                                                     defaultValue={selectedOption}
                                                     onChange={setSelectedOption}
                                                     options={options}
+                                                    className="text-primary"
                                                     placeholder="placeholder (Optional)"
                                                 />
                                             </div>
@@ -4803,7 +4851,7 @@ export function SolutionTemplateResult(props) {
                                                     defaultValue={selectedOption}
                                                     onChange={setSelectedOption}
                                                     options={priceMethodKeyValue}
-                                                    //   options={options}
+                                                    className="text-primary"
                                                     placeholder="placeholder (Optional)"
                                                 />
                                             </div>
@@ -4820,14 +4868,15 @@ export function SolutionTemplateResult(props) {
                                                     defaultValue={selectedOption}
                                                     onChange={setSelectedOption}
                                                     options={options}
+                                                    className="text-primary"
                                                     placeholder="placeholder (Optional)"
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                     <hr />
-                                    <h6>PRICES</h6>
-                                    <div className="row">
+                                    {/* <h6>PRICES</h6> */}
+                                    <div className="row input-fields">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -4840,6 +4889,7 @@ export function SolutionTemplateResult(props) {
                                                     defaultValue={selectedOption}
                                                     onChange={setSelectedOption}
                                                     options={options}
+                                                    className="text-primary"
                                                     placeholder="placeholder (Optional)"
                                                 />
                                             </div>
@@ -4854,7 +4904,7 @@ export function SolutionTemplateResult(props) {
                                                 </label>
                                                 <input
                                                     type="email"
-                                                    className="form-control border-radius-10"
+                                                    className="form-control border-radius-10 text-primary"
                                                     id="exampleInputEmail1"
                                                     aria-describedby="emailHelp"
                                                     placeholder="$100"
@@ -4862,7 +4912,7 @@ export function SolutionTemplateResult(props) {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="row">
+                                    <div className="row input-fields">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group date-box">
                                                 <label
@@ -4885,11 +4935,12 @@ export function SolutionTemplateResult(props) {
                                                             // value={options}
                                                             options={options}
                                                             placeholder="Select"
+                                                            className="text-primary"
                                                         />
                                                     </div>
                                                     <input
                                                         type="email"
-                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                                                         id="exampleInputEmail1"
                                                         aria-describedby="emailHelp"
                                                         placeholder="10%"
@@ -4907,7 +4958,7 @@ export function SolutionTemplateResult(props) {
                                                 </label>
                                                 <div className=" d-flex align-items-center form-control-date">
                                                     <Select
-                                                        className="select-input"
+                                                        className="select-input text-primary"
                                                         defaultValue={selectedOption}
                                                         onChange={setSelectedOption}
                                                         options={options}
@@ -4915,7 +4966,7 @@ export function SolutionTemplateResult(props) {
                                                     />
                                                     <input
                                                         type="email"
-                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                                                         id="exampleInputEmail1"
                                                         aria-describedby="emailHelp"
                                                         placeholder="20%"
@@ -4925,7 +4976,7 @@ export function SolutionTemplateResult(props) {
                                         </div>
                                     </div>
                                     <hr />
-                                    <div className="row">
+                                    <div className="row input-fields">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group">
                                                 <label
@@ -4936,7 +4987,7 @@ export function SolutionTemplateResult(props) {
                                                 </label>
                                                 <input
                                                     type="email"
-                                                    className="form-control border-radius-10"
+                                                    className="form-control border-radius-10 text-primary"
                                                     id="exampleInputEmail1"
                                                     aria-describedby="emailHelp"
                                                     placeholder="$100"
@@ -4953,7 +5004,7 @@ export function SolutionTemplateResult(props) {
                                                 </label>
                                                 <div className=" d-flex form-control-date">
                                                     <Select
-                                                        className="select-input"
+                                                        className="select-input text-primary"
                                                         defaultValue={selectedOption}
                                                         onChange={setSelectedOption}
                                                         options={options}
@@ -4961,7 +5012,7 @@ export function SolutionTemplateResult(props) {
                                                     />
                                                     <input
                                                         type="email"
-                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                                                         id="exampleInputEmail1"
                                                         aria-describedby="emailHelp"
                                                         placeholder="20%"
@@ -4979,7 +5030,7 @@ export function SolutionTemplateResult(props) {
                                                 </label>
                                                 <div className=" d-flex form-control-date">
                                                     <Select
-                                                        className="select-input"
+                                                        className="select-input text-primary"
                                                         defaultValue={selectedOption}
                                                         onChange={setSelectedOption}
                                                         options={options}
@@ -4987,7 +5038,7 @@ export function SolutionTemplateResult(props) {
                                                     />
                                                     <input
                                                         type="email"
-                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                                                         id="exampleInputEmail1"
                                                         aria-describedby="emailHelp"
                                                         placeholder="20%"
@@ -5071,7 +5122,7 @@ export function SolutionTemplateResult(props) {
                                         style={{ width: "100%", backgroundColor: "#fff" }}
                                     >
                                         <div
-                                            className="row align-items-center m-0"
+                                            className="row align-items-center m-0 "
                                             style={{ flexFlow: "unset" }}
                                         >
                                             <QuerySearchComp

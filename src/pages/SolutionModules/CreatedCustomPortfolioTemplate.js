@@ -115,6 +115,8 @@ import {
     selectUpdateList,
     selectUpdateTaskList,
     taskActions,
+    selectSolutionTaskList,
+    selectSolutionLevelList,
 } from "../PortfolioAndBundle/customerSegment/strategySlice";
 
 import QuerySearchComp from '../PortfolioAndBundle/QuerySearchComp';
@@ -187,6 +189,9 @@ export function CreatedCustomPortfolioTemplate(props) {
     const [headerTypeKeyValue, setHeaderTypeKeyValue] = useState([]);
     const [responseTimeTaskKeyValue, setResponseTimeTaskKeyValue] = useState([]);
     const [taskTypeKeyValue, setTaskTypeKeyValue] = useState([]);
+
+    const [solutionTypeListKeyValue, setSolutionTypeListKeyValue] = useState([]);
+    const [solutionLevelListKeyValue, setSolutionLevelListKeyValue] = useState([]);
 
     const [bundleItemTaskTypeKeyValue, setBundleItemTaskTypeKeyValue] = useState(
         []
@@ -1175,6 +1180,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                     responseTime: stratgyResponseTimeKeyValue.value,
                     productHierarchy: stratgyHierarchyKeyValue.value,
                     geographic: stratgyGeographicKeyValue.value,
+                    solutionType: solutionTypeListKeyValue.value,
+                    solutionLevel: solutionLevelListKeyValue.value,
                 });
 
                 const { portfolioId, ...res } = generalComponentData;
@@ -1239,6 +1246,11 @@ export function CreatedCustomPortfolioTemplate(props) {
                     portfolioPrice: {},
                     additionalPrice: {},
                     escalationPrice: {},
+
+                    solutionType: solutionTypeListKeyValue.value ?
+                        solutionTypeListKeyValue.value : "EMPTY",
+                    solutionLevel: solutionLevelListKeyValue.value ?
+                        solutionLevelListKeyValue.value : "EMPTY",
 
                     usageCategory: categoryUsageKeyValue1.value,
                     taskType: stratgyTaskTypeKeyValue.value,
@@ -1380,6 +1392,10 @@ export function CreatedCustomPortfolioTemplate(props) {
                     // additionalPrice: {},
                     // escalationPrice: {},
 
+                    solutionType: solutionTypeListKeyValue.value ?
+                        solutionTypeListKeyValue.value : "EMPTY",
+                    solutionLevel: solutionLevelListKeyValue.value ?
+                        solutionLevelListKeyValue.value : "EMPTY",
                     usageCategory: categoryUsageKeyValue1.value,
                     taskType: stratgyTaskTypeKeyValue.value,
                     strategyTask: stratgyTaskUsageKeyValue.value,
@@ -1536,9 +1552,14 @@ export function CreatedCustomPortfolioTemplate(props) {
                         : "EMPTY",
                     searchTerm: "EMPTY",
                     supportLevel: "EMPTY",
-                    portfolioPrice: {},
-                    additionalPrice: {},
-                    escalationPrice: {},
+
+                    solutionType: solutionTypeListKeyValue.value ?
+                        solutionTypeListKeyValue.value : "EMPTY",
+                    solutionLevel: solutionLevelListKeyValue.value ?
+                        solutionLevelListKeyValue.value : "EMPTY",
+                    // portfolioPrice: {},
+                    // additionalPrice: {},
+                    // escalationPrice: {},
                     customItems: selectedCustomItems,
                     customCoverages: cvgIds,
                     usageCategory: categoryUsageKeyValue1.value,
@@ -2056,6 +2077,16 @@ export function CreatedCustomPortfolioTemplate(props) {
         selectStrategyTaskOption(selectUpdateList)
     );
 
+
+    const solutionTypeList = useAppSelector(
+        selectStrategyTaskOption(selectSolutionTaskList)
+    );
+
+
+    const solutionLevelList = useAppSelector(
+        selectStrategyTaskOption(selectSolutionLevelList)
+    );
+
     const updatedTaskList = useAppSelector(
         selectStrategyTaskOption(selectUpdateTaskList)
     );
@@ -2283,6 +2314,14 @@ export function CreatedCustomPortfolioTemplate(props) {
         setBundleItems(temp);
         setLoadingItem(false);
         setTabs("1");
+    };
+
+    const HandleSolutionType = (e) => {
+        setSolutionLevelListKeyValue([]);
+        // setSolutionLevelKeyValue([]);
+        addPortFolioItem.taskType = "";
+        setSolutionTypeListKeyValue(e);
+        dispatch(taskActions.updateSolution(e.value));
     };
 
     const columns = [
@@ -4090,10 +4129,11 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     SOLUTION TYPE
                                                 </label>
                                                 <Select
-                                                    options={options}
+                                                    options={solutionTypeList}
+                                                    value={solutionTypeListKeyValue}
+                                                    // onChange={(e) => setSelectedOption(e)}
+                                                    onChange={(e) => HandleSolutionType(e)}
                                                     className="text-primary"
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
                                                 // isLoading={
                                                 //     lifeStageOfMachineKeyValueList.length > 0 ? false : true
                                                 // }
@@ -4109,10 +4149,11 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     SOLUTION LEVEL
                                                 </label>
                                                 <Select
-                                                    options={options}
+                                                    options={solutionLevelList}
                                                     className="text-primary"
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
+                                                    // defaultValue={selectedOption}
+                                                    value={solutionLevelListKeyValue}
+                                                    onChange={(e) => setSolutionLevelListKeyValue(e)}
                                                 />
                                             </div>
                                         </div>
@@ -4198,7 +4239,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 <input
                                                     type="text"
                                                     className="form-control border-radius-10 text-primary"
-                                                    name="preparedBy"
+                                                    name="preparedBy (ex-abc@gmail.com)"
                                                     placeholder="Required"
                                                     value={administrative.preparedBy}
                                                     onChange={handleAdministrativreChange}
@@ -4216,7 +4257,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 <input
                                                     type="text"
                                                     className="form-control border-radius-10 text-primary"
-                                                    placeholder="Optional"
+                                                    placeholder="Optional (ex-abc@gmail.com)"
                                                     name="approvedBy"
                                                     value={administrative.approvedBy}
                                                     onChange={handleAdministrativreChange}
@@ -4283,7 +4324,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 <input
                                                     type="text"
                                                     className="form-control border-radius-10 text-primary"
-                                                    placeholder="Optional"
+                                                    placeholder="Optional (ex-abc@gmail.com)"
                                                     name="revisedBy"
                                                     value={administrative.revisedBy}
                                                     onChange={handleAdministrativreChange}

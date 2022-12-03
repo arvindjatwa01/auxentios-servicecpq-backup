@@ -42,6 +42,7 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { DataGrid } from "@mui/x-data-grid";
+import Validator from "../../utils/validator";
 
 import { SolutionBuilderModal } from "../../pages/SolutionModules/index";
 
@@ -132,6 +133,8 @@ export const PortfolioSummary = () => {
   const [querySearchModelResult, setQuerySearchModelResult] = useState([])
   const [querySearchModelPrefixOption, setQuerySearchModelPrefixOption] = useState([])
 
+  const [editBundleService, setEditBundleService] = useState(false);
+
   // New Addition for bundle/Service Creation
   const [bundleServiceShow, setBundleServiceShow] = useState(false);
   const [bundleTabs, setBundleTabs] = useState("1");
@@ -157,6 +160,8 @@ export const PortfolioSummary = () => {
 
   const [selectedItemType, setSelectedItemType] = useState("");
   const [familySelectOption, setFamilySelectOption] = useState([]);
+
+  const [passItemEditRowData, setPassItemEditRowData] = useState();
 
   const history = useHistory()
   const options = [
@@ -821,6 +826,46 @@ export const PortfolioSummary = () => {
     });
   }
 
+  const makeBundleServiceEditable = (data) => {
+    setEditBundleService(true);
+    if (data.itemHeaderModel.bundleFlag === "SERVICE") {
+      setServiceOrBundlePrefix("SERVICE");
+      setBundleTabs("1")
+      setBundleServiceShow(true);
+    } else if (data.itemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
+      setServiceOrBundlePrefix("BUNDLE");
+      setBundleTabs("1")
+      setBundleServiceShow(true);
+      setCreateServiceOrBundle({
+        id: "",
+        name: data.itemName,
+        description: data.itemHeaderModel.itemHeaderDescription,
+        bundleFlag: data.itemHeaderModel.bundleFlag,
+        reference: data.itemHeaderModel.itemHeaderDescription,
+        customerSegment: "",
+        make: data.itemHeaderModel.itemHeaderMake,
+        model: data.itemHeaderModel.model,
+        family: data.itemHeaderModel.itemHeaderFamily,
+        prefix: { label: data.itemHeaderModel.prefix, value: data.itemHeaderModel.prefix },
+        machine: { label: data.itemHeaderModel.type, value: data.itemHeaderModel.type },
+        additional: "",
+        machineComponent: { label: data.itemHeaderModel.type, value: data.itemHeaderModel.type },
+      });
+
+      setAdministrative({
+        preparedBy: data.itemHeaderModel.preparedBy,
+        approvedBy: data.itemHeaderModel.approvedBy,
+        preparedOn: data.itemHeaderModel.preparedOn,
+        revisedBy: data.itemHeaderModel.revisedBy,
+        revisedOn: data.itemHeaderModel.revisedOn,
+        branch: data.itemHeaderModel.salesOffice,
+        offerValidity: data.itemHeaderModel.offerValidity,
+      });
+
+      setPassItemEditRowData(data)
+    }
+  }
+
   // const columns2 = [
   //   { field: "GroupNumber", headerName: "ID#", flex: 1, width: 70 },
   //   { field: "Type", headerName: "Description", flex: 1, width: 130 },
@@ -1028,6 +1073,13 @@ export const PortfolioSummary = () => {
           servicePrice: 0,
           status: "NEW",
           itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
+          preparedBy: administrative.preparedBy,
+          approvedBy: administrative.approvedBy,
+          preparedOn: administrative.preparedOn,
+          revisedBy: administrative.revisedBy,
+          revisedOn: administrative.revisedOn,
+          salesOffice: administrative.branch,
+          offerValidity: administrative.offerValidity
         },
         itemBodyModel: {
           itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
@@ -1138,14 +1190,82 @@ export const PortfolioSummary = () => {
           progress: undefined,
         });
       } else {
-        setBundleTabs("4");
+        setBundleTabs("3");
         // saveAddNewServiceOrBundle();
       }
     }
     // setTabs("4") //moving to component Data tab in create Item model
   };
+
+  const handleUpdateNewServiceOrBundle = () => {
+    if (serviceOrBundlePrefix === "BUNDLE") {
+      const validator = new Validator();
+
+      if ((!validator.emailValidation(administrative.preparedBy) ||
+        administrative.preparedBy == "" ||
+        administrative.preparedBy == undefined) ||
+        (administrative.approvedBy != "" &&
+          administrative.approvedBy != undefined &&
+          !validator.emailValidation(administrative.approvedBy)) ||
+        (administrative.revisedBy != "" &&
+          administrative.revisedBy != undefined &&
+          !validator.emailValidation(administrative.revisedBy)) ||
+        (administrative.branch == "" ||
+          administrative.branch == undefined)
+        // || (administrative.offerValidity == "" ||
+        // administrative.offerValidity == undefined)
+      ) {
+        toast("😐" + "Please fill mandatory Fields.", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        setBundleTabs("4");
+        // console.log("createServiceOrBundle : ", createServiceOrBundle);
+      }
+    }
+    if (serviceOrBundlePrefix === "SERVICE") {
+      const validator = new Validator();
+
+      if ((!validator.emailValidation(administrative.preparedBy) ||
+        administrative.preparedBy == "" ||
+        administrative.preparedBy == undefined) ||
+        (administrative.approvedBy != "" &&
+          administrative.approvedBy != undefined &&
+          !validator.emailValidation(administrative.approvedBy)) ||
+        (administrative.revisedBy != "" &&
+          administrative.revisedBy != undefined &&
+          !validator.emailValidation(administrative.revisedBy)) ||
+        (administrative.branch == "" ||
+          administrative.branch == undefined)
+        // || (administrative.offerValidity == "" ||
+        // administrative.offerValidity == undefined)
+      ) {
+        toast("😐" + "Please fill mandatory Fields.", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        setBundleTabs("4");
+        // console.log("createServiceOrBundle : ", createServiceOrBundle);
+      }
+    }
+  };
   const getAddportfolioItemData = (data) => {
     setAddportFolioItem(data)
+  }
+  const handleItemEditSave= () => {
+    setBundleTabs("3")
   }
   const getPriceCalculatorDataFun = (data) => {
     setPriceCalculator(data);
@@ -1155,6 +1275,7 @@ export const PortfolioSummary = () => {
   };
 
   const handleCreateChange = (e) => {
+    setEditBundleService(false);
     if (e.value === "PORTFOLIO") {
       let portfolioDetails = {
         portfolioId: "",
@@ -1169,10 +1290,61 @@ export const PortfolioSummary = () => {
       setServiceOrBundlePrefix("SERVICE");
       setBundleTabs("1")
       setBundleServiceShow(true);
+
+      setCreateServiceOrBundle({
+        id: "",
+        name: "",
+        description: "",
+        bundleFlag: "",
+        reference: "",
+        customerSegment: "",
+        make: "",
+        model: "",
+        family: "",
+        prefix: "",
+        machine: "",
+        additional: "",
+        machineComponent: "",
+      });
+
+      setAdministrative({
+        preparedBy: "",
+        approvedBy: "",
+        preparedOn: new Date(),
+        revisedBy: "",
+        revisedOn: new Date(),
+        branch: "",
+        offerValidity: "",
+      });
+
     } else {
       setServiceOrBundlePrefix("BUNDLE");
       setBundleTabs("1")
       setBundleServiceShow(true);
+      setCreateServiceOrBundle({
+        id: "",
+        name: "",
+        description: "",
+        bundleFlag: "",
+        reference: "",
+        customerSegment: "",
+        make: "",
+        model: "",
+        family: "",
+        prefix: "",
+        machine: "",
+        additional: "",
+        machineComponent: "",
+      });
+      setAdministrative({
+        preparedBy: "",
+        approvedBy: "",
+        preparedOn: new Date(),
+        revisedBy: "",
+        revisedOn: new Date(),
+        branch: "",
+        offerValidity: "",
+      });
     }
 
   }
@@ -1410,7 +1582,7 @@ export const PortfolioSummary = () => {
                 <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
                 <div className="row">
                   {recentPortfolio.map((data, index) =>
-                    index < 7 ?
+                    index < 10 ?
                       <div className="col-md-4">
                         <div className="recent-items mt-3">
                           <div className="d-flex justify-content-between align-items-center ">
@@ -1468,22 +1640,22 @@ export const PortfolioSummary = () => {
                       </div> : <></>
                   )}
                   {recentBundleService.map((data, sIndex) => {
-                    (data.itemHeaderModel.bundleFlag != "SERVICE" || data.itemHeaderModel.bundleFlag != "BUNDLE_ITEM") ? <></> :
-                      (
-                        <div className="col-md-4">
-                          <div className="recent-items mt-3">
-                            <div className="d-flex justify-content-between align-items-center ">
-                              <p className="mb-0 ">
-                                <FontAwesomeIcon
-                                  className=" font-size-14"
-                                  icon={faFileAlt}
-                                />
-                                <span className="font-weight-500 ml-2">
-                                  {/* Portfolio{" "} {data.name} */} {data.itemName}
-                                </span>
-                              </p>
-                              <div className="d-flex align-items-center">
-                                {/* <div className="white-space custom-checkbox">
+                    return (data.itemHeaderModel.bundleFlag == "PORTFOLIO") ? <></> :
+
+                      <div className="col-md-4">
+                        <div className="recent-items mt-3">
+                          <div className="d-flex justify-content-between align-items-center ">
+                            <p className="mb-0 ">
+                              <FontAwesomeIcon
+                                className=" font-size-14"
+                                icon={faFileAlt}
+                              />
+                              <span className="font-weight-500 ml-2">
+                                {/* Portfolio{" "} {data.name} */} {data.itemName}
+                              </span>
+                            </p>
+                            <div className="d-flex align-items-center">
+                              {/* <div className="white-space custom-checkbox">
                               <FormGroup>
                                 <FormControlLabel
                                   control={<Checkbox />}
@@ -1491,41 +1663,41 @@ export const PortfolioSummary = () => {
                                 />
                               </FormGroup>
                             </div> */}
-                                <a
-                                  href={undefined}
-                                  className="btn-sm"
-                                  style={{ cursor: "pointer" }}
-                                >
-                                  <i
-                                    className="fa fa-pencil"
-                                    aria-hidden="true"
-                                  // onClick={() =>
-                                  //   makePortfolioEditableEditable(data)
-                                  // }
-                                  ></i>
-                                </a>
-                                <a href="#" className="ml-3 font-size-14">
-                                  <FontAwesomeIcon icon={faShareAlt} />
-                                </a>
-                                <a href="#" className="ml-3 font-size-14">
-                                  <FontAwesomeIcon icon={faFolderPlus} />
-                                </a>
-                                <a href="#" className="ml-3 font-size-14">
-                                  <FontAwesomeIcon icon={faUpload} />
-                                </a>
-                                {/* <a href="#" className="ml-2">
+                              <a
+                                href={undefined}
+                                className="btn-sm"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <i
+                                  className="fa fa-pencil"
+                                  aria-hidden="true"
+                                  onClick={() =>
+                                    makeBundleServiceEditable(data)
+                                  }
+                                ></i>
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faShareAlt} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faFolderPlus} />
+                              </a>
+                              <a href="#" className="ml-3 font-size-14">
+                                <FontAwesomeIcon icon={faUpload} />
+                              </a>
+                              {/* <a href="#" className="ml-2">
                               <MuiMenuComponent options={activityOptions} />
                             </a> */}
-                              </div>
                             </div>
                           </div>
-                          <div className="d-flex justify-content-between align-items-center mt-2">
-                            {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
-                            <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(data.createdAt)}</p>
-                            <p className="font-size-12 mb-0">{data.itemHeaderModel.bundleFlag == "SERVICE" ? "Service" : data.itemHeaderModel.bundleFlag == "BUNDLE_ITEM" ? "Bundle" : "Portfolio"}</p>
-                          </div>
                         </div>
-                      )
+                        <div className="d-flex justify-content-between align-items-center mt-2">
+                          {/* <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p> */}
+                          <p className="font-size-12 mb-0">{getFormattedDateTimeByTimeStamp(data.createdAt)}</p>
+                          <p className="font-size-12 mb-0">{data.itemHeaderModel.bundleFlag == "SERVICE" ? "Service" : data.itemHeaderModel.bundleFlag == "BUNDLE_ITEM" ? "Bundle" : "Portfolio"}</p>
+                        </div>
+                      </div>
+
                   }
                   )}
 
@@ -2355,9 +2527,9 @@ export const PortfolioSummary = () => {
                   {serviceOrBundlePrefix === "BUNDLE" && (
                     <Tab label={`${serviceOrBundlePrefix} ITEMS`} value="2" />
                   )}
-                  {serviceOrBundlePrefix === "BUNDLE" && (
-                    <Tab label="ADMINISTRATIVE" value="3" />
-                  )}
+                  {/* {serviceOrBundlePrefix === "BUNDLE" && ( */}
+                  <Tab label="ADMINISTRATIVE" value="3" />
+                  {/* )} */}
                   <Tab label="PRICE CALCULATOR" value="4" />
                 </TabList>
               </Box>
@@ -2680,11 +2852,29 @@ export const PortfolioSummary = () => {
                 </div>
               </TabPanel>
               <TabPanel value="2">
-                <AddPortfolioItem
-                  setBundleTabs={setBundleTabs}
-                  compoFlag="BUNDLE"
-                  getAddportfolioItemData={getAddportfolioItemData}
-                />
+                {
+                  editBundleService ? <>
+
+
+                    <AddPortfolioItem
+                      passItemEditRowData={passItemEditRowData}
+                      handleItemEditSave={handleItemEditSave}
+                      compoFlag="itemEdit"
+                      setBundleTabs={setBundleTabs}
+                    />
+
+
+
+
+                  </> : <>
+                    <AddPortfolioItem
+                      setBundleTabs={setBundleTabs}
+                      compoFlag="BUNDLE"
+                      getAddportfolioItemData={getAddportfolioItemData}
+                      editBundleService={editBundleService}
+                    /></>
+                }
+
               </TabPanel>
               <TabPanel value="3">
                 <div className="row mt-4 input-fields">
@@ -2702,7 +2892,7 @@ export const PortfolioSummary = () => {
                         name="preparedBy"
                         value={administrative.preparedBy}
                         onChange={handleAdministrativreChange}
-                        placeholder="Required"
+                        placeholder="Required (ex-abc@gmail.com)"
                       />
                     </div>
                   </div>
@@ -2717,7 +2907,7 @@ export const PortfolioSummary = () => {
                       <input
                         type="text"
                         className="form-control text-primary border-radius-10"
-                        placeholder="Optional"
+                        placeholder="Optional  (ex-abc@gmail.com)"
                         name="approvedBy"
                         value={administrative.approvedBy}
                         onChange={handleAdministrativreChange}
@@ -2773,7 +2963,7 @@ export const PortfolioSummary = () => {
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
-                        placeholder="Optional"
+                        placeholder="Optional  (ex-abc@gmail.com)"
                         name="revisedBy"
                         value={administrative.revisedBy}
                         onChange={handleAdministrativreChange}
@@ -2858,7 +3048,7 @@ export const PortfolioSummary = () => {
                 <div className="row" style={{ justifyContent: "right" }}>
                   <button
                     type="button"
-                    onClick={handleAddNewServiceOrBundle}
+                    onClick={handleUpdateNewServiceOrBundle}
                     className="btn btn-light"
                   >
                     Save

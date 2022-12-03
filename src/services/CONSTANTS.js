@@ -36,12 +36,23 @@ export const GET_USER_DETAILS = (id) => `/data/user`;
 
 //Pricing URLS
 export const PRICING_COMMON_CONFIG = PRICING_URI + "common-config/";
+export const SOLUTION_PRICING_COMMON_CONFIG = SOLUTION_BUILDER_URI + "common-config/";
+export const PRICE_TYPE = SOLUTION_BUILDER_URI + "common-config/";
+export const PRICE_LIST = SOLUTION_BUILDER_URI + "common-config/price-list";
+export const PRICE_HEAD_TYPE = PRICING_COMMON_CONFIG + "common-config/price-head-type";
+
+export const ADDITIONAL_PRICE_GET = () => SOLUTION_BUILDER_URI + "additional/price";
+export const ESCALATION_PRICE_GET = () => SOLUTION_BUILDER_URI + "escalation/price"
 
 //Soltion Builder URLS
 export const GET_ALL_SOLUTION_PORTFOLIOS = () =>
   SOLUTION_BUILDER_URI + `portfolio?orderBY=ASC`;
 
 // export const SOLUTION_BUILDER_PRICE_CONFIG = PRICING_URI + "common-config/";
+
+// Template Search
+export const GET_SEARCH_KIT_ID = REPAIR_BUILDER_URI + "kit/search?search=KitId~";
+export const GET_SEARCH_STANDARD_JOB_ID = REPAIR_BUILDER_URI + "standard-job/search?search=standardJobId~";
 
 //User Service
 export const USER_SERVICE_SIGNUP_URL = () => USER_SERVICE_URI + "signup";
@@ -51,6 +62,7 @@ export const USER_SERVICE_SIGNIN_URL = () => USER_SERVICE_URI + "root-login";
 
 export const PORTFOLIO_URL = () => SOLUTION_BUILDER_URI + "portfolio";
 export const RECENT_PORTFOLIO_URL = SOLUTION_BUILDER_URI + "portfolio";
+export const PORTFOLIO_PRICE_CREATE = () => SOLUTION_BUILDER_URI + "portfolio/price";
 export const PORTFOLIO_SEARCH_URL = SOLUTION_BUILDER_URI + "portfolio/search?search=";
 
 export const Common_SOLUTION_BUILDER_URL = () =>

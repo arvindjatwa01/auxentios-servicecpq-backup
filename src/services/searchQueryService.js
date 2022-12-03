@@ -1,6 +1,6 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { GET_SEARCH_COVERAGE, GET_SEARCH_FAMILY_COVERAGE, PORTFOLIO_SEARCH_URL, RECENT_PORTFOLIO_URL, GET_RECENT_BUNDLE_SERVICE_URL } from "./CONSTANTS";
+import { GET_SEARCH_COVERAGE, GET_SEARCH_FAMILY_COVERAGE, PORTFOLIO_SEARCH_URL, RECENT_PORTFOLIO_URL, GET_RECENT_BUNDLE_SERVICE_URL, GET_SEARCH_KIT_ID, GET_SEARCH_STANDARD_JOB_ID } from "./CONSTANTS";
 
 /* ----------------- Authorization ------------------- */
 
@@ -151,3 +151,46 @@ export const getSearchQueryCoverageMaster = (searchStr) => {
   });
 };
 
+// Search Query Standard Job ID
+export const getSearchStandardJobId = (searchStr) => {
+  console.log("Query coverageService > getSearchStandardJobId called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(GET_SEARCH_STANDARD_JOB_ID + searchStr, { headers: headersdata })
+        .then((res) => {
+          console.log("getSearchStandardJobId > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("getSearchStandardJobId > axios err=", err);
+          reject("Error in getSearchStandardJobId axios!");
+        });
+    } catch (error) {
+      console.error("in Query coverageService > getSearchStandardJobId, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+// Search Query Kit ID
+export const getSearchKitId = (searchStr) => {
+  console.log("Query coverageService > getSearchKitId called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(GET_SEARCH_KIT_ID + searchStr, { headers: headersdata })
+        .then((res) => {
+          console.log("getSearchKitId > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("getSearchKitId > axios err=", err);
+          reject("Error in getSearchKitId axios!");
+        });
+    } catch (error) {
+      console.error("in Query coverageService > getSearchKitId, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
