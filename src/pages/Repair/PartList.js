@@ -1261,6 +1261,7 @@ function PartList(props) {
   const processRowUpdate = React.useCallback(
     (newRow, oldRow) =>
       new Promise((resolve, reject) => {
+        if(newRow.usagePercentage > 0 && newRow.usagePercentage < 100 && newRow.unitPrice > 0){
         if (
           newRow.quantity !== oldRow.quantity ||
           newRow.usagePercentage !== oldRow.usagePercentage ||
@@ -1270,7 +1271,7 @@ function PartList(props) {
           const index = rowsToUpdate.findIndex(
             (object) => object.id === newRow.id
           );
-          newRow.extendedPrice = newRow.quantity * newRow.unitPrice;
+          newRow.extendedPrice = parseFloat(newRow.quantity * newRow.unitPrice).toFixed(2);
           newRow.totalPrice =
             newRow.usagePercentage > 0
               ? parseFloat(
@@ -1290,6 +1291,9 @@ function PartList(props) {
           // console.log(oldRow);
           resolve(oldRow); // Nothing was changed
         }
+      } else {
+        handleSnack("warning", "Usage percentage should be a valid value!")
+      }
       }),
     []
   );

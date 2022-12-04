@@ -7,6 +7,26 @@ import { default as Select, default as SelectFilter } from "react-select";
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
 
 const AddLaborItemModal = (props) => {
+  const customStyle = {
+    control: (styles, { isDisabled }) => {
+      return {
+        ...styles,
+        background: isDisabled ? '#e9ecef' : 'white',
+        borderRadius: 10,
+        fontSize: 12
+      }
+    },
+      singleValue: (styles, { isDisabled }) => {
+        return {
+          ...styles,
+          color: "#616161",
+          borderRadius: 10,
+          fontSize: 12,
+          fontWeight: 500
+        }
+      }
+    
+  }
   const data = props.serviceEstimateData;
   const title =
     data.jobCode +
@@ -63,12 +83,14 @@ const AddLaborItemModal = (props) => {
                     CHARGE CODE
                   </label>
                   <Select
+                  isDisabled={props.labourItemData.isEditing}
                     onChange={(e) =>
                       props.setLabourItemData({
                         ...props.labourItemData,
                         chargeCode: e,
                       })
                     }
+                    styles={customStyle}
                     options={props.chargeCodeList}
                     placeholder="Required"
                     value={props.labourItemData.chargeCode}
@@ -87,6 +109,8 @@ const AddLaborItemModal = (props) => {
                         laborType: e,
                       })
                     }
+                    isDisabled={props.labourItemData.isEditing}
+                    styles={customStyle}
                     options={props.laborTypeList}
                     value={props.labourItemData.laborType}
                     placeholder="Required"
@@ -105,6 +129,9 @@ const AddLaborItemModal = (props) => {
                         serviceType: e,
                       })
                     }
+                    isDisabled={props.labourItemData.isEditing}
+                    styles={customStyle}
+
                     options={props.serviceTypeList}
                     value={props.labourItemData.serviceType}
                     placeholder="Required"
@@ -123,6 +150,8 @@ const AddLaborItemModal = (props) => {
                         unitOfMeasure: e,
                       })
                     }
+                    isDisabled={props.labourItemData.isEditing}
+                    styles={customStyle}
                     options={props.unitOfMeasureOptions}
                     placeholder="Required"
                     value={props.labourItemData.unitOfMeasure}
@@ -147,6 +176,8 @@ const AddLaborItemModal = (props) => {
                         props.setLabourItemData({
                           ...props.labourItemData,
                           estimatedHours: e.target.value,
+                          extendedPrice: e.target.value > 0 ? parseFloat(props.labourItemData.unitPrice * e.target.value).toFixed(2) : 0,
+                          totalPrice: e.target.value > 0 ? parseFloat(props.labourItemData.unitPrice * e.target.value).toFixed(2) : 0
                         })
                       }
                       value={props.labourItemData.estimatedHours}

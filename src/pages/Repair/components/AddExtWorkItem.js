@@ -3,6 +3,26 @@ import { default as Select, default as SelectFilter } from "react-select";
 import SearchBox from "./SearchBox";
 
 const AddExtWorkItemModal = (props) => {
+  const customStyle = {
+    control: (styles, { isDisabled }) => {
+      return {
+        ...styles,
+        background: isDisabled ? '#e9ecef' : 'white',
+        borderRadius: 10,
+        fontSize: 12
+      }
+    },
+      singleValue: (styles, { isDisabled }) => {
+        return {
+          ...styles,
+          color: "#616161",
+          borderRadius: 10,
+          fontSize: 12,
+          fontWeight: 500
+        }
+      }
+    
+  }
   const data = props.serviceEstimateData;
   const title =
     data.jobCode +
@@ -67,6 +87,7 @@ const AddExtWorkItemModal = (props) => {
                         activityName: e.label,
                       })
                     }
+                    styles={customStyle}
                     getOptionLabel={(option) => `${option.value}`}
                     value={props.extWorkItemData.activityId}
                     options={props.activityIdList}
@@ -156,6 +177,7 @@ const AddExtWorkItemModal = (props) => {
                         unitOfMeasure: e,
                       })
                     }
+                    styles={customStyle}
                     options={props.unitOfMeasureOptions}
                     placeholder="Required"
                     value={props.extWorkItemData.unitOfMeasure}
@@ -180,6 +202,8 @@ const AddExtWorkItemModal = (props) => {
                         props.setExtWorkItemData({
                           ...props.extWorkItemData,
                           estimatedHours: e.target.value,
+                          extendedPrice: e.target.value > 0 ? parseFloat(props.extWorkItemData.unitPrice * e.target.value).toFixed(2) : 0,
+                          totalPrice: e.target.value > 0 ? parseFloat(props.extWorkItemData.unitPrice * e.target.value).toFixed(2) : 0
                         })
                       }
                       value={props.extWorkItemData.estimatedHours}
@@ -263,12 +287,14 @@ const AddExtWorkItemModal = (props) => {
                     DIMENSIONS
                   </label>
                   <Select
+                    {...props}
                     onChange={(e) =>
                       props.setExtWorkItemData({
                         ...props.extWorkItemData,
                         dimensions: e,
                       })
                     }
+                    styles={customStyle}
                     options={props.dimensionList}
                     value={props.extWorkItemData.dimensions}
                     placeholder="Optional"

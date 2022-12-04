@@ -66,6 +66,14 @@ const AddConsumableItemModal = (props) => {
                       })
                     }
                     isDisabled={true}
+                    styles={{control: (styles, { isDisabled }) => {
+                      return {
+                        ...styles,
+                        background: isDisabled ? '#e9ecef' : 'white',
+                        color: isDisabled ? "#616161": "#616161",
+                        borderRadius: 10
+                      }
+                    }}}
                     value={props.consumableItemData.consumableType}
                     options={props.consumableTypeList}
                     placeholder="Required"
@@ -116,6 +124,8 @@ const AddConsumableItemModal = (props) => {
                       props.setConsumableItemData({
                         ...props.consumableItemData,
                         quantity: e.target.value,
+                        extendedPrice: e.target.value > 0 ? parseFloat(e.target.value * props.consumableItemData.unitPrice).toFixed(2): 0,
+                        totalPrice: e.target.value > 0 ? parseFloat(e.target.value * props.consumableItemData.unitPrice).toFixed(2) : 0
                       })
                     }
                     class="form-control border-radius-10"

@@ -169,6 +169,7 @@ function RepairServiceEstimate(props) {
     jobCode: "",
   });
   const initialLaborItemData = {
+    isEditing: false,
     chargeCode: "",
     laborType: "",
     serviceType: "",
@@ -369,8 +370,8 @@ function RepairServiceEstimate(props) {
   };
 
   const unitOfMeasureOptions = [
-    { label: "Hours", value: "Hours" },
-    { label: "Days", value: "Days" },
+    { label: "Hours", value: "HOURS" },
+    { label: "Days", value: "DAYS" },
   ];
   // Sets the value for the tab (labor, consumable, misc, extWork)
   const [value, setValue] = useState("labor");
@@ -966,7 +967,8 @@ function RepairServiceEstimate(props) {
       ),
       unitPrice: row.unitPrice ? row.unitPrice : 0,
       extendedPrice: row.extendedPrice ? row.extendedPrice : 0,
-      totalPrice: row.totalPrice ? row.totalPrice : 0
+      totalPrice: row.totalPrice ? row.totalPrice : 0,
+      isEditing: true,
     });
     // setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
     // setPartFieldViewonly(true);
@@ -978,7 +980,8 @@ function RepairServiceEstimate(props) {
     RemoveLaborItem(labourData.id, laborItemId)
       .then((res) => {
         handleSnack("success", res);
-        populateLaborItems(labourData);
+        // populateLaborItems(labourData);
+        populateServiceEstimation('labor');
       })
       .catch((e) => {
         console.log(e);
@@ -1011,7 +1014,8 @@ function RepairServiceEstimate(props) {
     RemoveConsumableItem(consumableData.id, consItemId)
       .then((res) => {
         handleSnack("success", res);
-        populateConsItems(consumableData);
+        // populateConsItems(consumableData);
+        populateServiceEstimation('consumable');
       })
       .catch((e) => {
         console.log(e);
@@ -1047,7 +1051,8 @@ function RepairServiceEstimate(props) {
     RemoveExtWorkItem(extWorkData.id, extWorkItemId)
       .then((res) => {
         handleSnack("success", res);
-        populateExtWorkItems(extWorkData);
+        // populateExtWorkItems(extWorkData);
+        populateServiceEstimation('extwork');
       })
       .catch((e) => {
         console.log(e);
@@ -1266,7 +1271,7 @@ function RepairServiceEstimate(props) {
       flex: 1,
       width: 130,
     },
-    { field: "vendor", headerName: "Vendor", flex: 1, width: 130 },
+    { field: "supplyingVendorCode", headerName: "Vendor", flex: 1, width: 130 },
     { field: "unitPrice", headerName: "Unit Price", flex: 1, width: 130 },
     {
       field: "extendedPrice",
