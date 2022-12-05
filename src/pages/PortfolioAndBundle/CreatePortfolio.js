@@ -2576,6 +2576,7 @@ export function CreatePortfolio(props) {
             template: true,
           }
 
+          console.log("reqobje price : ", reqObj);
           const exitsPortfolioUpdate = await updatePortfolio(
             portfolioId,
             reqObj
@@ -2714,9 +2715,11 @@ export function CreatePortfolio(props) {
             : "EMPTY",
           searchTerm: "EMPTY",
           supportLevel: "EMPTY",
-          // portfolioPrice: {},
-          // additionalPrice: {},
-          // escalationPrice: {},
+          portfolioPrice: portfolioPriceDataId,
+          additionalPrice: portfolioAdditionalPriceDataId,
+          escalationPrice: portfolioEscalationPriceDataId,
+
+
           portfolioPrice: portfolioPriceDataId,
           additionalPrice: portfolioAdditionalPriceDataId,
           escalationPrice: portfolioEscalationPriceDataId,

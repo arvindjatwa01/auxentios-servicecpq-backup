@@ -49,7 +49,8 @@ const AddPortfolioItem = (props) => {
   );
   const [categoryUsageKeyValue, setCategoryUsageKeyValue] = useState([]);
 
-  const [querySearchStandardJobResult, setQuerySearchStandardJobResult] = useState([])
+  const [querySearchStandardJobResult, setQuerySearchStandardJobResult] = useState([]);
+  const [querySearchRelatedKitResult, setQuerySearchRelatedKitResult] = useState([]);
   // const [querySearchStandardJobDescriptionResult, setQuerySearchStandardJobDescriptionResult] = useState()
   // const {stratgyTaskTypeKeyValue,categoryUsageKeyValue1} = useContext(PortfolioContext);
   const [addPortFolioItem, setAddportFolioItem] = useState({
@@ -239,17 +240,53 @@ const AddPortfolioItem = (props) => {
       });
   }
 
+  const handleRelatedKitInputSearch = (e) => {
+    setAddportFolioItem({
+      ...addPortFolioItem,
+      repairOption: e.target.value,
+    })
+    var searchStr = e.target.value;
+    getSearchKitId(searchStr)
+      .then((res) => {
+        // console.log("search Query Result --------- :", res);
+        // setMasterData(res);
+        $(`.scrollbar-model`).css("display", "block");
+        setQuerySearchRelatedKitResult(res)
+        var preArr = [];
+        for (var n = 0; n < res.length; n++) {
+          preArr.push({ label: res[n].prefix, value: res[n].prefix })
+        }
+        // setQuerySearchModelPrefixOption(preArr);
+      })
+      .catch((err) => {
+        console.log("error in getSearchQueryCoverage", err);
+      });
+  }
+
   const handleSearchStandardJobListClick = (e, currentItem) => {
 
     console.log("currentItem : ", currentItem);
     // templateDescription
-    // setAddportFolioItem({
-    //   ...addPortFolioItem,
-    //   templateId: e.target.value,
-    // })
+    setAddportFolioItem({
+      ...addPortFolioItem,
+      templateId: currentItem.standardJobId,
+      templateDescription: { label: currentItem.description, value: currentItem.description },
+    })
     $(`.scrollbar-model`).css("display", "none");
   }
 
+
+  const handleSearchRelatedKitListClick = (e, currentItem) => {
+
+    console.log("currentItem : ", currentItem);
+    // templateDescription
+    setAddportFolioItem({
+      ...addPortFolioItem,
+      repairOption: currentItem.kitId,
+      // templateDescription: { label: currentItem.description, value: currentItem.description },
+    })
+    $(`.scrollbar-model`).css("display", "none");
+  }
   // console.log("categoryList --- ", categoryList)
 
   const TabsEnableDisabledFun = () => {
@@ -710,14 +747,8 @@ const AddPortfolioItem = (props) => {
                         e,
                         currentItem
                       )}
-                    // onClick={(e) =>
-                    //   handleSearchListClick(
-                    //     e,
-                    //     currentItem,
-                    //   )
-                    // }
                     >
-                      {currentItem.model}
+                      {currentItem.standardJobId}  {currentItem.description}
                     </li>
                   ))}
                 </ul>
@@ -1330,7 +1361,7 @@ const AddPortfolioItem = (props) => {
                         //   )
                         // }
                         >
-                          {currentItem.model}
+                          {currentItem.standardJobId}  {currentItem.description}
                         </li>
                       ))}
                     </ul>
@@ -1433,7 +1464,40 @@ const AddPortfolioItem = (props) => {
                   >
                     REPAIR OPTION
                   </label>
-                  <Select
+                  <input
+                    type="text"
+                    className="form-control text-primary border-radius-10"
+                    name="repairOption"
+                    placeholder="REPAIR OPTION"
+                    value={addPortFolioItem.repairOption}
+                    onChange={(e) => handleRelatedKitInputSearch(e)}
+                  />
+                  {
+                    <ul
+                      className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
+                      id="style"
+                    >
+                      {querySearchRelatedKitResult.map((currentItem, j) => (
+                        <li
+                          className="list-group-item"
+                          key={j}
+                          onClick={(e) => handleSearchRelatedKitListClick(
+                            e,
+                            currentItem
+                          )}
+                        // onClick={(e) =>
+                        //   handleSearchListClick(
+                        //     e,
+                        //     currentItem,
+                        //   )
+                        // }
+                        >
+                          {currentItem.kitId}  {currentItem.description}
+                        </li>
+                      ))}
+                    </ul>
+                  }
+                  {/* <Select
                     options={options}
                     className="text-primary"
                     placeholder="REPAIR OPTION"
@@ -1444,7 +1508,7 @@ const AddPortfolioItem = (props) => {
                       })
                     }
                     value={addPortFolioItem.repairOption}
-                  />
+                  /> */}
                   {/* <div className="icon-defold">
                     <div className="form-control">
                       <Select

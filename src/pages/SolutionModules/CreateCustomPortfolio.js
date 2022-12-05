@@ -102,6 +102,7 @@ import {
     getMachineTypeKeyValue,
     getTypeKeyValue,
     getPortfolioCommonConfig,
+    getSolutionPriceCommonConfig,
     getSearchQueryCoverage,
     getSearchCoverageForFamily,
     itemCreation,
@@ -128,6 +129,10 @@ import {
     deleteMasterQuote,
     getSolutionLevelKeyValue,
     getSolutionTypeKeyValue,
+
+    escalationPriceCreation,
+    additionalPriceCreation,
+    portfolioPriceCreation,
 } from "../../services/index";
 import {
     selectCategoryList,
@@ -276,6 +281,28 @@ export function CreateCustomPortfolio(props) {
     const [categoryItem, setCategoryItem] = useState(null);
 
     const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
+    const [priceListKeyValue, setPriceListKeyValue] = useState([]);
+    const [priceTypeKeyValue, setPriceTypeKeyValue] = useState([]);
+    const [priceHeadTypeKeyValue, setPriceHeadTypeKeyValue] = useState([]);
+
+    const [priceListKeyValue1, setPriceListKeyValue1] = useState([]);
+    const [priceMethodKeyValue1, setPriceMethodKeyValue1] = useState([]);
+
+    const [portfolioPriceDataId, setPortfolioPriceDataId] = useState({})
+    const [portfolioAdditionalPriceDataId, setPortfolioAdditionalPriceDataId] = useState({})
+    const [portfolioEscalationPriceDataId, setPortfolioEscalationPriceDataId] = useState({})
+
+    const [priceDetails, setPriceDetails] = useState({
+        priceDate: new Date()
+    })
+    const [priceTypeKeyValue1, setPriceTypeKeyValue1] = useState([]);
+    const [priceAdditionalHeadKeyValue1, setPriceAdditionalHeadKeyValue1] = useState([]);
+    const [priceEscalationHeadKeyValue1, setPriceEscalationKeyValue1] = useState([]);
+    const [escalationPriceValue, setEscalationPriceValue] = useState()
+    const [additionalPriceValue, setAdditionalPriceValue] = useState()
+
+
+
     const [customerSegmentKeyValue, setCustomerSegmentKeyValue] = useState([]);
     const [strategyOptionals, setStrategyOptionals] = useState([]);
 
@@ -2261,9 +2288,326 @@ export function CreateCustomPortfolio(props) {
                     };
                 }
             } else if (e.target.id == "price") {
-                priceAgreementOption
-                    ? setValue("priceAgreement")
-                    : setValue("coverage");
+
+                if (state && state.type === "new") {
+                    let priceEscalation = {
+                        priceMethod: priceMethodKeyValue1.value,
+                        priceHeadType: priceEscalationHeadKeyValue1.value,
+                        escalationPercentage: parseInt(escalationPriceValue),
+                        validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                        validTo: validityData.toDate.toISOString().substring(0, 10),
+                        userId: "string"
+                    }
+
+                    let priceAdditional = {
+                        priceMethod: priceMethodKeyValue1.value,
+                        priceHeadType: priceAdditionalHeadKeyValue1.value,
+                        additionalPercentage: parseInt(additionalPriceValue),
+                        validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                        validTo: validityData.toDate.toISOString().substring(0, 10),
+                        userId: "string"
+                    }
+
+                    let portfolioPriceCreate = {
+                        priceMethod: priceMethodKeyValue1.value,
+                        priceType: priceTypeKeyValue1.value,
+                        priceList: priceListKeyValue1.value,
+                        priceDate: priceDetails.priceDate,
+                    }
+
+                    console.log("portfolioPriceCreate --- : ", portfolioPriceCreate)
+
+                    const escalationPrice = await escalationPriceCreation(priceEscalation);
+
+
+                    const additionalPrice = await additionalPriceCreation(priceAdditional);
+
+                    const portfolioPriceAPIData = await portfolioPriceCreation(portfolioPriceCreate);
+
+                    setPortfolioEscalationPriceDataId({
+                        escalationPriceId: escalationPrice.data.escalationPriceId,
+                    })
+                    setPortfolioAdditionalPriceDataId({
+                        additionalPriceId: additionalPrice.data.additionalPriceId,
+                    })
+                    setPortfolioPriceDataId({
+                        portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
+                    })
+                    const { portfolioId, ...res } = generalComponentData;
+
+                    let priceobjData = {
+                        ...res,
+                        visibleInCommerce: true,
+                        customerId: 0,
+                        lubricant: true,
+                        customerSegment: generalComponentData.customerSegment.value
+                            ? generalComponentData.customerSegment.value
+                            : "EMPTY",
+                        // machineType: generalComponentData.machineType
+                        //     ? generalComponentData.machineType
+                        //     : "EMPTY",
+                        machineType: machineTypeKeyValue.value,
+                        status: generalComponentData.status
+                            ? generalComponentData.status
+                            : "EMPTY",
+                        strategyTask: generalComponentData.strategyTask
+                            ? generalComponentData.strategyTask
+                            : "EMPTY",
+                        taskType: generalComponentData.taskType
+                            ? generalComponentData.taskType
+                            : "EMPTY",
+                        usageCategory: generalComponentData.usageCategory
+                            ? generalComponentData.usageCategory
+                            : "EMPTY",
+                        productHierarchy: generalComponentData.productHierarchy
+                            ? generalComponentData.productHierarchy
+                            : "EMPTY",
+                        geographic: generalComponentData.geographic
+                            ? generalComponentData.geographic
+                            : "EMPTY",
+                        availability: generalComponentData.availability
+                            ? generalComponentData.availability
+                            : "EMPTY",
+                        responseTime: generalComponentData.responseTime
+                            ? generalComponentData.responseTime
+                            : "EMPTY",
+                        type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                        application: generalComponentData.application
+                            ? generalComponentData.application
+                            : "EMPTY",
+                        contractOrSupport: generalComponentData.contractOrSupport
+                            ? generalComponentData.contractOrSupport
+                            : "EMPTY",
+                        // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                        //     ? generalComponentData.lifeStageOfMachine
+                        //     : "EMPTY",
+                        lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                        supportLevel: generalComponentData.supportLevel
+                            ? generalComponentData.supportLevel
+                            : "EMPTY",
+                        items: [],
+                        customCoverages: [],
+                        customerGroup: generalComponentData.customerGroup
+                            ? generalComponentData.customerGroup
+                            : "EMPTY",
+                        searchTerm: "EMPTY",
+                        supportLevel: "EMPTY",
+                        solutionType: solutionTypeListKeyValue.value ?
+                            solutionTypeListKeyValue.value : "EMPTY",
+                        solutionLevel: solutionLevelListKeyValue.value ?
+                            solutionLevelListKeyValue.value : "EMPTY",
+                        portfolioPrice: {
+                            portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
+                        },
+                        additionalPrice: {
+                            additionalPriceId: additionalPrice.data.additionalPriceId,
+                        },
+                        escalationPrice: {
+                            escalationPriceId: escalationPrice.data.escalationPriceId,
+                        },
+
+                        usageCategory: categoryUsageKeyValue1.value,
+                        taskType: stratgyTaskTypeKeyValue.value,
+                        strategyTask: stratgyTaskUsageKeyValue.value,
+                        responseTime: stratgyResponseTimeKeyValue.value,
+                        productHierarchy: stratgyHierarchyKeyValue.value,
+                        geographic: stratgyGeographicKeyValue.value,
+                        customItems: selectedCustomItems,
+
+                        preparedBy: administrative.preparedBy,
+                        approvedBy: administrative.approvedBy,
+                        preparedOn: administrative.preparedOn,
+                        revisedBy: administrative.revisedBy,
+                        revisedOn: administrative.revisedOn,
+                        salesOffice: administrative.salesOffice,
+                        offerValidity: administrative.offerValidity,
+                        template: flagTemplate,
+                        visibleInCommerce: flagCommerce,
+                    };
+
+                    const priceObjRes = await updateCustomPortfolio(
+                        generalComponentData.portfolioId,
+                        priceobjData
+                    )
+                    if (priceObjRes.status === 200) {
+                        toast("👏 Portfolio updated", {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                        });
+                        // setValue("administrative");
+                        setValue("priceAgreement");
+                        // setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: true });
+                        // console.log("administryRes updating", administryRes.data);
+                    } else {
+                        throw `${priceObjRes.status}:error in update portfolio`;
+                    };
+
+                } else {
+
+                    let priceEscalation = {
+                        priceMethod: priceMethodKeyValue1.value,
+                        priceHeadType: priceEscalationHeadKeyValue1.value,
+                        escalationPercentage: parseInt(escalationPriceValue),
+                        validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                        validTo: validityData.toDate.toISOString().substring(0, 10),
+                        userId: "string"
+                    }
+
+                    let priceAdditional = {
+                        priceMethod: priceMethodKeyValue1.value,
+                        priceHeadType: priceAdditionalHeadKeyValue1.value,
+                        additionalPercentage: parseInt(additionalPriceValue),
+                        validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                        validTo: validityData.toDate.toISOString().substring(0, 10),
+                        userId: "string"
+                    }
+
+                    let portfolioPriceCreate = {
+                        priceMethod: priceMethodKeyValue1.value,
+                        priceType: priceTypeKeyValue1.value,
+                        priceList: priceListKeyValue1.value,
+                        priceDate: priceDetails.priceDate,
+                    }
+
+                    console.log("portfolioPriceCreate --- : ", portfolioPriceCreate)
+
+                    const escalationPrice = await escalationPriceCreation(priceEscalation);
+
+
+                    const additionalPrice = await additionalPriceCreation(priceAdditional);
+
+                    const portfolioPriceAPIData = await portfolioPriceCreation(portfolioPriceCreate);
+
+                    setPortfolioEscalationPriceDataId({
+                        escalationPriceId: escalationPrice.data.escalationPriceId,
+                    })
+                    setPortfolioAdditionalPriceDataId({
+                        additionalPriceId: additionalPrice.data.additionalPriceId,
+                    })
+                    setPortfolioPriceDataId({
+                        portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
+                    })
+                    const { portfolioId, ...res } = generalComponentData;
+
+                    let priceobjData = {
+                        ...res,
+                        visibleInCommerce: true,
+                        customerId: 0,
+                        lubricant: true,
+                        customerSegment: generalComponentData.customerSegment.value
+                            ? generalComponentData.customerSegment.value
+                            : "EMPTY",
+                        // machineType: generalComponentData.machineType
+                        //     ? generalComponentData.machineType
+                        //     : "EMPTY",
+                        machineType: machineTypeKeyValue.value,
+                        status: generalComponentData.status
+                            ? generalComponentData.status
+                            : "EMPTY",
+                        strategyTask: generalComponentData.strategyTask
+                            ? generalComponentData.strategyTask
+                            : "EMPTY",
+                        taskType: generalComponentData.taskType
+                            ? generalComponentData.taskType
+                            : "EMPTY",
+                        usageCategory: generalComponentData.usageCategory
+                            ? generalComponentData.usageCategory
+                            : "EMPTY",
+                        productHierarchy: generalComponentData.productHierarchy
+                            ? generalComponentData.productHierarchy
+                            : "EMPTY",
+                        geographic: generalComponentData.geographic
+                            ? generalComponentData.geographic
+                            : "EMPTY",
+                        availability: generalComponentData.availability
+                            ? generalComponentData.availability
+                            : "EMPTY",
+                        responseTime: generalComponentData.responseTime
+                            ? generalComponentData.responseTime
+                            : "EMPTY",
+                        type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                        application: generalComponentData.application
+                            ? generalComponentData.application
+                            : "EMPTY",
+                        contractOrSupport: generalComponentData.contractOrSupport
+                            ? generalComponentData.contractOrSupport
+                            : "EMPTY",
+                        // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                        //     ? generalComponentData.lifeStageOfMachine
+                        //     : "EMPTY",
+                        lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                        supportLevel: generalComponentData.supportLevel
+                            ? generalComponentData.supportLevel
+                            : "EMPTY",
+                        items: [],
+                        customCoverages: [],
+                        customerGroup: generalComponentData.customerGroup
+                            ? generalComponentData.customerGroup
+                            : "EMPTY",
+                        searchTerm: "EMPTY",
+                        supportLevel: "EMPTY",
+                        solutionType: solutionTypeListKeyValue.value ?
+                            solutionTypeListKeyValue.value : "EMPTY",
+                        solutionLevel: solutionLevelListKeyValue.value ?
+                            solutionLevelListKeyValue.value : "EMPTY",
+                        portfolioPrice: {
+                            portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
+                        },
+                        additionalPrice: {
+                            additionalPriceId: additionalPrice.data.additionalPriceId,
+                        },
+                        escalationPrice: {
+                            escalationPriceId: escalationPrice.data.escalationPriceId,
+                        },
+
+                        usageCategory: categoryUsageKeyValue1.value,
+                        taskType: stratgyTaskTypeKeyValue.value,
+                        strategyTask: stratgyTaskUsageKeyValue.value,
+                        responseTime: stratgyResponseTimeKeyValue.value,
+                        productHierarchy: stratgyHierarchyKeyValue.value,
+                        geographic: stratgyGeographicKeyValue.value,
+                        customItems: selectedCustomItems,
+
+                        preparedBy: administrative.preparedBy,
+                        approvedBy: administrative.approvedBy,
+                        preparedOn: administrative.preparedOn,
+                        revisedBy: administrative.revisedBy,
+                        revisedOn: administrative.revisedOn,
+                        salesOffice: administrative.salesOffice,
+                        offerValidity: administrative.offerValidity,
+                        template: flagTemplate,
+                        visibleInCommerce: flagCommerce,
+                    };
+
+                    const priceObjRes = await updateCustomPortfolio(
+                        portfolioId,
+                        priceobjData
+                    )
+                    if (priceObjRes.status === 200) {
+                        toast("👏 Portfolio updated", {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                        });
+                        // setValue("administrative");
+                        setValue("priceAgreement");
+                        // setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: true });
+                        // console.log("administryRes updating", administryRes.data);
+                    } else {
+                        throw `${priceObjRes.status}:error in update portfolio`;
+                    };
+                }
+
+
             } else if (e.target.id == "priceAgreement") {
                 setValue("coverage");
             } else if (e.target.id == "coverage") {
@@ -2361,12 +2705,11 @@ export function CreateCustomPortfolio(props) {
                         : "EMPTY",
                     searchTerm: "EMPTY",
                     supportLevel: "EMPTY",
-                    // portfolioPrice: {},
-                    // additionalPrice: {},
-                    // escalationPrice: {},
-                    // portfolioPrice: { "portfolioPriceId": 92 },
-                    // additionalPrice: { "additionalPriceId": 1 },
-                    // escalationPrice: { "escalationPriceId": 1 },
+
+                    portfolioPrice: portfolioPriceDataId,
+                    additionalPrice: portfolioAdditionalPriceDataId,
+                    escalationPrice: portfolioEscalationPriceDataId,
+                    
                     customeItems: portfolioCustomItems,
                     items: [],
                     customCoverages: cvgIds,
@@ -2824,13 +3167,61 @@ export function CreateCustomPortfolio(props) {
             .catch((err) => {
                 alert(err);
             });
-        getPortfolioCommonConfig("price-method")
+        // getPortfolioCommonConfig("price-method")
+        //     .then((res) => {
+        //         const options = res.map((d) => ({
+        //             value: d.key,
+        //             label: d.value,
+        //         }));
+        //         setPriceMethodKeyValue(options);
+        //     })
+        //     .catch((err) => {
+        //         alert(err);
+        //     });
+        getSolutionPriceCommonConfig("price-method")
             .then((res) => {
                 const options = res.map((d) => ({
                     value: d.key,
                     label: d.value,
                 }));
                 setPriceMethodKeyValue(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
+
+        getSolutionPriceCommonConfig("price-type")
+            .then((res) => {
+                console.log("res ------", res)
+                const options = res.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setPriceTypeKeyValue(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
+
+        getSolutionPriceCommonConfig("price-list")
+            .then((res) => {
+                const options = res.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setPriceListKeyValue(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
+
+        getSolutionPriceCommonConfig("price-head-type")
+            .then((res) => {
+                const options = res.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setPriceHeadTypeKeyValue(options);
             })
             .catch((err) => {
                 alert(err);
@@ -7386,10 +7777,10 @@ export function CreateCustomPortfolio(props) {
                                                         <input
                                                             type="text"
                                                             className="form-control border-radius-10 text-primary"
-                                                            name="preparedBy (ex-abc@gmail.com)"
+                                                            name="preparedBy"
                                                             value={administrative.preparedBy}
                                                             onChange={handleAdministrativreChange}
-                                                            placeholder="Required"
+                                                            placeholder="Required (ex-abc@gmail.com)"
                                                         />
                                                     </div>
                                                 </div>
@@ -7519,6 +7910,7 @@ export function CreateCustomPortfolio(props) {
                                                             type="text"
                                                             className="form-control border-radius-10 text-primary"
                                                             name="branch"
+                                                            placeholder="Required"
                                                             value={administrative.branch}
                                                             onChange={handleAdministrativreChange}
                                                         />
@@ -7644,10 +8036,10 @@ export function CreateCustomPortfolio(props) {
                                                         PRICE LIST
                                                     </label>
                                                     <Select
-                                                        defaultValue={selectedOption}
+                                                        // defaultValue={priceListKeyValue}
+                                                        onChange={(e) => setPriceListKeyValue1(e)}
                                                         className="text-primary"
-                                                        onChange={setSelectedOption}
-                                                        options={options}
+                                                        options={priceListKeyValue}
                                                         placeholder="placeholder (Optional)"
                                                     />
                                                 </div>
@@ -7661,9 +8053,9 @@ export function CreateCustomPortfolio(props) {
                                                         PRICE METHOD
                                                     </label>
                                                     <Select
-                                                        defaultValue={selectedOption}
+                                                        // defaultValue={selectedOption}
                                                         className="text-primary"
-                                                        onChange={setSelectedOption}
+                                                        onChange={(e) => setPriceMethodKeyValue1(e)}
                                                         options={priceMethodKeyValue}
                                                         placeholder="required"
                                                     />
@@ -7677,13 +8069,33 @@ export function CreateCustomPortfolio(props) {
                                                     >
                                                         PRICE DATE
                                                     </label>
-                                                    <Select
+                                                    <div className="d-flex align-items-center date-box w-100">
+                                                        <div className="form-group w-100">
+                                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                                <DatePicker
+                                                                    variant="inline"
+                                                                    format="dd/MM/yyyy"
+                                                                    className="form-controldate border-radius-10"
+                                                                    label=""
+                                                                    name="preparedOn"
+                                                                    value={setPriceDetails.priceDate}
+                                                                    onChange={(e) =>
+                                                                        setPriceDetails({
+                                                                            ...priceDetails,
+                                                                            priceDate: e,
+                                                                        })
+                                                                    }
+                                                                />
+                                                            </MuiPickersUtilsProvider>
+                                                        </div>
+                                                    </div>
+                                                    {/* <Select
                                                         defaultValue={selectedOption}
                                                         className="text-primary"
                                                         onChange={setSelectedOption}
                                                         options={options}
                                                         placeholder="placeholder (Optional)"
-                                                    />
+                                                    /> */}
                                                 </div>
                                             </div>
                                         </div>
@@ -7699,10 +8111,10 @@ export function CreateCustomPortfolio(props) {
                                                         PRICE TYPE
                                                     </label>
                                                     <Select
-                                                        defaultValue={selectedOption}
+                                                        // defaultValue={priceTypeKeyValue}
                                                         className="text-primary"
-                                                        onChange={setSelectedOption}
-                                                        options={options}
+                                                        onChange={(e) => setPriceTypeKeyValue1(e)}
+                                                        options={priceTypeKeyValue}
                                                         placeholder="placeholder (Optional)"
                                                     />
                                                 </div>
@@ -7724,8 +8136,6 @@ export function CreateCustomPortfolio(props) {
                                                     />
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="row input-fields">
                                             <div className="col-md-4 col-sm-4">
                                                 <div className="form-group date-box">
                                                     <label
@@ -7735,28 +8145,25 @@ export function CreateCustomPortfolio(props) {
                                                         ADDITIONAL
                                                     </label>
                                                     <div className=" d-flex form-control-date">
-                                                        {/* <Select className="select-input"
-                            defaultValue={selectedOption}
-                            onChange={setSelectedOption}
-                            options={options}
-                            placeholder="placeholder "
-                          /> */}
+
                                                         <div className="">
                                                             <Select
-                                                                onChange={setSelectedOption}
+                                                                onChange={(e) => setPriceAdditionalHeadKeyValue1(e)}
                                                                 className="text-primary"
                                                                 isClearable={true}
                                                                 // value={options}
-                                                                options={options}
+                                                                options={priceHeadTypeKeyValue}
                                                                 placeholder="Select"
                                                             />
                                                         </div>
                                                         <input
                                                             type="text"
-                                                            className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                                            className="form-control rounded-top-left-0 text-primary rounded-bottom-left-0"
                                                             id="exampleInputEmail1"
                                                             aria-describedby="emailHelp"
                                                             placeholder="optional"
+                                                            value={additionalPriceValue}
+                                                            onChange={(e) => setAdditionalPriceValue(e.target.value)}
                                                         />
                                                     </div>
                                                 </div>
@@ -7772,10 +8179,10 @@ export function CreateCustomPortfolio(props) {
                                                     <div className=" d-flex align-items-center form-control-date">
                                                         <Select
                                                             className="select-input text-primary"
-                                                            defaultValue={selectedOption}
-                                                            onChange={setSelectedOption}
-                                                            options={options}
-                                                            placeholder="placeholder "
+                                                            // defaultValue={selectedOption}
+                                                            onChange={(e) => setPriceEscalationKeyValue1(e)}
+                                                            options={priceHeadTypeKeyValue}
+                                                            placeholder="Select "
                                                         />
                                                         <input
                                                             type="text"
@@ -7783,10 +8190,15 @@ export function CreateCustomPortfolio(props) {
                                                             id="exampleInputEmail1"
                                                             aria-describedby="emailHelp"
                                                             placeholder="optional"
+                                                            value={escalationPriceValue}
+                                                            onChange={(e) => setEscalationPriceValue(e.target.value)}
                                                         />
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div className="row input-fields">
+
                                         </div>
                                         {/* <hr /> */}
                                         <div className="row input-fields">

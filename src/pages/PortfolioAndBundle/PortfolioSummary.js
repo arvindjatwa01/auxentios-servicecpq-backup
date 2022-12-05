@@ -561,19 +561,19 @@ export const PortfolioSummary = () => {
       if (selectedItemType === "PORTFOLIO") {
         var newArr = [];
         const res2 = await portfolioSearch(searchStr)
-        for (var j = 0; j < res2.length; j++) {
-          for (var k = 0; k < res2[j].items.length; k++) {
-            newArr.push(res2[j].items[k]);
-          }
-        }
+        // for (var j = 0; j < res2.length; j++) {
+        //   for (var k = 0; k < res2[j].items.length; k++) {
+        //     newArr.push(res2[j].items[k]);
+        //   }
+        // }
 
-        var result = newArr.reduce((unique, o) => {
-          if (!unique.some(obj => obj.itemId === o.itemId)) {
-            unique.push(o);
-          }
-          return unique;
-        }, []);
-        setPortfolioItemData(result);
+        // var result = newArr.reduce((unique, o) => {
+        //   if (!unique.some(obj => obj.itemId === o.itemId)) {
+        //     unique.push(o);
+        //   }
+        //   return unique;
+        // }, []);
+        setPortfolioItemData(res2.data);
 
         console.log("setPortfolioItemData : ", portfolioItemData)
       } else {
@@ -1264,7 +1264,7 @@ export const PortfolioSummary = () => {
   const getAddportfolioItemData = (data) => {
     setAddportFolioItem(data)
   }
-  const handleItemEditSave= () => {
+  const handleItemEditSave = () => {
     setBundleTabs("3")
   }
   const getPriceCalculatorDataFun = (data) => {
@@ -1348,6 +1348,152 @@ export const PortfolioSummary = () => {
     }
 
   }
+
+
+  const SearchedPortfolioColumn = [
+    {
+      name: (
+        <>
+          {/* <div>Solution Id</div> */}
+          <div>Name</div>
+        </>
+      ),
+      selector: (row) => row.name,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.name,
+    },
+    {
+      name: (
+        <>
+          <div>Description</div>
+        </>
+      ),
+      selector: (row) => row.description,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.description,
+    },
+    {
+      name: (
+        <>
+          <div>Strategy</div>
+        </>
+      ),
+      selector: (row) => row.strategyTask,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.strategyTask,
+    }, {
+      name: (
+        <>
+          <div>Task Type</div>
+        </>
+      ),
+      selector: (row) => row.taskType,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.taskType,
+    },
+    // {
+    //   name: (
+    //     <>
+    //       <div>Quantity</div>
+    //     </>
+    //   ),
+    //   selector: (row) => row.portfolioPrice?.quantity,
+    //   wrap: true,
+    //   sortable: true,
+    //   format: (row) => row.portfolioPrice?.quantity,
+    // },
+    {
+      name: (
+        <>
+          <div>Net Price</div>
+        </>
+      ),
+      selector: (row) => row.portfolioPrice.price,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.portfolioPrice.price,
+    },
+    {
+      name: (
+        <>
+          <div>Net Additional</div>
+        </>
+      ),
+      selector: (row) => row.additionalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.additionalPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Parts Price</div>
+        </>
+      ),
+      selector: (row) => row.portfolioPrice?.sparePartsPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.portfolioPrice?.sparePartsPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Net Service Price</div>
+        </>
+      ),
+      selector: (row) => row.portfolioPrice?.servicePrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.portfolioPrice?.servicePrice,
+    },
+    {
+      name: (
+        <>
+          <div>Total Price</div>
+        </>
+      ),
+      selector: (row) => row.portfolioPrice?.totalPrice,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.portfolioPrice?.totalPrice,
+    },
+    {
+      name: (
+        <>
+          <div>Comments</div>
+        </>
+      ),
+      selector: (row) => row.itemHeaderModel?.comments,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.itemHeaderModel?.comments,
+    },
+    {
+      name: (
+        <>
+          <div>Action</div>
+        </>
+      ),
+      selector: (row) => row.action,
+      wrap: true,
+      sortable: true,
+      format: (row) => row.action,
+      cell: (row) => (
+        <div>
+          <a href={undefined} onClick={() =>
+            makePortfolioEditableEditable(row)
+          } style={{ cursor: "pointer" }} >
+
+            <img className="mr-2" src={penIcon} />
+          </a>
+        </div>
+      ),
+    },
+  ]
 
   const PortfolioItemColumn = [
     {
@@ -1487,6 +1633,11 @@ export const PortfolioSummary = () => {
       format: (row) => row.action,
       cell: (row) => (
         <div>
+          <a href={undefined} onClick={() =>
+            makeBundleServiceEditable(row)
+          } style={{ cursor: "pointer" }} >
+
+          </a>
           <img className="mr-2" src={penIcon} />
         </div>
       ),
@@ -2408,10 +2559,11 @@ export const PortfolioSummary = () => {
                   <DataTable
                     className=""
                     title=""
-                    columns={PortfolioItemColumn}
+                    // columns={PortfolioItemColumn}
+                    columns={SearchedPortfolioColumn}
                     data={portfolioItemData}
                     customStyles={customTableStyles}
-                    selectableRows
+                    // selectableRows
                     // onSelectedRowsChange={(state) => setPortfolioTempFilterMasterData(state.selectedRows)}
                     pagination
                   />
@@ -2424,7 +2576,7 @@ export const PortfolioSummary = () => {
                     columns={PortfolioItemColumn}
                     data={bundleServiceItemData}
                     customStyles={customTableStyles}
-                    selectableRows
+                    // selectableRows
                     // onSelectedRowsChange={(state) => setPortfolioTempFilterMasterData(state.selectedRows)}
                     pagination
                   />

@@ -2853,7 +2853,12 @@ export const Analytics = () => {
          format: (row) => row.action,
          cell: (row) => (
             <div>
+               <a href={undefined} onClick={() =>
+                  makePortfolioEditableEditable(row)
+               } style={{cursor: "pointer"}}>
+
                <img className="mr-2" src={penIcon} />
+               </a>
             </div>
          ),
       },

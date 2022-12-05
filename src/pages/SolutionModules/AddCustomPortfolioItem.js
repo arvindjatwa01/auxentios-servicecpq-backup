@@ -7,6 +7,7 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Link } from "react-router-dom";
 import { Box, Button, Stack, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
+import $ from "jquery";
 
 import { useDispatch, useSelector } from "react-redux";
 
@@ -25,16 +26,22 @@ import {
   getTaskTypeKeyValue,
   getMachineTypeKeyValue,
   getTypeKeyValue,
+  getSearchStandardJobId,
+  getSearchKitId,
 } from "../../services/index";
 
 const AddCustomPortfolioItem = (props) => {
-
-
-  console.log("props for AddCustomPortfolioItem is : ", props)
+  console.log("props for AddCustomPortfolioItem is : ", props);
   const [tabs, setTabs] = useState("1");
   const [editable, setEditable] = useState(
     props?.compoFlag === "itemEdit" ? true : false
   );
+
+  const [querySearchStandardJobResult, setQuerySearchStandardJobResult] =
+    useState([]);
+  const [querySearchRelatedKitResult, setQuerySearchRelatedKitResult] =
+    useState([]);
+
   // const {stratgyTaskTypeKeyValue,categoryUsageKeyValue1} = useContext(PortfolioContext);
   const [addPortFolioItem, setAddportFolioItem] = useState({
     id: 0,
@@ -52,6 +59,7 @@ const AddCustomPortfolioItem = (props) => {
     templateDescription: "",
     repairOption: "",
     strategyTask: "",
+    kitDescription: "",
   });
 
   const [typeKeyValue, setTypeKeyValue] = useState([]);
@@ -61,12 +69,15 @@ const AddCustomPortfolioItem = (props) => {
   );
   const [categoryUsageKeyValue, setCategoryUsageKeyValue] = useState([]);
 
-
   const [stratgyTaskUsageKeyValue, setStratgyTaskUsageKeyValue] = useState([]);
   const [stratgyTaskTypeKeyValue, setStratgyTaskTypeKeyValue] = useState([]);
 
-  const updatedTaskList = useAppSelector(selectStrategyTaskOption(selectUpdateTaskList));
-  const categoryList = useAppSelector(selectStrategyTaskOption(selectCategoryList));
+  const updatedTaskList = useAppSelector(
+    selectStrategyTaskOption(selectUpdateTaskList)
+  );
+  const categoryList = useAppSelector(
+    selectStrategyTaskOption(selectCategoryList)
+  );
   const updatedList = useAppSelector(
     selectStrategyTaskOption(selectUpdateList)
   );
@@ -84,7 +95,6 @@ const AddCustomPortfolioItem = (props) => {
   ];
 
   const initFetch = () => {
-
     getTaskTypeKeyValue()
       .then((res) => {
         const options = res.map((d) => ({
@@ -135,7 +145,6 @@ const AddCustomPortfolioItem = (props) => {
   };
   const dispatch = useDispatch();
 
-
   useEffect(() => {
     if (props.passItemEditRowData) {
       // setIt accordingly for fields
@@ -184,7 +193,7 @@ const AddCustomPortfolioItem = (props) => {
     addPortFolioItem.strategyTask = "";
     addPortFolioItem.taskType = "";
     // setCategoryUsageKeyValue1(e);
-    setAddportFolioItem({ ...addPortFolioItem, usageIn: e })
+    setAddportFolioItem({ ...addPortFolioItem, usageIn: e });
     dispatch(taskActions.updateList(e.value));
   };
 
@@ -192,33 +201,107 @@ const AddCustomPortfolioItem = (props) => {
     setStratgyTaskTypeKeyValue([]);
     addPortFolioItem.taskType = "";
     // setStratgyTaskUsageKeyValue(e);
-    setAddportFolioItem({ ...addPortFolioItem, strategyTask: e })
+    setAddportFolioItem({ ...addPortFolioItem, strategyTask: e });
     dispatch(taskActions.updateTask(e.value));
   };
 
   const TabsEnableDisabledFun = () => {
     // console.log("Hello");
-    console.log("tabs : ", tabs)
+    console.log("tabs : ", tabs);
     console.log("props.compoFlag : ", props.compoFlag);
-    console.log("addPortFolioItem.templateId : ", addPortFolioItem.templateId === "");
+    console.log(
+      "addPortFolioItem.templateId : ",
+      addPortFolioItem.templateId === ""
+    );
 
     if (tabs == 1) {
-      setTabs((prev) => `${parseInt(prev) + 1}`)
+      setTabs((prev) => `${parseInt(prev) + 1}`);
     } else if (tabs == 2 && addPortFolioItem.templateId == "") {
       // if(&& props.compoFlag === "ITEM")
-      setTabs((prev) => `${parseInt(prev) + 1}`)
+      setTabs((prev) => `${parseInt(prev) + 1}`);
     } else if (tabs == 2 && addPortFolioItem.templateId !== "") {
       if (props.compoFlag === "ITEM") {
         props.setTabs("2");
         props.getAddportfolioItemDataFun(addPortFolioItem);
       } else {
-        props.getAddportfolioItemData(addPortFolioItem)
+        props.getAddportfolioItemData(addPortFolioItem);
         props.setBundleTabs("3");
       }
     }
 
     // tabs < 3 && setTabs((prev) => `${parseInt(prev) + 1}`);
-  }
+  };
+
+  const handleStandardJobInputSearch = (e) => {
+    setAddportFolioItem({
+      ...addPortFolioItem,
+      templateId: e.target.value,
+    });
+    var searchStr = e.target.value;
+    getSearchStandardJobId(searchStr)
+      .then((res) => {
+        // console.log("search Query Result --------- :", res);
+        // setMasterData(res);
+        $(`.scrollbar-model`).css("display", "block");
+        setQuerySearchStandardJobResult(res);
+        var preArr = [];
+        for (var n = 0; n < res.length; n++) {
+          preArr.push({ label: res[n].prefix, value: res[n].prefix });
+        }
+        // setQuerySearchModelPrefixOption(preArr);
+      })
+      .catch((err) => {
+        console.log("error in getSearchQueryCoverage", err);
+      });
+  };
+
+  const handleRelatedKitInputSearch = (e) => {
+    setAddportFolioItem({
+      ...addPortFolioItem,
+      repairOption: e.target.value,
+    });
+    var searchStr = e.target.value;
+    getSearchKitId(searchStr)
+      .then((res) => {
+        // console.log("search Query Result --------- :", res);
+        // setMasterData(res);
+        $(`.scrollbar-model`).css("display", "block");
+        setQuerySearchRelatedKitResult(res);
+        var preArr = [];
+        for (var n = 0; n < res.length; n++) {
+          preArr.push({ label: res[n].prefix, value: res[n].prefix });
+        }
+        // setQuerySearchModelPrefixOption(preArr);
+      })
+      .catch((err) => {
+        console.log("error in getSearchQueryCoverage", err);
+      });
+  };
+
+  const handleSearchStandardJobListClick = (e, currentItem) => {
+    console.log("currentItem : ", currentItem);
+    // templateDescription
+    setAddportFolioItem({
+      ...addPortFolioItem,
+      templateId: currentItem.standardJobId,
+      templateDescription: {
+        label: currentItem.description,
+        value: currentItem.description,
+      },
+    });
+    $(`.scrollbar-model`).css("display", "none");
+  };
+
+  const handleSearchRelatedKitListClick = (e, currentItem) => {
+    console.log("currentItem : ", currentItem);
+    // templateDescription
+    setAddportFolioItem({
+      ...addPortFolioItem,
+      repairOption: currentItem.kitId,
+      kitDescription: { label: currentItem.description, value: currentItem.description },
+    });
+    $(`.scrollbar-model`).css("display", "none");
+  };
 
   const handleAddPortfolioSave = () => {
     if (props.compoFlag === "itemEdit") {
@@ -226,14 +309,12 @@ const AddCustomPortfolioItem = (props) => {
     } else if (props.compoFlag === "ITEM") {
       props.setTabs("2");
       props.getAddportfolioItemDataFun(addPortFolioItem);
-      console.log("addPortFolioItem : ", addPortFolioItem)
+      console.log("addPortFolioItem : ", addPortFolioItem);
     } else {
-      props.getAddportfolioItemData(addPortFolioItem)
+      props.getAddportfolioItemData(addPortFolioItem);
       props.setBundleTabs("3");
     }
   };
-
-
 
   return (
     <>
@@ -294,7 +375,12 @@ const AddCustomPortfolioItem = (props) => {
                 className="form-control border-radius-10"
                 placeholder="DESCRIPTION"
                 name="description"
-                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, description: e.target.value, })}
+                onChange={(e) =>
+                  setAddportFolioItem({
+                    ...addPortFolioItem,
+                    description: e.target.value,
+                  })
+                }
                 value={addPortFolioItem.description}
                 disabled={editable}
               />
@@ -312,7 +398,9 @@ const AddCustomPortfolioItem = (props) => {
                 options={categoryList}
                 // options={props.categoryList}
                 value={addPortFolioItem.usageIn}
-                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, usageIn: e })}
+                onChange={(e) =>
+                  setAddportFolioItem({ ...addPortFolioItem, usageIn: e })
+                }
                 isDisabled={editable}
               />
             </div>
@@ -333,7 +421,9 @@ const AddCustomPortfolioItem = (props) => {
                 options={updatedTaskList}
                 // options={props.updatedTaskList}
                 value={addPortFolioItem.taskType}
-                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, taskType: e, })}
+                onChange={(e) =>
+                  setAddportFolioItem({ ...addPortFolioItem, taskType: e })
+                }
                 isDisabled={editable}
               />
               {/* <div className="icon-defold">
@@ -362,7 +452,9 @@ const AddCustomPortfolioItem = (props) => {
               <Select
                 options={frequencyOptions}
                 placeholder="FREQUENCY"
-                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, frequency: e, })}
+                onChange={(e) =>
+                  setAddportFolioItem({ ...addPortFolioItem, frequency: e })
+                }
                 value={addPortFolioItem.frequency}
                 isDisabled={editable}
               />
@@ -401,7 +493,9 @@ const AddCustomPortfolioItem = (props) => {
                   { value: "per quarter", label: "per quarter" },
                 ]}
                 placeholder="HOURS"
-                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, unit: e })}
+                onChange={(e) =>
+                  setAddportFolioItem({ ...addPortFolioItem, unit: e })
+                }
                 value={addPortFolioItem.unit}
                 isDisabled={editable}
               />
@@ -421,7 +515,12 @@ const AddCustomPortfolioItem = (props) => {
                 className="form-control border-radius-10"
                 // options={options}
 
-                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
+                onChange={(e) =>
+                  setAddportFolioItem({
+                    ...addPortFolioItem,
+                    recommendedValue: e.target.value,
+                  })
+                }
                 value={addPortFolioItem.recommendedValue}
                 isDisabled={editable}
               />
@@ -439,7 +538,12 @@ const AddCustomPortfolioItem = (props) => {
                 type="text"
                 className="form-control border-radius-10"
                 placeholder="QUANTITY"
-                onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, quantity: e.target.value, })}
+                onChange={(e) =>
+                  setAddportFolioItem({
+                    ...addPortFolioItem,
+                    quantity: e.target.value,
+                  })
+                }
                 value={addPortFolioItem.quantity}
                 disabled={editable}
               />
@@ -612,7 +716,8 @@ const AddCustomPortfolioItem = (props) => {
               borderRadius: "5px",
             }}
           >
-            <TabList className="custom-tabs-div"
+            <TabList
+              className="custom-tabs-div"
               onChange={(e, newValue) => setTabs(newValue)}
               aria-label="lab API tabs example"
             >
@@ -623,12 +728,16 @@ const AddCustomPortfolioItem = (props) => {
               <Tab label="Related template(s)" value="2" />
               {/* <SellOutlinedIcon className=" font-size-16" /> */}
               {/* <Tab label="Related repair option" value="3" /> */}
-              <Tab label="Related Kit" value="3" disabled={addPortFolioItem.templateId != ""} />
+              <Tab
+                label="Related Kit"
+                value="3"
+                disabled={addPortFolioItem.templateId != ""}
+              />
             </TabList>
           </Box>
           <TabPanel value="1">
             {/* <p className="mt-4">SUMMARY</p> */}
-            <div className="row mt-4">
+            <div className="row mt-4 input-fields">
               {/* <div className="col-md-6 col-sm-6">
                 <div className="form-group w-100">
                   <label
@@ -656,7 +765,7 @@ const AddCustomPortfolioItem = (props) => {
                   </label>
                   <input
                     type="text"
-                    className="form-control border-radius-10"
+                    className="form-control border-radius-10 text-primary"
                     placeholder="Optional"
                     onChange={(e) =>
                       setAddportFolioItem({
@@ -679,9 +788,7 @@ const AddCustomPortfolioItem = (props) => {
                   <Select
                     options={categoryList}
                     value={addPortFolioItem.usageIn}
-                    // onChange={(e) =>
-                    //   setAddportFolioItem({ ...addPortFolioItem, usageIn: e })
-                    // }
+                    className="text-primary"
                     onChange={(e) => HandleCatUsage(e)}
                   />
                 </div>
@@ -689,7 +796,7 @@ const AddCustomPortfolioItem = (props) => {
             </div>
 
             <p className="mt-4">STRATEGY</p>
-            <div className="row mt-4">
+            <div className="row mt-4 input-fields">
               <div className="col-md-6 col-sm-6">
                 <div className="form-group">
                   <label
@@ -702,6 +809,7 @@ const AddCustomPortfolioItem = (props) => {
                     options={updatedList}
                     onChange={(e) => HandleStrategyUsage(e)}
                     value={addPortFolioItem.strategyTask}
+                    className="text-primary"
                   />
                 </div>
               </div>
@@ -721,6 +829,7 @@ const AddCustomPortfolioItem = (props) => {
                         taskType: e,
                       })
                     }
+                    className="text-primary"
                     value={addPortFolioItem.taskType}
                   />
                   {/* <div className="icon-defold">
@@ -759,6 +868,7 @@ const AddCustomPortfolioItem = (props) => {
                         frequency: e,
                       })
                     }
+                    className="text-primary"
                     value={addPortFolioItem.frequency}
                   />
                   {/* <div className="icon-defold">
@@ -803,6 +913,7 @@ const AddCustomPortfolioItem = (props) => {
                     onChange={(e) =>
                       setAddportFolioItem({ ...addPortFolioItem, unit: e })
                     }
+                    className="text-primary"
                     value={addPortFolioItem.unit}
                   />
                 </div>
@@ -821,15 +932,24 @@ const AddCustomPortfolioItem = (props) => {
                   >
                     <input
                       type="number"
-                      className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                      className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                       placeholder="Recommended Value"
                       // defaultValue={props?.priceCalculator?.startUsage}
                       // value={priceCalculator.startUsage}
-                      onChange={(e) => setAddportFolioItem({ ...addPortFolioItem, recommendedValue: e.target.value, })}
+                      onChange={(e) =>
+                        setAddportFolioItem({
+                          ...addPortFolioItem,
+                          recommendedValue: e.target.value,
+                        })
+                      }
                       value={addPortFolioItem.recommendedValue}
                       name="recommendedValue"
                     />
-                    <span className="hours-div">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                    <span className="hours-div">
+                      {addPortFolioItem.unit == ""
+                        ? "select unit"
+                        : addPortFolioItem.unit.label}
+                    </span>
                   </div>
                   {/* <Select
                     onChange={(e) =>
@@ -854,7 +974,7 @@ const AddCustomPortfolioItem = (props) => {
                   </label>
                   <input
                     type="text"
-                    className="form-control border-radius-10"
+                    className="form-control border-radius-10 text-primary"
                     placeholder="QUANTITY"
                     onChange={(e) =>
                       setAddportFolioItem({
@@ -876,7 +996,7 @@ const AddCustomPortfolioItem = (props) => {
                   </label>
                   <input
                     type="email"
-                    className="form-control border-radius-10"
+                    className="form-control border-radius-10 text-primary"
                     placeholder="NO. OF EVENTS"
                     onChange={(e) =>
                       setAddportFolioItem({
@@ -893,7 +1013,7 @@ const AddCustomPortfolioItem = (props) => {
           <TabPanel value="2">
             {" "}
             <p className="mt-4">TEMPLATES</p>
-            <div className="row">
+            <div className="row input-fields">
               <div className="col-md-6 col-sm-6">
                 <div className="form-group">
                   <label
@@ -902,7 +1022,34 @@ const AddCustomPortfolioItem = (props) => {
                   >
                     TEMPLATE ID
                   </label>
-                  <Select
+                  <input
+                    type="text"
+                    className="form-control text-primary border-radius-10 text-primary"
+                    name="model"
+                    placeholder="TEMPLATE ID"
+                    value={addPortFolioItem.templateId}
+                    // onChange={handleAddServiceBundleChange}
+                    onChange={(e) => handleStandardJobInputSearch(e)}
+                  />
+                  {
+                    <ul
+                      className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
+                      id="style"
+                    >
+                      {querySearchStandardJobResult.map((currentItem, j) => (
+                        <li
+                          className="list-group-item"
+                          key={j}
+                          onClick={(e) =>
+                            handleSearchStandardJobListClick(e, currentItem)
+                          }
+                        >
+                          {currentItem.standardJobId} {currentItem.description}
+                        </li>
+                      ))}
+                    </ul>
+                  }
+                  {/* <Select
                     options={options}
                     placeholder="TEMPLATE ID"
                     onChange={(e) =>
@@ -912,25 +1059,7 @@ const AddCustomPortfolioItem = (props) => {
                       })
                     }
                     value={addPortFolioItem.templateId}
-                  />
-                  {/* <div className="icon-defold">
-                    <div className="form-control">
-                      <Select
-                        options={options}
-                        placeholder="TEMPLATE ID"
-                        onChange={(e) =>
-                          setAddportFolioItem({
-                            ...addPortFolioItem,
-                            templateId: e,
-                          })
-                        }
-                        value={addPortFolioItem.templateId}
-                      />
-                      <span className="search-icon searchIcon">
-                        <SearchOutlinedIcon className="font-size-16" />
-                      </span>
-                    </div>
-                  </div> */}
+                  /> */}
                 </div>
               </div>
               <div className="col-md-6 col-sm-6">
@@ -950,7 +1079,9 @@ const AddCustomPortfolioItem = (props) => {
                         templateDescription: e,
                       })
                     }
+                    className="text-primary"
                     value={addPortFolioItem.templateDescription}
+                    isDisabled
                   />
                   {/* <div className="icon-defold">
                     <div className="form-control">
@@ -979,7 +1110,8 @@ const AddCustomPortfolioItem = (props) => {
                       href="#"
                       className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
                     >
-                      <span className="mr-2">+</span>Add Template / Kit
+                      <span className="mr-2">+</span>Go to Template
+                      {/* <span className="mr-2">+</span>Add Template / Kit */}
                     </a>
                   </div>
                 </div>
@@ -987,17 +1119,46 @@ const AddCustomPortfolioItem = (props) => {
             </div>
           </TabPanel>
           <TabPanel value="3">
-            <p className="mt-4">REPAIR OPTIONS</p>
-            <div className="row">
-              <div className="col-md-4 col-sm-4">
+            <p className="mt-4">RELATED KIT</p>
+            <div className="row input-fields">
+              <div className="col-md-6 col-sm-6">
                 <div className="form-group">
                   <label
                     className="text-light-dark font-size-14 font-weight-500"
                     for="exampleInputEmail1"
                   >
-                    REPAIR OPTION
+                    {/* REPAIR OPTION */}
+                    RELATED KIT
                   </label>
-                  <Select
+                  <input
+                    type="text"
+                    className="form-control text-primary border-radius-10 text-primary"
+                    name="repairOption"
+                    placeholder="RELATED KIT"
+                    value={addPortFolioItem.repairOption}
+                    onChange={(e) => handleRelatedKitInputSearch(e)}
+                  />
+                  {
+                    // {( addPortFolioItem.repairOption != ""  && querySearchRelatedKitResult.length > 0 ? "hello" : "bye" )}
+                    <ul
+                      className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
+                      id="style"
+                    >
+
+                      {querySearchRelatedKitResult.map((currentItem, j) => (
+                        <li
+                          className="list-group-item"
+                          key={j}
+                          onClick={(e) =>
+                            handleSearchRelatedKitListClick(e, currentItem)
+                          }
+                        >
+                          {currentItem.kitId} {currentItem.description}
+                        </li>
+                      ))}
+                    </ul>
+                  }
+                  {/* <Select
                     options={options}
                     placeholder="REPAIR OPTION"
                     onChange={(e) =>
@@ -1007,35 +1168,42 @@ const AddCustomPortfolioItem = (props) => {
                       })
                     }
                     value={addPortFolioItem.repairOption}
-                  />
-                  {/* <div className="icon-defold">
-                    <div className="form-control">
-                      <Select
-                        options={options}
-                        placeholder="REPAIR OPTION"
-                        onChange={(e) =>
-                          setAddportFolioItem({
-                            ...addPortFolioItem,
-                            repairOption: e,
-                          })
-                        }
-                        value={addPortFolioItem.repairOption}
-                      />
-                      <span className="search-icon searchIcon">
-                        <SearchOutlinedIcon className="font-size-16" />
-                      </span>
-                    </div>
-                  </div> */}
+                    className="text-primary"
+                  /> */}
                 </div>
               </div>
-              <div className="col-md-4 col-sm-4">
+              <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                  <label
+                    className="text-light-dark font-size-14 font-weight-500"
+                    for="exampleInputEmail1"
+                  >
+                    KIT DESCRIPTION
+                  </label>
+                  <Select
+                    options={options}
+                    placeholder="KIT DESCRIPTION"
+                    onChange={(e) =>
+                      setAddportFolioItem({
+                        ...addPortFolioItem,
+                        kitDescription: e,
+                      })
+                    }
+                    className="text-primary"
+                    value={addPortFolioItem.kitDescription}
+                    isDisabled
+                  />
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
                 <div className="form-group">
                   <div className="mt-4">
                     <a
                       href="#"
                       className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
                     >
-                      <span className="mr-2">+</span>Add Repair Option
+                      {/* <span className="mr-2">+</span>Add Repair Option */}
+                      <span className="mr-2">+</span>Go to Related Kit
                     </a>
                   </div>
                 </div>

@@ -1,15 +1,15 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { CREATE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID, CREATE_CUSTOM_PRICE, CUSTOM_PORTFOLIO_SEARCH_QUERY, QUOTE_CREATION, SEARCH_QUOTE_URL } from "./CONSTANTS";
+import { CREATE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID, CREATE_CUSTOM_PRICE, CUSTOM_PORTFOLIO_SEARCH_QUERY, QUOTE_CREATION, SEARCH_QUOTE_URL, CONVERT_PORTFOLIO_TO_QUOTE, GET_COVERT_QUOTE_DETAILS } from "./CONSTANTS";
 
 /* ----------------- Authorization ------------------- */
 
 var accessToken = localStorage.getItem("access_token");
 const headersdata = {
-  'content-type': 'application/json',
-  'Accept': 'application/json',
-  'Authorization': accessToken != undefined ? accessToken : ''
-  // 'Authorization': url.Auth_Token
+    'content-type': 'application/json',
+    'Accept': 'application/json',
+    'Authorization': accessToken != undefined ? accessToken : ''
+    // 'Authorization': url.Auth_Token
 }
 
 /* ------------------------------------------------------------ */
@@ -118,6 +118,48 @@ export const deleteMasterQuote = (id) => {
                 });
         } catch (error) {
             console.error("in customportfolioItemService > deleteMasterQuote, Err===", error);
+            reject(SYSTEM_ERROR);
+        }
+    });
+};
+
+export const convertPortfolioToQuoteData = (portfolioId) => {
+    console.log("QuoteService > convertPortfolioToQuoteData called...");
+    return new Promise((resolve, reject) => {
+        try {
+            axios
+                .get(CONVERT_PORTFOLIO_TO_QUOTE + portfolioId, { headers: headersdata })
+                .then((res) => {
+                    console.log("convertPortfolioToQuoteData > axios res=", res);
+                    resolve(res);
+                })
+                .catch((err) => {
+                    console.log("convertPortfolioToQuoteData > axios err=", err);
+                    reject("Error in convertPortfolioToQuoteData axios!");
+                });
+        } catch (error) {
+            console.error("in QuoteService > convertPortfolioToQuoteData, Err===", error);
+            reject(SYSTEM_ERROR);
+        }
+    });
+};
+
+export const getConvertQuoteData = (id) => {
+    console.log("QuoteService > getConvertQuoteData called...");
+    return new Promise((resolve, reject) => {
+        try {
+            axios
+                .get(GET_COVERT_QUOTE_DETAILS + "/" + id, { headers: headersdata })
+                .then((res) => {
+                    console.log("getConvertQuoteData > axios res=", res);
+                    resolve(res);
+                })
+                .catch((err) => {
+                    console.log("getConvertQuoteData > axios err=", err);
+                    reject("Error in getConvertQuoteData axios!");
+                });
+        } catch (error) {
+            console.error("in QuoteService > getConvertQuoteData, Err===", error);
             reject(SYSTEM_ERROR);
         }
     });
