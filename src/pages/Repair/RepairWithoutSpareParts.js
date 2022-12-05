@@ -18,7 +18,6 @@ import $ from "jquery";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import Moment from "react-moment";
 import { builderSearch, createBuilder } from "services/repairBuilderServices";
-import DynamicSearchComponent from "./components/DynamicSearchComponent";
 import { BUILDER_SEARCH_Q_OPTIONS, GRID_STYLE } from "./CONSTANTS";
 import LoadingProgress from "./components/Loader";
 import { useDispatch } from "react-redux";

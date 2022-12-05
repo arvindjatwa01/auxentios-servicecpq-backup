@@ -9,7 +9,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
-import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormGroup from "@mui/material/FormGroup";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
@@ -342,7 +341,7 @@ export const RepairPartlist = () => {
               </div>
             </div>
           </div>
-          <div className="bg-primary px-3 mb-3">
+          <div className="bg-primary px-3 mb-3 border-radius-6">
             <div className="row align-items-center">
               <div className="col-11 mx-2">
                 <div className="d-flex align-items-center bg-primary w-100">

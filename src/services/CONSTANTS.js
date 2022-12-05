@@ -174,6 +174,8 @@ export const SEARCH_EXTWORK = (query) => DATA_SERVICE_URI + `external-work/searc
 export const SEARCH_JOB_CODE = (query) => DATA_SERVICE_URI + `job-code/search?search=${query}`;
 export const SEARCH_Builder = (query) => REPAIR_BUILDER_URI + `builder/search?search=${query}`;
 export const FETCH_BASE_PRICE = (serviceId) => REPAIR_BUILDER_URI + `service-estimate/${serviceId}/base-price`;
+export const SEARCH_KIT = (query) => REPAIR_BUILDER_URI + `kit/search?search=${query}`;
+export const FETCH_REPAIR_BUILDER_KIT = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}`;
 
 /* ===================== Quote Service ============================= */
 

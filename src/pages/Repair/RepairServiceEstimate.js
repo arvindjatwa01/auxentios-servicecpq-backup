@@ -138,7 +138,7 @@ function RepairServiceEstimate(props) {
     },
     {
       value: "PER_ON_LABOR",
-      label: "Percentage on Labour",
+      label: "Percentage on Labor",
     },
   ];
   const priceOptionsPercent_NoLabor = [
