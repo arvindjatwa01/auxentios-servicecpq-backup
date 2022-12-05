@@ -1453,11 +1453,11 @@ function PartList(props) {
                   >
                     <MenuItem
                       className="custommenu ml-1 mr-5"
-                      style={{ borderBottom: "1px black" }}
                       onClick={handleCreateKIT}
                     >
                       Kit
                     </MenuItem>
+                    <Divider />
                     <MenuItem
                       className="custommenu ml-1 mr-5"
                       data-toggle="modal"
@@ -1465,7 +1465,6 @@ function PartList(props) {
                     >
                       Quote
                     </MenuItem>
-                    <Divider />
                   </Menu>
                 </React.Fragment>
               </div>

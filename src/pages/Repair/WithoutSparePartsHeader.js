@@ -770,13 +770,11 @@ function WithoutSparePartsHeader(props) {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    <MenuItem>Templates</MenuItem>
                     <MenuItem>Standard Job</MenuItem>
-                    <MenuItem>Kit</MenuItem>
+                    <Divider />
                     <MenuItem data-toggle="modal" data-target="#quotecreat">
                       Quote
                     </MenuItem>
-                    <Divider />
                   </Menu>
                 </React.Fragment>
               </div>
