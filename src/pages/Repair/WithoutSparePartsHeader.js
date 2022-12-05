@@ -770,9 +770,9 @@ function WithoutSparePartsHeader(props) {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    <MenuItem>Standard Job</MenuItem>
+                    <MenuItem className="custommenu ml-2 mr-4">Standard Job</MenuItem>
                     <Divider />
-                    <MenuItem data-toggle="modal" data-target="#quotecreat">
+                    <MenuItem data-toggle="modal" data-target="#quotecreat" className="custommenu ml-2 mr-4">
                       Quote
                     </MenuItem>
                   </Menu>

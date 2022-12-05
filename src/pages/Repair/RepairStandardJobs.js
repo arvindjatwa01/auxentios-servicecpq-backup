@@ -92,25 +92,6 @@ export const RepairStandardJobs = () => {
   const [typeOfSolutionBuild, setTypeOfSolutionBuild] = useState(-1);
   const [buildSolutionValue, setBuildSolutionValue] = useState(-1);
 
-  const [age, setAge] = React.useState("5");
-  const [age1, setAge1] = React.useState("5");
-  const [age2, setAge2] = React.useState("5");
-  const [show, setShow] = React.useState(false);
-
-  const handleChangedrop = (event) => {
-    setAge(event.target.value);
-  };
-  const handleChangedrop1 = (event) => {
-    setAge1(event.target.value);
-  };
-  const handleChangedrop2 = (event) => {
-    setAge2(event.target.value);
-  };
-
-  const handleRowClick = (e) => {
-    setShow(true);
-  };
-
   const rows = [
     {
       id: 1,

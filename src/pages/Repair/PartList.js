@@ -1452,14 +1452,14 @@ function PartList(props) {
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
                     <MenuItem
-                      className="custommenu ml-1 mr-5"
+                      className="custommenu ml-2 mr-5"
                       onClick={handleCreateKIT}
                     >
                       Kit
                     </MenuItem>
-                    <Divider />
+                    <Divider sx={{ my: 0.5 }} />
                     <MenuItem
-                      className="custommenu ml-1 mr-5"
+                      className="custommenu ml-2 mr-5"
                       data-toggle="modal"
                       data-target="#quotecreat"
                     >
