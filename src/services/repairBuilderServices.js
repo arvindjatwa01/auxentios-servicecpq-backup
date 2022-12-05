@@ -32,6 +32,7 @@ import {
   EXTWORK_ITEM,
   CONSUMABLE_ITEM,
   CREATE_KIT,
+  FETCH_BASE_PRICE,
 } from "./CONSTANTS";
 const accessToken = localStorage.getItem("access_token");
 
@@ -197,6 +198,33 @@ export const FetchServiceHeader = (operationId) => {
         });
     } catch (error) {
       console.error("FetchServiceHeader general exception", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+//fetch base Price for consumable, ext header and misc
+export const FetchBasePrice = (serviceId) => {
+  console.log("service repairbuilder > FetchBasePrice called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(FETCH_BASE_PRICE(serviceId), config)
+        .then((res) => {
+          console.log("repairbuilder -> FetchBasePrice response: ", res);
+          if (res.status === 200) {
+            resolve(res.data);
+          } else {
+            reject(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log("FetchBasePrice > axios err=", err);
+          reject("Error in FetchBasePrice axios!");
+        });
+    } catch (error) {
+      console.error("FetchBasePrice general exception", error);
       reject(SYSTEM_ERROR);
     }
   });

@@ -40,6 +40,7 @@ import {
   RemoveConsumableItem,
   RemoveExtWorkItem,
   FetchMiscforService,
+  FetchBasePrice,
 } from "services/repairBuilderServices";
 import Moment from "react-moment";
 import { useAppSelector } from "app/hooks";
@@ -244,7 +245,7 @@ function RepairServiceEstimate(props) {
     payer: "",
     flatRateIndicator: false,
     adjustedPrice: 0.0,
-    totalBase: 0.0,
+    basePrice: 0.0,
     percentageOfBase: 0,
   });
   // Ext Work Header
@@ -256,7 +257,7 @@ function RepairServiceEstimate(props) {
     payer: "",
     flatRateIndicator: false,
     adjustedPrice: 0.0,
-    totalBase: 0.0,
+    basePrice: 0.0,
     percentageOfBase: 0,
   });
   // Misc Header
@@ -269,7 +270,7 @@ function RepairServiceEstimate(props) {
     flatRateIndicator: false,
     adjustedPrice: 0.0,
     type: "",
-    totalBase: 0.0,
+    basePrice: 0.0,
     percentageOfBase: 0,
   });
   // In case there are no options from search result set the flag
@@ -379,7 +380,7 @@ function RepairServiceEstimate(props) {
   //fetches the service headers if already saved or sets the appropriate values
   useEffect(() => {
     setServiceEstHeaderLoading(true);
-    populateServiceEstimation('all');
+    populateServiceEstimation("all");
   }, []);
 
   const populateServiceEstimation = (fetchType) => {
@@ -413,10 +414,14 @@ function RepairServiceEstimate(props) {
           //if service header exists then mark it view only
           setServiceHeaderViewOnly(result.id ? true : false);
           if (result.id) {
-            if(fetchType === 'all' || fetchType === 'labor') populateLaborData(result);
-            if(fetchType === 'all' || fetchType === 'consumable') populateConsumableData(result);
-            if(fetchType === 'all' || fetchType === 'extwork') populateExtWorkData(result);
-            if(fetchType === 'all' || fetchType === 'misc') populateMiscData(result);
+            if (fetchType === "all" || fetchType === "labor")
+              populateLaborData(result);
+            if (fetchType === "all" || fetchType === "consumable")
+              populateConsumableData(result);
+            if (fetchType === "all" || fetchType === "extwork")
+              populateExtWorkData(result);
+            if (fetchType === "all" || fetchType === "misc")
+              populateMiscData(result);
           } else {
             setLabourData({
               ...labourData,
@@ -449,7 +454,7 @@ function RepairServiceEstimate(props) {
           setServiceEstHeaderLoading(false);
         });
     }
-  }
+  };
   function populateLaborData(result) {
     FetchLaborforService(result.id)
       .then((resultLabour) => {
@@ -463,7 +468,7 @@ function RepairServiceEstimate(props) {
             laborCode: laborCodeList.find(
               (element) => element.value === resultLabour.laborCode
             ),
-            totalPrice: resultLabour.totalPrice? resultLabour.totalPrice : 0
+            totalPrice: resultLabour.totalPrice ? resultLabour.totalPrice : 0,
           });
           populateLaborItems(resultLabour);
           setLaborViewOnly(true);
@@ -500,7 +505,9 @@ function RepairServiceEstimate(props) {
             pricingMethod: priceOptionsPercent.find(
               (element) => element.value === resultConsumable.pricingMethod
             ),
-            totalPrice: resultConsumable.totalPrice ? resultConsumable.totalPrice : 0
+            totalPrice: resultConsumable.totalPrice
+              ? resultConsumable.totalPrice
+              : 0,
           });
           populateConsItems(resultConsumable);
           setConsumableViewOnly(true);
@@ -538,7 +545,7 @@ function RepairServiceEstimate(props) {
             pricingMethod: priceOptionsPercent.find(
               (element) => element.value === resultExtWork.pricingMethod
             ),
-            totalPrice: resultExtWork.totalPrice? resultExtWork.totalPrice: 0
+            totalPrice: resultExtWork.totalPrice ? resultExtWork.totalPrice : 0,
           });
           populateExtWorkItems(resultExtWork);
           setExtWorkViewOnly(true);
@@ -581,7 +588,7 @@ function RepairServiceEstimate(props) {
             type: miscTypeList.find(
               (element) => element.value === resultMisc.type
             ),
-            totalPrice: resultMisc.totalPrice? resultMisc.totalPrice : 0
+            totalPrice: resultMisc.totalPrice ? resultMisc.totalPrice : 0,
           });
           setMiscViewOnly(true);
         }
@@ -608,8 +615,7 @@ function RepairServiceEstimate(props) {
     setSearchVendorResults([]);
     if (searchVendorfieldName === "consVendor") {
       consumableItemData.supplyingVendorName = searchText;
-    }
-    else {
+    } else {
       extWorkItemData.supplyingVendorName = searchText;
     }
     if (searchText) {
@@ -661,15 +667,15 @@ function RepairServiceEstimate(props) {
       ...extWorkItemData,
       supplyingVendorName: currentItem.fullName,
       supplyingVendorCode: currentItem.customerId,
-    });      
+    });
     setSearchVendorResults([]);
   };
-  const handleVendorConsSelect = (type, currentItem) => {    
+  const handleVendorConsSelect = (type, currentItem) => {
     setConsumableItemData({
       ...consumableItemData,
       supplyingVendorName: currentItem.fullName,
       supplyingVendorCode: currentItem.customerId,
-    });      
+    });
     setSearchVendorResults([]);
   };
 
@@ -761,6 +767,7 @@ function RepairServiceEstimate(props) {
         : 0.0,
       pricingMethod: consumableData.pricingMethod?.value,
       payer: consumableData.payer,
+      basePrice: consumableData.basePrice,
     };
     AddConsumableToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -793,10 +800,11 @@ function RepairServiceEstimate(props) {
         : 0.0,
       payer: extWorkData.payer,
       pricingMethod: extWorkData.pricingMethod?.value,
+      basePrice: extWorkData.basePrice,
     };
     AddExtWorkToService(serviceEstimateData.id, data)
       .then((result) => {
-        setConsumableData({
+        setExtWorkData({
           ...result,
           id: result.id,
           pricingMethod: priceOptionsPercent.find(
@@ -818,6 +826,7 @@ function RepairServiceEstimate(props) {
   const updateMiscHeader = () => {
     let data = {
       // ...miscData,
+      ...(miscData.id && { id: miscData.id }),
       jobCode: miscData.jobCode,
       jobCodeDescription: miscData.jobCodeDescription,
       percentageOfBase: miscData.percentageOfBase,
@@ -826,6 +835,7 @@ function RepairServiceEstimate(props) {
       payer: miscData.payer,
       pricingMethod: miscData.pricingMethod?.value,
       type: miscData.type?.value,
+      basePrice: miscData.basePrice,
     };
     AddMiscToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -835,11 +845,9 @@ function RepairServiceEstimate(props) {
           pricingMethod: priceOptionsPercent.find(
             (element) => element.value === result.pricingMethod
           ),
-          type: miscTypeList.find(
-            (element) => element.value === result.type
-          ),
+          type: miscTypeList.find((element) => element.value === result.type),
         });
-        populateServiceEstimation('misc');
+        populateServiceEstimation("misc");
         handleSnack("success", "Misc details updated!");
         setMiscViewOnly(true);
       })
@@ -871,7 +879,7 @@ function RepairServiceEstimate(props) {
         setLabourItemData(initialLaborItemData);
         // populateLaborItems(labourData);
         // populateLaborData(serviceEstimateData);
-        populateServiceEstimation('labor');
+        populateServiceEstimation("labor");
         handleSnack("success", "Added labor item successfully");
       })
       .catch((err) => {
@@ -882,36 +890,36 @@ function RepairServiceEstimate(props) {
 
   // Add or Update Consumable Item
   const addConsumableItem = () => {
-    if(consumableData.id){
-    let data = {
-      // ...consumableItemData,
-      ...(consumableItemData.id && { id: consumableItemData.id }),
-      consumableType: consumableItemData.consumableType?.value,
-      supplyingVendorCode: consumableItemData.supplyingVendorCode,
-      supplyingVendorName: consumableItemData.supplyingVendorName,
-      consumableCode: consumableItemData.consumableCode,
-      description: consumableItemData.description,
-      quantity: consumableItemData.quantity,
-      unitOfMeasure: consumableItemData.unitOfMeasure,
-      // vendor: consumableItemData.vendor,
-      currency: consumableItemData.currency,
-    };
+    if (consumableData.id) {
+      let data = {
+        // ...consumableItemData,
+        ...(consumableItemData.id && { id: consumableItemData.id }),
+        consumableType: consumableItemData.consumableType?.value,
+        supplyingVendorCode: consumableItemData.supplyingVendorCode,
+        supplyingVendorName: consumableItemData.supplyingVendorName,
+        consumableCode: consumableItemData.consumableCode,
+        description: consumableItemData.description,
+        quantity: consumableItemData.quantity,
+        unitOfMeasure: consumableItemData.unitOfMeasure,
+        // vendor: consumableItemData.vendor,
+        currency: consumableItemData.currency,
+      };
 
-    AddConsumableItem(consumableData.id, data)
-      .then((result) => {
-        setConsumableItemData(initialConsumableItemData);
-        // populateConsItems(consumableData);
-        // populateConsumableData(serviceEstimateData);
-        populateServiceEstimation('consumable');
-        handleSnack("success", "Added consumable item successfully");
-      })
-      .catch((err) => {
-        handleSnack("error", "Error occurred while adding consumable item!");
-      });
+      AddConsumableItem(consumableData.id, data)
+        .then((result) => {
+          setConsumableItemData(initialConsumableItemData);
+          // populateConsItems(consumableData);
+          // populateConsumableData(serviceEstimateData);
+          populateServiceEstimation("consumable");
+          handleSnack("success", "Added consumable item successfully");
+        })
+        .catch((err) => {
+          handleSnack("error", "Error occurred while adding consumable item!");
+        });
       handleConsumableItemClose();
       setQueryConsSearchSelector(initialConsQuery);
     } else {
-      handleSnack('warning', "Please update the consumable header details!")
+      handleSnack("warning", "Please update the consumable header details!");
     }
   };
 
@@ -927,7 +935,9 @@ function RepairServiceEstimate(props) {
       supplyingVendorName: extWorkItemData.supplyingVendorName,
       estimatedHours: extWorkItemData.estimatedHours,
       dimensions: extWorkItemData.dimensions?.value,
-      adjustedPrice: extWorkItemData.adjustedPrice,
+      ...(extWorkItemData.adjustedPrice && {
+        adjustedPrice: extWorkItemData.adjustedPrice,
+      }),
       unitOfMeasure: extWorkItemData.unitOfMeasure?.value,
     };
 
@@ -936,7 +946,7 @@ function RepairServiceEstimate(props) {
         setExtWorkItemData(initialExtWorkItemData);
         // populateExtWorkItems(extWorkData);
         // populateExtWorkData(serviceEstimateData);
-        populateServiceEstimation('extwork');
+        populateServiceEstimation("extwork");
         handleSnack("success", "Added ext work item successfully");
       })
       .catch((err) => {
@@ -981,7 +991,7 @@ function RepairServiceEstimate(props) {
       .then((res) => {
         handleSnack("success", res);
         // populateLaborItems(labourData);
-        populateServiceEstimation('labor');
+        populateServiceEstimation("labor");
       })
       .catch((e) => {
         console.log(e);
@@ -1003,7 +1013,7 @@ function RepairServiceEstimate(props) {
       ),
       unitPrice: row.unitPrice ? row.unitPrice : 0,
       extendedPrice: row.extendedPrice ? row.extendedPrice : 0,
-      totalPrice: row.totalPrice ? row.totalPrice : 0
+      totalPrice: row.totalPrice ? row.totalPrice : 0,
     });
     // setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
     setConsumableItemOpen(true);
@@ -1015,7 +1025,7 @@ function RepairServiceEstimate(props) {
       .then((res) => {
         handleSnack("success", res);
         // populateConsItems(consumableData);
-        populateServiceEstimation('consumable');
+        populateServiceEstimation("consumable");
       })
       .catch((e) => {
         console.log(e);
@@ -1042,7 +1052,7 @@ function RepairServiceEstimate(props) {
       ),
       unitPrice: row.unitPrice ? row.unitPrice : 0,
       extendedPrice: row.extendedPrice ? row.extendedPrice : 0,
-      totalPrice: row.totalPrice ? row.totalPrice : 0
+      totalPrice: row.totalPrice ? row.totalPrice : 0,
     });
     setExtWorkItemOpen(true);
   };
@@ -1052,7 +1062,7 @@ function RepairServiceEstimate(props) {
       .then((res) => {
         handleSnack("success", res);
         // populateExtWorkItems(extWorkData);
-        populateServiceEstimation('extwork');
+        populateServiceEstimation("extwork");
       })
       .catch((e) => {
         console.log(e);
@@ -1062,11 +1072,23 @@ function RepairServiceEstimate(props) {
         );
       });
   };
-
+  const [basePriceValues, setBasePriceValues] = useState({
+    PER_ON_TOTAL: 0.0,
+    PER_ON_LABOR: 0.0,
+  });
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    if (["consumables", "extwork", "othrMisc"].includes(newValue)) {
+      FetchBasePrice(serviceEstimateData.id)
+        .then((result) => {
+          setBasePriceValues(result);
+        })
+        .catch((e) => {
+          handleSnack("error", "Error occurred while fetching base price!");
+        });
+    }
   };
- 
+
   const handleExtWorkItemClose = () => {
     setExtWorkItemOpen(false);
     setSearchVendorResults([]);
@@ -1133,17 +1155,16 @@ function RepairServiceEstimate(props) {
       flex: 1,
       width: 130,
     },
-    { field: "unitPrice", headerName: "Unit Price", flex: 1, width: 130, renderCell: params => params.value ? params.value : 0 },
+    { field: "unitPrice", headerName: "Unit Price", flex: 1, width: 130 },
     {
       field: "extendedPrice",
       headerName: "Extended Price",
       flex: 1,
       width: 130,
-      renderCell: params => params.value ? params.value : 0
     },
     { field: "comment", headerName: "Comments", flex: 1, width: 130 },
     { field: "currency", headerName: "Currency", flex: 1, width: 130 },
-    { field: "totalPrice", headerName: "Total Price", flex: 1, width: 130, renderCell: params => params.value ? params.value : 0 },
+    { field: "totalPrice", headerName: "Total Price", flex: 1, width: 130 },
     {
       field: "Actions",
       headerName: "Actions",
@@ -2111,7 +2132,7 @@ function RepairServiceEstimate(props) {
                     )}
                   </TabPanel>
                   <TabPanel value="consumables">
-                    {!consumableData.id && (
+                    {/* {!consumableData.id && ( */}
                       <div className="col-md-12 col-sm-12">
                         <div className=" d-flex justify-content-between align-items-center">
                           <div>
@@ -2130,7 +2151,7 @@ function RepairServiceEstimate(props) {
                           </div>
                         </div>
                       </div>
-                    )}
+                    {/* )} */}
                     {flagRequired.consumableEnabled && (
                       <React.Fragment>
                         {!consumableViewOnly ? (
@@ -2188,12 +2209,15 @@ function RepairServiceEstimate(props) {
                                   PRICE METHOD
                                 </label>
                                 <Select
-                                  onChange={(e) =>
+                                  onChange={(e) => {
                                     setConsumableData({
                                       ...consumableData,
                                       pricingMethod: e,
-                                    })
-                                  }
+                                      basePrice: basePriceValues
+                                        ? basePriceValues[e.value]
+                                        : 0,
+                                    });
+                                  }}
                                   value={consumableData.pricingMethod}
                                   options={
                                     flagRequired.labourEnabled
@@ -2251,7 +2275,7 @@ function RepairServiceEstimate(props) {
                                   disabled
                                   class="form-control border-radius-10 text-primary"
                                   placeholder="Optional"
-                                  value={consumableData.totalBase}
+                                  value={consumableData.basePrice}
                                 />
                               </div>
                             </div>
@@ -2399,7 +2423,7 @@ function RepairServiceEstimate(props) {
                                   TOTAL BASE
                                 </p>
                                 <h6 className="font-weight-600">
-                                  {consumableData.totalBase}
+                                  {consumableData.basePrice}
                                 </h6>
                               </div>
                             </div>
@@ -2587,6 +2611,9 @@ function RepairServiceEstimate(props) {
                                     setExtWorkData({
                                       ...extWorkData,
                                       pricingMethod: e,
+                                      basePrice: basePriceValues
+                                        ? basePriceValues[e.value]
+                                        : 0,
                                     })
                                   }
                                   value={extWorkData.pricingMethod}
@@ -2646,7 +2673,7 @@ function RepairServiceEstimate(props) {
                                   disabled
                                   class="form-control border-radius-10 text-primary"
                                   placeholder="Optional"
-                                  value={extWorkData.totalBase}
+                                  value={extWorkData.basePrice}
                                 />
                               </div>
                             </div>
@@ -2793,7 +2820,7 @@ function RepairServiceEstimate(props) {
                                   TOTAL BASE
                                 </p>
                                 <h6 className="font-weight-600">
-                                  {extWorkData.totalBase}
+                                  {extWorkData.basePrice}
                                 </h6>
                               </div>
                             </div>
@@ -2939,7 +2966,7 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
-                            
+
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
@@ -2967,6 +2994,9 @@ function RepairServiceEstimate(props) {
                                     setMiscData({
                                       ...miscData,
                                       pricingMethod: e,
+                                      basePrice: basePriceValues
+                                        ? basePriceValues[e.value]
+                                        : 0,
                                     })
                                   }
                                   options={
@@ -3025,7 +3055,7 @@ function RepairServiceEstimate(props) {
                                   disabled
                                   class="form-control border-radius-10 text-primary"
                                   placeholder="Optional"
-                                  value={miscData.totalBase}
+                                  value={miscData.basePrice}
                                 />
                               </div>
                             </div>
@@ -3202,7 +3232,7 @@ function RepairServiceEstimate(props) {
                                   TOTAL BASE
                                 </p>
                                 <h6 className="font-weight-600">
-                                  {miscData.totalBase}
+                                  {miscData.basePrice}
                                 </h6>
                               </div>
                             </div>

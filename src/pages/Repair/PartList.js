@@ -1293,6 +1293,7 @@ function PartList(props) {
         }
       } else {
         handleSnack("warning", "Usage percentage should be a valid value!")
+        resolve(oldRow)
       }
       }),
     []
