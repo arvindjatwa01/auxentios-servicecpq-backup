@@ -49,6 +49,7 @@ import $ from "jquery";
 import {
     getSearchCoverageForFamily,
     getSearchQueryCoverage,
+    getConvertQuoteData,
 } from "../../services/index";
 import SelectFilter from "react-select";
 const customStyles = {
@@ -77,7 +78,11 @@ const customStyles = {
 
 
 export function SolutionServicePortfolio(props) {
+
     const history = useHistory()
+    const { state } = props.location;
+    console.log("props are : ", state)
+
     const [age, setAge] = React.useState('5');
     const [age1, setAge1] = React.useState('5');
     const [age2, setAge2] = React.useState('5');
@@ -88,11 +93,15 @@ export function SolutionServicePortfolio(props) {
     const [searchModelResults, setSearchModelResults] = useState([]);
     const [searchSerialResults, setSearchSerialResults] = useState([]);
 
+    const [quoteDataId, setQuoteDataId] = useState(0);
+
     const [severity, setSeverity] = useState("");
     const [openSnack, setOpenSnack] = useState(false);
     const [snackMessage, setSnackMessage] = useState("");
 
     const [searchCustResults, setSearchCustResults] = useState([]);
+
+    const [headerLoading, setHeaderLoading] = useState(false);
 
     const [customerData, setCustomerData] = useState({
         source: "User Generated",
@@ -121,79 +130,60 @@ export function SolutionServicePortfolio(props) {
     };
 
     const masterColumns = [
-        // {
-        //     name: (
-        //         <>
-        //             <div>Select</div>
-        //         </>
-        //     ),
-        //     // selector: (row) => row.check1,
-        //     wrap: true,
-        //     sortable: true,
-        //     maxWidth: "50px",
-        //     minWidth: "50px",
-        //     cell: (row) => (
-        //         <Checkbox
-        //             className="text-black"
-        //         // checked={row.check1}
-        //         // onChange={(e) => handleCheckboxData(e, row)}
-        //         />
-        //     ),
-        // },
         {
             name: (
                 <>
-                    <div>Group Number</div>
+                    <div>Sub Quote Id</div>
                 </>
             ),
-            selector: (row) => row.GroupNumber,
+            selector: (row) => row.sbQuoteId,
             wrap: true,
             sortable: true,
-            format: (row) => row.GroupNumber,
+            format: (row) => row.sbQuoteId,
         },
         {
             name: (
                 <>
-                    <div>Type</div>
+                    <div>Item Name</div>
                 </>
             ),
-            selector: (row) => row.Type,
+            selector: (row) => row.itemName,
             wrap: true,
             sortable: true,
-            format: (row) => row.Type,
+            format: (row) => row.itemName,
         },
         {
             name: (
                 <>
-                    <div>Part number</div>
+                    <div>Description</div>
                 </>
             ),
-            selector: (row) => row.Partnumber,
+            selector: (row) => row.description,
             wrap: true,
             sortable: true,
-            format: (row) => row.Partnumber,
+            format: (row) => row.description,
         },
         {
             name: (
                 <>
-                    <div>Price Extended</div>
+                    <div>Quantity</div>
                 </>
             ),
-            selector: (row) => row.PriceExtended,
+            selector: (row) => row.quantity,
             wrap: true,
             sortable: true,
-            format: (row) => row.PriceExtended,
+            format: (row) => row.quantity,
         },
         {
             name: (
                 <>
-                    <div>Price currency</div>
+                    <div>No of Event</div>
                 </>
             ),
-            selector: (row) => row.Pricecurrency,
+            selector: (row) => row.noOfEvents,
             wrap: true,
             sortable: true,
-            format: (row) => row.Pricecurrency,
+            format: (row) => row.noOfEvents,
         },
         {
             name: (
@@ -212,33 +202,33 @@ export function SolutionServicePortfolio(props) {
                     <div>Total Price</div>
                 </>
             ),
-            selector: (row) => row.TotalPrice,
+            selector: (row) => row.totalPrice,
             wrap: true,
             sortable: true,
-            format: (row) => row.TotalPrice,
+            format: (row) => row.totalPrice,
         },
-        {
-            name: (
-                <>
-                    <div>Comments</div>
-                </>
-            ),
-            selector: (row) => row.Comments,
-            wrap: true,
-            sortable: true,
-            format: (row) => row.Comments,
-        },
-        {
-            name: (
-                <>
-                    <div>Actions</div>
-                </>
-            ),
-            selector: (row) => row.Actions,
-            wrap: true,
-            sortable: true,
-            format: (row) => row.Actions,
-        },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Comments</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.Comments,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.Comments,
+        // },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Actions</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.Actions,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.Actions,
+        // },
     ];
     const handleCreate = () => {
         history.push('/quoteTemplate')
@@ -269,10 +259,43 @@ export function SolutionServicePortfolio(props) {
     const handleClose = () => setOpen(false);
     const handleClose1 = () => setOpen1(false);
     const handleCoveragetable = () => setOpenCoveragetable(false);
+    const [subQuoteItems, setSubQuoteItems] = useState([]);
+
+    useEffect(() => {
+        if (state && state.type === "new") {
+            // setPortfolioId(state.portfolioId);
+            // setGeneralData({ ...generalData, estimationNo: state.builderId });
+        } else if (state) {
+            setQuoteDataId(state.quoteId);
+            fetchAllDetails(state.quoteId);
+        }
+    }, []);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
+
+
+    const fetchAllDetails = async (quoteDataId) => {
+        console.log("quoteDataId --- ",quoteDataId)
+        if (quoteDataId) {
+            setHeaderLoading(true);
+            await getConvertQuoteData(quoteDataId)
+                .then((result) => {
+                    populateHeader(result);
+                })
+                .catch((err) => {
+                    handleSnack("error", "Error occured while fetching header details");
+                });
+            setHeaderLoading(false);
+        }
+    };
+
+    const populateHeader = (result) => {
+        console.log("result ----", result);
+
+        setSubQuoteItems(result.data.sbQuoteItems)
+    }
     const fileTypes = ["JPG", "PNG", "GIF"];
 
 
@@ -1363,7 +1386,7 @@ export function SolutionServicePortfolio(props) {
                                 className=""
                                 title=""
                                 columns={masterColumns}
-                                data={rows}
+                                data={subQuoteItems}
                                 customStyles={customStyles}
                                 selectableRows
                                 pagination

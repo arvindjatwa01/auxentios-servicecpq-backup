@@ -34,6 +34,17 @@ import BusinessCenterOutlinedIcon from "@mui/icons-material/BusinessCenterOutlin
 import LayersOutlinedIcon from "@mui/icons-material/LayersOutlined";
 import Validator from "../../utils/validator";
 
+
+import { useHistory } from 'react-router-dom';
+import IconButton from "@mui/material/IconButton";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import Menu from "@mui/material/Menu";
+import Divider from "@mui/material/Divider";
+import DropdownButton from "react-bootstrap/DropdownButton";
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ClearIcon from '@mui/icons-material/Clear';
+
+
 import MenuItem from '@mui/material/MenuItem';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileAlt, faFolderPlus } from '@fortawesome/free-solid-svg-icons'
@@ -90,7 +101,9 @@ import {
     getMachineTypeKeyValue,
     getLifeStageKeyValue,
     getTypeKeyValue,
+    convertPortfolioToQuoteData,
     getPortfolioCommonConfig,
+    getSolutionPriceCommonConfig,
     getSearchQueryCoverage,
     getSearchCoverageForFamily,
     itemCreation,
@@ -99,6 +112,9 @@ import {
     getItemPrice,
     getcustomItemPriceById,
     updateCustomPriceData,
+    escalationPriceCreation,
+    additionalPriceCreation,
+    portfolioPriceCreation,
 } from "../../services/index";
 import {
     selectCategoryList,
@@ -169,6 +185,7 @@ const customTableStyles = {
 
 export function SolutionTemplateResult(props) {
 
+    let history = useHistory()
     const location = useLocation();
 
     var selectedSolutionTemplateItemsVal = JSON.parse(localStorage.getItem('selectedSolutionTemplateItems'));
@@ -193,6 +210,13 @@ export function SolutionTemplateResult(props) {
 
     const [selectedOption, setSelectedOption] = useState(null);
     const [value, setValue] = React.useState('1');
+
+    const [value2, setValue2] = useState({
+        value: "Archived",
+        label: "Archived",
+    });
+    const [value3, setValue3] = useState({ value: "Gold", label: "Gold" });
+
     const [open, setOpen] = React.useState(false);
     const [open1, setOpen1] = React.useState(false);
     const [openCoverage, setOpenCoveragetable] = React.useState(false);
@@ -222,6 +246,12 @@ export function SolutionTemplateResult(props) {
     const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
     const [customerSegmentKeyValue, setCustomerSegmentKeyValue] = useState([]);
     const [strategyOptionals, setStrategyOptionals] = useState([]);
+
+
+    // const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
+    const [priceListKeyValue, setPriceListKeyValue] = useState([]);
+    const [priceTypeKeyValue, setPriceTypeKeyValue] = useState([]);
+    const [priceHeadTypeKeyValue, setPriceHeadTypeKeyValue] = useState([]);
 
     const [categoryUsageKeyValue1, setCategoryUsageKeyValue1] = useState([]);
     const [stratgyTaskTypeKeyValue, setStratgyTaskTypeKeyValue] = useState([]);
@@ -306,6 +336,13 @@ export function SolutionTemplateResult(props) {
         toInput: "",
     });
 
+    const [quoteDataShow, setQuoteDataShow] = useState(false)
+    const [quoteData, setQuoteData] = useState({
+        contact: "",
+        description: "",
+        reference: "",
+    });
+
     const [generalComponentData, setGeneralComponentData] = useState({
         name: "",
         description: "",
@@ -328,6 +365,7 @@ export function SolutionTemplateResult(props) {
     const [prefilgabelGeneral, setPrefilgabelGeneral] = useState("PORTFOLIO");
     const [priceAgreementOption, setPriceAgreementOption] = useState(false);
     const [open2, setOpen2] = useState(false);
+    const [open3, setOpen3] = useState(false);
 
     const [addPortFolioItem, setAddportFolioItem] = useState({
         id: 0,
@@ -343,6 +381,24 @@ export function SolutionTemplateResult(props) {
         templateDescription: "",
         repairOption: "",
     });
+
+    const [priceListKeyValue1, setPriceListKeyValue1] = useState([]);
+    const [priceMethodKeyValue1, setPriceMethodKeyValue1] = useState([]);
+
+    const [portfolioPriceDataId, setPortfolioPriceDataId] = useState({})
+    const [portfolioAdditionalPriceDataId, setPortfolioAdditionalPriceDataId] = useState({})
+    const [portfolioEscalationPriceDataId, setPortfolioEscalationPriceDataId] = useState({})
+
+    const [priceDetails, setPriceDetails] = useState({
+        priceDate: new Date()
+    })
+    const [priceTypeKeyValue1, setPriceTypeKeyValue1] = useState([]);
+    const [priceAdditionalHeadKeyValue1, setPriceAdditionalHeadKeyValue1] = useState([]);
+    const [priceEscalationHeadKeyValue1, setPriceEscalationKeyValue1] = useState([]);
+    const [escalationPriceValue, setEscalationPriceValue] = useState()
+    const [additionalPriceValue, setAdditionalPriceValue] = useState()
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
 
     const [showRelatedModel, setShowRelatedModel] = useState(false);
     const [editSerialNo, setEditSerialNo] = useState({
@@ -404,6 +460,22 @@ export function SolutionTemplateResult(props) {
     const [bundleServiceShow, setBundleServiceShow] = useState(false);
 
 
+    const handleOption2 = (e) => {
+        setValue2(e);
+    };
+    const handleOption3 = (e) => {
+        setValue3(e);
+    };
+
+
+    const handleQuoteInputChange = (e) => {
+        const { name, value } = e.target;
+        setQuoteData({
+            ...quoteData,
+            [name]: value,
+        });
+    }
+
     const makeHeaderEditable = () => {
         // console.log("Data is : ", location.selectedTemplateItems[0])
         if (value === "1" && viewOnlyTab.generalViewOnly)
@@ -429,6 +501,85 @@ export function SolutionTemplateResult(props) {
         temp.splice(index, 1);
         setPriceAgreementRows(temp);
     };
+
+    const handleCreate = () => {
+
+        console.log("quote Data 1 : ", quoteData)
+        setQuoteDataShow(false)
+        // setQuoteData({
+        //     contact: "",
+        //     description: "",
+        //     reference: ""
+        // });
+        let quotesDetails = {
+            quoteId: quoteData.contact,
+            type: "fetch",
+        };
+
+        history.push({
+            pathname: "/SolutionServicePortfolio",
+            state: quotesDetails,
+        });
+
+        console.log("quote Data 2 : ", quoteData)
+        // history.push("/quoteTemplate");
+    };
+
+    const handleCreateQuote = async () => {
+        // alert("hello");
+        let quoteObj = {
+            quoteType: "SOLUTION",
+            customerId: 0,
+            equipmentId: 0,
+            netValue: 0,
+            currency: "string",
+            grossValue: 0,
+            discount: 0,
+            margin: 0,
+            tax: 0,
+            status: "string",
+            validFrom: "2022-10-18",
+            validTo: "2022-10-18",
+            quantity: 0,
+            customPortfolioModels: portfolioId ? [
+                { customPortfolioId: portfolioId }
+            ] : [],
+            quoteBodyModel: {
+                quoteBodyId: 0,
+                quoteBodyDescription: "string",
+                payerId: 0,
+                shortText: "string",
+                longText: "string",
+                terms: "string",
+                conditions: "string",
+                contact: "string",
+                serialNumber: "string",
+                statusNumber: "string",
+                billingType: "PAY_SUPPORT",
+                promisedDeliveryDate: "2022-10-18",
+                salesOpportunity: "string",
+                componentSerialNumber: "string",
+                versionNumber: "string",
+                serviceRecipientModel: {
+                    serviceRecipientId: 0,
+                    serviceRecipientName: "string",
+                    serviceRecipientemail: "string",
+                    serviceRecipientaddress: "string"
+                }
+            }
+        }
+
+        // console.log("Quote Object is : ", CreatedCustomPortfolioDetails.customPortfolioId)
+
+        const quoteRes = await convertPortfolioToQuoteData(portfolioId);
+        // console.log("quoteRes : ", quoteRes);
+
+        // console.log("quote Response data is : ", quoteRes.data)
+        setQuoteData({ ...quoteData, contact: quoteRes.data.quoteId })
+
+        // console.log("quoteData : ", quoteData);
+        setQuoteDataShow(true);
+    }
 
     const handleAddNewRowPriceAgreement = () => {
         var temp = [...priceAgreementRows];
@@ -921,6 +1072,12 @@ export function SolutionTemplateResult(props) {
         alert("save");
     };
 
+    const handleClick = (event) => {
+        console.log("event", event);
+        setAnchorEl(event.currentTarget);
+        setOpen(true);
+    };
+
     const handleDropdownChange = (type, e) => {
         if (type == ENUM.STRATEGY_TASK) {
             setStrategyData({
@@ -1161,21 +1318,10 @@ export function SolutionTemplateResult(props) {
                         validTo: validityData.toDate.toISOString().substring(0, 10),
                     };
                 } else {
+                    console.log("reqObj : ", reqData)
                     throw "Please fill date fields";
                 }
                 setValue("3");
-                // let reqData;
-                // if (validityData.fromDate && validityData.toDate) {
-                //     reqData = {
-                //         validFrom: validityData.fromDate.toISOString().substring(0, 10),
-                //         validTo: validityData.toDate.toISOString().substring(0, 10),
-                //     };
-                // } else if (validityData.fromInput && validityData.toInput) {
-                //     reqData = {
-                //         validFrom: validityData.fromInput + validityData.from,
-                //         validTo: validityData.toInput + validityData.from,
-                //     };
-                // }
                 setGeneralComponentData({
                     ...generalComponentData,
                     ...reqData,
@@ -1335,8 +1481,8 @@ export function SolutionTemplateResult(props) {
                     (administrative.revisedBy != "" &&
                         administrative.revisedBy != undefined &&
                         !validator.emailValidation(administrative.revisedBy)) ||
-                    (administrative.branch == "" ||
-                        administrative.branch == undefined)
+                    (administrative.salesOffice == "" ||
+                        administrative.salesOffice == undefined)
                     // || (administrative.offerValidity == "" ||
                     // administrative.offerValidity == undefined)
                 ) {
@@ -1468,7 +1614,166 @@ export function SolutionTemplateResult(props) {
 
                 // setValue("4");
 
-            } else if (e.target.id == "coverage") {
+            } else if (e.target.id == "price") {
+
+                let priceEscalation = {
+                    priceMethod: priceMethodKeyValue1.value,
+                    priceHeadType: priceEscalationHeadKeyValue1.value,
+                    escalationPercentage: parseInt(escalationPriceValue),
+                    validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                    validTo: validityData.toDate.toISOString().substring(0, 10),
+                    userId: "string"
+                }
+
+                let priceAdditional = {
+                    priceMethod: priceMethodKeyValue1.value,
+                    priceHeadType: priceAdditionalHeadKeyValue1.value,
+                    additionalPercentage: parseInt(additionalPriceValue),
+                    validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                    validTo: validityData.toDate.toISOString().substring(0, 10),
+                    userId: "string"
+                }
+
+                let portfolioPriceCreate = {
+                    priceMethod: priceMethodKeyValue1.value,
+                    priceType: priceTypeKeyValue1.value,
+                    priceList: priceListKeyValue1.value,
+                    priceDate: priceDetails.priceDate,
+                }
+
+                console.log("portfolioPriceCreate --- : ", portfolioPriceCreate)
+
+                const escalationPrice = await escalationPriceCreation(priceEscalation);
+
+
+                const additionalPrice = await additionalPriceCreation(priceAdditional);
+
+                const portfolioPriceAPIData = await portfolioPriceCreation(portfolioPriceCreate);
+
+                setPortfolioEscalationPriceDataId({
+                    escalationPriceId: escalationPrice.data.escalationPriceId,
+                })
+                setPortfolioAdditionalPriceDataId({
+                    additionalPriceId: additionalPrice.data.additionalPriceId,
+                })
+                setPortfolioPriceDataId({
+                    portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
+                })
+                const { portfolioId, ...res } = generalComponentData;
+
+                let priceobjData = {
+                    ...res,
+                    visibleInCommerce: true,
+                    customerId: 0,
+                    lubricant: true,
+                    customerSegment: generalComponentData.customerSegment.value
+                        ? generalComponentData.customerSegment.value
+                        : "EMPTY",
+                    // machineType: generalComponentData.machineType
+                    //     ? generalComponentData.machineType
+                    //     : "EMPTY",
+                    machineType: machineTypeKeyValue.value,
+                    status: generalComponentData.status
+                        ? generalComponentData.status
+                        : "EMPTY",
+                    strategyTask: generalComponentData.strategyTask
+                        ? generalComponentData.strategyTask
+                        : "EMPTY",
+                    taskType: generalComponentData.taskType
+                        ? generalComponentData.taskType
+                        : "EMPTY",
+                    usageCategory: generalComponentData.usageCategory
+                        ? generalComponentData.usageCategory
+                        : "EMPTY",
+                    productHierarchy: generalComponentData.productHierarchy
+                        ? generalComponentData.productHierarchy
+                        : "EMPTY",
+                    geographic: generalComponentData.geographic
+                        ? generalComponentData.geographic
+                        : "EMPTY",
+                    availability: generalComponentData.availability
+                        ? generalComponentData.availability
+                        : "EMPTY",
+                    responseTime: generalComponentData.responseTime
+                        ? generalComponentData.responseTime
+                        : "EMPTY",
+                    type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                    application: generalComponentData.application
+                        ? generalComponentData.application
+                        : "EMPTY",
+                    contractOrSupport: generalComponentData.contractOrSupport
+                        ? generalComponentData.contractOrSupport
+                        : "EMPTY",
+                    // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                    //     ? generalComponentData.lifeStageOfMachine
+                    //     : "EMPTY",
+                    lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                    supportLevel: generalComponentData.supportLevel
+                        ? generalComponentData.supportLevel
+                        : "EMPTY",
+                    items: [],
+                    customCoverages: [],
+                    customerGroup: generalComponentData.customerGroup
+                        ? generalComponentData.customerGroup
+                        : "EMPTY",
+                    searchTerm: "EMPTY",
+                    supportLevel: "EMPTY",
+                    solutionType: solutionTypeListKeyValue.value ?
+                        solutionTypeListKeyValue.value : "EMPTY",
+                    solutionLevel: solutionLevelListKeyValue.value ?
+                        solutionLevelListKeyValue.value : "EMPTY",
+                    portfolioPrice: {
+                        portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
+                    },
+                    additionalPrice: {
+                        additionalPriceId: additionalPrice.data.additionalPriceId,
+                    },
+                    escalationPrice: {
+                        escalationPriceId: escalationPrice.data.escalationPriceId,
+                    },
+
+                    usageCategory: categoryUsageKeyValue1.value,
+                    taskType: stratgyTaskTypeKeyValue.value,
+                    strategyTask: stratgyTaskUsageKeyValue.value,
+                    responseTime: stratgyResponseTimeKeyValue.value,
+                    productHierarchy: stratgyHierarchyKeyValue.value,
+                    geographic: stratgyGeographicKeyValue.value,
+                    customItems: selectedCustomItems,
+
+                    preparedBy: administrative.preparedBy,
+                    approvedBy: administrative.approvedBy,
+                    preparedOn: administrative.preparedOn,
+                    revisedBy: administrative.revisedBy,
+                    revisedOn: administrative.revisedOn,
+                    salesOffice: administrative.salesOffice,
+                    offerValidity: administrative.offerValidity,
+                    template: flagTemplate,
+                    visibleInCommerce: flagCommerce,
+                };
+
+                const priceObjRes = await updateCustomPortfolio(
+                    portfolioId,
+                    priceobjData
+                )
+                if (priceObjRes.status === 200) {
+                    toast("👏 Portfolio updated", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                    // setValue("administrative");
+                    setValue("5");
+                    // setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: true });
+                    // console.log("administryRes updating", administryRes.data);
+                } else {
+                    throw `${priceObjRes.status}:error in update portfolio`;
+                };
+            }
+            else if (e.target.id == "coverage") {
 
 
                 let cvgIds = [];
@@ -1559,9 +1864,9 @@ export function SolutionTemplateResult(props) {
                         : "EMPTY",
                     searchTerm: "EMPTY",
                     supportLevel: "EMPTY",
-                    // portfolioPrice: {},
-                    // additionalPrice: {},
-                    // escalationPrice: {},
+                    portfolioPrice: portfolioPriceDataId,
+                    additionalPrice: portfolioAdditionalPriceDataId,
+                    escalationPrice: portfolioEscalationPriceDataId,
                     items: [],
                     customItems: [],
                     customCoverages: cvgIds,
@@ -1704,6 +2009,7 @@ export function SolutionTemplateResult(props) {
     const handleWithMiscCheckBox = (e) => {
         setMiscRequired(e.target.checked)
     }
+
 
     const UpdateCustomPriceInclusion = async () => {
         console.log("hello");
@@ -1962,13 +2268,61 @@ export function SolutionTemplateResult(props) {
             .catch((err) => {
                 alert(err);
             });
-        getPortfolioCommonConfig("price-method")
+        // getPortfolioCommonConfig("price-method")
+        //     .then((res) => {
+        //         const options = res.map((d) => ({
+        //             value: d.key,
+        //             label: d.value,
+        //         }));
+        //         setPriceMethodKeyValue(options);
+        //     })
+        //     .catch((err) => {
+        //         alert(err);
+        //     });
+        getSolutionPriceCommonConfig("price-method")
             .then((res) => {
                 const options = res.map((d) => ({
                     value: d.key,
                     label: d.value,
                 }));
                 setPriceMethodKeyValue(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
+
+        getSolutionPriceCommonConfig("price-type")
+            .then((res) => {
+                console.log("res ------", res)
+                const options = res.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setPriceTypeKeyValue(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
+
+        getSolutionPriceCommonConfig("price-list")
+            .then((res) => {
+                const options = res.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setPriceListKeyValue(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
+
+        getSolutionPriceCommonConfig("price-head-type")
+            .then((res) => {
+                const options = res.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setPriceHeadTypeKeyValue(options);
             })
             .catch((err) => {
                 alert(err);
@@ -2197,6 +2551,19 @@ export function SolutionTemplateResult(props) {
         { value: 'strawberry', label: 'Construction-Low' },
         { value: 'vanilla', label: 'Construction-Medium' },
         { value: 'Construction', label: 'Construction' },
+    ];
+
+    const options2 = [
+        { value: "chocolate", label: "Archived" },
+        { value: "strawberry", label: "Draft" },
+        { value: "vanilla", label: "Active" },
+        { value: "Construction", label: "Revised" },
+    ];
+    const options3 = [
+        { value: "chocolate", label: "Gold" },
+        { value: "strawberry", label: "1" },
+        { value: "vanilla", label: "2" },
+        { value: "Construction", label: "3" },
     ];
 
 
@@ -3679,17 +4046,153 @@ export function SolutionTemplateResult(props) {
             <div className="content-body" style={{ minHeight: '884px' }}>
                 <div class="container-fluid ">
                     <div className="d-flex align-items-center justify-content-between mt-2">
-                        <h5 className="font-weight-600 mb-0">Custom Solution Template</h5>
                         <div className="d-flex justify-content-center align-items-center">
+                            <h5 className="font-weight-600 mb-0">Custom Solution Template</h5>
+                            <div className="d-flex justify-content-center align-items-center">
+                                <div className="ml-3">
+                                    <Select
+                                        className="customselectbtn1"
+                                        onChange={(e) => handleOption3(e)}
+                                        options={options3}
+                                        value={value3}
+                                    />
+                                </div>
+
+                                <div className="ml-3">
+                                    <Select
+                                        className="customselectbtn"
+                                        onChange={(e) => handleOption2(e)}
+                                        options={options2}
+                                        value={value2}
+                                    />
+                                </div>
+                                <div className="rating-star">
+                                    <span class="fa fa-star checked"></span>
+                                    <span class="fa fa-star checked"></span>
+                                    <span class="fa fa-star checked"></span>
+                                    <span class="fa fa-star"></span>
+                                    <span class="fa fa-star"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="d-flex">
+                            <div>
+                                <React.Fragment>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            textAlign: "center",
+                                        }}
+                                    >
+                                        <IconButton
+                                            className="btn bg-primary text-white font-size-14 pr-0 ml-2"
+                                            style={{ borderRadius: "5px" }}
+                                            onClick={handleClick}
+                                            size="small"
+                                            aria-controls={open ? "account-menu" : undefined}
+                                            aria-haspopup="true"
+                                            aria-expanded={open ? "true" : undefined}
+                                        >
+                                            <span className="convert mx-2">
+                                                Convert to
+                                                <span>
+                                                    <KeyboardArrowDownIcon />
+                                                </span>
+                                            </span>
+                                        </IconButton>
+                                    </Box>
+                                    <Menu className=""
+                                        anchorEl={anchorEl}
+                                        id="account-menu"
+                                        open={open}
+                                        onClose={handleClose}
+                                        onClick={handleClose}
+                                        PaperProps={{
+                                            elevation: 0,
+                                            sx: {
+                                                overflow: "visible",
+                                                filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                                                mt: 1.5,
+                                                "& .MuiAvatar-root": {
+                                                    width: 32,
+                                                    height: 32,
+                                                    ml: -0.5,
+                                                    mr: 1,
+                                                },
+                                                "&:before": {
+                                                    content: '""',
+                                                    display: "block",
+                                                    position: "absolute",
+                                                    top: 0,
+                                                    right: 14,
+                                                    width: 10,
+                                                    height: 10,
+                                                    bgcolor: "background.paper",
+                                                    transform: "translateY(-50%) rotate(45deg)",
+                                                    zIndex: 0,
+                                                },
+                                            },
+                                        }}
+                                        transformOrigin={{ horizontal: "right", vertical: "top" }}
+                                        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                                    >
+                                        <MenuItem className="custommenu">Templates</MenuItem>
+                                        {/* <MenuItem className="custommenu">Standard Job</MenuItem>
+                                        <MenuItem className="custommenu">Kit</MenuItem> */}
+                                        <MenuItem className="custommenu" data-toggle="modal" data-target="#quotecreat">
+                                            Quote
+                                        </MenuItem>
+                                        <Divider />
+                                    </Menu>
+                                </React.Fragment>
+                            </div>
+                            <div className="d-flex justify-content-center align-items-center">
+                                <a href="#" className="ml-3 font-size-14" title="Share">
+                                    <img src={shareIcon}></img>
+                                </a>
+                                <a
+                                    href="#"
+                                    className="ml-3 font-size-14"
+                                    title="Items to Review"
+                                >
+                                    <img src={folderaddIcon}></img>
+                                </a>
+                                <a href="#" className="ml-3 font-size-14" title="Upload">
+                                    <img src={uploadIcon}></img>
+                                </a>
+                                {/* <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a> */}
+                                <a href="#" className="ml-3 font-size-14" title="Delete">
+                                    <img src={deleteIcon}></img>
+                                </a>
+                                <a href="#" className="ml-3 font-size-14" title="Copy">
+                                    <img src={copyIcon}></img>
+                                </a>
+                                <DropdownButton
+                                    className="customDropdown ml-2"
+                                    id="dropdown-item-button"
+                                >
+                                    <Dropdown.Item
+                                        as="button" data-toggle="modal" data-target="#versionpopup2"
+
+                                    >
+                                        New Versions
+                                    </Dropdown.Item>
+                                    <Dropdown.Item as="button" data-toggle="modal" data-target="#myModal2">Show Errors</Dropdown.Item>
+                                    <Dropdown.Item as="button">Review</Dropdown.Item>
+                                </DropdownButton>
+
+                            </div>
+                        </div>
+                        {/* <div className="d-flex justify-content-center align-items-center">
                             <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
                             <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
                             <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>
                             <a href="#" className="ml-3 font-size-14"><img src={cpqIcon}></img></a>
                             <a href="#" className="ml-3 font-size-14"><img src={deleteIcon}></img></a>
                             <a href="#" className="ml-3 font-size-14"><img src={copyIcon}></img></a>
-                            {/* <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a> */}
-
-                        </div>
+                            
+                        </div> */}
                     </div>
                     <div className="card p-4 mt-5">
                         <h5 className="d-flex align-items-center mb-0">
@@ -4006,6 +4509,7 @@ export function SolutionTemplateResult(props) {
                                                                         setValidityData({
                                                                             ...validityData,
                                                                             fromDate: e,
+                                                                            inputFlag: false,
                                                                         })
                                                                     }
                                                                 />
@@ -4030,6 +4534,8 @@ export function SolutionTemplateResult(props) {
                                                                         setValidityData({
                                                                             ...validityData,
                                                                             toDate: e,
+                                                                            dateFlag: true,
+                                                                            inputFlag: false,
                                                                         })
                                                                     }
                                                                 />
@@ -4831,10 +5337,9 @@ export function SolutionTemplateResult(props) {
                                                     PRICE LIST
                                                 </label>
                                                 <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
+                                                    onChange={(e) => setPriceListKeyValue1(e)}
                                                     className="text-primary"
+                                                    options={priceListKeyValue}
                                                     placeholder="placeholder (Optional)"
                                                 />
                                             </div>
@@ -4848,11 +5353,11 @@ export function SolutionTemplateResult(props) {
                                                     PRICE METHOD
                                                 </label>
                                                 <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={priceMethodKeyValue}
+                                                    // defaultValue={selectedOption}
                                                     className="text-primary"
-                                                    placeholder="placeholder (Optional)"
+                                                    onChange={(e) => setPriceMethodKeyValue1(e)}
+                                                    options={priceMethodKeyValue}
+                                                    placeholder="required"
                                                 />
                                             </div>
                                         </div>
@@ -4864,13 +5369,26 @@ export function SolutionTemplateResult(props) {
                                                 >
                                                     PRICE DATE
                                                 </label>
-                                                <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
-                                                    className="text-primary"
-                                                    placeholder="placeholder (Optional)"
-                                                />
+                                                <div className="d-flex align-items-center date-box w-100">
+                                                    <div className="form-group w-100">
+                                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                            <DatePicker
+                                                                variant="inline"
+                                                                format="dd/MM/yyyy"
+                                                                className="form-controldate border-radius-10"
+                                                                label=""
+                                                                name="preparedOn"
+                                                                value={setPriceDetails.priceDate}
+                                                                onChange={(e) =>
+                                                                    setPriceDetails({
+                                                                        ...priceDetails,
+                                                                        priceDate: e,
+                                                                    })
+                                                                }
+                                                            />
+                                                        </MuiPickersUtilsProvider>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -4886,10 +5404,10 @@ export function SolutionTemplateResult(props) {
                                                     PRICE TYPE
                                                 </label>
                                                 <Select
-                                                    defaultValue={selectedOption}
-                                                    onChange={setSelectedOption}
-                                                    options={options}
+                                                    // defaultValue={priceTypeKeyValue}
                                                     className="text-primary"
+                                                    onChange={(e) => setPriceTypeKeyValue1(e)}
+                                                    options={priceTypeKeyValue}
                                                     placeholder="placeholder (Optional)"
                                                 />
                                             </div>
@@ -4911,8 +5429,6 @@ export function SolutionTemplateResult(props) {
                                                 />
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="row input-fields">
                                         <div className="col-md-4 col-sm-4">
                                             <div className="form-group date-box">
                                                 <label
@@ -4922,28 +5438,24 @@ export function SolutionTemplateResult(props) {
                                                     ADDITIONAL
                                                 </label>
                                                 <div className=" d-flex form-control-date">
-                                                    {/* <Select className="select-input"
-                            defaultValue={selectedOption}
-                            onChange={setSelectedOption}
-                            options={options}
-                            placeholder="placeholder "
-                          /> */}
                                                     <div className="">
                                                         <Select
-                                                            onChange={setSelectedOption}
+                                                            onChange={(e) => setPriceAdditionalHeadKeyValue1(e)}
+                                                            className="text-primary"
                                                             isClearable={true}
                                                             // value={options}
-                                                            options={options}
+                                                            options={priceHeadTypeKeyValue}
                                                             placeholder="Select"
-                                                            className="text-primary"
                                                         />
                                                     </div>
                                                     <input
-                                                        type="email"
-                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                                        type="text"
+                                                        className="form-control rounded-top-left-0 text-primary rounded-bottom-left-0"
                                                         id="exampleInputEmail1"
                                                         aria-describedby="emailHelp"
-                                                        placeholder="10%"
+                                                        placeholder="optional"
+                                                        value={additionalPriceValue}
+                                                        onChange={(e) => setAdditionalPriceValue(e.target.value)}
                                                     />
                                                 </div>
                                             </div>
@@ -4959,22 +5471,27 @@ export function SolutionTemplateResult(props) {
                                                 <div className=" d-flex align-items-center form-control-date">
                                                     <Select
                                                         className="select-input text-primary"
-                                                        defaultValue={selectedOption}
-                                                        onChange={setSelectedOption}
-                                                        options={options}
-                                                        placeholder="placeholder "
+                                                        // defaultValue={selectedOption}
+                                                        onChange={(e) => setPriceEscalationKeyValue1(e)}
+                                                        options={priceHeadTypeKeyValue}
+                                                        placeholder="Select "
                                                     />
                                                     <input
-                                                        type="email"
-                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
+                                                        type="text"
+                                                        className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
                                                         id="exampleInputEmail1"
                                                         aria-describedby="emailHelp"
-                                                        placeholder="20%"
+                                                        placeholder="optional"
+                                                        value={escalationPriceValue}
+                                                        onChange={(e) => setEscalationPriceValue(e.target.value)}
                                                     />
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    {/* <div className="row input-fields">
+
+                                    </div> */}
                                     <hr />
                                     <div className="row input-fields">
                                         <div className="col-md-4 col-sm-4">
@@ -5050,7 +5567,9 @@ export function SolutionTemplateResult(props) {
                                     <div className="row" style={{ justifyContent: "right" }}>
                                         <button
                                             type="button"
-                                            onClick={() => setValue("5")}
+                                            // onClick={() => setValue("5")}
+                                            onClick={handleNextClick}
+                                            id="price"
                                             className="btn btn-light"
                                         >
                                             Save & Next
@@ -5747,7 +6266,297 @@ export function SolutionTemplateResult(props) {
                             </div>
                         </Modal.Body>
                     </Modal>
-                    <Modal show={open} onHide={handleClose} size="md"
+
+                    <div
+                        class="modal fade"
+                        id="quotecreat"
+                        tabindex="-1"
+                        role="dialog"
+                        aria-labelledby="exampleModalLabel"
+                        aria-hidden="true"
+                    >
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content bg-white border-none">
+                                <div class="modal-header border-none">
+                                    <h5 class="modal-title" id="exampleModalLabel">
+                                        Quote Create
+                                    </h5>
+                                    <button
+                                        type="button"
+                                        class="close"
+                                        data-dismiss="modal"
+                                        aria-label="Close"
+                                    >
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <p className="d-block px-3">
+                                    It is a long established fact that a reader will be distracted by
+                                    the readable content of a page when looking at its layout.
+                                </p>
+                                <hr className="my-1" />
+                                <div class="modal-body">
+                                    <div className="row">
+                                        <div className="col-md-12 col-sm-12">
+                                            <div className="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    Quote Type
+                                                </label>
+                                                <Select
+                                                    defaultValue={selectedOption}
+                                                    onChange={setSelectedOption}
+                                                    options={options}
+                                                    placeholder="Cyclical"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    Quote ID
+                                                </label>
+                                                <input
+                                                    type="email"
+                                                    class="form-control"
+                                                    id="exampleInputEmail1"
+                                                    aria-describedby="emailHelp"
+                                                    // placeholder="Enter email"
+                                                    name="contact"
+                                                    value={quoteData.contact}
+                                                    // onChange={handleQuoteInputChange}
+                                                    placeholder="(Auto-generated)"
+                                                    disabled={true}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    Description
+                                                </label>
+                                                <textarea
+                                                    class="form-control"
+                                                    id="exampleFormControlTextarea1"
+                                                    rows="3"
+                                                    name="description"
+                                                    value={quoteData.description}
+                                                    onChange={handleQuoteInputChange}
+                                                ></textarea>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-12 col-sm-12">
+                                            <div class="form-group">
+                                                <label
+                                                    className="text-light-dark font-size-12 font-weight-500"
+                                                    htmlFor="exampleInputEmail1"
+                                                >
+                                                    Reference
+                                                </label>
+                                                <input
+                                                    type="email"
+                                                    class="form-control"
+                                                    id="exampleInputEmail1"
+                                                    aria-describedby="emailHelp"
+                                                    placeholder="Enter email"
+                                                    name="reference"
+                                                    value={quoteData.reference}
+                                                    onChange={handleQuoteInputChange}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {quoteDataShow ? <>
+                                        <div className="row">
+                                            <div class="col-md-12 col-sm-12">
+                                                <div class="form-group mt-3">
+                                                    <p class="font-size-12 font-weight-500 mb-2">QUOTE TYPE </p>
+                                                    <h6 class="font-weight-500">
+                                                        {/* Repair Quote with Spare Parts */}SOLUTION
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 col-sm-12">
+                                                <div class="form-group mt-3">
+                                                    <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
+                                                    {/* <h6 class="font-weight-500">SB12345</h6> */}
+                                                    <h6 class="font-weight-500">{quoteData.contact}</h6>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 col-sm-12">
+                                                <div class="form-group mt-3">
+                                                    <p class="font-size-12 font-weight-500 mb-2">
+                                                        QUOTE DESCRIPTION
+                                                    </p>
+                                                    {/* <h6 class="font-weight-500">Holder text</h6> */}
+                                                    <h6 class="font-weight-500">{quoteData.description}</h6>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 col-sm-12">
+                                                <div class="form-group mt-3">
+                                                    <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
+                                                    {/* <h6 class="font-weight-500">Holder text</h6> */}
+                                                    <h6 class="font-weight-500">{quoteData.reference}</h6>
+                                                </div>
+                                            </div>
+                                        </div></> : <></>}
+
+                                </div>
+                                <div class="modal-footer" style={{ display: "unset" }}>
+                                    {quoteDataShow ? <>
+                                        <div className="mb-2">
+                                            <a
+                                                href="#"
+                                                onClick={() => handleCreate()}
+                                                data-dismiss="modal"
+                                                className="btn bg-primary d-block text-white"
+                                            >
+                                                Done
+                                            </a>
+                                            {/* <a
+                                    href="#"
+                                    data-dismiss="modal"
+                                    onClick={() => setQuoteDataShow(false)}
+                                    className="btn bg-primary d-block text-white"
+                                >
+                                    Done
+                                </a> */}
+                                        </div>
+                                    </> : <></>}
+                                    <div>
+                                        <button class="btn  btn-primary" onClick={() => handleCreateQuote()}>Create</button>
+                                        <button
+                                            type="button"
+                                            class="btn pull-right border"
+                                            data-dismiss="modal"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="modal right fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+
+                                            <div class="modal-header">
+                                                <h4 class="modal-title" id="myModalLabel2"><ErrorOutlineIcon className="mr-2" style={{ fontSize: '32px' }} />Errors</h4>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                                <div className='d-flex justify-content-between align-items-center px-3 border-bottom'>
+                                                    <h6 className='mb-0'>3 errors found in line items</h6>
+                                                    <div>
+                                                        <a href='#' className='btn'><ClearIcon className="mr-2" style={{ color: '#000' }} />Clear All</a>
+                                                    </div>
+                                                </div>
+                                                <div className=' mt-2'>
+                                                    <h6 className="px-3">FILTER</h6>
+                                                    <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
+                                                        <TabContext value={value}>
+                                                            <Box className="custom-tabs" sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                                                                <TabList className="custom-tabs-div" onChange={handleChange} aria-label="lab API tabs example">
+                                                                    <Tab label="Part list" value="1" />
+                                                                    <Tab label="Service Estimates" value="2" />
+                                                                    <Tab label="Form" value="3" />
+
+                                                                </TabList>
+                                                            </Box>
+                                                            <TabPanel className="px-3" value="1">
+                                                                <div className="card border p-3 mb-0">
+                                                                    <div className="d-flex justify-content-between align-items-center">
+                                                                        <p className="mb-0">Invalid data</p>
+                                                                        <h6 className="mb-0">2 min ago</h6>
+                                                                    </div>
+                                                                    <h6 className="mb-0"> Part list header component code</h6>
+                                                                    <p className="mb-0">Fix <a href="#" className="btn">Go to field</a></p>
+                                                                </div>
+                                                            </TabPanel>
+                                                            <TabPanel value="2">Item Two</TabPanel>
+                                                            <TabPanel value="3">Item Three</TabPanel>
+                                                        </TabContext>
+                                                    </Box>
+                                                    <hr className="mb-0" />
+                                                    <div className="p-3">
+                                                        <a href='#' className='btn text-light border-light px-2'>Go Back to Solution</a>
+                                                        <a href='#' className='btn btn-primary float-right px-2'>Choose the correct portfolio</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal right fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+
+                                            <div class="modal-header">
+                                                <h4 class="modal-title" id="myModalLabel2"><ErrorOutlineIcon className="mr-2" style={{ fontSize: '32px' }} />Errors</h4>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                                <div className='d-flex justify-content-between align-items-center px-3 border-bottom'>
+                                                    <h6 className='mb-0'>3 errors found in line items</h6>
+                                                    <div>
+                                                        <a href='#' className='btn'><ClearIcon className="mr-2" style={{ color: '#000' }} />Clear All</a>
+                                                    </div>
+                                                </div>
+                                                <div className=' mt-2'>
+                                                    <h6 className="px-3">FILTER</h6>
+                                                    <Box className="mt-4" sx={{ width: '100%', typography: 'body1' }}>
+                                                        <TabContext value={value}>
+                                                            <Box className="custom-tabs" sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                                                                <TabList className="custom-tabs-div" onChange={handleChange} aria-label="lab API tabs example">
+                                                                    <Tab label="Part list" value="1" />
+                                                                    <Tab label="Service Estimates" value="2" />
+                                                                    <Tab label="Form" value="3" />
+
+                                                                </TabList>
+                                                            </Box>
+                                                            <TabPanel className="px-3" value="1">
+                                                                <div className="card border p-3 mb-0">
+                                                                    <div className="d-flex justify-content-between align-items-center">
+                                                                        <p className="mb-0">Invalid data</p>
+                                                                        <h6 className="mb-0">2 min ago</h6>
+                                                                    </div>
+                                                                    <h6 className="mb-0"> Part list header component code</h6>
+                                                                    <p className="mb-0">Fix <a href="#" className="btn">Go to field</a></p>
+                                                                </div>
+                                                            </TabPanel>
+                                                            <TabPanel value="2">Item Two</TabPanel>
+                                                            <TabPanel value="3">Item Three</TabPanel>
+                                                        </TabContext>
+                                                    </Box>
+                                                    <hr className="mb-0" />
+                                                    <div className="p-3">
+                                                        <a href='#' className='btn text-light border-light px-2'>Go Back to Solution</a>
+                                                        <a href='#' className='btn btn-primary float-right px-2'>Choose the correct portfolio</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <Modal show={open3} onHide={() => setOpen3(false)} size="md"
                         aria-labelledby="contained-modal-title-vcenter"
                         centered>
                         <Modal.Header closeButton>

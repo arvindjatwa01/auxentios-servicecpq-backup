@@ -21,6 +21,9 @@ const DATA_SERVICE_BASE_URL = "http://35.200.157.237/";
 
 const PRICING_URI = PRICING_BASE_URL + "pricing-svc/v1/";
 const SOLUTION_BUILDER_URI = SOLUTION_BASE_URL + "solution-builder-svc/v1/";
+
+const QUOTE_REST_SERVICE = SOLUTION_BASE_URL+ "quote-svc/v1/quote/"
+
 const USER_SERVICE_URI = USER_SERVICE_BASE_URL + "user-svc/v1/user/";
 const SEARCH_COVERAGE = DATA_SERVICE_BASE_URL + "data-svc/api/v1/coverage/"
 const DATA_SERVICE_URI = DATA_SERVICE_BASE_URL + "data-svc/api/v1/";
@@ -51,7 +54,7 @@ export const GET_ALL_SOLUTION_PORTFOLIOS = () =>
 // export const SOLUTION_BUILDER_PRICE_CONFIG = PRICING_URI + "common-config/";
 
 // Template Search
-export const GET_SEARCH_KIT_ID = REPAIR_BUILDER_URI + "kit/search?search=KitId~";
+export const GET_SEARCH_KIT_ID = REPAIR_BUILDER_URI + "kit/search?search=kitId~";
 export const GET_SEARCH_STANDARD_JOB_ID = REPAIR_BUILDER_URI + "standard-job/search?search=standardJobId~";
 
 //User Service
@@ -180,4 +183,7 @@ export const FETCH_REPAIR_BUILDER_KIT = (kitId) => REPAIR_BUILDER_URI + `kit/${k
 /* ===================== Quote Service ============================= */
 
 export const QUOTE_CREATION = () => SOLUTION_BUILDER_URI + "/quote";
+export const CONVERT_PORTFOLIO_TO_QUOTE = QUOTE_REST_SERVICE + "convert-potfolio-to-quote?portfolioId=";
+export const GET_COVERT_QUOTE_DETAILS = QUOTE_REST_SERVICE;
+
 export const SEARCH_QUOTE_URL = () => SOLUTION_BUILDER_URI + "/quote/search?search=";
