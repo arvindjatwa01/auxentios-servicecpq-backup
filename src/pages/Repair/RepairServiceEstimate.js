@@ -2232,7 +2232,7 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div className="form-group mt-3 date-box">
                                 <label className="text-light-dark font-size-12 font-weight-600">
-                                  PERCENTAGE
+                                  PERCENTAGE OF BASE
                                 </label>
                                 <div
                                   className=" d-flex form-control-date"
@@ -2410,7 +2410,7 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
-                                  PERCENTAGE PRICE
+                                  PERCENTAGE OF BASE
                                 </p>
                                 <h6 className="font-weight-600">
                                   {consumableData.percentageOfBase}
@@ -2630,7 +2630,7 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div className="form-group mt-3 date-box">
                                 <label className="text-light-dark font-size-12 font-weight-600">
-                                  PERCENTAGE
+                                  PERCENTAGE OF BASE
                                 </label>
                                 <div
                                   className=" d-flex form-control-date"
@@ -2807,7 +2807,7 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
-                                  PERCENTAGE PRICE
+                                  PERCENTAGE OF BASE
                                 </p>
                                 <h6 className="font-weight-600">
                                   {extWorkData.percentageOfBase}
@@ -3013,7 +3013,7 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div className="form-group mt-3 date-box">
                                 <label className="text-light-dark font-size-12 font-weight-600">
-                                  PERCENTAGE
+                                  PERCENTAGE OF BASE
                                 </label>
                                 <div
                                   className=" d-flex form-control-date"
@@ -3219,7 +3219,7 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
-                                  PERCENTAGE PRICE
+                                  PERCENTAGE OF BASE
                                 </p>
                                 <h6 className="font-weight-600">
                                   {miscData.percentageOfBase}
