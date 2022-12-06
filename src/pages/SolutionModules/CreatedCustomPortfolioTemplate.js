@@ -116,6 +116,7 @@ import {
     escalationPriceCreation,
     additionalPriceCreation,
     portfolioPriceCreation,
+    deleteCustomItem,
 } from "../../services/index";
 import {
     selectCategoryList,
@@ -218,10 +219,10 @@ export function CreatedCustomPortfolioTemplate(props) {
     const [value, setValue] = React.useState('1');
 
     const [value2, setValue2] = useState({
-        value: "Archived",
-        label: "Archived",
+        value: "DRAFT",
+        label: "Draft",
     });
-    const [value3, setValue3] = useState({ value: "Gold", label: "Gold" });
+    const [value3, setValue3] = useState({ value: "STANDARD", label: "Standard (Bronze)" });
 
     const [open, setOpen] = React.useState(false);
     const [open1, setOpen1] = React.useState(false);
@@ -268,6 +269,7 @@ export function CreatedCustomPortfolioTemplate(props) {
     const [escalationPriceValue, setEscalationPriceValue] = useState()
     const [additionalPriceValue, setAdditionalPriceValue] = useState()
 
+    const [currentExpendPortfolioItemRow, setCurrentExpendPortfolioItemRow] = useState(null)
 
 
     const [customerSegmentKeyValue, setCustomerSegmentKeyValue] = useState([]);
@@ -398,13 +400,13 @@ export function CreatedCustomPortfolioTemplate(props) {
         let quotesDetails = {
             quoteId: quoteData.contact,
             type: "fetch",
-         };
+        };
 
         history.push({
             pathname: "/SolutionServicePortfolio",
             state: quotesDetails,
-         });
-        
+        });
+
         console.log("quote Data 2 : ", quoteData)
         // history.push("/quoteTemplate");
     };
@@ -832,6 +834,119 @@ export function CreatedCustomPortfolioTemplate(props) {
         }
     };
 
+    const createNewVersion = async () => {
+
+        try {
+            if (portfolioId != undefined || portfolioId != null) {
+                if (newVersionName != "") {
+                    let versionObj = await getCustomPortfolio(portfolioId);
+                    console.log("versionObj : ", versionObj);
+                    var verNewValue;
+                    if (versionObj.supportLevel == "EMPTY") {
+                        verNewValue = "STANDARD";
+                    } else if (versionObj.supportLevel == "STANDARD") {
+                        verNewValue = "SUPERIOR";
+                    } else if (versionObj.supportLevel == "SUPERIOR") {
+                        verNewValue = "PREMIUM";
+                    } else {
+                        verNewValue = versionObj.supportLevel;
+                    }
+                    let createNewVersionObj = {
+                        customPortfolioId: 0,
+                        name: newVersionName,
+                        description: versionObj.description,
+                        machineType: versionObj.machineType,
+                        searchTerm: versionObj.searchTerm,
+                        lubricant: versionObj.lubricant,
+                        customerId: versionObj.customerId,
+                        customerGroup: versionObj.customerGroup,
+                        customerSegment: versionObj.customerSegment,
+                        externalReference: versionObj.externalReference,
+                        status: versionObj.status,
+                        validFrom: versionObj.validFrom,
+                        validTo: versionObj.validTo,
+                        strategyTask: versionObj.strategyTask,
+                        taskType: versionObj.taskType,
+                        usageCategory: versionObj.usageCategory,
+                        productHierarchy: versionObj.productHierarchy,
+                        geographic: versionObj.geographic,
+                        solutionType: versionObj.solutionType,
+                        solutionLevel: versionObj.solutionLevel,
+                        availability: versionObj.availability,
+                        responseTime: versionObj.responseTime,
+                        type: versionObj.type,
+                        application: versionObj.application,
+                        contractOrSupport: versionObj.contractOrSupport,
+                        lifeStageOfMachine: versionObj.lifeStageOfMachine,
+                        supportLevel: verNewValue,
+                        numberOfEvents: versionObj.numberOfEvents,
+                        itemRelations: versionObj.itemRelations,
+                        rating: versionObj.rating,
+                        startUsage: versionObj.startUsage,
+                        endUsage: versionObj.endUsage,
+                        unit: versionObj.unit,
+                        additionals: versionObj.additionals,
+                        preparedBy: versionObj.preparedBy,
+                        approvedBy: versionObj.approvedBy,
+                        preparedOn: versionObj.preparedOn,
+                        revisedBy: versionObj.revisedBy,
+                        revisedOn: versionObj.revisedOn,
+                        salesOffice: versionObj.salesOffice,
+                        offerValidity: versionObj.offerValidity,
+                        customItems: versionObj.customItems,
+                        customCoverages: versionObj.customCoverages,
+                        portfolioPrice: versionObj.portfolioPrice,
+                        additionalPrice: versionObj.additionalPrice,
+                        escalationPrice: versionObj.escalationPrice,
+                        saveState: versionObj.saveState,
+                        userId: versionObj.userId,
+                        template: versionObj.template,
+                        visibleInCommerce: versionObj.visibleInCommerce
+                    }
+
+                    const portfolioRes = await createCustomPortfolio(createNewVersionObj);
+                    if (portfolioRes.status === 200) {
+                        toast("👏 New Version Created", {
+                            position: "top-right",
+                            autoClose: 3000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                        });
+
+                        // $('#versionpopup').modal('hide');
+                    }
+
+
+
+                } else {
+                    throw "Please Crate a New Version Portfolio Name First";
+
+                }
+            } else {
+                throw "Create Portfolio First";
+            }
+        } catch (error) {
+            console.log("somehing went wrong:", error);
+            // toast("😐" + "Create Portfolio First", {
+            toast("😐" + error, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return;
+        }
+        // if (portfolioId != undefined || portfolioId != null) {
+        console.log("my portfolioId : ", portfolioId);
+        // }
+    }
+
     const saveAddNewServiceOrBundle = async () => {
         setTabs(`${parseInt(tabs) + 1}`);
         try {
@@ -1044,15 +1159,55 @@ export function CreatedCustomPortfolioTemplate(props) {
         console.log("handleServiceItemEdit", row);
     };
 
-    const handleServiceItemDelete = (e, row) => {
-        const _bundleItems = [...bundleItems];
-        const updated = _bundleItems.filter((currentItem) => {
-            if (currentItem.id !== row.id) {
-                return currentItem;
+    const handleServiceItemDelete = async (e, row) => {
+        try {
+            console.log("row data ---- : ", row)
+            const delRes = await deleteCustomItem(row.customItemBodyModel.customItemPrices.customItemPriceDataId);
+            if (delRes.status == 200) {
+                toast("😎 Item Deletion Successfull", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+                const _bundleItems = [...bundleItems];
+                const updated = _bundleItems.filter((currentItem) => {
+                    if (currentItem.id !== row.id) {
+                        return currentItem;
+                    }
+                });
+                setBundleItems(updated);
+                setServiceOrBundlePrefix("");
             }
-        });
-        setBundleItems(updated);
+        } catch (error) {
+            console.log("error", error);
+            toast("😐" + error, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return;
+        }
+
+        // toast("😐" + "Something went wrong !!", {
+        //     position: "top-right",
+        //     autoClose: 3000,
+        //     hideProgressBar: false,
+        //     closeOnClick: true,
+        //     pauseOnHover: true,
+        //     draggable: true,
+        //     progress: undefined,
+        // });
     };
+
 
     const handleServiceItemSave = (e, row) => {
         alert("save");
@@ -1166,9 +1321,9 @@ export function CreatedCustomPortfolioTemplate(props) {
                     application: "HILL",
                     contractOrSupport: "LEVEL_I",
                     lifeStageOfMachine: "NEW_BREAKIN",
-                    supportLevel: "PREMIUM",
+                    // supportLevel: "PREMIUM",
+                    supportLevel: value3.value,
                     serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
-
 
 
                     visibleInCommerce: true,
@@ -1398,7 +1553,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                         ? generalComponentData.customerGroup
                         : "EMPTY",
                     searchTerm: "EMPTY",
-                    supportLevel: "EMPTY",
+                    // supportLevel: "PREMIUM",
+                    supportLevel: value3.value,
                     portfolioPrice: {},
                     additionalPrice: {},
                     escalationPrice: {},
@@ -1543,7 +1699,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                         ? generalComponentData.customerGroup
                         : "EMPTY",
                     searchTerm: "EMPTY",
-                    supportLevel: "EMPTY",
+                    // supportLevel: "PREMIUM",
+                    supportLevel: value3.value,
                     // portfolioPrice: {},
                     // additionalPrice: {},
                     // escalationPrice: {},
@@ -1723,7 +1880,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                         ? generalComponentData.customerGroup
                         : "EMPTY",
                     searchTerm: "EMPTY",
-                    supportLevel: "EMPTY",
+                    // supportLevel: "PREMIUM",
+                    supportLevel: value3.value,
                     solutionType: solutionTypeListKeyValue.value ?
                         solutionTypeListKeyValue.value : "EMPTY",
                     solutionLevel: solutionLevelListKeyValue.value ?
@@ -1865,7 +2023,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                         ? generalComponentData.customerGroup
                         : "EMPTY",
                     searchTerm: "EMPTY",
-                    supportLevel: "EMPTY",
+                    // supportLevel: "PREMIUM",
+                    supportLevel: value3.value,
 
                     solutionType: solutionTypeListKeyValue.value ?
                         solutionTypeListKeyValue.value : "EMPTY",
@@ -2305,6 +2464,29 @@ export function CreatedCustomPortfolioTemplate(props) {
             .catch((err) => {
                 alert(err);
             });
+        getSolutionPriceCommonConfig("support-level")
+            .then((res) => {
+                const options = res.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setVersionOption(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
+
+        getSolutionPriceCommonConfig("status")
+            .then((res) => {
+                const options = res.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setStatusOption(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
     };
 
     const dispatch = useDispatch();
@@ -2326,12 +2508,48 @@ export function CreatedCustomPortfolioTemplate(props) {
 
         // Solution Templates Auto fill  Data Conditons 
 
+        let itemsArrData = [];
+
+        // console.log("CreatedCustomPortfolioDetails 123344 ---- : ", CreatedCustomPortfolioDetails)
+
+        for (let b = 0; b < CreatedCustomPortfolioDetails.itemRelations.length; b++) {
+            // console.log("item relations ", b + ": " + CreatedCustomPortfolioDetails.itemRelations[b].portfolioItemId)
+            // console.log("hello user -----", b)
+            let expendedArrObj = [];
+            let obj = CreatedCustomPortfolioDetails.customItems.find(obj => obj.customItemId == CreatedCustomPortfolioDetails.itemRelations[b].portfolioItemId);
+            for (let c = 0; c < CreatedCustomPortfolioDetails.itemRelations[b].bundles.length; c++) {
+
+                let bundleObj = CreatedCustomPortfolioDetails.customItems.find((objBundle, i) => {
+                    if (objBundle.customItemId == CreatedCustomPortfolioDetails.itemRelations[b].bundles[c]) {
+
+                        return objBundle; // stop searching
+                    }
+                });
+                expendedArrObj.push(bundleObj);
+            }
+
+            for (let d = 0; d < CreatedCustomPortfolioDetails.itemRelations[b].services.length; d++) {
+
+                let serviceObj = CreatedCustomPortfolioDetails.customItems.find((objService, i) => {
+                    if (objService.customItemId == CreatedCustomPortfolioDetails.itemRelations[b].services[d]) {
+
+                        return objService; // stop searching
+                    }
+                });
+                expendedArrObj.push(serviceObj);
+            }
+            obj.associatedServiceOrBundle = expendedArrObj;
+            itemsArrData.push(obj);
+        }
+
+        console.log("item arr is 2333 : ", itemsArrData)
+
         // setCreatedCustomPortfolioItems(location.selectedTemplateItems);
-        setCreatedCustomPortfolioItems(CreatedCustomPortfolioDetails.customItems);
+        // setCreatedCustomPortfolioItems(CreatedCustomPortfolioDetails.customItems);
+        setCreatedCustomPortfolioItems(itemsArrData);
 
         // console.log("location.selectedTemplateItems 11 : ", location.selectedTemplateItems)
         // console.log("localStorage.getItem('selectedTemplateItems') : ", JSON.parse(localStorage.getItem('selectedTemplateItems')))
-        // console.log('setCreatedCustomPortfolioItems', createdCustomPortfolioItems)
         let itemIdData = []
         let priceDataId = []
         // itemIdData.push({ "itemId": location.selectedTemplateItems[0].itemId })
@@ -2339,81 +2557,8 @@ export function CreatedCustomPortfolioTemplate(props) {
         // const customItemsId = location.selectedTemplateItems.map((data, i) => {
         const customItemsId = CreatedCustomPortfolioDetails.customItems.map((data, i) => {
 
-            // console.log("my map data is :=> ", data);
-            // console.log("itemHeaderId is :=>  ", data.customItemHeaderModel?.itemHeaderId);
-            // console.log("itemHeaderModel is => :  ", data.customItemHeaderModel);
             itemIdData.push({ "customItemId": parseInt(data.customItemId) })
-            // itemIdValue.push(data)
 
-            // data.itemBodyModel.itemPrices.map((pricedata, j) => {
-            //     priceDataId.push({ "customItemPriceDataId": pricedata.itemPriceDataId })
-            // });
-
-
-            // itemIdData.push({
-            //     customItemId: "",
-            //     itemName: data.itemName,
-            //     customItemHeaderModel: {
-            //         customItemHeaderId: data.itemHeaderModel.itemHeaderId,
-            //         itemHeaderDescription: data.itemHeaderModel.itemHeaderDescription,
-            //         bundleFlag: data.itemHeaderModel.bundleFlag,
-            //         portfolioItemId: data.itemHeaderModel.portfolioItemId,
-            //         reference: data.itemHeaderModel.reference,
-            //         itemHeaderMake: data.itemHeaderModel.itemHeaderMake,
-            //         itemHeaderFamily: data.itemHeaderModel.itemHeaderFamily,
-            //         model: data.itemHeaderModel.model,
-            //         prefix: data.itemHeaderModel.prefix,
-            //         type: data.itemHeaderModel.type,
-            //         additional: data.itemHeaderModel.additional,
-            //         currency: data.itemHeaderModel.currency,
-            //         netPrice: data.itemHeaderModel.netPrice,
-            //         itemProductHierarchy: data.itemHeaderModel.itemProductHierarchy,
-            //         itemHeaderGeographic: data.itemHeaderModel.itemHeaderGeographic,
-            //         responseTime: data.itemHeaderModel.responseTime,
-            //         usage: data.itemHeaderModel.usage,
-            //         validFrom: data.itemHeaderModel.validFrom,
-            //         validTo: data.itemHeaderModel.validTo,
-            //         estimatedTime: data.itemHeaderModel.estimatedTime,
-            //         servicePrice: data.itemHeaderModel.servicePrice,
-            //         status: data.itemHeaderModel.status,
-            //         componentCode: data.itemHeaderModel.componentCode,
-            //         componentDescription: data.itemHeaderModel.componentDescription,
-            //         serialNumber: data.itemHeaderModel.serialNumber,
-            //         itemHeaderStrategy: data.itemHeaderModel.itemHeaderStrategy,
-            //         variant: data.itemHeaderModel.variant,
-            //         itemHeaderCustomerSegment: data.itemHeaderModel.itemHeaderCustomerSegment,
-            //         jobCode: data.itemHeaderModel.jobCode,
-            //         preparedBy: data.itemHeaderModel.preparedBy,
-            //         approvedBy: data.itemHeaderModel.approvedBy,
-            //         preparedOn: data.itemHeaderModel.preparedOn,
-            //         revisedBy: data.itemHeaderModel.revisedBy,
-            //         revisedOn: data.itemHeaderModel.revisedOn,
-            //         salesOffice: data.itemHeaderModel.salesOffice,
-            //         offerValidity: data.itemHeaderModel.offerValidity
-            //     },
-            //     customItemBodyModel: {
-            //         customItemBodyId: data.itemBodyModel.itemBodyId,
-            //         itemBodyDescription: data.itemBodyModel.itemBodyDescription,
-            //         spareParts: data.itemBodyModel.spareParts,
-            //         labours: data.itemBodyModel.labours,
-            //         miscellaneous: data.itemBodyModel.miscellaneous,
-            //         taskType: data.itemBodyModel.taskType,
-            //         solutionCode: data.itemBodyModel.solutionCode,
-            //         usageIn: data.itemBodyModel.usageIn,
-            //         usage: data.itemBodyModel.usage,
-            //         year: data.itemBodyModel.year,
-            //         avgUsage: data.itemBodyModel.avgUsage,
-            //         unit: data.itemBodyModel.unit,
-            //         customItemPrices: priceDataId,
-            //     },
-            //     createdAt: data.createdAt
-            // })
-
-
-            // console.log("map function data is => " ,data)
-
-            // setSelectedCustomItems([...selectedCustomItems, { "itemId": data.itemId }])
-            // console.log("Item Id's : ", data.itemId)
         })
         setSelectedCustomItems(itemIdData)
         // console.log("selected Custom Items Data are  : ", selectedCustomItems)
@@ -2505,6 +2650,9 @@ export function CreatedCustomPortfolioTemplate(props) {
         { value: "Construction", label: "3" },
     ];
 
+    const [versionOption, setVersionOption] = useState([]);
+    const [statusOption, setStatusOption] = useState([]);
+    const [newVersionName, setNewVersionName] = useState("");
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -3473,16 +3621,27 @@ export function CreatedCustomPortfolioTemplate(props) {
     ];
 
     const selectedportfolioTempItemsColumn = [
+        // {
+        //     name: (
+        //         <>
+        //             <div>Item ID</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.customItemId,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.customItemId,
+        // },
         {
             name: (
                 <>
-                    <div>Item ID</div>
+                    <div>Item Name</div>
                 </>
             ),
-            selector: (row) => row.customItemId,
+            selector: (row) => row.itemName,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemId,
+            format: (row) => row.itemName,
         },
         {
             name: (
@@ -3600,7 +3759,16 @@ export function CreatedCustomPortfolioTemplate(props) {
                     className="d-flex justify-content-center align-items-center row-svg-div"
                     style={{ minWidth: "180px !important" }}
                 >
-
+                    <div
+                        className=" cursor"
+                        onClick={(e) => handleServiceItemEdit(e, row)}
+                    >
+                        <Tooltip title="Edit">
+                            <Link to="#" className="px-1">
+                                <img className="m-1" src={penIcon} />
+                            </Link>
+                        </Tooltip>
+                    </div>
 
 
                     <div className=" cursor" data-toggle="modal" data-target="#myModal12">
@@ -3608,11 +3776,38 @@ export function CreatedCustomPortfolioTemplate(props) {
                             <div className="px-1">
                                 <img src={cpqIcon}></img>
                             </div>
-                            {/* <Link to="#" className="px-1">
-                                <img src={cpqIcon}></img>
-                            </Link> */}
                         </Tooltip>
                     </div>
+                    {row.customItemBodyModel.customItemPrices != null  && row.customItemBodyModel.customItemPrices.length > 0 ?
+
+                        <div className="" onClick={(e) => handleServiceItemDelete(e, row)}>
+                            <Tooltip title="Delete">
+                                <Link to="#" className="px-1">
+                                    <svg
+                                        data-name="Layer 41"
+                                        id="Layer_41"
+                                        viewBox="0 0 50 50"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <title />
+                                        <path
+                                            className="cls-1"
+                                            d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                                        />
+                                        <path
+                                            className="cls-1"
+                                            d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                                        />
+                                        <path
+                                            className="cls-1"
+                                            d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                                        />
+                                    </svg>
+                                </Link>
+                            </Tooltip>
+                        </div>
+                        : <></>}
+
                 </div>
             ),
         },
@@ -3743,161 +3938,199 @@ export function CreatedCustomPortfolioTemplate(props) {
                     className="sc-evZas cMMpBL rdt_TableRow"
                     style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
                 >
-                    <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco"></div>
+                    <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
                     <div
                         id="cell-1-undefined"
                         data-column-id="1"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
-                        <div>{bundleAndService.itemId}</div>
+                        {/* <div>{bundleAndService.customItemId}</div> */}
+                        <div>{bundleAndService.itemName}</div>
                     </div>
                     <div
                         id="cell-2-undefined"
                         data-column-id="2"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
-                            {bundleAndService.itemBodyModel.itemBodyDescription}
+                            {bundleAndService.customItemHeaderModel.itemHeaderDescription}
                         </div>
                     </div>
                     <div
                         id="cell-3-undefined"
                         data-column-id="3"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
-                            {bundleAndService.itemHeaderModel.strategy}
+                            {bundleAndService.customItemHeaderModel.itemHeaderStrategy}
                         </div>
                     </div>
                     <div
                         id="cell-4-undefined"
                         data-column-id="4"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
-                            {bundleAndService.itemBodyModel.standardJobId}
+                            {bundleAndService.customItemBodyModel.taskType}
                         </div>
                     </div>
                     <div
                         id="cell-5-undefined"
                         data-column-id="5"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
-                            {bundleAndService.itemBodyModel.repairOption}
+                            {bundleAndService.customItemHeaderModel?.quantity}
                         </div>
                     </div>
                     <div
                         id="cell-6-undefined"
                         data-column-id="6"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
-                            {bundleAndService.itemBodyModel.frequency}
+                            {bundleAndService.customItemHeaderModel.netPrice}
                         </div>
                     </div>
                     <div
                         id="cell-7-undefined"
                         data-column-id="7"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
-                            {bundleAndService.itemBodyModel.quantity}
+                            {bundleAndService.customItemHeaderModel.additional}
                         </div>
                     </div>
                     <div
                         id="cell-8-undefined"
                         data-column-id="8"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
-                            {bundleAndService.itemBodyModel.sparePartsPrice}
+                            {bundleAndService.customItemHeaderModel?.price}
                         </div>
                     </div>
                     <div
                         id="cell-9-undefined"
                         data-column-id="9"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
-                            {bundleAndService.itemBodyModel.servicePrice}
+                            {bundleAndService.customItemHeaderModel.netPrice}
                         </div>
                     </div>
                     <div
                         id="cell-10-undefined"
                         data-column-id="10"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemHeaderModel?.comments}
+                        </div>
+                    </div>
+                    {/* <div
+                        id="cell-10-undefined"
+                        data-column-id="10"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
                         <div data-tag="allowRowEvents">
                             {bundleAndService.itemBodyModel.totalPrice}
                         </div>
-                    </div>
+                    </div> */}
                     <div
-                        id="cell-11-undefined"
-                        data-column-id="11"
+                        id="cell-10-undefined"
+                        data-column-id="10"
                         role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz rdt_TableCell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
                         data-tag="allowRowEvents"
                     >
-                        <div
-                            className="cursor"
-                            onClick={(e) => handleExpandedRowEdit(e, i)}
-                        >
-                            <Tooltip title="Edit">
-                                <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
-                            </Tooltip>
-                        </div>
-                        <div
-                            className="cursor"
-                            onClick={(e) => handleExpandedRowDelete(e, i)}
-                        >
-                            <Tooltip title="Delete">
-                                <Link to="#" className="mx-1">
-                                    <svg
-                                        data-name="Layer 41"
-                                        id="Layer_41"
-                                        width="14px"
-                                        viewBox="0 0 50 50"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <title />
-                                        <path
-                                            className="cls-1"
-                                            d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                                        />
-                                        <path
-                                            className="cls-1"
-                                            d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                                        />
-                                        <path
-                                            className="cls-1"
-                                            d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                                        />
-                                    </svg>
-                                </Link>
-                            </Tooltip>
+                        <div data-tag="allowRowEvents">
+                            {/* {bundleAndService.itemBodyModel.totalPrice} */}
                         </div>
                     </div>
+
+                    {/* {bundleItems.length > 0 && (
+              <div
+                id="cell-11-undefined"
+                data-column-id="11"
+                role="gridcell"
+                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz custom-rdt_TableCell rdt_TableCell"
+                data-tag="allowRowEvents"
+              >
+                <div
+                  className="cursor"
+                  onClick={(e) =>
+                    handleExpandedRowEdit(
+                      e,
+                      data.itemId,
+                      data.associatedServiceOrBundle[i]
+                    )
+                  }
+                >
+                  <Tooltip title="Edit">
+                    <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
+                  </Tooltip>
+                </div>
+                <div
+                  className="cursor"
+                  onClick={(e) =>
+                    handleExpandedRowDelete(
+                      e,
+                      data.itemId,
+                      data.associatedServiceOrBundle[i].itemId
+                    )
+                  }
+                >
+                  <Tooltip title="Delete">
+                    <Link to="#" className="mx-1">
+                      <svg
+                        data-name="Layer 41"
+                        id="Layer_41"
+                        width="14px"
+                        viewBox="0 0 50 50"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <title />
+                        <path
+                          className="cls-1"
+                          d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                        />
+                        <path
+                          className="cls-1"
+                          d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                        />
+                        <path
+                          className="cls-1"
+                          d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                        />
+                      </svg>
+                    </Link>
+                  </Tooltip>
+                </div>
+              </div>)} */}
+
                 </div>
             ))}
         </div>
@@ -3940,7 +4173,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                     <Select
                                         className="customselectbtn1"
                                         onChange={(e) => handleOption3(e)}
-                                        options={options3}
+                                        options={versionOption}
                                         value={value3}
                                     />
                                 </div>
@@ -3949,7 +4182,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                     <Select
                                         className="customselectbtn"
                                         onChange={(e) => handleOption2(e)}
-                                        options={options2}
+                                        options={statusOption}
                                         value={value2}
                                     />
                                 </div>
@@ -5604,9 +5837,14 @@ export function CreatedCustomPortfolioTemplate(props) {
                                 columns={selectedportfolioTempItemsColumn}
                                 data={createdCustomPortfolioItems}
                                 customStyles={customTableStyles}
+                                expandableRows
+                                expandableRowExpanded={(row) => (row === currentExpendPortfolioItemRow)}
+                                expandOnRowClicked
+                                onRowClicked={(row) => setCurrentExpendPortfolioItemRow(row)}
+                                expandableRowsComponent={ExpandedComponent}
+                                onRowExpandToggled={(bool, row) => setCurrentExpendPortfolioItemRow(row)}
                                 pagination
                             />
-                            {console.log("createdCustomPortfolioItems : ", createdCustomPortfolioItems)}
                         </div>
                     </div>
 
@@ -6313,6 +6551,36 @@ export function CreatedCustomPortfolioTemplate(props) {
                             </div>
                         </Modal.Body>
                     </Modal>
+                    <div class="modal fade" id="versionpopup2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header border-none">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">
+                                        New Version
+                                    </h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+
+                                <p className="mx-3 mt-0">
+                                    Description, Product experts convert the repair option to a standard job or template.
+                                </p>
+                                <div className="hr"></div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="usr">Name</label>
+                                        <input type="text" class="form-control" id="usr" placeholder="Enter Name" onChange={(e) => setNewVersionName(e.target.value)} value={newVersionName} />
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" className="btn  btn-primary w-100" onClick={createNewVersion}>Create </button>
+                                    <button type="button" className="btn btn-primary w-100" data-dismiss="modal">Cancel</button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>

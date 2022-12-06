@@ -224,10 +224,10 @@ export function CreatePortfolio(props) {
     label: "Archived",
   });
   const [value2, setValue2] = useState({
-    value: "Archived",
-    label: "Archived",
+    value: "DRAFT",
+    label: "Draft",
   });
-  const [value3, setValue3] = useState({ value: "Gold", label: "Gold" });
+  const [value3, setValue3] = useState({ value: "STANDARD", label: "Standard (Bronze)" });
 
   const [bundleItemTaskTypeKeyValue, setBundleItemTaskTypeKeyValue] = useState(
     []
@@ -1772,7 +1772,8 @@ export function CreatePortfolio(props) {
             application: "HILL",
             contractOrSupport: "LEVEL_I",
             lifeStageOfMachine: "NEW_BREAKIN",
-            supportLevel: "PREMIUM",
+            // supportLevel: "PREMIUM",
+            supportLevel: value3.value,
             serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
           };
           const portfolioRes = await createPortfolio(reqData);
@@ -1846,7 +1847,8 @@ export function CreatePortfolio(props) {
               ? generalComponentData?.contractOrSupport
               : "EMPTY",
             lifeStageOfMachine: "NEW_BREAKIN",
-            supportLevel: "PREMIUM",
+            // supportLevel: "PREMIUM",
+            supportLevel: value3.value,
             numberOfEvents: 0,
             itemRelations: [],
             rating: "string",
@@ -1994,7 +1996,8 @@ export function CreatePortfolio(props) {
               ? generalComponentData.customerGroup
               : "EMPTY",
             searchTerm: "EMPTY",
-            supportLevel: "EMPTY",
+            // supportLevel: "PREMIUM",
+            supportLevel: value3.value,
             portfolioPrice: { "portfolioPriceId": 92 },
             additionalPrice: { "additionalPriceId": 1 },
             escalationPrice: { "escalationPriceId": 1 },
@@ -2076,7 +2079,8 @@ export function CreatePortfolio(props) {
               ? generalComponentData?.contractOrSupport
               : "EMPTY",
             lifeStageOfMachine: "NEW_BREAKIN",
-            supportLevel: "PREMIUM",
+            // supportLevel: "PREMIUM",
+            supportLevel: value3.value,
             numberOfEvents: 0,
             itemRelations: [],
             rating: "string",
@@ -2206,7 +2210,8 @@ export function CreatePortfolio(props) {
               ? generalComponentData.customerGroup
               : "EMPTY",
             searchTerm: "EMPTY",
-            supportLevel: "EMPTY",
+            // supportLevel: "PREMIUM",
+            supportLevel: value3.value,
             // portfolioPrice: {},
             // additionalPrice: {},
             // escalationPrice: {},
@@ -2307,7 +2312,8 @@ export function CreatePortfolio(props) {
               ? generalComponentData?.contractOrSupport
               : "EMPTY",
             lifeStageOfMachine: "NEW_BREAKIN",
-            supportLevel: "PREMIUM",
+            // supportLevel: "PREMIUM",
+            supportLevel: value3.value,
             numberOfEvents: 0,
             itemRelations: [],
             rating: "string",
@@ -2450,7 +2456,8 @@ export function CreatePortfolio(props) {
               ? generalComponentData.customerGroup
               : "EMPTY",
             searchTerm: "EMPTY",
-            supportLevel: "EMPTY",
+            // supportLevel: "PREMIUM",
+            supportLevel: value3.value,
             portfolioPrice: {
               portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
             },
@@ -2559,7 +2566,8 @@ export function CreatePortfolio(props) {
               ? generalComponentData?.contractOrSupport
               : "EMPTY",
             lifeStageOfMachine: "NEW_BREAKIN",
-            supportLevel: "PREMIUM",
+            // supportLevel: "PREMIUM",
+            supportLevel: value3.value,
             numberOfEvents: 0,
             itemRelations: [],
             rating: "string",
@@ -2624,126 +2632,258 @@ export function CreatePortfolio(props) {
       } else if (e.target.id == "priceAgreement") {
         setValue("coverage");
       } else if (e.target.id == "coverage") {
-        let cvgIds = [];
-        for (let i = 0; i < selectedMasterData.length; i++) {
-          if (
-            selectedMasterData[i].model === "" ||
-            selectedMasterData[i].family === ""
-          ) {
-            throw "Family or Model values are missing";
+
+        if (state && state.type === "new") {
+          let cvgIds = [];
+          for (let i = 0; i < selectedMasterData.length; i++) {
+            if (
+              selectedMasterData[i].model === "" ||
+              selectedMasterData[i].family === ""
+            ) {
+              throw "Family or Model values are missing";
+            }
+            let reqObj = {
+              coverageId: 0,
+              serviceId: 0,
+              modelNo: selectedMasterData[i].model,
+              serialNumber: "",
+              startSerialNumber: "",
+              endSerialNumber: "",
+              serialNumberPrefix: "",
+              family: selectedMasterData[i].family,
+              make: selectedMasterData[i].make,
+              fleet: "",
+              fleetSize: "SMALL",
+              location: "",
+              startDate: "",
+              endDate: "",
+              actions: "",
+              createdAt: "",
+            };
+            const cvgRes = await createCoverage(reqObj);
+            console.log("createCoverage res:", cvgRes);
+            cvgIds.push({ coverageId: cvgRes.coverageId });
           }
-          let reqObj = {
-            coverageId: 0,
-            serviceId: 0,
-            modelNo: selectedMasterData[i].model,
-            serialNumber: "",
-            startSerialNumber: "",
-            endSerialNumber: "",
-            serialNumberPrefix: "",
-            family: selectedMasterData[i].family,
-            make: selectedMasterData[i].make,
-            fleet: "",
-            fleetSize: "SMALL",
-            location: "",
-            startDate: "",
-            endDate: "",
-            actions: "",
-            createdAt: "",
+
+          setPortfolioCoverage(cvgIds);
+
+          setGeneralComponentData({
+            ...generalComponentData,
+            coverages: cvgIds,
+          });
+          const { portfolioId, ...res } = generalComponentData;
+          let obj = {
+            ...res,
+            visibleInCommerce: true,
+            customerId: 0,
+            lubricant: true,
+            customerSegment: generalComponentData.customerSegment
+              ? generalComponentData.customerSegment.value
+              : "EMPTY",
+            machineType: generalComponentData.machineType
+              ? generalComponentData.machineType
+              : "EMPTY",
+            status: generalComponentData.status
+              ? generalComponentData.status
+              : "EMPTY",
+            strategyTask: generalComponentData.strategyTask
+              ? generalComponentData.strategyTask
+              : "EMPTY",
+            taskType: generalComponentData.taskType
+              ? generalComponentData.taskType
+              : "EMPTY",
+            usageCategory: generalComponentData.usageCategory
+              ? generalComponentData.usageCategory
+              : "EMPTY",
+            productHierarchy: generalComponentData.productHierarchy
+              ? generalComponentData.productHierarchy
+              : "EMPTY",
+            geographic: generalComponentData.geographic
+              ? generalComponentData.geographic
+              : "EMPTY",
+            availability: generalComponentData.availability
+              ? generalComponentData.availability
+              : "EMPTY",
+            responseTime: generalComponentData.responseTime
+              ? generalComponentData.responseTime
+              : "EMPTY",
+            type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+            application: generalComponentData.application
+              ? generalComponentData.application
+              : "EMPTY",
+            contractOrSupport: generalComponentData.contractOrSupport
+              ? generalComponentData.contractOrSupport
+              : "EMPTY",
+            lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+              ? generalComponentData.lifeStageOfMachine
+              : "EMPTY",
+            supportLevel: generalComponentData.supportLevel
+              ? generalComponentData.supportLevel
+              : "EMPTY",
+            customerGroup: generalComponentData.customerGroup
+              ? generalComponentData.customerGroup
+              : "EMPTY",
+            searchTerm: "EMPTY",
+            // supportLevel: "PREMIUM",
+            supportLevel: value3.value,
+            portfolioPrice: portfolioPriceDataId,
+            additionalPrice: portfolioAdditionalPriceDataId,
+            escalationPrice: portfolioEscalationPriceDataId,
+
+
+            portfolioPrice: portfolioPriceDataId,
+            additionalPrice: portfolioAdditionalPriceDataId,
+            escalationPrice: portfolioEscalationPriceDataId,
+            items: portfolioItems,
+            coverages: cvgIds,
+            usageCategory: categoryUsageKeyValue1.value,
+            taskType: stratgyTaskTypeKeyValue.value,
+            strategyTask: stratgyTaskUsageKeyValue.value,
+            responseTime: stratgyResponseTimeKeyValue.value,
+            productHierarchy: stratgyHierarchyKeyValue.value,
+            geographic: stratgyGeographicKeyValue.value,
+            preparedBy: administrative.preparedBy,
+            approvedBy: administrative.approvedBy,
+            preparedOn: administrative.preparedOn,
+            revisedBy: administrative.revisedBy,
+            revisedOn: administrative.revisedOn,
+            salesOffice: administrative.salesOffice,
+            offerValidity: administrative.offerValidity,
           };
-          const cvgRes = await createCoverage(reqObj);
-          console.log("createCoverage res:", cvgRes);
-          cvgIds.push({ coverageId: cvgRes.coverageId });
-        }
 
-        setPortfolioCoverage(cvgIds);
+          if (generalComponentData.portfolioId) {
+            const updatePortfolioRes = await updatePortfolio(
+              generalComponentData.portfolioId,
+              obj
+            );
+            if (updatePortfolioRes.status === 200) {
+              toast("👏 Portfolio updated", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+            } else {
+              throw `${updatePortfolioRes.status}:allready exist or something else`;
+            }
+          } else {
+            throw "Please Create portfolio first";
+          }
+        } else {
 
-        setGeneralComponentData({
-          ...generalComponentData,
-          coverages: cvgIds,
-        });
-        const { portfolioId, ...res } = generalComponentData;
-        let obj = {
-          ...res,
-          visibleInCommerce: true,
-          customerId: 0,
-          lubricant: true,
-          customerSegment: generalComponentData.customerSegment
-            ? generalComponentData.customerSegment.value
-            : "EMPTY",
-          machineType: generalComponentData.machineType
-            ? generalComponentData.machineType
-            : "EMPTY",
-          status: generalComponentData.status
-            ? generalComponentData.status
-            : "EMPTY",
-          strategyTask: generalComponentData.strategyTask
-            ? generalComponentData.strategyTask
-            : "EMPTY",
-          taskType: generalComponentData.taskType
-            ? generalComponentData.taskType
-            : "EMPTY",
-          usageCategory: generalComponentData.usageCategory
-            ? generalComponentData.usageCategory
-            : "EMPTY",
-          productHierarchy: generalComponentData.productHierarchy
-            ? generalComponentData.productHierarchy
-            : "EMPTY",
-          geographic: generalComponentData.geographic
-            ? generalComponentData.geographic
-            : "EMPTY",
-          availability: generalComponentData.availability
-            ? generalComponentData.availability
-            : "EMPTY",
-          responseTime: generalComponentData.responseTime
-            ? generalComponentData.responseTime
-            : "EMPTY",
-          type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-          application: generalComponentData.application
-            ? generalComponentData.application
-            : "EMPTY",
-          contractOrSupport: generalComponentData.contractOrSupport
-            ? generalComponentData.contractOrSupport
-            : "EMPTY",
-          lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-            ? generalComponentData.lifeStageOfMachine
-            : "EMPTY",
-          supportLevel: generalComponentData.supportLevel
-            ? generalComponentData.supportLevel
-            : "EMPTY",
-          customerGroup: generalComponentData.customerGroup
-            ? generalComponentData.customerGroup
-            : "EMPTY",
-          searchTerm: "EMPTY",
-          supportLevel: "EMPTY",
-          portfolioPrice: portfolioPriceDataId,
-          additionalPrice: portfolioAdditionalPriceDataId,
-          escalationPrice: portfolioEscalationPriceDataId,
+          let cvgIds = [];
+          for (let i = 0; i < selectedMasterData.length; i++) {
+            if (
+              selectedMasterData[i].model === "" ||
+              selectedMasterData[i].family === ""
+            ) {
+              throw "Family or Model values are missing";
+            }
+            let reqObj = {
+              coverageId: 0,
+              serviceId: 0,
+              modelNo: selectedMasterData[i].model,
+              serialNumber: "",
+              startSerialNumber: "",
+              endSerialNumber: "",
+              serialNumberPrefix: "",
+              family: selectedMasterData[i].family,
+              make: selectedMasterData[i].make,
+              fleet: "",
+              fleetSize: "SMALL",
+              location: "",
+              startDate: "",
+              endDate: "",
+              actions: "",
+              createdAt: "",
+            };
+            const cvgRes = await createCoverage(reqObj);
+            console.log("createCoverage res:", cvgRes);
+            cvgIds.push({ coverageId: cvgRes.coverageId });
+          }
 
+          setPortfolioCoverage(cvgIds);
 
-          portfolioPrice: portfolioPriceDataId,
-          additionalPrice: portfolioAdditionalPriceDataId,
-          escalationPrice: portfolioEscalationPriceDataId,
-          items: portfolioItems,
-          coverages: cvgIds,
-          usageCategory: categoryUsageKeyValue1.value,
-          taskType: stratgyTaskTypeKeyValue.value,
-          strategyTask: stratgyTaskUsageKeyValue.value,
-          responseTime: stratgyResponseTimeKeyValue.value,
-          productHierarchy: stratgyHierarchyKeyValue.value,
-          geographic: stratgyGeographicKeyValue.value,
-          preparedBy: administrative.preparedBy,
-          approvedBy: administrative.approvedBy,
-          preparedOn: administrative.preparedOn,
-          revisedBy: administrative.revisedBy,
-          revisedOn: administrative.revisedOn,
-          salesOffice: administrative.salesOffice,
-          offerValidity: administrative.offerValidity,
-        };
-        if (generalComponentData.portfolioId) {
+          let reqObj = {
+            portfolioId: portfolioId,
+            // type: prefilgabelGeneral,
+            type: "MACHINE",
+            name: generalComponentData.name,
+            description: generalComponentData.description,
+            customerSegment: generalComponentData.customerSegment?.value,
+            externalReference: generalComponentData.externalReference,
+
+            validFrom: validityData.fromDate.toISOString().substring(0, 10),
+            validTo: validityData.fromDate.toISOString().substring(0, 10),
+
+            usageCategory: categoryUsageKeyValue1.value,
+            taskType: stratgyTaskTypeKeyValue.value,
+            strategyTask: stratgyTaskUsageKeyValue.value,
+            responseTime: stratgyResponseTimeKeyValue.value,
+            productHierarchy: stratgyHierarchyKeyValue.value,
+            geographic: stratgyGeographicKeyValue.value,
+
+            preparedBy: administrative.preparedBy,
+            approvedBy: administrative.approvedBy,
+            preparedOn: administrative.preparedOn,
+            revisedBy: administrative.revisedBy,
+            revisedOn: administrative.revisedOn,
+            offerValidity: administrative.offerValidity,
+            salesOffice: administrative.salesOffice,
+
+            machineType: generalComponentData?.machineType
+              ? generalComponentData?.machineType
+              : "EMPTY",
+            searchTerm: "EMPTY",
+            lubricant: true,
+            customerId: 0,
+            customerGroup: generalComponentData?.customerGroup
+              ? generalComponentData?.customerGroup
+              : "EMPTY",
+            status: generalComponentData?.status
+              ? generalComponentData?.status
+              : "EMPTY",
+            availability: generalComponentData?.availability
+              ? generalComponentData?.availability
+              : "EMPTY",
+            application: generalComponentData?.application
+              ? generalComponentData?.application
+              : "EMPTY",
+            contractOrSupport: generalComponentData?.contractOrSupport
+              ? generalComponentData?.contractOrSupport
+              : "EMPTY",
+            lifeStageOfMachine: "NEW_BREAKIN",
+            // supportLevel: "PREMIUM",
+            supportLevel: value3.value,
+            numberOfEvents: 0,
+            itemRelations: [],
+            rating: "string",
+            startUsage: 0,
+            endUsage: 0,
+            unit: "HOURS",
+            additionals: "string",
+            portfolioPrice: null,
+            additionalPrice: null,
+            escalationPrice: null,
+            saveState: false,
+            userId: null,
+            visibleInCommerce: true,
+            template: true,
+
+            items: portfolioItems,
+            coverages: cvgIds,
+          }
+
+          console.log("portfolioID --- : ", portfolioId)
           const updatePortfolioRes = await updatePortfolio(
-            generalComponentData.portfolioId,
-            obj
+            portfolioId,
+            reqObj
           );
+
+          console.log("updatePortfolioRes 123 : ", updatePortfolioRes);
           if (updatePortfolioRes.status === 200) {
             toast("👏 Portfolio updated", {
               position: "top-right",
@@ -2757,9 +2897,8 @@ export function CreatePortfolio(props) {
           } else {
             throw `${updatePortfolioRes.status}:allready exist or something else`;
           }
-        } else {
-          throw "Please Create portfolio first";
         }
+
       }
     } catch (error) {
       console.log("somehing went wrong:", error);
@@ -2806,6 +2945,115 @@ export function CreatePortfolio(props) {
     });
   };
 
+  const createNewVersion = async () => {
+
+    try {
+      if (portfolioId != undefined || portfolioId != null) {
+        if (newVersionName != "") {
+          let versionObj = await getPortfolio(portfolioId);
+
+          var verNewValue;
+          if (versionObj.supportLevel == "EMPTY") {
+            verNewValue = "STANDARD";
+          } else if (versionObj.supportLevel == "STANDARD") {
+            verNewValue = "SUPERIOR";
+          } else if (versionObj.supportLevel == "SUPERIOR") {
+            verNewValue = "PREMIUM";
+          } else {
+            verNewValue = versionObj.supportLevel;
+          }
+          let createNewVersionObj = {
+            portfolioId: 0,
+            name: newVersionName,
+            description: versionObj.description,
+            machineType: versionObj.machineType,
+            searchTerm: versionObj.searchTerm,
+            lubricant: versionObj.lubricant,
+            customerId: versionObj.customerId,
+            customerGroup: versionObj.customerGroup,
+            customerSegment: versionObj.customerSegment,
+            externalReference: versionObj.externalReference,
+            status: versionObj.status,
+            validFrom: versionObj.validFrom,
+            validTo: versionObj.validTo,
+            strategyTask: versionObj.strategyTask,
+            taskType: versionObj.taskType,
+            usageCategory: versionObj.usageCategory,
+            productHierarchy: versionObj.productHierarchy,
+            geographic: versionObj.geographic,
+            availability: versionObj.availability,
+            responseTime: versionObj.responseTime,
+            type: versionObj.type,
+            application: versionObj.application,
+            contractOrSupport: versionObj.contractOrSupport,
+            lifeStageOfMachine: versionObj.lifeStageOfMachine,
+            supportLevel: verNewValue,
+            numberOfEvents: versionObj.numberOfEvents,
+            itemRelations: versionObj.itemRelations,
+            rating: versionObj.rating,
+            startUsage: versionObj.startUsage,
+            endUsage: versionObj.endUsage,
+            unit: versionObj.unit,
+            additionals: versionObj.additional,
+            preparedBy: versionObj.preparedBy,
+            approvedBy: versionObj.approvedBy,
+            preparedOn: versionObj.preparedOn,
+            revisedBy: versionObj.revisedBy,
+            revisedOn: versionObj.revisedOn,
+            salesOffice: versionObj.salesOffice,
+            offerValidity: versionObj.offerValidity,
+            items: versionObj.items,
+            coverages: versionObj.coverages,
+            portfolioPrice: versionObj.portfolioPrice,
+            additionalPrice: versionObj.additionalPrice,
+            escalationPrice: versionObj.escalationPrice,
+            saveState: versionObj.saveState,
+            userId: versionObj.userId,
+            template: versionObj.template,
+            visibleInCommerce: versionObj.visibleInCommerce,
+          }
+
+          const portfolioRes = await createPortfolio(createNewVersionObj);
+          if (portfolioRes.status === 200) {
+            toast("👏 New Version Created", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            
+            $('#versionpopup').modal('hide');
+          }
+
+        } else {
+          throw "Please Crate a New Version Portfolio Name First";
+
+        }
+      } else {
+        throw "Create Portfolio First";
+      }
+    } catch (error) {
+      console.log("somehing went wrong:", error);
+      // toast("😐" + "Create Portfolio First", {
+      toast("😐" + error, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+    // if (portfolioId != undefined || portfolioId != null) {
+    console.log("my portfolioId : ", portfolioId);
+    // }
+  }
+
   const Inclusion_Exclusion = (e, data) => {
     console.log("event is : ", e);
     console.log("itemData : ", data);
@@ -2840,6 +3088,8 @@ export function CreatePortfolio(props) {
       items: result.items,
       coverages: result.coverages,
     })
+
+    setPortfolioId(result.portfolioId);
     setPortfolioCoverage(result.coverages);
 
     // categoryUsageKeyValue1
@@ -2864,7 +3114,7 @@ export function CreatePortfolio(props) {
     setBundleItems(result.items)
 
   }
-  console.log("generalComponentData ---- : ", generalComponentData)
+  // console.log("generalComponentData ---- : ", generalComponentData)
 
   const handleWithSparePartsCheckBox = (e) => {
     setPartsRequired(e.target.checked)
@@ -3175,6 +3425,8 @@ export function CreatePortfolio(props) {
         alert(err);
       });
 
+
+
     getSolutionPriceCommonConfig("price-head-type")
       .then((res) => {
         const options = res.map((d) => ({
@@ -3182,6 +3434,29 @@ export function CreatePortfolio(props) {
           label: d.value,
         }));
         setPriceHeadTypeKeyValue(options);
+      })
+      .catch((err) => {
+        alert(err);
+      });
+
+    getSolutionPriceCommonConfig("support-level")
+      .then((res) => {
+        const options = res.map((d) => ({
+          value: d.key,
+          label: d.value,
+        }));
+        setVersionOption(options);
+      })
+      .catch((err) => {
+        alert(err);
+      });
+    getSolutionPriceCommonConfig("status")
+      .then((res) => {
+        const options = res.map((d) => ({
+          value: d.key,
+          label: d.value,
+        }));
+        setStatusOption(options);
       })
       .catch((err) => {
         alert(err);
@@ -3316,11 +3591,15 @@ export function CreatePortfolio(props) {
     { value: "Construction", label: "Revised" },
   ];
   const options3 = [
-    { value: "chocolate", label: "Gold" },
+    { value: "chocolate", label: "Gold 12" },
     { value: "strawberry", label: "1" },
     { value: "vanilla", label: "2" },
     { value: "Construction", label: "3" },
   ];
+
+  const [versionOption, setVersionOption] = useState([]);
+  const [statusOption, setStatusOption] = useState([]);
+  const [newVersionName, setNewVersionName] = useState("");
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -6419,7 +6698,7 @@ export function CreatePortfolio(props) {
                   <Select
                     className="customselectbtn1"
                     onChange={(e) => handleOption3(e)}
-                    options={options3}
+                    options={versionOption}
                     value={value3}
                   />
                 </div>
@@ -6428,7 +6707,7 @@ export function CreatePortfolio(props) {
                   <Select
                     className="customselectbtn"
                     onChange={(e) => handleOption2(e)}
-                    options={options2}
+                    options={statusOption}
                     value={value2}
                   />
                 </div>
@@ -12251,11 +12530,11 @@ export function CreatePortfolio(props) {
             <div class="modal-body">
               <div class="form-group">
                 <label for="usr">Name</label>
-                <input type="text" class="form-control" id="usr" placeholder="Copy of Quote"></input>
+                <input type="text" class="form-control" id="usr" placeholder="Enter Name" onChange={(e) => setNewVersionName(e.target.value)} value={newVersionName} />
               </div>
             </div>
             <div class="modal-footer">
-              <button type="button" className="btn  btn-primary w-100">Create </button>
+              <button type="button" className="btn  btn-primary w-100" onClick={createNewVersion}>Create </button>
               <button type="button" className="btn btn-primary w-100" data-dismiss="modal">Cancel</button>
 
             </div>
