@@ -1,56 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { Modal } from "react-bootstrap";
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import AddIcon from "@mui/icons-material/Add";
-import { ToastContainer, toast } from "react-toastify";
-import Select from "@mui/material/Select";
-import { FileUploader } from "react-drag-drop-files";
-import { MuiMenuComponent } from "../Operational/index";
+import { faFileAlt, faFolderPlus, faPlus, faShareAlt, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileAlt, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
-import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
-import { faUpload } from "@fortawesome/free-solid-svg-icons";
-import { faPen } from "@fortawesome/free-solid-svg-icons";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import OwlCarousel from "react-owl-carousel";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
-import Buttonarrow from "../../assets/icons/svg/Button-arrow.svg";
-import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
-import shareIcon from "../../assets/icons/svg/share.svg";
-import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
-import uploadIcon from "../../assets/icons/svg/upload.svg";
-import cpqIcon from "../../assets/icons/svg/CPQ.svg";
-import deleteIcon from "../../assets/icons/svg/delete.svg";
-import copyIcon from "../../assets/icons/svg/Copy.svg";
-import { CommanComponents } from "../../components/index";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
+import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 
-import { SolutionBuilderModal } from "../../pages/SolutionModules/index";
-import SelectFilter from "react-select";
-import SearchIcon from "@mui/icons-material/Search";
-import $ from "jquery";
 import EditIcon from "@mui/icons-material/EditTwoTone";
+import $ from "jquery";
 
-import { useDispatch } from "react-redux";
-import { repairActions } from "./dropdowns/repairSlice";
-import { builderSearch, kitSearch } from "services/repairBuilderServices";
-import Moment from "react-moment";
-import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-import LoadingProgress from "./components/Loader";
 import { Typography } from "@mui/material";
+import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+import Moment from "react-moment";
+import { useDispatch } from "react-redux";
+import { kitSearch } from "services/repairBuilderServices";
+import LoadingProgress from "./components/Loader";
 import SearchComponent from "./components/SearchComponent";
-import { GRID_STYLE, PARTLIST_BUILDER_SEARCH_Q_OPTIONS } from "./CONSTANTS";
+import { GRID_STYLE, KIT_SEARCH_Q_OPTIONS } from "./CONSTANTS";
+import { repairActions } from "./dropdowns/repairSlice";
 
 export const RepairKits = () => {
   const [show, setShow] = React.useState(false);
@@ -326,7 +293,7 @@ export const RepairKits = () => {
                     handleSnack={handleSnack}
                     searchAPI={kitSearch}
                     searchClick={handleQuerySearchClick}
-                    options={PARTLIST_BUILDER_SEARCH_Q_OPTIONS}
+                    options={KIT_SEARCH_Q_OPTIONS}
                     color="white"
                     buttonText={"SEARCH"}
                   />

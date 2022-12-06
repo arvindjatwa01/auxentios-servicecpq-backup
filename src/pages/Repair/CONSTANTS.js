@@ -84,6 +84,33 @@ export const PARTLIST_BUILDER_SEARCH_Q_OPTIONS = [
   { label: "SerialNo", value: "serialNo" },
   { label: "Status", value: "status" },
 ];
+
+export const KIT_SEARCH_Q_OPTIONS = [
+  {
+    label: "ID",
+    value: "kitId",
+  },
+  {
+    label: "Description",
+    value: "description",
+  },
+  {
+    label: "Customer ID",
+    value: "customerId",
+  },
+  { label: "Model", value: "model" },
+  {
+    label: "Make",
+    value: "make",
+  },
+  {
+    label: "Family",
+    value: "family",
+  },
+  { label: "SerialNo", value: "serialNo" },
+  { label: "Status", value: "status" },
+];
+
 export const CONSUMABLE_SEARCH_Q_OPTIONS = [
   {
     label: "Id",
