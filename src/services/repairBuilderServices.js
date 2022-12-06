@@ -956,7 +956,7 @@ export const addMultiPartsToPartList = (partListId, data) => {
             resolve(res.data);
           } else {
             console.log("Error Status:", res.status);
-            reject("Error in addMultiPartsToPartList axios!");
+            reject(res.data);
           }          
         })
         .catch((err) => {

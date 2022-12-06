@@ -1237,7 +1237,11 @@ function PartList(props) {
         })
         .catch((err) => {
           console.log(err);
-          handleSnack("error", `😐 Error occurred while adding the parts!`);
+          if(err && err.message === "Price not found"){
+            handleSnack("error", `😐 ${err.message}!`);
+          } else {
+            handleSnack("error", `😐 Error occurred while adding the parts!`);
+          }
         });
     } else {
       handleSnack("info", "Please save all the header details!");
