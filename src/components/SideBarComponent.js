@@ -573,7 +573,7 @@ export function SideBarComponent(props) {
             <Link to="/" className="border-radius-50" aria-expanded="false">
               <span className="span-icon home">
                   <svg id="Layer_1" xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 37 27.3">
+                        viewBox="0 0 37 27.3" className="width-24">
                       <g>
                         <g>
                           <path class="st1" d="M1.5,18.7c-0.4,0-0.8-0.1-1.1-0.4c-0.6-0.6-0.6-1.5,0-2.1L15.2,1.4c0.9-0.9,2-1.4,3.3-1.4
