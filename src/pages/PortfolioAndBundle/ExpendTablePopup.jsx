@@ -10,22 +10,6 @@ import { Box, Button, Stack, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
 import {
-    createPortfolio,
-    getPortfolio,
-    getPortfolioSchema,
-    getMakeKeyValue,
-    getModelKeyValue,
-    getPrefixKeyValue,
-    updatePortfolio,
-    getUsageCategoryKeyValue,
-    getTaskTypeKeyValue,
-    getResponseTimeTaskKeyValue,
-    getValidityKeyValue,
-    getStrategyTaskKeyValue,
-    getProductHierarchyKeyValue,
-    getGergraphicKeyValue,
-    getMachineTypeKeyValue,
-    getTypeKeyValue,
     getPortfolioCommonConfig,
     getSearchQueryCoverage,
     getSearchCoverageForFamily,
@@ -36,7 +20,9 @@ import {
     deleteItem,
     getComponentCodeSuggetions,
     itemPriceDataId,
-    updateItemPriceData
+    updateItemPriceData,
+    getSearchStandardJobId,
+    getSearchKitId
 } from "../../services/index";
 
 const ExpendTablePopup = ({ data, ...props }) => {
@@ -44,6 +30,9 @@ const ExpendTablePopup = ({ data, ...props }) => {
     console.log("props : ", data);
 
     const [priceMethodKeyValue, setPriceMethodKeyValue] = useState([]);
+    const [querySearchStandardJobResult, setQuerySearchStandardJobResult] = useState([]);
+    const [querySearchRelatedKitResult, setQuerySearchRelatedKitResult] = useState([]);
+
 
     const [expandedPriceCalculator, setExpandedPriceCalculator] = useState({
         itemId: "",
@@ -107,19 +96,19 @@ const ExpendTablePopup = ({ data, ...props }) => {
         templateDescription: "",
         repairOption: "",
         strategyTask: "",
-      });
-      const handleAddPortfolioSave = () => {
+    });
+    const handleAddPortfolioSave = () => {
         if (props.compoFlag === "itemEdit") {
-          props.handleItemEditSave(addPortFolioItem);
+            props.handleItemEditSave(addPortFolioItem);
         } else if (props.compoFlag === "ITEM") {
-          props.setTabs("2");
-          props.getAddportfolioItemDataFun(addPortFolioItem);
-          console.log("addPortFolioItem : ", addPortFolioItem)
+            props.setTabs("2");
+            props.getAddportfolioItemDataFun(addPortFolioItem);
+            console.log("addPortFolioItem : ", addPortFolioItem)
         } else {
-          props.getAddportfolioItemData(addPortFolioItem)
-          props.setBundleTabs("3");
+            props.getAddportfolioItemData(addPortFolioItem)
+            props.setBundleTabs("3");
         }
-      };
+    };
     const handleExpandedPriceSave = async (e, rowData) => {
         try {
             const { itemId, itemName, itemHeaderModel, itemBodyModel } = rowData
@@ -169,6 +158,78 @@ const ExpendTablePopup = ({ data, ...props }) => {
 
     }
 
+    const handleStandardJobInputSearch = (e) => {
+
+        setAddportFolioItem({
+            ...addPortFolioItem,
+            templateId: e.target.value,
+        })
+        var searchStr = e.target.value;
+        getSearchStandardJobId(searchStr)
+            .then((res) => {
+                // console.log("search Query Result --------- :", res);
+                // setMasterData(res);
+                $(`.scrollbar-model`).css("display", "block");
+                setQuerySearchStandardJobResult(res)
+                var preArr = [];
+                for (var n = 0; n < res.length; n++) {
+                    preArr.push({ label: res[n].prefix, value: res[n].prefix })
+                }
+                // setQuerySearchModelPrefixOption(preArr);
+            })
+            .catch((err) => {
+                console.log("error in getSearchQueryCoverage", err);
+            });
+    }
+
+    const handleRelatedKitInputSearch = (e) => {
+        setAddportFolioItem({
+            ...addPortFolioItem,
+            repairOption: e.target.value,
+        })
+        var searchStr = e.target.value;
+        getSearchKitId(searchStr)
+            .then((res) => {
+                // console.log("search Query Result --------- :", res);
+                // setMasterData(res);
+                $(`.scrollbar-model`).css("display", "block");
+                setQuerySearchRelatedKitResult(res)
+                var preArr = [];
+                for (var n = 0; n < res.length; n++) {
+                    preArr.push({ label: res[n].prefix, value: res[n].prefix })
+                }
+                // setQuerySearchModelPrefixOption(preArr);
+            })
+            .catch((err) => {
+                console.log("error in getSearchQueryCoverage", err);
+            });
+    }
+
+    const handleSearchStandardJobListClick = (e, currentItem) => {
+
+        console.log("currentItem : ", currentItem);
+        // templateDescription
+        setAddportFolioItem({
+            ...addPortFolioItem,
+            templateId: currentItem.standardJobId,
+            templateDescription: { label: currentItem.description, value: currentItem.description },
+        })
+        $(`.scrollbar-model`).css("display", "none");
+    }
+
+
+    const handleSearchRelatedKitListClick = (e, currentItem) => {
+
+        console.log("currentItem : ", currentItem);
+        // templateDescription
+        setAddportFolioItem({
+            ...addPortFolioItem,
+            repairOption: currentItem.kitId,
+            // templateDescription: { label: currentItem.description, value: currentItem.description },
+        })
+        $(`.scrollbar-model`).css("display", "none");
+    }
+
     const optionsusage = [
         { value: "chocolate", label: "/Hour" },
         { value: "strawberry", label: "/Km" },
@@ -202,35 +263,69 @@ const ExpendTablePopup = ({ data, ...props }) => {
                         <span className="ml-2 font-size-14">Related Kit</span>
                     </span> */}
                     <TabContext value={tabs}>
-          <Box
-            sx={{
-              borderBottom: 1,
-              borderColor: "divider",
-              backgroundColor: "#fff",
-              borderRadius: "5px",
-            }}
-          >
-            <TabList className="custom-tabs-div"
-              onChange={(e, newValue) => setTabs(newValue)}
-              aria-label="lab API tabs example"
-            >
-              <Tab label="Related template(s)" value="1" />
-              <Tab label="Related Kit" value="2" disabled={addPortFolioItem.templateId != ""} />
-            </TabList>
-          </Box>
-          <TabPanel value="1">
-            {" "}
-            <p className="mt-4 font-size-14">TEMPLATES</p>
-            <div className="row input-fields">
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <label
-                    className="text-light-dark font-size-12 font-weight-500"
-                    for="exampleInputEmail1"
-                  >
-                    TEMPLATE ID
-                  </label>
-                  <Select
+                        <Box
+                            sx={{
+                                borderBottom: 1,
+                                borderColor: "divider",
+                                backgroundColor: "#fff",
+                                borderRadius: "5px",
+                            }}
+                        >
+                            <TabList className="custom-tabs-div"
+                                onChange={(e, newValue) => setTabs(newValue)}
+                                aria-label="lab API tabs example"
+                            >
+                                <Tab label="Related template(s)" value="1" />
+                                <Tab label="Related Kit" value="2" disabled={addPortFolioItem.templateId != ""} />
+                            </TabList>
+                        </Box>
+                        <TabPanel value="1">
+                            {" "}
+                            <p className="mt-4 font-size-14">TEMPLATES</p>
+                            <div className="row input-fields">
+                                <div className="col-md-6 col-sm-6">
+                                    <div className="form-group">
+                                        <label
+                                            className="text-light-dark font-size-12 font-weight-500"
+                                            for="exampleInputEmail1"
+                                        >
+                                            TEMPLATE ID
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-control text-primary border-radius-10"
+                                            name="model"
+                                            placeholder="TEMPLATE ID"
+                                            value={addPortFolioItem.templateId}
+                                            // onChange={handleAddServiceBundleChange}
+                                            onChange={(e) => handleStandardJobInputSearch(e)}
+                                        />
+                                        {
+                                            <ul
+                                                className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
+                                                id="style"
+                                            >
+                                                {querySearchStandardJobResult.map((currentItem, j) => (
+                                                    <li
+                                                        className="list-group-item"
+                                                        key={j}
+                                                        onClick={(e) => handleSearchStandardJobListClick(
+                                                            e,
+                                                            currentItem
+                                                        )}
+                                                    // onClick={(e) =>
+                                                    //   handleSearchListClick(
+                                                    //     e,
+                                                    //     currentItem,
+                                                    //   )
+                                                    // }
+                                                    >
+                                                        {currentItem.standardJobId}  {currentItem.description}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        }
+                                        {/* <Select
                     options={options}
                     className="text-primary"
                     placeholder="TEMPLATE ID"
@@ -241,96 +336,130 @@ const ExpendTablePopup = ({ data, ...props }) => {
                       })
                     }
                     value={addPortFolioItem.templateId}
-                  />
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <label
-                    className="text-light-dark font-size-12 font-weight-500"
-                    for="exampleInputEmail1"
-                  >
-                    TEMPLATE DESCRIPTION
-                  </label>
-                  <Select
-                    options={options}
-                    className="text-primary"
-                    placeholder="TEMPLATE DESCRIPTION"
-                    onChange={(e) =>
-                      setAddportFolioItem({
-                        ...addPortFolioItem,
-                        templateDescription: e,
-                      })
-                    }
-                    value={addPortFolioItem.templateDescription}
-                  />
-                </div>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <div className="form-group">
-                  <div className="mt-4">
-                    <a
-                      href="#"
-                      className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
-                    >
-                      <span className="mr-2">+</span>Add Template / Kit
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </TabPanel>
-          <TabPanel value="2">
-            <p className="mt-4 font-size-14">REPAIR OPTIONS</p>
-            <div className="row input-fields">
-              <div className="col-md-4 col-sm-4">
-                <div className="form-group">
-                  <label
-                    className="text-light-dark font-size-12 font-weight-500"
-                    for="exampleInputEmail1"
-                  >
-                    REPAIR OPTION
-                  </label>
-                  <Select
-                    options={options}
-                    placeholder="REPAIR OPTION"
-                    className="text-primary"
-                    onChange={(e) =>
-                      setAddportFolioItem({
-                        ...addPortFolioItem,
-                        repairOption: e,
-                      })
-                    }
-                    value={addPortFolioItem.repairOption}
-                  />
-                </div>
-              </div>
-              <div className="col-md-4 col-sm-4">
-                <div className="form-group">
-                  <div className="mt-4">
-                    <a
-                      href="#"
-                      className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
-                    >
-                      <span className="mr-2">+</span>Add Repair Option
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="text-right pb-2">
-              <Link
-                to="#"
-                className="btn border mr-4"
-                onClick={handleAddPortfolioSave}
-              >
-                {props.compoFlag === "itemEdit"
-                  ? "Save Changes"
-                  : "Save & Continue"}
-              </Link>
-            </div>
-          </TabPanel>
-        </TabContext>
+                  /> */}
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-sm-6">
+                                    <div className="form-group">
+                                        <label
+                                            className="text-light-dark font-size-12 font-weight-500"
+                                            for="exampleInputEmail1"
+                                        >
+                                            TEMPLATE DESCRIPTION
+                                        </label>
+                                        <Select
+                                            options={options}
+                                            className="text-primary"
+                                            placeholder="TEMPLATE DESCRIPTION"
+                                            onChange={(e) =>
+                                                setAddportFolioItem({
+                                                    ...addPortFolioItem,
+                                                    templateDescription: e,
+                                                })
+                                            }
+                                            value={addPortFolioItem.templateDescription}
+                                            isDisabled
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-md-6 col-sm-6">
+                                    <div className="form-group">
+                                        <div className="mt-4">
+                                            <a
+                                                href="#"
+                                                className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
+                                            >
+                                                <span className="mr-2">+</span>Add Template / Kit
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </TabPanel>
+                        <TabPanel value="2">
+                            <p className="mt-4 font-size-14">REPAIR OPTIONS</p>
+                            <div className="row input-fields">
+                                <div className="col-md-4 col-sm-4">
+                                    <div className="form-group">
+                                        <label
+                                            className="text-light-dark font-size-12 font-weight-500"
+                                            for="exampleInputEmail1"
+                                        >
+                                            REPAIR OPTION
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-control text-primary border-radius-10"
+                                            name="repairOption"
+                                            placeholder="REPAIR OPTION"
+                                            value={addPortFolioItem.repairOption}
+                                            onChange={(e) => handleRelatedKitInputSearch(e)}
+                                        />
+                                        {
+                                            <ul
+                                                className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
+                                                id="style"
+                                            >
+                                                {querySearchRelatedKitResult.map((currentItem, j) => (
+                                                    <li
+                                                        className="list-group-item"
+                                                        key={j}
+                                                        onClick={(e) => handleSearchRelatedKitListClick(
+                                                            e,
+                                                            currentItem
+                                                        )}
+                                                    // onClick={(e) =>
+                                                    //   handleSearchListClick(
+                                                    //     e,
+                                                    //     currentItem,
+                                                    //   )
+                                                    // }
+                                                    >
+                                                        {currentItem.kitId}  {currentItem.description}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        }
+                                        {/* <Select
+                                            options={options}
+                                            placeholder="REPAIR OPTION"
+                                            className="text-primary"
+                                            onChange={(e) =>
+                                                setAddportFolioItem({
+                                                    ...addPortFolioItem,
+                                                    repairOption: e,
+                                                })
+                                            }
+                                            value={addPortFolioItem.repairOption}
+                                        /> */}
+                                    </div>
+                                </div>
+                                <div className="col-md-4 col-sm-4">
+                                    <div className="form-group">
+                                        <div className="mt-4">
+                                            <a
+                                                href="#"
+                                                className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
+                                            >
+                                                <span className="mr-2">+</span>Add Repair Option
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="text-right pb-2">
+                                <Link
+                                    to="#"
+                                    className="btn border mr-4"
+                                    onClick={handleAddPortfolioSave}
+                                >
+                                    {props.compoFlag === "itemEdit"
+                                        ? "Save Changes"
+                                        : "Save & Continue"}
+                                </Link>
+                            </div>
+                        </TabPanel>
+                    </TabContext>
                 </div>
             </div>
             <div className="row mt-3 input-fields">
@@ -432,28 +561,28 @@ const ExpendTablePopup = ({ data, ...props }) => {
                         >
                             Start Usage
                         </label>
-                        <div className=" d-flex form-control-date border left-select-div" style={{borderRadius: "5px"}}>
-                            
+                        <div className=" d-flex form-control-date border left-select-div" style={{ borderRadius: "5px" }}>
+
                             <input
-                            className="form-control border-none text-primary"
-                            type="text"
-                            id="startUsage"
-                        // value={expandedPriceCalculator.startUsage}
-                        // onChange={handleExpandePriceChange}
-                        />
-                       
-                                <Select
-                                    isClearable={true}
-                                    id=""
-                                    options={optionsusage}
-                                    placeholder="Select"
-                                    className='text-primary'
-                                // value={expandedPriceCalculator.priceAdditionalSelect}
-                                // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceAdditionalSelect: e })}
-                                />
-                            
+                                className="form-control border-none text-primary"
+                                type="text"
+                                id="startUsage"
+                            // value={expandedPriceCalculator.startUsage}
+                            // onChange={handleExpandePriceChange}
+                            />
+
+                            <Select
+                                isClearable={true}
+                                id=""
+                                options={optionsusage}
+                                placeholder="Select"
+                                className='text-primary'
+                            // value={expandedPriceCalculator.priceAdditionalSelect}
+                            // onChange={(e) => setExpandedPriceCalculator({ ...expandedPriceCalculator, priceAdditionalSelect: e })}
+                            />
+
                         </div>
-                        
+
                     </div>
                 </div>
                 <div className="col-md-6 col-sm-6">
@@ -463,21 +592,21 @@ const ExpendTablePopup = ({ data, ...props }) => {
                         >
                             End Usage
                         </label>
-                       
+
                         <div
-                    className=" d-flex form-control-date"
-                    style={{ overflow: "hidden" }}
-                  >
-                   <input
-                            className="form-control border-radius-10 text-primary"
-                            type="text"
-                            id="endUsage"
-                        // value={expandedPriceCalculator.endUsage}
-                        // onChange={handleExpandePriceChange}
-                        />
-                    
-                    <span className="hours-div">hours</span>
-                  </div>
+                            className=" d-flex form-control-date"
+                            style={{ overflow: "hidden" }}
+                        >
+                            <input
+                                className="form-control border-radius-10 text-primary"
+                                type="text"
+                                id="endUsage"
+                            // value={expandedPriceCalculator.endUsage}
+                            // onChange={handleExpandePriceChange}
+                            />
+
+                            <span className="hours-div">hours</span>
+                        </div>
                     </div>
                 </div>
 

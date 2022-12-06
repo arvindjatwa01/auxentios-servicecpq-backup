@@ -216,16 +216,18 @@ export function CreateCustomPortfolio(props) {
     const [openSnack, setOpenSnack] = useState(false);
     const [snackMessage, setSnackMessage] = useState("");
 
+    const [currentExpendPortfolioItemRow, setCurrentExpendPortfolioItemRow] = useState(null)
+
 
     const [value1, setValue1] = useState({
         value: "Archived",
         label: "Archived",
     });
     const [value2, setValue2] = useState({
-        value: "Archived",
-        label: "Archived",
+        value: "DRAFT",
+        label: "Draft",
     });
-    const [value3, setValue3] = useState({ value: "Gold", label: "Gold" });
+    const [value3, setValue3] = useState({ value: "STANDARD", label: "Standard (Bronze)" });
 
     const [bundleItemTaskTypeKeyValue, setBundleItemTaskTypeKeyValue] = useState(
         []
@@ -768,7 +770,7 @@ export function CreateCustomPortfolio(props) {
                     validTo: generalComponentData.validTo,
                     estimatedTime: "",
                     servicePrice: 0,
-                    status: "NEW",
+                    status: "DRAFT",
                 },
                 customItemBodyModel: {
                     customItemBodyId: parseInt(addPortFolioItem.id),
@@ -875,7 +877,8 @@ export function CreateCustomPortfolio(props) {
                     ? generalComponentData.customerGroup
                     : "EMPTY",
                 searchTerm: "EMPTY",
-                supportLevel: "EMPTY",
+                // supportLevel: "PREMIUM",
+                supportLevel: value3.value,
                 // portfolioPrice: {},
                 // additionalPrice: {},
                 // escalationPrice: {},
@@ -1443,7 +1446,8 @@ export function CreateCustomPortfolio(props) {
     };
     const handleServiceItemDelete = async (e, row) => {
         // try {
-        //     const delRes = await deleteCustomItem(row.customItemId);
+        //     console.log("row data ---- : ", row)
+        //     const delRes = await deleteCustomItem(row.customItemBodyModel.customItemPrices.customItemPriceDataId);
         //     if (delRes.status == 200) {
         //         toast("😎 Item Deletion Successfull", {
         //             position: "top-right",
@@ -1652,7 +1656,7 @@ export function CreateCustomPortfolio(props) {
                         application: "HILL",
                         contractOrSupport: "LEVEL_I",
                         lifeStageOfMachine: "NEW_BREAKIN",
-                        supportLevel: "PREMIUM",
+                        supportLevel: value3.value,
                         serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
 
                         template: flagTemplate,
@@ -1738,7 +1742,8 @@ export function CreateCustomPortfolio(props) {
                             ? generalComponentData?.contractOrSupport
                             : "EMPTY",
                         lifeStageOfMachine: "NEW_BREAKIN",
-                        supportLevel: "PREMIUM",
+                        // supportLevel: "PREMIUM",
+                        supportLevel: value3.value,
                         numberOfEvents: 0,
                         itemRelations: [],
                         rating: "string",
@@ -1890,7 +1895,8 @@ export function CreateCustomPortfolio(props) {
                             ? generalComponentData.customerGroup
                             : "EMPTY",
                         searchTerm: "EMPTY",
-                        supportLevel: "EMPTY",
+                        // supportLevel: "PREMIUM",
+                        supportLevel: value3.value,
                         // portfolioPrice: { "portfolioPriceId": 92 },
                         // additionalPrice: { "additionalPriceId": 1 },
                         // escalationPrice: { "escalationPriceId": 1 },
@@ -2001,7 +2007,8 @@ export function CreateCustomPortfolio(props) {
                             ? generalComponentData?.contractOrSupport
                             : "EMPTY",
                         lifeStageOfMachine: "NEW_BREAKIN",
-                        supportLevel: "PREMIUM",
+                        // supportLevel: "PREMIUM",
+                        supportLevel: value3.value,
                         numberOfEvents: 0,
                         itemRelations: [],
                         rating: "string",
@@ -2130,7 +2137,8 @@ export function CreateCustomPortfolio(props) {
                             ? generalComponentData.customerGroup
                             : "EMPTY",
                         searchTerm: "EMPTY",
-                        supportLevel: "EMPTY",
+                        // supportLevel: "PREMIUM",
+                        supportLevel: value3.value,
                         // portfolioPrice: {},
                         // additionalPrice: {},
                         // escalationPrice: {},
@@ -2247,7 +2255,8 @@ export function CreateCustomPortfolio(props) {
                             ? generalComponentData?.contractOrSupport
                             : "EMPTY",
                         lifeStageOfMachine: "NEW_BREAKIN",
-                        supportLevel: "PREMIUM",
+                        // supportLevel: "PREMIUM",
+                        supportLevel: value3.value,
                         numberOfEvents: 0,
                         itemRelations: [],
                         rating: "string",
@@ -2391,7 +2400,8 @@ export function CreateCustomPortfolio(props) {
                             ? generalComponentData.customerGroup
                             : "EMPTY",
                         searchTerm: "EMPTY",
-                        supportLevel: "EMPTY",
+                        // supportLevel: "PREMIUM",
+                        supportLevel: value3.value,
                         solutionType: solutionTypeListKeyValue.value ?
                             solutionTypeListKeyValue.value : "EMPTY",
                         solutionLevel: solutionLevelListKeyValue.value ?
@@ -2550,7 +2560,8 @@ export function CreateCustomPortfolio(props) {
                             ? generalComponentData.customerGroup
                             : "EMPTY",
                         searchTerm: "EMPTY",
-                        supportLevel: "EMPTY",
+                        // supportLevel: "PREMIUM",
+                        supportLevel: value3.value,
                         solutionType: solutionTypeListKeyValue.value ?
                             solutionTypeListKeyValue.value : "EMPTY",
                         solutionLevel: solutionLevelListKeyValue.value ?
@@ -2704,12 +2715,13 @@ export function CreateCustomPortfolio(props) {
                         ? generalComponentData.customerGroup
                         : "EMPTY",
                     searchTerm: "EMPTY",
-                    supportLevel: "EMPTY",
+                    // supportLevel: "PREMIUM",
+                    supportLevel: value3.value,
 
                     portfolioPrice: portfolioPriceDataId,
                     additionalPrice: portfolioAdditionalPriceDataId,
                     escalationPrice: portfolioEscalationPriceDataId,
-                    
+
                     customeItems: portfolioCustomItems,
                     items: [],
                     customCoverages: cvgIds,
@@ -2801,6 +2813,119 @@ export function CreateCustomPortfolio(props) {
         });
     };
 
+    const createNewVersion = async () => {
+
+        try {
+            if (portfolioId != undefined || portfolioId != null) {
+                if (newVersionName != "") {
+                    let versionObj = await getCustomPortfolio(portfolioId);
+                    console.log("versionObj : ", versionObj);
+                    var verNewValue;
+                    if (versionObj.supportLevel == "EMPTY") {
+                        verNewValue = "STANDARD";
+                    } else if (versionObj.supportLevel == "STANDARD") {
+                        verNewValue = "SUPERIOR";
+                    } else if (versionObj.supportLevel == "SUPERIOR") {
+                        verNewValue = "PREMIUM";
+                    } else {
+                        verNewValue = versionObj.supportLevel;
+                    }
+                    let createNewVersionObj = {
+                        customPortfolioId: 0,
+                        name: newVersionName,
+                        description: versionObj.description,
+                        machineType: versionObj.machineType,
+                        searchTerm: versionObj.searchTerm,
+                        lubricant: versionObj.lubricant,
+                        customerId: versionObj.customerId,
+                        customerGroup: versionObj.customerGroup,
+                        customerSegment: versionObj.customerSegment,
+                        externalReference: versionObj.externalReference,
+                        status: versionObj.status,
+                        validFrom: versionObj.validFrom,
+                        validTo: versionObj.validTo,
+                        strategyTask: versionObj.strategyTask,
+                        taskType: versionObj.taskType,
+                        usageCategory: versionObj.usageCategory,
+                        productHierarchy: versionObj.productHierarchy,
+                        geographic: versionObj.geographic,
+                        solutionType: versionObj.solutionType,
+                        solutionLevel: versionObj.solutionLevel,
+                        availability: versionObj.availability,
+                        responseTime: versionObj.responseTime,
+                        type: versionObj.type,
+                        application: versionObj.application,
+                        contractOrSupport: versionObj.contractOrSupport,
+                        lifeStageOfMachine: versionObj.lifeStageOfMachine,
+                        supportLevel: verNewValue,
+                        numberOfEvents: versionObj.numberOfEvents,
+                        itemRelations: versionObj.itemRelations,
+                        rating: versionObj.rating,
+                        startUsage: versionObj.startUsage,
+                        endUsage: versionObj.endUsage,
+                        unit: versionObj.unit,
+                        additionals: versionObj.additionals,
+                        preparedBy: versionObj.preparedBy,
+                        approvedBy: versionObj.approvedBy,
+                        preparedOn: versionObj.preparedOn,
+                        revisedBy: versionObj.revisedBy,
+                        revisedOn: versionObj.revisedOn,
+                        salesOffice: versionObj.salesOffice,
+                        offerValidity: versionObj.offerValidity,
+                        customItems: versionObj.customItems,
+                        customCoverages: versionObj.customCoverages,
+                        portfolioPrice: versionObj.portfolioPrice,
+                        additionalPrice: versionObj.additionalPrice,
+                        escalationPrice: versionObj.escalationPrice,
+                        saveState: versionObj.saveState,
+                        userId: versionObj.userId,
+                        template: versionObj.template,
+                        visibleInCommerce: versionObj.visibleInCommerce
+                    }
+
+                    const portfolioRes = await createCustomPortfolio(createNewVersionObj);
+                    if (portfolioRes.status === 200) {
+                        toast("👏 New Version Created", {
+                            position: "top-right",
+                            autoClose: 3000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                        });
+
+                        // $('#versionpopup').modal('hide');
+                    }
+
+                    
+
+                } else {
+                    throw "Please Crate a New Version Portfolio Name First";
+
+                }
+            } else {
+                throw "Create Portfolio First";
+            }
+        } catch (error) {
+            console.log("somehing went wrong:", error);
+            // toast("😐" + "Create Portfolio First", {
+            toast("😐" + error, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return;
+        }
+        // if (portfolioId != undefined || portfolioId != null) {
+        console.log("my portfolioId : ", portfolioId);
+        // }
+    }
+
     const Inclusion_Exclusion = (e, data) => {
         console.log("event is : ", e);
         console.log("itemData : ", data);
@@ -2862,7 +2987,43 @@ export function CreateCustomPortfolio(props) {
         setSelectedMasterData(result.customCoverages)
         setBundleItems(result.customItems)
 
-        setPortfolioCustomItems(result.customItems)
+
+        let itemsArrData = [];
+
+        // console.log("result 123344 ---- : ", result)
+
+        for (let b = 0; b < result.itemRelations.length; b++) {
+            // console.log("item relations ", b + ": " + result.itemRelations[b].portfolioItemId)
+            // console.log("hello user -----", b)
+            let expendedArrObj = [];
+            let obj = result.customItems.find(obj => obj.customItemId == result.itemRelations[b].portfolioItemId);
+            for (let c = 0; c < result.itemRelations[b].bundles.length; c++) {
+
+                let bundleObj = result.customItems.find((objBundle, i) => {
+                    if (objBundle.customItemId == result.itemRelations[b].bundles[c]) {
+
+                        return objBundle; // stop searching
+                    }
+                });
+                expendedArrObj.push(bundleObj);
+            }
+
+            for (let d = 0; d < result.itemRelations[b].services.length; d++) {
+
+                let serviceObj = result.customItems.find((objService, i) => {
+                    if (objService.customItemId == result.itemRelations[b].services[d]) {
+
+                        return objService; // stop searching
+                    }
+                });
+                expendedArrObj.push(serviceObj);
+            }
+            obj.associatedServiceOrBundle = expendedArrObj;
+            itemsArrData.push(obj);
+        }
+
+        // setPortfolioCustomItems(result.customItems)
+        setPortfolioCustomItems(itemsArrData);
     }
 
 
@@ -3226,6 +3387,30 @@ export function CreateCustomPortfolio(props) {
             .catch((err) => {
                 alert(err);
             });
+
+        getSolutionPriceCommonConfig("support-level")
+            .then((res) => {
+                const options = res.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setVersionOption(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
+
+        getSolutionPriceCommonConfig("status")
+            .then((res) => {
+                const options = res.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setStatusOption(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
     };
 
     const dispatch = useDispatch();
@@ -3374,6 +3559,10 @@ export function CreateCustomPortfolio(props) {
         { value: "vanilla", label: "2" },
         { value: "Construction", label: "3" },
     ];
+
+    const [versionOption, setVersionOption] = useState([]);
+    const [statusOption, setStatusOption] = useState([]);
+    const [newVersionName, setNewVersionName] = useState("");
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -4582,16 +4771,27 @@ export function CreateCustomPortfolio(props) {
     //     },
     // ];
     const bundleItemColumns = [
+        // {
+        //     name: (
+        //         <>
+        //             <div>Item ID </div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.customItemId,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.customItemId,
+        // },
         {
             name: (
                 <>
-                    <div>Item ID </div>
+                    <div>Item Name </div>
                 </>
             ),
-            selector: (row) => row.customItemId,
+            selector: (row) => row.itemName,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemId,
+            format: (row) => row.itemName,
         },
         {
             name: (
@@ -4739,16 +4939,6 @@ export function CreateCustomPortfolio(props) {
                             </Link>
                         </Tooltip>
                     </div>
-                    {/* <div
-                        className=" cursor"
-                        onClick={(e) => handleServiceItemSave(e, row)}
-                    >
-                        <Tooltip title="Save">
-                            <Link to="#" className="px-1">
-                                <SaveOutlinedIcon />
-                            </Link>
-                        </Tooltip>
-                    </div> */}
                     <div className="" onClick={(e) => handleServiceItemDelete(e, row)}>
                         <Tooltip title="Delete">
                             <Link to="#" className="px-1">
@@ -4960,16 +5150,27 @@ export function CreateCustomPortfolio(props) {
                 </>
             ),
         },
+        // {
+        //     name: (
+        //         <>
+        //             <div>Item ID </div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.customItemId,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.customItemId,
+        // },
         {
             name: (
                 <>
-                    <div>Item ID </div>
+                    <div>Item Name </div>
                 </>
             ),
-            selector: (row) => row.customItemId,
+            selector: (row) => row.itemName,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemId,
+            format: (row) => row.itemName,
         },
         {
             name: (
@@ -5073,16 +5274,27 @@ export function CreateCustomPortfolio(props) {
     ];
     const tempBundleItemColumns1 = [
 
+        // {
+        //     name: (
+        //         <>
+        //             <div>Item Id</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.itemId,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.itemId,
+        // },
         {
             name: (
                 <>
-                    <div>Item Id</div>
+                    <div>Item Name</div>
                 </>
             ),
-            selector: (row) => row.itemId,
+            selector: (row) => row.itemName,
             wrap: true,
             sortable: true,
-            format: (row) => row.itemId,
+            format: (row) => row.itemName,
         },
         {
             name: (
@@ -5241,16 +5453,27 @@ export function CreateCustomPortfolio(props) {
     ];
     const tempBundleItemColumns1New = [
 
+        // {
+        //     name: (
+        //         <>
+        //             <div>Item Id</div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.customItemId,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.customItemId,
+        // },
         {
             name: (
                 <>
-                    <div>Item Id</div>
+                    <div>Item Name</div>
                 </>
             ),
-            selector: (row) => row.customItemId,
+            selector: (row) => row.itemName,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemId,
+            format: (row) => row.itemName,
         },
         {
             name: (
@@ -6740,7 +6963,7 @@ export function CreateCustomPortfolio(props) {
                                     <Select
                                         className="customselectbtn1"
                                         onChange={(e) => handleOption3(e)}
-                                        options={options3}
+                                        options={versionOption}
                                         value={value3}
                                     />
                                 </div>
@@ -6749,7 +6972,7 @@ export function CreateCustomPortfolio(props) {
                                     <Select
                                         className="customselectbtn"
                                         onChange={(e) => handleOption2(e)}
-                                        options={options2}
+                                        options={statusOption}
                                         value={value2}
                                     />
                                 </div>
@@ -8717,7 +8940,11 @@ export function CreateCustomPortfolio(props) {
                                         data={bundleItems}
                                         customStyles={customStyles}
                                         expandableRows
+                                        expandableRowExpanded={(row) => (row === currentExpendPortfolioItemRow)}
+                                        expandOnRowClicked
+                                        onRowClicked={(row) => setCurrentExpendPortfolioItemRow(row)}
                                         expandableRowsComponent={ExpandedComponent}
+                                        onRowExpandToggled={(bool, row) => setCurrentExpendPortfolioItemRow(row)}
                                         pagination
                                     />
                                 </div>
@@ -11582,7 +11809,8 @@ export function CreateCustomPortfolio(props) {
                                         { label: "Family", value: "itemHeaderFamily" },
                                         { label: "Model", value: "model" },
                                         { label: "Prefix", value: "prefix" },
-                                        { label: "Item Id", value: "itemId" },
+                                        // { label: "Item Id", value: "itemId" },
+                                        { label: "Item Name", value: "itemName" },
                                         { label: "Description", value: "description" },
                                     ]}
                                     setTempBundleService1={setTempBundleService1}
@@ -12768,11 +12996,11 @@ export function CreateCustomPortfolio(props) {
                         <div class="modal-body">
                             <div class="form-group">
                                 <label for="usr">Name</label>
-                                <input type="text" class="form-control" id="usr" placeholder="Copy of Quote"></input>
+                                <input type="text" class="form-control" id="usr" placeholder="Enter Name" onChange={(e) => setNewVersionName(e.target.value)} value={newVersionName} />
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" className="btn  btn-primary w-100">Create </button>
+                            <button type="button" className="btn  btn-primary w-100" onClick={createNewVersion}>Create </button>
                             <button type="button" className="btn btn-primary w-100" data-dismiss="modal">Cancel</button>
 
                         </div>

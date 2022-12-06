@@ -115,6 +115,7 @@ import {
     escalationPriceCreation,
     additionalPriceCreation,
     portfolioPriceCreation,
+    deleteCustomItem,
 } from "../../services/index";
 import {
     selectCategoryList,
@@ -225,6 +226,7 @@ export function SolutionTemplateResult(props) {
     const [geographicKeyValue, setGeographicKeyValue] = useState([]);
     const [typeKeyValue, setTypeKeyValue] = useState([]);
 
+    const [currentExpendPortfolioItemRow, setCurrentExpendPortfolioItemRow] = useState(null)
 
     const [machineTypeKeyValueList, setMachineTypeKeyValueList] = useState([])
     const [lifeStageOfMachineKeyValueList, setLifeStageOfMachineKeyValueList] = useState([])
@@ -580,6 +582,214 @@ export function SolutionTemplateResult(props) {
         // console.log("quoteData : ", quoteData);
         setQuoteDataShow(true);
     }
+
+    const ExpandedComponent = ({ data }) => (
+        <div className="scrollbar" id="style">
+            {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
+                <div
+                    key={i}
+                    id="row-0"
+                    role="row"
+                    className="sc-evZas cMMpBL rdt_TableRow"
+                    style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
+                >
+                    <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
+                    <div
+                        id="cell-1-undefined"
+                        data-column-id="1"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        {/* <div>{bundleAndService.customItemId}</div> */}
+                        <div>{bundleAndService.itemName}</div>
+                    </div>
+                    <div
+                        id="cell-2-undefined"
+                        data-column-id="2"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemHeaderModel.itemHeaderDescription}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-3-undefined"
+                        data-column-id="3"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemHeaderModel.itemHeaderStrategy}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-4-undefined"
+                        data-column-id="4"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemBodyModel.taskType}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-5-undefined"
+                        data-column-id="5"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemHeaderModel?.quantity}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-6-undefined"
+                        data-column-id="6"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemHeaderModel.netPrice}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-7-undefined"
+                        data-column-id="7"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemHeaderModel.additional}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-8-undefined"
+                        data-column-id="8"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemHeaderModel?.price}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-9-undefined"
+                        data-column-id="9"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemHeaderModel.netPrice}
+                        </div>
+                    </div>
+                    <div
+                        id="cell-10-undefined"
+                        data-column-id="10"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.customItemHeaderModel?.comments}
+                        </div>
+                    </div>
+                    {/* <div
+                        id="cell-10-undefined"
+                        data-column-id="10"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {bundleAndService.itemBodyModel.totalPrice}
+                        </div>
+                    </div> */}
+                    <div
+                        id="cell-10-undefined"
+                        data-column-id="10"
+                        role="gridcell"
+                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                        data-tag="allowRowEvents"
+                    >
+                        <div data-tag="allowRowEvents">
+                            {/* {bundleAndService.itemBodyModel.totalPrice} */}
+                        </div>
+                    </div>
+
+                    {/* {bundleItems.length > 0 && (
+              <div
+                id="cell-11-undefined"
+                data-column-id="11"
+                role="gridcell"
+                className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz custom-rdt_TableCell rdt_TableCell"
+                data-tag="allowRowEvents"
+              >
+                <div
+                  className="cursor"
+                  onClick={(e) =>
+                    handleExpandedRowEdit(
+                      e,
+                      data.itemId,
+                      data.associatedServiceOrBundle[i]
+                    )
+                  }
+                >
+                  <Tooltip title="Edit">
+                    <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
+                  </Tooltip>
+                </div>
+                <div
+                  className="cursor"
+                  onClick={(e) =>
+                    handleExpandedRowDelete(
+                      e,
+                      data.itemId,
+                      data.associatedServiceOrBundle[i].itemId
+                    )
+                  }
+                >
+                  <Tooltip title="Delete">
+                    <Link to="#" className="mx-1">
+                      <svg
+                        data-name="Layer 41"
+                        id="Layer_41"
+                        width="14px"
+                        viewBox="0 0 50 50"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <title />
+                        <path
+                          className="cls-1"
+                          d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                        />
+                        <path
+                          className="cls-1"
+                          d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                        />
+                        <path
+                          className="cls-1"
+                          d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                        />
+                      </svg>
+                    </Link>
+                  </Tooltip>
+                </div>
+              </div>)} */}
+
+                </div>
+            ))}
+        </div>
+    );
 
     const handleAddNewRowPriceAgreement = () => {
         var temp = [...priceAgreementRows];
@@ -1058,14 +1268,53 @@ export function SolutionTemplateResult(props) {
         console.log("handleServiceItemEdit", row);
     };
 
-    const handleServiceItemDelete = (e, row) => {
-        const _bundleItems = [...bundleItems];
-        const updated = _bundleItems.filter((currentItem) => {
-            if (currentItem.id !== row.id) {
-                return currentItem;
+    const handleServiceItemDelete = async (e, row) => {
+        try {
+            console.log("row data ---- : ", row)
+            const delRes = await deleteCustomItem(row.customItemBodyModel.customItemPrices.customItemPriceDataId);
+            if (delRes.status == 200) {
+                toast("😎 Item Deletion Successfull", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+
+                const _bundleItems = [...bundleItems];
+                const updated = _bundleItems.filter((currentItem) => {
+                    if (currentItem.id !== row.id) {
+                        return currentItem;
+                    }
+                });
+                setBundleItems(updated);
+                setServiceOrBundlePrefix("");
             }
-        });
-        setBundleItems(updated);
+        } catch (error) {
+            console.log("error", error);
+            toast("😐" + error, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return;
+        }
+
+        // toast("😐" + "Something went wrong !!", {
+        //     position: "top-right",
+        //     autoClose: 3000,
+        //     hideProgressBar: false,
+        //     closeOnClick: true,
+        //     pauseOnHover: true,
+        //     draggable: true,
+        //     progress: undefined,
+        // });
     };
 
     const handleServiceItemSave = (e, row) => {
@@ -1156,6 +1405,119 @@ export function SolutionTemplateResult(props) {
         }
     };
 
+    const createNewVersion = async () => {
+
+        try {
+            if (portfolioId != undefined || portfolioId != null) {
+                if (newVersionName != "") {
+                    let versionObj = await getCustomPortfolio(portfolioId);
+                    console.log("versionObj : ", versionObj);
+                    var verNewValue;
+                    if (versionObj.supportLevel == "EMPTY") {
+                        verNewValue = "STANDARD";
+                    } else if (versionObj.supportLevel == "STANDARD") {
+                        verNewValue = "SUPERIOR";
+                    } else if (versionObj.supportLevel == "SUPERIOR") {
+                        verNewValue = "PREMIUM";
+                    } else {
+                        verNewValue = versionObj.supportLevel;
+                    }
+                    let createNewVersionObj = {
+                        customPortfolioId: 0,
+                        name: newVersionName,
+                        description: versionObj.description,
+                        machineType: versionObj.machineType,
+                        searchTerm: versionObj.searchTerm,
+                        lubricant: versionObj.lubricant,
+                        customerId: versionObj.customerId,
+                        customerGroup: versionObj.customerGroup,
+                        customerSegment: versionObj.customerSegment,
+                        externalReference: versionObj.externalReference,
+                        status: versionObj.status,
+                        validFrom: versionObj.validFrom,
+                        validTo: versionObj.validTo,
+                        strategyTask: versionObj.strategyTask,
+                        taskType: versionObj.taskType,
+                        usageCategory: versionObj.usageCategory,
+                        productHierarchy: versionObj.productHierarchy,
+                        geographic: versionObj.geographic,
+                        solutionType: versionObj.solutionType,
+                        solutionLevel: versionObj.solutionLevel,
+                        availability: versionObj.availability,
+                        responseTime: versionObj.responseTime,
+                        type: versionObj.type,
+                        application: versionObj.application,
+                        contractOrSupport: versionObj.contractOrSupport,
+                        lifeStageOfMachine: versionObj.lifeStageOfMachine,
+                        supportLevel: verNewValue,
+                        numberOfEvents: versionObj.numberOfEvents,
+                        itemRelations: versionObj.itemRelations,
+                        rating: versionObj.rating,
+                        startUsage: versionObj.startUsage,
+                        endUsage: versionObj.endUsage,
+                        unit: versionObj.unit,
+                        additionals: versionObj.additionals,
+                        preparedBy: versionObj.preparedBy,
+                        approvedBy: versionObj.approvedBy,
+                        preparedOn: versionObj.preparedOn,
+                        revisedBy: versionObj.revisedBy,
+                        revisedOn: versionObj.revisedOn,
+                        salesOffice: versionObj.salesOffice,
+                        offerValidity: versionObj.offerValidity,
+                        customItems: versionObj.customItems,
+                        customCoverages: versionObj.customCoverages,
+                        portfolioPrice: versionObj.portfolioPrice,
+                        additionalPrice: versionObj.additionalPrice,
+                        escalationPrice: versionObj.escalationPrice,
+                        saveState: versionObj.saveState,
+                        userId: versionObj.userId,
+                        template: versionObj.template,
+                        visibleInCommerce: versionObj.visibleInCommerce
+                    }
+
+                    const portfolioRes = await createCustomPortfolio(createNewVersionObj);
+                    if (portfolioRes.status === 200) {
+                        toast("👏 New Version Created", {
+                            position: "top-right",
+                            autoClose: 3000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                        });
+
+                        // $('#versionpopup').modal('hide');
+                    }
+
+
+
+                } else {
+                    throw "Please Crate a New Version Portfolio Name First";
+
+                }
+            } else {
+                throw "Create Portfolio First";
+            }
+        } catch (error) {
+            console.log("somehing went wrong:", error);
+            // toast("😐" + "Create Portfolio First", {
+            toast("😐" + error, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            return;
+        }
+        // if (portfolioId != undefined || portfolioId != null) {
+        console.log("my portfolioId : ", portfolioId);
+        // }
+    }
+
     const handleNextClick = async (e) => {
         try {
 
@@ -1189,7 +1551,8 @@ export function SolutionTemplateResult(props) {
                     application: "HILL",
                     contractOrSupport: "LEVEL_I",
                     lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                    supportLevel: "PREMIUM",
+                    // supportLevel: "PREMIUM",
+                    supportLevel: value3.value,
                     serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
 
                     machineType: machineTypeKeyValue.value,
@@ -1401,7 +1764,8 @@ export function SolutionTemplateResult(props) {
                         ? generalComponentData.customerGroup
                         : "EMPTY",
                     searchTerm: "EMPTY",
-                    supportLevel: "EMPTY",
+                    // supportLevel: "PREMIUM",
+                    supportLevel: value3.value,
                     solutionType: solutionTypeListKeyValue.value ?
                         solutionTypeListKeyValue.value : "EMPTY",
                     solutionLevel: solutionLevelListKeyValue.value ?
@@ -1561,7 +1925,8 @@ export function SolutionTemplateResult(props) {
                         ? generalComponentData.customerGroup
                         : "EMPTY",
                     searchTerm: "EMPTY",
-                    supportLevel: "EMPTY",
+                    // supportLevel: "PREMIUM",
+                    supportLevel: value3.value,
                     // portfolioPrice: {},
                     // additionalPrice: {},
                     // escalationPrice: {},
@@ -1717,7 +2082,8 @@ export function SolutionTemplateResult(props) {
                         ? generalComponentData.customerGroup
                         : "EMPTY",
                     searchTerm: "EMPTY",
-                    supportLevel: "EMPTY",
+                    // supportLevel: "PREMIUM",
+                    supportLevel: value3.value,
                     solutionType: solutionTypeListKeyValue.value ?
                         solutionTypeListKeyValue.value : "EMPTY",
                     solutionLevel: solutionLevelListKeyValue.value ?
@@ -1863,7 +2229,8 @@ export function SolutionTemplateResult(props) {
                         ? generalComponentData.customerGroup
                         : "EMPTY",
                     searchTerm: "EMPTY",
-                    supportLevel: "EMPTY",
+                    // supportLevel: "PREMIUM",
+                    supportLevel: value3.value,
                     portfolioPrice: portfolioPriceDataId,
                     additionalPrice: portfolioAdditionalPriceDataId,
                     escalationPrice: portfolioEscalationPriceDataId,
@@ -2327,6 +2694,29 @@ export function SolutionTemplateResult(props) {
             .catch((err) => {
                 alert(err);
             });
+        getSolutionPriceCommonConfig("support-level")
+            .then((res) => {
+                const options = res.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setVersionOption(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
+
+        getSolutionPriceCommonConfig("status")
+            .then((res) => {
+                const options = res.map((d) => ({
+                    value: d.key,
+                    label: d.value,
+                }));
+                setStatusOption(options);
+            })
+            .catch((err) => {
+                alert(err);
+            });
     };
 
     const dispatch = useDispatch();
@@ -2342,6 +2732,41 @@ export function SolutionTemplateResult(props) {
     }, [dispatch]);
 
     useEffect(() => {
+
+
+        let itemsArrData = [];
+
+        for (let b = 0; b < selectedSolutionTemplateItemsVal[0].itemRelations.length; b++) {
+            // console.log("item relations ", b + ": " + selectedSolutionTemplateItemsVal[0].itemRelations[b].portfolioItemId)
+            // console.log("hello user -----", b)
+            let expendedArrObj = [];
+            let obj = selectedSolutionTemplateItemsVal[0].customItems.find(obj => obj.customItemId == selectedSolutionTemplateItemsVal[0].itemRelations[b].portfolioItemId);
+            for (let c = 0; c < selectedSolutionTemplateItemsVal[0].itemRelations[b].bundles.length; c++) {
+
+                let bundleObj = selectedSolutionTemplateItemsVal[0].customItems.find((objBundle, i) => {
+                    if (objBundle.customItemId == selectedSolutionTemplateItemsVal[0].itemRelations[b].bundles[c]) {
+
+                        return objBundle; // stop searching
+                    }
+                });
+                expendedArrObj.push(bundleObj);
+            }
+
+            for (let d = 0; d < selectedSolutionTemplateItemsVal[0].itemRelations[b].services.length; d++) {
+
+                let serviceObj = selectedSolutionTemplateItemsVal[0].customItems.find((objService, i) => {
+                    if (objService.customItemId == selectedSolutionTemplateItemsVal[0].itemRelations[b].services[d]) {
+
+                        return objService; // stop searching
+                    }
+                });
+                expendedArrObj.push(serviceObj);
+            }
+            obj.associatedServiceOrBundle = expendedArrObj;
+            itemsArrData.push(obj);
+        }
+
+        console.log("item arr is : ", itemsArrData)
 
 
         // console.log("data are here ", location.selectedTemplateItems)
@@ -2362,13 +2787,10 @@ export function SolutionTemplateResult(props) {
             items: [],
             customCoverages: [],
         });
-        // setPortfolioId(location.selectedTemplateItems[0].customPortfolioId);
         setPortfolioId(selectedSolutionTemplateItemsVal[0].customPortfolioId);
 
         setValidityData({
             ...validityData,
-            // fromDate: location.selectedTemplateItems[0].validFrom,
-            // toDate: location.selectedTemplateItems[0].validTo,
             fromDate: selectedSolutionTemplateItemsVal[0].validFrom,
             toDate: selectedSolutionTemplateItemsVal[0].validTo,
             from: null,
@@ -2460,24 +2882,9 @@ export function SolutionTemplateResult(props) {
             "value": selectedSolutionTemplateItemsVal[0].lifeStageOfMachine
         });
 
-        // setSelecteSolutionItems(location.selectedTemplateItems[0].customItems);
-        setSelecteSolutionItems(selectedSolutionTemplateItemsVal[0].customItems);
+        // setSelecteSolutionItems(selectedSolutionTemplateItemsVal[0].customItems);
+        setSelecteSolutionItems(itemsArrData);
 
-        // console.log("location.selectedTemplateItems : ", location.selectedTemplateItems)
-        // console.log("New Life stage value is : ", lifeStageOfMachineKeyValue)
-
-        // let itemIdData = []
-        // let priceDataId = []
-        // itemIdData.push({ "itemId": location.selectedTemplateItems[0].itemId })
-
-        // const customItemsId = location.selectedTemplateItems.map((data, i) => {
-
-        //     console.log("my map data is :=> ", data);
-        //     console.log("itemHeaderId is :=>  ", data.customItemHeaderModel?.itemHeaderId);
-        //     console.log("itemHeaderModel is => :  ", data.customItemHeaderModel);
-        //     itemIdData.push({ "customItemId": parseInt(data.customItemId) })
-        // })
-        // setSelectedCustomItems(itemIdData)
 
     }, [portfolioId])
 
@@ -2566,6 +2973,9 @@ export function SolutionTemplateResult(props) {
         { value: "Construction", label: "3" },
     ];
 
+    const [versionOption, setVersionOption] = useState([]);
+    const [statusOption, setStatusOption] = useState([]);
+    const [newVersionName, setNewVersionName] = useState("");
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -3612,16 +4022,27 @@ export function SolutionTemplateResult(props) {
     ];
 
     const selectedCustomItemsColumn = [
+        // {
+        //     name: (
+        //         <>
+        //             <div>Item ID </div>
+        //         </>
+        //     ),
+        //     selector: (row) => row.customItemId,
+        //     wrap: true,
+        //     sortable: true,
+        //     format: (row) => row.customItemId,
+        // },
         {
             name: (
                 <>
-                    <div>Item ID </div>
+                    <div>Item Name </div>
                 </>
             ),
-            selector: (row) => row.customItemId,
+            selector: (row) => row.itemName,
             wrap: true,
             sortable: true,
-            format: (row) => row.customItemId,
+            format: (row) => row.itemName,
         },
         {
             name: (
@@ -3737,6 +4158,16 @@ export function SolutionTemplateResult(props) {
                     className="d-flex justify-content-center align-items-center row-svg-div"
                     style={{ minWidth: "180px !important" }}
                 >
+                    <div
+                        className=" cursor"
+                        onClick={(e) => handleServiceItemEdit(e, row)}
+                    >
+                        <Tooltip title="Edit">
+                            <Link to="#" className="px-1">
+                                <img className="m-1" src={penIcon} />
+                            </Link>
+                        </Tooltip>
+                    </div>
 
                     <div className=" cursor" data-toggle="modal" data-target="#myModal12">
                         <Tooltip title="Inclusion" onClick={(e) => Inclusive_Exclusive(e, row)}>
@@ -3748,6 +4179,33 @@ export function SolutionTemplateResult(props) {
                             </Link> */}
                         </Tooltip>
                     </div>
+                    {row.customItemBodyModel.customItemPrices != null && row.customItemBodyModel.customItemPrices.length > 0 ?
+                        <div className="" onClick={(e) => handleServiceItemDelete(e, row)}>
+                            <Tooltip title="Delete">
+                                <Link to="#" className="px-1">
+                                    <svg
+                                        data-name="Layer 41"
+                                        id="Layer_41"
+                                        viewBox="0 0 50 50"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <title />
+                                        <path
+                                            className="cls-1"
+                                            d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                                        />
+                                        <path
+                                            className="cls-1"
+                                            d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                                        />
+                                        <path
+                                            className="cls-1"
+                                            d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                                        />
+                                    </svg>
+                                </Link>
+                            </Tooltip>
+                        </div> : <></>}
                 </div>
             ),
         },
@@ -3869,175 +4327,6 @@ export function SolutionTemplateResult(props) {
         setAddportFolioItem(data)
     }
 
-    const ExpandedComponent = ({ data }) => (
-        <div className="scrollbar" id="style">
-            {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
-                <div
-                    key={i}
-                    id="row-0"
-                    role="row"
-                    className="sc-evZas cMMpBL rdt_TableRow"
-                    style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
-                >
-                    <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco"></div>
-                    <div
-                        id="cell-1-undefined"
-                        data-column-id="1"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div>{bundleAndService.itemId}</div>
-                    </div>
-                    <div
-                        id="cell-2-undefined"
-                        data-column-id="2"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.itemBodyModel.itemBodyDescription}
-                        </div>
-                    </div>
-                    <div
-                        id="cell-3-undefined"
-                        data-column-id="3"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.itemHeaderModel.strategy}
-                        </div>
-                    </div>
-                    <div
-                        id="cell-4-undefined"
-                        data-column-id="4"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.itemBodyModel.standardJobId}
-                        </div>
-                    </div>
-                    <div
-                        id="cell-5-undefined"
-                        data-column-id="5"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.itemBodyModel.repairOption}
-                        </div>
-                    </div>
-                    <div
-                        id="cell-6-undefined"
-                        data-column-id="6"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.itemBodyModel.frequency}
-                        </div>
-                    </div>
-                    <div
-                        id="cell-7-undefined"
-                        data-column-id="7"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.itemBodyModel.quantity}
-                        </div>
-                    </div>
-                    <div
-                        id="cell-8-undefined"
-                        data-column-id="8"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.itemBodyModel.sparePartsPrice}
-                        </div>
-                    </div>
-                    <div
-                        id="cell-9-undefined"
-                        data-column-id="9"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.itemBodyModel.servicePrice}
-                        </div>
-                    </div>
-                    <div
-                        id="cell-10-undefined"
-                        data-column-id="10"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.itemBodyModel.totalPrice}
-                        </div>
-                    </div>
-                    <div
-                        id="cell-11-undefined"
-                        data-column-id="11"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div
-                            className="cursor"
-                            onClick={(e) => handleExpandedRowEdit(e, i)}
-                        >
-                            <Tooltip title="Edit">
-                                <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
-                            </Tooltip>
-                        </div>
-                        <div
-                            className="cursor"
-                            onClick={(e) => handleExpandedRowDelete(e, i)}
-                        >
-                            <Tooltip title="Delete">
-                                <Link to="#" className="mx-1">
-                                    <svg
-                                        data-name="Layer 41"
-                                        id="Layer_41"
-                                        width="14px"
-                                        viewBox="0 0 50 50"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <title />
-                                        <path
-                                            className="cls-1"
-                                            d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                                        />
-                                        <path
-                                            className="cls-1"
-                                            d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                                        />
-                                        <path
-                                            className="cls-1"
-                                            d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                                        />
-                                    </svg>
-                                </Link>
-                            </Tooltip>
-                        </div>
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
 
 
     return (
@@ -6012,9 +6301,15 @@ export function SolutionTemplateResult(props) {
                                 columns={selectedCustomItemsColumn}
                                 data={selectedSolutionItems}
                                 customStyles={customTableStyles}
+                                expandableRows
+                                expandableRowExpanded={(row) => (row === currentExpendPortfolioItemRow)}
+                                expandOnRowClicked
+                                onRowClicked={(row) => setCurrentExpendPortfolioItemRow(row)}
+                                expandableRowsComponent={ExpandedComponent}
+                                onRowExpandToggled={(bool, row) => setCurrentExpendPortfolioItemRow(row)}
                                 pagination
                             />
-                            {console.log("selectedSolutionItems data : ", selectedSolutionItems)}
+                            {/* {console.log("selectedSolutionItems data : ", selectedSolutionItems)} */}
                         </div>
                     </div>
 
@@ -6721,6 +7016,36 @@ export function SolutionTemplateResult(props) {
                             </div>
                         </Modal.Body>
                     </Modal>
+                    <div class="modal fade" id="versionpopup2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header border-none">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">
+                                        New Version
+                                    </h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+
+                                <p className="mx-3 mt-0">
+                                    Description, Product experts convert the repair option to a standard job or template.
+                                </p>
+                                <div className="hr"></div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="usr">Name</label>
+                                        <input type="text" class="form-control" id="usr" placeholder="Enter Name" onChange={(e) => setNewVersionName(e.target.value)} value={newVersionName} />
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" className="btn  btn-primary w-100" onClick={createNewVersion}>Create </button>
+                                    <button type="button" className="btn btn-primary w-100" data-dismiss="modal">Cancel</button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>

@@ -1,6 +1,6 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { CREATE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID, CREATE_CUSTOM_PRICE, CUSTOM_PORTFOLIO_SEARCH_QUERY } from "./CONSTANTS";
+import { CREATE_CUSTOM_PORTFOLIO_ITEM,DELETE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID, CREATE_CUSTOM_PRICE, CUSTOM_PORTFOLIO_SEARCH_QUERY } from "./CONSTANTS";
 
 /* ----------------- Authorization ------------------- */
 
@@ -148,7 +148,7 @@ export const updateCustomItemData = (id,payLoad) => {
     return new Promise((resolve, reject) => {
       try {
         axios
-          .delete(`${CREATE_CUSTOM_PORTFOLIO_ITEM()}/${id}`, { headers: headersdata })
+          .delete(DELETE_CUSTOM_PORTFOLIO_ITEM+id, { headers: headersdata })
           .then((res) => {
             console.log("deletecustomItem > axios res=", res);
             resolve(res);
