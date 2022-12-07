@@ -383,141 +383,141 @@ const customStyles = {
                         <h6 className="font-weight-600 text-grey mb-0">RECENT REPAIR BUILDER</h6>
                         <div className="row">
                         <div className="col-md-4">
-                            <div className="recent-items mt-3">
-                            <div className="d-flex justify-content-between align-items-center ">
-                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Builder</span></p>
+                            <div className="recent-items mt-3 block-div">
+                              <div className="d-flex justify-content-between align-items-center ">
+                                <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Builder</span></p>
                                 <div className="d-flex align-items-center">
-                                <div className="white-space custom-checkbox">
+                                  <div className="white-space custom-checkbox">
                                     <FormGroup>
-                                    <FormControlLabel control={<Checkbox defaultChecked />} label="" />
+                                      <FormControlLabel  control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
                                     </FormGroup>
+                                  </div>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                  <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                                 </div>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
-                                </div>
-                            </div>
+                              </div>
 
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
-                            <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                            <p className="font-size-12 mb-0">Repair Builder </p>
+                              <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                              <p className="font-size-12 mb-0">Repair Builder</p>
                             </div>
                         </div>
                         <div className="col-md-4">
-                            <div className="recent-items mt-3">
-                            <div className="d-flex justify-content-between align-items-center ">
-                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Builder</span></p>
+                            <div className="recent-items mt-3 block-div">
+                              <div className="d-flex justify-content-between align-items-center ">
+                                <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Builder</span></p>
                                 <div className="d-flex align-items-center">
-                                <div className="white-space custom-checkbox">
+                                  <div className="white-space custom-checkbox">
                                     <FormGroup>
-                                    <FormControlLabel control={<Checkbox />} label="" />
+                                      <FormControlLabel  control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
                                     </FormGroup>
+                                  </div>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                  <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                                 </div>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
-                                </div>
-                            </div>
+                              </div>
 
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
-                            <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                            <p className="font-size-12 mb-0">Repair Builder </p>
+                              <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                              <p className="font-size-12 mb-0">Repair Builder</p>
                             </div>
                         </div>
                         <div className="col-md-4">
-                            <div className="recent-items mt-3">
-                            <div className="d-flex justify-content-between align-items-center ">
-                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Builder</span></p>
+                            <div className="recent-items mt-3 block-div">
+                              <div className="d-flex justify-content-between align-items-center ">
+                                <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Builder</span></p>
                                 <div className="d-flex align-items-center">
-                                <div className="white-space custom-checkbox">
+                                  <div className="white-space custom-checkbox">
                                     <FormGroup>
-                                    <FormControlLabel control={<Checkbox />} label="" />
+                                      <FormControlLabel  control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
                                     </FormGroup>
+                                  </div>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                  <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                                 </div>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
-                                </div>
-                            </div>
+                              </div>
 
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
-                            <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                            <p className="font-size-12 mb-0">Repair Builder  </p>
+                              <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                              <p className="font-size-12 mb-0">Repair Builder</p>
                             </div>
                         </div>
                         <div className="col-md-4">
-                            <div className="recent-items mt-3">
-                            <div className="d-flex justify-content-between align-items-center ">
-                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Builder </span></p>
+                            <div className="recent-items mt-3 block-div">
+                              <div className="d-flex justify-content-between align-items-center ">
+                                <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Builder</span></p>
                                 <div className="d-flex align-items-center">
-                                <div className="white-space custom-checkbox">
+                                  <div className="white-space custom-checkbox">
                                     <FormGroup>
-                                    <FormControlLabel control={<Checkbox />} label="" />
+                                      <FormControlLabel  control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
                                     </FormGroup>
+                                  </div>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                  <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                                 </div>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
-                                </div>
-                            </div>
+                              </div>
 
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
-                            <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                            <p className="font-size-12 mb-0">Repair Builder</p>
+                              <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                              <p className="font-size-12 mb-0">Repair Builder</p>
                             </div>
                         </div>
                         <div className="col-md-4">
-                            <div className="recent-items mt-3">
-                            <div className="d-flex justify-content-between align-items-center ">
-                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Builder</span></p>
+                            <div className="recent-items mt-3 block-div">
+                              <div className="d-flex justify-content-between align-items-center ">
+                                <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Builder</span></p>
                                 <div className="d-flex align-items-center">
-                                <div className="white-space custom-checkbox">
+                                  <div className="white-space custom-checkbox">
                                     <FormGroup>
-                                    <FormControlLabel control={<Checkbox />} label="" />
+                                      <FormControlLabel  control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
                                     </FormGroup>
+                                  </div>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                  <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                                 </div>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
-                                </div>
-                            </div>
+                              </div>
 
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
-                            <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                            <p className="font-size-12 mb-0">Repair Builder </p>
+                              <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                              <p className="font-size-12 mb-0">Repair Builder</p>
                             </div>
                         </div>
                         <div className="col-md-4">
-                            <div className="recent-items mt-3">
-                            <div className="d-flex justify-content-between align-items-center ">
-                                <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Builder</span></p>
+                            <div className="recent-items mt-3 block-div">
+                              <div className="d-flex justify-content-between align-items-center ">
+                                <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Repair Builder</span></p>
                                 <div className="d-flex align-items-center">
-                                <div className="white-space custom-checkbox">
+                                  <div className="white-space custom-checkbox">
                                     <FormGroup>
-                                    <FormControlLabel control={<Checkbox />} label="" />
+                                      <FormControlLabel  control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
                                     </FormGroup>
+                                  </div>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                                  <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                                  <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                                 </div>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                                <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                                <a href="#" className="ml-2"><MuiMenuComponent options={activityOptions} /></a>
-                                </div>
-                            </div>
+                              </div>
 
                             </div>
                             <div className="d-flex justify-content-between align-items-center mt-2">
-                            <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                            <p className="font-size-12 mb-0">Repair Builder</p>
+                              <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                              <p className="font-size-12 mb-0">Repair Builder</p>
                             </div>
                         </div>
 

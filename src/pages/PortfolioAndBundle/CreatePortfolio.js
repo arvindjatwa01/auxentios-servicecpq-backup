@@ -5343,7 +5343,7 @@ export function CreatePortfolio(props) {
             <DatePicker
               variant="inline"
               format="dd/MM/yyyy"
-              className="form-controldate border-radius-10"
+              className="form-controldate border-radius-10 mr-3"
               label=""
             // value={row.startDate}
             />
@@ -5359,6 +5359,8 @@ export function CreatePortfolio(props) {
       ),
       selector: (row) => row.endDate,
       wrap: true,
+     maxWidth: "127px",
+     minWidth: "127px",
       sortable: true,
       format: (row) => row.endDate,
       cell: (row) => (
@@ -10901,7 +10903,7 @@ export function CreatePortfolio(props) {
             </Link>
           </div>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="included_table">
           <DataTable
             className=""
             title=""

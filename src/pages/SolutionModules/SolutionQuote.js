@@ -211,7 +211,7 @@ const  SolutionQuote=()=>{
                   <div className="col-md-4">
                     <div className="recent-items mt-3 block-div">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -234,7 +234,7 @@ const  SolutionQuote=()=>{
                   <div className="col-md-4">
                     <div className="recent-items mt-3 block-div">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -257,7 +257,7 @@ const  SolutionQuote=()=>{
                   <div className="col-md-4">
                     <div className="recent-items mt-3 block-div">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -280,7 +280,7 @@ const  SolutionQuote=()=>{
                   <div className="col-md-4">
                     <div className="recent-items mt-3 block-div">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -303,7 +303,7 @@ const  SolutionQuote=()=>{
                   <div className="col-md-4">
                     <div className="recent-items mt-3 block-div">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -326,7 +326,7 @@ const  SolutionQuote=()=>{
                   <div className="col-md-4">
                     <div className="recent-items mt-3 block-div">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -349,7 +349,7 @@ const  SolutionQuote=()=>{
                   <div className="col-md-4">
                     <div className="recent-items mt-3 block-div">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -372,7 +372,7 @@ const  SolutionQuote=()=>{
                   <div className="col-md-4">
                     <div className="recent-items mt-3 block-div">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
@@ -395,7 +395,7 @@ const  SolutionQuote=()=>{
                   <div className="col-md-4">
                     <div className="recent-items mt-3 block-div">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 "><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
                         <div className="d-flex align-items-center">
                           <div className="white-space custom-checkbox">
                             <FormGroup>
