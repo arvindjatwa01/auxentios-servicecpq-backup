@@ -67,6 +67,7 @@ import { ReactTableNested } from "../Test/ReactTableNested";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import DataTable from "react-data-table-component";
+import { customerSearch, machineSearch } from "services/searchServices";
 
 import boxicon from "../../assets/icons/png/box.png";
 
@@ -239,6 +240,7 @@ export function CreateCustomPortfolio(props) {
     const [open, setOpen] = useState(false);
     const [open1, setOpen1] = useState(false);
     const [openCoverage, setOpenCoveragetable] = useState(false);
+    const [versionPopup, setVersionPopup] = useState(false)
 
     const [productHierarchyKeyValue, setProductHierarchyKeyValue] = useState([]);
     const [geographicKeyValue, setGeographicKeyValue] = useState([]);
@@ -303,10 +305,16 @@ export function CreateCustomPortfolio(props) {
     const [escalationPriceValue, setEscalationPriceValue] = useState()
     const [additionalPriceValue, setAdditionalPriceValue] = useState()
 
-
+    const [querySearchModelResult, setQuerySearchModelResult] = useState([])
+    const [querySearchModelPrefixOption, setQuerySearchModelPrefixOption] = useState([])
+    const [selectedPrefixOption, setSelectedPrefixOption] = useState("");
 
     const [customerSegmentKeyValue, setCustomerSegmentKeyValue] = useState([]);
     const [strategyOptionals, setStrategyOptionals] = useState([]);
+    
+
+    const [searchCoverageSerialResults, setSearchCoverageSerialResults] = useState([]);
+    const [coverageSerialResultList, setCoverageSerialResultList] = useState([]);
 
     const [categoryUsageKeyValue1, setCategoryUsageKeyValue1] = useState([]);
     const [stratgyTaskTypeKeyValue, setStratgyTaskTypeKeyValue] = useState([]);
@@ -634,6 +642,48 @@ export function CreateCustomPortfolio(props) {
         temp.splice(index, 1);
         setPriceAgreementRows(temp);
     };
+
+    const handleModelInputSearch = (e) => {
+
+        setEditSerialNo({ ...editSerialNo, modelNo: e.target.value })
+        var searchStr = "model~" + e.target.value;
+        getSearchQueryCoverage(searchStr)
+            .then((res) => {
+                // console.log("search Query Result --------- :", res);
+                // setMasterData(res);
+                $(`.scrollbar-model`).css("display", "block");
+                setQuerySearchModelResult(res)
+                var preArr = [];
+                for (var n = 0; n < res.length; n++) {
+                    preArr.push({ label: res[n].prefix, value: res[n].prefix })
+                }
+                setQuerySearchModelPrefixOption(preArr);
+            })
+            .catch((err) => {
+                console.log("error in getSearchQueryCoverage", err);
+            });
+    }
+
+    const handleSearchModelListClick = (e, currentItem) => {
+        console.log(currentItem)
+
+        setEditSerialNo({
+            ...editSerialNo,
+            modelNo: currentItem.model,
+            make: currentItem.make,
+            family: currentItem.family
+        })
+        $(`.scrollbar-model`).css("display", "none");
+    }
+
+    const selectPrefixOption = (e) => {
+        console.log(e);
+        setSelectedPrefixOption(e)
+        setEditSerialNo({
+            ...editSerialNo,
+            serialNoPrefix: e.value,
+        })
+    }
 
     const handleAddNewRowPriceAgreement = () => {
         var temp = [...priceAgreementRows];
@@ -2894,11 +2944,12 @@ export function CreateCustomPortfolio(props) {
                             draggable: true,
                             progress: undefined,
                         });
+                        setVersionPopup(false)
 
                         // $('#versionpopup').modal('hide');
                     }
 
-                    
+
 
                 } else {
                     throw "Please Crate a New Version Portfolio Name First";
@@ -2919,6 +2970,7 @@ export function CreateCustomPortfolio(props) {
                 draggable: true,
                 progress: undefined,
             });
+            // setVersionPopup(false)
             return;
         }
         // if (portfolioId != undefined || portfolioId != null) {
@@ -3432,6 +3484,12 @@ export function CreateCustomPortfolio(props) {
         } else if (state) {
             setPortfolioId(state.portfolioId);
             fetchAllDetails(state.portfolioId);
+            var versionHistoryData = {
+                portfolioId: state.portfolioId,
+                exitingType: "solution",
+                editable: true,
+            };
+            localStorage.setItem('exitingType', JSON.stringify(versionHistoryData));
         }
     }, []);
 
@@ -5590,109 +5648,124 @@ export function CreateCustomPortfolio(props) {
 
     const columns4 = [
         {
-            name: (
-                <>
-                    <div>Family</div>
-                </>
-            ),
-            selector: (row) => row.family,
-            wrap: true,
-            sortable: true,
-            format: (row) => row.family,
+          name: (
+            <>
+              <div>Family</div>
+            </>
+          ),
+          selector: (row) => row.family,
+          wrap: true,
+          sortable: true,
+          format: (row) => row.family,
         },
         {
-            name: (
-                <>
-                    <div>Model</div>
-                </>
-            ),
-            selector: (row) => row.model,
-            wrap: true,
-            sortable: true,
-            format: (row) => row.model,
+          name: (
+            <>
+              <div>Model</div>
+            </>
+          ),
+          selector: (row) => row.model,
+          wrap: true,
+          sortable: true,
+          format: (row) => row.model,
         },
         {
-            name: (
-                <>
-                    <div>Serial Number</div>
-                </>
-            ),
-            selector: (row) => row.noSeriese,
-            wrap: true,
-            sortable: true,
-            format: (row) => row.noSeriese,
-            cell: (row) => (
-                <div>
-                    <Select
-                        className="customselect"
-                        options={[
-                            { label: "12345", value: "12345" },
-                            { label: "12345", value: "12345" },
-                        ]}
-                    />
-                </div>
-            ),
+          name: (
+            <>
+              <div>Serial Number</div>
+            </>
+          ),
+          selector: (row) => row.noSeriese,
+          wrap: true,
+          sortable: true,
+          format: (row) => row.noSeriese,
+          cell: (row) => (
+            <div>
+              {/* <SearchBox
+                value={row.noSeriese}
+                onChange={(e) =>
+                  handleCoverageHandleMachineSearch(
+                    "serialNo",
+                    row.model,
+                    e.target.value
+                  )
+                }
+                type="equipmentNumber"
+                result={searchCoverageSerialResults}
+                onSelect={handleModelSelect}
+                noOptions={noCoverageOptionSerial}
+              /> */}
+              <Select
+                className="customselect"
+                // options={[
+                //   { label: "12345", value: "12345" },
+                //   { label: "12345", value: "12345" },
+                // ]}
+                options={coverageSerialResultList}
+              />
+            </div>
+          ),
         },
         {
-            name: (
-                <>
-                    <div>Location</div>
-                </>
-            ),
-            selector: (row) => row.location,
-            wrap: true,
-            sortable: true,
-            format: (row) => row.location,
+          name: (
+            <>
+              <div>Location</div>
+            </>
+          ),
+          selector: (row) => row.location,
+          wrap: true,
+          sortable: true,
+          format: (row) => row.location,
         },
         {
-            name: (
-                <>
-                    <div>Start Date</div>
-                </>
-            ),
-            selector: (row) => row.startDate,
-            wrap: true,
-            sortable: true,
-            format: (row) => row.startDate,
-            cell: (row) => (
-                <div className="date-box tabledate-box">
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <DatePicker
-                            variant="inline"
-                            format="dd/MM/yyyy"
-                            className="form-controldate border-radius-10"
-                            label=""
-                        // value={row.startDate}
-                        />
-                    </MuiPickersUtilsProvider>
-                </div>
-            ),
+          name: (
+            <>
+              <div>Start Date</div>
+            </>
+          ),
+          selector: (row) => row.startDate,
+          wrap: true,
+          sortable: true,
+          format: (row) => row.startDate,
+          cell: (row) => (
+            <div className="date-box tabledate-box">
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <DatePicker
+                  variant="inline"
+                  format="dd/MM/yyyy"
+                  className="form-controldate border-radius-10"
+                  label=""
+                // value={row.startDate}
+                />
+              </MuiPickersUtilsProvider>
+            </div>
+          ),
         },
         {
-            name: (
-                <>
-                    <div>End Date</div>
-                </>
-            ),
-            selector: (row) => row.endDate,
-            wrap: true,
-            sortable: true,
-            format: (row) => row.endDate,
-            cell: (row) => (
-                <div className="date-box tabledate-box">
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <DatePicker
-                            variant="inline"
-                            format="dd/MM/yyyy"
-                            className="form-controldate border-radius-10"
-                            label=""
-                        // value={validityData.fromDate}
-                        />
-                    </MuiPickersUtilsProvider>
-                </div>
-            ),
+          name: (
+            <>
+              <div>End Date</div>
+            </>
+          ),
+          selector: (row) => row.endDate,
+          wrap: true,
+          sortable: true,
+          format: (row) => row.endDate,
+          cell: (row) => (
+            <div className="date-box tabledate-box">
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <DatePicker
+                  variant="inline"
+                  format="dd/MM/yyyy"
+                  className="form-controldate border-radius-10"
+                  label=""
+                // value={validityData.fromDate}
+                />
+              </MuiPickersUtilsProvider>
+            </div>
+          ),
         },
-    ];
+      ];
 
     const data4 = [
         {
@@ -5774,7 +5847,7 @@ export function CreateCustomPortfolio(props) {
     };
     const [show, setShow] = React.useState(false);
 
-    const ShowRelatedIncludeModelBox = (dataRow) => {
+    const ShowRelatedIncludeModelBox = async (dataRow) => {
         setModelIncludedData([]);
 
         var ModelBoxKeys = [];
@@ -5796,8 +5869,8 @@ export function CreateCustomPortfolio(props) {
                         model: dataRow.model,
                         noSeriese: "0JAPA000470",
                         location: "LIMA",
-                        startDate: "08/04/20017",
-                        endDate: "08/04/20017",
+                        startDate: "08/04/2017",
+                        endDate: "08/04/2017",
                     },
                 ],
             });
@@ -5814,6 +5887,21 @@ export function CreateCustomPortfolio(props) {
             }
         });
 
+        var searchQueryMachine = dataRow.model
+            ? "model~" + dataRow.model
+            : "";
+        var serialArr = [];
+        console.log("dataRow ---- ", searchQueryMachine)
+        await machineSearch(searchQueryMachine)
+            .then((result) => {
+                console.log("my rsult is ---- ", result)
+                for (let i = 0; i < result.length; i++) {
+                    // var serialValue = {label: equipmentNumber, value: equipmentNumber}
+                    serialArr.push({ label: result[i].equipmentNumber, value: result[i].equipmentNumber })
+                }
+            })
+        setCoverageSerialResultList(serialArr)
+        console.log("serialArr --- : ", serialArr);
         setShowRelatedModel(true);
         setOpenModelBoxDataId(dataRow);
     };
@@ -7083,8 +7171,9 @@ export function CreateCustomPortfolio(props) {
                                     id="dropdown-item-button"
                                 >
                                     <Dropdown.Item
-                                        as="button" data-toggle="modal" data-target="#versionpopup2"
-
+                                        as="button"
+                                        // data-toggle="modal" data-target="#versionpopup2"
+                                        onClick={() => setVersionPopup(true)}
                                     >
                                         New Versions
                                     </Dropdown.Item>
@@ -12977,6 +13066,72 @@ export function CreateCustomPortfolio(props) {
                     </div>
                 </div>
             </div>
+            <Modal
+                show={versionPopup}
+                onHide={() => setVersionPopup(false)}
+                size="md"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header closeButton className="border-none">
+                    <Modal.Title>New Version</Modal.Title>
+                    {/* <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button> */}
+                </Modal.Header>
+                <p className="mx-3 mt-0">
+                    Description, Product experts convert the repair option to a standard job or template.
+                </p>
+                <div className="hr"></div>
+                <Modal.Body>
+                    <div class="form-group">
+                        <label for="usr">Name</label>
+                        <input type="text" class="form-control" id="usr" placeholder="Enter Name" onChange={(e) => setNewVersionName(e.target.value)} value={newVersionName} />
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <button type="button" className="btn  btn-primary w-100" onClick={createNewVersion}>Create </button>
+                    <button type="button" className="btn btn-primary w-100" onClick={() => setVersionPopup(false)}>Cancel</button>
+                </Modal.Footer>
+            </Modal>
+            <Modal
+                show={showRelatedModel}
+                onHide={() => setShowRelatedModel(false)}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header className="align-items-center">
+                    <div>
+                        <Modal.Title>Included Serial No</Modal.Title>
+                    </div>
+                    <div>
+                        <Link
+                            to="#"
+                            className=" btn bg-primary text-white"
+                            onClick={() => AddNewRowData(openModelBoxDataId)}
+                        >
+                            Add New
+                        </Link>
+                    </div>
+                </Modal.Header>
+                <Modal.Body>
+                    <DataTable
+                        className=""
+                        title=""
+                        columns={columns4}
+                        data={modelIncludedData}
+                        customStyles={customStyles}
+                    // pagination
+                    />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={() => setShowRelatedModel(false)}>
+                        Close
+                    </Button>
+                    <Button variant="primary">Save changes</Button>
+                </Modal.Footer>
+            </Modal>
             <div class="modal fade" id="versionpopup2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
@@ -13003,6 +13158,350 @@ export function CreateCustomPortfolio(props) {
                             <button type="button" className="btn  btn-primary w-100" onClick={createNewVersion}>Create </button>
                             <button type="button" className="btn btn-primary w-100" data-dismiss="modal">Cancel</button>
 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div
+                className="modal fade"
+                id="AddCoverage"
+                tabindex="-1"
+                role="dialog"
+                aria-labelledby="exampleModalLabel"
+                aria-hidden="true"
+            >
+                <div
+                    className="modal-dialog modal-dialog-centered modal-lg"
+                    role="document"
+                >
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="exampleModalLabel">
+                                Edit Coverage
+                            </h5>
+                            <button
+                                type="button"
+                                className="close"
+                                data-dismiss="modal"
+                                aria-label="Close"
+                            >
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            <div className="row input-fields">
+                                <div className="col-md-4 col-sm-4">
+                                    <div className="form-group w-100">
+                                        <label
+                                            className="text-light-dark font-size-14 font-weight-500"
+                                            htmlFor="exampleInputEmail1"
+                                        >
+                                            Coverage ID
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-control border-radius-10 text-primary"
+                                            disabled
+                                            placeholder="(AUTO GENERATE)"
+                                            value={editSerialNo.coverageId}
+                                            defaultValue={editSerialNo.coverageId}
+                                        />
+                                    </div>
+                                </div>
+                                {/* <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">Service ID</label>
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                  </div>
+                </div> */}
+                                <div className="col-md-4 col-sm-4">
+                                    <div className="form-group">
+                                        <label
+                                            className="text-light-dark font-size-14 font-weight-500"
+                                            htmlFor="exampleInputEmail1"
+                                        >
+                                            Make
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-control text-primary border-radius-10"
+                                            name="make"
+                                            placeholder="Auto Fill Search Model...."
+                                            value={editSerialNo.make}
+                                            defaultValue={editSerialNo.make}
+                                            disabled
+                                        />
+                                        {/* <Select
+                      options={categoryList}
+                      placeholder={editSerialNo.make}
+                      value={editSerialNo.make}
+                      defaultValue={editSerialNo.make}
+                      onChange={(e) =>
+                        setEditSerialNo({ ...editSerialNo, make: e.value })
+                      }
+                    /> */}
+                                    </div>
+                                </div>
+                                <div className="col-md-4 col-sm-4">
+                                    <div className="form-group">
+                                        <label
+                                            className="text-light-dark font-size-14 font-weight-500"
+                                            htmlFor="exampleInputEmail1"
+                                        >
+                                            Family
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-control text-primary border-radius-10"
+                                            name="family"
+                                            placeholder="Auto Fill Search Model...."
+                                            value={editSerialNo.family}
+                                            defaultValue={editSerialNo.family}
+                                            disabled
+                                        />
+                                        {/* <Select
+                      options={categoryList}
+                      placeholder={editSerialNo.family}
+                      value={editSerialNo.family}
+                      defaultValue={editSerialNo.family}
+                      onChange={(e) =>
+                        setEditSerialNo({ ...editSerialNo, family: e.value })
+                      }
+                    // onChange={(e) => HandleCatUsage(e)}
+                    /> */}
+                                    </div>
+                                </div>
+                                <div className="col-md-4 col-sm-4">
+                                    <div className="form-group">
+                                        <label
+                                            className="text-light-dark font-size-14 font-weight-500"
+                                            htmlFor="exampleInputEmail1"
+                                        >
+                                            Model No
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-control text-primary border-radius-10"
+                                            name="model"
+                                            placeholder="Model(Required*)"
+                                            value={editSerialNo.modelNo}
+                                            defaultValue={editSerialNo.modelNo}
+                                            // onChange={handleAddServiceBundleChange}
+                                            onChange={(e) => handleModelInputSearch(e)}
+                                        />
+                                        {/* <Select
+                      options={categoryList}
+                      placeholder={editSerialNo.modelNo}
+                      value={editSerialNo.modelNo}
+                      defaultValue={editSerialNo.modelNo}
+                      onChange={(e) =>
+                        setEditSerialNo({ ...editSerialNo, modelNo: e.value })
+                      }
+                    /> */}
+                                        {
+                                            <ul
+                                                className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
+                                                id="style"
+                                            >
+                                                {querySearchModelResult.map((currentItem, j) => (
+                                                    <li
+                                                        className="list-group-item"
+                                                        key={j}
+                                                        onClick={(e) => handleSearchModelListClick(
+                                                            e,
+                                                            currentItem
+                                                        )}
+                                                    // onClick={(e) =>
+                                                    //   handleSearchListClick(
+                                                    //     e,
+                                                    //     currentItem,
+                                                    //   )
+                                                    // }
+                                                    >
+                                                        {currentItem.model}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        }
+                                    </div>
+                                </div>
+                                <div className="col-md-4 col-sm-4">
+                                    <div className="form-group">
+                                        <label
+                                            className="text-light-dark font-size-14 font-weight-500"
+                                            htmlFor="exampleInputEmail1"
+                                        >
+                                            Serial No Prefix
+                                        </label>
+                                        <Select
+                                            // options={categoryList}
+                                            options={querySearchModelPrefixOption}
+                                            placeholder={editSerialNo.serialNoPrefix}
+                                            value={editSerialNo.serialNoPrefix}
+                                            defaultValue={editSerialNo.serialNoPrefix}
+                                            // onChange={(e) =>
+                                            //   setEditSerialNo({
+                                            //     ...editSerialNo,
+                                            //     serialNoPrefix: e.value,
+                                            //   })
+                                            // }
+                                            className="text-primary"
+                                            onChange={(e) => selectPrefixOption(e)}
+                                        // onChange={(e) => HandleCatUsage(e)}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-md-4 col-sm-4">
+                                    <div className="form-group">
+                                        <label
+                                            className="text-light-dark font-size-14 font-weight-500"
+                                            htmlFor="exampleInputEmail1"
+                                        >
+                                            Start Serial No
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-control border-radius-10 text-primary"
+                                            placeholder="(Optional)"
+                                            value={editSerialNo.startSerialNo}
+                                            defaultValue={editSerialNo.startSerialNo}
+                                            onChange={(e) =>
+                                                setEditSerialNo({
+                                                    ...editSerialNo,
+                                                    startSerialNo: e.target.value,
+                                                })
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-md-4 col-sm-4">
+                                    <div className="form-group">
+                                        <label
+                                            className="text-light-dark font-size-14 font-weight-500"
+                                            htmlFor="exampleInputEmail1"
+                                        >
+                                            End Serial No
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-control border-radius-10 text-primary"
+                                            placeholder="(Optional)"
+                                            value={editSerialNo.endSerialNo}
+                                            defaultValue={editSerialNo.endSerialNo}
+                                            onChange={(e) =>
+                                                setEditSerialNo({
+                                                    ...editSerialNo,
+                                                    endSerialNo: e.target.value,
+                                                })
+                                            }
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="col-md-4 col-sm-4">
+                                    <div className="form-group">
+                                        <label
+                                            className="text-light-dark font-size-14 font-weight-500"
+                                            htmlFor="exampleInputEmail1"
+                                        >
+                                            Fleet
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-control border-radius-10 text-primary"
+                                            placeholder="(Optional)"
+                                            value={editSerialNo.fleet}
+                                            defaultValue={editSerialNo.fleet}
+                                            onChange={(e) =>
+                                                setEditSerialNo({
+                                                    ...editSerialNo,
+                                                    fleet: e.target.value,
+                                                })
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col-md-4 col-sm-4">
+                                    <div className="form-group">
+                                        <label
+                                            className="text-light-dark font-size-14 font-weight-500"
+                                            htmlFor="exampleInputEmail1"
+                                        >
+                                            Fleet Size
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="form-control border-radius-10 text-primary"
+                                            placeholder="(Optional)"
+                                            value={editSerialNo.fleetSize}
+                                            defaultValue={editSerialNo.fleetSize}
+                                            onChange={(e) =>
+                                                setEditSerialNo({
+                                                    ...editSerialNo,
+                                                    fleetSize: e.target.value,
+                                                })
+                                            }
+                                        />
+                                        {/* <Select
+                      value={editSerialNo.fleetSize}
+                      defaultValue={editSerialNo.fleetSize}
+                      placeholder={editSerialNo.fleetSize}
+                      onChange={(e) =>
+                        setEditSerialNo({ ...editSerialNo, fleetSize: e.value })
+                      }
+                      options={categoryList}
+                    // onChange={(e) => HandleCatUsage(e)}
+                    /> */}
+                                    </div>
+                                </div>
+                                {/* <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Location
+                    </label>
+                    <Select
+                      // value={}
+                      options={categoryList}
+                      onChange={(e) => HandleCatUsage(e)}
+                    />
+
+                  </div>
+                </div>
+
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">Start Date </label>
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">End Date </label>
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">Actions </label>
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                  </div>
+                </div> */}
+                            </div>
+                        </div>
+                        <div className="modal-footer">
+                            <button
+                                type="button"
+                                className="btn border w-100 bg-white"
+                                data-dismiss="modal"
+                            >
+                                Close
+                            </button>
+                            <button type="button" className="btn btn-primary w-100">
+                                Save changes
+                            </button>
                         </div>
                     </div>
                 </div>
