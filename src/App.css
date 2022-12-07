@@ -3035,7 +3035,7 @@ nav.main-menu li.active>a,
 }
 
 .doQoVi {
-  overflow: hidden !important;
+  overflow: visible !important;
 }
 
 .custommenu {
@@ -3449,3 +3449,6 @@ width: 18px;}
 .block-div .css-zun73v.Mui-checked, .css-zun73v.MuiCheckbox-indeterminate {
   color: #872ff7 !important;
 }
+.included_table{}
+.included_table .rdt_TableCol{min-width: 100px !important;}
+.included_table .rdt_TableCell{min-width: 100px !important;}

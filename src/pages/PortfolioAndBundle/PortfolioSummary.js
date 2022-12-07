@@ -1874,7 +1874,7 @@ export const PortfolioSummary = () => {
                       <div className="col-md-4">
                         <div className="recent-items mt-3">
                           <div className="d-flex justify-content-between align-items-center ">
-                            <p className="mb-0 ">
+                            <p className="mb-0 overflow-hidden white-space">
                               <FontAwesomeIcon
                                 className=" font-size-14"
                                 icon={faFileAlt}
@@ -1933,7 +1933,7 @@ export const PortfolioSummary = () => {
                       <div className="col-md-4">
                         <div className="recent-items mt-3">
                           <div className="d-flex justify-content-between align-items-center ">
-                            <p className="mb-0 ">
+                            <p className="mb-0 overflow-hidden white-space">
                               <FontAwesomeIcon
                                 className=" font-size-14"
                                 icon={faFileAlt}
@@ -2356,7 +2356,7 @@ export const PortfolioSummary = () => {
                   <div className="col-md-4">
                     <div className="recent-items mt-3">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 ">
+                        <p className="mb-0 overflow-hidden white-space">
                           <FontAwesomeIcon
                             className=" font-size-14"
                             icon={faFileAlt}
@@ -2397,7 +2397,7 @@ export const PortfolioSummary = () => {
                   <div className="col-md-4">
                     <div className="recent-items mt-3">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 ">
+                        <p className="mb-0 overflow-hidden white-space">
                           <FontAwesomeIcon
                             className=" font-size-14"
                             icon={faFileAlt}
@@ -2438,7 +2438,7 @@ export const PortfolioSummary = () => {
                   <div className="col-md-4">
                     <div className="recent-items mt-3">
                       <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 ">
+                        <p className="mb-0 overflow-hidden white-space">
                           <FontAwesomeIcon
                             className=" font-size-14"
                             icon={faFileAlt}
