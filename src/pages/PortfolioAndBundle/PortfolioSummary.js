@@ -251,6 +251,10 @@ export const PortfolioSummary = () => {
         setRecentBundleService(res);
       })
 
+      if(JSON.parse(localStorage.getItem('exitingType'))) {
+        localStorage.removeItem('exitingType');
+      }
+
   }, []);
 
   // console.log("setRecentPortfolio : ", recentPortfolio);

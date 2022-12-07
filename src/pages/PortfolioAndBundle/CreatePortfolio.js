@@ -238,6 +238,7 @@ export function CreatePortfolio(props) {
   const [value, setValue] = useState("general");
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
+  const [versionPopup, setVersionPopup] = useState(false)
   const [openCoverage, setOpenCoveragetable] = useState(false);
 
   const [productHierarchyKeyValue, setProductHierarchyKeyValue] = useState([]);
@@ -284,8 +285,12 @@ export function CreatePortfolio(props) {
   const [searchModelResults, setSearchModelResults] = useState([]);
   const [searchSerialResults, setSearchSerialResults] = useState([]);
 
+  const [searchCoverageSerialResults, setSearchCoverageSerialResults] = useState([]);
+  const [coverageSerialResultList, setCoverageSerialResultList] = useState([]);
+
   const [noOptionsModel, setNoOptionsModel] = useState(false);
   const [noOptionsSerial, setNoOptionsSerial] = useState(false);
+  const [noCoverageOptionSerial, setNoCoverageOptionSerial] = useState(false);
 
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
@@ -599,6 +604,50 @@ export function CreatePortfolio(props) {
       customerSegment: e,
     });
   };
+
+
+  const handleModelInputSearch = (e) => {
+
+    setEditSerialNo({ ...editSerialNo, modelNo: e.target.value })
+    var searchStr = "model~" + e.target.value;
+    getSearchQueryCoverage(searchStr)
+      .then((res) => {
+        // console.log("search Query Result --------- :", res);
+        // setMasterData(res);
+        $(`.scrollbar-model`).css("display", "block");
+        setQuerySearchModelResult(res)
+        var preArr = [];
+        for (var n = 0; n < res.length; n++) {
+          preArr.push({ label: res[n].prefix, value: res[n].prefix })
+        }
+        setQuerySearchModelPrefixOption(preArr);
+      })
+      .catch((err) => {
+        console.log("error in getSearchQueryCoverage", err);
+      });
+  }
+  
+
+  const handleSearchModelListClick = (e, currentItem) => {
+    console.log(currentItem)
+
+    setEditSerialNo({
+      ...editSerialNo,
+      modelNo: currentItem.model,
+      make: currentItem.make,
+      family: currentItem.family
+    })
+    $(`.scrollbar-model`).css("display", "none");
+  }
+
+  const selectPrefixOption = (e) => {
+    console.log(e);
+    setSelectedPrefixOption(e)
+    setEditSerialNo({
+      ...editSerialNo,
+      serialNoPrefix: e.value,
+    })
+  }
 
   const handleMoreAction = (type) => {
     if (type == 1) {
@@ -3024,8 +3073,8 @@ export function CreatePortfolio(props) {
               draggable: true,
               progress: undefined,
             });
-            
-            $('#versionpopup').modal('hide');
+
+            setVersionPopup(false)
           }
 
         } else {
@@ -3034,6 +3083,7 @@ export function CreatePortfolio(props) {
         }
       } else {
         throw "Create Portfolio First";
+
       }
     } catch (error) {
       console.log("somehing went wrong:", error);
@@ -3047,6 +3097,7 @@ export function CreatePortfolio(props) {
         draggable: true,
         progress: undefined,
       });
+      setVersionPopup(false)
       return;
     }
     // if (portfolioId != undefined || portfolioId != null) {
@@ -3476,12 +3527,25 @@ export function CreatePortfolio(props) {
   }, [dispatch]);
 
   useEffect(() => {
+    
     if (state && state.type === "new") {
       // setPortfolioId(state.portfolioId);
       // setGeneralData({ ...generalData, estimationNo: state.builderId });
+      var versionHistoryData = {
+        portfolioId: "",
+        exitingType: "portfolio",
+        editable: false,
+      }
+      localStorage.setItem('exitingType', JSON.stringify(versionHistoryData));
     } else if (state) {
       setPortfolioId(state.portfolioId);
       fetchAllDetails(state.portfolioId);
+      var versionHistoryData = {
+        portfolioId: state.portfolioId,
+        exitingType: "portfolio",
+        editable: true,
+      }
+      localStorage.setItem('exitingType', JSON.stringify(versionHistoryData));
     }
   }, []);
 
@@ -5227,12 +5291,27 @@ export function CreatePortfolio(props) {
       format: (row) => row.noSeriese,
       cell: (row) => (
         <div>
+          {/* <SearchBox
+            value={row.noSeriese}
+            onChange={(e) =>
+              handleCoverageHandleMachineSearch(
+                "serialNo",
+                row.model,
+                e.target.value
+              )
+            }
+            type="equipmentNumber"
+            result={searchCoverageSerialResults}
+            onSelect={handleModelSelect}
+            noOptions={noCoverageOptionSerial}
+          /> */}
           <Select
             className="customselect"
-            options={[
-              { label: "12345", value: "12345" },
-              { label: "12345", value: "12345" },
-            ]}
+            // options={[
+            //   { label: "12345", value: "12345" },
+            //   { label: "12345", value: "12345" },
+            // ]}
+            options={coverageSerialResultList}
           />
         </div>
       ),
@@ -5378,7 +5457,13 @@ export function CreatePortfolio(props) {
   };
   const [show, setShow] = React.useState(false);
 
-  const ShowRelatedIncludeModelBox = (dataRow) => {
+  const [querySearchModelResult, setQuerySearchModelResult] = useState([])
+  const [querySearchModelPrefixOption, setQuerySearchModelPrefixOption] = useState([])
+
+  const [selectedPrefixOption, setSelectedPrefixOption] = useState("");
+
+
+  const ShowRelatedIncludeModelBox = async (dataRow) => {
     setModelIncludedData([]);
 
     var ModelBoxKeys = [];
@@ -5400,8 +5485,8 @@ export function CreatePortfolio(props) {
             model: dataRow.model,
             noSeriese: "0JAPA000470",
             location: "LIMA",
-            startDate: "08/04/20017",
-            endDate: "08/04/20017",
+            startDate: "08/04/2017",
+            endDate: "08/04/2017",
           },
         ],
       });
@@ -5418,6 +5503,21 @@ export function CreatePortfolio(props) {
       }
     });
 
+    var searchQueryMachine = dataRow.model
+      ? "model~" + dataRow.model
+      : "";
+    var serialArr = [];
+    console.log("dataRow ---- ", searchQueryMachine)
+    await machineSearch(searchQueryMachine)
+      .then((result) => {
+        console.log("my rsult is ---- ", result)
+        for (let i = 0; i < result.length; i++) {
+          // var serialValue = {label: equipmentNumber, value: equipmentNumber}
+          serialArr.push({ label: result[i].equipmentNumber, value: result[i].equipmentNumber })
+        }
+      })
+    setCoverageSerialResultList(serialArr)
+    console.log("serialArr --- : ", serialArr);
     setShowRelatedModel(true);
     setOpenModelBoxDataId(dataRow);
   };
@@ -6408,6 +6508,35 @@ export function CreatePortfolio(props) {
     }
   };
 
+
+  const handleCoverageHandleMachineSearch = async (searchCoverageMachineFieldName, modelValue, SearchText) => {
+    let searchQueryMachine = "";
+
+    if (searchCoverageMachineFieldName === "serialNo") {
+      // componentData.serialNo = searchText;
+      searchQueryMachine = SearchText
+        ? modelValue
+          ? `model:${modelValue} AND equipmentNumber~` + SearchText
+          : "equipmentNumber~" + SearchText
+        : "";
+    }
+
+    if (searchQueryMachine) {
+      await machineSearch(searchQueryMachine)
+        .then((result) => {
+          if (result && result.length > 0) {
+            setSearchCoverageSerialResults(result);
+            setNoCoverageOptionSerial(false);
+          } else {
+            setNoCoverageOptionSerial(true);
+          }
+        })
+        .catch((e) => {
+          handleSnack("error", "Error occurred while searching the machine!");
+        });
+    }
+  }
+
   // Select machine from the search result
   const handleModelSelect = (type, currentItem) => {
     if (type === "model") {
@@ -6818,8 +6947,9 @@ export function CreatePortfolio(props) {
                   id="dropdown-item-button"
                 >
                   <Dropdown.Item
-                    as="button" data-toggle="modal" data-target="#versionpopup"
-
+                    as="button"
+                    // data-toggle="modal" data-target="#versionpopup"
+                    onClick={() => setVersionPopup(true)}
                   >
                     New Versions
                   </Dropdown.Item>
@@ -8855,6 +8985,8 @@ export function CreatePortfolio(props) {
           </div>
         </div>
       </Modal>
+
+
       <Modal
         show={openCoverage}
         onHide={handleCoveragetable}
@@ -10416,7 +10548,7 @@ export function CreatePortfolio(props) {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="exampleModalLabel">
-                Add Coverage
+                Edit Coverage
               </h5>
               <button
                 type="button"
@@ -10428,7 +10560,7 @@ export function CreatePortfolio(props) {
               </button>
             </div>
             <div className="modal-body">
-              <div className="row">
+              <div className="row input-fields">
                 <div className="col-md-4 col-sm-4">
                   <div className="form-group w-100">
                     <label
@@ -10439,7 +10571,7 @@ export function CreatePortfolio(props) {
                     </label>
                     <input
                       type="text"
-                      className="form-control border-radius-10"
+                      className="form-control border-radius-10 text-primary"
                       disabled
                       placeholder="(AUTO GENERATE)"
                       value={editSerialNo.coverageId}
@@ -10461,16 +10593,24 @@ export function CreatePortfolio(props) {
                     >
                       Make
                     </label>
-                    <Select
+                    <input
+                      type="text"
+                      className="form-control text-primary border-radius-10"
+                      name="make"
+                      placeholder="Auto Fill Search Model...."
+                      value={editSerialNo.make}
+                      defaultValue={editSerialNo.make}
+                      disabled
+                    />
+                    {/* <Select
                       options={categoryList}
                       placeholder={editSerialNo.make}
-                      // onChange={(e) => HandleCatUsage(e)}
                       value={editSerialNo.make}
                       defaultValue={editSerialNo.make}
                       onChange={(e) =>
                         setEditSerialNo({ ...editSerialNo, make: e.value })
                       }
-                    />
+                    /> */}
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
@@ -10481,7 +10621,16 @@ export function CreatePortfolio(props) {
                     >
                       Family
                     </label>
-                    <Select
+                    <input
+                      type="text"
+                      className="form-control text-primary border-radius-10"
+                      name="family"
+                      placeholder="Auto Fill Search Model...."
+                      value={editSerialNo.family}
+                      defaultValue={editSerialNo.family}
+                      disabled
+                    />
+                    {/* <Select
                       options={categoryList}
                       placeholder={editSerialNo.family}
                       value={editSerialNo.family}
@@ -10490,7 +10639,7 @@ export function CreatePortfolio(props) {
                         setEditSerialNo({ ...editSerialNo, family: e.value })
                       }
                     // onChange={(e) => HandleCatUsage(e)}
-                    />
+                    /> */}
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
@@ -10501,7 +10650,17 @@ export function CreatePortfolio(props) {
                     >
                       Model No
                     </label>
-                    <Select
+                    <input
+                      type="text"
+                      className="form-control text-primary border-radius-10"
+                      name="model"
+                      placeholder="Model(Required*)"
+                      value={editSerialNo.modelNo}
+                      defaultValue={editSerialNo.modelNo}
+                      // onChange={handleAddServiceBundleChange}
+                      onChange={(e) => handleModelInputSearch(e)}
+                    />
+                    {/* <Select
                       options={categoryList}
                       placeholder={editSerialNo.modelNo}
                       value={editSerialNo.modelNo}
@@ -10509,8 +10668,32 @@ export function CreatePortfolio(props) {
                       onChange={(e) =>
                         setEditSerialNo({ ...editSerialNo, modelNo: e.value })
                       }
-                    // onChange={(e) => HandleCatUsage(e)}
-                    />
+                    /> */}
+                    {
+                      <ul
+                        className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
+                        id="style"
+                      >
+                        {querySearchModelResult.map((currentItem, j) => (
+                          <li
+                            className="list-group-item"
+                            key={j}
+                            onClick={(e) => handleSearchModelListClick(
+                              e,
+                              currentItem
+                            )}
+                          // onClick={(e) =>
+                          //   handleSearchListClick(
+                          //     e,
+                          //     currentItem,
+                          //   )
+                          // }
+                          >
+                            {currentItem.model}
+                          </li>
+                        ))}
+                      </ul>
+                    }
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4">
@@ -10522,16 +10705,19 @@ export function CreatePortfolio(props) {
                       Serial No Prefix
                     </label>
                     <Select
-                      options={categoryList}
+                      // options={categoryList}
+                      options={querySearchModelPrefixOption}
                       placeholder={editSerialNo.serialNoPrefix}
                       value={editSerialNo.serialNoPrefix}
                       defaultValue={editSerialNo.serialNoPrefix}
-                      onChange={(e) =>
-                        setEditSerialNo({
-                          ...editSerialNo,
-                          serialNoPrefix: e.value,
-                        })
-                      }
+                      // onChange={(e) =>
+                      //   setEditSerialNo({
+                      //     ...editSerialNo,
+                      //     serialNoPrefix: e.value,
+                      //   })
+                      // }
+                      className="text-primary"
+                      onChange={(e) => selectPrefixOption(e)}
                     // onChange={(e) => HandleCatUsage(e)}
                     />
                   </div>
@@ -10546,7 +10732,7 @@ export function CreatePortfolio(props) {
                     </label>
                     <input
                       type="text"
-                      className="form-control border-radius-10"
+                      className="form-control border-radius-10 text-primary"
                       placeholder="(Optional)"
                       value={editSerialNo.startSerialNo}
                       defaultValue={editSerialNo.startSerialNo}
@@ -10569,7 +10755,7 @@ export function CreatePortfolio(props) {
                     </label>
                     <input
                       type="text"
-                      className="form-control border-radius-10"
+                      className="form-control border-radius-10 text-primary"
                       placeholder="(Optional)"
                       value={editSerialNo.endSerialNo}
                       defaultValue={editSerialNo.endSerialNo}
@@ -10593,7 +10779,7 @@ export function CreatePortfolio(props) {
                     </label>
                     <input
                       type="text"
-                      className="form-control border-radius-10"
+                      className="form-control border-radius-10 text-primary"
                       placeholder="(Optional)"
                       value={editSerialNo.fleet}
                       defaultValue={editSerialNo.fleet}
@@ -10614,7 +10800,20 @@ export function CreatePortfolio(props) {
                     >
                       Fleet Size
                     </label>
-                    <Select
+                    <input
+                      type="text"
+                      className="form-control border-radius-10 text-primary"
+                      placeholder="(Optional)"
+                      value={editSerialNo.fleetSize}
+                      defaultValue={editSerialNo.fleetSize}
+                      onChange={(e) =>
+                        setEditSerialNo({
+                          ...editSerialNo,
+                          fleetSize: e.target.value,
+                        })
+                      }
+                    />
+                    {/* <Select
                       value={editSerialNo.fleetSize}
                       defaultValue={editSerialNo.fleetSize}
                       placeholder={editSerialNo.fleetSize}
@@ -10623,7 +10822,7 @@ export function CreatePortfolio(props) {
                       }
                       options={categoryList}
                     // onChange={(e) => HandleCatUsage(e)}
-                    />
+                    /> */}
                   </div>
                 </div>
                 {/* <div className="col-md-4 col-sm-4">
@@ -12541,6 +12740,36 @@ export function CreatePortfolio(props) {
           </div>
         </div>
       </div>
+
+      <Modal
+        show={versionPopup}
+        onHide={() => setVersionPopup(false)}
+        size="md"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton className="border-none">
+          <Modal.Title>New Version</Modal.Title>
+          {/* <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button> */}
+        </Modal.Header>
+        <p className="mx-3 mt-0">
+          Description, Product experts convert the repair option to a standard job or template.
+        </p>
+        <div className="hr"></div>
+        <Modal.Body>
+          <div class="form-group">
+            <label for="usr">Name</label>
+            <input type="text" class="form-control" id="usr" placeholder="Enter Name" onChange={(e) => setNewVersionName(e.target.value)} value={newVersionName} />
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" className="btn  btn-primary w-100" onClick={createNewVersion}>Create </button>
+          <button type="button" className="btn btn-primary w-100" onClick={() => setVersionPopup(false)}>Cancel</button>
+        </Modal.Footer>
+      </Modal>
+
       <div class="modal right fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
