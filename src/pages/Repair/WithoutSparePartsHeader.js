@@ -678,8 +678,8 @@ function WithoutSparePartsHeader(props) {
         versionOpen={versionOpen}
         handleCloseVersion={() => setVersionOpen(false)}
         handleCreateVersion={createVersion}
-        description = {versionDescription}
-        setDescription = {setVersionDescription}
+        description={versionDescription}
+        setDescription={setVersionDescription}
       />
       <div className="content-body">
         <div className="container-fluid ">
@@ -770,9 +770,15 @@ function WithoutSparePartsHeader(props) {
                     transformOrigin={{ horizontal: "right", vertical: "top" }}
                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    <MenuItem className="custommenu ml-2 mr-4">Standard Job</MenuItem>
+                    <MenuItem className="custommenu ml-2 mr-4">
+                      Standard Job
+                    </MenuItem>
                     <Divider />
-                    <MenuItem data-toggle="modal" data-target="#quotecreat" className="custommenu ml-2 mr-4">
+                    <MenuItem
+                      data-toggle="modal"
+                      data-target="#quotecreat"
+                      className="custommenu ml-2 mr-4"
+                    >
                       Quote
                     </MenuItem>
                   </Menu>
@@ -799,11 +805,19 @@ function WithoutSparePartsHeader(props) {
                 <a href="#" className="ml-3 font-size-14" title="Copy">
                   <img src={copyIcon}></img>
                 </a>
-                <DropdownButton className="customDropdown ml-2" id="dropdown-item-button">
-                <Dropdown.Item as="button" onClick={() => setVersionOpen(true)}>New Versions</Dropdown.Item>
-                <Dropdown.Item as="button">Show Errors</Dropdown.Item>
-                <Dropdown.Item as="button">Review</Dropdown.Item>
-              </DropdownButton>  
+                <DropdownButton
+                  className="customDropdown ml-2"
+                  id="dropdown-item-button"
+                >
+                  <Dropdown.Item
+                    as="button"
+                    onClick={() => setVersionOpen(true)}
+                  >
+                    New Versions
+                  </Dropdown.Item>
+                  <Dropdown.Item as="button">Show Errors</Dropdown.Item>
+                  <Dropdown.Item as="button">Review</Dropdown.Item>
+                </DropdownButton>
               </div>
             </div>
           </div>
@@ -821,7 +835,12 @@ function WithoutSparePartsHeader(props) {
                       <i
                         className="fa fa-pencil"
                         aria-hidden="true"
-                        onClick={() => (selBuilderStatus?.value === 'DRAFT' || selBuilderStatus?.value === 'REVISED') ? makeHeaderEditable() : handleSnack('info', 'Builder is active!')}
+                        onClick={() =>
+                          selBuilderStatus?.value === "DRAFT" ||
+                          selBuilderStatus?.value === "REVISED"
+                            ? makeHeaderEditable()
+                            : handleSnack("info", "Builder is active!")
+                        }
                       ></i>
                     </a>{" "}
                     <a href="#" className="btn-sm">
@@ -838,11 +857,14 @@ function WithoutSparePartsHeader(props) {
                   sx={{ width: "100%", typography: "body1" }}
                 >
                   {headerLoading ? (
-                    <LoadingProgress/>
+                    <LoadingProgress />
                   ) : (
                     <TabContext value={value}>
                       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                        <TabList className="custom-tabs-div" onChange={handleChange}>
+                        <TabList
+                          className="custom-tabs-div"
+                          onChange={handleChange}
+                        >
                           <Tab label="Customer" value="customer" />
                           <Tab label="Machine " value="machine" />
                           <Tab label="Estimation Details" value="estimation" />
@@ -978,10 +1000,12 @@ function WithoutSparePartsHeader(props) {
                                 type="button"
                                 className="btn btn-light bg-primary text-white"
                                 disabled={
-                                !(customerData.source &&
-                                  customerData.contactEmail &&
-                                  customerData.customerGroup &&
-                                  customerData.contactName) || noOptionsCust
+                                  !(
+                                    customerData.source &&
+                                    customerData.contactEmail &&
+                                    customerData.customerGroup &&
+                                    customerData.contactName
+                                  ) || noOptionsCust
                                 }
                                 onClick={updateCustomerData}
                               >
@@ -1215,7 +1239,11 @@ function WithoutSparePartsHeader(props) {
                                 type="button"
                                 className="btn btn-light bg-primary text-white"
                                 disabled={
-                                  !(machineData.model && machineData.serialNo) || noOptionsModel || noOptionsSerial
+                                  !(
+                                    machineData.model && machineData.serialNo
+                                  ) ||
+                                  noOptionsModel ||
+                                  noOptionsSerial
                                 }
                                 onClick={updateMachineData}
                               >
@@ -1725,47 +1753,48 @@ function WithoutSparePartsHeader(props) {
                         )}
                       </TabPanel>
                       <TabPanel value="price">
-                      {!viewOnlyTab.priceViewOnly ? 
-                        <><div className="row input-fields">
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                NET PRICE
-                              </label>
-                              <input
-                                type="text"
-                                disabled
-                                className="form-control border-radius-10 text-primary"
-                                placeholder="Optional"
-                                value={pricingData.netPrice}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="align-items-center date-box">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                PRICE DATE
-                              </label>
-                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <DatePicker
-                                  variant="inline"
-                                  format="dd/MM/yyyy"
-                                  inputProps={{ style: FONT_STYLE }}
-                                  className="form-controldate border-radius-10"
-                                  label=""
-                                  disableFuture
-                                  value={pricingData.priceDate}
-                                  onChange={(e) =>
-                                    setPricingData({
-                                      ...pricingData,
-                                      priceDate: e,
-                                    })
-                                  }
-                                />
-                              </MuiPickersUtilsProvider>
-                            </div>
-                          </div>
-                          {/* <div className="col-md-4 col-sm-4">
+                        {!viewOnlyTab.priceViewOnly ? (
+                          <>
+                            <div className="row input-fields">
+                              <div className="col-md-4 col-sm-4">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    NET PRICE
+                                  </label>
+                                  <input
+                                    type="text"
+                                    disabled
+                                    className="form-control border-radius-10 text-primary"
+                                    placeholder="Optional"
+                                    value={pricingData.netPrice}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-4 col-sm-4">
+                                <div className="align-items-center date-box">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    PRICE DATE
+                                  </label>
+                                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <DatePicker
+                                      variant="inline"
+                                      format="dd/MM/yyyy"
+                                      inputProps={{ style: FONT_STYLE }}
+                                      className="form-controldate border-radius-10"
+                                      label=""
+                                      disableFuture
+                                      value={pricingData.priceDate}
+                                      onChange={(e) =>
+                                        setPricingData({
+                                          ...pricingData,
+                                          priceDate: e,
+                                        })
+                                      }
+                                    />
+                                  </MuiPickersUtilsProvider>
+                                </div>
+                              </div>
+                              {/* <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
                                 COST PRICE
@@ -1779,92 +1808,116 @@ function WithoutSparePartsHeader(props) {
                               />
                             </div>
                           </div> */}
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                PRICE METHOD
-                              </label>
-                              <Select
-                                value={pricingData.priceMethod}
-                                onChange={(e) =>
-                                  setPricingData({
-                                    ...pricingData,
-                                    priceMethod: e,
-                                  })
+                              <div className="col-md-4 col-sm-4">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    PRICE METHOD
+                                  </label>
+                                  <Select
+                                    value={pricingData.priceMethod}
+                                    onChange={(e) =>
+                                      setPricingData({
+                                        ...pricingData,
+                                        priceMethod: e,
+                                      })
+                                    }
+                                    options={priceMethodOptions}
+                                    placeholder="Required"
+                                    styles={FONT_STYLE_SELECT}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-4 col-sm-4">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    ADJUSTED PRICE
+                                  </label>
+                                  <input
+                                    type="text"
+                                    disabled={
+                                      !(
+                                        pricingData.priceMethod?.value ===
+                                        "FLAT_RATE"
+                                      )
+                                    }
+                                    className="form-control border-radius-10 text-primary"
+                                    placeholder="Optional"
+                                    value={pricingData.adjustedPrice}
+                                    onChange={(e) =>
+                                      setPricingData({
+                                        ...pricingData,
+                                        adjustedPrice: e.target.value,
+                                      })
+                                    }
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-4 col-sm-4">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    CURRENCY
+                                  </label>
+                                  <Select
+                                    onChange={(e) =>
+                                      setPricingData({
+                                        ...pricingData,
+                                        currency: e,
+                                      })
+                                    }
+                                    options={currencyOptions}
+                                    placeholder="Required"
+                                    value={pricingData.currency}
+                                    styles={FONT_STYLE_SELECT}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              className="row"
+                              style={{ justifyContent: "right" }}
+                            >
+                              <button
+                                type="button"
+                                className="btn btn-light bg-primary text-white"
+                                onClick={updatePriceData}
+                                disabled={
+                                  !(pricingData.priceDate &&
+                                  pricingData.priceMethod &&
+                                  pricingData.currency &&
+                                  pricingData.priceMethod?.value === "FLAT_RATE"
+                                    ? pricingData.adjustedPrice > 0
+                                    : true)
                                 }
-                                options={priceMethodOptions}
-                                placeholder="Required"
-                                styles={FONT_STYLE_SELECT}
-                              />
+                              >
+                                Save
+                              </button>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                ADJUSTED PRICE
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                placeholder="Optional"
-                                value={pricingData.adjustedPrice}
-                                onChange={e=> setPricingData({...pricingData, adjustedPrice: e.target.value})}
-                              />
+                          </>
+                        ) : (
+                          <div className="row mt-3">
+                            <div className="col-md-4 col-sm-4">
+                              <div className="form-group">
+                                <p className="font-size-12 font-weight-500 mb-2">
+                                  NET PRICE
+                                </p>
+                                <h6 className="font-weight-500">
+                                  {pricingData.netPrice}
+                                </h6>
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                CURRENCY
-                              </label>
-                              <Select
-                                onChange={e=> setPricingData({...pricingData, currency: e})}
-                                options={currencyOptions}
-                                placeholder="Required"
-                                value={pricingData.currency}
-                                styles={FONT_STYLE_SELECT}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                        className="row"
-                        style={{ justifyContent: "right" }}
-                      >
-                        <button
-                          type="button"
-                          className="btn btn-light bg-primary text-white"
-                          onClick={updatePriceData}
-                          disabled={
-                            !(pricingData.priceDate && pricingData.priceMethod && pricingData.currency)
-                          }
-                        >
-                          Save
-                        </button>
-                      </div>
-                      </> :
-                        <div className="row mt-3">
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                NET PRICE
-                              </p>
-                              <h6 className="font-weight-500">{pricingData.netPrice}</h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                PRICE DATE
-                              </p>
-                              <h6 className="font-weight-500">
-                                <Moment format="DD/MM/YYYY">
+                            <div className="col-md-4 col-sm-4">
+                              <div className="form-group">
+                                <p className="font-size-12 font-weight-500 mb-2">
+                                  PRICE DATE
+                                </p>
+                                <h6 className="font-weight-500">
+                                  <Moment format="DD/MM/YYYY">
                                     {pricingData.priceDate}
-                                </Moment>
-                              </h6>
+                                  </Moment>
+                                </h6>
+                              </div>
                             </div>
-                          </div>
-                          {/* <div className="col-md-4 col-sm-4">
+                            {/* <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <p className="font-size-12 font-weight-500 mb-2">
                                 COST PRICE
@@ -1872,33 +1925,39 @@ function WithoutSparePartsHeader(props) {
                               <h6 className="font-weight-500">01.09.2021</h6>
                             </div>
                           </div> */}
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                PRICE METHOD
-                              </p>
-                              <h6 className="font-weight-500">{pricingData.priceMethod?.label} </h6>
+                            <div className="col-md-4 col-sm-4">
+                              <div className="form-group">
+                                <p className="font-size-12 font-weight-500 mb-2">
+                                  PRICE METHOD
+                                </p>
+                                <h6 className="font-weight-500">
+                                  {pricingData.priceMethod?.label}{" "}
+                                </h6>
+                              </div>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                ADJUSTED PRICE{" "}
-                              </p>
-                              <h6 className="font-weight-500">{pricingData.adjustedPrice}</h6>
+                            <div className="col-md-4 col-sm-4">
+                              <div className="form-group">
+                                <p className="font-size-12 font-weight-500 mb-2">
+                                  ADJUSTED PRICE{" "}
+                                </p>
+                                <h6 className="font-weight-500">
+                                  {pricingData.adjustedPrice}
+                                </h6>
+                              </div>
                             </div>
-                          </div>
 
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                CURRENCY{" "}
-                              </p>
-                              <h6 className="font-weight-500">{pricingData.currency?.label}</h6>
+                            <div className="col-md-4 col-sm-4">
+                              <div className="form-group">
+                                <p className="font-size-12 font-weight-500 mb-2">
+                                  CURRENCY{" "}
+                                </p>
+                                <h6 className="font-weight-500">
+                                  {pricingData.currency?.label}
+                                </h6>
+                              </div>
                             </div>
                           </div>
-                        </div>
-}
+                        )}
                       </TabPanel>
                     </TabContext>
                   )}
@@ -1915,7 +1974,9 @@ function WithoutSparePartsHeader(props) {
                 <button
                   onClick={() => setActiveElement({ name: "segment", bId })}
                   className="btn bg-primary text-white"
-                  disabled={!Object.values(viewOnlyTab).every(item => item === true)}
+                  disabled={
+                    !Object.values(viewOnlyTab).every((item) => item === true)
+                  }
                 >
                   <span className="mr-2">
                     <FontAwesomeIcon icon={faPlus} />
@@ -1927,7 +1988,11 @@ function WithoutSparePartsHeader(props) {
           )}
           {activeElement.name === "segment" && (
             <WithoutSpareParts
-              builderDetails={{ activeElement, setActiveElement, fetchAllDetails }}
+              builderDetails={{
+                activeElement,
+                setActiveElement,
+                fetchAllDetails,
+              }}
             />
           )}
           {activeElement.name === "operation" && (

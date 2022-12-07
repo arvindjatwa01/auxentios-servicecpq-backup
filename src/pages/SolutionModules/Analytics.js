@@ -1643,6 +1643,11 @@ export const Analytics = () => {
          })
       setHeaderLoading(false)
 
+
+      if (JSON.parse(localStorage.getItem('exitingType'))) {
+         localStorage.removeItem('exitingType');
+      }
+
    }, []);
 
    const handleLandingPageQuerySearchClick = async () => {
@@ -2855,9 +2860,9 @@ export const Analytics = () => {
             <div>
                <a href={undefined} onClick={() =>
                   makePortfolioEditableEditable(row)
-               } style={{cursor: "pointer"}}>
+               } style={{ cursor: "pointer" }}>
 
-               <img className="mr-2" src={penIcon} />
+                  <img className="mr-2" src={penIcon} />
                </a>
             </div>
          ),

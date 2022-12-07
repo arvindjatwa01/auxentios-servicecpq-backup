@@ -14,6 +14,9 @@ const AddConsumableItemModal = (props) => {
     data.componentCodeDescription +
     " | " +
     data.jobOperation;
+    const calculateTotalPrice = (extendedPrice, usage) => {
+      return usage > 0 ? (usage / 100) * extendedPrice : extendedPrice;
+    };
   return (
     <Modal
       show={props.consumableItemOpen}
@@ -123,9 +126,12 @@ const AddConsumableItemModal = (props) => {
                     onChange={(e) =>
                       props.setConsumableItemData({
                         ...props.consumableItemData,
-                        quantity: e.target.value,
+                        quantity: e.target.value,                        
                         extendedPrice: e.target.value > 0 ? parseFloat(e.target.value * props.consumableItemData.unitPrice).toFixed(2): 0,
-                        totalPrice: e.target.value > 0 ? parseFloat(e.target.value * props.consumableItemData.unitPrice).toFixed(2) : 0
+                        totalPrice: e.target.value > 0 ? props.consumableItemData.usagePercentage > 0 ? parseFloat(
+                          (props.consumableItemData.usagePercentage / 100) *
+                          e.target.value * props.consumableItemData.unitPrice
+                        ).toFixed(2): parseFloat(e.target.value * props.consumableItemData.unitPrice).toFixed(2) : 0
                       })
                     }
                     class="form-control border-radius-10"
@@ -225,6 +231,35 @@ const AddConsumableItemModal = (props) => {
                   />
                 </div>
               </div>
+              <div className="col-md-6 col-sm-6">
+                <div class="form-group w-100">
+                  <label className="text-light-dark font-size-12 font-weight-500">
+                    % USAGE
+                  </label>
+                  <input
+                    type="text"
+                    value={props.consumableItemData.usagePercentage ? props.consumableItemData.usagePercentage : 100}
+                    onChange={(e) =>
+                      props.setConsumableItemData({
+                        ...props.consumableItemData,
+                        usagePercentage: e.target.value,
+                        totalPrice: props.consumableItemData.extendedPrice
+                            ? parseFloat(
+                                calculateTotalPrice(
+                                  props.consumableItemData.extendedPrice,
+                                  e.target.value
+                                )
+                              ).toFixed(2)
+                            : 0.0,
+                        
+                      })
+                    }
+                    class="form-control border-radius-10"
+                    placeholder="Optional"
+                  />
+                </div>
+              </div>
+            
               <div className="col-md-6 col-sm-6">
                 <div class="form-group w-100">
                   <label className="text-light-dark font-size-12 font-weight-500">

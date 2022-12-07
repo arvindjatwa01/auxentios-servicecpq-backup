@@ -47,13 +47,22 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import { signup } from './../services/userServices';
 
+import {
+  getAuditRestServiceData
+} from "./../services/index";
+
 export function SubHeaderComponent(props) {
+
 
   // const dispatch = useDispatch();
   const result = useSelector((state) => state.loginSuccess);
+  const [editableText, setEditAbleText] = useState(0)
   // console.log("result is : ", result)
   const [loginUserId, setLoginUserId] = useState(null);
   const [loginStatus, setLoginStatus] = useState(false);
+
+  const [auditResData, setAuditResData] = useState([]);
+  const [exitingAuditName, setExitingAuditName]= useState("");
   // console.log("result of user subheader component : ", result.currentUser)
 
   const [selectedOption, setSelectedOption] = useState(null);
@@ -93,6 +102,20 @@ export function SubHeaderComponent(props) {
     console.log("====")
     console.log(anchor)
     setState({ ...state, [anchor]: open });
+    const exitingType = JSON.parse(localStorage.getItem('exitingType'));
+
+    if (exitingType != undefined) {
+      if (exitingType.editable) {
+        // if(exitingType.exitingType = "portfolio"){
+        fetchVersionHistoryData(exitingType.exitingType, exitingType.portfolioId);
+        // }
+        setEditAbleText(editableText + 1)
+      }
+    } else {
+      setEditAbleText(1)
+      setAuditResData([]);
+    }
+    console.log("exitingType ---- : ", exitingType);
   };
   const activityOptions = [
     'None',
@@ -247,7 +270,75 @@ export function SubHeaderComponent(props) {
             </div>
           </div>
           <div className="modal-body" style={{ background: 'white' }}>
-            <div className="card border p-3 bg-primary ">
+            {auditResData.length > 0 ? <>
+              {auditResData.map((auditData, i) =>
+                <>
+                  {i == 0 ?
+                    <div className="card border p-3 bg-primary ">
+                      <h5 className="d-flex align-items-center justify-content-between mb-0">
+                        {/* <div className="text-white" style={{ display: 'contents' }}><span className="mr-3">{auditData.entityData.name}</span> */}
+                        <div className="text-white" style={{ display: 'contents' }}><span className="mr-3">{exitingAuditName}</span>
+                          <div>
+                            <a href="#" className="btn-sm text-white"><i className="fa fa-pencil" aria-hidden="true"></i></a>
+                            <a href="#" className="btn-sm text-white"><i className="fa fa-bookmark-o" aria-hidden="true"></i></a>
+                            <a href="#" className="btn-sm text-white"><i className="fa fa-folder-o" aria-hidden="true"></i></a></div>
+                        </div>
+                      </h5>
+                    </div>
+                    : <></>}
+
+                  <div className="card border p-3">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <p className="mb-0">{getFormattedDateTimeByTimeStamp(auditData.createdAt)}
+                        <a href="#" className="p-1 more-btn " style={{ marginLeft: '35px' }}>+ 2
+                          <span className="c-btn">J</span>
+                        </a>
+                      </p>
+                      <p className="mb-0"><a href="#" className=""><MuiMenuComponent options={activityOptions} /></a></p>
+
+                    </div>
+
+                    <div className="mt-3">
+                      <small>MAKE</small>
+                    </div>
+                    <p className="text-black mb-2" style={{ textDecoration: 'line-through' }}>Chinalco Sa,Beijing,Chaina(code 302037)</p>
+                    <p className="text-black mb-2">Chinalco Sa,Beijing,Chaina(code 302037)</p>
+                    <div className="mt-3">
+                      <small>FAMILY</small>
+                    </div>
+                    <p className="text-black mb-2" style={{ textDecoration: 'line-through' }}>Alberto Franco,Head of Purchase</p>
+                    <p className="text-black mb-2">Alberto Franco,Head of Purchase</p>
+                    <div className="mt-3">
+                      <small>RECOMMENDED FREQUENCY</small>
+                    </div>
+                    <p className="text-black mb-2" style={{ textDecoration: 'line-through' }}>SFI234</p>
+                    <p className="text-black mb-2">SFI234</p>
+                    <div className="card border">
+                      <table className="table table-bordered mb-0">
+                        <tbody>
+                          <tr>
+                            <td>365-1234</td>
+                            <td><MoreHorizOutlinedIcon /></td>
+                            <td><MoreHorizOutlinedIcon /></td>
+                            <td><MoreHorizOutlinedIcon /></td>
+                            <td >
+                              <div className="d-flex justify-content-between">
+                                <div className="mr-3">
+                                  <small style={{ textDecoration: 'line-through' }}>$80</small>
+                                  <p className="mb-0 mt-2">$100</p>
+                                </div>
+                                <div><span className="c-btn" style={{ position: 'unset' }}>J</span></div>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </>
+              )}
+            </> : <></>}
+            {/* <div className="card border p-3 bg-primary ">
               <h5 className="d-flex align-items-center justify-content-between mb-0">
                 <div className="text-white" style={{ display: 'contents' }}><span className="mr-3">Service Estimate 01</span>
                   <div>
@@ -259,7 +350,7 @@ export function SubHeaderComponent(props) {
             </div>
             <div className="card border p-3">
               <div className="d-flex justify-content-between align-items-center">
-                <p className="mb-0">5 Aug 21, 1:38 pm
+                <p className="mb-0">5 Aug 2021, 1:38 pm
                   <a href="#" className="p-1 more-btn " style={{ marginLeft: '35px' }}>+ 2
                     <span className="c-btn">J</span>
                   </a>
@@ -362,7 +453,9 @@ export function SubHeaderComponent(props) {
                   </tbody>
                 </table>
               </div>
-            </div>
+            </div> */}
+
+
             {/* <div className="">
               <div className="d-flex justify-content-between align-items-center">
                 <p className="mb-0">5 Aug 21, 1:38 pm by
@@ -453,6 +546,60 @@ export function SubHeaderComponent(props) {
   //
   //
   // }, [reduxState.user]);
+
+  const fetchVersionHistoryData = async (exitingType, portfolioId) => {
+    var caseType;
+    if (exitingType == "portfolio") {
+      caseType = "portfolio";
+    } else if (exitingType == "solution") {
+      caseType = "custom portfolio";
+    }
+
+    var searchText = portfolioId + "/" + caseType;
+    console.log("searchText : ", searchText)
+    const auditRes = await getAuditRestServiceData(searchText);
+    console.log("auditRes----- ", auditRes);
+    setAuditResData(auditRes);
+    setExitingAuditName(auditRes[auditRes.length-1].entityData.name)
+  }
+
+  const getFormattedDateTimeByTimeStamp = (timeStamp) => {
+
+    var date = new Date(timeStamp);
+    var year = date.getFullYear();
+    // var m = date.getMonth() + 1;
+    var m = date.getMonth();
+    // var month = m < 10 ? '0' + m : m;
+    var month = m;
+    var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+    var format = "AM";
+    var hour = date.getHours();
+    var minutes = date.getMinutes();
+
+    var monthName = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    if (hour > 11) {
+      format = "PM";
+    }
+    if (hour > 12) {
+      hour = hour - 12;
+    } else if (hour === 0) {
+      hour = 12;
+    }
+
+    if (hour < 10) {
+      hour = "0" + hour;
+    }
+
+    if (minutes < 10) {
+      minutes = "0" + minutes;
+    }
+
+    var finalDateString = day + " " + monthName[month] + " " + year + " " + hour + ":" + minutes + " " + format;
+    // var finalDateString = hour + ":" + minutes + "" + format + ", " + day + " " + monthName[month] + " " + year;
+    return finalDateString;
+  }
+
   useEffect(() => {
     var now = new Date();
     var day = new Date().getDate();
@@ -477,9 +624,24 @@ export function SubHeaderComponent(props) {
     } else {
       setLoginStatus(false)
     }
+
+
     // setLoginStatus(result.isLoggedIn)
     // setLoginUserId(result.currentUser.userId)
-  }, [])
+  }, []);
+  useEffect(() => {
+
+    // if (exitingType != undefined) {
+    //   if (exitingType.editable) {
+    //     // if(exitingType.exitingType = "portfolio"){
+    //     fetchVersionHistoryData(exitingType.exitingType, exitingType.portfolioId);
+    //     // }
+    //     setEditAbleText(editableText+1)
+    //   }
+    // }else{
+    //   setEditAbleText(1)
+    // }
+  }, []);
   return (
     <>
 
@@ -497,44 +659,44 @@ export function SubHeaderComponent(props) {
                       {/* <li className="cursor"><a href="#" onClick={toggleDrawer(anchor, true, false)}><img src={repeateIcon}></img></a></li>
                       <li className="cursor"><a href="#" data-original-title="" title="" onClick={toggleDrawer(anchor, true, true)}><img src={peopleIcon}></img></a></li> */}
                       <li className="cursor mr-2 "><a href="#" onClick={toggleDrawer(anchor, true, false)}>
-                      <span className="mr-2 version-history">
-                      <svg style={{width:"20px"}} id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 176.44455 158.21163"><defs></defs><g><path class="cls-2" d="M50.15975,122.41183H30.58119c-3.19789,0-5.78966-2.59178-5.78966-5.78966s2.59178-5.78966,5.78966-5.78966h19.57856c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z"/><path class="cls-2" d="M50.15975,97.40093H30.58119c-3.19789,0-5.78966-2.59178-5.78966-5.78966s2.59178-5.78966,5.78966-5.78966h19.57856c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z"/><path class="cls-2" d="M50.15975,72.39003H30.58119c-3.19789,0-5.78966-2.59178-5.78966-5.78966s2.59178-5.78966,5.78966-5.78966h19.57856c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z"/><path class="cls-2" d="M50.15975,47.378H30.58119c-3.19789,0-5.78966-2.59178-5.78966-5.78966s2.59178-5.78966,5.78966-5.78966h19.57856c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z"/></g><path class="cls-2" d="M114.15138,158.21163H12.99734c-7.16697,0-12.99734-5.8315-12.99734-12.99848V12.99848C0,5.8315,5.83037,0,12.99734,0H114.15138c7.16697,0,12.99734,5.8315,12.99734,12.99848V145.21315c0,7.16697-5.83037,12.99848-12.99734,12.99848ZM12.99734,11.57933c-.78251,0-1.41802,.63664-1.41802,1.41915V145.21315c0,.78251,.63551,1.41915,1.41802,1.41915H114.15138c.78251,0,1.41802-.63664,1.41802-1.41915V12.99848c0-.78251-.63551-1.41915-1.41802-1.41915H12.99734Z"/><g><circle class="cls-1" cx="121.35872" cy="79.10553" r="49.296"/><path class="cls-2" d="M121.35906,134.19131c-30.37312,0-55.08549-24.71124-55.08549-55.08549s24.71237-55.08549,55.08549-55.08549,55.08549,24.71124,55.08549,55.08549-24.71237,55.08549-55.08549,55.08549Zm0-98.59165c-23.98866,0-43.50616,19.51637-43.50616,43.50616s19.5175,43.50616,43.50616,43.50616,43.50616-19.51637,43.50616-43.50616-19.5175-43.50616-43.50616-43.50616Z"/></g><g><polyline class="cls-1" points="121.35872 58.0879 121.35872 79.10553 147.3426 79.10553"/><path class="cls-2" d="M147.34244,84.89548h-25.98338c-3.19789,0-5.78966-2.59178-5.78966-5.78966v-21.01807c0-3.19789,2.59178-5.78966,5.78966-5.78966s5.78966,2.59178,5.78966,5.78966v15.2284h20.19372c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z"/></g></svg>
-                      </span>
-                      Version history</a></li>
+                        <span className="mr-2 version-history">
+                          <svg style={{ width: "20px" }} id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 176.44455 158.21163"><defs></defs><g><path class="cls-2" d="M50.15975,122.41183H30.58119c-3.19789,0-5.78966-2.59178-5.78966-5.78966s2.59178-5.78966,5.78966-5.78966h19.57856c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z" /><path class="cls-2" d="M50.15975,97.40093H30.58119c-3.19789,0-5.78966-2.59178-5.78966-5.78966s2.59178-5.78966,5.78966-5.78966h19.57856c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z" /><path class="cls-2" d="M50.15975,72.39003H30.58119c-3.19789,0-5.78966-2.59178-5.78966-5.78966s2.59178-5.78966,5.78966-5.78966h19.57856c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z" /><path class="cls-2" d="M50.15975,47.378H30.58119c-3.19789,0-5.78966-2.59178-5.78966-5.78966s2.59178-5.78966,5.78966-5.78966h19.57856c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z" /></g><path class="cls-2" d="M114.15138,158.21163H12.99734c-7.16697,0-12.99734-5.8315-12.99734-12.99848V12.99848C0,5.8315,5.83037,0,12.99734,0H114.15138c7.16697,0,12.99734,5.8315,12.99734,12.99848V145.21315c0,7.16697-5.83037,12.99848-12.99734,12.99848ZM12.99734,11.57933c-.78251,0-1.41802,.63664-1.41802,1.41915V145.21315c0,.78251,.63551,1.41915,1.41802,1.41915H114.15138c.78251,0,1.41802-.63664,1.41802-1.41915V12.99848c0-.78251-.63551-1.41915-1.41802-1.41915H12.99734Z" /><g><circle class="cls-1" cx="121.35872" cy="79.10553" r="49.296" /><path class="cls-2" d="M121.35906,134.19131c-30.37312,0-55.08549-24.71124-55.08549-55.08549s24.71237-55.08549,55.08549-55.08549,55.08549,24.71124,55.08549,55.08549-24.71237,55.08549-55.08549,55.08549Zm0-98.59165c-23.98866,0-43.50616,19.51637-43.50616,43.50616s19.5175,43.50616,43.50616,43.50616,43.50616-19.51637,43.50616-43.50616-19.5175-43.50616-43.50616-43.50616Z" /></g><g><polyline class="cls-1" points="121.35872 58.0879 121.35872 79.10553 147.3426 79.10553" /><path class="cls-2" d="M147.34244,84.89548h-25.98338c-3.19789,0-5.78966-2.59178-5.78966-5.78966v-21.01807c0-3.19789,2.59178-5.78966,5.78966-5.78966s5.78966,2.59178,5.78966,5.78966v15.2284h20.19372c3.19789,0,5.78966,2.59178,5.78966,5.78966s-2.59178,5.78966-5.78966,5.78966Z" /></g></svg>
+                        </span>
+                        Version history</a></li>
                       <li className="cursor mr-2"><a href="#" data-original-title="" title="" onClick={toggleDrawer(anchor, true, true)}>
-                      <span className="mr-2 collab">
-                      <svg style={{width:"20px"}} id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 182.79509 172.72537"><defs></defs><g><circle class="cls-1" cx="92.89864" cy="100.88062" r="66.05457"/><path class="cls-2" d="M92.89924,172.72537c-39.61397,0-71.84386-32.22989-71.84386-71.84499S53.28527,29.03652,92.89924,29.03652s71.84386,32.22876,71.84386,71.84386-32.22989,71.84499-71.84386,71.84499Zm0-132.10952c-33.22951,0-60.26453,27.03502-60.26453,60.26453s27.03502,60.26566,60.26453,60.26566,60.26453-27.03502,60.26453-60.26566-27.03502-60.26453-60.26453-60.26453Z"/></g><g><circle class="cls-1" cx="92.89864" cy="34.82605" r="29.03653"/><path class="cls-2" d="M92.89924,69.65238c-19.20314,0-34.82619-15.62305-34.82619-34.82619S73.6961,0,92.89924,0s34.82619,15.62305,34.82619,34.82619-15.62305,34.82619-34.82619,34.82619Zm0-58.07305c-12.81868,0-23.24686,10.42818-23.24686,23.24686s10.42818,23.24686,23.24686,23.24686,23.24686-10.42818,23.24686-23.24686-10.42818-23.24686-23.24686-23.24686Z"/></g><g><circle class="cls-1" cx="34.82558" cy="135.471" r="29.03653"/><path class="cls-2" d="M34.82619,170.29755c-19.20314,0-34.82619-15.62305-34.82619-34.82619s15.62305-34.82619,34.82619-34.82619,34.82619,15.62305,34.82619,34.82619-15.62305,34.82619-34.82619,34.82619Zm0-58.07305c-12.81868,0-23.24686,10.42818-23.24686,23.24686s10.42818,23.24686,23.24686,23.24686,23.24686-10.42818,23.24686-23.24686-10.42818-23.24686-23.24686-23.24686Z"/></g><g><circle class="cls-1" cx="147.96849" cy="135.471" r="29.03653"/><path class="cls-2" d="M147.9689,170.29755c-19.20314,0-34.82619-15.62305-34.82619-34.82619s15.62305-34.82619,34.82619-34.82619,34.82619,15.62305,34.82619,34.82619-15.62305,34.82619-34.82619,34.82619Zm0-58.07305c-12.81868,0-23.24686,10.42818-23.24686,23.24686s10.42818,23.24686,23.24686,23.24686,23.24686-10.42818,23.24686-23.24686-10.42818-23.24686-23.24686-23.24686Z"/></g></svg>
-                      </span>
-                      Collaborators</a></li>
+                        <span className="mr-2 collab">
+                          <svg style={{ width: "20px" }} id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 182.79509 172.72537"><defs></defs><g><circle class="cls-1" cx="92.89864" cy="100.88062" r="66.05457" /><path class="cls-2" d="M92.89924,172.72537c-39.61397,0-71.84386-32.22989-71.84386-71.84499S53.28527,29.03652,92.89924,29.03652s71.84386,32.22876,71.84386,71.84386-32.22989,71.84499-71.84386,71.84499Zm0-132.10952c-33.22951,0-60.26453,27.03502-60.26453,60.26453s27.03502,60.26566,60.26453,60.26566,60.26453-27.03502,60.26453-60.26566-27.03502-60.26453-60.26453-60.26453Z" /></g><g><circle class="cls-1" cx="92.89864" cy="34.82605" r="29.03653" /><path class="cls-2" d="M92.89924,69.65238c-19.20314,0-34.82619-15.62305-34.82619-34.82619S73.6961,0,92.89924,0s34.82619,15.62305,34.82619,34.82619-15.62305,34.82619-34.82619,34.82619Zm0-58.07305c-12.81868,0-23.24686,10.42818-23.24686,23.24686s10.42818,23.24686,23.24686,23.24686,23.24686-10.42818,23.24686-23.24686-10.42818-23.24686-23.24686-23.24686Z" /></g><g><circle class="cls-1" cx="34.82558" cy="135.471" r="29.03653" /><path class="cls-2" d="M34.82619,170.29755c-19.20314,0-34.82619-15.62305-34.82619-34.82619s15.62305-34.82619,34.82619-34.82619,34.82619,15.62305,34.82619,34.82619-15.62305,34.82619-34.82619,34.82619Zm0-58.07305c-12.81868,0-23.24686,10.42818-23.24686,23.24686s10.42818,23.24686,23.24686,23.24686,23.24686-10.42818,23.24686-23.24686-10.42818-23.24686-23.24686-23.24686Z" /></g><g><circle class="cls-1" cx="147.96849" cy="135.471" r="29.03653" /><path class="cls-2" d="M147.9689,170.29755c-19.20314,0-34.82619-15.62305-34.82619-34.82619s15.62305-34.82619,34.82619-34.82619,34.82619,15.62305,34.82619,34.82619-15.62305,34.82619-34.82619,34.82619Zm0-58.07305c-12.81868,0-23.24686,10.42818-23.24686,23.24686s10.42818,23.24686,23.24686,23.24686,23.24686-10.42818,23.24686-23.24686-10.42818-23.24686-23.24686-23.24686Z" /></g></svg>
+                        </span>
+                        Collaborators</a></li>
                       <li className="cursor mr-2"><a href="#" data-original-title="" title="">
-                      <span className="mr-2 insight">
-                            <svg class="insight" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 37 39.6">
-                                  <g>
-                                    <g>
-                                      <path class="st1" d="M5.3,39.6c-2.9,0-5.3-2.4-5.3-5.3V23.8c0-2.9,2.4-5.3,5.3-5.3s5.3,2.4,5.3,5.3v10.4
+                        <span className="mr-2 insight">
+                          <svg class="insight" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 37 39.6">
+                            <g>
+                              <g>
+                                <path class="st1" d="M5.3,39.6c-2.9,0-5.3-2.4-5.3-5.3V23.8c0-2.9,2.4-5.3,5.3-5.3s5.3,2.4,5.3,5.3v10.4
                                         C10.6,37.2,8.2,39.6,5.3,39.6z M5.3,21c-1.5,0-2.8,1.3-2.8,2.8v10.4c0,1.5,1.3,2.8,2.8,2.8s2.8-1.3,2.8-2.8V23.8
                                         C8.1,22.3,6.8,21,5.3,21z"/>
-                                    </g>
-                                    <g>
-                                      <path class="st1" d="M18.5,39.6c-2.9,0-5.3-2.4-5.3-5.3v-29c0-2.9,2.4-5.3,5.3-5.3s5.3,2.4,5.3,5.3v29
+                              </g>
+                              <g>
+                                <path class="st1" d="M18.5,39.6c-2.9,0-5.3-2.4-5.3-5.3v-29c0-2.9,2.4-5.3,5.3-5.3s5.3,2.4,5.3,5.3v29
                                         C23.8,37.2,21.4,39.6,18.5,39.6z M18.5,2.5c-1.5,0-2.8,1.3-2.8,2.8v29c0,1.5,1.3,2.8,2.8,2.8s2.8-1.3,2.8-2.8v-29
                                         C21.3,3.8,20,2.5,18.5,2.5z"/>
-                                    </g>
-                                    <g>
-                                      <path class="st1" d="M31.7,39.6c-2.9,0-5.3-2.4-5.3-5.3V16.6c0-2.9,2.4-5.3,5.3-5.3s5.3,2.4,5.3,5.3v17.6
+                              </g>
+                              <g>
+                                <path class="st1" d="M31.7,39.6c-2.9,0-5.3-2.4-5.3-5.3V16.6c0-2.9,2.4-5.3,5.3-5.3s5.3,2.4,5.3,5.3v17.6
                                         C37,37.2,34.6,39.6,31.7,39.6z M31.7,13.8c-1.5,0-2.8,1.3-2.8,2.8v17.6c0,1.5,1.3,2.8,2.8,2.8s2.8-1.3,2.8-2.8V16.6
                                         C34.5,15.1,33.2,13.8,31.7,13.8z"/>
-                                    </g>
-                                  </g>
-                            </svg>
-                      </span>
-                      Insights </a></li>
+                              </g>
+                            </g>
+                          </svg>
+                        </span>
+                        Insights </a></li>
                       <li className="cursor"><a href="#" data-original-title="" title="Note" data-toggle="modal" data-target="#notemodal">
-                      <span className="mr-2 notes">
-                      <svg style={{width:"18px"}} id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 159.28809 165.66504"><defs></defs><path class="cls-1" d="M153.49829,119.08057h-25.23022V15.15967c0-8.35889-6.80054-15.15967-15.15942-15.15967H15.15942C6.80054,0,0,6.80078,0,15.15967V124.87061c0,22.49365,18.29834,40.79443,40.79224,40.79443,.22705,0,.45093-.01221,.677-.01562,.10229,.00537,.20312,.01562,.30664,.01562H118.49341c22.4939,0,40.79468-18.30078,40.79468-40.79443,0-3.19824-2.5918-5.79004-5.78979-5.79004ZM11.57935,124.87061V15.15967c0-1.97461,1.60547-3.58008,3.58008-3.58008H113.10864c1.97437,0,3.58008,1.60547,3.58008,3.58008V119.08057h-39.4646c-3.89453,0-7.07422,3.06592-7.2417,6.9917-.63306,15.70801-13.4563,28.01318-29.19019,28.01318-16.10718,0-29.21289-13.10596-29.21289-29.21484Zm106.91406,29.21484h-49.17188c6.26929-6.11914,10.57202-14.25586,11.86035-23.42529h65.94849c-2.69385,13.34521-14.50952,23.42529-28.63696,23.42529Z"/><path class="cls-1" d="M35.56567,42.92383h54.45215c3.198,0,5.78979-2.5918,5.78979-5.78955s-2.5918-5.78955-5.78979-5.78955H35.56567c-3.198,0-5.78955,2.5918-5.78955,5.78955s2.59155,5.78955,5.78955,5.78955Z"/><path class="cls-1" d="M35.56567,71.12061h54.45215c3.198,0,5.78979-2.5918,5.78979-5.79004,0-3.19775-2.5918-5.78955-5.78979-5.78955H35.56567c-3.198,0-5.78955,2.5918-5.78955,5.78955,0,3.19824,2.59155,5.79004,5.78955,5.79004Z"/><path class="cls-1" d="M95.80762,93.52686c0-3.19775-2.5918-5.78955-5.78979-5.78955H35.56567c-3.198,0-5.78955,2.5918-5.78955,5.78955,0,3.19824,2.59155,5.79004,5.78955,5.79004h54.45215c3.198,0,5.78979-2.5918,5.78979-5.79004Z"/></svg>
-                      </span>
-                      Notes </a></li>
+                        <span className="mr-2 notes">
+                          <svg style={{ width: "18px" }} id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 159.28809 165.66504"><defs></defs><path class="cls-1" d="M153.49829,119.08057h-25.23022V15.15967c0-8.35889-6.80054-15.15967-15.15942-15.15967H15.15942C6.80054,0,0,6.80078,0,15.15967V124.87061c0,22.49365,18.29834,40.79443,40.79224,40.79443,.22705,0,.45093-.01221,.677-.01562,.10229,.00537,.20312,.01562,.30664,.01562H118.49341c22.4939,0,40.79468-18.30078,40.79468-40.79443,0-3.19824-2.5918-5.79004-5.78979-5.79004ZM11.57935,124.87061V15.15967c0-1.97461,1.60547-3.58008,3.58008-3.58008H113.10864c1.97437,0,3.58008,1.60547,3.58008,3.58008V119.08057h-39.4646c-3.89453,0-7.07422,3.06592-7.2417,6.9917-.63306,15.70801-13.4563,28.01318-29.19019,28.01318-16.10718,0-29.21289-13.10596-29.21289-29.21484Zm106.91406,29.21484h-49.17188c6.26929-6.11914,10.57202-14.25586,11.86035-23.42529h65.94849c-2.69385,13.34521-14.50952,23.42529-28.63696,23.42529Z" /><path class="cls-1" d="M35.56567,42.92383h54.45215c3.198,0,5.78979-2.5918,5.78979-5.78955s-2.5918-5.78955-5.78979-5.78955H35.56567c-3.198,0-5.78955,2.5918-5.78955,5.78955s2.59155,5.78955,5.78955,5.78955Z" /><path class="cls-1" d="M35.56567,71.12061h54.45215c3.198,0,5.78979-2.5918,5.78979-5.79004,0-3.19775-2.5918-5.78955-5.78979-5.78955H35.56567c-3.198,0-5.78955,2.5918-5.78955,5.78955,0,3.19824,2.59155,5.79004,5.78955,5.79004Z" /><path class="cls-1" d="M95.80762,93.52686c0-3.19775-2.5918-5.78955-5.78979-5.78955H35.56567c-3.198,0-5.78955,2.5918-5.78955,5.78955,0,3.19824,2.59155,5.79004,5.78955,5.79004h54.45215c3.198,0,5.78979-2.5918,5.78979-5.79004Z" /></svg>
+                        </span>
+                        Notes </a></li>
                       {/* <li className="cursor"><a href="#" data-toggle="modal" data-target="#myModal2"><WarningAmberIcon className="mr-2" style={{ fontSize: '21px', color: '#000' }} />Errors</a></li> */}
                     </ul>
                   </div>

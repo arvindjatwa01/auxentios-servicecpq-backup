@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { Common_SOLUTION_BUILDER_URL } from "./CONSTANTS";
+import { Common_SOLUTION_BUILDER_URL, GET_AUDIT_SERVICE_DATA } from "./CONSTANTS";
 
 /* ----------------- Authorization ------------------- */
 
@@ -291,6 +291,31 @@ export const getSolutionLevelKeyValue = () => {
         });
     } catch (error) {
       // console.error("in userServices > getSolutionLevelKeyValue, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+/**
+ * Function to audit Rest servicekeyvalue.
+ */
+export const getAuditRestServiceData = (searchText) => {
+  // console.log("commonSolutionBuilder > getAuditRestServiceData called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(GET_AUDIT_SERVICE_DATA + searchText, { headers: headersdata })
+        .then((res) => {
+          // console.log("getAuditRestServiceData > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          // console.log("getAuditRestServiceData > axios err=", err);
+          reject("Error in getAuditRestServiceData axios!");
+        });
+    } catch (error) {
+      // console.error("in userServices > getAuditRestServiceData, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

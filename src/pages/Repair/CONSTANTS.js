@@ -149,43 +149,92 @@ export const GRID_STYLE = {
   },
   "& .MuiTablePagination-displayedRows, .MuiTablePagination-selectLabel": {
     marginTop: "1em",
-    marginBottom: "1em"
+    marginBottom: "1em",
   },
-  "& .MuiTablePagination-select":{
+  "& .MuiTablePagination-select": {
     marginTop: "1.5em",
-    marginBottom: "1.5em"
+    marginBottom: "1.5em",
   },
-  '& .MuiDataGrid-columnHeader, .MuiDataGrid-cell': {
+  "& .MuiDataGrid-columnHeader, .MuiDataGrid-cell": {
     borderRight: `1px solid rgba(0,0,0,.12)`,
     paddingLeft: "8px",
-    paddingRight: "8px"
+    paddingRight: "8px",
   },
-  '& .MuiDataGrid-iconSeparator': {
-    display: 'none',
-  },                              
+  "& .MuiDataGrid-iconSeparator": {
+    display: "none",
+  },
   // minHeight: 300,
   "& .MuiDataGrid-cellContent": {
     fontSize: 12,
-  },  
-}
+  },
+};
 export const FONT_STYLE = {
-  color: '#872ff7',
-  fontSize: '17px',
-  fontWeight: '500',
-  padding: 0
-}
+  color: "#872ff7",
+  fontSize: "17px",
+  fontWeight: "500",
+  padding: 0,
+};
 
 export const FONT_STYLE_SELECT = {
-  placeholder: provided => ({
-    ...provided, 
-    ...FONT_STYLE
+  placeholder: (provided) => ({
+    ...provided,
+    ...FONT_STYLE,
   }),
-  control: provided => ({
+  control: (provided) => ({
     ...provided,
     borderRadius: 10,
   }),
-  singleValue: provided => ({
+  singleValue: (provided) => ({
     ...provided,
-    ...FONT_STYLE
-  })
-}
+    ...FONT_STYLE,
+  }),
+};
+export const LABOR_PRICE_OPTIONS = [
+  {
+    value: "LIST",
+    label: "List Price",
+  },
+  {
+    value: "COST_PLUS",
+    label: "Cost Plus",
+  },
+];
+
+export const CONS_EXT_PRICE_OPTIONS = [
+  {
+    value: "LIST",
+    label: "List Price",
+  },
+  {
+    value: "PER_ON_TOTAL",
+    label: "Percentage on Total",
+  },
+  {
+    value: "PER_ON_LABOR",
+    label: "Percentage on Labour",
+  },
+];
+
+export const CONSEXT_PRICE_OPTIONS_NOLABOR = [
+  {
+    value: "LIST",
+    label: "List Price",
+  },
+  {
+    value: "PER_ON_TOTAL",
+    label: "Percentage on Total",
+  },
+];
+
+export const MISC_PRICE_OPTIONS = [
+  { value: "PER_ON_TOTAL", label: "Percentage on Total" },
+  {
+    value: "PER_ON_LABOR",
+    label: "Percentage on Labour",
+  },
+];
+
+export const MISC_PRICE_OPTIONS_NOLABOR = [
+  { value: "PER_ON_TOTAL", label: "Percentage on Total" },
+];
+
