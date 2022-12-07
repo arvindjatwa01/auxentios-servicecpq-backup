@@ -2513,6 +2513,12 @@ function PartList(props) {
                               </label>
                               <input
                                 type="text"
+                                disabled={
+                                  !(
+                                    pricingData.priceMethod?.value ===
+                                    "FLAT_RATE"
+                                  )
+                                }
                                 className="form-control border-radius-10 text-primary"
                                 placeholder="Optional"
                                 value={pricingData.adjustedPrice}
@@ -2555,11 +2561,12 @@ function PartList(props) {
                             className="btn btn-light bg-primary text-white"
                             onClick={updatePriceData}
                             disabled={
-                              !(
-                                pricingData.priceDate &&
-                                pricingData.priceMethod &&
-                                pricingData.currency
-                              )
+                              !(pricingData.priceDate &&
+                              pricingData.priceMethod &&
+                              pricingData.currency &&
+                              pricingData.priceMethod?.value === "FLAT_RATE"
+                                ? pricingData.adjustedPrice > 0
+                                : true)
                             }
                           >
                             Save

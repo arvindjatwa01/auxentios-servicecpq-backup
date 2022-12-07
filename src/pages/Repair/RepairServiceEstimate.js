@@ -69,11 +69,16 @@ import {
 import { FormControlLabel, FormGroup, Switch } from "@mui/material";
 import AddLaborItemModal from "./components/AddLaborItem";
 import {
+  CONSEXT_PRICE_OPTIONS_NOLABOR,
   CONSUMABLE_SEARCH_Q_OPTIONS,
+  CONS_EXT_PRICE_OPTIONS,
   EXTWORK_SEARCH_Q_OPTIONS,
   FONT_STYLE,
   FONT_STYLE_SELECT,
   GRID_STYLE,
+  LABOR_PRICE_OPTIONS,
+  MISC_PRICE_OPTIONS,
+  MISC_PRICE_OPTIONS_NOLABOR,
 } from "./CONSTANTS";
 import SearchComponent from "./components/SearchComponent";
 import AddExtWorkItemModal from "./components/AddExtWorkItem";
@@ -130,23 +135,7 @@ function RepairServiceEstimate(props) {
   const priceMethodOptions = useAppSelector(
     selectDropdownOption(selectPricingMethodList)
   );
-  // Price methods for consumables, ext work, misc
-  const priceOptionsPercent = [
-    {
-      value: "PER_ON_TOTAL",
-      label: "Percentage on Total",
-    },
-    {
-      value: "PER_ON_LABOR",
-      label: "Percentage on Labor",
-    },
-  ];
-  const priceOptionsPercent_NoLabor = [
-    {
-      value: "PER_ON_TOTAL",
-      label: "Percentage on Total",
-    },
-  ];
+
   // Retrieve activity Ids
   const activityIdList = useAppSelector(
     selectDropdownOption(selectActivityIdList)
@@ -168,6 +157,7 @@ function RepairServiceEstimate(props) {
     currency: "USD",
     netPrice: 0.0,
     jobCode: "",
+    adjustedPrice: 0,
   });
   const initialLaborItemData = {
     isEditing: false,
@@ -212,6 +202,7 @@ function RepairServiceEstimate(props) {
     unitPrice: 0.0,
     extendedPrice: 0.0,
     totalPrice: 0.0,
+    usagePercentage: 100,
     currency: serviceEstimateData.currency,
   };
   const [labourData, setLabourData] = useState({
@@ -399,6 +390,7 @@ function RepairServiceEstimate(props) {
             componentCodeDescription: result.componentCodeDescription,
             jobOperation: result.jobOperation,
             netPrice: result.netPrice ? result.netPrice : 0.0,
+            adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
             priceDate: result.priceDate,
             priceMethod: priceMethodOptions.find(
               (element) => element.value === result.priceMethod
@@ -462,7 +454,7 @@ function RepairServiceEstimate(props) {
           setLabourData({
             ...resultLabour,
             id: resultLabour.id,
-            pricingMethod: priceMethodOptions.find(
+            pricingMethod: LABOR_PRICE_OPTIONS.find(
               (element) => element.value === resultLabour.pricingMethod
             ),
             laborCode: laborCodeList.find(
@@ -502,7 +494,7 @@ function RepairServiceEstimate(props) {
           setConsumableData({
             ...resultConsumable,
             id: resultConsumable.id,
-            pricingMethod: priceOptionsPercent.find(
+            pricingMethod: CONS_EXT_PRICE_OPTIONS.find(
               (element) => element.value === resultConsumable.pricingMethod
             ),
             totalPrice: resultConsumable.totalPrice
@@ -542,7 +534,7 @@ function RepairServiceEstimate(props) {
           setExtWorkData({
             ...resultExtWork,
             id: resultExtWork.id,
-            pricingMethod: priceOptionsPercent.find(
+            pricingMethod: CONS_EXT_PRICE_OPTIONS.find(
               (element) => element.value === resultExtWork.pricingMethod
             ),
             totalPrice: resultExtWork.totalPrice ? resultExtWork.totalPrice : 0,
@@ -582,7 +574,7 @@ function RepairServiceEstimate(props) {
           setMiscData({
             ...resultMisc,
             id: resultMisc.id,
-            pricingMethod: priceOptionsPercent.find(
+            pricingMethod: MISC_PRICE_OPTIONS.find(
               (element) => element.value === resultMisc.pricingMethod
             ),
             type: miscTypeList.find(
@@ -725,8 +717,6 @@ function RepairServiceEstimate(props) {
       laborCode: labourData.laborCode?.value,
       totalHours: labourData.totalHours,
       flatRateIndicator: labourData.flatRateIndicator,
-      // ratePerHourOrDay: labourData.ratePerHourOrDay, //TODO - Remove once API modifies to consider price at backend
-      // totalPrice: labourData.totalPrice, //TODO - Remove once API modifies to consider price at backend
       adjustedPrice: labourData.flatRateIndicator
         ? labourData.adjustedPrice
         : 0.0,
@@ -737,7 +727,7 @@ function RepairServiceEstimate(props) {
         setLabourData({
           ...result,
           id: result.id,
-          pricingMethod: priceMethodOptions.find(
+          pricingMethod: LABOR_PRICE_OPTIONS.find(
             (element) => element.value === result.pricingMethod
           ),
           totalPrice: result.totalPrice ? result.totalPrice : 0,
@@ -760,21 +750,26 @@ function RepairServiceEstimate(props) {
       ...(consumableData.id && { id: consumableData.id }),
       jobCode: consumableData.jobCode,
       jobCodeDescription: consumableData.jobCodeDescription,
-      percentageOfBase: consumableData.percentageOfBase,
+      ...(!consumableData.flatRateIndicator ?
+        consumableData.pricingMethod?.value?.includes("PER")
+        ? {
+            percentageOfBase: consumableData.percentageOfBase,
+            pricingMethod: consumableData.pricingMethod?.value,
+            basePrice: consumableData.basePrice,
+          }
+        : { pricingMethod: consumableData.pricingMethod?.value } : {}),
       flatRateIndicator: consumableData.flatRateIndicator,
       adjustedPrice: consumableData.flatRateIndicator
         ? consumableData.adjustedPrice
         : 0.0,
-      pricingMethod: consumableData.pricingMethod?.value,
       payer: consumableData.payer,
-      basePrice: consumableData.basePrice,
     };
     AddConsumableToService(serviceEstimateData.id, data)
       .then((result) => {
         setConsumableData({
           ...result,
           id: result.id,
-          pricingMethod: priceOptionsPercent.find(
+          pricingMethod: CONS_EXT_PRICE_OPTIONS.find(
             (element) => element.value === result.pricingMethod
           ),
         });
@@ -793,21 +788,26 @@ function RepairServiceEstimate(props) {
       ...(extWorkData.id && { id: extWorkData.id }),
       jobCode: extWorkData.jobCode,
       jobCodeDescription: extWorkData.jobCodeDescription,
-      percentageOfBase: extWorkData.percentageOfBase,
       flatRateIndicator: extWorkData.flatRateIndicator,
+      ...(!extWorkData.flatRateIndicator ?
+            extWorkData.pricingMethod?.value?.includes("PER")
+            ? {
+                percentageOfBase: extWorkData.percentageOfBase,
+                pricingMethod: extWorkData.pricingMethod?.value,
+                basePrice: extWorkData.basePrice,
+              }
+            : { pricingMethod: extWorkData.pricingMethod?.value } : {}),
       adjustedPrice: extWorkData.flatRateIndicator
         ? extWorkData.adjustedPrice
         : 0.0,
       payer: extWorkData.payer,
-      pricingMethod: extWorkData.pricingMethod?.value,
-      basePrice: extWorkData.basePrice,
     };
     AddExtWorkToService(serviceEstimateData.id, data)
       .then((result) => {
         setExtWorkData({
           ...result,
           id: result.id,
-          pricingMethod: priceOptionsPercent.find(
+          pricingMethod: CONS_EXT_PRICE_OPTIONS.find(
             (element) => element.value === result.pricingMethod
           ),
         });
@@ -829,20 +829,22 @@ function RepairServiceEstimate(props) {
       ...(miscData.id && { id: miscData.id }),
       jobCode: miscData.jobCode,
       jobCodeDescription: miscData.jobCodeDescription,
-      percentageOfBase: miscData.percentageOfBase,
       flatRateIndicator: miscData.flatRateIndicator,
+      ...(!miscData.flatRateIndicator && {
+        percentageOfBase: miscData.percentageOfBase,
+        pricingMethod: miscData.pricingMethod?.value,
+        basePrice: miscData.basePrice,
+      }),
       adjustedPrice: miscData.flatRateIndicator ? miscData.adjustedPrice : 0.0,
       payer: miscData.payer,
-      pricingMethod: miscData.pricingMethod?.value,
       type: miscData.type?.value,
-      basePrice: miscData.basePrice,
     };
     AddMiscToService(serviceEstimateData.id, data)
       .then((result) => {
         setMiscData({
           ...result,
           id: result.id,
-          pricingMethod: priceOptionsPercent.find(
+          pricingMethod: MISC_PRICE_OPTIONS.find(
             (element) => element.value === result.pricingMethod
           ),
           type: miscTypeList.find((element) => element.value === result.type),
@@ -901,6 +903,7 @@ function RepairServiceEstimate(props) {
         description: consumableItemData.description,
         quantity: consumableItemData.quantity,
         unitOfMeasure: consumableItemData.unitOfMeasure,
+        usagePercentage: consumableItemData.usagePercentage,
         // vendor: consumableItemData.vendor,
         currency: consumableItemData.currency,
       };
@@ -1301,6 +1304,7 @@ function RepairServiceEstimate(props) {
       width: 130,
     },
     { field: "currency", headerName: "Currency", flex: 1, width: 130 },
+    { field: "usagePercentage", headerName: "% Usage", flex: 1, width: 130 },
     { field: "totalPrice", headerName: "Total price", flex: 1, width: 130 },
     {
       field: "Actions",
@@ -1577,6 +1581,31 @@ function RepairServiceEstimate(props) {
                         //     netPrice: e.target.value,
                         //   })
                         // }
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <label className="text-light-dark font-size-12 font-weight-600">
+                        ADJUSTED PRICE
+                      </label>
+                      <input
+                        type="text"
+                        disabled={
+                          !(
+                            serviceEstimateData.priceMethod?.value ===
+                            "FLAT_RATE"
+                          )
+                        }
+                        class="form-control border-radius-10 text-primary"
+                        // placeholder="Required"
+                        value={serviceEstimateData.adjustedPrice}
+                        onChange={(e) =>
+                          setServiceEstimateData({
+                            ...serviceEstimateData,
+                            adjustedPrice: e.target.value,
+                          })
+                        }
                       />
                     </div>
                   </div>
@@ -1868,7 +1897,7 @@ function RepairServiceEstimate(props) {
                                       pricingMethod: e,
                                     })
                                   }
-                                  options={priceMethodOptions}
+                                  options={LABOR_PRICE_OPTIONS}
                                   placeholder="Required"
                                   value={labourData.pricingMethod}
                                   styles={FONT_STYLE_SELECT}
@@ -1904,6 +1933,9 @@ function RepairServiceEstimate(props) {
                                           setLabourData({
                                             ...labourData,
                                             flatRateIndicator: e.target.checked,
+                                            adjustedPrice: e.target.checked
+                                              ? labourData.adjustedPrice
+                                              : 0.0,
                                           })
                                         }
                                       />
@@ -2133,24 +2165,24 @@ function RepairServiceEstimate(props) {
                   </TabPanel>
                   <TabPanel value="consumables">
                     {/* {!consumableData.id && ( */}
-                      <div className="col-md-12 col-sm-12">
-                        <div className=" d-flex justify-content-between align-items-center">
-                          <div>
-                            <FormGroup>
-                              <FormControlLabel
-                                control={
-                                  <Switch
-                                    checked={flagRequired.consumableEnabled}
-                                    onChange={handleChangeSwitch}
-                                    name="consumableEnabled"
-                                  />
-                                }
-                                label="REQUIRED"
-                              />
-                            </FormGroup>
-                          </div>
+                    <div className="col-md-12 col-sm-12">
+                      <div className=" d-flex justify-content-between align-items-center">
+                        <div>
+                          <FormGroup>
+                            <FormControlLabel
+                              control={
+                                <Switch
+                                  checked={flagRequired.consumableEnabled}
+                                  onChange={handleChangeSwitch}
+                                  name="consumableEnabled"
+                                />
+                              }
+                              label="REQUIRED"
+                            />
+                          </FormGroup>
                         </div>
                       </div>
+                    </div>
                     {/* )} */}
                     {flagRequired.consumableEnabled && (
                       <React.Fragment>
@@ -2203,82 +2235,104 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group  mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  PRICE METHOD
-                                </label>
-                                <Select
-                                  onChange={(e) => {
-                                    setConsumableData({
-                                      ...consumableData,
-                                      pricingMethod: e,
-                                      basePrice: basePriceValues
-                                        ? basePriceValues[e.value]
-                                        : 0,
-                                    });
-                                  }}
-                                  value={consumableData.pricingMethod}
-                                  options={
-                                    flagRequired.labourEnabled
-                                      ? priceOptionsPercent
-                                      : priceOptionsPercent_NoLabor
-                                  }
-                                  placeholder="Required"
-                                  styles={FONT_STYLE_SELECT}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group mt-3 date-box">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  PERCENTAGE OF BASE
-                                </label>
-                                <div
-                                  className=" d-flex form-control-date"
-                                  style={{ overflow: "hidden" }}
-                                >
-                                  <input
-                                    type="text"
-                                    className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                                    // style={{width: '64%'}}
-                                    placeholder="Required"
-                                    value={consumableData.percentageOfBase}
-                                    onChange={(e) =>
-                                      setConsumableData({
-                                        ...consumableData,
-                                        percentageOfBase: e.target.value,
-                                      })
-                                    }
-                                  />
-                                  <span
-                                    className="hours-div"
-                                    style={{ float: "left", width: "40%" }}
-                                  >
-                                    {consumableData.pricingMethod?.label
-                                      ? consumableData.pricingMethod?.label?.replace(
-                                          "Percentage",
-                                          "%"
-                                        )
-                                      : "%"}
-                                  </span>
+                            {!consumableData.flatRateIndicator ? (
+                              <>
+                                <div className="col-md-4 col-sm-4">
+                                  <div className="form-group  mt-3">
+                                    <label className="text-light-dark font-size-12 font-weight-500">
+                                      PRICE METHOD
+                                    </label>
+                                    <Select
+                                      onChange={(e) => {
+                                        setConsumableData({
+                                          ...consumableData,
+                                          pricingMethod: e,
+                                          basePrice:
+                                            basePriceValues &&
+                                            basePriceValues[e.value]
+                                              ? basePriceValues[e.value]
+                                              : 0,
+                                        });
+                                      }}
+                                      value={consumableData.pricingMethod}
+                                      options={
+                                        flagRequired.labourEnabled
+                                          ? CONS_EXT_PRICE_OPTIONS
+                                          : CONSEXT_PRICE_OPTIONS_NOLABOR
+                                      }
+                                      placeholder="Required"
+                                      styles={FONT_STYLE_SELECT}
+                                    />
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  TOTAL BASE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={consumableData.basePrice}
-                                />
-                              </div>
-                            </div>
+                                {consumableData.pricingMethod?.value?.includes(
+                                  "PER"
+                                ) ? (
+                                  <>
+                                    <div className="col-md-4 col-sm-4">
+                                      <div className="form-group mt-3 date-box">
+                                        <label className="text-light-dark font-size-12 font-weight-600">
+                                          PERCENTAGE OF BASE
+                                        </label>
+                                        <div
+                                          className=" d-flex form-control-date"
+                                          style={{ overflow: "hidden" }}
+                                        >
+                                          <input
+                                            type="text"
+                                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                            // style={{width: '64%'}}
+                                            placeholder="Required"
+                                            value={
+                                              consumableData.percentageOfBase
+                                            }
+                                            onChange={(e) =>
+                                              setConsumableData({
+                                                ...consumableData,
+                                                percentageOfBase:
+                                                  e.target.value,
+                                              })
+                                            }
+                                          />
+                                          <span
+                                            className="hours-div"
+                                            style={{
+                                              float: "left",
+                                              width: "40%",
+                                            }}
+                                          >
+                                            {consumableData.pricingMethod?.label
+                                              ? consumableData.pricingMethod?.label?.replace(
+                                                  "Percentage",
+                                                  "%"
+                                                )
+                                              : "%"}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-md-4 col-sm-4">
+                                      <div class="form-group mt-3">
+                                        <label className="text-light-dark font-size-12 font-weight-600">
+                                          TOTAL BASE
+                                        </label>
+                                        <input
+                                          type="text"
+                                          disabled
+                                          class="form-control border-radius-10 text-primary"
+                                          placeholder="Optional"
+                                          value={consumableData.basePrice}
+                                        />
+                                      </div>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <></>
+                                )}
+                              </>
+                            ) : (
+                              <></>
+                            )}
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <FormGroup>
@@ -2296,6 +2350,9 @@ function RepairServiceEstimate(props) {
                                           setConsumableData({
                                             ...consumableData,
                                             flatRateIndicator: e.target.checked,
+                                            adjustedPrice: e.target.checked
+                                              ? consumableData.adjustedPrice
+                                              : 0.0,
                                           })
                                         }
                                       />
@@ -2352,8 +2409,15 @@ function RepairServiceEstimate(props) {
                                   onClick={updateConsumableHeader}
                                   disabled={
                                     !(
-                                      consumableData.percentageOfBase &&
-                                      consumableData.pricingMethod &&
+                                      (!consumableData.flatRateIndicator
+                                        ? consumableData.pricingMethod &&
+                                          consumableData.pricingMethod.value.includes(
+                                            "PER"
+                                          )
+                                          ? consumableData.percentageOfBase &&
+                                            consumableData.basePrice
+                                          : consumableData.pricingMethod
+                                        : true) &&
                                       (consumableData.flatRateIndicator
                                         ? consumableData.adjustedPrice
                                         : true)
@@ -2397,36 +2461,50 @@ function RepairServiceEstimate(props) {
                                 </h6>
                               </div>
                             </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  PRICE METHOD
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {consumableData.pricingMethod?.label}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  PERCENTAGE OF BASE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {consumableData.percentageOfBase}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  TOTAL BASE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {consumableData.basePrice}
-                                </h6>
-                              </div>
-                            </div>
+                            {!consumableData.flatRateIndicator ? (
+                              <>
+                                <div className="col-md-4 col-sm-4">
+                                  <div class="form-group mt-3">
+                                    <p className="font-size-12 font-weight-600 mb-2">
+                                      PRICE METHOD
+                                    </p>
+                                    <h6 className="font-weight-600">
+                                      {consumableData.pricingMethod?.label}
+                                    </h6>
+                                  </div>
+                                </div>
+                                {consumableData.pricingMethod?.value?.includes(
+                                  "PER"
+                                ) ? (
+                                  <>
+                                    <div className="col-md-4 col-sm-4">
+                                      <div class="form-group mt-3">
+                                        <p className="font-size-12 font-weight-600 mb-2">
+                                          PERCENTAGE OF BASE
+                                        </p>
+                                        <h6 className="font-weight-600">
+                                          {consumableData.percentageOfBase}
+                                        </h6>
+                                      </div>
+                                    </div>
+                                    <div className="col-md-4 col-sm-4">
+                                      <div class="form-group mt-3">
+                                        <p className="font-size-12 font-weight-600 mb-2">
+                                          TOTAL BASE
+                                        </p>
+                                        <h6 className="font-weight-600">
+                                          {consumableData.basePrice}
+                                        </h6>
+                                      </div>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <></>
+                                )}{" "}
+                              </>
+                            ) : (
+                              <></>
+                            )}
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
@@ -2601,83 +2679,102 @@ function RepairServiceEstimate(props) {
                                 />
                               </div>
                             </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  PRICE METHOD
-                                </label>
-                                <Select
-                                  onChange={(e) =>
-                                    setExtWorkData({
-                                      ...extWorkData,
-                                      pricingMethod: e,
-                                      basePrice: basePriceValues
-                                        ? basePriceValues[e.value]
-                                        : 0,
-                                    })
-                                  }
-                                  value={extWorkData.pricingMethod}
-                                  options={
-                                    flagRequired.labourEnabled
-                                      ? priceOptionsPercent
-                                      : priceOptionsPercent_NoLabor
-                                  }
-                                  placeholder="Required"
-                                  styles={FONT_STYLE_SELECT}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group mt-3 date-box">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  PERCENTAGE OF BASE
-                                </label>
-                                <div
-                                  className=" d-flex form-control-date"
-                                  style={{ overflow: "hidden" }}
-                                >
-                                  <input
-                                    type="text"
-                                    className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                                    // style={{width: '64%'}}
-                                    placeholder="Required"
-                                    value={extWorkData.percentageOfBase}
-                                    onChange={(e) =>
-                                      setExtWorkData({
-                                        ...extWorkData,
-                                        percentageOfBase: e.target.value,
-                                      })
-                                    }
-                                  />
-                                  <span
-                                    className="hours-div"
-                                    style={{ float: "left", width: "40%" }}
-                                  >
-                                    {extWorkData.pricingMethod?.label
-                                      ? extWorkData.pricingMethod?.label?.replace(
-                                          "Percentage",
-                                          "%"
-                                        )
-                                      : "%"}
-                                  </span>
+                            {!extWorkData.flatRateIndicator ? (
+                              <>
+                                <div className="col-md-4 col-sm-4">
+                                  <div class="form-group mt-3">
+                                    <label className="text-light-dark font-size-12 font-weight-600">
+                                      PRICE METHOD
+                                    </label>
+                                    <Select
+                                      onChange={(e) =>
+                                        setExtWorkData({
+                                          ...extWorkData,
+                                          pricingMethod: e,
+                                          basePrice:
+                                            basePriceValues &&
+                                            basePriceValues[e.value]
+                                              ? basePriceValues[e.value]
+                                              : 0,
+                                        })
+                                      }
+                                      value={extWorkData.pricingMethod}
+                                      options={
+                                        flagRequired.labourEnabled
+                                          ? CONS_EXT_PRICE_OPTIONS
+                                          : CONSEXT_PRICE_OPTIONS_NOLABOR
+                                      }
+                                      placeholder="Required"
+                                      styles={FONT_STYLE_SELECT}
+                                    />
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  TOTAL BASE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={extWorkData.basePrice}
-                                />
-                              </div>
-                            </div>
-
+                                {extWorkData.pricingMethod?.value?.includes(
+                                  "PER"
+                                ) ? (
+                                  <>
+                                    <div className="col-md-4 col-sm-4">
+                                      <div className="form-group mt-3 date-box">
+                                        <label className="text-light-dark font-size-12 font-weight-600">
+                                          PERCENTAGE OF BASE
+                                        </label>
+                                        <div
+                                          className=" d-flex form-control-date"
+                                          style={{ overflow: "hidden" }}
+                                        >
+                                          <input
+                                            type="text"
+                                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                            // style={{width: '64%'}}
+                                            placeholder="Required"
+                                            value={extWorkData.percentageOfBase}
+                                            onChange={(e) =>
+                                              setExtWorkData({
+                                                ...extWorkData,
+                                                percentageOfBase:
+                                                  e.target.value,
+                                              })
+                                            }
+                                          />
+                                          <span
+                                            className="hours-div"
+                                            style={{
+                                              float: "left",
+                                              width: "40%",
+                                            }}
+                                          >
+                                            {extWorkData.pricingMethod?.label
+                                              ? extWorkData.pricingMethod?.label?.replace(
+                                                  "Percentage",
+                                                  "%"
+                                                )
+                                              : "%"}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-md-4 col-sm-4">
+                                      <div class="form-group mt-3">
+                                        <label className="text-light-dark font-size-12 font-weight-600">
+                                          TOTAL BASE
+                                        </label>
+                                        <input
+                                          type="text"
+                                          disabled
+                                          class="form-control border-radius-10 text-primary"
+                                          placeholder="Optional"
+                                          value={extWorkData.basePrice}
+                                        />
+                                      </div>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <></>
+                                )}
+                              </>
+                            ) : (
+                              <></>
+                            )}
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <FormGroup>
@@ -2693,6 +2790,9 @@ function RepairServiceEstimate(props) {
                                           setExtWorkData({
                                             ...extWorkData,
                                             flatRateIndicator: e.target.checked,
+                                            adjustedPrice: e.target.checked
+                                              ? extWorkData.adjustedPrice
+                                              : 0.0,
                                           })
                                         }
                                       />
@@ -2749,8 +2849,15 @@ function RepairServiceEstimate(props) {
                                   onClick={updateExtWorkHeader}
                                   disabled={
                                     !(
-                                      extWorkData.percentageOfBase &&
-                                      extWorkData.pricingMethod &&
+                                      (!extWorkData.flatRateIndicator
+                                        ? extWorkData.pricingMethod &&
+                                          extWorkData.pricingMethod.value.includes(
+                                            "PER"
+                                          )
+                                          ? extWorkData.percentageOfBase &&
+                                            extWorkData.basePrice
+                                          : extWorkData.pricingMethod
+                                        : true) &&
                                       (extWorkData.flatRateIndicator
                                         ? extWorkData.adjustedPrice
                                         : true)
@@ -2794,37 +2901,50 @@ function RepairServiceEstimate(props) {
                                 </h6>
                               </div>
                             </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  PRICE METHOD
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {extWorkData.pricingMethod?.label}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  PERCENTAGE OF BASE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {extWorkData.percentageOfBase}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  TOTAL BASE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {extWorkData.basePrice}
-                                </h6>
-                              </div>
-                            </div>
-
+                            {!extWorkData.flatRateIndicator ? (
+                              <>
+                                <div className="col-md-4 col-sm-4">
+                                  <div class="form-group mt-3">
+                                    <p className="font-size-12 font-weight-600 mb-2">
+                                      PRICE METHOD
+                                    </p>
+                                    <h6 className="font-weight-600">
+                                      {extWorkData.pricingMethod?.label}
+                                    </h6>
+                                  </div>
+                                </div>
+                                {extWorkData.pricingMethod?.value?.includes(
+                                  "PER"
+                                ) ? (
+                                  <>
+                                    <div className="col-md-4 col-sm-4">
+                                      <div class="form-group mt-3">
+                                        <p className="font-size-12 font-weight-600 mb-2">
+                                          PERCENTAGE OF BASE
+                                        </p>
+                                        <h6 className="font-weight-600">
+                                          {extWorkData.percentageOfBase}
+                                        </h6>
+                                      </div>
+                                    </div>
+                                    <div className="col-md-4 col-sm-4">
+                                      <div class="form-group mt-3">
+                                        <p className="font-size-12 font-weight-600 mb-2">
+                                          TOTAL BASE
+                                        </p>
+                                        <h6 className="font-weight-600">
+                                          {extWorkData.basePrice}
+                                        </h6>
+                                      </div>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <></>
+                                )}
+                              </>
+                            ) : (
+                              <></>
+                            )}
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
@@ -2984,82 +3104,89 @@ function RepairServiceEstimate(props) {
                               </div>
                             </div>
                             {/* <div className="col-md-8 col-sm-4"></div> */}
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  PRICE METHOD
-                                </label>
-                                <Select
-                                  onChange={(e) =>
-                                    setMiscData({
-                                      ...miscData,
-                                      pricingMethod: e,
-                                      basePrice: basePriceValues
-                                        ? basePriceValues[e.value]
-                                        : 0,
-                                    })
-                                  }
-                                  options={
-                                    flagRequired.labourEnabled
-                                      ? priceOptionsPercent
-                                      : priceOptionsPercent_NoLabor
-                                  }
-                                  placeholder="Required"
-                                  value={miscData.pricingMethod}
-                                  styles={FONT_STYLE_SELECT}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group mt-3 date-box">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  PERCENTAGE OF BASE
-                                </label>
-                                <div
-                                  className=" d-flex form-control-date"
-                                  style={{ overflow: "hidden" }}
-                                >
-                                  <input
-                                    type="text"
-                                    className="form-control rounded-top-left-0 rounded-bottom-left-0"
-                                    placeholder="Required"
-                                    value={miscData.percentageOfBase}
-                                    onChange={(e) =>
-                                      setMiscData({
-                                        ...miscData,
-                                        percentageOfBase: e.target.value,
-                                      })
-                                    }
-                                  />
-                                  <span
-                                    className="hours-div"
-                                    style={{ float: "left", width: "40%" }}
-                                  >
-                                    {miscData.pricingMethod?.label
-                                      ? miscData.pricingMethod?.label?.replace(
-                                          "Percentage",
-                                          "%"
-                                        )
-                                      : "%"}
-                                  </span>
+                            {!miscData.flatRateIndicator ? (
+                              <>
+                                <div className="col-md-4 col-sm-4">
+                                  <div class="form-group mt-3">
+                                    <label className="text-light-dark font-size-12 font-weight-600">
+                                      PRICE METHOD
+                                    </label>
+                                    <Select
+                                      onChange={(e) =>
+                                        setMiscData({
+                                          ...miscData,
+                                          pricingMethod: e,
+                                          basePrice:
+                                            basePriceValues &&
+                                            basePriceValues[e.value]
+                                              ? basePriceValues[e.value]
+                                              : 0,
+                                        })
+                                      }
+                                      options={
+                                        flagRequired.labourEnabled
+                                          ? MISC_PRICE_OPTIONS
+                                          : MISC_PRICE_OPTIONS_NOLABOR
+                                      }
+                                      placeholder="Required"
+                                      value={miscData.pricingMethod}
+                                      styles={FONT_STYLE_SELECT}
+                                    />
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <label className="text-light-dark font-size-12 font-weight-600">
-                                  TOTAL BASE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  class="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={miscData.basePrice}
-                                />
-                              </div>
-                            </div>
-
+                                <div className="col-md-4 col-sm-4">
+                                  <div className="form-group mt-3 date-box">
+                                    <label className="text-light-dark font-size-12 font-weight-600">
+                                      PERCENTAGE OF BASE
+                                    </label>
+                                    <div
+                                      className=" d-flex form-control-date"
+                                      style={{ overflow: "hidden" }}
+                                    >
+                                      <input
+                                        type="text"
+                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                        placeholder="Required"
+                                        value={miscData.percentageOfBase}
+                                        onChange={(e) =>
+                                          setMiscData({
+                                            ...miscData,
+                                            percentageOfBase: e.target.value,
+                                          })
+                                        }
+                                      />
+                                      <span
+                                        className="hours-div"
+                                        style={{ float: "left", width: "40%" }}
+                                      >
+                                        {miscData.pricingMethod?.label
+                                          ? miscData.pricingMethod?.label?.replace(
+                                              "Percentage",
+                                              "%"
+                                            )
+                                          : "%"}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="col-md-4 col-sm-4">
+                                  <div class="form-group mt-3">
+                                    <label className="text-light-dark font-size-12 font-weight-600">
+                                      TOTAL BASE
+                                    </label>
+                                    <input
+                                      type="text"
+                                      disabled
+                                      class="form-control border-radius-10 text-primary"
+                                      placeholder="Optional"
+                                      value={miscData.basePrice}
+                                    />
+                                  </div>
+                                </div>
+                              </>
+                            ) : (
+                              <></>
+                            )}
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <FormGroup>
@@ -3075,6 +3202,9 @@ function RepairServiceEstimate(props) {
                                           setMiscData({
                                             ...miscData,
                                             flatRateIndicator: e.target.checked,
+                                            adjustedPrice: e.target.checked
+                                              ? miscData.adjustedPrice
+                                              : 0.0,
                                           })
                                         }
                                       />
@@ -3150,9 +3280,12 @@ function RepairServiceEstimate(props) {
                                   onClick={updateMiscHeader}
                                   disabled={
                                     !(
-                                      miscData.percentageOfBase &&
+                                      (!miscData.flatRateIndicator
+                                        ? miscData.percentageOfBase &&
+                                          miscData.pricingMethod &&
+                                          miscData.basePrice
+                                        : true) &&
                                       miscData.type &&
-                                      miscData.pricingMethod &&
                                       (miscData.flatRateIndicator
                                         ? miscData.adjustedPrice
                                         : true)
@@ -3206,36 +3339,42 @@ function RepairServiceEstimate(props) {
                                 </h6>
                               </div>
                             </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  PRICE METHOD
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {miscData.pricingMethod?.label}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  PERCENTAGE OF BASE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {miscData.percentageOfBase}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div class="form-group mt-3">
-                                <p className="font-size-12 font-weight-600 mb-2">
-                                  TOTAL BASE
-                                </p>
-                                <h6 className="font-weight-600">
-                                  {miscData.basePrice}
-                                </h6>
-                              </div>
-                            </div>
+                            {!miscData.flatRateIndicator ? (
+                              <>
+                                <div className="col-md-4 col-sm-4">
+                                  <div class="form-group mt-3">
+                                    <p className="font-size-12 font-weight-600 mb-2">
+                                      PRICE METHOD
+                                    </p>
+                                    <h6 className="font-weight-600">
+                                      {miscData.pricingMethod?.label}
+                                    </h6>
+                                  </div>
+                                </div>
+                                <div className="col-md-4 col-sm-4">
+                                  <div class="form-group mt-3">
+                                    <p className="font-size-12 font-weight-600 mb-2">
+                                      PERCENTAGE OF BASE
+                                    </p>
+                                    <h6 className="font-weight-600">
+                                      {miscData.percentageOfBase}
+                                    </h6>
+                                  </div>
+                                </div>
+                                <div className="col-md-4 col-sm-4">
+                                  <div class="form-group mt-3">
+                                    <p className="font-size-12 font-weight-600 mb-2">
+                                      TOTAL BASE
+                                    </p>
+                                    <h6 className="font-weight-600">
+                                      {miscData.basePrice}
+                                    </h6>
+                                  </div>
+                                </div>
+                              </>
+                            ) : (
+                              <></>
+                            )}
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <p className="font-size-12 font-weight-600 mb-2">
