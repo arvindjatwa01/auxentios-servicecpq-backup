@@ -13115,7 +13115,7 @@ export function CreateCustomPortfolio(props) {
                         </Link>
                     </div>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className="included_table">
                     <DataTable
                         className=""
                         title=""
