@@ -3452,3 +3452,11 @@ width: 18px;}
 .included_table{}
 .included_table .rdt_TableCol{min-width: 100px !important;}
 .included_table .rdt_TableCell{min-width: 100px !important;}
+.logo-servicecpq{}
+.logo-servicecpq .cls-1{fill:#58595b;}
+.logo-servicecpq .cls-2{fill:#7d35ed;}
+.logo-servicecpq .cls-3{mix-blend-mode:multiply;}
+.logo-servicecpq .cls-4{isolation:isolate;}
+.dateNotEditable .MuiInputBase-input {
+  cursor: not-allowed !important;
+}

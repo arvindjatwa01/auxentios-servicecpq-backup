@@ -6801,7 +6801,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                 </Link>
                             </div>
                         </Modal.Header>
-                        <Modal.Body>
+                        <Modal.Body className="included_table">
                             <DataTable
                                 className=""
                                 title=""
