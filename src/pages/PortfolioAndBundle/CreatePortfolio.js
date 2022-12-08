@@ -357,7 +357,7 @@ export function CreatePortfolio(props) {
     preparedOn: new Date(),
     revisedBy: null,
     revisedOn: new Date(),
-    branch: null,
+    salesOffice: null,
     offerValidity: null,
   });
 
@@ -626,7 +626,7 @@ export function CreatePortfolio(props) {
         console.log("error in getSearchQueryCoverage", err);
       });
   }
-  
+
 
   const handleSearchModelListClick = (e, currentItem) => {
     console.log(currentItem)
@@ -1800,53 +1800,9 @@ export function CreatePortfolio(props) {
         ) {
           throw "Please fill required field properly";
         }
-        if (state && state.type === "new") {
-          let reqData = {
-            type: prefilgabelGeneral,
-            name: generalComponentData.name,
-            description: generalComponentData.description,
-            externalReference: generalComponentData.externalReference,
-            customerSegment: generalComponentData.customerSegment
-              ? generalComponentData.customerSegment.value
-              : "",
-
-            strategyTask: "PREVENTIVE_MAINTENANCE",
-            taskType: "PM1",
-            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-            productHierarchy: "END_PRODUCT",
-            geographic: "ONSITE",
-            availability: "AVAILABILITY_GREATER_95",
-            responseTime: "PROACTIVE",
-            type: "MACHINE",
-            application: "HILL",
-            contractOrSupport: "LEVEL_I",
-            lifeStageOfMachine: "NEW_BREAKIN",
-            // supportLevel: "PREMIUM",
-            supportLevel: value3.value,
-            serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
-          };
-          const portfolioRes = await createPortfolio(reqData);
-          if (portfolioRes.status === 200) {
-            toast("👏 Portfolio Created", {
-              position: "top-right",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-            });
-            setValue("validity");
-            setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
-            setGeneralComponentData({
-              ...generalComponentData,
-              portfolioId: portfolioRes.data.portfolioId,
-            });
-            setPortfolioId(portfolioRes.data.portfolioId);
-          } else {
-            throw `${portfolioRes.status}:error in portfolio creation`;
-          }
-        } else {
+        // alert(state.type)
+        console.log("state is --- ".state)
+        if (state && state.type === "fetch") {
           let reqObj = {
             portfolioId: portfolioId,
             // type: prefilgabelGeneral,
@@ -1898,6 +1854,7 @@ export function CreatePortfolio(props) {
             lifeStageOfMachine: "NEW_BREAKIN",
             // supportLevel: "PREMIUM",
             supportLevel: value3.value,
+            status: value2.value,
             numberOfEvents: 0,
             itemRelations: [],
             rating: "string",
@@ -1934,8 +1891,54 @@ export function CreatePortfolio(props) {
           } else {
             throw `${exitsPortfolioUpdate.status}:error in update portfolio`;
           };
-        }
+        } else {
+          let reqData = {
+            type: prefilgabelGeneral,
+            name: generalComponentData.name,
+            description: generalComponentData.description,
+            externalReference: generalComponentData.externalReference,
+            customerSegment: generalComponentData.customerSegment
+              ? generalComponentData.customerSegment.value
+              : "",
 
+            strategyTask: "PREVENTIVE_MAINTENANCE",
+            taskType: "PM1",
+            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+            productHierarchy: "END_PRODUCT",
+            geographic: "ONSITE",
+            availability: "AVAILABILITY_GREATER_95",
+            responseTime: "PROACTIVE",
+            type: "MACHINE",
+            application: "HILL",
+            contractOrSupport: "LEVEL_I",
+            lifeStageOfMachine: "NEW_BREAKIN",
+            // supportLevel: "PREMIUM",
+            supportLevel: value3.value,
+            status: value2.value,
+            serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
+          };
+          const portfolioRes = await createPortfolio(reqData);
+          if (portfolioRes.status === 200) {
+            toast("👏 Portfolio Created", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+            setValue("validity");
+            setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
+            setGeneralComponentData({
+              ...generalComponentData,
+              portfolioId: portfolioRes.data.portfolioId,
+            });
+            setPortfolioId(portfolioRes.data.portfolioId);
+          } else {
+            throw `${portfolioRes.status}:error in portfolio creation`;
+          }
+        }
       } else if (e.target.id == "validity") {
         let reqData;
         if (
@@ -2047,9 +2050,10 @@ export function CreatePortfolio(props) {
             searchTerm: "EMPTY",
             // supportLevel: "PREMIUM",
             supportLevel: value3.value,
-            portfolioPrice: { "portfolioPriceId": 92 },
-            additionalPrice: { "additionalPriceId": 1 },
-            escalationPrice: { "escalationPriceId": 1 },
+            status: value2.value,
+            // portfolioPrice: { "portfolioPriceId": 92 },
+            // additionalPrice: { "additionalPriceId": 1 },
+            // escalationPrice: { "escalationPriceId": 1 },
 
             usageCategory: categoryUsageKeyValue1.value,
             taskType: stratgyTaskTypeKeyValue.value,
@@ -2130,6 +2134,7 @@ export function CreatePortfolio(props) {
             lifeStageOfMachine: "NEW_BREAKIN",
             // supportLevel: "PREMIUM",
             supportLevel: value3.value,
+            status: value2.value,
             numberOfEvents: 0,
             itemRelations: [],
             rating: "string",
@@ -2182,8 +2187,8 @@ export function CreatePortfolio(props) {
           (administrative.revisedBy != "" &&
             administrative.revisedBy != undefined &&
             !validator.emailValidation(administrative.revisedBy)) ||
-          (administrative.branch == "" ||
-            administrative.branch == undefined)
+          (administrative.salesOffice == "" ||
+            administrative.salesOffice == undefined)
           //   ||
           // (administrative.offerValidity == "" ||
           //   administrative.offerValidity == undefined)
@@ -2261,6 +2266,7 @@ export function CreatePortfolio(props) {
             searchTerm: "EMPTY",
             // supportLevel: "PREMIUM",
             supportLevel: value3.value,
+            status: value2.value,
             // portfolioPrice: {},
             // additionalPrice: {},
             // escalationPrice: {},
@@ -2363,6 +2369,7 @@ export function CreatePortfolio(props) {
             lifeStageOfMachine: "NEW_BREAKIN",
             // supportLevel: "PREMIUM",
             supportLevel: value3.value,
+            status: value2.value,
             numberOfEvents: 0,
             itemRelations: [],
             rating: "string",
@@ -2507,6 +2514,7 @@ export function CreatePortfolio(props) {
             searchTerm: "EMPTY",
             // supportLevel: "PREMIUM",
             supportLevel: value3.value,
+            status: value2.value,
             portfolioPrice: {
               portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
             },
@@ -2537,6 +2545,8 @@ export function CreatePortfolio(props) {
             salesOffice: administrative.salesOffice,
             offerValidity: administrative.offerValidity,
           };
+
+          console.log("priceobjData --- ", priceobjData)
 
           const priceObjRes = await updatePortfolio(
             generalComponentData.portfolioId,
@@ -2617,6 +2627,7 @@ export function CreatePortfolio(props) {
             lifeStageOfMachine: "NEW_BREAKIN",
             // supportLevel: "PREMIUM",
             supportLevel: value3.value,
+            status: value2.value,
             numberOfEvents: 0,
             itemRelations: [],
             rating: "string",
@@ -2775,14 +2786,15 @@ export function CreatePortfolio(props) {
             searchTerm: "EMPTY",
             // supportLevel: "PREMIUM",
             supportLevel: value3.value,
-            portfolioPrice: portfolioPriceDataId,
-            additionalPrice: portfolioAdditionalPriceDataId,
-            escalationPrice: portfolioEscalationPriceDataId,
+            status: value2.value,
+            // portfolioPrice: portfolioPriceDataId,
+            // additionalPrice: portfolioAdditionalPriceDataId,
+            // escalationPrice: portfolioEscalationPriceDataId,
 
 
-            portfolioPrice: portfolioPriceDataId,
-            additionalPrice: portfolioAdditionalPriceDataId,
-            escalationPrice: portfolioEscalationPriceDataId,
+            // portfolioPrice: portfolioPriceDataId,
+            // additionalPrice: portfolioAdditionalPriceDataId,
+            // escalationPrice: portfolioEscalationPriceDataId,
             items: portfolioItems,
             coverages: cvgIds,
             usageCategory: categoryUsageKeyValue1.value,
@@ -2907,6 +2919,7 @@ export function CreatePortfolio(props) {
             lifeStageOfMachine: "NEW_BREAKIN",
             // supportLevel: "PREMIUM",
             supportLevel: value3.value,
+            status: value2.value,
             numberOfEvents: 0,
             itemRelations: [],
             rating: "string",
@@ -3120,6 +3133,16 @@ export function CreatePortfolio(props) {
 
   const populateHeader = (result) => {
     console.log("result ----", result);
+    var statusVal;
+    if (result.status == "" || result.status == "EMPTY" || result.status == null) {
+      statusVal = "DRAFT";
+    } else {
+      statusVal = result.status;
+    }
+    setValue2({ label: statusVal, value: statusVal })
+    setValue3({ label: result.supportLevel, value: result.supportLevel })
+
+
     setViewOnlyTab({
       generalViewOnly: true,
       validityViewOnly: true,
@@ -3151,18 +3174,67 @@ export function CreatePortfolio(props) {
     setStratgyHierarchyKeyValue({ label: result.productHierarchy, value: result.productHierarchy })
     setStratgyGeographicKeyValue({ label: result.geographic, value: result.geographic })
 
+    // Administrative Data
+
     setAdministrative({
       preparedBy: result.preparedBy,
       approvedBy: result.approvedBy,
       preparedOn: result.preparedOn,
       revisedBy: result.revisedBy,
       revisedOn: result.revisedOn,
-      branch: result.salesOffice,
+      salesOffice: result.salesOffice,
       offerValidity: result.offerValidity,
     });
+
+    //validity Data
+    setValidityData({
+      fromDate: result.validFrom,
+      toDate: result.validTo,
+      from: null,
+      to: null,
+      fromInput: "",
+      toInput: "",
+      dateFlag: false,
+      inputFlag: false,
+    });
+
+
     setSelectedMasterData(result.coverages);
 
-    setBundleItems(result.items)
+    let itemsArrData = [];
+
+    for (let b = 0; b < result.itemRelations.length; b++) {
+      let expendedArrObj = [];
+      let obj = result.items.find(obj => obj.itemId == result.itemRelations[b].portfolioItemId);
+      for (let c = 0; c < result.itemRelations[b].bundles.length; c++) {
+
+        let bundleObj = result.items.find((objBundle, i) => {
+          if (objBundle.itemId == result.itemRelations[b].bundles[c]) {
+
+            return objBundle; // stop searching
+          }
+        });
+        expendedArrObj.push(bundleObj);
+      }
+
+      for (let d = 0; d < result.itemRelations[b].services.length; d++) {
+
+        let serviceObj = result.items.find((objService, i) => {
+          if (objService.itemId == result.itemRelations[b].services[d]) {
+
+            return objService; // stop searching
+          }
+        });
+        expendedArrObj.push(serviceObj);
+      }
+      obj.associatedServiceOrBundle = expendedArrObj;
+      itemsArrData.push(obj);
+    }
+
+    // setPortfolioitems(result.items)
+
+    // setBundleItems(result.items)
+    setBundleItems(itemsArrData)
 
   }
   // console.log("generalComponentData ---- : ", generalComponentData)
@@ -3492,6 +3564,9 @@ export function CreatePortfolio(props) {
 
     getSolutionPriceCommonConfig("support-level")
       .then((res) => {
+
+        // console.log("res --- 12333 : ", res);
+        res.pop();
         const options = res.map((d) => ({
           value: d.key,
           label: d.value,
@@ -3503,6 +3578,7 @@ export function CreatePortfolio(props) {
       });
     getSolutionPriceCommonConfig("status")
       .then((res) => {
+        res.pop();
         const options = res.map((d) => ({
           value: d.key,
           label: d.value,
@@ -3527,7 +3603,7 @@ export function CreatePortfolio(props) {
   }, [dispatch]);
 
   useEffect(() => {
-    
+
     if (state && state.type === "new") {
       // setPortfolioId(state.portfolioId);
       // setGeneralData({ ...generalData, estimationNo: state.builderId });
@@ -4027,14 +4103,46 @@ export function CreatePortfolio(props) {
 
   const makeHeaderEditable = () => {
     // console.log("Data is : ", "helloooooo")
-    if (value === "general" && viewOnlyTab.generalViewOnly)
-      setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: false });
-    else if (value === "strategy" && viewOnlyTab.strategyViewOnly) {
-      setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: false });
+    // if (state && state.type == "fetch") {
+    if (value2.value == "ACTIVE") {
+      toast("😐" + " Portfolio is Active", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } else {
+      if (value === "general" && viewOnlyTab.generalViewOnly)
+        setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: false });
+      else if (value === "validity" && viewOnlyTab.validityViewOnly) {
+        setViewOnlyTab({ ...viewOnlyTab, validityViewOnly: false });
+      }
+      else if (value === "strategy" && viewOnlyTab.strategyViewOnly) {
+        setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: false });
+      }
+      else if (value === "administrative" && viewOnlyTab.administrativeViewOnly) {
+        setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: false });
+      }
+
     }
-    else if (value === "administrative" && viewOnlyTab.administrativeViewOnly) {
-      setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: false });
-    }
+    // } else {
+    //   if (value === "general" && viewOnlyTab.generalViewOnly)
+    //     setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: false });
+    //   else if (value === "validity" && viewOnlyTab.validityViewOnly) {
+    //     setViewOnlyTab({ ...viewOnlyTab, validityViewOnly: false });
+    //   }
+    //   else if (value === "strategy" && viewOnlyTab.strategyViewOnly) {
+    //     setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: false });
+    //   }
+    //   else if (value === "administrative" && viewOnlyTab.administrativeViewOnly) {
+    //     setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: false });
+    //   }
+    // }
+
+
   }
 
   const columns = [
@@ -5359,8 +5467,8 @@ export function CreatePortfolio(props) {
       ),
       selector: (row) => row.endDate,
       wrap: true,
-     maxWidth: "127px",
-     minWidth: "127px",
+      maxWidth: "127px",
+      minWidth: "127px",
       sortable: true,
       format: (row) => row.endDate,
       cell: (row) => (
@@ -6970,6 +7078,7 @@ export function CreatePortfolio(props) {
                 </span>
                 <a href={undefined} className="btn-sm" style={{ cursor: "pointer" }}>
                   <i className="fa fa-pencil" aria-hidden="true" onClick={makeHeaderEditable}></i>
+                  {/* <i className="fa fa-pencil" aria-hidden="true" onClick={() => value2.value == "ACTIVE" ? handleSnack("info", "Builder is active!") : makeHeaderEditable() }></i> */}
                 </a>
                 <a href="#" className="btn-sm">
                   <i className="fa fa-bookmark-o" aria-hidden="true"></i>
@@ -7144,7 +7253,7 @@ export function CreatePortfolio(props) {
                               PORTFOLIO NAME
                             </p>
                             <h6 className="font-weight-500">
-                              {generalComponentData.name}
+                              {generalComponentData.name == "" || generalComponentData.name == null ? "NA" : generalComponentData.name}
                             </h6>
                           </div>
                         </div>
@@ -7154,7 +7263,7 @@ export function CreatePortfolio(props) {
                               PORTFOLIO DESCRIPTION
                             </p>
                             <h6 className="font-weight-500">
-                              {generalComponentData.description}
+                              {generalComponentData.description == "" || generalComponentData.description == null ? "NA" : generalComponentData.description}
                             </h6>
                           </div>
                         </div>
@@ -7172,7 +7281,7 @@ export function CreatePortfolio(props) {
                               REFERENCE
                             </p>
                             <h6 className="font-weight-500">
-                              {generalComponentData.externalReference}
+                              {generalComponentData.externalReference == "" || generalComponentData.externalReference == null ? "NA" : generalComponentData.externalReference}
                             </h6>
                           </div>
                         </div>
@@ -7257,7 +7366,7 @@ export function CreatePortfolio(props) {
                                   <DatePicker
                                     variant="inline"
                                     format="dd/MM/yyyy"
-                                    className="form-controldate text-primary border-radius-10"
+                                    className={`form-controldate text-primary border-radius-10 ${viewOnlyTab.validityViewOnly ? "dateNotEditable" : ""}`}
                                     label=""
                                     value={validityData.fromDate}
                                     onChange={(e) =>
@@ -7267,6 +7376,7 @@ export function CreatePortfolio(props) {
                                         inputFlag: false,
                                       })
                                     }
+                                    readOnly={viewOnlyTab.validityViewOnly}
                                   />
                                 </MuiPickersUtilsProvider>
                                 {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
@@ -7281,7 +7391,7 @@ export function CreatePortfolio(props) {
                                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                   <DatePicker
                                     variant="inline"
-                                    className="form-controldate text-primary border-radius-10"
+                                    className={`form-controldate text-primary border-radius-10 ${viewOnlyTab.validityViewOnly ? "dateNotEditable" : ""}`}
                                     label=""
                                     format="dd/MM/yyyy"
                                     value={validityData.toDate}
@@ -7293,6 +7403,7 @@ export function CreatePortfolio(props) {
                                         inputFlag: false,
                                       })
                                     }
+                                    readOnly={viewOnlyTab.validityViewOnly}
                                   />
                                 </MuiPickersUtilsProvider>
                               </div>
@@ -7331,6 +7442,7 @@ export function CreatePortfolio(props) {
                                       }
                                       options={validityKeyValue}
                                       placeholder="Select "
+                                      isDisabled={viewOnlyTab.validityViewOnly}
                                     />
                                     <div>
                                       <input
@@ -7347,6 +7459,7 @@ export function CreatePortfolio(props) {
                                             dateFlag: false,
                                           })
                                         }
+                                        disabled={viewOnlyTab.validityViewOnly}
                                       />
                                     </div>
                                   </div>
@@ -7374,6 +7487,7 @@ export function CreatePortfolio(props) {
                                       isDisabled={true}
                                       options={validityKeyValue}
                                       placeholder="Select "
+                                    // isDisabled={viewOnlyTab.validityViewOnly}
                                     />
                                     <div>
                                       <input
@@ -7391,6 +7505,7 @@ export function CreatePortfolio(props) {
                                             inputFlag: true,
                                           })
                                         }
+                                        disabled={viewOnlyTab.validityViewOnly}
                                       />
                                     </div>
                                   </div>
@@ -7451,16 +7566,18 @@ export function CreatePortfolio(props) {
                                             </div>
                                         </div>
                                     </div> */}
-                    <div className="row" style={{ justifyContent: "right" }}>
-                      <button
-                        type="button"
-                        onClick={handleNextClick}
-                        className="btn btn-light"
-                        id="validity"
-                      >
-                        Save & Next
-                      </button>
-                    </div>
+                    {!viewOnlyTab.validityViewOnly ? <>
+                      <div className="row" style={{ justifyContent: "right" }}>
+                        <button
+                          type="button"
+                          onClick={handleNextClick}
+                          className="btn btn-light"
+                          id="validity"
+                        >
+                          Save & Next
+                        </button>
+                      </div>
+                    </> : <></>}
                   </TabPanel>
                   <TabPanel value={"strategy"}>
 
@@ -7871,8 +7988,8 @@ export function CreatePortfolio(props) {
                               <input
                                 type="text"
                                 className="form-control border-radius-10 text-primary"
-                                name="branch"
-                                value={administrative.branch}
+                                name="salesOffice"
+                                value={administrative.salesOffice}
                                 onChange={handleAdministrativreChange}
                                 placeholder="Required"
                               />
@@ -7919,7 +8036,7 @@ export function CreatePortfolio(props) {
                                 {/* {console.log("new dataa : ", coverageData.machineType)} */}
                               </p>
                               <h6 className="font-weight-500">
-                                {(administrative.preparedBy)}
+                                {(administrative.preparedBy == "" || administrative.preparedBy == null ? "NA" : administrative.preparedBy)}
                               </h6>
                             </div>
                           </div>
@@ -7929,7 +8046,7 @@ export function CreatePortfolio(props) {
                                 APPROVED BY
                               </p>
                               <h6 className="font-weight-500">
-                                {(administrative.approvedBy)}
+                                {(administrative.approvedBy == "" || administrative.approvedBy == null ? "NA" : administrative.approvedBy)}
                                 {/* {Object.keys(stratgyTaskUsageKeyValue).length > 0 ? (stratgyTaskUsageKeyValue.label) : (location.selectedTemplateItems[0].strategyTask)} */}
                               </h6>
                             </div>
@@ -7940,7 +8057,7 @@ export function CreatePortfolio(props) {
                                 PREPARED ON
                               </p>
                               <h6 className="font-weight-500">
-                                {(administrative.preparedOn)}
+                                {(administrative.preparedOn == "" || administrative.preparedOn == null ? "NA" : administrative.preparedOn)}
                                 {/* {Object.keys(stratgyTaskTypeKeyValue).length > 0 ? (stratgyTaskTypeKeyValue.label) : (location.selectedTemplateItems[0].taskType)} */}
                               </h6>
                             </div>
@@ -7951,7 +8068,7 @@ export function CreatePortfolio(props) {
                                 REVISED BY
                               </p>
                               <h6 className="font-weight-500">
-                                {administrative.revisedBy}
+                                {(administrative.revisedBy == "" || administrative.revisedBy == null ? "NA" : administrative.revisedBy)}
                               </h6>
                             </div>
                           </div>
@@ -7961,7 +8078,7 @@ export function CreatePortfolio(props) {
                                 REVISED  ON
                               </p>
                               <h6 className="font-weight-500">
-                                {administrative.revisedOn}
+                                {(administrative.revisedOn == "" || administrative.revisedOn == null ? "NA" : administrative.revisedOn)}
                               </h6>
                             </div>
                           </div>
@@ -7971,7 +8088,7 @@ export function CreatePortfolio(props) {
                                 SALSE OFFICE/BRANCH
                               </p>
                               <h6 className="font-weight-500">
-                                {administrative.salesOffice}
+                                {(administrative.salesOffice == "" || administrative.salesOffice == null ? "NA" : administrative.salesOffice)}
                               </h6>
                             </div>
                           </div>
@@ -7981,7 +8098,7 @@ export function CreatePortfolio(props) {
                                 OFFER VALIDITY
                               </p>
                               <h6 className="font-weight-500">
-                                {administrative.offerValidity}
+                                {(administrative.offerValidity == "" || administrative.offerValidity == null ? "NA" : administrative.offerValidity)}
                               </h6>
                             </div>
                           </div>
@@ -8679,7 +8796,7 @@ export function CreatePortfolio(props) {
               <div>
                 <div
                   className="custom-table  card"
-                  style={{ height: 400, width: "100%" }}
+                  style={{ minHeight: 200, height: "auto", width: "100%" }}
                 >
                   <DataTable
                     title=""
@@ -11651,7 +11768,7 @@ export function CreatePortfolio(props) {
                       </span>
                     </div>
                   </div>
-                  <div className="row">
+                  <div className="row input-fields">
                     <div className="col-md-6 col-sm-6">
                       <div className="form-group">
                         <label className="text-light-dark font-size-14 font-weight-500">
@@ -11661,7 +11778,7 @@ export function CreatePortfolio(props) {
                         <div className="customselectsearch">
                           <input
                             type="text"
-                            className="form-control border-radius-10"
+                            className="form-control border-radius-10 text-primary"
                             name="componentCode"
                             value={componentData.componentCode}
                             onChange={handleComponentChange}
@@ -11688,7 +11805,7 @@ export function CreatePortfolio(props) {
                         </label>
                         <input
                           type="text"
-                          className="form-control border-radius-10"
+                          className="form-control border-radius-10 text-primary"
                           name="description"
                           value={componentData.description}
                           onChange={handleComponentChange}
@@ -11835,7 +11952,7 @@ export function CreatePortfolio(props) {
                       </div>
                     </div>
                   </div>
-                  <div className="row mt-3">
+                  <div className="row mt-3 input-fields">
                     <div className="col-md-6 col-sm-6">
                       <div className="form-group">
                         <label
@@ -11850,6 +11967,7 @@ export function CreatePortfolio(props) {
                           name="priceMethod"
                           onChange={(e) => setComponentData({ ...componentData, priceMethod: e })}
                           placeholder="placeholder (Optional)"
+                          className=" text-primary"
                         />
                       </div>
                     </div>
@@ -11870,11 +11988,12 @@ export function CreatePortfolio(props) {
                               onChange={(e) => setComponentData({ ...componentData, priceAdditionalSelect: e })}
                               options={options}
                               placeholder="Select"
+                              className=" text-primary"
                             />
                           </div>
                           <input
                             type="text"
-                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                             placeholder="10%"
                             // defaultValue={props?.priceCalculator?.priceAdditionalInput}
                             value={componentData.priceAdditionalInput}
@@ -11894,7 +12013,7 @@ export function CreatePortfolio(props) {
                         </label>
                         <div className=" d-flex align-items-center form-control-date">
                           <Select
-                            className="select-input"
+                            className="select-input  text-primary"
                             value={componentData.priceEscalationSelect}
                             name="priceEscalationSelect"
                             onChange={(e) => setComponentData({ ...componentData, priceEscalationSelect: e })}
@@ -11923,7 +12042,7 @@ export function CreatePortfolio(props) {
                         </label>
                         <input
                           type="text"
-                          className="form-control border-radius-10"
+                          className="form-control border-radius-10 text-primary"
                           // defaultValue={props?.priceCalculator?.calculatedPrice}
                           value={componentData.calculatedPrice}
                           name="calculatedPrice"
@@ -11943,7 +12062,7 @@ export function CreatePortfolio(props) {
                         </label>
                         <input
                           type="text"
-                          className="form-control border-radius-10"
+                          className="form-control border-radius-10 text-primary"
                           value={componentData.flatPrice}
                           name="flatPrice"
                           onChange={handleComponentChange}
@@ -11968,11 +12087,12 @@ export function CreatePortfolio(props) {
                               isClearable={true}
                               options={options}
                               placeholder="Select"
+                              className=" text-primary"
                             />
                           </div>
                           <input
                             type="text"
-                            className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                            className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                             value={componentData.discountTypeInput}
                             name="discountTypeInput"
                             onChange={handleComponentChange}

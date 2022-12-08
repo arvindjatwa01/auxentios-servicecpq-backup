@@ -2797,10 +2797,10 @@ export const Analytics = () => {
                <div>Net Additional</div>
             </>
          ),
-         selector: (row) => row.additionalPrice,
+         selector: (row) => row.additionalPrice?.additionalPercentage,
          wrap: true,
          sortable: true,
-         format: (row) => row.additionalPrice,
+         format: (row) => row.additionalPrice?.additionalPercentage,
       },
       {
          name: (
@@ -3352,7 +3352,7 @@ export const Analytics = () => {
                               columns={SolutionPortfolioColumn}
                               data={searchedPortfolioSolution}
                               customStyles={customTableStyles}
-                              selectableRows
+                              // selectableRows
                               // onSelectedRowsChange={(state) => setPortfolioTempFilterMasterData(state.selectedRows)}
                               pagination
                            />

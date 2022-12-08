@@ -311,7 +311,7 @@ export function CreateCustomPortfolio(props) {
 
     const [customerSegmentKeyValue, setCustomerSegmentKeyValue] = useState([]);
     const [strategyOptionals, setStrategyOptionals] = useState([]);
-    
+
 
     const [searchCoverageSerialResults, setSearchCoverageSerialResults] = useState([]);
     const [coverageSerialResultList, setCoverageSerialResultList] = useState([]);
@@ -3090,6 +3090,9 @@ export function CreateCustomPortfolio(props) {
         // console.log("Data is : ", "helloooooo")
         if (value === "general" && viewOnlyTab.generalViewOnly)
             setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: false });
+        else if (value === "validity" && viewOnlyTab.validityViewOnly) {
+            setViewOnlyTab({ ...viewOnlyTab, validityViewOnly: false });
+        }
         else if (value === "strategy" && viewOnlyTab.strategyViewOnly) {
             setViewOnlyTab({ ...viewOnlyTab, strategyViewOnly: false });
         }
@@ -5648,40 +5651,40 @@ export function CreateCustomPortfolio(props) {
 
     const columns4 = [
         {
-          name: (
-            <>
-              <div>Family</div>
-            </>
-          ),
-          selector: (row) => row.family,
-          wrap: true,
-          sortable: true,
-          format: (row) => row.family,
+            name: (
+                <>
+                    <div>Family</div>
+                </>
+            ),
+            selector: (row) => row.family,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.family,
         },
         {
-          name: (
-            <>
-              <div>Model</div>
-            </>
-          ),
-          selector: (row) => row.model,
-          wrap: true,
-          sortable: true,
-          format: (row) => row.model,
+            name: (
+                <>
+                    <div>Model</div>
+                </>
+            ),
+            selector: (row) => row.model,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.model,
         },
         {
-          name: (
-            <>
-              <div>Serial Number</div>
-            </>
-          ),
-          selector: (row) => row.noSeriese,
-          wrap: true,
-          sortable: true,
-          format: (row) => row.noSeriese,
-          cell: (row) => (
-            <div>
-              {/* <SearchBox
+            name: (
+                <>
+                    <div>Serial Number</div>
+                </>
+            ),
+            selector: (row) => row.noSeriese,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.noSeriese,
+            cell: (row) => (
+                <div>
+                    {/* <SearchBox
                 value={row.noSeriese}
                 onChange={(e) =>
                   handleCoverageHandleMachineSearch(
@@ -5695,77 +5698,77 @@ export function CreateCustomPortfolio(props) {
                 onSelect={handleModelSelect}
                 noOptions={noCoverageOptionSerial}
               /> */}
-              <Select
-                className="customselect"
-                // options={[
-                //   { label: "12345", value: "12345" },
-                //   { label: "12345", value: "12345" },
-                // ]}
-                options={coverageSerialResultList}
-              />
-            </div>
-          ),
+                    <Select
+                        className="customselect"
+                        // options={[
+                        //   { label: "12345", value: "12345" },
+                        //   { label: "12345", value: "12345" },
+                        // ]}
+                        options={coverageSerialResultList}
+                    />
+                </div>
+            ),
         },
         {
-          name: (
-            <>
-              <div>Location</div>
-            </>
-          ),
-          selector: (row) => row.location,
-          wrap: true,
-          sortable: true,
-          format: (row) => row.location,
+            name: (
+                <>
+                    <div>Location</div>
+                </>
+            ),
+            selector: (row) => row.location,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.location,
         },
         {
-          name: (
-            <>
-              <div>Start Date</div>
-            </>
-          ),
-          selector: (row) => row.startDate,
-          wrap: true,
-          sortable: true,
-          format: (row) => row.startDate,
-          cell: (row) => (
-            <div className="date-box tabledate-box">
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <DatePicker
-                  variant="inline"
-                  format="dd/MM/yyyy"
-                  className="form-controldate border-radius-10"
-                  label=""
-                // value={row.startDate}
-                />
-              </MuiPickersUtilsProvider>
-            </div>
-          ),
+            name: (
+                <>
+                    <div>Start Date</div>
+                </>
+            ),
+            selector: (row) => row.startDate,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.startDate,
+            cell: (row) => (
+                <div className="date-box tabledate-box">
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <DatePicker
+                            variant="inline"
+                            format="dd/MM/yyyy"
+                            className="form-controldate border-radius-10"
+                            label=""
+                        // value={row.startDate}
+                        />
+                    </MuiPickersUtilsProvider>
+                </div>
+            ),
         },
         {
-          name: (
-            <>
-              <div>End Date</div>
-            </>
-          ),
-          selector: (row) => row.endDate,
-          wrap: true,
-          sortable: true,
-          format: (row) => row.endDate,
-          cell: (row) => (
-            <div className="date-box tabledate-box">
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <DatePicker
-                  variant="inline"
-                  format="dd/MM/yyyy"
-                  className="form-controldate border-radius-10"
-                  label=""
-                // value={validityData.fromDate}
-                />
-              </MuiPickersUtilsProvider>
-            </div>
-          ),
+            name: (
+                <>
+                    <div>End Date</div>
+                </>
+            ),
+            selector: (row) => row.endDate,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.endDate,
+            cell: (row) => (
+                <div className="date-box tabledate-box">
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <DatePicker
+                            variant="inline"
+                            format="dd/MM/yyyy"
+                            className="form-controldate border-radius-10"
+                            label=""
+                        // value={validityData.fromDate}
+                        />
+                    </MuiPickersUtilsProvider>
+                </div>
+            ),
         },
-      ];
+    ];
 
     const data4 = [
         {
@@ -6267,186 +6270,190 @@ export function CreateCustomPortfolio(props) {
     );
 
     const ExpandedComponent = ({ data }) => (
-        <div className="scrollbar" id="style">
-            {data.associatedServiceOrBundle?.map((bundleAndService, i) => (
-                <div
-                    key={i}
-                    id="row-0"
-                    role="row"
-                    className="sc-evZas cMMpBL rdt_TableRow"
-                    style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
-                >
-                    <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
+        <>
+            {/* {data?.associatedServiceOrBundle ? <> */}
+            <div className="scrollbar" id="style">
+                {data?.associatedServiceOrBundle?.map((bundleAndService, i) => (
                     <div
-                        id="cell-1-undefined"
-                        data-column-id="1"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                        data-tag="allowRowEvents"
+                        key={i}
+                        id="row-0"
+                        role="row"
+                        className="sc-evZas cMMpBL rdt_TableRow"
+                        style={{ backgroundColor: "rgb(241 241 241 / 26%)" }}
                     >
-                        <div>{bundleAndService.customItemId}</div>
-                    </div>
-                    <div
-                        id="cell-2-undefined"
-                        data-column-id="2"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.customItemBodyModel?.itemBodyDescription}
-                        </div>
-                    </div>
-                    <div
-                        id="cell-3-undefined"
-                        data-column-id="3"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.customItemHeaderModel?.strategy}
-                        </div>
-                    </div>
-                    <div
-                        id="cell-4-undefined"
-                        data-column-id="4"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.customItemBodyModel?.standardJobId}
-                        </div>
-                    </div>
-                    <div
-                        id="cell-5-undefined"
-                        data-column-id="5"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.customItemBodyModel?.repairOption}
-                        </div>
-                    </div>
-                    <div
-                        id="cell-6-undefined"
-                        data-column-id="6"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.customItemBodyModel?.frequency}
-                        </div>
-                    </div>
-                    <div
-                        id="cell-7-undefined"
-                        data-column-id="7"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.customItemBodyModel?.quantity}
-                        </div>
-                    </div>
-                    <div
-                        id="cell-8-undefined"
-                        data-column-id="8"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.customItemBodyModel?.sparePartsPrice}
-                        </div>
-                    </div>
-                    <div
-                        id="cell-9-undefined"
-                        data-column-id="9"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.customItemBodyModel?.servicePrice}
-                        </div>
-                    </div>
-                    <div
-                        id="cell-10-undefined"
-                        data-column-id="10"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
-                        <div data-tag="allowRowEvents">
-                            {bundleAndService.customItemBodyModel?.totalPrice}
-                        </div>
-                    </div>
-                    {bundleItems.length > 0 && (<div
-                        id="cell-11-undefined"
-                        data-column-id="11"
-                        role="gridcell"
-                        className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz custom-rdt_TableCell rdt_TableCell"
-                        data-tag="allowRowEvents"
-                    >
+                        <div className="sc-iBkjds sc-iqcoie iXqCvb bMkWco custom-rdt_TableCell"></div>
                         <div
-                            className="cursor"
-                            onClick={(e) =>
-                                handleExpandedRowEdit(
-                                    e,
-                                    data.customItemId,
-                                    data.associatedServiceOrBundle[i]
-                                )
-                            }
+                            id="cell-1-undefined"
+                            data-column-id="1"
+                            role="gridcell"
+                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            data-tag="allowRowEvents"
                         >
-                            <Tooltip title="Edit">
-                                <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
-                            </Tooltip>
+                            <div>{bundleAndService.customItemId}</div>
                         </div>
                         <div
-                            className="cursor"
-                            onClick={(e) =>
-                                handleExpandedRowDelete(
-                                    e,
-                                    data.customItemId,
-                                    data.associatedServiceOrBundle[i].customItemId
-                                )
-                            }
+                            id="cell-2-undefined"
+                            data-column-id="2"
+                            role="gridcell"
+                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            data-tag="allowRowEvents"
                         >
-                            <Tooltip title="Delete">
-                                <Link to="#" className="mx-1">
-                                    <svg
-                                        data-name="Layer 41"
-                                        id="Layer_41"
-                                        width="14px"
-                                        viewBox="0 0 50 50"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <title />
-                                        <path
-                                            className="cls-1"
-                                            d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                                        />
-                                        <path
-                                            className="cls-1"
-                                            d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                                        />
-                                        <path
-                                            className="cls-1"
-                                            d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                                        />
-                                    </svg>
-                                </Link>
-                            </Tooltip>
+                            <div data-tag="allowRowEvents">
+                                {bundleAndService.customItemBodyModel?.itemBodyDescription}
+                            </div>
                         </div>
-                    </div>)}
+                        <div
+                            id="cell-3-undefined"
+                            data-column-id="3"
+                            role="gridcell"
+                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            data-tag="allowRowEvents"
+                        >
+                            <div data-tag="allowRowEvents">
+                                {bundleAndService.customItemHeaderModel?.strategy}
+                            </div>
+                        </div>
+                        <div
+                            id="cell-4-undefined"
+                            data-column-id="4"
+                            role="gridcell"
+                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            data-tag="allowRowEvents"
+                        >
+                            <div data-tag="allowRowEvents">
+                                {bundleAndService.customItemBodyModel?.standardJobId}
+                            </div>
+                        </div>
+                        <div
+                            id="cell-5-undefined"
+                            data-column-id="5"
+                            role="gridcell"
+                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eVkrRQ bzejeY custom-rdt_TableCell rdt_TableCell"
+                            data-tag="allowRowEvents"
+                        >
+                            <div data-tag="allowRowEvents">
+                                {bundleAndService.customItemBodyModel?.repairOption}
+                            </div>
+                        </div>
+                        <div
+                            id="cell-6-undefined"
+                            data-column-id="6"
+                            role="gridcell"
+                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            data-tag="allowRowEvents"
+                        >
+                            <div data-tag="allowRowEvents">
+                                {bundleAndService.customItemBodyModel?.frequency}
+                            </div>
+                        </div>
+                        <div
+                            id="cell-7-undefined"
+                            data-column-id="7"
+                            role="gridcell"
+                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            data-tag="allowRowEvents"
+                        >
+                            <div data-tag="allowRowEvents">
+                                {bundleAndService.customItemBodyModel?.quantity}
+                            </div>
+                        </div>
+                        <div
+                            id="cell-8-undefined"
+                            data-column-id="8"
+                            role="gridcell"
+                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            data-tag="allowRowEvents"
+                        >
+                            <div data-tag="allowRowEvents">
+                                {bundleAndService.customItemBodyModel?.sparePartsPrice}
+                            </div>
+                        </div>
+                        <div
+                            id="cell-9-undefined"
+                            data-column-id="9"
+                            role="gridcell"
+                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            data-tag="allowRowEvents"
+                        >
+                            <div data-tag="allowRowEvents">
+                                {bundleAndService.customItemBodyModel?.servicePrice}
+                            </div>
+                        </div>
+                        <div
+                            id="cell-10-undefined"
+                            data-column-id="10"
+                            role="gridcell"
+                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
+                            data-tag="allowRowEvents"
+                        >
+                            <div data-tag="allowRowEvents">
+                                {bundleAndService.customItemBodyModel?.totalPrice}
+                            </div>
+                        </div>
+                        {bundleItems.length > 0 && (<div
+                            id="cell-11-undefined"
+                            data-column-id="11"
+                            role="gridcell"
+                            className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv kVRqLz custom-rdt_TableCell rdt_TableCell"
+                            data-tag="allowRowEvents"
+                        >
+                            <div
+                                className="cursor"
+                                onClick={(e) =>
+                                    handleExpandedRowEdit(
+                                        e,
+                                        data.customItemId,
+                                        data.associatedServiceOrBundle[i]
+                                    )
+                                }
+                            >
+                                <Tooltip title="Edit">
+                                    <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
+                                </Tooltip>
+                            </div>
+                            <div
+                                className="cursor"
+                                onClick={(e) =>
+                                    handleExpandedRowDelete(
+                                        e,
+                                        data.customItemId,
+                                        data.associatedServiceOrBundle[i].customItemId
+                                    )
+                                }
+                            >
+                                <Tooltip title="Delete">
+                                    <Link to="#" className="mx-1">
+                                        <svg
+                                            data-name="Layer 41"
+                                            id="Layer_41"
+                                            width="14px"
+                                            viewBox="0 0 50 50"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <title />
+                                            <path
+                                                className="cls-1"
+                                                d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
+                                            />
+                                            <path
+                                                className="cls-1"
+                                                d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
+                                            />
+                                            <path
+                                                className="cls-1"
+                                                d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
+                                            />
+                                        </svg>
+                                    </Link>
+                                </Tooltip>
+                            </div>
+                        </div>)}
 
-                </div>
-            ))}
-        </div>
+                    </div>
+                ))}
+            </div>
+            {/* </> : <></>} */}
+        </>
     );
     const ExpandedPriceCalculator = ({ data }) => (<>
         <div className="ligt-greey-bg p-2">
@@ -7536,7 +7543,7 @@ export function CreateCustomPortfolio(props) {
                                                                     <DatePicker
                                                                         variant="inline"
                                                                         format="dd/MM/yyyy"
-                                                                        className="form-controldate text-primary border-radius-10"
+                                                                        className={`form-controldate text-primary border-radius-10 ${viewOnlyTab.validityViewOnly ? "dateNotEditable" : ""}`}
                                                                         label=""
                                                                         value={validityData.fromDate}
                                                                         onChange={(e) =>
@@ -7546,6 +7553,7 @@ export function CreateCustomPortfolio(props) {
                                                                                 inputFlag: false,
                                                                             })
                                                                         }
+                                                                        readOnly={viewOnlyTab.validityViewOnly}
                                                                     />
                                                                 </MuiPickersUtilsProvider>
                                                                 {/* <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Placeholder (Optional)" /> */}
@@ -7560,7 +7568,7 @@ export function CreateCustomPortfolio(props) {
                                                                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                                                     <DatePicker
                                                                         variant="inline"
-                                                                        className="form-controldate text-primary border-radius-10"
+                                                                        className={`form-controldate text-primary border-radius-10 ${viewOnlyTab.validityViewOnly ? "dateNotEditable" : ""}`}
                                                                         label=""
                                                                         format="dd/MM/yyyy"
                                                                         value={validityData.toDate}
@@ -7572,6 +7580,7 @@ export function CreateCustomPortfolio(props) {
                                                                                 inputFlag: false,
                                                                             })
                                                                         }
+                                                                        readOnly={viewOnlyTab.validityViewOnly}
                                                                     />
                                                                 </MuiPickersUtilsProvider>
                                                             </div>
@@ -7610,6 +7619,7 @@ export function CreateCustomPortfolio(props) {
                                                                             }
                                                                             options={validityKeyValue}
                                                                             placeholder="Select "
+                                                                            isDisabled={viewOnlyTab.validityViewOnly}
                                                                         />
                                                                         <div>
                                                                             <input
@@ -7626,6 +7636,7 @@ export function CreateCustomPortfolio(props) {
                                                                                         dateFlag: false,
                                                                                     })
                                                                                 }
+                                                                                disabled={viewOnlyTab.validityViewOnly}
                                                                             />
                                                                         </div>
                                                                     </div>
@@ -7670,6 +7681,7 @@ export function CreateCustomPortfolio(props) {
                                                                                         inputFlag: true,
                                                                                     })
                                                                                 }
+                                                                                disabled={viewOnlyTab.validityViewOnly}
                                                                             />
                                                                         </div>
                                                                     </div>
@@ -7730,16 +7742,18 @@ export function CreateCustomPortfolio(props) {
                                             </div>
                                         </div>
                                     </div> */}
-                                        <div className="row" style={{ justifyContent: "right" }}>
-                                            <button
-                                                type="button"
-                                                onClick={handleNextClick}
-                                                className="btn btn-light"
-                                                id="validity"
-                                            >
-                                                Save & Next
-                                            </button>
-                                        </div>
+                                        {!viewOnlyTab.validityViewOnly ? <>
+                                            <div className="row" style={{ justifyContent: "right" }}>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleNextClick}
+                                                    className="btn btn-light"
+                                                    id="validity"
+                                                >
+                                                    Save & Next
+                                                </button>
+                                            </div>
+                                        </> : <></>}
                                     </TabPanel>
                                     <TabPanel value={"strategy"}>
                                         {!viewOnlyTab.strategyViewOnly ? <>
@@ -9021,7 +9035,7 @@ export function CreateCustomPortfolio(props) {
                             <div>
                                 <div
                                     className="custom-table  card"
-                                    style={{ height: 400, width: "100%" }}
+                                    style={{ minHeight: 200, height: "auto", width: "100%" }}
                                 >
                                     <DataTable
                                         title=""
