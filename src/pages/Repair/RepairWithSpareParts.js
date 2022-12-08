@@ -14,7 +14,7 @@ import FormGroup from "@mui/material/FormGroup";
 import { DataGrid } from "@mui/x-data-grid";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { MuiMenuComponent } from "../Operational/index";
@@ -113,7 +113,12 @@ export const RepairWithSpareParts = () => {
     { field: "Total", headerName: "Total $", flex: 1, width: 130 },
     { field: "Status", headerName: "Status", flex: 1, width: 130 },
   ];
+  useEffect(() => {
 
+    if (JSON.parse(localStorage.getItem('exitingType'))) {
+      localStorage.removeItem('exitingType');
+   }
+  }, []);
   const activityOptions = ["None", "Atria", "Callisto"];
 
   const handleOperator = (e, id) => {

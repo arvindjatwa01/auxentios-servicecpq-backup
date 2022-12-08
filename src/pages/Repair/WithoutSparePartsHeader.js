@@ -47,7 +47,10 @@ import ModalCreateVersion from "./components/ModalCreateVersion";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import { ERROR_MAX_VERSIONS, FONT_STYLE, FONT_STYLE_SELECT } from "./CONSTANTS";
 import { useAppSelector } from "app/hooks";
-import { selectDropdownOption, selectPricingMethodList } from "./dropdowns/repairSlice";
+import {
+  selectDropdownOption,
+  selectPricingMethodList,
+} from "./dropdowns/repairSlice";
 import LoadingProgress from "./components/Loader";
 
 function WithoutSparePartsHeader(props) {
@@ -63,7 +66,7 @@ function WithoutSparePartsHeader(props) {
   const [noOptionsCust, setNoOptionsCust] = useState(false);
   const [noOptionsModel, setNoOptionsModel] = useState(false);
   const [noOptionsSerial, setNoOptionsSerial] = useState(false);
-  const currencyOptions = [{ value: "USD", label: "USD" }]
+  const currencyOptions = [{ value: "USD", label: "USD" }];
   const [activeElement, setActiveElement] = useState({
     name: "header",
     bId: "",
@@ -80,7 +83,7 @@ function WithoutSparePartsHeader(props) {
     machineViewOnly: false,
     generalViewOnly: false,
     estViewOnly: false,
-    priceViewOnly: false
+    priceViewOnly: false,
   });
 
   const [customerData, setCustomerData] = useState({
@@ -93,7 +96,7 @@ function WithoutSparePartsHeader(props) {
     customerGroup: "",
     customerSegment: "",
     regionOrState: "",
-    country:""
+    country: "",
   });
   const [machineData, setMachineData] = useState({
     make: "",
@@ -105,7 +108,7 @@ function WithoutSparePartsHeader(props) {
     registrationNo: "",
     chasisNo: "",
     productSegment: "",
-    productGroup: ""
+    productGroup: "",
   });
   const [generalData, setGeneralData] = useState({
     estimationDate: new Date(),
@@ -186,6 +189,12 @@ function WithoutSparePartsHeader(props) {
   }, []);
 
   const fetchAllDetails = async (builderId) => {
+    var versionHistoryData = {
+      builderId: "",
+      exitingType: "repair",
+      editable: false,
+    };
+    localStorage.setItem("exitingType", JSON.stringify(versionHistoryData));
     if (builderId) {
       setHeaderLoading(true);
       await fetchBuilderDetails(builderId)
@@ -220,7 +229,7 @@ function WithoutSparePartsHeader(props) {
       bId,
       sId: "",
       oId: "",
-    })
+    });
   };
   const populateHeader = (result) => {
     setViewOnlyTab({
@@ -228,7 +237,12 @@ function WithoutSparePartsHeader(props) {
       machineViewOnly: result.serialNo ? true : false,
       generalViewOnly: result.estimationDate ? true : false,
       estViewOnly: result.preparedBy ? true : false,
-      priceViewOnly: result.priceMethod !== "EMPTY" && result.priceMethod !== null && result.priceMethod !== "" ? true : false,
+      priceViewOnly:
+        result.priceMethod !== "EMPTY" &&
+        result.priceMethod !== null &&
+        result.priceMethod !== ""
+          ? true
+          : false,
     });
     setBId(result.id);
     setRating(result.rating);
@@ -255,7 +269,7 @@ function WithoutSparePartsHeader(props) {
       source: result.source ? result.source : "User Generated",
       customerSegment: result.customerSegment,
       country: result.country,
-      regionOrState: result.regionOrState
+      regionOrState: result.regionOrState,
     });
     setMachineData({
       make: result.make,
@@ -267,12 +281,14 @@ function WithoutSparePartsHeader(props) {
       registrationNo: result.registrationNo,
       chasisNo: result.chasisNo,
       productGroup: result.productGroup,
-      productSegment: result.productSegment
+      productSegment: result.productSegment,
     });
     setGeneralData({
       description: result.description,
-      estimationDate: result.estimationDate? result.estimationDate : new Date() ,
-      estimationNo: result.builderId? result.builderId : state.builderId,
+      estimationDate: result.estimationDate
+        ? result.estimationDate
+        : new Date(),
+      estimationNo: result.builderId ? result.builderId : state.builderId,
       reference: result.reference,
       validity: validityOptions.find(
         (element) => element.value == result.validityDays
@@ -282,15 +298,15 @@ function WithoutSparePartsHeader(props) {
     setEstimationData({
       approvedBy: result.approver,
       preparedBy: result.preparedBy,
-      preparedOn: result.preparedOn? result.preparedOn : new Date(),
+      preparedOn: result.preparedOn ? result.preparedOn : new Date(),
       revisedBy: result.revisedBy,
-      revisedOn: result.revisedOn? result.revisedOn : new Date(),
+      revisedOn: result.revisedOn ? result.revisedOn : new Date(),
       salesOffice: salesOfficeOptions.find(
         (element) => element.value === result.salesOffice
       ),
     });
     setPricingData({
-      priceDate: result.priceDate? result.priceDate : new Date(),
+      priceDate: result.priceDate ? result.priceDate : new Date(),
       priceMethod: priceMethodOptions.find(
         (element) => element.value === result.priceMethod
       ),
@@ -299,7 +315,7 @@ function WithoutSparePartsHeader(props) {
       currency: currencyOptions.find(
         (element) => element.value === result.currency
       ),
-    })
+    });
   };
 
   const [severity, setSeverity] = useState("");
@@ -343,7 +359,7 @@ function WithoutSparePartsHeader(props) {
       customerName: currentItem.fullName,
       customerSegment: currentItem.customerSegment,
       country: currentItem.addressDTO?.country,
-      regionOrState: currentItem.addressDTO?.regionOrState
+      regionOrState: currentItem.addressDTO?.regionOrState,
     });
     console.log(currentItem);
     setSearchCustResults([]);
@@ -427,7 +443,7 @@ function WithoutSparePartsHeader(props) {
         make: currentItem.maker,
         family: currentItem.market,
         productGroup: currentItem.productGroup,
-        productSegment: currentItem.productSegment
+        productSegment: currentItem.productSegment,
       });
       setSearchSerialResults([]);
     }
@@ -465,7 +481,7 @@ function WithoutSparePartsHeader(props) {
       contactPhone: customerData.contactPhone,
       customerSegment: customerData.customerSegment,
       regionOrState: customerData.regionOrState,
-      country: customerData.country
+      country: customerData.country,
     };
     console.log(data);
     const validator = new Validator();
@@ -502,7 +518,7 @@ function WithoutSparePartsHeader(props) {
       chasisNo: machineData.chasisNo,
       serialNo: machineData.serialNo,
       productGroup: machineData.productGroup,
-      productSegment: machineData.productSegment
+      productSegment: machineData.productSegment,
     };
     updateBuilderMachine(bId, data)
       .then((result) => {
@@ -656,14 +672,17 @@ function WithoutSparePartsHeader(props) {
     //   })
     //   .catch((err) => {
     //     setVersionOpen(false);
-        
+
     //     if(err.message === "Not Allowed")
     //       handleSnack("warning", ERROR_MAX_VERSIONS )
     //     else
     //       handleSnack("error", "Error occurred while creating builder version");
     //     setVersionDescription('');
     //   });
-    handleSnack("info", "Create Version API needs to be finalized for Without Spare Parts");
+    handleSnack(
+      "info",
+      "Create Version API needs to be created for Without Spare Parts"
+    );
   };
 
   return (

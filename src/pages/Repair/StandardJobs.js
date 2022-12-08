@@ -131,6 +131,14 @@ function StandardJobs(){
     },
   },
 };
+useEffect(() => {
+  var versionHistoryData = {
+    builderId: "",
+    exitingType: "repair",
+    editable: false,
+  };
+  localStorage.setItem('exitingType', JSON.stringify(versionHistoryData));
+})
   const handleDeletQuerySearch = () => {
     setQuerySearchSelector([])
     setCount(0)

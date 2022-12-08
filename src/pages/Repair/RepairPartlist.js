@@ -55,6 +55,9 @@ export const RepairPartlist = () => {
   useEffect(() => {
     dispatch(repairActions.fetchDropdowns());
     fetcheRecentPartlists();
+    if (JSON.parse(localStorage.getItem('exitingType'))) {
+      localStorage.removeItem('exitingType');
+   }
   }, []);
 
   const fetcheRecentPartlists = () => {

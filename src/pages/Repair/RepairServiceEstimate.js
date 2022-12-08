@@ -1747,6 +1747,16 @@ function RepairServiceEstimate(props) {
                   <div className="col-md-4 col-sm-4">
                     <div class="form-group mt-3">
                       <p className="font-size-12 font-weight-600 mb-2">
+                        ADJUSTED PRICE
+                      </p>
+                      <h6 className="font-weight-600">
+                        {serviceEstimateData.adjustedPrice}
+                      </h6>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-sm-4">
+                    <div class="form-group mt-3">
+                      <p className="font-size-12 font-weight-600 mb-2">
                         JOB CODE{" "}
                       </p>
                       <h6 className="font-weight-600">

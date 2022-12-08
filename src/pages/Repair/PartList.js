@@ -1,113 +1,93 @@
-import React, { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import Tab from "@mui/material/Tab";
-import Select from "react-select";
-import SelectBox from "@mui/material/Select";
-import { Button, Modal } from "react-bootstrap";
-import Checkbox from "@mui/material/Checkbox";
+import DeleteIcon from "@mui/icons-material/DeleteTwoTone";
+import EditIcon from "@mui/icons-material/EditTwoTone";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import EditIcon from "@mui/icons-material/EditTwoTone";
-import LabelIcon from "@mui/icons-material/LabelTwoTone";
-import DeleteIcon from "@mui/icons-material/DeleteTwoTone";
+import Box from "@mui/material/Box";
+import Checkbox from "@mui/material/Checkbox";
+import Tab from "@mui/material/Tab";
+import React, { useEffect, useState } from "react";
+import { Modal } from "react-bootstrap";
+import Select from "react-select";
 // import { MuiMenuComponent } from "./components/MuiMenuRepair";
-import SearchIcon from "@mui/icons-material/Search";
-import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
-import { MuiMenuComponent } from "pages/Operational";
+import { faCloudUploadAlt, faFileAlt, faFolderPlus, faShareAlt, faUpload } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import Divider from "@mui/material/Divider";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormGroup from "@mui/material/FormGroup";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import {
   DataGrid,
   getGridStringOperators,
   GridActionsCellItem,
-  useGridApiContext,
+  useGridApiContext
 } from "@mui/x-data-grid";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import shareIcon from "../../assets/icons/svg/share.svg";
-import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
-import uploadIcon from "../../assets/icons/svg/upload.svg";
-import deleteIcon from "../../assets/icons/svg/delete.svg";
-import copyIcon from "../../assets/icons/svg/Copy.svg";
-import { Link, useHistory } from "react-router-dom";
-import { faFileAlt, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
-import FormGroup from "@mui/material/FormGroup";
-import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
-import Loader from "react-js-loader";
-import { faUpload } from "@fortawesome/free-solid-svg-icons";
-import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
-import { FileUploader } from "react-drag-drop-files";
-import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
 import $ from "jquery";
+import { MuiMenuComponent } from "pages/Operational";
+import { FileUploader } from "react-drag-drop-files";
+import { useHistory } from "react-router-dom";
+import copyIcon from "../../assets/icons/svg/Copy.svg";
+import deleteIcon from "../../assets/icons/svg/delete.svg";
+import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
+import shareIcon from "../../assets/icons/svg/share.svg";
+import uploadIcon from "../../assets/icons/svg/upload.svg";
 // import SearchIcon from "@mui/icons-material/Search";
 import DateFnsUtils from "@date-io/date-fns";
+import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import {
+  debounce, Rating,
+  TextareaAutosize
+} from "@mui/material";
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
+import Moment from "react-moment";
 import {
   addMultiPartsToPartList,
   addPartToPartList,
   createBuilderVersion,
-  createKIT,
-  fetchBuilderDetails,
-  fetchBuilderPricingMethods,
-  fetchBuilderVersionDet,
+  createKIT, fetchBuilderVersionDet,
   fetchPartlistFromBuilder,
-  fetchPartsFromPartlist,
-  RemoveLaborItem,
-  RemoveSparepart,
+  fetchPartsFromPartlist, RemoveSparepart,
   updateBuilderCustomer,
   updateBuilderEstimation,
   updateBuilderGeneralDet,
   updateBuilderMachine,
   updateBuilderPrice,
   updateBuilderStatus,
-  uploadPartsToPartlist,
+  uploadPartsToPartlist
 } from "services/repairBuilderServices";
-import SearchBox from "./components/SearchBox";
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import Moment from "react-moment";
 import Validator from "utils/validator";
 import CustomSnackbar from "../Common/CustomSnackBar";
-import DynamicSearchComponent from "./components/DynamicSearchComponent";
 import AddNewSparepartModal from "./components/AddNewSparePart";
-import {
-  debounce,
-  FormControl,
-  InputLabel,
-  Rating,
-  TextareaAutosize,
-} from "@mui/material";
-import Dropdown from "react-bootstrap/Dropdown";
-import DropdownButton from "react-bootstrap/DropdownButton";
+import SearchBox from "./components/SearchBox";
 // import logoIcon from '../assets/icons/svg/menu.png'
+import { useAppSelector } from "app/hooks";
+import {
+  customerSearch,
+  machineSearch,
+  sparePartSearch
+} from "services/searchServices";
+import { RenderConfirmDialog } from "./components/ConfirmationBox";
+import LoadingProgress from "./components/Loader";
+import ModalCreateVersion from "./components/ModalCreateVersion";
+import ModalShare from "./components/ModalShare";
+import SearchComponent from "./components/SearchComponent";
 import {
   ERROR_MAX_VERSIONS,
   FONT_STYLE,
   FONT_STYLE_SELECT,
   GRID_STYLE,
   INITIAL_PAGE_NO,
-  INITIAL_PAGE_SIZE,
-  PARTS_TAG_OPTIONS,
-  SPAREPART_SEARCH_Q_OPTIONS,
+  INITIAL_PAGE_SIZE, SPAREPART_SEARCH_Q_OPTIONS
 } from "./CONSTANTS";
-import { RenderConfirmDialog } from "./components/ConfirmationBox";
-import { Typography } from "@material-ui/core";
-import {
-  customerSearch,
-  machineSearch,
-  sparePartSearch,
-} from "services/searchServices";
-import ModalCreateVersion from "./components/ModalCreateVersion";
-import ModalShare from "./components/ModalShare";
-import SearchComponent from "./components/SearchComponent";
-import { useAppSelector } from "app/hooks";
 import {
   selectDropdownOption,
-  selectPricingMethodList,
+  selectPricingMethodList
 } from "./dropdowns/repairSlice";
-import LoadingProgress from "./components/Loader";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -339,6 +319,12 @@ function PartList(props) {
   }, []);
 
   const fetchAllDetails = (builderId, versionNumber) => {
+    var versionHistoryData = {
+      builderId: "",
+      exitingType: "repair",
+      editable: false,
+    };
+    localStorage.setItem('exitingType', JSON.stringify(versionHistoryData));
     console.log(builderId, versionNumber);
     if (builderId && versionNumber) {
       setHeaderLoading(true);

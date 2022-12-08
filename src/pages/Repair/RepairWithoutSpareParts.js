@@ -33,6 +33,9 @@ export const RepairWithoutSpareParts = () => {
     fetchRecentBuilders(
       `builderType:BUILDER_WITHOUT_SPAREPART AND saved:true&pageSize=10&sortColumn=updatedAt&orderBY=DESC`
     );
+    if (JSON.parse(localStorage.getItem('exitingType'))) {
+      localStorage.removeItem('exitingType');
+   }
   }, []);
 
   const fetchRecentBuilders = async (searchQuery) => {

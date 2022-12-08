@@ -38,6 +38,9 @@ export const RepairKits = () => {
   useEffect(() => {
     dispatch(repairActions.fetchDropdowns());
     fetcheRecentKits();
+    if (JSON.parse(localStorage.getItem('exitingType'))) {
+      localStorage.removeItem('exitingType');
+    }
   }, []);
 
   const fetcheRecentKits = () => {

@@ -110,12 +110,17 @@ export function SubHeaderComponent(props) {
         fetchVersionHistoryData(exitingType.exitingType, exitingType.portfolioId);
         // }
         setEditAbleText(editableText + 1)
+      } else if(exitingType.exitingType === 'repair') {
+        setExitingAuditName("Repair");
+        setAuditResData([]);
       }
     } else {
+      setExitingAuditName("");
       setEditAbleText(1)
       setAuditResData([]);
     }
     console.log("exitingType ---- : ", exitingType);
+    console.log("exitName", exitingAuditName);
   };
   const activityOptions = [
     'None',
@@ -338,7 +343,7 @@ export function SubHeaderComponent(props) {
                 </>
               )}
             </> : <></>}
-            {/* <div className="card border p-3 bg-primary ">
+            {exitingAuditName === "Repair" && <><div className="card border p-3 bg-primary ">
               <h5 className="d-flex align-items-center justify-content-between mb-0">
                 <div className="text-white" style={{ display: 'contents' }}><span className="mr-3">Service Estimate 01</span>
                   <div>
@@ -453,7 +458,7 @@ export function SubHeaderComponent(props) {
                   </tbody>
                 </table>
               </div>
-            </div> */}
+            </div> </>}
 
 
             {/* <div className="">

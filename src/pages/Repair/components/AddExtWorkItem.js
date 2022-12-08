@@ -316,6 +316,16 @@ const AddExtWorkItemModal = (props) => {
               type="button"
               className="btn text-white bg-primary"
               onClick={props.addExtWorkItem}
+              disabled={
+                !(
+                  props.extWorkItemData.activityId &&
+                  props.extWorkItemData.activityName &&
+                  props.extWorkItemData.unitOfMeasure &&
+                  props.extWorkItemData.estimatedHours > 0 && 
+                  props.extWorkItemData.supplyingVendorName && 
+                  props.extWorkItemData.unitPrice
+                )
+              }
             >
               Save
             </button>

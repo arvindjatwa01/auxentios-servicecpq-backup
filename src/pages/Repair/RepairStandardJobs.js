@@ -1,67 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { Modal } from "react-bootstrap";
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import { ToastContainer, toast } from "react-toastify";
-import AddIcon from "@mui/icons-material/Add";
-import Select from "@mui/material/Select";
-import { FileUploader } from "react-drag-drop-files";
-import { MuiMenuComponent } from "../Operational/index";
-import DataTable from "react-data-table-component";
+import { faFileAlt, faFolderPlus, faPlus, faShareAlt, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileAlt, faFolderPlus } from "@fortawesome/free-solid-svg-icons";
-import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
-import { faUpload } from "@fortawesome/free-solid-svg-icons";
-import { faPen } from "@fortawesome/free-solid-svg-icons";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import OwlCarousel from "react-owl-carousel";
+import AddIcon from "@mui/icons-material/Add";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormGroup from "@mui/material/FormGroup";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
-import Buttonarrow from "../../assets/icons/svg/Button-arrow.svg";
-import { faCloudUploadAlt } from "@fortawesome/free-solid-svg-icons";
-import shareIcon from "../../assets/icons/svg/share.svg";
-import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
-import uploadIcon from "../../assets/icons/svg/upload.svg";
-import cpqIcon from "../../assets/icons/svg/CPQ.svg";
-import deleteIcon from "../../assets/icons/svg/delete.svg";
-import copyIcon from "../../assets/icons/svg/Copy.svg";
-import { CommanComponents } from "../../components/index";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
+import React, { useEffect, useState } from "react";
+import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import { DataGrid } from "@mui/x-data-grid";
+import { ToastContainer } from "react-toastify";
+import { MuiMenuComponent } from "../Operational/index";
 
-import { SolutionBuilderModal } from "../../pages/SolutionModules/index";
-import SelectFilter from "react-select";
 import SearchIcon from "@mui/icons-material/Search";
 import $ from "jquery";
+import SelectFilter from "react-select";
+import { SolutionBuilderModal } from "../../pages/SolutionModules/index";
 import {
-  createPortfolio,
-  getPortfolio,
-  getPortfolioSchema,
-  getMakeKeyValue,
-  getModelKeyValue,
-  getPrefixKeyValue,
-  updatePortfolio,
-  getUsageCategoryKeyValue,
-  getTaskTypeKeyValue,
-  getResponseTimeTaskKeyValue,
-  getValidityKeyValue,
-  getStrategyTaskKeyValue,
-  getProductHierarchyKeyValue,
-  getGergraphicKeyValue,
-  getMachineTypeKeyValue,
-  getTypeKeyValue,
-  getPortfolioCommonConfig,
-  getSearchQueryCoverage,
-  getSearchCoverageForFamily,
-  itemCreation,
+  getSearchCoverageForFamily, getSearchQueryCoverage
 } from "../../services/index";
 
 export const RepairStandardJobs = () => {
@@ -92,6 +48,12 @@ export const RepairStandardJobs = () => {
   const [typeOfSolutionBuild, setTypeOfSolutionBuild] = useState(-1);
   const [buildSolutionValue, setBuildSolutionValue] = useState(-1);
 
+  useEffect(() => {
+
+    if (JSON.parse(localStorage.getItem('exitingType'))) {
+      localStorage.removeItem('exitingType');
+   }
+  }, []);
   const rows = [
     {
       id: 1,

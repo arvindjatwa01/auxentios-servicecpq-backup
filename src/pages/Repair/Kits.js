@@ -112,7 +112,14 @@ function Kits() {
   const [value4, setValue4] = useState({ value: 'Gold', label: 'Gold' });
   const [value2, setValue2] = useState({ value: 'Archived', label: 'Archived' });
   const [value3, setValue3] = useState({ value: 'Gold', label: 'Gold' });
-
+  useEffect(() => {
+    var versionHistoryData = {
+      builderId: "",
+      exitingType: "repair",
+      editable: false,
+    };
+    localStorage.setItem('exitingType', JSON.stringify(versionHistoryData));
+  })
   const options2 = [
     { value: "chocolate", label: "Archived" },
     { value: "strawberry", label: "Draft" },

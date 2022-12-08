@@ -109,6 +109,12 @@ function WithSpareParts(props) {
     if (state.type === "new") {
       console.log("Created a new builder");
     }
+    var versionHistoryData = {
+      builderId: "",
+      exitingType: "repair",
+      editable: false,
+    };
+    localStorage.setItem('exitingType', JSON.stringify(versionHistoryData));
   }, []);
 
   const [severity, setSeverity] = useState("");
