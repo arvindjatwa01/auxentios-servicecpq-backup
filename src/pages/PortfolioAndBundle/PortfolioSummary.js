@@ -251,9 +251,9 @@ export const PortfolioSummary = () => {
         setRecentBundleService(res);
       })
 
-      if(JSON.parse(localStorage.getItem('exitingType'))) {
-        localStorage.removeItem('exitingType');
-      }
+    if (JSON.parse(localStorage.getItem('exitingType'))) {
+      localStorage.removeItem('exitingType');
+    }
 
   }, []);
 
@@ -1557,17 +1557,17 @@ export const PortfolioSummary = () => {
       sortable: true,
       format: (row) => row?.portfolioPrice?.price,
     },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Net Additional</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row?.additionalPrice,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row?.additionalPrice,
-    // },
+    {
+      name: (
+        <>
+          <div>Net Additional</div>
+        </>
+      ),
+      selector: (row) => row?.additionalPrice?.additionalPercentage,
+      wrap: true,
+      sortable: true,
+      format: (row) => row?.additionalPrice?.additionalPercentage,
+    },
     {
       name: (
         <>

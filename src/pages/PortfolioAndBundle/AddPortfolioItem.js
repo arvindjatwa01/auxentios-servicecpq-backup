@@ -1446,7 +1446,8 @@ const AddPortfolioItem = (props) => {
                       href="#"
                       className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
                     >
-                      <span className="mr-2">+</span>Add Template / Kit
+                      <span className="mr-2">+</span>Go to Template
+                      {/* <span className="mr-2">+</span>Add Template / Kit */}
                     </a>
                   </div>
                 </div>
@@ -1454,21 +1455,23 @@ const AddPortfolioItem = (props) => {
             </div>
           </TabPanel>
           <TabPanel value="3">
-            <p className="mt-4">REPAIR OPTIONS</p>
+            {/* <p className="mt-4">REPAIR OPTIONS</p> */}
+            <p className="mt-4">RELATED KIT</p>
             <div className="row input-fields">
-              <div className="col-md-4 col-sm-4">
+              <div className="col-md-6 col-sm-6">
                 <div className="form-group">
                   <label
                     className="text-light-dark font-size-14 font-weight-500"
                     for="exampleInputEmail1"
                   >
-                    REPAIR OPTION
+                    {/* REPAIR OPTION */}
+                    RELATED KIT
                   </label>
                   <input
                     type="text"
                     className="form-control text-primary border-radius-10"
                     name="repairOption"
-                    placeholder="REPAIR OPTION"
+                    placeholder="RELATED KIT"
                     value={addPortFolioItem.repairOption}
                     onChange={(e) => handleRelatedKitInputSearch(e)}
                   />
@@ -1529,14 +1532,38 @@ const AddPortfolioItem = (props) => {
                   </div> */}
                 </div>
               </div>
-              <div className="col-md-4 col-sm-4">
+              <div className="col-md-6 col-sm-6">
+                <div className="form-group">
+                  <label
+                    className="text-light-dark font-size-14 font-weight-500"
+                    for="exampleInputEmail1"
+                  >
+                    KIT DESCRIPTION
+                  </label>
+                  <Select
+                    options={options}
+                    placeholder="KIT DESCRIPTION"
+                    onChange={(e) =>
+                      setAddportFolioItem({
+                        ...addPortFolioItem,
+                        kitDescription: e,
+                      })
+                    }
+                    className="text-primary"
+                    value={addPortFolioItem.kitDescription}
+                    isDisabled
+                  />
+                </div>
+              </div>
+              <div className="col-md-6 col-sm-6">
                 <div className="form-group">
                   <div className="mt-4">
                     <a
                       href="#"
                       className="form-control Add-new-segment-div text-center border-radius-10 bg-light-dark font-size-16 text-violet mt-2"
                     >
-                      <span className="mr-2">+</span>Add Repair Option
+                      {/* <span className="mr-2">+</span>Add Repair Option */}
+                      <span className="mr-2">+</span>Go to Related Kit
                     </a>
                   </div>
                 </div>
