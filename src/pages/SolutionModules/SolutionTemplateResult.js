@@ -415,6 +415,7 @@ export function SolutionTemplateResult(props) {
     const [querySearchModelResult, setQuerySearchModelResult] = useState([])
     const [querySearchModelPrefixOption, setQuerySearchModelPrefixOption] = useState([])
     const [selectedPrefixOption, setSelectedPrefixOption] = useState("");
+    const [includedModelIndex, setIncludedModelIndex] = useState(0);
 
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -4038,40 +4039,40 @@ export function SolutionTemplateResult(props) {
 
     const columns4 = [
         {
-          name: (
-            <>
-              <div>Family</div>
-            </>
-          ),
-          selector: (row) => row.family,
-          wrap: true,
-          sortable: true,
-          format: (row) => row.family,
+            name: (
+                <>
+                    <div>Family</div>
+                </>
+            ),
+            selector: (row) => row.family,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.family,
         },
         {
-          name: (
-            <>
-              <div>Model</div>
-            </>
-          ),
-          selector: (row) => row.model,
-          wrap: true,
-          sortable: true,
-          format: (row) => row.model,
+            name: (
+                <>
+                    <div>Model</div>
+                </>
+            ),
+            selector: (row) => row.model,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.model,
         },
         {
-          name: (
-            <>
-              <div>Serial Number</div>
-            </>
-          ),
-          selector: (row) => row.noSeriese,
-          wrap: true,
-          sortable: true,
-          format: (row) => row.noSeriese,
-          cell: (row) => (
-            <div>
-              {/* <SearchBox
+            name: (
+                <>
+                    <div>Serial Number</div>
+                </>
+            ),
+            selector: (row) => row.noSeriese,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.noSeriese,
+            cell: (i, row) => (
+                <div>
+                    {/* <SearchBox
                 value={row.noSeriese}
                 onChange={(e) =>
                   handleCoverageHandleMachineSearch(
@@ -4085,77 +4086,77 @@ export function SolutionTemplateResult(props) {
                 onSelect={handleModelSelect}
                 noOptions={noCoverageOptionSerial}
               /> */}
-              <Select
-                className="customselect"
-                // options={[
-                //   { label: "12345", value: "12345" },
-                //   { label: "12345", value: "12345" },
-                // ]}
-                options={coverageSerialResultList}
-              />
-            </div>
-          ),
+                    <Select
+                        className="customselect"
+                        maxMenuHeight={80}
+                        onChange={(e) => handleIncludedeSerialNoSelectChange(e, i, row)}
+                        value={row.serialNumber}
+                        options={coverageSerialResultList}
+                    // isOptionDisabled={(e) => handleDisableSerialNoChangesOptions(e,i,row)}
+                    />
+                </div>
+            ),
         },
         {
-          name: (
-            <>
-              <div>Location</div>
-            </>
-          ),
-          selector: (row) => row.location,
-          wrap: true,
-          sortable: true,
-          format: (row) => row.location,
+            name: (
+                <>
+                    <div>Location</div>
+                </>
+            ),
+            selector: (row) => row.location,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.location,
         },
         {
-          name: (
-            <>
-              <div>Start Date</div>
-            </>
-          ),
-          selector: (row) => row.startDate,
-          wrap: true,
-          sortable: true,
-          format: (row) => row.startDate,
-          cell: (row) => (
-            <div className="date-box tabledate-box">
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <DatePicker
-                  variant="inline"
-                  format="dd/MM/yyyy"
-                  className="form-controldate border-radius-10"
-                  label=""
-                // value={row.startDate}
-                />
-              </MuiPickersUtilsProvider>
-            </div>
-          ),
+            name: (
+                <>
+                    <div>Start Date</div>
+                </>
+            ),
+            selector: (row) => row.startDate,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.startDate,
+            cell: (row) => (
+                <div className="date-box tabledate-box">
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <DatePicker
+                            variant="inline"
+                            format="dd/MM/yyyy"
+                            className="form-controldate border-radius-10"
+                            label=""
+                        // value={row.startDate}
+                        />
+                    </MuiPickersUtilsProvider>
+                </div>
+            ),
         },
         {
-          name: (
-            <>
-              <div>End Date</div>
-            </>
-          ),
-          selector: (row) => row.endDate,
-          wrap: true,
-          sortable: true,
-          format: (row) => row.endDate,
-          cell: (row) => (
-            <div className="date-box tabledate-box">
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <DatePicker
-                  variant="inline"
-                  format="dd/MM/yyyy"
-                  className="form-controldate border-radius-10"
-                  label=""
-                // value={validityData.fromDate}
-                />
-              </MuiPickersUtilsProvider>
-            </div>
-          ),
+            name: (
+                <>
+                    <div>End Date</div>
+                </>
+            ),
+            selector: (row) => row.endDate,
+            wrap: true,
+            sortable: true,
+            format: (row) => row.endDate,
+            cell: (row) => (
+                <div className="date-box tabledate-box">
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <DatePicker
+                            variant="inline"
+                            format="dd/MM/yyyy"
+                            className="form-controldate border-radius-10"
+                            label=""
+                        // value={validityData.fromDate}
+                        />
+                    </MuiPickersUtilsProvider>
+                </div>
+            ),
         },
-      ];
+    ];
 
     const selectedportfolioTempItemsColumn = [
         {
@@ -4472,63 +4473,100 @@ export function SolutionTemplateResult(props) {
         }
     };
 
-    const ShowRelatedIncludeModelBox = async (dataRow) => {
-        setModelIncludedData([]);
+    const ShowRelatedIncludeModelBox = async (i, dataRow) => {
+        const _selectedMasterData = [...selectedMasterData]
+        const obj = _selectedMasterData[i]
 
-        var ModelBoxKeys = [];
-        var KeyValues = [];
-
-        for (var key in openedModelBoxData) {
-            ModelBoxKeys.push(Object.keys(openedModelBoxData[key]));
-        }
-
-        const ValIs = ModelBoxKeys.map((i, data) => {
-            KeyValues.push(Number(i[0]));
-        });
-
-        if (!KeyValues.includes(dataRow.id)) {
-            openedModelBoxData.push({
-                [dataRow.id]: [
-                    {
-                        family: dataRow.family,
-                        model: dataRow.model,
-                        noSeriese: "0JAPA000470",
-                        location: "LIMA",
-                        startDate: "08/04/2017",
-                        endDate: "08/04/2017",
-                    },
-                ],
-            });
-        }
-
-        setOpenedModelBoxData([...openedModelBoxData]);
-
-        const NewAddedData = openedModelBoxData.map((currentItem, i) => {
-            if (currentItem.hasOwnProperty(dataRow.id)) {
-                var valueOf = Object.values(currentItem);
-                const Addval = valueOf.map((myVal, i) => {
-                    setModelIncludedData([...myVal]);
-                });
+        if (!obj.associatedIncludedModelData) {
+            const tempObj = {
+                ...obj, associatedIncludedModelData: [{
+                    family: dataRow.family,
+                    model: dataRow.model,
+                    noSeriese: "0JAPA000470",
+                    location: "LIMA",
+                    startDate: "08/04/2017",
+                    endDate: "08/04/2017",
+                    serialNumber: ""
+                }]
             }
-        });
-
+            _selectedMasterData[i] = tempObj
+            setSelectedMasterData(_selectedMasterData)
+        }
+        // else{
+        //   // const tempObj={...obj,associatedIncludedModelData:[...obj.associatedIncludedModelData]}
+        //   // _selectedMasterData[i]=tempObj
+        //   // console.log("_selectedMasterData",_selectedMasterData[i])
+        //   // setSelectedMasterData(_selectedMasterData)  
+        // }
         var searchQueryMachine = dataRow.model
             ? "model~" + dataRow.model
             : "";
         var serialArr = [];
-        console.log("dataRow ---- ", searchQueryMachine)
         await machineSearch(searchQueryMachine)
             .then((result) => {
                 console.log("my rsult is ---- ", result)
                 for (let i = 0; i < result.length; i++) {
-                    // var serialValue = {label: equipmentNumber, value: equipmentNumber}
                     serialArr.push({ label: result[i].equipmentNumber, value: result[i].equipmentNumber })
                 }
             })
         setCoverageSerialResultList(serialArr)
-        console.log("serialArr --- : ", serialArr);
+        setIncludedModelIndex(i)
         setShowRelatedModel(true);
-        setOpenModelBoxDataId(dataRow);
+        // setModelIncludedData([]);
+
+        // var ModelBoxKeys = [];
+        // var KeyValues = [];
+
+        // for (var key in openedModelBoxData) {
+        //     ModelBoxKeys.push(Object.keys(openedModelBoxData[key]));
+        // }
+
+        // const ValIs = ModelBoxKeys.map((i, data) => {
+        //     KeyValues.push(Number(i[0]));
+        // });
+
+        // if (!KeyValues.includes(dataRow.id)) {
+        //     openedModelBoxData.push({
+        //         [dataRow.id]: [
+        //             {
+        //                 family: dataRow.family,
+        //                 model: dataRow.model,
+        //                 noSeriese: "0JAPA000470",
+        //                 location: "LIMA",
+        //                 startDate: "08/04/2017",
+        //                 endDate: "08/04/2017",
+        //             },
+        //         ],
+        //     });
+        // }
+
+        // setOpenedModelBoxData([...openedModelBoxData]);
+
+        // const NewAddedData = openedModelBoxData.map((currentItem, i) => {
+        //     if (currentItem.hasOwnProperty(dataRow.id)) {
+        //         var valueOf = Object.values(currentItem);
+        //         const Addval = valueOf.map((myVal, i) => {
+        //             setModelIncludedData([...myVal]);
+        //         });
+        //     }
+        // });
+
+        // var searchQueryMachine = dataRow.model
+        //     ? "model~" + dataRow.model
+        //     : "";
+        // var serialArr = [];
+        // console.log("dataRow ---- ", searchQueryMachine)
+        // await machineSearch(searchQueryMachine)
+        //     .then((result) => {
+        //         console.log("my rsult is ---- ", result)
+        //         for (let i = 0; i < result.length; i++) {
+        //             serialArr.push({ label: result[i].equipmentNumber, value: result[i].equipmentNumber })
+        //         }
+        //     })
+        // setCoverageSerialResultList(serialArr)
+        // console.log("serialArr --- : ", serialArr);
+        // setShowRelatedModel(true);
+        // setOpenModelBoxDataId(dataRow);
     };
 
     const AddNewRowData = (rowItem) => {
@@ -4554,6 +4592,87 @@ export function SolutionTemplateResult(props) {
             });
         }
     };
+
+    const handleIncludedeSerialNoSelectChange = (e, i, row) => {
+        let _selectedMasterData = [...selectedMasterData]
+        let tempObj = _selectedMasterData[includedModelIndex].associatedIncludedModelData[i]
+
+        tempObj = { ...tempObj, serialNumber: e }
+        _selectedMasterData[includedModelIndex].associatedIncludedModelData[i] = tempObj
+        setSelectedMasterData(_selectedMasterData)
+        // return
+        //   const _modelIncludedData=[...modelIncludedData]
+        //   const obj=_modelIncludedData[i]
+        //  _modelIncludedData[i]={...row,serialNumber:e}
+        //  setModelIncludedData(_modelIncludedData)
+        //  console.log("_modelIncludedData[i]",obj)
+        //   console.log("handleIncludedeSerialNoSelectChange",row,i)
+
+    }
+
+    const handleIncludedSerialNoStartDataChange = (e, i, row) => {
+
+        let _selectedMasterData = [...selectedMasterData]
+        let tempObj = _selectedMasterData[includedModelIndex].associatedIncludedModelData[i]
+
+        tempObj = { ...tempObj, startDate: e }
+        _selectedMasterData[includedModelIndex].associatedIncludedModelData[i] = tempObj
+        setSelectedMasterData(_selectedMasterData)
+    }
+
+    const handleIncludedSerialNoEndDataChange = (e, i, row) => {
+
+        let _selectedMasterData = [...selectedMasterData]
+        let tempObj = _selectedMasterData[includedModelIndex].associatedIncludedModelData[i]
+
+        tempObj = { ...tempObj, endDate: e }
+        _selectedMasterData[includedModelIndex].associatedIncludedModelData[i] = tempObj
+        setSelectedMasterData(_selectedMasterData)
+    }
+
+    const handleIncludeSerialNumberSaveChanges = async (data) => {
+        console.log("data is ----- : ", data);
+
+        if (data.associatedIncludedModelData.length > 1) {
+            let cvgIds = [];
+            for (let i = 0; i < data.associatedIncludedModelData.length; i++) {
+                if (i > 0) {
+                    let reqObj = {
+                        customCoverageId: 0,
+                        serviceId: 0,
+                        modelNo: data.model,
+                        serialNumber: data.associatedIncludedModelData[i].serialNumber?.value ? data.associatedIncludedModelData[i].serialNumber?.value : "",
+                        startSerialNumber: "",
+                        endSerialNumber: "",
+                        serialNumberPrefix: "",
+                        family: data.family,
+                        make: data.make,
+                        fleet: "",
+                        fleetSize: "SMALL",
+                        location: "",
+                        startDate: "",
+                        endDate: "",
+                        actions: "",
+                    }
+                    const cvgRes = await createCutomCoverage(reqObj);
+                    console.log("createCoverage res:", cvgRes);
+                    cvgIds.push({ coverageId: cvgRes.customCoverageId });
+                } else {
+                    console.log("0 index");
+                }
+            }
+        }
+    }
+
+    const handleDisableSerialNoChangesOptions = (e, i, row) => {
+
+        // const selectedValue = coverageSerialResultList.value;
+        // const changeToValue = e.value;
+        // console.log(" value is : ",changeToValue)
+
+        // return !(coverageSerialResultList.includes(e));
+
+    }
 
     const handleExpandedRowDelete = (e, id) => {
         const _bundleItems = [...bundleItems];
@@ -7317,7 +7436,7 @@ export function SolutionTemplateResult(props) {
                                 <Link
                                     to="#"
                                     className=" btn bg-primary text-white"
-                                    onClick={() => AddNewRowData(openModelBoxDataId)}
+                                    onClick={() => AddNewRowData(selectedMasterData[includedModelIndex])}
                                 >
                                     Add New
                                 </Link>
@@ -7328,7 +7447,7 @@ export function SolutionTemplateResult(props) {
                                 className=""
                                 title=""
                                 columns={columns4}
-                                data={modelIncludedData}
+                                data={selectedMasterData[includedModelIndex]?.associatedIncludedModelData}
                                 customStyles={customStyles}
                             // pagination
                             />

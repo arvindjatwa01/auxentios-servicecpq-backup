@@ -516,6 +516,9 @@ export function CreatePortfolio(props) {
     netPrice: "",
     totalPrice: 1200,
   });
+
+  const [serialNumber, setSerialNumber] = useState("");
+
   const [expandedPriceCalculator, setExpandedPriceCalculator] = useState({
     itemId: "",
     description: "",
@@ -1824,9 +1827,9 @@ export function CreatePortfolio(props) {
 
             preparedBy: administrative.preparedBy,
             approvedBy: administrative.approvedBy,
-            preparedOn: administrative.preparedOn,
+            preparedOn: administrative.preparedOn.toISOString().substring(0, 10),
             revisedBy: administrative.revisedBy,
-            revisedOn: administrative.revisedOn,
+            revisedOn: administrative.revisedOn.toISOString().substring(0, 10),
             offerValidity: administrative.offerValidity,
             salesOffice: administrative.salesOffice,
 
@@ -2200,9 +2203,9 @@ export function CreatePortfolio(props) {
             ...generalComponentData,
             preparedBy: administrative.preparedBy,
             approvedBy: administrative.approvedBy,
-            preparedOn: administrative.preparedOn,
+            preparedOn: administrative.preparedOn.toISOString().substring(0, 10),
             revisedBy: administrative.revisedBy,
-            revisedOn: administrative.revisedOn,
+            revisedOn: administrative.revisedOn.toISOString().substring(0, 10),
             salesOffice: administrative.salesOffice,
             offerValidity: administrative.offerValidity,
           });
@@ -2706,7 +2709,7 @@ export function CreatePortfolio(props) {
               coverageId: 0,
               serviceId: 0,
               modelNo: selectedMasterData[i].model,
-              serialNumber: "",
+              serialNumber: selectedMasterData[i].associatedIncludedModelData[0].serialNumber?.value,
               startSerialNumber: "",
               endSerialNumber: "",
               serialNumberPrefix: "",
@@ -2792,9 +2795,9 @@ export function CreatePortfolio(props) {
             // escalationPrice: portfolioEscalationPriceDataId,
 
 
-            // portfolioPrice: portfolioPriceDataId,
-            // additionalPrice: portfolioAdditionalPriceDataId,
-            // escalationPrice: portfolioEscalationPriceDataId,
+            portfolioPrice: portfolioPriceDataId,
+            additionalPrice: portfolioAdditionalPriceDataId,
+            escalationPrice: portfolioEscalationPriceDataId,
             items: portfolioItems,
             coverages: cvgIds,
             usageCategory: categoryUsageKeyValue1.value,
@@ -4463,7 +4466,7 @@ export function CreatePortfolio(props) {
       wrap: true,
       sortable: true,
       format: (row) => row.action,
-      cell: (row) => (
+      cell: (row, i) => (
         <div>
           <Link
             to="#"
@@ -4514,7 +4517,7 @@ export function CreatePortfolio(props) {
           <Link
             to="#"
             className="btn-svg text-white cursor"
-            onClick={() => ShowRelatedIncludeModelBox(row)}
+            onClick={() => ShowRelatedIncludeModelBox(i, row)}
           >
             <svg
               data-name="Layer 1"
@@ -4568,10 +4571,10 @@ export function CreatePortfolio(props) {
           <div>Description</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.itemBodyDescription,
+      selector: (row) => row.itemHeaderModel.itemHeaderDescription,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.itemBodyDescription,
+      format: (row) => row.itemHeaderModel.itemHeaderDescription,
     },
     {
       name: (
@@ -4579,10 +4582,10 @@ export function CreatePortfolio(props) {
           <div>Strategy</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel.strategy,
+      selector: (row) => row.itemHeaderModel.itemHeaderStrategy,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel.strategy,
+      format: (row) => row.itemHeaderModel.itemHeaderStrategy,
     },
     // --------------- New (Add on Update Item Fileds) Start ------------------- //
     {
@@ -4602,10 +4605,10 @@ export function CreatePortfolio(props) {
           <div>Quantity</div>
         </>
       ),
-      selector: (row) => row.itemBodyModel.quantity,
+      selector: (row) => row.itemBodyModel?.quantity,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemBodyModel.quantity,
+      format: (row) => row.itemBodyModel?.quantity,
     },
     {
       name: (
@@ -4635,10 +4638,10 @@ export function CreatePortfolio(props) {
           <div>Net Parts Price</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel?.partsprice,
+      selector: (row) => row.itemBodyModel?.partsprice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel?.partsprice,
+      format: (row) => row.itemBodyModel?.partsprice,
     },
     {
       name: (
@@ -4646,10 +4649,10 @@ export function CreatePortfolio(props) {
           <div>Net Service Price</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel?.servicePrice,
+      selector: (row) => row.itemBodyModel?.servicePrice,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel?.servicePrice,
+      format: (row) => row.itemBodyModel?.servicePrice,
     },
     {
       name: (
@@ -4668,10 +4671,10 @@ export function CreatePortfolio(props) {
           <div>Comments</div>
         </>
       ),
-      selector: (row) => row.itemHeaderModel?.comments,
+      selector: (row) => row.itemBodyModel?.comments,
       wrap: true,
       sortable: true,
-      format: (row) => row.itemHeaderModel?.comments,
+      format: (row) => row.itemBodyModel?.comments,
     },
 
     // --------------- New (Add on Update Item Fileds) End ------------------- //
@@ -5397,7 +5400,7 @@ export function CreatePortfolio(props) {
       wrap: true,
       sortable: true,
       format: (row) => row.noSeriese,
-      cell: (row) => (
+      cell: (row, i) => (
         <div>
           {/* <SearchBox
             value={row.noSeriese}
@@ -5415,11 +5418,11 @@ export function CreatePortfolio(props) {
           /> */}
           <Select
             className="customselect"
-            // options={[
-            //   { label: "12345", value: "12345" },
-            //   { label: "12345", value: "12345" },
-            // ]}
+            maxMenuHeight={80}
+            onChange={(e) => handleIncludedeSerialNoSelectChange(e, i, row)}
+            value={row.serialNumber}
             options={coverageSerialResultList}
+          // isOptionDisabled={(e) => handleDisableSerialNoChangesOptions(e,i,row)}
           />
         </div>
       ),
@@ -5445,7 +5448,7 @@ export function CreatePortfolio(props) {
       wrap: true,
       sortable: true,
       format: (row) => row.startDate,
-      cell: (row) => (
+      cell: (row, i) => (
         <div className="date-box tabledate-box">
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <DatePicker
@@ -5453,7 +5456,9 @@ export function CreatePortfolio(props) {
               format="dd/MM/yyyy"
               className="form-controldate border-radius-10 mr-3"
               label=""
-            // value={row.startDate}
+              // value={row.serialNumber}
+              // value={row.startDate}
+              onChange={(e) => handleIncludedSerialNoStartDataChange(e, i, row)}
             />
           </MuiPickersUtilsProvider>
         </div>
@@ -5471,7 +5476,7 @@ export function CreatePortfolio(props) {
       minWidth: "127px",
       sortable: true,
       format: (row) => row.endDate,
-      cell: (row) => (
+      cell: (row, i) => (
         <div className="date-box tabledate-box">
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <DatePicker
@@ -5479,6 +5484,8 @@ export function CreatePortfolio(props) {
               format="dd/MM/yyyy"
               className="form-controldate border-radius-10"
               label=""
+              // value={row.endDate}
+              onChange={(e) => handleIncludedSerialNoEndDataChange(e, i, row)}
             // value={validityData.fromDate}
             />
           </MuiPickersUtilsProvider>
@@ -5486,6 +5493,8 @@ export function CreatePortfolio(props) {
       ),
     },
   ];
+
+  // console.log("setSerialNumber 1234 : ", serialNumber);
 
   const data4 = [
     {
@@ -5571,53 +5580,41 @@ export function CreatePortfolio(props) {
   const [querySearchModelPrefixOption, setQuerySearchModelPrefixOption] = useState([])
 
   const [selectedPrefixOption, setSelectedPrefixOption] = useState("");
+  const [includedModelIndex, setIncludedModelIndex] = useState(0);
 
 
-  const ShowRelatedIncludeModelBox = async (dataRow) => {
-    setModelIncludedData([]);
+  const ShowRelatedIncludeModelBox = async (i, dataRow) => {
+    const _selectedMasterData = [...selectedMasterData]
+    const obj = _selectedMasterData[i]
 
-    var ModelBoxKeys = [];
-    var KeyValues = [];
-
-    for (var key in openedModelBoxData) {
-      ModelBoxKeys.push(Object.keys(openedModelBoxData[key]));
-    }
-
-    const ValIs = ModelBoxKeys.map((i, data) => {
-      KeyValues.push(Number(i[0]));
-    });
-
-    if (!KeyValues.includes(dataRow.id)) {
-      openedModelBoxData.push({
-        [dataRow.id]: [
-          {
-            family: dataRow.family,
-            model: dataRow.model,
-            noSeriese: "0JAPA000470",
-            location: "LIMA",
-            startDate: "08/04/2017",
-            endDate: "08/04/2017",
-          },
-        ],
-      });
-    }
-
-    setOpenedModelBoxData([...openedModelBoxData]);
-
-    const NewAddedData = openedModelBoxData.map((currentItem, i) => {
-      if (currentItem.hasOwnProperty(dataRow.id)) {
-        var valueOf = Object.values(currentItem);
-        const Addval = valueOf.map((myVal, i) => {
-          setModelIncludedData([...myVal]);
-        });
+    if (!obj.associatedIncludedModelData) {
+      const tempObj = {
+        ...obj, associatedIncludedModelData: [{
+          family: dataRow.family,
+          model: dataRow.model,
+          noSeriese: "0JAPA000470",
+          location: "LIMA",
+          startDate: "08/04/2017",
+          endDate: "08/04/2017",
+          serialNumber: ""
+        }]
       }
-    });
+      _selectedMasterData[i] = tempObj
+      setSelectedMasterData(_selectedMasterData)
 
+
+
+    }
+    // else{
+    //   // const tempObj={...obj,associatedIncludedModelData:[...obj.associatedIncludedModelData]}
+    //   // _selectedMasterData[i]=tempObj
+    //   // console.log("_selectedMasterData",_selectedMasterData[i])
+    //   // setSelectedMasterData(_selectedMasterData)  
+    // }
     var searchQueryMachine = dataRow.model
       ? "model~" + dataRow.model
       : "";
     var serialArr = [];
-    console.log("dataRow ---- ", searchQueryMachine)
     await machineSearch(searchQueryMachine)
       .then((result) => {
         console.log("my rsult is ---- ", result)
@@ -5627,34 +5624,229 @@ export function CreatePortfolio(props) {
         }
       })
     setCoverageSerialResultList(serialArr)
-    console.log("serialArr --- : ", serialArr);
+    setIncludedModelIndex(i)
     setShowRelatedModel(true);
-    setOpenModelBoxDataId(dataRow);
+
+    // return
+
+    // console.log("datarow ----- : ", dataRow, obj);
+    // setModelIncludedData([]);
+
+    // var ModelBoxKeys = [];
+    // var KeyValues = [];
+
+    // for (var key in openedModelBoxData) {
+    //   ModelBoxKeys.push(Object.keys(openedModelBoxData[key]));
+    // }
+
+    // const ValIs = ModelBoxKeys.map((i, data) => {
+    //   KeyValues.push(Number(i[0]));
+    // });
+
+    // if (!KeyValues.includes(dataRow.id)) {
+    //   openedModelBoxData.push({
+    //     [dataRow.id]: [
+    //       {
+    //         family: dataRow.family,
+    //         model: dataRow.model,
+    //         noSeriese: "0JAPA000470",
+    //         location: "LIMA",
+    //         startDate: "08/04/2017",
+    //         endDate: "08/04/2017",
+    //         serialNumber: ""
+    //       },
+    //     ],
+    //   });
+    // }
+
+    // setOpenedModelBoxData([...openedModelBoxData]);
+
+    // const NewAddedData = openedModelBoxData.map((currentItem, i) => {
+    //   if (currentItem.hasOwnProperty(dataRow.id)) {
+    //     var valueOf = Object.values(currentItem);
+    //     const Addval = valueOf.map((myVal, i) => {
+    //       console.log("currentItem1234567", myVal)
+    //       setModelIncludedData([...myVal]);
+    //     });
+    //   }
+    // });
+
+    // var searchQueryMachine = dataRow.model
+    //   ? "model~" + dataRow.model
+    //   : "";
+    // var serialArr = [];
+    // console.log("dataRow ---- ", searchQueryMachine)
+    // await machineSearch(searchQueryMachine)
+    //   .then((result) => {
+    //     console.log("my rsult is ---- ", result)
+    //     for (let i = 0; i < result.length; i++) {
+    //       serialArr.push({ label: result[i].equipmentNumber, value: result[i].equipmentNumber })
+    //     }
+    //   })
+    // setCoverageSerialResultList(serialArr)
+    // console.log("serialArr --- : ", serialArr);
+    // setShowRelatedModel(true);
+    // setOpenModelBoxDataId(dataRow);
   };
 
   const AddNewRowData = (rowItem) => {
-    if (showRelatedModel === true) {
-      const _IncludedDataList = [...openedModelBoxData];
-
-      const NewAddedData = _IncludedDataList.map((currentItem, i) => {
-        for (var j in currentItem) {
-          if (j == rowItem.id) {
-            currentItem[j].push({
-              family: rowItem.family,
-              model: rowItem.model,
-              noSeriese: "0JAPA000470",
-              location: "LIMA",
-              startDate: "08/04/20017",
-              endDate: "08/04/20017",
-            });
-            setModelIncludedData([...currentItem[j]]);
-
-            setOpenedModelBoxData([...openedModelBoxData]);
-          }
-        }
-      });
+    let _selectedMasterData = [...selectedMasterData]
+    let obj = _selectedMasterData[includedModelIndex]
+    obj = {
+      ...obj, associatedIncludedModelData: [...obj.associatedIncludedModelData, {
+        family: rowItem.family,
+        model: rowItem.model,
+        noSeriese: "0JAPA000470",
+        location: "LIMA",
+        startDate: "08/04/20017",
+        endDate: "08/04/20017",
+        serialNumber: ""
+      }]
     }
+    _selectedMasterData[includedModelIndex] = obj
+
+    setSelectedMasterData([..._selectedMasterData])
+    // return
+
+
+    // if (showRelatedModel === true) {
+    //   const _IncludedDataList = [...openedModelBoxData];
+
+    //   const NewAddedData = _IncludedDataList.map((currentItem, i) => {
+    //     for (var j in currentItem) {
+    //       if (j == rowItem.id) {
+    //         currentItem[j].push({
+    //           family: rowItem.family,
+    //           model: rowItem.model,
+    //           noSeriese: "0JAPA000470",
+    //           location: "LIMA",
+    //           startDate: "08/04/20017",
+    //           endDate: "08/04/20017",
+    //           serialNumber:""
+    //         });
+    //         setModelIncludedData([...currentItem[j]]);
+
+    //         setOpenedModelBoxData([...openedModelBoxData]);
+    //       }
+    //     }
+    //   });
+    // }
   };
+
+  const handleIncludedeSerialNoSelectChange = (e, i, row) => {
+    let _selectedMasterData = [...selectedMasterData]
+    let tempObj = _selectedMasterData[includedModelIndex].associatedIncludedModelData[i]
+
+    tempObj = { ...tempObj, serialNumber: e }
+    _selectedMasterData[includedModelIndex].associatedIncludedModelData[i] = tempObj
+    setSelectedMasterData(_selectedMasterData)
+    // return
+    //   const _modelIncludedData=[...modelIncludedData]
+    //   const obj=_modelIncludedData[i]
+    //  _modelIncludedData[i]={...row,serialNumber:e}
+    //  setModelIncludedData(_modelIncludedData)
+    //  console.log("_modelIncludedData[i]",obj)
+    //   console.log("handleIncludedeSerialNoSelectChange",row,i)
+
+  }
+
+  const handleIncludedSerialNoStartDataChange = (e, i, row) => {
+
+    let _selectedMasterData = [...selectedMasterData]
+    let tempObj = _selectedMasterData[includedModelIndex].associatedIncludedModelData[i]
+
+    tempObj = { ...tempObj, startDate: e }
+    _selectedMasterData[includedModelIndex].associatedIncludedModelData[i] = tempObj
+    setSelectedMasterData(_selectedMasterData)
+  }
+
+  const handleIncludedSerialNoEndDataChange = (e, i, row) => {
+
+    let _selectedMasterData = [...selectedMasterData]
+    let tempObj = _selectedMasterData[includedModelIndex].associatedIncludedModelData[i]
+
+    tempObj = { ...tempObj, endDate: e }
+    _selectedMasterData[includedModelIndex].associatedIncludedModelData[i] = tempObj
+    setSelectedMasterData(_selectedMasterData)
+  }
+
+  const handleIncludeSerialNumberSaveChanges = async (data) => {
+    console.log("data is ----- : ", data);
+    if (data.associatedIncludedModelData.length > 1) {
+      let cvgIds = [];
+      for (let i = 0; i < data.associatedIncludedModelData.length; i++) {
+        // if (
+        //   data.associatedIncludedModelData[i].model === "" ||
+        //   data.associatedIncludedModelData[i].family === ""
+        // ) {
+        //   throw "Family or Model values are missing";
+        // }
+        if (i > 0) {
+          let reqObj = {
+            coverageId: 0,
+            serviceId: 0,
+            modelNo: data.model,
+            serialNumber: data.associatedIncludedModelData[i].serialNumber?.value ? data.associatedIncludedModelData[i].serialNumber?.value : "",
+            startSerialNumber: "",
+            endSerialNumber: "",
+            serialNumberPrefix: "",
+            family: data.family,
+            make: data.make,
+            fleet: "",
+            fleetSize: "SMALL",
+            location: "",
+            // startDate: data.associatedIncludedModelData[i].startDate,
+            // endDate: data.associatedIncludedModelData[i].endDate,
+            startDate: "",
+            endDate: "",
+            actions: "",
+            createdAt: "",
+          };
+          const cvgRes = await createCoverage(reqObj);
+          console.log("createCoverage res:", cvgRes);
+          cvgIds.push({ coverageId: cvgRes.coverageId });
+        }else{
+          console.log("0 index");
+        }
+
+      }
+
+      setPortfolioCoverage(cvgIds);
+      setShowRelatedModel(false)
+    }
+
+    // const cvgObj = {
+    //   coverageId: 0,
+    //   serviceId: 0,
+    //   modelNo: string,
+    //   serialNumber: string,
+    //   startSerialNumber: string,
+    //   endSerialNumber: string,
+    //   serialNumberPrefix: string,
+    //   family: string,
+    //   make: string,
+    //   fleet: string,
+    //   fleetSize: SMALL,
+    //   location: string,
+    //   startDate: 2022 - 12 - 09,
+    //   endDate: 2022 - 12 - 09,
+    //   actions: string,
+    // }
+
+
+
+  }
+
+  const handleDisableSerialNoChangesOptions = (e, i, row) => {
+
+    // const selectedValue = coverageSerialResultList.value;
+    // const changeToValue = e.value;
+    // console.log(" value is : ",changeToValue)
+
+    // return !(coverageSerialResultList.includes(e));
+
+  }
+
 
   const handleExpandedRowDelete = async (e, itemId, bundleId) => {
     try {
@@ -6014,7 +6206,7 @@ export function CreatePortfolio(props) {
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
-              {bundleAndService.itemBodyModel.itemBodyDescription}
+              {bundleAndService.itemHeaderModel.itemHeaderDescription}
             </div>
           </div>
           <div
@@ -6025,7 +6217,7 @@ export function CreatePortfolio(props) {
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
-              {bundleAndService.itemHeaderModel.strategy}
+              {bundleAndService.itemHeaderModel.itemHeaderStrategy}
             </div>
           </div>
           <div
@@ -6036,7 +6228,7 @@ export function CreatePortfolio(props) {
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
-              {bundleAndService.itemBodyModel.standardJobId}
+              {bundleAndService.itemBodyModel.taskType}
             </div>
           </div>
           <div
@@ -6047,7 +6239,7 @@ export function CreatePortfolio(props) {
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
-              {bundleAndService.itemBodyModel.repairOption}
+              {bundleAndService.itemBodyModel?.quantity}
             </div>
           </div>
           <div
@@ -6058,7 +6250,7 @@ export function CreatePortfolio(props) {
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
-              {bundleAndService.itemBodyModel.frequency}
+              {bundleAndService.itemHeaderModel?.netPrice}
             </div>
           </div>
           <div
@@ -6069,7 +6261,7 @@ export function CreatePortfolio(props) {
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
-              {bundleAndService.itemBodyModel.quantity}
+              {bundleAndService.itemHeaderModel?.additional}
             </div>
           </div>
           <div
@@ -6080,7 +6272,7 @@ export function CreatePortfolio(props) {
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
-              {bundleAndService.itemBodyModel.sparePartsPrice}
+              {bundleAndService.itemBodyModel?.sparePartsPrice}
             </div>
           </div>
           <div
@@ -6091,7 +6283,7 @@ export function CreatePortfolio(props) {
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
-              {bundleAndService.itemBodyModel.servicePrice}
+              {bundleAndService.itemBodyModel?.servicePrice}
             </div>
           </div>
           <div
@@ -6102,7 +6294,7 @@ export function CreatePortfolio(props) {
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
-              {bundleAndService.itemBodyModel.totalPrice}
+              {bundleAndService.itemBodyModel?.totalPrice}
             </div>
           </div>
           <div
@@ -6113,19 +6305,33 @@ export function CreatePortfolio(props) {
             data-tag="allowRowEvents"
           >
             <div data-tag="allowRowEvents">
-              {bundleAndService.itemBodyModel.totalPrice}
+              {bundleAndService.itemBodyModel?.totalPrice}
             </div>
           </div>
           <div
             id="cell-10-undefined"
-            data-column-id="10"
+            data-column-id="11"
             role="gridcell"
             className="sc-iBkjds sc-ftvSup sc-papXJ hUvRIg eLCUDv bIEyyu custom-rdt_TableCell rdt_TableCell"
             data-tag="allowRowEvents"
           >
-            <div data-tag="allowRowEvents">
-              {/* {bundleAndService.itemBodyModel.totalPrice} */}
+            <div
+              className="cursor"
+              onClick={(e) =>
+                handleExpandedRowEdit(
+                  e,
+                  data.itemId,
+                  data.associatedServiceOrBundle[i]
+                )
+              }
+            >
+              <Tooltip title="Edit">
+                <img className="mx-1" src={penIcon} style={{ width: "14px" }} />
+              </Tooltip>
             </div>
+            {/* <div data-tag="allowRowEvents">
+               {bundleAndService.itemBodyModel.totalPrice}
+            </div> */}
           </div>
 
           {/* {bundleItems.length > 0 && (
@@ -6917,6 +7123,43 @@ export function CreatePortfolio(props) {
 
 
     }
+  }
+
+  const getFormattedDateTimeByTimeStamp = (timeStamp) => {
+
+    var date = new Date(timeStamp);
+    var year = date.getFullYear();
+    // var m = date.getMonth() + 1;
+    var m = date.getMonth();
+    // var month = m < 10 ? '0' + m : m;
+    var month = m;
+    var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+    var format = "AM";
+    var hour = date.getHours();
+    var minutes = date.getMinutes();
+
+    var monthName = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    if (hour > 11) {
+      format = "PM";
+    }
+    if (hour > 12) {
+      hour = hour - 12;
+    } else if (hour === 0) {
+      hour = 12;
+    }
+
+    if (hour < 10) {
+      hour = "0" + hour;
+    }
+
+    if (minutes < 10) {
+      minutes = "0" + minutes;
+    }
+
+    // var finalDateString = day + "-" + month + "-" + year + " " + hour + ":" + minutes + " " + format;
+    var finalDateString = year + "-" + month + "-" + day;
+    return finalDateString;
   }
 
   return (
@@ -8057,7 +8300,7 @@ export function CreatePortfolio(props) {
                                 PREPARED ON
                               </p>
                               <h6 className="font-weight-500">
-                                {(administrative.preparedOn == "" || administrative.preparedOn == null ? "NA" : administrative.preparedOn)}
+                                {(administrative.preparedOn == "" || administrative.preparedOn == null ? "NA" : getFormattedDateTimeByTimeStamp(administrative.preparedOn))}
                                 {/* {Object.keys(stratgyTaskTypeKeyValue).length > 0 ? (stratgyTaskTypeKeyValue.label) : (location.selectedTemplateItems[0].taskType)} */}
                               </h6>
                             </div>
@@ -8078,7 +8321,7 @@ export function CreatePortfolio(props) {
                                 REVISED  ON
                               </p>
                               <h6 className="font-weight-500">
-                                {(administrative.revisedOn == "" || administrative.revisedOn == null ? "NA" : administrative.revisedOn)}
+                                {(administrative.revisedOn == "" || administrative.revisedOn == null ? "NA" : getFormattedDateTimeByTimeStamp(administrative.revisedOn))}
                               </h6>
                             </div>
                           </div>
@@ -11014,7 +11257,7 @@ export function CreatePortfolio(props) {
             <Link
               to="#"
               className=" btn bg-primary text-white"
-              onClick={() => AddNewRowData(openModelBoxDataId)}
+              onClick={() => AddNewRowData(selectedMasterData[includedModelIndex])}
             >
               Add New
             </Link>
@@ -11025,7 +11268,7 @@ export function CreatePortfolio(props) {
             className=""
             title=""
             columns={columns4}
-            data={modelIncludedData}
+            data={selectedMasterData[includedModelIndex]?.associatedIncludedModelData}
             customStyles={customStyles}
           // pagination
           />
@@ -11034,7 +11277,7 @@ export function CreatePortfolio(props) {
           <Button variant="primary" onClick={() => setShowRelatedModel(false)}>
             Close
           </Button>
-          <Button variant="primary">Save changes</Button>
+          <Button variant="primary" onClick={() => handleIncludeSerialNumberSaveChanges(selectedMasterData[includedModelIndex])}>Save changes</Button>
         </Modal.Footer>
       </Modal>
 
