@@ -12,7 +12,6 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Tab from "@mui/material/Tab";
-import Loader from "react-js-loader";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import { MuiMenuComponent } from "pages/Operational";
 import React, { useEffect, useState } from "react";

@@ -1,4 +1,3 @@
-import DeleteIcon from "@mui/icons-material/Delete";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import FormatListBulletedOutlinedIcon from "@mui/icons-material/FormatListBulletedOutlined";
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
@@ -44,7 +43,8 @@ import {
 } from "services/repairBuilderServices";
 import Moment from "react-moment";
 import { useAppSelector } from "app/hooks";
-
+import deleteIcon from "../../assets/icons/svg/delete.svg";
+import penIcon from "../../assets/images/pen.png";
 import {
   selectDropdownOption,
   selectChargeCodeList,
@@ -66,7 +66,7 @@ import {
   getExtWork,
   getVendors,
 } from "services/searchServices";
-import { FormControlLabel, FormGroup, Switch } from "@mui/material";
+import { FormControlLabel, FormGroup, Switch, Tooltip } from "@mui/material";
 import AddLaborItemModal from "./components/AddLaborItem";
 import {
   CONSEXT_PRICE_OPTIONS_NOLABOR,
@@ -478,7 +478,7 @@ function RepairServiceEstimate(props) {
   function populateLaborItems(result) {
     FetchLaborItems(result.id)
       .then((resultLabourItems) => {
-        if (resultLabourItems && resultLabourItems.result.length > 0) {
+        if (resultLabourItems && resultLabourItems.result?.length > 0) {
           setLaborItems(resultLabourItems.result);
         }
       })
@@ -517,7 +517,7 @@ function RepairServiceEstimate(props) {
   function populateConsItems(result) {
     FetchConsumableItems(result.id)
       .then((resultConsumableItems) => {
-        if (resultConsumableItems && resultConsumableItems.result.length > 0) {
+        if (resultConsumableItems && resultConsumableItems.result?.length > 0) {
           setConsumableItems(resultConsumableItems.result);
         }
       })
@@ -554,7 +554,7 @@ function RepairServiceEstimate(props) {
   function populateExtWorkItems(result) {
     FetchExtWorkItems(result.id)
       .then((resultExtWorkItems) => {
-        if (resultExtWorkItems && resultExtWorkItems.result.length > 0) {
+        if (resultExtWorkItems && resultExtWorkItems.result?.length > 0) {
           setExtWorkItems(resultExtWorkItems.result);
         }
       })
@@ -750,14 +750,15 @@ function RepairServiceEstimate(props) {
       ...(consumableData.id && { id: consumableData.id }),
       jobCode: consumableData.jobCode,
       jobCodeDescription: consumableData.jobCodeDescription,
-      ...(!consumableData.flatRateIndicator ?
-        consumableData.pricingMethod?.value?.includes("PER")
-        ? {
-            percentageOfBase: consumableData.percentageOfBase,
-            pricingMethod: consumableData.pricingMethod?.value,
-            basePrice: consumableData.basePrice,
-          }
-        : { pricingMethod: consumableData.pricingMethod?.value } : {}),
+      ...(!consumableData.flatRateIndicator
+        ? consumableData.pricingMethod?.value?.includes("PER")
+          ? {
+              percentageOfBase: consumableData.percentageOfBase,
+              pricingMethod: consumableData.pricingMethod?.value,
+              basePrice: consumableData.basePrice,
+            }
+          : { pricingMethod: consumableData.pricingMethod?.value }
+        : {}),
       flatRateIndicator: consumableData.flatRateIndicator,
       adjustedPrice: consumableData.flatRateIndicator
         ? consumableData.adjustedPrice
@@ -789,14 +790,15 @@ function RepairServiceEstimate(props) {
       jobCode: extWorkData.jobCode,
       jobCodeDescription: extWorkData.jobCodeDescription,
       flatRateIndicator: extWorkData.flatRateIndicator,
-      ...(!extWorkData.flatRateIndicator ?
-            extWorkData.pricingMethod?.value?.includes("PER")
-            ? {
-                percentageOfBase: extWorkData.percentageOfBase,
-                pricingMethod: extWorkData.pricingMethod?.value,
-                basePrice: extWorkData.basePrice,
-              }
-            : { pricingMethod: extWorkData.pricingMethod?.value } : {}),
+      ...(!extWorkData.flatRateIndicator
+        ? extWorkData.pricingMethod?.value?.includes("PER")
+          ? {
+              percentageOfBase: extWorkData.percentageOfBase,
+              pricingMethod: extWorkData.pricingMethod?.value,
+              basePrice: extWorkData.basePrice,
+            }
+          : { pricingMethod: extWorkData.pricingMethod?.value }
+        : {}),
       adjustedPrice: extWorkData.flatRateIndicator
         ? extWorkData.adjustedPrice
         : 0.0,
@@ -1176,14 +1178,26 @@ function RepairServiceEstimate(props) {
       getActions: (params) => {
         return [
           <GridActionsCellItem
-            icon={<EditOutlinedIcon />}
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Edit">
+                  <img className="m-1" src={penIcon} alt="Edit" />
+                </Tooltip>
+              </div>
+            }
             label="Edit"
             className="textPrimary"
             onClick={() => openLaborRow(params.row)}
             color="inherit"
           />,
           <GridActionsCellItem
-            icon={<DeleteIcon />}
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Remove">
+                  <img className="m-1" src={deleteIcon} alt="Delete" />
+                </Tooltip>
+              </div>
+            }
             label="Delete"
             onClick={() => handleDeleteLaborItem(params.row.id)}
             color="inherit"
@@ -1260,11 +1274,10 @@ function RepairServiceEstimate(props) {
       activityId: activityIdList.find(
         (element) => element.value === selectedData.activityId
       ),
+      description: selectedData.longDescription,
       activityName: selectedData.activityDescription,
       supplyingVendorCode: selectedData.supplyingVendorCode,
       supplyingVendorName: selectedData.supplyingVendorName,
-      // unitOfMeasure: selectedData.unit,
-      // dimension:
     });
     setExtWorkItemOpen(true);
   };
@@ -1314,14 +1327,26 @@ function RepairServiceEstimate(props) {
       getActions: (params) => {
         return [
           <GridActionsCellItem
-            icon={<EditOutlinedIcon />}
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Edit">
+                  <img className="m-1" src={penIcon} alt="Edit" />
+                </Tooltip>
+              </div>
+            }
             label="Edit"
             className="textPrimary"
             onClick={() => openConsumableRow(params.row)}
             color="inherit"
           />,
           <GridActionsCellItem
-            icon={<DeleteIcon />}
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Remove">
+                  <img className="m-1" src={deleteIcon} alt="Delete" />
+                </Tooltip>
+              </div>
+            }
             label="Delete"
             onClick={() => handleDeleteConsumableItem(params.row.id)}
             color="inherit"
@@ -1371,14 +1396,26 @@ function RepairServiceEstimate(props) {
       getActions: (params) => {
         return [
           <GridActionsCellItem
-            icon={<EditOutlinedIcon />}
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Edit">
+                  <img className="m-1" src={penIcon} alt="Edit" />
+                </Tooltip>
+              </div>
+            }
             label="Edit"
             className="textPrimary"
             onClick={() => openExtWorkRow(params.row)}
             color="inherit"
           />,
           <GridActionsCellItem
-            icon={<DeleteIcon />}
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Remove">
+                  <img className="m-1" src={deleteIcon} alt="Delete" />
+                </Tooltip>
+              </div>
+            }
             label="Delete"
             onClick={() => handleDeleteExtWorkItem(params.row.id)}
             color="inherit"

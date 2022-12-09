@@ -70,7 +70,7 @@ export const RepairWithoutSpareParts = () => {
         </Moment>
       ),
     },
-    { field: "totalPrice", headerName: "Total $", flex: 1, width: 130 },
+    { field: "netPrice", headerName: "Total $", flex: 1, width: 130 , renderCell: (params) => <span style={{fontSize: 12}}>{parseFloat(params.value)?.toFixed(2)}</span>},
     { field: "status", headerName: "Status", flex: 1, width: 130 },
     {
       field: "actions",

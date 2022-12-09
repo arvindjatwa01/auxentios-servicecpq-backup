@@ -322,8 +322,7 @@ const AddExtWorkItemModal = (props) => {
                   props.extWorkItemData.activityName &&
                   props.extWorkItemData.unitOfMeasure &&
                   props.extWorkItemData.estimatedHours > 0 && 
-                  props.extWorkItemData.supplyingVendorName && 
-                  props.extWorkItemData.unitPrice
+                  props.extWorkItemData.supplyingVendorName
                 )
               }
             >

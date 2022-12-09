@@ -95,7 +95,8 @@ const SearchComponent = (props) => {
           );
         });
     } else {
-      props.handleSnack("info", "Please fill search category");
+      props.handleSnack("info", "Please fill search criteria!");
+      obj.selectOptions = [];
     }
     obj.inputSearch = e.target.value;
   };

@@ -14,6 +14,8 @@ import { faCloudUploadAlt, faFileAlt, faFolderPlus, faShareAlt, faUpload } from 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import deleteicon from "../../assets/images/delete.png";
+import penIcon from "../../assets/images/pen.png";
 import Divider from "@mui/material/Divider";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormGroup from "@mui/material/FormGroup";
@@ -40,7 +42,8 @@ import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import {
   debounce, Rating,
-  TextareaAutosize
+  TextareaAutosize,
+  Tooltip
 } from "@mui/material";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
@@ -982,14 +985,26 @@ function PartList(props) {
       getActions: (params) => {
         return [
           <GridActionsCellItem
-            icon={<EditIcon />}
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Edit">
+                  <img className="m-1" src={penIcon} alt="Edit" />
+                </Tooltip>
+              </div>
+            }
             label="Edit"
             className="textPrimary"
             onClick={() => openSparePartRow(params.row)}
             color="inherit"
           />,
           <GridActionsCellItem
-            icon={<DeleteIcon />}
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Edit">
+                  <img className="m-1" src={deleteIcon} alt="Delete" />
+                </Tooltip>
+              </div>
+            }
             label="Delete"
             onClick={() => handleDeleteSparePart(params.row.id)}
             color="inherit"
