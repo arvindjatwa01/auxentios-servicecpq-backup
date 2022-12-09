@@ -583,11 +583,21 @@ function WithoutSparePartsHeader(props) {
       priceMethod: pricingData.priceMethod?.value,
       currency: pricingData.currency?.value,
       priceDate: pricingData.priceDate,
-      adjustedPrice: pricingData.adjustedPrice,
+      adjustedPrice:
+        pricingData.priceMethod?.value === "FLAT_RATE"
+          ? pricingData.adjustedPrice
+          : 0,
     };
     updateBuilderPrice(bId, data)
       .then((result) => {
         // setValue("price");
+        if (result) {
+          setPricingData({
+            ...pricingData,
+            adjustedPrice: result.adjustedPrice,
+            netPrice: result.netPrice,
+          });
+        }
         setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
         handleSnack("success", "Pricing details updated!");
       })
@@ -1860,7 +1870,12 @@ function WithoutSparePartsHeader(props) {
                                     }
                                     className="form-control border-radius-10 text-primary"
                                     placeholder="Optional"
-                                    value={pricingData.adjustedPrice}
+                                    value={
+                                      pricingData.priceMethod?.value ===
+                                      "FLAT_RATE"
+                                        ? pricingData.adjustedPrice
+                                        : 0.0
+                                    }
                                     onChange={(e) =>
                                       setPricingData({
                                         ...pricingData,

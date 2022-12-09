@@ -10,7 +10,13 @@ import React, { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import Select from "react-select";
 // import { MuiMenuComponent } from "./components/MuiMenuRepair";
-import { faCloudUploadAlt, faFileAlt, faFolderPlus, faShareAlt, faUpload } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCloudUploadAlt,
+  faFileAlt,
+  faFolderPlus,
+  faShareAlt,
+  faUpload,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -26,7 +32,7 @@ import {
   DataGrid,
   getGridStringOperators,
   GridActionsCellItem,
-  useGridApiContext
+  useGridApiContext,
 } from "@mui/x-data-grid";
 import $ from "jquery";
 import { MuiMenuComponent } from "pages/Operational";
@@ -40,11 +46,7 @@ import uploadIcon from "../../assets/icons/svg/upload.svg";
 // import SearchIcon from "@mui/icons-material/Search";
 import DateFnsUtils from "@date-io/date-fns";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import {
-  debounce, Rating,
-  TextareaAutosize,
-  Tooltip
-} from "@mui/material";
+import { debounce, Rating, TextareaAutosize, Tooltip } from "@mui/material";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Moment from "react-moment";
@@ -52,16 +54,18 @@ import {
   addMultiPartsToPartList,
   addPartToPartList,
   createBuilderVersion,
-  createKIT, fetchBuilderVersionDet,
+  createKIT,
+  fetchBuilderVersionDet,
   fetchPartlistFromBuilder,
-  fetchPartsFromPartlist, RemoveSparepart,
+  fetchPartsFromPartlist,
+  RemoveSparepart,
   updateBuilderCustomer,
   updateBuilderEstimation,
   updateBuilderGeneralDet,
   updateBuilderMachine,
   updateBuilderPrice,
   updateBuilderStatus,
-  uploadPartsToPartlist
+  uploadPartsToPartlist,
 } from "services/repairBuilderServices";
 import Validator from "utils/validator";
 import CustomSnackbar from "../Common/CustomSnackBar";
@@ -72,7 +76,7 @@ import { useAppSelector } from "app/hooks";
 import {
   customerSearch,
   machineSearch,
-  sparePartSearch
+  sparePartSearch,
 } from "services/searchServices";
 import { RenderConfirmDialog } from "./components/ConfirmationBox";
 import LoadingProgress from "./components/Loader";
@@ -85,11 +89,12 @@ import {
   FONT_STYLE_SELECT,
   GRID_STYLE,
   INITIAL_PAGE_NO,
-  INITIAL_PAGE_SIZE, SPAREPART_SEARCH_Q_OPTIONS
+  INITIAL_PAGE_SIZE,
+  SPAREPART_SEARCH_Q_OPTIONS,
 } from "./CONSTANTS";
 import {
   selectDropdownOption,
-  selectPricingMethodList
+  selectPricingMethodList,
 } from "./dropdowns/repairSlice";
 
 function CommentEditInputCell(props) {
@@ -327,7 +332,7 @@ function PartList(props) {
       exitingType: "repair",
       editable: false,
     };
-    localStorage.setItem('exitingType', JSON.stringify(versionHistoryData));
+    localStorage.setItem("exitingType", JSON.stringify(versionHistoryData));
     console.log(builderId, versionNumber);
     if (builderId && versionNumber) {
       setHeaderLoading(true);
@@ -790,7 +795,10 @@ function PartList(props) {
       priceMethod: pricingData.priceMethod?.value,
       currency: pricingData.currency?.value,
       priceDate: pricingData.priceDate,
-      adjustedPrice: pricingData.adjustedPrice,
+      adjustedPrice:
+        pricingData.priceMethod?.value === "FLAT_RATE"
+          ? pricingData.adjustedPrice
+          : 0,
     };
     updateBuilderPrice(bId, data)
       .then((result) => {
@@ -835,7 +843,10 @@ function PartList(props) {
           handleSnack("success", `👏 New Spare Part has been added!`);
         else
           handleSnack("success", `👏 Selected part detail has been updated!`);
-        fetchPartsOfPartlist(partListNo, page, pageSize);
+        if (result) {
+          fetchAllDetails(builderId, generalData.version);
+        }
+        // fetchPartsOfPartlist(partListNo, page, pageSize);
       })
       .catch((err) => {
         handleSnack("error", `😐 Error occurred while adding spare part`);
@@ -870,11 +881,14 @@ function PartList(props) {
     form.append("file", file);
     await uploadPartsToPartlist(partListNo, form)
       .then((result) => {
-        fetchPartsOfPartlist(partListNo, page, pageSize);
+        // fetchPartsOfPartlist(partListNo, page, pageSize);
         handleSnack(
           "success",
           `New parts have been uploaded to the partlist: ${partListId}`
         );
+        if (result) {
+          fetchAllDetails(builderId, generalData.version);
+        }
       })
       .catch((err) => {
         handleSnack("error", `Failed to upload the parts!`);
@@ -1019,7 +1033,8 @@ function PartList(props) {
     RemoveSparepart(partListNo, sparePartId)
       .then((res) => {
         handleSnack("success", res);
-        fetchPartsOfPartlist(partListNo, page, pageSize);
+        fetchAllDetails(builderId, generalData.version);
+        // fetchPartsOfPartlist(partListNo, page, pageSize);
       })
       .catch((e) => {
         console.log(e);
@@ -1206,6 +1221,8 @@ function PartList(props) {
 
   // Add the selected parts from search result to partlist
   const addSelectedPartsToPartList = async () => {
+    setPartsLoading(true);
+    handleSearchResClose();
     if (Object.values(viewOnlyTab).every((item) => item === true)) {
       const parts = [];
       selectedMasterData.map((item) => {
@@ -1228,17 +1245,18 @@ function PartList(props) {
 
       await addMultiPartsToPartList(partListNo, parts)
         .then((result) => {
-          handleSearchResClose();
           handleSnack(
             "success",
             `👏 New parts have been added with default quantity as 1!`
           );
-          fetchAllDetails(builderId, generalData.version);
+          if (result) {
+            fetchAllDetails(builderId, generalData.version);
+          }
           // fetchPartsOfPartlist(partListNo, page, pageSize);
         })
         .catch((err) => {
           console.log(err);
-          if(err && err.message === "Price not found"){
+          if (err && err.message === "Price not found") {
             handleSnack("error", `😐 ${err.message}!`);
           } else {
             handleSnack("error", `😐 Error occurred while adding the parts!`);
@@ -1247,6 +1265,7 @@ function PartList(props) {
     } else {
       handleSnack("info", "Please save all the header details!");
     }
+    setPartsLoading(false);
   };
 
   const onPartsFilterChange = React.useCallback((filterModel) => {
@@ -1266,40 +1285,46 @@ function PartList(props) {
   const processRowUpdate = React.useCallback(
     (newRow, oldRow) =>
       new Promise((resolve, reject) => {
-        if(newRow.usagePercentage > 0 && newRow.usagePercentage < 100 && newRow.unitPrice > 0){
         if (
-          newRow.quantity !== oldRow.quantity ||
-          newRow.usagePercentage !== oldRow.usagePercentage ||
-          newRow.comment !== oldRow.comment
+          newRow.usagePercentage > 0 &&
+          newRow.usagePercentage < 100 &&
+          newRow.unitPrice > 0
         ) {
-          // console.log(newRow, newRow.quantity !== oldRow.quantity);
-          const index = rowsToUpdate.findIndex(
-            (object) => object.id === newRow.id
-          );
-          newRow.extendedPrice = parseFloat(newRow.quantity * newRow.unitPrice).toFixed(2);
-          newRow.totalPrice =
-            newRow.usagePercentage > 0
-              ? parseFloat(
-                  newRow.extendedPrice * 0.01 * newRow.usagePercentage
-                ).toFixed(2)
-              : parseFloat(newRow.extendedPrice).toFixed(2);
-          if (index === -1) {
-            // console.log("add");
-            setRowsToUpdate((prevRows) => [...prevRows, newRow]);
-          } else {
-            rowsToUpdate[index] = newRow;
-          }
+          if (
+            newRow.quantity !== oldRow.quantity ||
+            newRow.usagePercentage !== oldRow.usagePercentage ||
+            newRow.comment !== oldRow.comment
+          ) {
+            // console.log(newRow, newRow.quantity !== oldRow.quantity);
+            const index = rowsToUpdate.findIndex(
+              (object) => object.id === newRow.id
+            );
+            newRow.extendedPrice = parseFloat(
+              newRow.quantity * newRow.unitPrice
+            ).toFixed(2);
+            newRow.totalPrice =
+              newRow.usagePercentage > 0
+                ? parseFloat(
+                    newRow.extendedPrice * 0.01 * newRow.usagePercentage
+                  ).toFixed(2)
+                : parseFloat(newRow.extendedPrice).toFixed(2);
+            if (index === -1) {
+              // console.log("add");
+              setRowsToUpdate((prevRows) => [...prevRows, newRow]);
+            } else {
+              rowsToUpdate[index] = newRow;
+            }
 
-          // Save the arguments to resolve or reject the promise later
-          resolve(newRow);
+            // Save the arguments to resolve or reject the promise later
+            resolve(newRow);
+          } else {
+            // console.log(oldRow);
+            resolve(oldRow); // Nothing was changed
+          }
         } else {
-          // console.log(oldRow);
-          resolve(oldRow); // Nothing was changed
+          handleSnack("warning", "Usage percentage should be a valid value!");
+          resolve(oldRow);
         }
-      } else {
-        handleSnack("warning", "Usage percentage should be a valid value!")
-        resolve(oldRow)
-      }
       }),
     []
   );
@@ -1314,7 +1339,10 @@ function PartList(props) {
         .then((result) => {
           handleSnack("success", `👏 Parts have been updated!`);
           setRowsToUpdate([]);
-          fetchPartsOfPartlist(partListNo, page, pageSize);
+          if (result) {
+            fetchAllDetails(builderId, generalData.version);
+          }
+          // fetchPartsOfPartlist(partListNo, page, pageSize);
         })
         .catch((err) => {
           console.log(err);
@@ -2522,7 +2550,11 @@ function PartList(props) {
                                 }
                                 className="form-control border-radius-10 text-primary"
                                 placeholder="Optional"
-                                value={pricingData.adjustedPrice}
+                                value={
+                                  pricingData.priceMethod?.value === "FLAT_RATE"
+                                    ? pricingData.adjustedPrice
+                                    : 0
+                                }
                                 onChange={(e) =>
                                   setPricingData({
                                     ...pricingData,

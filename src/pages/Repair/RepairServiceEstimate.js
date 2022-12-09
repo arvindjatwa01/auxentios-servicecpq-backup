@@ -686,7 +686,11 @@ function RepairServiceEstimate(props) {
   const updateServiceEstHeader = () => {
     let data = {
       ...serviceEstimateData,
-      priceMethod: serviceEstimateData.priceMethod.value,
+      priceMethod: serviceEstimateData.priceMethod?.value,
+      adjustedPrice:
+        serviceEstimateData.priceMethod?.value === "FLAT_RATE"
+          ? serviceEstimateData.adjustedPrice
+          : 0.0,
     };
     AddServiceHeader(activeElement.oId, data)
       .then((result) => {
@@ -1571,21 +1575,6 @@ function RepairServiceEstimate(props) {
                         />
                       </MuiPickersUtilsProvider>
                     </div>
-                    {/* <div class="form-group mt-3">
-                <label
-                  className="text-light-dark font-size-12 font-weight-600"
-                  
-                >
-                  PRICE DATE
-                </label>
-                <input
-                  type="text"
-                  class="form-control border-radius-10 text-primary"
-                  
-                  
-                  placeholder="Required"
-                />
-              </div> */}
                   </div>
                   <div className="col-md-4 col-sm-4">
                     <div class="form-group mt-3">
@@ -1636,7 +1625,11 @@ function RepairServiceEstimate(props) {
                         }
                         class="form-control border-radius-10 text-primary"
                         // placeholder="Required"
-                        value={serviceEstimateData.adjustedPrice}
+                        value={
+                          serviceEstimateData.priceMethod?.value === "FLAT_RATE"
+                            ? serviceEstimateData.adjustedPrice
+                            : 0.0
+                        }
                         onChange={(e) =>
                           setServiceEstimateData({
                             ...serviceEstimateData,
@@ -1679,16 +1672,17 @@ function RepairServiceEstimate(props) {
                     type="button"
                     className="btn btn-light bg-primary text-white"
                     disabled={
-                      !(
-                        serviceEstimateData.jobOperation &&
-                        serviceEstimateData.description &&
-                        serviceEstimateData.currency &&
-                        // serviceEstimateData.netPrice &&
-                        serviceEstimateData.priceDate &&
-                        serviceEstimateData.priceMethod?.value &&
-                        serviceEstimateData.reference &&
-                        serviceEstimateData.segmentTitle
-                      )
+                      !(serviceEstimateData.jobOperation &&
+                      serviceEstimateData.description &&
+                      serviceEstimateData.currency &&
+                      // serviceEstimateData.netPrice &&
+                      serviceEstimateData.priceDate &&
+                      serviceEstimateData.priceMethod?.value &&
+                      serviceEstimateData.reference &&
+                      serviceEstimateData.segmentTitle &&
+                      serviceEstimateData.priceMethod?.value === "FLAT_RATE"
+                        ? serviceEstimateData.adjustedPrice > 0
+                        : true)
                     }
                     onClick={updateServiceEstHeader}
                   >
