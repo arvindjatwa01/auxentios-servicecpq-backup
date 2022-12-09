@@ -308,6 +308,7 @@ export function CreateCustomPortfolio(props) {
     const [querySearchModelResult, setQuerySearchModelResult] = useState([])
     const [querySearchModelPrefixOption, setQuerySearchModelPrefixOption] = useState([])
     const [selectedPrefixOption, setSelectedPrefixOption] = useState("");
+    const [includedModelIndex, setIncludedModelIndex] = useState(0);
 
     const [customerSegmentKeyValue, setCustomerSegmentKeyValue] = useState([]);
     const [strategyOptionals, setStrategyOptionals] = useState([]);
@@ -5682,7 +5683,7 @@ export function CreateCustomPortfolio(props) {
             wrap: true,
             sortable: true,
             format: (row) => row.noSeriese,
-            cell: (row) => (
+            cell: (i, row) => (
                 <div>
                     {/* <SearchBox
                 value={row.noSeriese}
@@ -5700,11 +5701,11 @@ export function CreateCustomPortfolio(props) {
               /> */}
                     <Select
                         className="customselect"
-                        // options={[
-                        //   { label: "12345", value: "12345" },
-                        //   { label: "12345", value: "12345" },
-                        // ]}
+                        maxMenuHeight={80}
+                        onChange={(e) => handleIncludedeSerialNoSelectChange(e, i, row)}
+                        value={row.serialNumber}
                         options={coverageSerialResultList}
+                    // isOptionDisabled={(e) => handleDisableSerialNoChangesOptions(e,i,row)}
                     />
                 </div>
             ),
@@ -5850,63 +5851,100 @@ export function CreateCustomPortfolio(props) {
     };
     const [show, setShow] = React.useState(false);
 
-    const ShowRelatedIncludeModelBox = async (dataRow) => {
-        setModelIncludedData([]);
+    const ShowRelatedIncludeModelBox = async (i, dataRow) => {
+        const _selectedMasterData = [...selectedMasterData]
+        const obj = _selectedMasterData[i]
 
-        var ModelBoxKeys = [];
-        var KeyValues = [];
-
-        for (var key in openedModelBoxData) {
-            ModelBoxKeys.push(Object.keys(openedModelBoxData[key]));
-        }
-
-        const ValIs = ModelBoxKeys.map((i, data) => {
-            KeyValues.push(Number(i[0]));
-        });
-
-        if (!KeyValues.includes(dataRow.id)) {
-            openedModelBoxData.push({
-                [dataRow.id]: [
-                    {
-                        family: dataRow.family,
-                        model: dataRow.model,
-                        noSeriese: "0JAPA000470",
-                        location: "LIMA",
-                        startDate: "08/04/2017",
-                        endDate: "08/04/2017",
-                    },
-                ],
-            });
-        }
-
-        setOpenedModelBoxData([...openedModelBoxData]);
-
-        const NewAddedData = openedModelBoxData.map((currentItem, i) => {
-            if (currentItem.hasOwnProperty(dataRow.id)) {
-                var valueOf = Object.values(currentItem);
-                const Addval = valueOf.map((myVal, i) => {
-                    setModelIncludedData([...myVal]);
-                });
+        if (!obj.associatedIncludedModelData) {
+            const tempObj = {
+                ...obj, associatedIncludedModelData: [{
+                    family: dataRow.family,
+                    model: dataRow.model,
+                    noSeriese: "0JAPA000470",
+                    location: "LIMA",
+                    startDate: "08/04/2017",
+                    endDate: "08/04/2017",
+                    serialNumber: ""
+                }]
             }
-        });
-
+            _selectedMasterData[i] = tempObj
+            setSelectedMasterData(_selectedMasterData)
+        }
+        // else{
+        //   // const tempObj={...obj,associatedIncludedModelData:[...obj.associatedIncludedModelData]}
+        //   // _selectedMasterData[i]=tempObj
+        //   // console.log("_selectedMasterData",_selectedMasterData[i])
+        //   // setSelectedMasterData(_selectedMasterData)  
+        // }
         var searchQueryMachine = dataRow.model
             ? "model~" + dataRow.model
             : "";
         var serialArr = [];
-        console.log("dataRow ---- ", searchQueryMachine)
         await machineSearch(searchQueryMachine)
             .then((result) => {
                 console.log("my rsult is ---- ", result)
                 for (let i = 0; i < result.length; i++) {
-                    // var serialValue = {label: equipmentNumber, value: equipmentNumber}
                     serialArr.push({ label: result[i].equipmentNumber, value: result[i].equipmentNumber })
                 }
             })
         setCoverageSerialResultList(serialArr)
-        console.log("serialArr --- : ", serialArr);
+        setIncludedModelIndex(i)
         setShowRelatedModel(true);
-        setOpenModelBoxDataId(dataRow);
+        // setModelIncludedData([]);
+
+        // var ModelBoxKeys = [];
+        // var KeyValues = [];
+
+        // for (var key in openedModelBoxData) {
+        //     ModelBoxKeys.push(Object.keys(openedModelBoxData[key]));
+        // }
+
+        // const ValIs = ModelBoxKeys.map((i, data) => {
+        //     KeyValues.push(Number(i[0]));
+        // });
+
+        // if (!KeyValues.includes(dataRow.id)) {
+        //     openedModelBoxData.push({
+        //         [dataRow.id]: [
+        //             {
+        //                 family: dataRow.family,
+        //                 model: dataRow.model,
+        //                 noSeriese: "0JAPA000470",
+        //                 location: "LIMA",
+        //                 startDate: "08/04/2017",
+        //                 endDate: "08/04/2017",
+        //             },
+        //         ],
+        //     });
+        // }
+
+        // setOpenedModelBoxData([...openedModelBoxData]);
+
+        // const NewAddedData = openedModelBoxData.map((currentItem, i) => {
+        //     if (currentItem.hasOwnProperty(dataRow.id)) {
+        //         var valueOf = Object.values(currentItem);
+        //         const Addval = valueOf.map((myVal, i) => {
+        //             setModelIncludedData([...myVal]);
+        //         });
+        //     }
+        // });
+
+        // var searchQueryMachine = dataRow.model
+        //     ? "model~" + dataRow.model
+        //     : "";
+        // var serialArr = [];
+        // console.log("dataRow ---- ", searchQueryMachine)
+        // await machineSearch(searchQueryMachine)
+        //     .then((result) => {
+        //         console.log("my rsult is ---- ", result)
+        //         for (let i = 0; i < result.length; i++) {
+        //             serialArr.push({ label: result[i].equipmentNumber, value: result[i].equipmentNumber })
+        //         }
+        //     })
+        // setCoverageSerialResultList(serialArr)
+        // console.log("serialArr --- : ", serialArr);
+        // setShowRelatedModel(true);
+        // setOpenModelBoxDataId(dataRow);
     };
 
     const AddNewRowData = (rowItem) => {
@@ -5932,6 +5970,93 @@ export function CreateCustomPortfolio(props) {
             });
         }
     };
+
+    const handleIncludedeSerialNoSelectChange = (e, i, row) => {
+        let _selectedMasterData = [...selectedMasterData]
+        let tempObj = _selectedMasterData[includedModelIndex].associatedIncludedModelData[i]
+
+        tempObj = { ...tempObj, serialNumber: e }
+        _selectedMasterData[includedModelIndex].associatedIncludedModelData[i] = tempObj
+        setSelectedMasterData(_selectedMasterData)
+        // return
+        //   const _modelIncludedData=[...modelIncludedData]
+        //   const obj=_modelIncludedData[i]
+        //  _modelIncludedData[i]={...row,serialNumber:e}
+        //  setModelIncludedData(_modelIncludedData)
+        //  console.log("_modelIncludedData[i]",obj)
+        //   console.log("handleIncludedeSerialNoSelectChange",row,i)
+
+    }
+
+    const handleIncludedSerialNoStartDataChange = (e, i, row) => {
+
+        let _selectedMasterData = [...selectedMasterData]
+        let tempObj = _selectedMasterData[includedModelIndex].associatedIncludedModelData[i]
+
+        tempObj = { ...tempObj, startDate: e }
+        _selectedMasterData[includedModelIndex].associatedIncludedModelData[i] = tempObj
+        setSelectedMasterData(_selectedMasterData)
+    }
+
+    const handleIncludedSerialNoEndDataChange = (e, i, row) => {
+
+        let _selectedMasterData = [...selectedMasterData]
+        let tempObj = _selectedMasterData[includedModelIndex].associatedIncludedModelData[i]
+
+        tempObj = { ...tempObj, endDate: e }
+        _selectedMasterData[includedModelIndex].associatedIncludedModelData[i] = tempObj
+        setSelectedMasterData(_selectedMasterData)
+    }
+
+    const handleIncludeSerialNumberSaveChanges = async (data) => {
+        console.log("data is ----- : ", data);
+
+        if (data.associatedIncludedModelData.length > 1) {
+            let cvgIds = [];
+            for (let i = 0; i < data.associatedIncludedModelData.length; i++) {
+                if (i > 0) {
+                    let reqObj = {
+                        customCoverageId: 0,
+                        serviceId: 0,
+                        modelNo: data.model,
+                        serialNumber: data.associatedIncludedModelData[i].serialNumber?.value ? data.associatedIncludedModelData[i].serialNumber?.value : "",
+                        startSerialNumber: "",
+                        endSerialNumber: "",
+                        serialNumberPrefix: "",
+                        family: data.family,
+                        make: data.make,
+                        fleet: "",
+                        fleetSize: "SMALL",
+                        location: "",
+                        startDate: "",
+                        endDate: "",
+                        actions: "",
+                    }
+                    const cvgRes = await createCutomCoverage(reqObj);
+                    console.log("createCoverage res:", cvgRes);
+                    cvgIds.push({ coverageId: cvgRes.customCoverageId });
+                } else {
+                    console.log("0 index");
+                }
+            }
+        }
+
+
+
+
+
+    }
+
+    const handleDisableSerialNoChangesOptions = (e, i, row) => {
+
+        // const selectedValue = coverageSerialResultList.value;
+        // const changeToValue = e.value;
+        // console.log(" value is : ",changeToValue)
+
+        // return !(coverageSerialResultList.includes(e));
+
+    }
+
 
     const handleExpandedRowDelete = async (e, itemId, bundleId) => {
         // try {
@@ -11242,44 +11367,6 @@ export function CreateCustomPortfolio(props) {
             <ToastContainer />
             {/* <div className="modal fade" id="relatedTable" tabindex="-1" role="dialog" aria-labelledby="exampleReleted" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered modal-lg" role="document"> */}
-            <Modal
-                show={showRelatedModel}
-                onHide={() => setShowRelatedModel(false)}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-            >
-                <Modal.Header className="align-items-center">
-                    <div>
-                        <Modal.Title>Included Serial No</Modal.Title>
-                    </div>
-                    <div>
-                        <Link
-                            to="#"
-                            className=" btn bg-primary text-white"
-                            onClick={() => AddNewRowData(openModelBoxDataId)}
-                        >
-                            Add New
-                        </Link>
-                    </div>
-                </Modal.Header>
-                <Modal.Body>
-                    <DataTable
-                        className=""
-                        title=""
-                        columns={columns4}
-                        data={modelIncludedData}
-                        customStyles={customStyles}
-                    // pagination
-                    />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="primary" onClick={() => setShowRelatedModel(false)}>
-                        Close
-                    </Button>
-                    <Button variant="primary">Save changes</Button>
-                </Modal.Footer>
-            </Modal>
 
             <Modal
                 show={openMiniBundleItem}
@@ -13123,7 +13210,7 @@ export function CreateCustomPortfolio(props) {
                         <Link
                             to="#"
                             className=" btn bg-primary text-white"
-                            onClick={() => AddNewRowData(openModelBoxDataId)}
+                            onClick={() => AddNewRowData(selectedMasterData[includedModelIndex])}
                         >
                             Add New
                         </Link>
@@ -13134,7 +13221,7 @@ export function CreateCustomPortfolio(props) {
                         className=""
                         title=""
                         columns={columns4}
-                        data={modelIncludedData}
+                        data={selectedMasterData[includedModelIndex]?.associatedIncludedModelData}
                         customStyles={customStyles}
                     // pagination
                     />
@@ -13143,7 +13230,7 @@ export function CreateCustomPortfolio(props) {
                     <Button variant="primary" onClick={() => setShowRelatedModel(false)}>
                         Close
                     </Button>
-                    <Button variant="primary">Save changes</Button>
+                    <Button variant="primary" onClick={() => handleIncludeSerialNumberSaveChanges(selectedMasterData[includedModelIndex])}>Save changes</Button>
                 </Modal.Footer>
             </Modal>
             <div class="modal fade" id="versionpopup2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">

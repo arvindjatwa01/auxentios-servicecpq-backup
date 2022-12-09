@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { itemCreation, updatePortfolio, getPortfolioCommonConfig, } from "../../services/index";
+import { itemCreation, updatePortfolio, getPortfolioCommonConfig, portfolioItemPriceSjid} from "../../services/index";
 
 import {
   taskActions,
@@ -44,9 +44,29 @@ const PriceCalculator = (props) => {
   const dispatch = useDispatch();
   useEffect(() => {
     if (props.priceCalculator) {
+      console.log("priceCalculator 111111",props.priceCalculator)
       setPriceCalculator(props.priceCalculator);
     }
   }, [props]);
+
+useEffect(()=>{
+  portfolioItemPriceSjidFun()
+},[])
+
+const portfolioItemPriceSjidFun=async()=>{
+  const rObj={
+    standardJobId: "SJ000002",
+    repairKitId: "string",
+    itemId: 1,
+    itemPriceDataId: 25
+  }
+const res=await portfolioItemPriceSjid(rObj)
+
+setPriceCalculator({...priceCalculator,netPrice:res.data.netPrice})
+
+
+console.log("response",res)
+}
 
   useEffect(() => {
     // const portfolioId1=location.state

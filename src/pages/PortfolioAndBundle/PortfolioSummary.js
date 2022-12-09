@@ -163,6 +163,7 @@ export const PortfolioSummary = () => {
   const [familySelectOption, setFamilySelectOption] = useState([]);
 
   const [passItemEditRowData, setPassItemEditRowData] = useState();
+  const [itemPriceData, setItemPriceData] = useState({});
 
   const history = useHistory()
   const options = [
@@ -1207,7 +1208,7 @@ export const PortfolioSummary = () => {
             validTo: "",
             estimatedTime: "",
             servicePrice: 0,
-            status: "NEW",
+            status: "DRAFT",
             itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
             preparedBy: administrative.preparedBy,
             approvedBy: administrative.approvedBy,
@@ -1401,8 +1402,10 @@ export const PortfolioSummary = () => {
       }
     }
   };
-  const getAddportfolioItemData = (data) => {
+  const getAddportfolioItemData = (data,itemPriceData) => {
+    console.log("itemPriceData11111111",itemPriceData)
     setAddportFolioItem(data)
+    setItemPriceData(itemPriceData)
   }
   const handleItemEditSave = () => {
     setBundleTabs("3")
@@ -3155,10 +3158,6 @@ export const PortfolioSummary = () => {
                       compoFlag="itemEdit"
                       setBundleTabs={setBundleTabs}
                     />
-
-
-
-
                   </> : <>
                     <AddPortfolioItem
                       setBundleTabs={setBundleTabs}
@@ -3354,6 +3353,7 @@ export const PortfolioSummary = () => {
                   setBundleTabs={setBundleTabs}
                   setBundleServiceShow={setBundleServiceShow}
                   getPriceCalculatorDataFun={getPriceCalculatorDataFun}
+                  priceCalculator={itemPriceData}
                 />
               </TabPanel>
             </TabContext>

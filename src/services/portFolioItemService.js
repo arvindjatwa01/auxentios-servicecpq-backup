@@ -201,3 +201,23 @@ export const updateItemPriceData = (id, payLoad) => {
   });
 };
 
+export const createItemPriceData = (payLoad) => {
+  console.log("portfolioItemService > createItemPriceData called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(`${PORTFOLIO_ITEM_PRICE_BY_ITEM_ID()}`, payLoad, { headers: headersdata })
+        .then((res) => {
+          console.log("createItemPriceData > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("createItemPriceData > axios err=", err);
+          reject("Error in createItemPriceData axios!");
+        });
+    } catch (error) {
+      console.error("in portfolioItemService > createItemPriceData, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};

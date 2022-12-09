@@ -3339,12 +3339,30 @@ button.bg-primary:hover {
   border-bottom: 2px solid #872ff7 !important;
 }
 
+/* .rdt_TableRow {
+  font-size: 12px !important;
+  color: #808080 !important;
+  min-height: 44px !important;
+} */
 .rdt_TableRow {
   font-size: 12px !important;
   color: #808080 !important;
   min-height: 44px !important;
+  border-bottom-style: solid !important;
+  border-bottom-width: 1px !important;
+  border-bottom-color: rgba(0,0,0,.12) !important;
+  display: flex;
+  -webkit-box-align: stretch;
+  align-items: stretch;
+  align-content: stretch;
+  width: 100%;
+  box-sizing: border-box;
 }
-
+.rdt_TableRowL:not(:last-of-type) {
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(0,0,0,.12);
+}
 .rdt_TableHead {
   border-radius: 6px !important;
   overflow: hidden !important;
