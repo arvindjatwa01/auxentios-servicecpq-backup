@@ -87,6 +87,7 @@ import {
   updateItemData,
   portfolioSearch,
   itemSearch,
+  portfolioItemPriceSjid,
 } from "../../services/index";
 
 export const PortfolioSummary = () => {
@@ -142,6 +143,7 @@ export const PortfolioSummary = () => {
   const [serviceOrBundlePrefix, setServiceOrBundlePrefix] = useState("");
   const [typeKeyValue, setTypeKeyValue] = useState([]);
   const [selectedPrefixOption, setSelectedPrefixOption] = useState("");
+  const [selectedCustomerSegmentOption, setSelectedCustomerSegmentOption] = useState("");
   const [createServiceOrBundle, setCreateServiceOrBundle] = useState({
     id: "",
     name: "",
@@ -610,7 +612,7 @@ export const PortfolioSummary = () => {
     }
   };
 
-  console.log("set PortfolioItemData ------ -- : ", portfolioItemData)
+  // console.log("set PortfolioItemData ------ -- : ", portfolioItemData)
 
   const handleQuerySearchClick = () => {
     $(".scrollbar").css("display", "none");
@@ -790,6 +792,14 @@ export const PortfolioSummary = () => {
     })
   }
 
+  const handleSelectCustomerSegment = (e) => {
+    setSelectedCustomerSegmentOption(e)
+    setCreateServiceOrBundle({
+      ...createServiceOrBundle,
+      customerSegment: e,
+    })
+  }
+
   const handleSearchListClick = (e, currentItem, obj1, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
@@ -864,6 +874,8 @@ export const PortfolioSummary = () => {
         machineComponent: { label: data.itemHeaderModel.type, value: data.itemHeaderModel.type },
       });
 
+      setSelectedPrefixOption({ label: data.itemHeaderModel.prefix, value: data.itemHeaderModel.prefix });
+
       setAdministrative({
         preparedBy: data.itemHeaderModel.preparedBy,
         approvedBy: data.itemHeaderModel.approvedBy,
@@ -893,6 +905,7 @@ export const PortfolioSummary = () => {
         machineComponent: { label: data.itemHeaderModel.type, value: data.itemHeaderModel.type },
       });
 
+      setSelectedPrefixOption({ label: data.itemHeaderModel.prefix, value: data.itemHeaderModel.prefix });
       setAdministrative({
         preparedBy: data.itemHeaderModel.preparedBy,
         approvedBy: data.itemHeaderModel.approvedBy,
@@ -1260,20 +1273,21 @@ export const PortfolioSummary = () => {
           }
         }
 
-        const res = await itemCreation(reqObj);
-        if (res.status === 200) {
-          toast("😎" + `${serviceOrBundlePrefix} created`, {
-            position: "top-right",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          setAddportFolioItem({});
+        // const res = await itemCreation(reqObj);
+        // if (res.status === 200) {
+        //   toast("😎" + `${serviceOrBundlePrefix} created`, {
+        //     position: "top-right",
+        //     autoClose: 3000,
+        //     hideProgressBar: false,
+        //     closeOnClick: true,
+        //     pauseOnHover: true,
+        //     draggable: true,
+        //     progress: undefined,
+        //   });
+        //   setAddportFolioItem({});
 
-        }
+        // }
+        setAddportFolioItem({});
       }
       console.log("editBundleService : ", editBundleService)
 
@@ -1338,7 +1352,7 @@ export const PortfolioSummary = () => {
     // setTabs("4") //moving to component Data tab in create Item model
   };
 
-  const handleUpdateNewServiceOrBundle = () => {
+  const handleUpdateNewServiceOrBundle = async () => {
     if (serviceOrBundlePrefix === "BUNDLE") {
       const validator = new Validator();
 
@@ -1366,6 +1380,98 @@ export const PortfolioSummary = () => {
           progress: undefined,
         });
       } else {
+
+        let reqObj = {
+          itemId: 0,
+          // itemName: "",
+          itemName: createServiceOrBundle.name,
+          itemHeaderModel: {
+            itemHeaderId: 0,
+            itemHeaderDescription: createServiceOrBundle.description,
+            bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+            portfolioItemId: 0,
+            reference: createServiceOrBundle.reference,
+            itemHeaderMake: createServiceOrBundle.make,
+            itemHeaderFamily: createServiceOrBundle.family,
+            model: createServiceOrBundle.model,
+            prefix: createServiceOrBundle.prefix,
+            type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
+            additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
+            currency: "",
+            netPrice: 0,
+            itemProductHierarchy: "END_PRODUCT",
+            itemHeaderGeographic: "ONSITE",
+            responseTime: "PROACTIVE",
+            usage: "",
+            validFrom: "",
+            validTo: "",
+            estimatedTime: "",
+            servicePrice: 0,
+            status: "DRAFT",
+            itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
+            componentCode: "",
+            componentDescription: "",
+            serialNumber: "",
+            variant: "",
+            itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value,
+            jobCode: "",
+            preparedBy: administrative.preparedBy,
+            approvedBy: administrative.approvedBy,
+            preparedOn: administrative.preparedOn,
+            revisedBy: administrative.revisedBy,
+            revisedOn: administrative.revisedOn,
+            salesOffice: administrative.branch,
+            offerValidity: administrative.offerValidity
+          },
+          itemBodyModel: {
+            itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
+            itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
+            frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
+            spareParts: ["WITH_SPARE_PARTS"],
+            labours: ["WITH_LABOUR"],
+            miscellaneous: ["LUBRICANTS"],
+            taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["PM1"],
+            solutionCode: "",
+            usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+            recommendedValue: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.recommendedValue) : 0,
+            usage: "",
+            year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
+            avgUsage: 0,
+            unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
+            itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
+              {
+                itemPriceDataId: itemPriceData.itemPriceDataId
+              }
+            ] : [],
+          }
+        }
+
+        const res = await itemCreation(reqObj);
+        if (res.status === 200) {
+          toast("😎" + `${serviceOrBundlePrefix} created`, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          // setAddportFolioItem({});
+
+        }
+
+        if (serviceOrBundlePrefix === "BUNDLE") {
+          const rObj = {
+            standardJobId: itemPriceData.standardJobId,
+            repairKitId: itemPriceData.repairKitId,
+            itemId: res.data.itemId,
+            itemPriceDataId: itemPriceData.itemPriceDataId
+          }
+          const res2 = await portfolioItemPriceSjid(rObj)
+
+          console.log("administrative 12345 : ", res2);
+        }
         setBundleTabs("4");
         // console.log("createServiceOrBundle : ", createServiceOrBundle);
       }
@@ -1402,8 +1508,8 @@ export const PortfolioSummary = () => {
       }
     }
   };
-  const getAddportfolioItemData = (data,itemPriceData) => {
-    console.log("itemPriceData11111111",itemPriceData)
+  const getAddportfolioItemData = (data, itemPriceData) => {
+    console.log("itemPriceData11111111", itemPriceData)
     setAddportFolioItem(data)
     setItemPriceData(itemPriceData)
   }
@@ -1460,8 +1566,13 @@ export const PortfolioSummary = () => {
         offerValidity: "",
       });
 
-    } else {
+      setQuerySearchModelPrefixOption([]);
+      setSelectedPrefixOption("");
+
+    } else if (e.value === "BUNDLE") {
       setServiceOrBundlePrefix("BUNDLE");
+      setQuerySearchModelPrefixOption([]);
+      setSelectedPrefixOption("");
       setBundleTabs("1")
       setBundleServiceShow(true);
       setCreateServiceOrBundle({
@@ -1834,7 +1945,7 @@ export const PortfolioSummary = () => {
     offerValidity: null,
   });
   const handleAdministrativreChange = (e) => {
-    console.log("handleAdministrativreChange", administrative);
+    // console.log("handleAdministrativreChange", administrative);
     var value = e.target.value;
     var name = e.target.name;
     setAdministrative({ ...administrative, [name]: value });
@@ -2985,11 +3096,12 @@ export const PortfolioSummary = () => {
                             CUSTOMER SEGMENT
                           </label>
                           <Select
-                            // options={options}
-                            options={customerSegmentKeyValue}
+                            onchange={(e) => handleSelectCustomerSegment(e)}
+                            // onChange={(e) => setCreateServiceOrBundle({ ...createServiceOrBundle, customerSegment: e, })}
                             className="text-primary"
-                            onChange={(e) => setCreateServiceOrBundle({ ...createServiceOrBundle, customerSegment: e, })}
-                            value={createServiceOrBundle.customerSegment}
+                            // value={createServiceOrBundle.customerSegment}
+                            value={selectedCustomerSegmentOption}
+                            options={customerSegmentKeyValue}
                             placeholder="Customer Segment"
                           />
                         </div>
@@ -3070,18 +3182,12 @@ export const PortfolioSummary = () => {
                             >
                               {querySearchModelResult.map((currentItem, j) => (
                                 <li
-                                  className="list-group-item"
+                                  className="list-group-item text-primary"
                                   key={j}
                                   onClick={(e) => handleSearchModelListClick(
                                     e,
                                     currentItem
                                   )}
-                                // onClick={(e) =>
-                                //   handleSearchListClick(
-                                //     e,
-                                //     currentItem,
-                                //   )
-                                // }
                                 >
                                   {currentItem.model}
                                 </li>

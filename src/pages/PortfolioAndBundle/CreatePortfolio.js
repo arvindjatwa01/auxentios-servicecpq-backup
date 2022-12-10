@@ -219,6 +219,8 @@ export function CreatePortfolio(props) {
   const [currentExpendModelComponentRow, setCurrentExpendModelComponentRow] = useState(null);
   const [currentExpendPortfolioItemRow, setCurrentExpendPortfolioItemRow] = useState(null)
 
+  const [itemPriceData, setItemPriceData] = useState({});
+
   const [value1, setValue1] = useState({
     value: "Archived",
     label: "Archived",
@@ -804,7 +806,7 @@ export function CreatePortfolio(props) {
     }
   };
 
-  const handleBundleItemSaveAndContinue = async (data) => {
+  const handleBundleItemSaveAndContinue = async (data, itemPriceData) => {
     try {
       // let reqObj = {
       //   itemId: 0,
@@ -877,6 +879,7 @@ export function CreatePortfolio(props) {
       //   },
       // };
 
+//  Old Todo
       let reqObj = {
         itemId: 0,
         itemName: data.name,
@@ -947,6 +950,72 @@ export function CreatePortfolio(props) {
           totalPrice: 0,
         },
       };
+// New Todo
+
+      // let reqObj = {
+      //   itemId: 0,
+      //   // itemName: "",
+      //   itemName: data.name,
+      //   itemHeaderModel: {
+      //     itemHeaderId: 0,
+      //     itemHeaderDescription: data.headerdescription,
+      //     bundleFlag: "PORTFOLIO",
+      //     portfolioItemId: 0,
+      //     reference: generalComponentData.externalReference,,
+      //     itemHeaderMake: data?.make,
+      //     itemHeaderFamily: data?.family,
+      //     model: data.model,
+      //     prefix: data.prefix,
+      //     type: data.machineComponent != "" ? data.machineComponent?.value : "MACHINE",
+      //     additional: data.additional != "" ? data.additional.value : "",
+      //     currency: "",
+      //     netPrice: 0,
+      //     itemProductHierarchy: "END_PRODUCT",
+      //     itemHeaderGeographic: "ONSITE",
+      //     responseTime: "PROACTIVE",
+      //     usage: "",
+      //     validFrom: generalComponentData.validFrom,
+      //     validTo: generalComponentData.validTo,
+      //     estimatedTime: "",
+      //     servicePrice: 0,
+      //     status: "DRAFT",
+      //     itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
+      //     componentCode: "",
+      //     componentDescription: "",
+      //     serialNumber: "",
+      //     variant: "",
+      //     itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value,
+      //     jobCode: "",
+      //     preparedBy: administrative.preparedBy,
+      //     approvedBy: administrative.approvedBy,
+      //     preparedOn: administrative.preparedOn,
+      //     revisedBy: administrative.revisedBy,
+      //     revisedOn: administrative.revisedOn,
+      //     salesOffice: administrative.branch,
+      //     offerValidity: administrative.offerValidity
+      //   },
+      //   itemBodyModel: {
+      //     itemBodyId: 0,
+      //     itemBodyDescription: data.description,
+      //     frequency: data.frequency?.value,
+      //     spareParts: ["WITH_SPARE_PARTS"],
+      //     labours: ["WITH_LABOUR"],
+      //     miscellaneous: ["LUBRICANTS"],
+      //     taskType: [data.taskType.value],
+      //     solutionCode: "",
+      //     usageIn: data.usageIn.value,
+      //     recommendedValue: parseInt(data.recommendedValue),
+      //     usage: "",
+      //     year: data.year,,
+      //     avgUsage: 0,
+      //     unit: data.unit?.value : "",
+      //     itemPrices: [
+      //       {
+      //         itemPriceDataId: itemPriceData.itemPriceDataId
+      //       }
+      //     ],
+      //   }
+      // }
 
       // console.log("requested obj : ", reqObj);
       // console.log("requested obj 2 : ", addPortFolioItem);
@@ -5805,7 +5874,7 @@ export function CreatePortfolio(props) {
           const cvgRes = await createCoverage(reqObj);
           console.log("createCoverage res:", cvgRes);
           cvgIds.push({ coverageId: cvgRes.coverageId });
-        }else{
+        } else {
           console.log("0 index");
         }
 
@@ -5905,10 +5974,12 @@ export function CreatePortfolio(props) {
     setEditItemShow(true);
   };
 
-  const getAddportfolioItemDataFun = (data) => {
+  const getAddportfolioItemDataFun = (data, itemPriceData) => {
     setAddportFolioItem(data);
     // console.log("data------ : ", data)
-    handleBundleItemSaveAndContinue(data);
+
+    setItemPriceData(itemPriceData)
+    handleBundleItemSaveAndContinue(data, itemPriceData);
     setTempBundleService1([]);
     setTempBundleService2([]);
     setTempBundleService3([]);

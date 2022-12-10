@@ -326,19 +326,138 @@ const AddPortfolioItem = (props) => {
       setTabs((prev) => `${parseInt(prev) + 1}`)
     } else if (tabs == 2 && addPortFolioItem.templateId !== "") {
       if (props.compoFlag === "ITEM") {
-       
+
+        const rObj = {
+          itemPriceDataId: 0,
+          quantity: addPortFolioItem.quantity,
+          startUsage: "",
+          endUsage: "",
+          standardJobId: addPortFolioItem.templateId,
+          repairKitId: "",
+          templateDescription: addPortFolioItem.templateDescription?.value,
+          repairOption: "",
+          additional: "",
+          partListId: "",
+          serviceEstimateId: "",
+          numberOfEvents: 0,
+          priceMethod: "LIST_PRICE",
+          priceType: "FIXED",
+          listPrice: 0,
+          priceEscalation: "",
+          calculatedPrice: 0,
+          flatPrice: 0,
+          discountType: "",
+          year: "",
+          noOfYear: 0,
+          sparePartsPrice: 0,
+          sparePartsPriceBreakDownPercentage: 0,
+          servicePrice: 0,
+          labourPrice: 0,
+          labourPriceBreakDownPercentage: 0,
+          miscPrice: 0,
+          miscPriceBreakDownPercentage: 0,
+          totalPrice: 0,
+          netService: 0,
+          portfolio: {
+            portfolioId: 1
+          },
+          tenantId: 0,
+          createdAt: "2022-12-09T13:52:27.880Z",
+          partsRequired: true,
+          serviceRequired: true,
+          labourRequired: true,
+          miscRequired: true
+        }
+
+        const itemPriceData = await createItemPriceData(rObj)
+
         props.setTabs("2");
-        props.getAddportfolioItemDataFun(addPortFolioItem);
+        props.getAddportfolioItemDataFun(addPortFolioItem, itemPriceData.data);
 
 
       } else {
         const rObj = {
           itemPriceDataId: 0,
-          quantity: 0,
+          quantity: addPortFolioItem.quantity,
           startUsage: "",
           endUsage: "",
           standardJobId: addPortFolioItem.templateId,
           repairKitId: "",
+          templateDescription: addPortFolioItem.templateDescription?.value,
+          repairOption: "",
+          additional: "",
+          partListId: "",
+          serviceEstimateId: "",
+          numberOfEvents: 0,
+          priceMethod: "LIST_PRICE",
+          priceType: "FIXED",
+          listPrice: 0,
+          priceEscalation: "",
+          calculatedPrice: 0,
+          flatPrice: 0,
+          discountType: "",
+          year: "",
+          noOfYear: 0,
+          sparePartsPrice: 0,
+          sparePartsPriceBreakDownPercentage: 0,
+          servicePrice: 0,
+          labourPrice: 0,
+          labourPriceBreakDownPercentage: 0,
+          miscPrice: 0,
+          miscPriceBreakDownPercentage: 0,
+          totalPrice: 0,
+          netService: 0,
+          portfolio: {
+            portfolioId: 1
+          },
+          tenantId: 0,
+          createdAt: "2022-12-09T13:52:27.880Z",
+          partsRequired: true,
+          serviceRequired: true,
+          labourRequired: true,
+          miscRequired: true
+        }
+
+        const itemPriceData = await createItemPriceData(rObj)
+        props.getAddportfolioItemData(addPortFolioItem, itemPriceData.data)
+        props.setBundleTabs("3");
+      }
+    }
+
+    // tabs < 3 && setTabs((prev) => `${parseInt(prev) + 1}`);
+  }
+
+  const handleAddPortfolioSave = async () => {
+    if (props.compoFlag === "itemEdit") {
+      props.handleItemEditSave(addPortFolioItem);
+      // props.setTabs("2");
+    } else if (props.compoFlag === "ITEM") {
+      props.setTabs("2");
+      props.getAddportfolioItemDataFun(addPortFolioItem);
+    } else {
+
+
+      // alert("hello");
+
+      if (addPortFolioItem.repairOption == "") {
+        toast("😐" + "Please fill related Kit field", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+
+        const rObj = {
+          itemPriceDataId: 0,
+          quantity: addPortFolioItem.quantity,
+          startUsage: "",
+          endUsage: "",
+          standardJobId: "",
+          repairKitId: addPortFolioItem.repairOption,
           templateDescription: "",
           repairOption: "",
           additional: "",
@@ -375,24 +494,11 @@ const AddPortfolioItem = (props) => {
         }
 
         const itemPriceData = await createItemPriceData(rObj)
-        props.getAddportfolioItemData(addPortFolioItem,itemPriceData.data)
+        props.getAddportfolioItemData(addPortFolioItem, itemPriceData.data)
+
+        // props.getAddportfolioItemData(addPortFolioItem)
         props.setBundleTabs("3");
       }
-    }
-
-    // tabs < 3 && setTabs((prev) => `${parseInt(prev) + 1}`);
-  }
-
-  const handleAddPortfolioSave = () => {
-    if (props.compoFlag === "itemEdit") {
-      props.handleItemEditSave(addPortFolioItem);
-      // props.setTabs("2");
-    } else if (props.compoFlag === "ITEM") {
-      props.setTabs("2");
-      props.getAddportfolioItemDataFun(addPortFolioItem);
-    } else {
-      props.getAddportfolioItemData(addPortFolioItem)
-      props.setBundleTabs("3");
     }
   };
   return (
@@ -1256,6 +1362,7 @@ const AddPortfolioItem = (props) => {
                       <Select
                         options={frequencyOptions}
                         placeholder="Select....."
+                        className="text-primary"
                         onChange={(e) =>
                           setAddportFolioItem({
                             ...addPortFolioItem,
@@ -1342,7 +1449,7 @@ const AddPortfolioItem = (props) => {
                         //   })
                         // }
                         />
-                        <span className="hours-div">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
+                        <span className="hours-div text-primary">{addPortFolioItem.unit == "" ? "select unit" : addPortFolioItem.unit.label}</span>
                       </div>
                       {/* <Select
                     onChange={(e) =>
