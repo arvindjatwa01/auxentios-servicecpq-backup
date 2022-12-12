@@ -43,14 +43,16 @@ const PriceCalculator = (props) => {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    if (props.priceCalculator) {
-      console.log("priceCalculator 111111", props.priceCalculator)
-      setPriceCalculator(props.priceCalculator);
+    if (props.serviceOrBundlePrefix !== "SERVICE") {
+      if (props.priceCalculator) {
+        console.log("priceCalculator 111111", props.priceCalculator)
+        setPriceCalculator(props.priceCalculator);
+      }
     }
   }, [props]);
 
   useEffect(() => {
-    if(props.serviceOrBundlePrefix == "BUNDLE"){
+    if (props.serviceOrBundlePrefix == "BUNDLE") {
       portfolioItemPriceSjidFun()
     }
   }, [])
@@ -73,7 +75,7 @@ const PriceCalculator = (props) => {
 
 
     setPriceCalculator({
-      ...priceCalculator, 
+      ...priceCalculator,
       priceMethod: res.data.priceMethod,
       listPrice: res.data.listPrice,
       calculatedPrice: res.data.calculatedPrice,
@@ -82,7 +84,7 @@ const PriceCalculator = (props) => {
       startUsage: res.data.startUsage,
       endUsage: res.data.endUsage,
       totalPrice: res.data.totalPrice,
-      netPrice:res.data.netService
+      netPrice: res.data.netService
     })
 
 

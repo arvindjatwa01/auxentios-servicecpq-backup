@@ -317,6 +317,20 @@ const AddPortfolioItem = (props) => {
           draggable: true,
           progress: undefined,
         });
+      } else if ((props.compoFlag === "BUNDLE") &&
+        (addPortFolioItem.usageIn == "" ||
+          addPortFolioItem.taskType == "" ||
+          addPortFolioItem.quantity == "")) {
+        toast("😐" + "Please fill mandatory fields", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+
       } else {
         setTabs((prev) => `${parseInt(prev) + 1}`)
         setAddportFolioItem({ ...addPortFolioItem, templateId: "", repairOption: "" });
@@ -369,10 +383,16 @@ const AddPortfolioItem = (props) => {
           miscRequired: true
         }
 
+        // console.log("reqObj 12333333 ", rObj)
+
         const itemPriceData = await createItemPriceData(rObj)
 
         props.setTabs("2");
-        props.getAddportfolioItemDataFun(addPortFolioItem, itemPriceData.data);
+        if(props.compoFlag === "itemEdit") {
+          props.handleItemEditSave(addPortFolioItem, itemPriceData.data);
+        }else {
+          props.getAddportfolioItemDataFun(addPortFolioItem, itemPriceData.data);
+        }
 
 
       } else {
@@ -419,7 +439,13 @@ const AddPortfolioItem = (props) => {
         }
 
         const itemPriceData = await createItemPriceData(rObj)
-        props.getAddportfolioItemData(addPortFolioItem, itemPriceData.data)
+        if(props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditPort") {
+          props.handleItemEditSave(addPortFolioItem, itemPriceData.data);
+        }else if(props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditBundle") { 
+          props.handleItemEditSave(addPortFolioItem, itemPriceData.data);
+        }else{
+          props.getAddportfolioItemData(addPortFolioItem, itemPriceData.data)
+        }
         props.setBundleTabs("3");
       }
     }

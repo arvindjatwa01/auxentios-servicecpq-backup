@@ -136,6 +136,7 @@ export const PortfolioSummary = () => {
   const [querySearchModelPrefixOption, setQuerySearchModelPrefixOption] = useState([])
 
   const [editBundleService, setEditBundleService] = useState(false);
+  const [bundleAndServiceEditAble, setBundleAndServiceEditAble] = useState(false)
 
   // New Addition for bundle/Service Creation
   const [bundleServiceShow, setBundleServiceShow] = useState(false);
@@ -793,11 +794,13 @@ export const PortfolioSummary = () => {
   }
 
   const handleSelectCustomerSegment = (e) => {
+    // console.log("e is : ", e)
+
     setSelectedCustomerSegmentOption(e)
     setCreateServiceOrBundle({
       ...createServiceOrBundle,
       customerSegment: e,
-    })
+    });
   }
 
   const handleSearchListClick = (e, currentItem, obj1, id) => {
@@ -853,7 +856,9 @@ export const PortfolioSummary = () => {
   }
 
   const makeBundleServiceEditable = (data) => {
+    console.log("data is ------ ", data);
     setEditBundleService(true);
+    setBundleAndServiceEditAble(true)
     if (data.itemHeaderModel.bundleFlag === "SERVICE") {
       setServiceOrBundlePrefix("SERVICE");
       setBundleTabs("1")
@@ -863,8 +868,8 @@ export const PortfolioSummary = () => {
         name: data.itemName,
         description: data.itemHeaderModel.itemHeaderDescription,
         bundleFlag: data.itemHeaderModel.bundleFlag,
-        reference: data.itemHeaderModel.itemHeaderDescription,
-        customerSegment: "",
+        reference: data.itemHeaderModel.reference,
+        customerSegment: { label: data.itemHeaderModel.itemHeaderCustomerSegment, value: data.itemHeaderModel.itemHeaderCustomerSegment },
         make: data.itemHeaderModel.itemHeaderMake,
         model: data.itemHeaderModel.model,
         family: data.itemHeaderModel.itemHeaderFamily,
@@ -873,6 +878,8 @@ export const PortfolioSummary = () => {
         additional: "",
         machineComponent: { label: data.itemHeaderModel.type, value: data.itemHeaderModel.type },
       });
+
+      setSelectedCustomerSegmentOption({ label: data.itemHeaderModel.itemHeaderCustomerSegment, value: data.itemHeaderModel.itemHeaderCustomerSegment })
 
       setSelectedPrefixOption({ label: data.itemHeaderModel.prefix, value: data.itemHeaderModel.prefix });
 
@@ -1095,11 +1102,92 @@ export const PortfolioSummary = () => {
 
   // SERVICE/BUNDLE MODEL FUNCTIONS
   const saveAddNewServiceOrBundle = async () => {
+    // console.log("editBundleService : ", createServiceOrBundle)
+    // console.log("addPortFolioItem : ", addPortFolioItem)
+    // console.log("passItemEditRowData : ", passItemEditRowData);
     try {
       // if(createServiceOrBundle.description==""||createServiceOrBundle.model==""){
       //   throw "Please fill fields properly"
       // }
       if (editBundleService) {
+        // let reqObj = {
+        //   itemId: createServiceOrBundle.id,
+        //   // itemName: "",
+        //   itemName: createServiceOrBundle.name,
+        //   itemHeaderModel: {
+        //     itemHeaderId: createServiceOrBundle.id,
+        //     itemHeaderDescription: createServiceOrBundle.description,
+        //     bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+        //     portfolioItemId: 0,
+        //     reference: createServiceOrBundle.reference,
+        //     itemHeaderMake: createServiceOrBundle.make,
+        //     itemHeaderFamily: createServiceOrBundle.family,
+        //     model: createServiceOrBundle.model,
+        //     prefix: createServiceOrBundle.prefix,
+        //     // type: "MACHINE",
+        //     type: createServiceOrBundle.machineComponent?.value,
+        //     additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional?.value : "",
+        //     currency: "",
+        //     netPrice: 0,
+        //     itemProductHierarchy: "END_PRODUCT",
+        //     itemHeaderGeographic: "ONSITE",
+        //     responseTime: "PROACTIVE",
+        //     usage: "",
+        //     validFrom: "",
+        //     validTo: "",
+        //     estimatedTime: "",
+        //     servicePrice: 0,
+        //     status: "NEW",
+        //     itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
+        //     preparedBy: administrative.preparedBy,
+        //     approvedBy: administrative.approvedBy,
+        //     preparedOn: administrative.preparedOn,
+        //     revisedBy: administrative.revisedBy,
+        //     revisedOn: administrative.revisedOn,
+        //     salesOffice: administrative.branch,
+        //     offerValidity: administrative.offerValidity
+        //   },
+        //   itemBodyModel: {
+        //     itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
+        //     itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
+        //     quantity: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.quantity) : 0,
+        //     startUsage: "",
+        //     endUsage: priceCalculator.startUsage ? priceCalculator.startUsage : "",
+        //     standardJobId: priceCalculator.endUsage ? priceCalculator.endUsage : "",
+        //     frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
+        //     additional: "",
+        //     spareParts: ["WITH_SPARE_PARTS"],
+        //     labours: ["WITH_LABOUR"],
+        //     miscellaneous: ["LUBRICANTS"],
+        //     taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["PM1"],
+        //     solutionCode: "",
+        //     usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+        //     recommendedValue: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.recommendedValue) : 0,
+        //     usage: "",
+        //     repairKitId: "",
+        //     templateDescription: "",
+        //     partListId: "",
+        //     serviceEstimateId: "",
+        //     numberOfEvents: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.numberOfEvents) : 0,
+        //     repairOption: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.repairOption.value : "",
+        //     priceMethod: "LIST_PRICE",
+        //     listPrice: priceCalculator.listPrice ? parseInt(priceCalculator.listPrice) : 0,
+        //     priceEscalation: "",
+        //     calculatedPrice: priceCalculator.calculatedPrice ? parseInt(priceCalculator.calculatedPrice) : 0,
+        //     flatPrice: priceCalculator.flatPrice ? parseInt(priceCalculator.flatPrice) : 0,
+        //     discountType: "",
+        //     year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
+        //     avgUsage: 0,
+        //     unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
+        //     sparePartsPrice: 0,
+        //     sparePartsPriceBreakDownPercentage: 0,
+        //     servicePrice: 0,
+        //     servicePriceBreakDownPercentage: 0,
+        //     miscPrice: 0,
+        //     miscPriceBreakDownPercentage: 0,
+        //     totalPrice: 0
+        //   }
+        // }
         let reqObj = {
           itemId: createServiceOrBundle.id,
           // itemName: "",
@@ -1113,9 +1201,9 @@ export const PortfolioSummary = () => {
             itemHeaderMake: createServiceOrBundle.make,
             itemHeaderFamily: createServiceOrBundle.family,
             model: createServiceOrBundle.model,
-            prefix: createServiceOrBundle.prefix,
-            type: "MACHINE",
-            additional: createServiceOrBundle.additional.value,
+            prefix: createServiceOrBundle.prefix?.value,
+            type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
+            additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
             currency: "",
             netPrice: 0,
             itemProductHierarchy: "END_PRODUCT",
@@ -1126,8 +1214,14 @@ export const PortfolioSummary = () => {
             validTo: "",
             estimatedTime: "",
             servicePrice: 0,
-            status: "NEW",
+            status: "DRAFT",
             itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
+            componentCode: "",
+            componentDescription: "",
+            serialNumber: "",
+            variant: "",
+            itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value,
+            jobCode: "",
             preparedBy: administrative.preparedBy,
             approvedBy: administrative.approvedBy,
             preparedOn: administrative.preparedOn,
@@ -1139,44 +1233,27 @@ export const PortfolioSummary = () => {
           itemBodyModel: {
             itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
             itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
-            quantity: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.quantity) : 0,
-            startUsage: "",
-            endUsage: priceCalculator.startUsage ? priceCalculator.startUsage : "",
-            standardJobId: priceCalculator.endUsage ? priceCalculator.endUsage : "",
             frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
-            additional: "",
             spareParts: ["WITH_SPARE_PARTS"],
             labours: ["WITH_LABOUR"],
             miscellaneous: ["LUBRICANTS"],
-            taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["PM1"],
+            taskType: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.taskType?.value : ["PM1"],
             solutionCode: "",
             usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
             recommendedValue: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.recommendedValue) : 0,
             usage: "",
-            repairKitId: "",
-            templateDescription: "",
-            partListId: "",
-            serviceEstimateId: "",
-            numberOfEvents: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.numberOfEvents) : 0,
-            repairOption: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.repairOption.value : "",
-            priceMethod: "LIST_PRICE",
-            listPrice: priceCalculator.listPrice ? parseInt(priceCalculator.listPrice) : 0,
-            priceEscalation: "",
-            calculatedPrice: priceCalculator.calculatedPrice ? parseInt(priceCalculator.calculatedPrice) : 0,
-            flatPrice: priceCalculator.flatPrice ? parseInt(priceCalculator.flatPrice) : 0,
-            discountType: "",
             year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
             avgUsage: 0,
             unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
-            sparePartsPrice: 0,
-            sparePartsPriceBreakDownPercentage: 0,
-            servicePrice: 0,
-            servicePriceBreakDownPercentage: 0,
-            miscPrice: 0,
-            miscPriceBreakDownPercentage: 0,
-            totalPrice: 0
+            itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
+              {
+                itemPriceDataId: itemPriceData.itemPriceDataId
+              }
+            ] : [],
           }
         }
+
+        console.log("reqObj 1234567888 : ", reqObj)
 
         const res = await updateItemData(createServiceOrBundle.id, reqObj);
         if (res.status === 200) {
@@ -1189,7 +1266,8 @@ export const PortfolioSummary = () => {
             draggable: true,
             progress: undefined,
           });
-          setAddportFolioItem({});
+          setBundleTabs("4");
+          // setAddportFolioItem({});
 
         }
 
@@ -1287,7 +1365,7 @@ export const PortfolioSummary = () => {
         //   setAddportFolioItem({});
 
         // }
-        setAddportFolioItem({});
+        // setAddportFolioItem({});
       }
       console.log("editBundleService : ", editBundleService)
 
@@ -1503,7 +1581,89 @@ export const PortfolioSummary = () => {
           progress: undefined,
         });
       } else {
-        setBundleTabs("4");
+
+
+        let reqObj = {
+          itemId: 0,
+          // itemName: "",
+          itemName: createServiceOrBundle.name,
+          itemHeaderModel: {
+            itemHeaderId: 0,
+            itemHeaderDescription: createServiceOrBundle.description,
+            bundleFlag: serviceOrBundlePrefix === "SERVICE" ? "SERVICE" : "BUNDLE_ITEM",
+            portfolioItemId: 0,
+            reference: createServiceOrBundle.reference,
+            itemHeaderMake: createServiceOrBundle.make,
+            itemHeaderFamily: createServiceOrBundle.family,
+            model: createServiceOrBundle.model,
+            prefix: createServiceOrBundle.prefix,
+            type: createServiceOrBundle.machineComponent != "" ? createServiceOrBundle.machineComponent?.value : "MACHINE",
+            additional: createServiceOrBundle.additional != "" ? createServiceOrBundle.additional.value : "",
+            currency: "",
+            netPrice: 0,
+            itemProductHierarchy: "END_PRODUCT",
+            itemHeaderGeographic: "ONSITE",
+            responseTime: "PROACTIVE",
+            usage: "",
+            validFrom: "",
+            validTo: "",
+            estimatedTime: "",
+            servicePrice: 0,
+            status: "DRAFT",
+            itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
+            componentCode: "",
+            componentDescription: "",
+            serialNumber: "",
+            variant: "",
+            itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value,
+            jobCode: "",
+            preparedBy: administrative.preparedBy,
+            approvedBy: administrative.approvedBy,
+            preparedOn: administrative.preparedOn,
+            revisedBy: administrative.revisedBy,
+            revisedOn: administrative.revisedOn,
+            salesOffice: administrative.branch,
+            offerValidity: administrative.offerValidity
+          },
+          itemBodyModel: {
+            itemBodyId: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.id) : 0,
+            itemBodyDescription: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.description : "",
+            frequency: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.frequency?.value : "",
+            spareParts: ["WITH_SPARE_PARTS"],
+            labours: ["WITH_LABOUR"],
+            miscellaneous: ["LUBRICANTS"],
+            taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["PM1"],
+            solutionCode: "",
+            usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
+            recommendedValue: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.recommendedValue) : 0,
+            usage: "",
+            year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
+            avgUsage: 0,
+            unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
+            itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
+              {
+                itemPriceDataId: itemPriceData.itemPriceDataId
+              }
+            ] : [],
+          }
+        }
+
+        const res = await itemCreation(reqObj);
+        if (res.status === 200) {
+          toast("😎" + `${serviceOrBundlePrefix} created`, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          setBundleTabs("4");
+          // setAddportFolioItem({});
+
+        }
+
         // console.log("createServiceOrBundle : ", createServiceOrBundle);
       }
     }
@@ -1513,10 +1673,15 @@ export const PortfolioSummary = () => {
     setAddportFolioItem(data)
     setItemPriceData(itemPriceData)
   }
-  const handleItemEditSave = () => {
+  const handleItemEditSave = (data, itemPriceData) => {
+    setAddportFolioItem(data)
+    setItemPriceData(itemPriceData)
     setBundleTabs("3")
   }
   const getPriceCalculatorDataFun = (data) => {
+
+    console.log("data 123456789 : ", data)
+
     setPriceCalculator(data);
     setBundleServiceShow(false);
     setBundleTabs("1")
@@ -1525,6 +1690,7 @@ export const PortfolioSummary = () => {
 
   const handleCreateChange = (e) => {
     setEditBundleService(false);
+    setBundleAndServiceEditAble(false);
     if (e.value === "PORTFOLIO") {
       let portfolioDetails = {
         portfolioId: "",
@@ -1898,6 +2064,43 @@ export const PortfolioSummary = () => {
       ),
     },
   ]
+
+  const getFormattedDateTimeByTimeStampForAdministrative = (timeStamp) => {
+
+    var date = new Date(timeStamp);
+    var year = date.getFullYear();
+    // var m = date.getMonth() + 1;
+    var m = date.getMonth();
+    // var month = m < 10 ? '0' + m : m;
+    var month = m;
+    var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+    var format = "AM";
+    var hour = date.getHours();
+    var minutes = date.getMinutes();
+
+    var monthName = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    if (hour > 11) {
+      format = "PM";
+    }
+    if (hour > 12) {
+      hour = hour - 12;
+    } else if (hour === 0) {
+      hour = 12;
+    }
+
+    if (hour < 10) {
+      hour = "0" + hour;
+    }
+
+    if (minutes < 10) {
+      minutes = "0" + minutes;
+    }
+
+    // var finalDateString = day + "-" + month + "-" + year + " " + hour + ":" + minutes + " " + format;
+    var finalDateString = year + "-" + month + "-" + day;
+    return finalDateString;
+  }
 
   const getFormattedDateTimeByTimeStamp = (timeStamp) => {
 
@@ -2977,7 +3180,7 @@ export const PortfolioSummary = () => {
                     <h5 className="d-flex align-items-center mb-0">
                       <div className="" style={{ display: "contents" }}>
                         <span className="mr-3">Header</span>
-                        <a href="#" className="btn-sm">
+                        <a href={undefined} className="btn-sm" style={{ cursor: "pointer" }} onClick={() => setBundleAndServiceEditAble(false)}>
                           <i className="fa fa-pencil" aria-hidden="true"></i>
                         </a>
                         <a href="#" className="btn-sm">
@@ -3009,13 +3212,99 @@ export const PortfolioSummary = () => {
                         />
                       </div>
                     </h5>
-                    <div className="row mt-4 input-fields">
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            {serviceOrBundlePrefix} NAME
-                          </label>
-                          {/* <input
+                    {bundleAndServiceEditAble ?
+                      <>
+                        <div className="row mt-4 ">
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">{serviceOrBundlePrefix} NAME</p>
+                              <h6 className="font-weight-500 text-uppercase">{createServiceOrBundle.name}</h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">{serviceOrBundlePrefix} DESCRIPTION</p>
+                              <h6 className="font-weight-500 text-uppercase">{createServiceOrBundle.description}</h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">BUNDLE/SERVICE</p>
+                              <h6 className="font-weight-500 text-uppercase">
+                                {serviceOrBundlePrefix === "SERVICE"
+                                  ? "SERVICE"
+                                  : "BUNDLE_ITEM"}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">REFERENCE</p>
+                              <h6 className="font-weight-500 text-uppercase">
+                                {createServiceOrBundle.reference}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">CUSTOMER SEGMENT</p>
+                              <h6 className="font-weight-500 text-uppercase">
+                                {selectedCustomerSegmentOption?.value}
+                                {/* {createServiceOrBundle.customerSegment?.value} */}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">MACHINE/COMPONENT</p>
+                              <h6 className="font-weight-500 text-uppercase">
+                                {createServiceOrBundle.machineComponent?.value}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">MAKE</p>
+                              <h6 className="font-weight-500 text-uppercase">
+                                {createServiceOrBundle.make}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">FAMILY</p>
+                              <h6 className="font-weight-500 text-uppercase">
+                                {createServiceOrBundle.family}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group customselectmodelSerch">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">MODEL(S)</p>
+                              <h6 className="font-weight-500 text-uppercase">
+                                {createServiceOrBundle.model}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREFIX(S)</p>
+                              <h6 className="font-weight-500 text-uppercase">
+                                {selectedPrefixOption?.value}
+                              </h6>
+                            </div>
+                          </div>
+                        </div>
+                      </> :
+
+                      <>
+                        <div className="row mt-4 input-fields">
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                {serviceOrBundlePrefix} NAME
+                              </label>
+                              {/* <input
                             type="text"
                             className="form-control border-radius-10"
                             disabled
@@ -3027,188 +3316,188 @@ export const PortfolioSummary = () => {
                                 : ""
                             }
                           /> */}
-                          <input
-                            type="text"
-                            className="form-control text-primary border-radius-10"
-                            name="name"
-                            placeholder="Name (Required*)"
-                            onChange={handleAddServiceBundleChange}
-                            value={createServiceOrBundle.name}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            {serviceOrBundlePrefix} DESCRIPTION
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control text-primary border-radius-10"
-                            name="description"
-                            placeholder="Description (Required*)"
-                            value={createServiceOrBundle.description}
-                            onChange={handleAddServiceBundleChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            BUNDLE/SERVICE
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control text-primary border-radius-10"
-                            name="bundleFlag"
-                            placeholder="Bundle Flag"
-                            value={
-                              serviceOrBundlePrefix === "SERVICE"
-                                ? "SERVICE"
-                                : "BUNDLE_ITEM"
-                            }
-                            onChange={handleAddServiceBundleChange}
-                            disabled
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            REFERENCE
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control text-primary border-radius-10"
-                            name="reference"
-                            placeholder="Reference"
-                            value={createServiceOrBundle.reference}
-                            onChange={handleAddServiceBundleChange}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            CUSTOMER SEGMENT
-                          </label>
-                          <Select
-                            onchange={(e) => handleSelectCustomerSegment(e)}
-                            // onChange={(e) => setCreateServiceOrBundle({ ...createServiceOrBundle, customerSegment: e, })}
-                            className="text-primary"
-                            // value={createServiceOrBundle.customerSegment}
-                            value={selectedCustomerSegmentOption}
-                            options={customerSegmentKeyValue}
-                            placeholder="Customer Segment"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            MACHINE/COMPONENT
-                          </label>
-                          <Select
-                            isClearable={true}
-                            className="text-primary"
-                            value={createServiceOrBundle.machineComponent}
-                            onChange={(e) =>
-                              setCreateServiceOrBundle({
-                                ...createServiceOrBundle,
-                                machineComponent: e,
-                              })
-                            }
-                            isLoading={typeKeyValue.length > 0 ? false : true}
-                            options={typeKeyValue}
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            MAKE
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control text-primary border-radius-10"
-                            name="make"
-                            placeholder="Auto Fill Search Model...."
-                            value={createServiceOrBundle.make}
-                            onChange={handleAddServiceBundleChange}
-                            disabled
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            FAMILY
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control text-primary border-radius-10"
-                            name="make"
-                            placeholder="Auto Fill Search Model...."
-                            value={createServiceOrBundle.family}
-                            // onChange={handleAddServiceBundleChange}
-                            disabled
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group customselectmodelSerch">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            MODEL(S)
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control text-primary border-radius-10"
-                            name="model"
-                            placeholder="Model(Required*)"
-                            value={createServiceOrBundle.model}
-                            // onChange={handleAddServiceBundleChange}
-                            onChange={(e) => handleModelInputSearch(e)}
-                          />
-                          {
-                            <ul
-                              className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
-                              id="style"
-                            >
-                              {querySearchModelResult.map((currentItem, j) => (
-                                <li
-                                  className="list-group-item text-primary"
-                                  key={j}
-                                  onClick={(e) => handleSearchModelListClick(
-                                    e,
-                                    currentItem
-                                  )}
+                              <input
+                                type="text"
+                                className="form-control text-primary border-radius-10"
+                                name="name"
+                                placeholder="Name (Required*)"
+                                onChange={handleAddServiceBundleChange}
+                                value={createServiceOrBundle.name}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                {serviceOrBundlePrefix} DESCRIPTION
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control text-primary border-radius-10"
+                                name="description"
+                                placeholder="Description (Required*)"
+                                value={createServiceOrBundle.description}
+                                onChange={handleAddServiceBundleChange}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                BUNDLE/SERVICE
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control text-primary border-radius-10"
+                                name="bundleFlag"
+                                placeholder="Bundle Flag"
+                                value={
+                                  serviceOrBundlePrefix === "SERVICE"
+                                    ? "SERVICE"
+                                    : "BUNDLE_ITEM"
+                                }
+                                onChange={handleAddServiceBundleChange}
+                                disabled
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                REFERENCE
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control text-primary border-radius-10"
+                                name="reference"
+                                placeholder="Reference"
+                                value={createServiceOrBundle.reference}
+                                onChange={handleAddServiceBundleChange}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                CUSTOMER SEGMENT
+                              </label>
+                              <Select
+                                onChange={(e) => handleSelectCustomerSegment(e)}
+                                // onChange={(e) => setCreateServiceOrBundle({ ...createServiceOrBundle, customerSegment: e, })}
+                                className="text-primary"
+                                // value={createServiceOrBundle.customerSegment}
+                                value={selectedCustomerSegmentOption}
+                                options={customerSegmentKeyValue}
+                                placeholder="Customer Segment"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                MACHINE/COMPONENT
+                              </label>
+                              <Select
+                                isClearable={true}
+                                className="text-primary"
+                                value={createServiceOrBundle.machineComponent}
+                                onChange={(e) =>
+                                  setCreateServiceOrBundle({
+                                    ...createServiceOrBundle,
+                                    machineComponent: e,
+                                  })
+                                }
+                                isLoading={typeKeyValue.length > 0 ? false : true}
+                                options={typeKeyValue}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                MAKE
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control text-primary border-radius-10"
+                                name="make"
+                                placeholder="Auto Fill Search Model...."
+                                value={createServiceOrBundle.make}
+                                onChange={handleAddServiceBundleChange}
+                                disabled
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                FAMILY
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control text-primary border-radius-10"
+                                name="make"
+                                placeholder="Auto Fill Search Model...."
+                                value={createServiceOrBundle.family}
+                                // onChange={handleAddServiceBundleChange}
+                                disabled
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group customselectmodelSerch">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                MODEL(S)
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control text-primary border-radius-10"
+                                name="model"
+                                placeholder="Model(Required*)"
+                                value={createServiceOrBundle.model}
+                                // onChange={handleAddServiceBundleChange}
+                                onChange={(e) => handleModelInputSearch(e)}
+                              />
+                              {
+                                <ul
+                                  className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
+                                  id="style"
                                 >
-                                  {currentItem.model}
-                                </li>
-                              ))}
-                            </ul>
-                          }
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-3">
-                        <div className="form-group">
-                          <label className="text-light-dark font-size-12 font-weight-500">
-                            PREFIX(S)
-                          </label>
-                          <Select
-                            onChange={(e) => selectPrefixOption(e)}
-                            className="text-primary"
-                            value={selectedPrefixOption}
-                            options={querySearchModelPrefixOption}
-                            placeholder="select....."
-                          />
-                          {/* <input
+                                  {querySearchModelResult.map((currentItem, j) => (
+                                    <li
+                                      className="list-group-item text-primary"
+                                      key={j}
+                                      onClick={(e) => handleSearchModelListClick(
+                                        e,
+                                        currentItem
+                                      )}
+                                    >
+                                      {currentItem.model}
+                                    </li>
+                                  ))}
+                                </ul>
+                              }
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-3">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                PREFIX(S)
+                              </label>
+                              <Select
+                                onChange={(e) => selectPrefixOption(e)}
+                                className="text-primary"
+                                value={selectedPrefixOption}
+                                options={querySearchModelPrefixOption}
+                                placeholder="select....."
+                              />
+                              {/* <input
                             type="text"
                             className="form-control border-radius-10"
                             name="prefix"
@@ -3216,10 +3505,10 @@ export const PortfolioSummary = () => {
                             value={createServiceOrBundle.prefix}
                             onChange={handleAddServiceBundleChange}
                           /> */}
-                        </div>
-                      </div>
+                            </div>
+                          </div>
 
-                      {/* <div className="col-md-4 col-sm-3">
+                          {/* <div className="col-md-4 col-sm-3">
                         <div className="form-group">
                           <label
                             className="text-light-dark font-size-12 font-weight-500"
@@ -3240,7 +3529,9 @@ export const PortfolioSummary = () => {
                           />
                         </div>
                       </div> */}
-                    </div>
+                        </div>
+                      </>}
+
                     <div className="row" style={{ justifyContent: "right" }}>
                       <button
                         type="button"
@@ -3262,6 +3553,7 @@ export const PortfolioSummary = () => {
                       passItemEditRowData={passItemEditRowData}
                       handleItemEditSave={handleItemEditSave}
                       compoFlag="itemEdit"
+                      compoFlagTest="itemEditBundle"
                       setBundleTabs={setBundleTabs}
                     />
                   </> : <>
@@ -3275,52 +3567,113 @@ export const PortfolioSummary = () => {
 
               </TabPanel>
               <TabPanel value="3">
-                <div className="row mt-4 input-fields">
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        PREPARED BY
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control text-primary border-radius-10"
-                        name="preparedBy"
-                        value={administrative.preparedBy}
-                        onChange={handleAdministrativreChange}
-                        placeholder="Required (ex-abc@gmail.com)"
-                      />
+                {bundleAndServiceEditAble ?
+                  <>
+                    <div className="row mt-4">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED BY</p>
+                          <h6 className="font-weight-500 text-uppercase">
+                            {administrative.preparedBy}
+                          </h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">APPROVED BY</p>
+                          <h6 className="font-weight-500 text-uppercase">
+                            {administrative.approvedBy}
+                          </h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED ON</p>
+                          <h6 className="font-weight-500 text-uppercase">
+                            {getFormattedDateTimeByTimeStampForAdministrative(administrative.preparedOn)}
+                          </h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED BY</p>
+                          <h6 className="font-weight-500 text-uppercase">
+                            {administrative.revisedBy}
+                          </h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED ON</p>
+                          <h6 className="font-weight-500 text-uppercase">
+                            {getFormattedDateTimeByTimeStampForAdministrative(administrative.revisedOn)}
+                          </h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">SALSE OFFICE/BRANCH</p>
+                          <h6 className="font-weight-500 text-uppercase">
+                            {administrative.branch}
+                          </h6>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">OFFER VALIDITY</p>
+                          <h6 className="font-weight-500 text-uppercase">
+                            {administrative.offerValidity}
+                          </h6>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        APPROVED BY
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control text-primary border-radius-10"
-                        placeholder="Optional  (ex-abc@gmail.com)"
-                        name="approvedBy"
-                        value={administrative.approvedBy}
-                        onChange={handleAdministrativreChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    {/* <div className="form-group"> */}
-                    <label
-                      className="text-light-dark font-size-14 font-weight-500"
-                      htmlFor="exampleInputEmail1"
-                    >
-                      PREPARED ON
-                    </label>
-                    {/* <input
+                  </> : <>
+                    <div className="row mt-4 input-fields">
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            PREPARED BY
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control text-primary border-radius-10"
+                            name="preparedBy"
+                            value={administrative.preparedBy}
+                            onChange={handleAdministrativreChange}
+                            placeholder="Required (ex-abc@gmail.com)"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            APPROVED BY
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control text-primary border-radius-10"
+                            placeholder="Optional  (ex-abc@gmail.com)"
+                            name="approvedBy"
+                            value={administrative.approvedBy}
+                            onChange={handleAdministrativreChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        {/* <div className="form-group"> */}
+                        <label
+                          className="text-light-dark font-size-14 font-weight-500"
+                          htmlFor="exampleInputEmail1"
+                        >
+                          PREPARED ON
+                        </label>
+                        {/* <input
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
@@ -3328,55 +3681,55 @@ export const PortfolioSummary = () => {
                           value={administrative.preparedOn}
                           onChange={handleAdministrativreChange}
                         /> */}
-                    <div className="d-flex align-items-center date-box w-100">
-                      <div className="form-group w-100">
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                          <DatePicker
-                            variant="inline"
-                            format="dd/MM/yyyy"
-                            className="form-controldate border-radius-10"
-                            label=""
-                            name="preparedOn"
-                            value={administrative.preparedOn}
-                            onChange={(e) =>
-                              setAdministrative({
-                                ...administrative,
-                                preparedOn: e,
-                              })
-                            }
-                          />
-                        </MuiPickersUtilsProvider>
+                        <div className="d-flex align-items-center date-box w-100">
+                          <div className="form-group w-100">
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                              <DatePicker
+                                variant="inline"
+                                format="dd/MM/yyyy"
+                                className="form-controldate border-radius-10"
+                                label=""
+                                name="preparedOn"
+                                value={administrative.preparedOn}
+                                onChange={(e) =>
+                                  setAdministrative({
+                                    ...administrative,
+                                    preparedOn: e,
+                                  })
+                                }
+                              />
+                            </MuiPickersUtilsProvider>
+                          </div>
+                        </div>
+                        {/* </div> */}
                       </div>
-                    </div>
-                    {/* </div> */}
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        REVISED BY
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10 text-primary"
-                        placeholder="Optional  (ex-abc@gmail.com)"
-                        name="revisedBy"
-                        value={administrative.revisedBy}
-                        onChange={handleAdministrativreChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        REVISED ON
-                      </label>
-                      {/* <input
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            REVISED BY
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            placeholder="Optional  (ex-abc@gmail.com)"
+                            name="revisedBy"
+                            value={administrative.revisedBy}
+                            onChange={handleAdministrativreChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            REVISED ON
+                          </label>
+                          {/* <input
                           type="text"
                           className="form-control border-radius-10"
                           placeholder="Optional"
@@ -3384,69 +3737,71 @@ export const PortfolioSummary = () => {
                           value={administrative.revisedOn}
                           onChange={handleAdministrativreChange}
                         /> */}
-                      <div className="d-flex align-items-center date-box w-100">
-                        <div className="form-group w-100 m-0">
-                          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <DatePicker
-                              variant="inline"
-                              format="dd/MM/yyyy"
-                              className="form-controldate border-radius-10"
-                              label=""
-                              name="revisedOn"
-                              value={administrative.revisedOn}
-                              onChange={(e) =>
-                                setAdministrative({
-                                  ...administrative,
-                                  revisedOn: e,
-                                })
-                              }
-                            />
-                          </MuiPickersUtilsProvider>
+                          <div className="d-flex align-items-center date-box w-100">
+                            <div className="form-group w-100 m-0">
+                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <DatePicker
+                                  variant="inline"
+                                  format="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  label=""
+                                  name="revisedOn"
+                                  value={administrative.revisedOn}
+                                  onChange={(e) =>
+                                    setAdministrative({
+                                      ...administrative,
+                                      revisedOn: e,
+                                    })
+                                  }
+                                />
+                              </MuiPickersUtilsProvider>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            SALSE OFFICE/BRANCH
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            name="branch"
+                            value={administrative.branch}
+                            onChange={handleAdministrativreChange}
+                            placeholder="Required"
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4 col-sm-4">
+                        <div className="form-group">
+                          <label
+                            className="text-light-dark font-size-14 font-weight-500"
+                            htmlFor="exampleInputEmail1"
+                          >
+                            OFFER VALIDITY
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control border-radius-10 text-primary"
+                            placeholder="Optional"
+                            name="offerValidity"
+                            value={administrative.offerValidity}
+                            onChange={handleAdministrativreChange}
+                          />
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        SALSE OFFICE/BRANCH
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10 text-primary"
-                        name="branch"
-                        value={administrative.branch}
-                        onChange={handleAdministrativreChange}
-                        placeholder="Required"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-4 col-sm-4">
-                    <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-14 font-weight-500"
-                        htmlFor="exampleInputEmail1"
-                      >
-                        OFFER VALIDITY
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control border-radius-10 text-primary"
-                        placeholder="Optional"
-                        name="offerValidity"
-                        value={administrative.offerValidity}
-                        onChange={handleAdministrativreChange}
-                      />
-                    </div>
-                  </div>
-                </div>
+                  </>}
+
                 <div className="row" style={{ justifyContent: "right" }}>
                   <button
                     type="button"
-                    onClick={handleUpdateNewServiceOrBundle}
+                    onClick={editBundleService ? saveAddNewServiceOrBundle : handleUpdateNewServiceOrBundle}
                     className="btn btn-light"
                   >
                     Save
