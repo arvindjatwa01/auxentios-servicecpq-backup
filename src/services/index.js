@@ -12,7 +12,7 @@ export { getUserDetails, signup, signIn } from './userServices';
 export { getAllPortfolios } from './solutionBuilderServices'
 export { createPortfolio, getPortfolio, updatePortfolio, portfolioSearch } from './servicePortfolioServices'
 export { createCustomPortfolio, updateCustomPortfolio, getCustomPortfolio, solutionPortfolioSearch, getSearchForRecentSolutionPortfolio, getSearchForRecentSolutionBundleService, copyPortfolioICustomPortfolio } from './customPortfolioSolutions'
-export { getPortfolioCommonConfig, getPortfolioPriceTypeCommonConfig, getPortfolioPriceHeadTypeCommonConfig, getSolutionPriceCommonConfig, additionalPriceCreation, escalationPriceCreation, portfolioPriceCreation,portfolioItemPriceSjid } from './pricingCommonConfig'
+export { getPortfolioCommonConfig, getPortfolioPriceTypeCommonConfig, getPortfolioPriceHeadTypeCommonConfig, getSolutionPriceCommonConfig, additionalPriceCreation, escalationPriceCreation, portfolioPriceCreation,portfolioItemPriceSjid, getItemPriceData } from './pricingCommonConfig'
 export { getMakeKeyValue, getModelKeyValue, getPrefixKeyValue, createCoverage, createCutomCoverage } from './coverageService'
 export { getUsageCategoryKeyValue, getStrategyTaskKeyValue, getTaskTypeKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getLifeStageKeyValue, getTypeKeyValue, getResponseTimeTaskKeyValue, getValidityKeyValue, getSolutionTypeKeyValue, getSolutionLevelKeyValue, getAuditRestServiceData } from './commonSolutionBuilderServices'
 export { getSearchQueryCoverage, getSearchCoverageForFamily, getSearchForPortfolio, getSearchForRecentPortfolio, getSearchForRecentBundleService, getSearchStandardJobId, getSearchKitId } from "./searchQueryService"

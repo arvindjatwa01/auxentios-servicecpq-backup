@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { itemCreation, updatePortfolio, getPortfolioCommonConfig, portfolioItemPriceSjid} from "../../services/index";
+import { itemCreation, updatePortfolio, getPortfolioCommonConfig, portfolioItemPriceSjid, getItemPriceData } from "../../services/index";
 
 import {
   taskActions,
@@ -44,29 +44,50 @@ const PriceCalculator = (props) => {
   const dispatch = useDispatch();
   useEffect(() => {
     if (props.priceCalculator) {
-      console.log("priceCalculator 111111",props.priceCalculator)
+      console.log("priceCalculator 111111", props.priceCalculator)
       setPriceCalculator(props.priceCalculator);
     }
   }, [props]);
 
-useEffect(()=>{
-  portfolioItemPriceSjidFun()
-},[])
+  useEffect(() => {
+    if(props.serviceOrBundlePrefix == "BUNDLE"){
+      portfolioItemPriceSjidFun()
+    }
+  }, [])
 
-const portfolioItemPriceSjidFun=async()=>{
-  const rObj={
-    standardJobId: "SJ000002",
-    repairKitId: "string",
-    itemId: 1,
-    itemPriceDataId: 25
+  const portfolioItemPriceSjidFun = async () => {
+
+    const rObjId = props.priceCalculator.itemPriceDataId;
+
+    const res = await getItemPriceData(rObjId)
+
+    console.log("res data ", res)
+
+    // const rObj={
+    //   standardJobId: "SJ000002",
+    //   repairKitId: "string",
+    //   itemId: 1,
+    //   itemPriceDataId: 25
+    // }
+
+
+
+    setPriceCalculator({
+      ...priceCalculator, 
+      priceMethod: res.data.priceMethod,
+      listPrice: res.data.listPrice,
+      calculatedPrice: res.data.calculatedPrice,
+      flatPrice: res.data.flatPrice,
+      priceYear: res.data.year,
+      startUsage: res.data.startUsage,
+      endUsage: res.data.endUsage,
+      totalPrice: res.data.totalPrice,
+      netPrice:res.data.netService
+    })
+
+
+    // console.log("response",res)
   }
-const res=await portfolioItemPriceSjid(rObj)
-
-setPriceCalculator({...priceCalculator,netPrice:res.data.netPrice})
-
-
-console.log("response",res)
-}
 
   useEffect(() => {
     // const portfolioId1=location.state

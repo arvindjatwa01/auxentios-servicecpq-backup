@@ -1,6 +1,6 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { PRICING_COMMON_CONFIG, SOLUTION_PRICING_COMMON_CONFIG, PRICE_HEAD_TYPE, PORTFOLIO_PRICE_CREATE, PRICE_LIST, PRICE_TYPE, ADDITIONAL_PRICE_GET, ESCALATION_PRICE_GET, PORTFOLIO_ITEM_PRICE_SJID } from "./CONSTANTS";
+import { PRICING_COMMON_CONFIG, SOLUTION_PRICING_COMMON_CONFIG, PRICE_HEAD_TYPE, PORTFOLIO_PRICE_CREATE, PRICE_LIST, PRICE_TYPE, ADDITIONAL_PRICE_GET, ESCALATION_PRICE_GET, PORTFOLIO_ITEM_PRICE_SJID,PORTFOLIO_ITEM_PRICE_BY_ITEM_ID } from "./CONSTANTS";
 
 /* ----------------- Authorization ------------------- */
 
@@ -205,6 +205,28 @@ export const portfolioItemPriceSjid = (data) => {
         });
     } catch (error) {
       console.error("in pricingCommonConfig > portfolioItemPriceSjid, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+// get Item Price Data
+export const getItemPriceData = (id) => {
+  console.log("pricingCommonConfig > getItemPriceData called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(`${PORTFOLIO_ITEM_PRICE_BY_ITEM_ID()}/${id}`, { headers: headersdata })
+        .then((res) => {
+          console.log("getItemPriceData > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("getItemPriceData > axios err=", err);
+          reject("Error in getItemPriceData axios!");
+        });
+    } catch (error) {
+      console.error("in pricingCommonConfig > getItemPriceData, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });
