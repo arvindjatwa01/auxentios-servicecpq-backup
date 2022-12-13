@@ -22,6 +22,7 @@ import {
   getSearchStandardJobId,
   getSearchKitId,
   createItemPriceData,
+  getItemPriceData,
 } from "../../services/index";
 import {
   selectUpdateTaskList,
@@ -48,6 +49,28 @@ const AddPortfolioItem = (props) => {
   const [bundleItemTaskTypeKeyValue, setBundleItemTaskTypeKeyValue] = useState(
     []
   );
+
+  const [editAbleItemPrice, setEditAbleItemPrice] = useState({
+    priceMethod: "",
+    listPrice: "",
+    priceAdditionalSelect: "",
+    priceAdditionalInput: "",
+    priceEscalationSelect: "",
+    priceEscalationInput: "",
+    calculatedPrice: "",
+    flatPrice: "",
+    discountTypeSelect: "",
+    discountTypeInput: "",
+    priceYear: "",
+    startUsage: "",
+    endUsage: "",
+    usageType: "",
+    frequency: "",
+    cycle: "",
+    suppresion: "",
+    netPrice: 1200,
+    totalPrice: 1200,
+  })
   const [categoryUsageKeyValue, setCategoryUsageKeyValue] = useState([]);
 
   const [querySearchStandardJobResult, setQuerySearchStandardJobResult] = useState([]);
@@ -179,16 +202,95 @@ const AddPortfolioItem = (props) => {
         recommendedValue: recommendedValue,
         quantity,
         numberOfEvents: numberOfEvents,
-        templateDescription: {
-          label: itemBodyDescription,
-          value: itemBodyDescription,
-        },
+        // templateDescription: {
+        //   label: itemBodyDescription,
+        //   value: itemBodyDescription,
+        // },
         strategyTask: { label: props.passItemEditRowData.itemHeaderModel.itemHeaderStrategy, value: props.passItemEditRowData.itemHeaderModel.itemHeaderStrategy },
         // repairOption: { label: repairOption, value: repairOption },
         repairOption: repairOption,
       });
+
+      if (props.passItemEditRowData.itemBodyModel.itemPrices.length > 0) {
+        ItemPriceDataFetchById();
+      }
+
     }
   }, []);
+
+  const ItemPriceDataFetchById = async () => {
+
+    console.log("props.passItemEditRowData : ", props.passItemEditRowData)
+    // console.log("props.passItemEditRowData : ", props.passItemEditRowData.itemBodyModel.itemPrices[0].itemPriceDataId)
+
+    const priceId = props.passItemEditRowData.itemBodyModel.itemPrices[0].itemPriceDataId;
+
+    const priceDataId = props.passItemEditRowData.itemBodyModel.itemPrices[0].itemPriceDataId;
+    // getItemPriceData
+
+    const res = await getItemPriceData(priceDataId)
+    setEditAbleItemPrice(res.data)
+    const {
+      itemName,
+      itemBodyDescription,
+      startUsage,
+      endusage,
+      frequency,
+      usageIn,
+      taskType,
+      unit,
+      recommendedValue,
+      quantity,
+      numberOfEvents,
+      templateDescription,
+      // repairOption,
+    } = props.passItemEditRowData.itemBodyModel;
+    setAddportFolioItem({
+      ...addPortFolioItem,
+      id: props.passItemEditRowData.itemId,
+      name: props.passItemEditRowData.itemName,
+      description: itemBodyDescription,
+      usageIn: { label: usageIn, value: usageIn },
+      taskType: { label: taskType, value: taskType },
+      frequency: { label: frequency, value: frequency },
+      unit: { label: unit, value: unit },
+      recommendedValue: recommendedValue,
+      quantity: res.data.quantity,
+      numberOfEvents: numberOfEvents,
+      strategyTask: { label: props.passItemEditRowData.itemHeaderModel.itemHeaderStrategy, value: props.passItemEditRowData.itemHeaderModel.itemHeaderStrategy },
+      templateId: (res.data.standardJobId == "" || res.data.standardJobId == "string") ? "" : res.data.standardJobId,
+      templateDescription: {
+        label: res.data.templateDescription,
+        value: res.data.templateDescription,
+      },
+      repairOption: (res.data.repairKitId == "" || res.data.repairKitId == "string") ? "" : res.data.repairKitId,
+      kitDescription: (res.data.repairKitId == "" || res.data.repairKitId == "string") ? "" : {
+        label: "rty",
+        value: "rty",
+      },
+
+    });
+
+    // setAddportFolioItem({
+    //   templateId: res.data.standardJobId != "" || res.data.standardJobId != "string" ? res.data.standardJobId : "",
+    //   templateDescription: {
+    //     label: res.data.templateDescription,
+    //     value: res.data.templateDescription,
+    //   },
+    //   repairOption: res.data.repairKitId != "" || res.data.repairKitId != "string" ? res.data.repairKitId : "",
+    //   // kitDescription: {
+    //   //   label: res.data.templateDescription,
+    //   //   value: res.data.templateDescription,
+    //   // },
+    //   kitDescription: res.data.repairKitId != "" || res.data.repairKitId != "string" ? {
+    //     label: "rty",
+    //     value: "rty",
+    //   } : "",
+
+    // })
+
+    console.log("price Result fetch Data : ", res);
+  }
 
   useEffect(() => {
     // const portfolioId1=location.state
@@ -332,70 +434,67 @@ const AddPortfolioItem = (props) => {
         });
 
       } else {
-        setTabs((prev) => `${parseInt(prev) + 1}`)
-        setAddportFolioItem({ ...addPortFolioItem, templateId: "", repairOption: "" });
+        if (props.compoFlag == "itemEdit") {
+          setTabs((prev) => `${parseInt(prev) + 1}`)
+        } else {
+          setTabs((prev) => `${parseInt(prev) + 1}`)
+          setAddportFolioItem({ ...addPortFolioItem, templateId: "", repairOption: "" });
+        }
       }
     } else if (tabs == 2 && addPortFolioItem.templateId == "") {
       // if(&& props.compoFlag === "ITEM")
       setTabs((prev) => `${parseInt(prev) + 1}`)
     } else if (tabs == 2 && addPortFolioItem.templateId !== "") {
       if (props.compoFlag === "ITEM") {
-
-        const rObj = {
-          itemPriceDataId: 0,
-          quantity: addPortFolioItem.quantity,
-          startUsage: "",
-          endUsage: "",
-          standardJobId: addPortFolioItem.templateId,
-          repairKitId: "",
-          templateDescription: addPortFolioItem.templateDescription?.value,
-          repairOption: "",
-          additional: "",
-          partListId: "",
-          serviceEstimateId: "",
-          numberOfEvents: 0,
-          priceMethod: "LIST_PRICE",
-          priceType: "FIXED",
-          listPrice: 0,
-          priceEscalation: "",
-          calculatedPrice: 0,
-          flatPrice: 0,
-          discountType: "",
-          year: "",
-          noOfYear: 0,
-          sparePartsPrice: 0,
-          sparePartsPriceBreakDownPercentage: 0,
-          servicePrice: 0,
-          labourPrice: 0,
-          labourPriceBreakDownPercentage: 0,
-          miscPrice: 0,
-          miscPriceBreakDownPercentage: 0,
-          totalPrice: 0,
-          netService: 0,
-          portfolio: {
-            portfolioId: 1
-          },
-          tenantId: 0,
-          createdAt: "2022-12-09T13:52:27.880Z",
-          partsRequired: true,
-          serviceRequired: true,
-          labourRequired: true,
-          miscRequired: true
-        }
-
-        // console.log("reqObj 12333333 ", rObj)
-
-        const itemPriceData = await createItemPriceData(rObj)
-
+        // const rObj = {
+        //   itemPriceDataId: 0,
+        //   quantity: addPortFolioItem.quantity,
+        //   startUsage: "",
+        //   endUsage: "",
+        //   standardJobId: addPortFolioItem.templateId,
+        //   repairKitId: "",
+        //   templateDescription: addPortFolioItem.templateDescription?.value,
+        //   repairOption: "",
+        //   additional: "",
+        //   partListId: "",
+        //   serviceEstimateId: "",
+        //   numberOfEvents: 0,
+        //   priceMethod: "LIST_PRICE",
+        //   priceType: "FIXED",
+        //   listPrice: 0,
+        //   priceEscalation: "",
+        //   calculatedPrice: 0,
+        //   flatPrice: 0,
+        //   discountType: "",
+        //   year: "",
+        //   noOfYear: 0,
+        //   sparePartsPrice: 0,
+        //   sparePartsPriceBreakDownPercentage: 0,
+        //   servicePrice: 0,
+        //   labourPrice: 0,
+        //   labourPriceBreakDownPercentage: 0,
+        //   miscPrice: 0,
+        //   miscPriceBreakDownPercentage: 0,
+        //   totalPrice: 0,
+        //   netService: 0,
+        //   portfolio: {
+        //     portfolioId: 1
+        //   },
+        //   tenantId: 0,
+        //   createdAt: "2022-12-09T13:52:27.880Z",
+        //   partsRequired: true,
+        //   serviceRequired: true,
+        //   labourRequired: true,
+        //   miscRequired: true
+        // }
+        // const itemPriceData = await createItemPriceData(rObj)
         props.setTabs("2");
-        if(props.compoFlag === "itemEdit") {
-          props.handleItemEditSave(addPortFolioItem, itemPriceData.data);
-        }else {
-          props.getAddportfolioItemDataFun(addPortFolioItem, itemPriceData.data);
-        }
-
-
-      } else {
+        props.getAddportfolioItemDataFun(addPortFolioItem);
+        // if (props.compoFlag === "itemEdit") {
+        //   props.handleItemEditSave(addPortFolioItem, itemPriceData.data);
+        // } else {
+        // }
+      } else if (props.compoFlag === "BUNDLE") {
         const rObj = {
           itemPriceDataId: 0,
           quantity: addPortFolioItem.quantity,
@@ -433,19 +532,64 @@ const AddPortfolioItem = (props) => {
           tenantId: 0,
           createdAt: "2022-12-09T13:52:27.880Z",
           partsRequired: true,
-          serviceRequired: true,
+          serviceRequired: false,
           labourRequired: true,
           miscRequired: true
         }
-
         const itemPriceData = await createItemPriceData(rObj)
-        if(props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditPort") {
-          props.handleItemEditSave(addPortFolioItem, itemPriceData.data);
-        }else if(props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditBundle") { 
-          props.handleItemEditSave(addPortFolioItem, itemPriceData.data);
-        }else{
+        props.setBundleTabs("3");
+        props.getAddportfolioItemDataFun(addPortFolioItem, itemPriceData.data);
+      } else {
+        if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditPort") {
+          props.handleItemEditSave(addPortFolioItem, editAbleItemPrice);
+        } else if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditBundle") {
+          props.handleItemEditSave(addPortFolioItem, editAbleItemPrice);
+        } else {
+          const rObj = {
+            itemPriceDataId: 0,
+            quantity: addPortFolioItem.quantity,
+            startUsage: "",
+            endUsage: "",
+            standardJobId: addPortFolioItem.templateId,
+            repairKitId: "",
+            templateDescription: addPortFolioItem.templateDescription?.value,
+            repairOption: "",
+            additional: "",
+            partListId: "",
+            serviceEstimateId: "",
+            numberOfEvents: 0,
+            priceMethod: "LIST_PRICE",
+            priceType: "FIXED",
+            listPrice: 0,
+            priceEscalation: "",
+            calculatedPrice: 0,
+            flatPrice: 0,
+            discountType: "",
+            year: "",
+            noOfYear: 0,
+            sparePartsPrice: 0,
+            sparePartsPriceBreakDownPercentage: 0,
+            servicePrice: 0,
+            labourPrice: 0,
+            labourPriceBreakDownPercentage: 0,
+            miscPrice: 0,
+            miscPriceBreakDownPercentage: 0,
+            totalPrice: 0,
+            netService: 0,
+            portfolio: {
+              portfolioId: 1
+            },
+            tenantId: 0,
+            createdAt: "2022-12-09T13:52:27.880Z",
+            partsRequired: true,
+            serviceRequired: false,
+            labourRequired: true,
+            miscRequired: true
+          }
+          const itemPriceData = await createItemPriceData(rObj);
           props.getAddportfolioItemData(addPortFolioItem, itemPriceData.data)
         }
+
         props.setBundleTabs("3");
       }
     }
@@ -454,77 +598,84 @@ const AddPortfolioItem = (props) => {
   }
 
   const handleAddPortfolioSave = async () => {
-    if (props.compoFlag === "itemEdit") {
-      props.handleItemEditSave(addPortFolioItem);
-      // props.setTabs("2");
-    } else if (props.compoFlag === "ITEM") {
+    // if (props.compoFlag === "itemEdit") {
+    //   props.handleItemEditSave(addPortFolioItem);
+    //   // props.setTabs("2");
+    // } else 
+    if (props.compoFlag === "ITEM") {
       props.setTabs("2");
       props.getAddportfolioItemDataFun(addPortFolioItem);
     } else {
-
-
-      // alert("hello");
-
-      if (addPortFolioItem.repairOption == "") {
-        toast("😐" + "Please fill related Kit field", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+      if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditPort") {
+        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice);
+      } else if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditBundle") {
+        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice);
       } else {
 
-        const rObj = {
-          itemPriceDataId: 0,
-          quantity: addPortFolioItem.quantity,
-          startUsage: "",
-          endUsage: "",
-          standardJobId: "",
-          repairKitId: addPortFolioItem.repairOption,
-          templateDescription: "",
-          repairOption: "",
-          additional: "",
-          partListId: "",
-          serviceEstimateId: "",
-          numberOfEvents: 0,
-          priceMethod: "LIST_PRICE",
-          priceType: "FIXED",
-          listPrice: 0,
-          priceEscalation: "",
-          calculatedPrice: 0,
-          flatPrice: 0,
-          discountType: "",
-          year: "",
-          noOfYear: 0,
-          sparePartsPrice: 0,
-          sparePartsPriceBreakDownPercentage: 0,
-          servicePrice: 0,
-          labourPrice: 0,
-          labourPriceBreakDownPercentage: 0,
-          miscPrice: 0,
-          miscPriceBreakDownPercentage: 0,
-          totalPrice: 0,
-          netService: 0,
-          portfolio: {
-            portfolioId: 1
-          },
-          tenantId: 0,
-          createdAt: "2022-12-09T13:52:27.880Z",
-          partsRequired: true,
-          serviceRequired: true,
-          labourRequired: true,
-          miscRequired: true
+        if (addPortFolioItem.repairOption == "") {
+          toast("😐" + "Please fill related Kit field", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } else {
+
+          const rObj = {
+            itemPriceDataId: 0,
+            quantity: addPortFolioItem.quantity,
+            startUsage: "",
+            endUsage: "",
+            standardJobId: addPortFolioItem.templateId,
+            repairKitId: addPortFolioItem.repairOption,
+            templateDescription: addPortFolioItem.templateDescription,
+            repairOption: "",
+            additional: "",
+            partListId: "",
+            serviceEstimateId: "",
+            numberOfEvents: 0,
+            priceMethod: "LIST_PRICE",
+            priceType: "FIXED",
+            listPrice: 0,
+            priceEscalation: "",
+            calculatedPrice: 0,
+            flatPrice: 0,
+            discountType: "",
+            year: "",
+            noOfYear: 0,
+            sparePartsPrice: 0,
+            sparePartsPriceBreakDownPercentage: 0,
+            servicePrice: 0,
+            labourPrice: 0,
+            labourPriceBreakDownPercentage: 0,
+            miscPrice: 0,
+            miscPriceBreakDownPercentage: 0,
+            totalPrice: 0,
+            netService: 0,
+            portfolio: {
+              portfolioId: 1
+            },
+            tenantId: 0,
+            createdAt: "2022-12-09T13:52:27.880Z",
+            partsRequired: true,
+            serviceRequired: false,
+            labourRequired: true,
+            miscRequired: true
+          }
+
+          const itemPriceData = await createItemPriceData(rObj)
+          props.getAddportfolioItemData(addPortFolioItem, itemPriceData.data)
+
+          // props.getAddportfolioItemData(addPortFolioItem)
+          props.setBundleTabs("3");
         }
-
-        const itemPriceData = await createItemPriceData(rObj)
-        props.getAddportfolioItemData(addPortFolioItem, itemPriceData.data)
-
-        // props.getAddportfolioItemData(addPortFolioItem)
-        props.setBundleTabs("3");
       }
+      // alert("hello");
+
+
     }
   };
   return (
@@ -1119,19 +1270,38 @@ const AddPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">NAME</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.name}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {(addPortFolioItem.name == "" ||
+                          addPortFolioItem.name == null ||
+                          addPortFolioItem.name == undefined ||
+                          addPortFolioItem.name == "string")
+                          ? "NA" : addPortFolioItem.name}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">DESCRIPTION</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.description}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {(addPortFolioItem.description == "" ||
+                          addPortFolioItem.description == null ||
+                          addPortFolioItem.description == undefined ||
+                          addPortFolioItem.description == "string") ?
+                          "NA" : addPortFolioItem.description}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">USAGE IN</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.usageIn?.value}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {(addPortFolioItem.usageIn.length == 0 ||
+                          addPortFolioItem.usageIn?.value == "" ||
+                          addPortFolioItem.usageIn?.value == null ||
+                          addPortFolioItem.usageIn?.value == undefined ||
+                          addPortFolioItem.usageIn?.value == "string")
+                          ? "NA" : addPortFolioItem.usageIn?.value}
+                      </h6>
                     </div>
                   </div>
                 </div>
@@ -1140,45 +1310,94 @@ const AddPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">STRATEGY TASK</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.strategyTask?.value}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {(addPortFolioItem.strategyTask.length == 0 ||
+                          addPortFolioItem.strategyTask?.value == "" ||
+                          addPortFolioItem.strategyTask?.value == null ||
+                          addPortFolioItem.strategyTask?.value == undefined ||
+                          addPortFolioItem.strategyTask?.value == "string")
+                          ? "NA" : addPortFolioItem.strategyTask?.value}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">TASK TYPE</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.taskType?.value}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {(addPortFolioItem.taskType.length == 0 ||
+                          addPortFolioItem.taskType?.value == "" ||
+                          addPortFolioItem.taskType?.value == null ||
+                          addPortFolioItem.taskType?.value == undefined ||
+                          addPortFolioItem.taskType?.value == "string")
+                          ? "" : addPortFolioItem.taskType?.value}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="font-size-12 text-light-dark font-weight-500 mb-2">FREQUENCY</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.frequency?.value}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {(addPortFolioItem.frequency.length == 0 ||
+                          addPortFolioItem.frequency?.value == "" ||
+                          addPortFolioItem.frequency?.value == null ||
+                          addPortFolioItem.frequency?.value == undefined ||
+                          addPortFolioItem.frequency?.value == "string")
+                          ? "NA" : addPortFolioItem.frequency?.value}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">UNIT</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.unit?.value}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {(addPortFolioItem.unit.length == 0 ||
+                          addPortFolioItem.unit?.value == "" ||
+                          addPortFolioItem.unit?.value == null ||
+                          addPortFolioItem.unit?.value == undefined ||
+                          addPortFolioItem.unit?.value == "string")
+                          ? "NA" : addPortFolioItem.unit?.value}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">RECOMMENDED VALUE</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.recommendedValue}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {(addPortFolioItem.recommendedValue == "" ||
+                          addPortFolioItem.recommendedValue == null ||
+                          addPortFolioItem.recommendedValue == undefined ||
+                          addPortFolioItem.recommendedValue == "string")
+                          ? "NA" : addPortFolioItem.recommendedValue}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">QUANTITY</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.quantity}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {(addPortFolioItem.quantity == "" ||
+                          addPortFolioItem.quantity == null ||
+                          addPortFolioItem.quantity == undefined ||
+                          addPortFolioItem.quantity == "string")
+                          ? "NA" : addPortFolioItem.quantity}
+                      </h6>
                     </div>
                   </div>
-                  <div className="col-md-6 col-sm-6">
-                    <div className="form-group">
-                      <p className="text-light-dark font-size-12 font-weight-500 mb-2">NO. OF EVENTS</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.numberOfEvents}</h6>
-                    </div>
-                  </div>
+                  {props.compoFlagTest == "itemEditPort" ?
+                    <>
+                      <div className="col-md-6 col-sm-6">
+                        <div className="form-group">
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">NO. OF EVENTS</p>
+                          <h6 className="font-weight-500 text-uppercase">
+                            {(addPortFolioItem.numberOfEvents == "" ||
+                              addPortFolioItem.numberOfEvents == null ||
+                              addPortFolioItem.numberOfEvents == undefined ||
+                              addPortFolioItem.numberOfEvents == "string")
+                              ? "NA" : addPortFolioItem.numberOfEvents}
+                          </h6>
+                        </div>
+                      </div>
+                    </> : <></>}
                 </div>
               </> :
               <>
@@ -1596,13 +1815,25 @@ const AddPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">TEMPLATE ID</p>
-                      <h6 className="font-weight-500">{addPortFolioItem?.templateId}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {(addPortFolioItem?.templateId == "" ||
+                          addPortFolioItem?.templateId == null ||
+                          addPortFolioItem?.templateId == "string" ||
+                          addPortFolioItem?.templateId == undefined)
+                          ? "NA" : addPortFolioItem?.templateId}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">TEMPLATE DESCRIPTION</p>
-                      <h6 className="font-weight-500">{addPortFolioItem?.templateDescription?.value}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {(addPortFolioItem?.templateDescription.length == 0 ||
+                          addPortFolioItem?.templateDescription?.value == "" ||
+                          addPortFolioItem?.templateDescription?.value == null ||
+                          addPortFolioItem?.templateDescription?.value == undefined)
+                          ? "NA" : addPortFolioItem?.templateDescription?.value}
+                      </h6>
                     </div>
                   </div>
                 </div>
@@ -1752,13 +1983,25 @@ const AddPortfolioItem = (props) => {
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">RELATED KIT</p>
                       {/* <h6 className="font-weight-500">CVA</h6> */}
-                      <h6 className="font-weight-500">{addPortFolioItem?.repairOption}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {(addPortFolioItem?.repairOption == "" ||
+                          addPortFolioItem?.repairOption == null ||
+                          addPortFolioItem?.repairOption == undefined ||
+                          addPortFolioItem?.repairOption == "string")
+                          ? "NA" : addPortFolioItem?.repairOption}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">KIT DESCRIPTION</p>
-                      <h6 className="font-weight-500">{addPortFolioItem?.kitDescription?.value}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {(addPortFolioItem?.repairOption == "" ||
+                          addPortFolioItem?.repairOption == null ||
+                          addPortFolioItem?.repairOption == undefined ||
+                          addPortFolioItem?.repairOption == "string")
+                          ? "NA" : addPortFolioItem?.kitDescription?.value}
+                      </h6>
                       {/* <h6 className="font-weight-500">CVA</h6> */}
                     </div>
                   </div>

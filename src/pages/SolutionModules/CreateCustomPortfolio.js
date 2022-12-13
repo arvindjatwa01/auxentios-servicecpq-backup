@@ -347,8 +347,10 @@ export function CreateCustomPortfolio(props) {
 
     const [partsRequired, setPartsRequired] = useState(true);
     const [labourRequired, setlabourRequired] = useState(true);
-    const [serviceRequired, setServiceRequired] = useState(true);
+    const [serviceRequired, setServiceRequired] = useState(false);
     const [miscRequired, setMiscRequired] = useState(true);
+
+    const [needOnlyParts, setNeedOnlyParts] = useState(false);
 
     const [coverageData, setCoverageData] = useState({
         make: "",
@@ -3105,9 +3107,31 @@ export function CreateCustomPortfolio(props) {
         }
     }
 
-    const handleWithSparePartsCheckBox = (e) => {
-        setPartsRequired(e.target.checked)
+    // const handleWithSparePartsCheckBox = (e) => {
+    //     setPartsRequired(e.target.checked)
+    // }
+
+    const handleWithSparePartsCheckBox = (e, selectToggle) => {
+        if (selectToggle == "with") {
+            setPartsRequired(e.target.checked)
+        } else {
+            var rowChecked = e.target.checked;
+            setPartsRequired(!rowChecked)
+        }
     }
+
+    const handleNeedOnlySparePartsCheckBox = (e) => {
+        if (e.target.checked) {
+            setPartsRequired(true)
+            setServiceRequired(false)
+            setlabourRequired(false)
+            setMiscRequired(false)
+            setNeedOnlyParts(true)
+        } else {
+            setNeedOnlyParts(false)
+        }
+    }
+
 
     const handleWithLabourCheckBox = (e) => {
         setlabourRequired(e.target.checked)
@@ -11800,19 +11824,23 @@ export function CreateCustomPortfolio(props) {
                             <div className="bg-white p-3">
                                 <FormGroup>
                                     <FormControlLabel
-                                        control={<Switch />}
+                                        control={<Switch disabled={needOnlyParts} />}
                                         label="With Spare Parts"
-                                        onChange={(e) => handleWithSparePartsCheckBox(e)}
+                                        onChange={(e) => handleWithSparePartsCheckBox(e, "with")}
                                         checked={partsRequired}
 
                                     />
                                     <FormControlLabel
-                                        control={<Switch disabled />}
+                                        control={<Switch disabled={needOnlyParts} />}
                                         label="I have Spare Parts"
+                                        onChange={(e) => handleWithSparePartsCheckBox(e, "without")}
+                                        checked={!partsRequired && !needOnlyParts}
                                     />
                                     <FormControlLabel
-                                        control={<Switch disabled />}
+                                        control={<Switch />}
                                         label="I need only Spare Parts"
+                                        onChange={(e) => handleNeedOnlySparePartsCheckBox(e)}
+                                        checked={needOnlyParts}
                                     />
                                 </FormGroup>
                             </div>
@@ -11826,7 +11854,7 @@ export function CreateCustomPortfolio(props) {
                                     <div>
                                         <FormGroup>
                                             <FormControlLabel
-                                                control={<Switch />}
+                                                control={<Switch disabled={needOnlyParts} />}
                                                 label="With Labor"
                                                 onChange={(e) => handleWithLabourCheckBox(e)}
                                                 checked={labourRequired}
@@ -11852,14 +11880,20 @@ export function CreateCustomPortfolio(props) {
                             </div>
                             <div className="bg-white p-3">
                                 <FormGroup>
-                                    <FormControlLabel control={<Switch disabled />} label=" Lubricants" />
+                                    <FormControlLabel
+                                        control={<Switch disabled />}
+                                        label=" Lubricants"
+                                    />
                                     <FormControlLabel
                                         control={<Switch disabled />}
                                         label="Travel Expenses"
                                     />
-                                    <FormControlLabel control={<Switch disabled />} label="Tools" />
                                     <FormControlLabel
-                                        control={<Switch />}
+                                        control={<Switch disabled />}
+                                        label="Tools"
+                                    />
+                                    <FormControlLabel
+                                        control={<Switch disabled={needOnlyParts} />}
                                         label="External Work"
                                         onChange={(e) => handleWithMiscCheckBox(e)}
                                         checked={miscRequired}
@@ -11882,7 +11916,7 @@ export function CreateCustomPortfolio(props) {
                                     <div>
                                         <FormGroup>
                                             <FormControlLabel
-                                                control={<Switch />}
+                                                control={<Switch disabled={needOnlyParts} />}
                                                 label=" Changee Oil and Filter"
                                                 onChange={(e) => handleWithServiceCheckBox(e)}
                                                 checked={serviceRequired}

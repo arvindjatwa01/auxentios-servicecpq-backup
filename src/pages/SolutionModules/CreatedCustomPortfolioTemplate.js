@@ -198,7 +198,7 @@ export function CreatedCustomPortfolioTemplate(props) {
     var CreatedCustomPortfolioDetails = JSON.parse(localStorage.getItem('createdCustomPortfolioData'));
 
 
-    console.log("Props is --------- : ", CreatedCustomPortfolioDetails);
+    // console.log("Props is --------- : ", CreatedCustomPortfolioDetails);
 
     // console.log("CreatedCustomPortfolioDetails : ", CreatedCustomPortfolioDetails)
     const [makeKeyValue, setMakeKeyValue] = useState([]);
@@ -316,12 +316,14 @@ export function CreatedCustomPortfolioTemplate(props) {
 
     const [partsRequired, setPartsRequired] = useState(true);
     const [labourRequired, setlabourRequired] = useState(true);
-    const [serviceRequired, setServiceRequired] = useState(true);
+    const [serviceRequired, setServiceRequired] = useState(false);
     const [miscRequired, setMiscRequired] = useState(true);
+    const [needOnlyParts, setNeedOnlyParts] = useState(false)
 
     // const [selectePortfolioTempItemsData, setSelectedPortfolioTempItemsData] = useState([]);
     const [selectedCustomItems, setSelectedCustomItems] = useState([]);
     const [createdCustomPortfolioItems, setCreatedCustomPortfolioItems] = useState([]);
+    const [createCopyPortfolioCoverage, setCreateCopyPortfolioCoverage] = useState([]);
 
     const [coverageData, setCoverageData] = useState({
         make: "",
@@ -1500,97 +1502,165 @@ export function CreatedCustomPortfolioTemplate(props) {
                     throw "Please fill required field properly";
                 }
 
+                // Old Todo if Error Occurred
+
+                // let reqData = {
+                //     type: prefilgabelGeneral,
+                //     name: generalComponentData.name,
+                //     description: generalComponentData.description,
+                //     externalReference: generalComponentData.externalReference,
+
+                //     strategyTask: "PREVENTIVE_MAINTENANCE",
+                //     taskType: "PM1",
+                //     usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+                //     productHierarchy: "END_PRODUCT",
+                //     geographic: "ONSITE",
+                //     availability: "AVAILABILITY_GREATER_95",
+                //     responseTime: "PROACTIVE",
+                //     type: "MACHINE",
+                //     application: "HILL",
+                //     contractOrSupport: "LEVEL_I",
+                //     lifeStageOfMachine: "NEW_BREAKIN",
+                //     // supportLevel: "PREMIUM",
+                //     supportLevel: value3.value,
+                //     serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
+
+
+                //     visibleInCommerce: true,
+                //     customerId: 0,
+                //     lubricant: true,
+                //     customerSegment: generalComponentData.customerSegment?.value
+                //         ? generalComponentData.customerSegment?.value
+                //         : "EMPTY",
+                //     machineType: generalComponentData.machineType
+                //         ? generalComponentData.machineType
+                //         : "EMPTY",
+                //     status: generalComponentData.status
+                //         ? generalComponentData.status
+                //         : "EMPTY",
+                //     // strategyTask: generalComponentData.strategyTask
+                //     //     ? generalComponentData.strategyTask
+                //     //     : "EMPTY",
+                //     // taskType: generalComponentData.taskType
+                //     //     ? generalComponentData.taskType
+                //     //     : "EMPTY",
+                //     usageCategory: generalComponentData.usageCategory
+                //         ? generalComponentData.usageCategory
+                //         : "EMPTY",
+                //     // productHierarchy: generalComponentData.productHierarchy
+                //     //     ? generalComponentData.productHierarchy
+                //     //     : "EMPTY",
+                //     // geographic: generalComponentData.geographic
+                //     //     ? generalComponentData.geographic
+                //     //     : "EMPTY",
+                //     availability: generalComponentData.availability
+                //         ? generalComponentData.availability
+                //         : "EMPTY",
+                //     // responseTime: generalComponentData.responseTime
+                //     //     ? generalComponentData.responseTime
+                //     //     : "EMPTY",
+                //     type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                //     application: generalComponentData.application
+                //         ? generalComponentData.application
+                //         : "EMPTY",
+                //     contractOrSupport: generalComponentData.contractOrSupport
+                //         ? generalComponentData.contractOrSupport
+                //         : "EMPTY",
+                //     lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                //         ? generalComponentData.lifeStageOfMachine
+                //         : "EMPTY",
+                //     supportLevel: generalComponentData.supportLevel
+                //         ? generalComponentData.supportLevel
+                //         : "EMPTY",
+
+                //     customCoverages: [],
+                //     customerGroup: generalComponentData.customerGroup
+                //         ? generalComponentData.customerGroup
+                //         : "EMPTY",
+                //     searchTerm: "EMPTY",
+                //     supportLevel: "EMPTY",
+                //     portfolioPrice: {},
+                //     additionalPrice: {},
+                //     escalationPrice: {},
+
+                //     // usageCategory: categoryUsageKeyValue1.value,
+                //     // taskType: stratgyTaskTypeKeyValue.value,
+                //     // strategyTask: stratgyTaskUsageKeyValue.value,
+                //     // responseTime: stratgyResponseTimeKeyValue.value,
+                //     // productHierarchy: stratgyHierarchyKeyValue.value,
+                //     // geographic: stratgyGeographicKeyValue.value,
+                //     customItems: selectedCustomItems,
+
+                //     template: flagTemplate,
+                //     visibleInCommerce: flagCommerce,
+
+                // };
+
+                // New Todo without Error
                 let reqData = {
-                    type: prefilgabelGeneral,
                     name: generalComponentData.name,
                     description: generalComponentData.description,
                     externalReference: generalComponentData.externalReference,
+                    customerSegment: generalComponentData.customerSegment?.value ?
+                        generalComponentData.customerSegment?.value : "Customer Segment",
+                    template: flagTemplate,
+                    visibleInCommerce: flagCommerce,
 
+                    validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                    validTo: validityData.toDate.toISOString().substring(0, 10),
+
+                    responseTime: stratgyResponseTimeKeyValue?.value ?
+                        stratgyResponseTimeKeyValue?.value : "PROACTIVE",
+                    productHierarchy: stratgyHierarchyKeyValue?.value ?
+                        stratgyHierarchyKeyValue?.value : "END_PRODUCT",
+                    geographic: stratgyGeographicKeyValue?.value ?
+                        stratgyGeographicKeyValue?.value : "ONSITE",
+                    solutionType: solutionTypeListKeyValue?.value ?
+                        solutionTypeListKeyValue?.value : "CONTRACT",
+                    solutionLevel: solutionLevelListKeyValue?.value ?
+                        solutionLevelListKeyValue?.value : "LEVEL_I",
+
+                    preparedBy: administrative.preparedBy,
+                    approvedBy: administrative.approvedBy,
+                    preparedOn: administrative.preparedOn,
+                    revisedBy: administrative.revisedBy,
+                    revisedOn: administrative.revisedOn,
+                    salesOffice: administrative.salesOffice,
+                    offerValidity: administrative.offerValidity,
+
+                    supportLevel: value3.value,
+                    status: value2.value,
+
+                    customItems: selectedCustomItems,
+
+                    machineType: "NEW",
+                    searchTerm: "",
+                    lubricant: true,
+                    customerId: 0,
+                    customerGroup: "",
                     strategyTask: "PREVENTIVE_MAINTENANCE",
                     taskType: "PM1",
                     usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
-                    productHierarchy: "END_PRODUCT",
-                    geographic: "ONSITE",
                     availability: "AVAILABILITY_GREATER_95",
-                    responseTime: "PROACTIVE",
                     type: "MACHINE",
                     application: "HILL",
                     contractOrSupport: "LEVEL_I",
                     lifeStageOfMachine: "NEW_BREAKIN",
-                    // supportLevel: "PREMIUM",
-                    supportLevel: value3.value,
-                    serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
-
-
-                    visibleInCommerce: true,
-                    customerId: 0,
-                    lubricant: true,
-                    customerSegment: generalComponentData.customerSegment?.value
-                        ? generalComponentData.customerSegment?.value
-                        : "EMPTY",
-                    machineType: generalComponentData.machineType
-                        ? generalComponentData.machineType
-                        : "EMPTY",
-                    status: generalComponentData.status
-                        ? generalComponentData.status
-                        : "EMPTY",
-                    // strategyTask: generalComponentData.strategyTask
-                    //     ? generalComponentData.strategyTask
-                    //     : "EMPTY",
-                    // taskType: generalComponentData.taskType
-                    //     ? generalComponentData.taskType
-                    //     : "EMPTY",
-                    usageCategory: generalComponentData.usageCategory
-                        ? generalComponentData.usageCategory
-                        : "EMPTY",
-                    // productHierarchy: generalComponentData.productHierarchy
-                    //     ? generalComponentData.productHierarchy
-                    //     : "EMPTY",
-                    // geographic: generalComponentData.geographic
-                    //     ? generalComponentData.geographic
-                    //     : "EMPTY",
-                    availability: generalComponentData.availability
-                        ? generalComponentData.availability
-                        : "EMPTY",
-                    // responseTime: generalComponentData.responseTime
-                    //     ? generalComponentData.responseTime
-                    //     : "EMPTY",
-                    type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                    application: generalComponentData.application
-                        ? generalComponentData.application
-                        : "EMPTY",
-                    contractOrSupport: generalComponentData.contractOrSupport
-                        ? generalComponentData.contractOrSupport
-                        : "EMPTY",
-                    lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                        ? generalComponentData.lifeStageOfMachine
-                        : "EMPTY",
-                    supportLevel: generalComponentData.supportLevel
-                        ? generalComponentData.supportLevel
-                        : "EMPTY",
-
+                    numberOfEvents: 0,
+                    rating: "",
+                    startUsage: 0,
+                    endUsage: 0,
+                    unit: "HOURS",
+                    additionals: "",
                     customCoverages: [],
-                    customerGroup: generalComponentData.customerGroup
-                        ? generalComponentData.customerGroup
-                        : "EMPTY",
-                    searchTerm: "EMPTY",
-                    supportLevel: "EMPTY",
-                    portfolioPrice: {},
-                    additionalPrice: {},
-                    escalationPrice: {},
 
-                    // usageCategory: categoryUsageKeyValue1.value,
-                    // taskType: stratgyTaskTypeKeyValue.value,
-                    // strategyTask: stratgyTaskUsageKeyValue.value,
-                    // responseTime: stratgyResponseTimeKeyValue.value,
-                    // productHierarchy: stratgyHierarchyKeyValue.value,
-                    // geographic: stratgyGeographicKeyValue.value,
-                    customItems: selectedCustomItems,
-
-                    template: flagTemplate,
-                    visibleInCommerce: flagCommerce,
-
-                };
+                    // portfolioPrice: {},
+                    // additionalPrice: {},
+                    // escalationPrice: {},
+                    portfolioPrice: portfolioPriceDataId,
+                    additionalPrice: portfolioAdditionalPriceDataId,
+                    escalationPrice: portfolioEscalationPriceDataId,
+                }
 
                 setGeneralComponentData({
                     ...generalComponentData,
@@ -1604,16 +1674,12 @@ export function CreatedCustomPortfolioTemplate(props) {
                 });
 
                 console.log("reqData is : ", reqData);
+
                 var portfolioRes = await updateCustomPortfolio(
-                    // location.autocreatedcustomPortfolioData.customPortfolioId,
                     CreatedCustomPortfolioDetails.customPortfolioId,
                     reqData
                 )
 
-                // const portfolioRes = {
-                //     status: 3000
-                // };
-                // const portfolioRes = await createCustomPortfolio(reqData);
                 if (portfolioRes.status === 200) {
                     toast("👏 Portfolio Update Successfully", {
                         position: "top-right",
@@ -1631,12 +1697,8 @@ export function CreatedCustomPortfolioTemplate(props) {
                     });
                     setPortfolioId(portfolioRes.data.customPortfolioId);
                 } else {
-                    throw `${portfolioRes.status}:error in portfolio creation`;
+                    throw `Error in portfolio update`;
                 }
-                // console.log("req data : ", reqData)
-
-                // setValue("2");
-                // console.log("general Data => ", generalData)
             } else if (e.target.id == "validity") {
                 let reqData;
                 if (
@@ -1696,17 +1758,21 @@ export function CreatedCustomPortfolioTemplate(props) {
                 let obj = {
                     ...res,
                     visibleInCommerce: true,
+
                     customerId: 0,
                     lubricant: true,
                     customerSegment: generalComponentData.customerSegment.value
                         ? generalComponentData.customerSegment.value
-                        : "EMPTY",
-                    // machineType: generalComponentData.machineType
-                    //     ? generalComponentData.machineType
+                        : "Customer Segment",
+
+                    // status: generalComponentData.status
+                    //     ? generalComponentData.status
                     //     : "EMPTY",
-                    status: generalComponentData.status
-                        ? generalComponentData.status
-                        : "EMPTY",
+
+                    supportLevel: value3.value,
+                    status: value2.value,
+                    customItems: selectedCustomItems,
+
                     strategyTask: generalComponentData.strategyTask
                         ? generalComponentData.strategyTask
                         : "EMPTY",
@@ -1728,22 +1794,20 @@ export function CreatedCustomPortfolioTemplate(props) {
                     responseTime: generalComponentData.responseTime
                         ? generalComponentData.responseTime
                         : "EMPTY",
-                    type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+
+                    type: generalComponentData.type ? generalComponentData.type : "MACHINE",
                     application: generalComponentData.application
                         ? generalComponentData.application
                         : "EMPTY",
                     contractOrSupport: generalComponentData.contractOrSupport
                         ? generalComponentData.contractOrSupport
                         : "EMPTY",
-                    // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                    //     ? generalComponentData.lifeStageOfMachine
-                    //     : "EMPTY",
                     machineType: machineTypeKeyValue.value,
                     lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                    supportLevel: generalComponentData.supportLevel
-                        ? generalComponentData.supportLevel
-                        : "EMPTY",
-                    customItems: [],
+                    // supportLevel: generalComponentData.supportLevel
+                    //     ? generalComponentData.supportLevel
+                    //     : "EMPTY",
+                    // customItems: [],
                     customCoverages: [],
                     customerGroup: generalComponentData.customerGroup
                         ? generalComponentData.customerGroup
@@ -1751,9 +1815,14 @@ export function CreatedCustomPortfolioTemplate(props) {
                     searchTerm: "EMPTY",
                     // supportLevel: "PREMIUM",
                     supportLevel: value3.value,
-                    portfolioPrice: {},
-                    additionalPrice: {},
-                    escalationPrice: {},
+
+                    // portfolioPrice: {},
+                    // additionalPrice: {},
+                    // escalationPrice: {},
+
+                    portfolioPrice: portfolioPriceDataId,
+                    additionalPrice: portfolioAdditionalPriceDataId,
+                    escalationPrice: portfolioEscalationPriceDataId,
 
                     solutionType: solutionTypeListKeyValue.value ?
                         solutionTypeListKeyValue.value : "EMPTY",
@@ -1849,9 +1918,15 @@ export function CreatedCustomPortfolioTemplate(props) {
                     // machineType: generalComponentData.machineType
                     //     ? generalComponentData.machineType
                     //     : "EMPTY",
-                    status: generalComponentData.status
-                        ? generalComponentData.status
-                        : "EMPTY",
+
+
+                    // status: generalComponentData.status
+                    //     ? generalComponentData.status
+                    //     : "EMPTY",
+                    supportLevel: value3.value,
+                    status: value2.value,
+
+
                     strategyTask: generalComponentData.strategyTask
                         ? generalComponentData.strategyTask
                         : "EMPTY",
@@ -1885,21 +1960,26 @@ export function CreatedCustomPortfolioTemplate(props) {
                     //     : "EMPTY",
                     machineType: machineTypeKeyValue.value,
                     lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                    supportLevel: generalComponentData.supportLevel
-                        ? generalComponentData.supportLevel
-                        : "EMPTY",
+                    // supportLevel: generalComponentData.supportLevel
+                    //     ? generalComponentData.supportLevel
+                    //     : "EMPTY",
                     customItems: selectedCustomItems,
-                    items: [],
                     customCoverages: [],
                     customerGroup: generalComponentData.customerGroup
                         ? generalComponentData.customerGroup
                         : "EMPTY",
                     searchTerm: "EMPTY",
                     // supportLevel: "PREMIUM",
-                    supportLevel: value3.value,
+                    // supportLevel: value3.value,
+
+
                     // portfolioPrice: {},
                     // additionalPrice: {},
                     // escalationPrice: {},
+
+                    portfolioPrice: portfolioPriceDataId,
+                    additionalPrice: portfolioAdditionalPriceDataId,
+                    escalationPrice: portfolioEscalationPriceDataId,
 
                     solutionType: solutionTypeListKeyValue.value ?
                         solutionTypeListKeyValue.value : "EMPTY",
@@ -1927,27 +2007,6 @@ export function CreatedCustomPortfolioTemplate(props) {
                     template: flagTemplate,
                     visibleInCommerce: flagCommerce,
 
-                    // preparedBy: generalComponentData.preparedBy
-                    // ? generalComponentData.preparedBy
-                    // : "",
-                    // approvedBy: generalComponentData.approvedBy
-                    // ? generalComponentData.approvedBy
-                    // : "",
-                    // preparedOn: generalComponentData.preparedOn
-                    // ? generalComponentData.preparedOn
-                    // : "",
-                    // revisedBy: generalComponentData.revisedBy
-                    // ? generalComponentData.revisedBy
-                    // : "",
-                    // revisedOn: generalComponentData.revisedOn
-                    // ? generalComponentData.revisedOn
-                    // : "",
-                    // salesOffice: generalComponentData.salesOffice
-                    // ? generalComponentData.salesOffice
-                    // : "",
-                    // offerValidity: generalComponentData.offerValidity
-                    // ? generalComponentData.offerValidity
-                    // : "",
                 };
 
                 const administryRes = await updateCustomPortfolio(
@@ -2173,12 +2232,15 @@ export function CreatedCustomPortfolioTemplate(props) {
                     customerSegment: generalComponentData.customerSegment
                         ? generalComponentData.customerSegment.value
                         : "EMPTY",
+
+                    supportLevel: value3.value,
+                    status: value2.value,
                     // machineType: generalComponentData.machineType
                     //     ? generalComponentData.machineType
                     //     : "EMPTY",
-                    status: generalComponentData.status
-                        ? generalComponentData.status
-                        : "EMPTY",
+                    // status: generalComponentData.status
+                    //     ? generalComponentData.status
+                    //     : "EMPTY",
                     strategyTask: generalComponentData.strategyTask
                         ? generalComponentData.strategyTask
                         : "EMPTY",
@@ -2212,15 +2274,15 @@ export function CreatedCustomPortfolioTemplate(props) {
                     //     : "EMPTY",
                     machineType: machineTypeKeyValue.value,
                     lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                    supportLevel: generalComponentData.supportLevel
-                        ? generalComponentData.supportLevel
-                        : "EMPTY",
+                    // supportLevel: generalComponentData.supportLevel
+                    //     ? generalComponentData.supportLevel
+                    //     : "EMPTY",
                     customerGroup: generalComponentData.customerGroup
                         ? generalComponentData.customerGroup
                         : "EMPTY",
                     searchTerm: "EMPTY",
                     // supportLevel: "PREMIUM",
-                    supportLevel: value3.value,
+                    // supportLevel: value3.value,
 
                     solutionType: solutionTypeListKeyValue.value ?
                         solutionTypeListKeyValue.value : "EMPTY",
@@ -2324,13 +2386,22 @@ export function CreatedCustomPortfolioTemplate(props) {
         console.log("editable Custom Price data : ", editAbleCustomPriceData);
 
     }
-    const handleWithSparePartsCheckBox = (e) => {
-        setPartsRequired(e.target.checked)
-        // // if(e.target.checked){
+    // const handleWithSparePartsCheckBox = (e) => {
+    //     setPartsRequired(e.target.checked)
+    //     // // if(e.target.checked){
 
-        // // }
-        // console.log("event is : ", e.target.checked)
-        // console.log("event : ",e);
+    //     // // }
+    //     // console.log("event is : ", e.target.checked)
+    //     // console.log("event : ",e);
+    // }
+
+    const handleWithSparePartsCheckBox = (e, selectToggle) => {
+        if (selectToggle == "with") {
+            setPartsRequired(e.target.checked)
+        } else {
+            var rowChecked = e.target.checked;
+            setPartsRequired(!rowChecked)
+        }
     }
 
     const handleWithLabourCheckBox = (e) => {
@@ -2343,6 +2414,18 @@ export function CreatedCustomPortfolioTemplate(props) {
 
     const handleWithMiscCheckBox = (e) => {
         setMiscRequired(e.target.checked)
+    }
+
+    const handleNeedOnlySparePartsCheckBox = (e) => {
+        if (e.target.checked) {
+            setPartsRequired(true)
+            setServiceRequired(false)
+            setlabourRequired(false)
+            setMiscRequired(false)
+            setNeedOnlyParts(true)
+        } else {
+            setNeedOnlyParts(false)
+        }
     }
 
     const UpdateCustomPriceInclusion = async () => {
@@ -2706,11 +2789,7 @@ export function CreatedCustomPortfolioTemplate(props) {
 
         let itemsArrData = [];
 
-        // console.log("CreatedCustomPortfolioDetails 123344 ---- : ", CreatedCustomPortfolioDetails)
-
         for (let b = 0; b < CreatedCustomPortfolioDetails.itemRelations.length; b++) {
-            // console.log("item relations ", b + ": " + CreatedCustomPortfolioDetails.itemRelations[b].portfolioItemId)
-            // console.log("hello user -----", b)
             let expendedArrObj = [];
             let obj = CreatedCustomPortfolioDetails.customItems.find(obj => obj.customItemId == CreatedCustomPortfolioDetails.itemRelations[b].portfolioItemId);
             for (let c = 0; c < CreatedCustomPortfolioDetails.itemRelations[b].bundles.length; c++) {
@@ -2725,39 +2804,38 @@ export function CreatedCustomPortfolioTemplate(props) {
             }
 
             for (let d = 0; d < CreatedCustomPortfolioDetails.itemRelations[b].services.length; d++) {
-
                 let serviceObj = CreatedCustomPortfolioDetails.customItems.find((objService, i) => {
                     if (objService.customItemId == CreatedCustomPortfolioDetails.itemRelations[b].services[d]) {
-
                         return objService; // stop searching
                     }
                 });
                 expendedArrObj.push(serviceObj);
             }
+
             obj.associatedServiceOrBundle = expendedArrObj;
             itemsArrData.push(obj);
         }
 
-        console.log("item arr is 2333 : ", itemsArrData)
+        // console.log("item arr is 2333 : ", itemsArrData)
 
-        // setCreatedCustomPortfolioItems(location.selectedTemplateItems);
-        // setCreatedCustomPortfolioItems(CreatedCustomPortfolioDetails.customItems);
         setCreatedCustomPortfolioItems(itemsArrData);
 
-        // console.log("location.selectedTemplateItems 11 : ", location.selectedTemplateItems)
-        // console.log("localStorage.getItem('selectedTemplateItems') : ", JSON.parse(localStorage.getItem('selectedTemplateItems')))
-        let itemIdData = []
-        let priceDataId = []
-        // itemIdData.push({ "itemId": location.selectedTemplateItems[0].itemId })
-
-        // const customItemsId = location.selectedTemplateItems.map((data, i) => {
+        let itemIdData = [];
+        let priceDataId = [];
+        let copiedCoverage = [];
         const customItemsId = CreatedCustomPortfolioDetails.customItems.map((data, i) => {
-
             itemIdData.push({ "customItemId": parseInt(data.customItemId) })
-
         })
         setSelectedCustomItems(itemIdData)
-        // console.log("selected Custom Items Data are  : ", selectedCustomItems)
+
+        // const customCoverageId = CreatedCustomPortfolioDetails.customCoverages.map((data, i) => {
+        //     copiedCoverage.push({ "coverageId": parseInt(data.coverageId) })
+        // })
+
+        // setCreateCopyPortfolioCoverage(copiedCoverage);
+
+        setSelectedMasterData(CreatedCustomPortfolioDetails.customCoverages);
+
     }, [])
 
     // console.log("selected Custom Items Data are  : ", selectedCustomItems)
@@ -6213,21 +6291,24 @@ export function CreatedCustomPortfolioTemplate(props) {
                                     <div className="bg-white p-3">
                                         <FormGroup>
                                             <FormControlLabel
-                                                control={<Switch />}
+                                                control={<Switch disabled={needOnlyParts} />}
                                                 // label="With Spare Parts"
                                                 label="With Parts"
-                                                onChange={(e) => handleWithSparePartsCheckBox(e)}
+                                                onChange={(e) => handleWithSparePartsCheckBox(e, "with")}
                                                 // value={partsRequired}
                                                 checked={partsRequired}
                                             />
                                             <FormControlLabel
-                                                control={<Switch disabled />}
+                                                control={<Switch disabled={needOnlyParts} />}
                                                 label="I have Spare Parts"
-
+                                                onChange={(e) => handleWithSparePartsCheckBox(e, "without")}
+                                                checked={!partsRequired && !needOnlyParts}
                                             />
                                             <FormControlLabel
-                                                control={<Switch disabled />}
+                                                control={<Switch />}
                                                 label="I need only Spare Parts"
+                                                onChange={(e) => handleNeedOnlySparePartsCheckBox(e)}
+                                                checked={needOnlyParts}
                                             />
                                         </FormGroup>
                                     </div>
@@ -6241,7 +6322,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                             <div>
                                                 <FormGroup>
                                                     <FormControlLabel
-                                                        control={<Switch />}
+                                                        control={<Switch disabled={needOnlyParts} />}
                                                         label="With Labor"
                                                         onChange={(e) => handleWithLabourCheckBox(e)}
                                                         checked={labourRequired}
@@ -6267,14 +6348,20 @@ export function CreatedCustomPortfolioTemplate(props) {
                                     <div className="bg-white p-3">
                                         <FormGroup>
                                             <FormControlLabel
-                                                control={<Switch />}
+                                                control={<Switch disabled={needOnlyParts} />}
                                                 // label="Travel Expenses"
                                                 label="Misc Required"
                                                 onChange={(e) => handleWithMiscCheckBox(e)}
                                                 checked={miscRequired}
                                             />
-                                            <FormControlLabel control={<Switch disabled />} label=" Lubricants" />
-                                            <FormControlLabel control={<Switch disabled />} label="Tools" />
+                                            <FormControlLabel
+                                                control={<Switch disabled />}
+                                                label=" Lubricants"
+                                            />
+                                            <FormControlLabel
+                                                control={<Switch disabled />}
+                                                label="Tools"
+                                            />
                                             <FormControlLabel
                                                 control={<Switch disabled />}
                                                 label="External Work"
@@ -6297,7 +6384,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                             <div>
                                                 <FormGroup>
                                                     <FormControlLabel
-                                                        control={<Switch />}
+                                                        control={<Switch disabled={needOnlyParts} />}
                                                         // label=" Changee Oil and Filter"
                                                         label=" Service Required"
                                                         onChange={(e) => handleWithServiceCheckBox(e)}
@@ -6326,7 +6413,10 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                 control={<Switch disabled />}
                                                 label="Cabin Air Filter"
                                             />
-                                            <FormControlLabel control={<Switch disabled />} label="Rotete Tires" />
+                                            <FormControlLabel
+                                                control={<Switch disabled />}
+                                                label="Rotete Tires"
+                                            />
                                         </FormGroup>
                                         <h5 className="d-flex align-items-center mb-0">
                                             <div className="" style={{ display: "contents" }}>

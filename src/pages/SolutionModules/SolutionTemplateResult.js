@@ -294,8 +294,9 @@ export function SolutionTemplateResult(props) {
 
     const [partsRequired, setPartsRequired] = useState(true);
     const [labourRequired, setlabourRequired] = useState(true);
-    const [serviceRequired, setServiceRequired] = useState(true);
+    const [serviceRequired, setServiceRequired] = useState(false);
     const [miscRequired, setMiscRequired] = useState(true);
+    const [needOnlyParts, setNeedOnlyParts] = useState(false);
 
     // const [selectePortfolioTempItemsData, setSelectedPortfolioTempItemsData] = useState([]);
     const [selectedCustomItems, setSelectedCustomItems] = useState([]);
@@ -2554,13 +2555,17 @@ export function SolutionTemplateResult(props) {
 
     }
 
-    const handleWithSparePartsCheckBox = (e) => {
-        setPartsRequired(e.target.checked)
-        // // if(e.target.checked){
+    // const handleWithSparePartsCheckBox = (e) => {
+    //     setPartsRequired(e.target.checked)
+    // }
 
-        // // }
-        // console.log("event is : ", e.target.checked)
-        // console.log("event : ",e);
+    const handleWithSparePartsCheckBox = (e, selectToggle) => {
+        if (selectToggle == "with") {
+            setPartsRequired(e.target.checked)
+        } else {
+            var rowChecked = e.target.checked;
+            setPartsRequired(!rowChecked)
+        }
     }
 
     const handleWithLabourCheckBox = (e) => {
@@ -2573,6 +2578,18 @@ export function SolutionTemplateResult(props) {
 
     const handleWithMiscCheckBox = (e) => {
         setMiscRequired(e.target.checked)
+    }
+
+    const handleNeedOnlySparePartsCheckBox = (e) => {
+        if (e.target.checked) {
+            setPartsRequired(true)
+            setServiceRequired(false)
+            setlabourRequired(false)
+            setMiscRequired(false)
+            setNeedOnlyParts(true)
+        } else {
+            setNeedOnlyParts(false)
+        }
     }
 
 
@@ -6708,21 +6725,23 @@ export function SolutionTemplateResult(props) {
                                     <div className="bg-white p-3">
                                         <FormGroup>
                                             <FormControlLabel
-                                                control={<Switch />}
-                                                // label="With Spare Parts"
-                                                label="With Parts"
-                                                onChange={(e) => handleWithSparePartsCheckBox(e)}
-                                                // value={partsRequired}
+                                                control={<Switch disabled={needOnlyParts} />}
+                                                label="With Spare Parts"
+                                                // label="With Parts"
+                                                onChange={(e) => handleWithSparePartsCheckBox(e, "with")}
                                                 checked={partsRequired}
                                             />
                                             <FormControlLabel
-                                                control={<Switch disabled />}
+                                                control={<Switch disabled={needOnlyParts} />}
                                                 label="I have Spare Parts"
-
+                                                onChange={(e) => handleWithSparePartsCheckBox(e, "without")}
+                                                checked={!partsRequired && !needOnlyParts}
                                             />
                                             <FormControlLabel
-                                                control={<Switch disabled />}
+                                                control={<Switch />}
                                                 label="I need only Spare Parts"
+                                                onChange={(e) => handleNeedOnlySparePartsCheckBox(e)}
+                                                checked={needOnlyParts}
                                             />
                                         </FormGroup>
                                     </div>
@@ -6736,7 +6755,7 @@ export function SolutionTemplateResult(props) {
                                             <div>
                                                 <FormGroup>
                                                     <FormControlLabel
-                                                        control={<Switch />}
+                                                        control={<Switch disabled={needOnlyParts} />}
                                                         label="With Labor"
                                                         onChange={(e) => handleWithLabourCheckBox(e)}
                                                         checked={labourRequired}
@@ -6762,14 +6781,20 @@ export function SolutionTemplateResult(props) {
                                     <div className="bg-white p-3">
                                         <FormGroup>
                                             <FormControlLabel
-                                                control={<Switch />}
+                                                control={<Switch disabled={needOnlyParts} />}
                                                 // label="Travel Expenses"
                                                 label="Misc Required"
                                                 onChange={(e) => handleWithMiscCheckBox(e)}
                                                 checked={miscRequired}
                                             />
-                                            <FormControlLabel control={<Switch disabled />} label=" Lubricants" />
-                                            <FormControlLabel control={<Switch disabled />} label="Tools" />
+                                            <FormControlLabel
+                                                control={<Switch disabled />}
+                                                label=" Lubricants"
+                                            />
+                                            <FormControlLabel
+                                                control={<Switch disabled />}
+                                                label="Tools"
+                                            />
                                             <FormControlLabel
                                                 control={<Switch disabled />}
                                                 label="External Work"
@@ -6792,7 +6817,7 @@ export function SolutionTemplateResult(props) {
                                             <div>
                                                 <FormGroup>
                                                     <FormControlLabel
-                                                        control={<Switch />}
+                                                        control={<Switch disabled={needOnlyParts} />}
                                                         // label=" Changee Oil and Filter"
                                                         label=" Service Required"
                                                         onChange={(e) => handleWithServiceCheckBox(e)}

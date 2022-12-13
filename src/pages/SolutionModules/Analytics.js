@@ -39,6 +39,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 
+import Loader from "react-js-loader";
 import LoadingProgress from "../Repair/components/Loader";
 
 import { SolutionBuilderModal } from "../../pages/SolutionModules/index"
@@ -210,6 +211,8 @@ export const Analytics = () => {
 
    const [selectTypeOfSolution, setSelectTypeOfSolution] = useState(-1)
    const [solutionValue, setSolutionValue] = useState(3)
+
+   const [portfolioToSolutionProgress, setPortfolioToSolutionProgress] = useState(false)
    const [selectedTemplateLabel, setSelectedTemplateLabel] = useState("");
 
    const [createdCustomItems, setCreatedCustomItems] = useState([])
@@ -575,7 +578,7 @@ export const Analytics = () => {
          // localStorage.setItem("autocreatedcustomPortfolioData", JSON.stringify(CreatedcustomPortfolioData));
          // alert("hello");
       } else if (solutionValue == 0) {
-
+         setPortfolioToSolutionProgress(true)
          var newCustomItemsId = [];
 
          console.log("select Portfolio Items : ", selectedPortfolioTempMasterData);
@@ -603,12 +606,14 @@ export const Analytics = () => {
          // localStorage.setItem("createdCustomPortfolioData", copyPortfolioCustomRes.data);
          localStorage.setItem("createdCustomPortfolioData", JSON.stringify(copyPortfolioCustomRes.data));
          // localStorage.setItem("solutionValueIs", solutionValue);
+         setPortfolioToSolutionProgress(true)
          history.push({
             pathname: CREATED_CUSTOM_PORTFOLIO_DETAILS,
             // selectedTemplateItems: createdCustomItems,
             // solutionValueIs: solutionValue,
             // autocreatedcustomPortfolioData: CreatedcustomPortfolioData
          });
+
       }
 
       // if (solutionValue == 1) {
@@ -4162,14 +4167,24 @@ export const Analytics = () => {
                               <ul class="submenu templateResultheading accordion mt-2" style={{ display: 'block' }}>
                                  <li><a className="cursor result">INCLUDED PORTFOLIO TEMPLATE</a></li>
                               </ul>
-                              <DataTable
-                                 className="mt-3"
-                                 title=""
-                                 columns={SelectedPortfolioMasterDataColumn}
-                                 data={selectedPortfolioTempMasterData}
-                                 customStyles={customTableStyles}
-                                 pagination
-                              />
+                              <div style={{ position: 'relative' }}>
+
+                                 <div className="customtable-loader">
+                                    {portfolioToSolutionProgress ?
+                                       <>
+                                          <LoadingProgress />
+                                       </> : <></>}
+                                 </div>
+                                 <DataTable
+                                    className="mt-3"
+                                    title=""
+                                    columns={SelectedPortfolioMasterDataColumn}
+                                    data={selectedPortfolioTempMasterData}
+                                    customStyles={customTableStyles}
+                                    pagination
+                                 />
+                              </div>
+
                               <div className="m-2 text-right">
                                  {/* <div> */}
                                  {/* <button className="btn btn-primary w-100" onClick={handleTemplateItemSaveAndContinue}>Save & Continue</button> */}
@@ -4178,6 +4193,7 @@ export const Analytics = () => {
                                     onClick={handleTemplateItemSaveAndContinue}
                                     className="btn text-white bg-primary"
                                     value="Save & Continue"
+                                    disabled={portfolioToSolutionProgress}
                                  />
                               </div>
                            </div>
