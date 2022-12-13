@@ -12,7 +12,7 @@ import "owl.carousel/dist/assets/owl.theme.default.css";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import Loader from "react-js-loader";
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import EditIcon from "@mui/icons-material/EditTwoTone";
 import $ from "jquery";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";

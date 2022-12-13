@@ -589,6 +589,7 @@ const AddPortfolioItem = (props) => {
           const itemPriceData = await createItemPriceData(rObj);
           props.getAddportfolioItemData(addPortFolioItem, itemPriceData.data)
         }
+
         props.setBundleTabs("3");
       }
     }

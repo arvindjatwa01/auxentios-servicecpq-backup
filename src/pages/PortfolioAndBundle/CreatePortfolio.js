@@ -121,7 +121,9 @@ import {
   portfolioPriceCreation,
   portfolioItemPriceSjid,
   getItemPriceData,
+
   createItemPriceData,
+
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -7226,7 +7228,9 @@ export function CreatePortfolio(props) {
             itemId: tempBundleItems[i].itemId,
             standardJobId: itemPriceData.standardJobId,
             repairKitId: itemPriceData.repairKitId,
+
             itemPriceDataId: itemPriceData.itemPriceDataId
+
           }
           break;
         }

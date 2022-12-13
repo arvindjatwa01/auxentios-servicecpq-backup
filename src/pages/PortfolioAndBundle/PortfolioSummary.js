@@ -1255,6 +1255,7 @@ export const PortfolioSummary = () => {
 
         console.log("reqObj 1234567888 : ", reqObj)
 
+
         // const res = await updateItemData(createServiceOrBundle.id, reqObj);
         // if (res.status === 200) {
         //   toast("😎" + `${serviceOrBundlePrefix} updated`, {
@@ -3218,23 +3219,27 @@ export const PortfolioSummary = () => {
                           <div className="col-md-4 col-sm-3">
                             <div className="form-group">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">{serviceOrBundlePrefix} NAME</p>
+
                               <h6 className="font-weight-500 text-uppercase">
                                 {(createServiceOrBundle.name == "" ||
                                   createServiceOrBundle.name == null ||
                                   createServiceOrBundle.name == undefined ||
                                   createServiceOrBundle.name == "string") ? "NA" : createServiceOrBundle.name}
                               </h6>
+
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-3">
                             <div className="form-group">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">{serviceOrBundlePrefix} DESCRIPTION</p>
+
                               <h6 className="font-weight-500 text-uppercase">
                                 {(createServiceOrBundle.description == "" ||
                                   createServiceOrBundle.description == null ||
                                   createServiceOrBundle.description == undefined ||
                                   createServiceOrBundle.description == "string") ? "NA" : createServiceOrBundle.description}
                               </h6>
+
                             </div>
                           </div>
                           <div className="col-md-4 col-sm-3">
@@ -3251,10 +3256,12 @@ export const PortfolioSummary = () => {
                             <div className="form-group">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">REFERENCE</p>
                               <h6 className="font-weight-500 text-uppercase">
+
                                 {(createServiceOrBundle.reference == "" ||
                                   createServiceOrBundle.reference == null ||
                                   createServiceOrBundle.reference == undefined ||
                                   createServiceOrBundle.reference == "string") ? "NA" : createServiceOrBundle.reference}
+
                               </h6>
                             </div>
                           </div>
@@ -3262,12 +3269,14 @@ export const PortfolioSummary = () => {
                             <div className="form-group">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">CUSTOMER SEGMENT</p>
                               <h6 className="font-weight-500 text-uppercase">
+
                                 {(selectedCustomerSegmentOption.length == 0 ||
                                   selectedCustomerSegmentOption?.value == "" ||
                                   selectedCustomerSegmentOption?.value == null ||
                                   selectedCustomerSegmentOption?.value == undefined ||
                                   selectedCustomerSegmentOption?.value == "string") ? "NA"
                                   : selectedCustomerSegmentOption?.value}
+
                                 {/* {createServiceOrBundle.customerSegment?.value} */}
                               </h6>
                             </div>
@@ -3276,11 +3285,13 @@ export const PortfolioSummary = () => {
                             <div className="form-group">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">MACHINE/COMPONENT</p>
                               <h6 className="font-weight-500 text-uppercase">
+
                                 {(createServiceOrBundle.machineComponent?.value == "" ||
                                   createServiceOrBundle.machineComponent?.value == null ||
                                   createServiceOrBundle.machineComponent?.value == undefined ||
                                   createServiceOrBundle.machineComponent?.value == "EMPTY")
                                   ? "NA" : createServiceOrBundle.machineComponent?.value}
+
                               </h6>
                             </div>
                           </div>
@@ -3288,11 +3299,13 @@ export const PortfolioSummary = () => {
                             <div className="form-group">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">MAKE</p>
                               <h6 className="font-weight-500 text-uppercase">
+
                                 {(createServiceOrBundle.make == "" ||
                                   createServiceOrBundle.make == null ||
                                   createServiceOrBundle.make == undefined ||
                                   createServiceOrBundle.make == "string") ?
                                   "NA" : createServiceOrBundle.make}
+
                               </h6>
                             </div>
                           </div>
@@ -3300,11 +3313,13 @@ export const PortfolioSummary = () => {
                             <div className="form-group">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">FAMILY</p>
                               <h6 className="font-weight-500 text-uppercase">
+
                                 {(createServiceOrBundle.family == "" ||
                                   createServiceOrBundle.family == null ||
                                   createServiceOrBundle.family == undefined ||
                                   createServiceOrBundle.family == "string") ?
                                   "NA" : createServiceOrBundle.family}
+
                               </h6>
                             </div>
                           </div>
@@ -3312,11 +3327,13 @@ export const PortfolioSummary = () => {
                             <div className="form-group customselectmodelSerch">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">MODEL(S)</p>
                               <h6 className="font-weight-500 text-uppercase">
+
                                 {(createServiceOrBundle.model == "" ||
                                   createServiceOrBundle.model == null ||
                                   createServiceOrBundle.model == undefined ||
                                   createServiceOrBundle.model == "string") ?
                                   "NA" : createServiceOrBundle.model}
+
                               </h6>
                             </div>
                           </div>
@@ -3324,12 +3341,14 @@ export const PortfolioSummary = () => {
                             <div className="form-group">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREFIX(S)</p>
                               <h6 className="font-weight-500 text-uppercase">
+
                                 {(selectedPrefixOption.length == 0 ||
                                   selectedPrefixOption?.value == "" ||
                                   selectedPrefixOption?.value == null ||
                                   selectedPrefixOption?.value == undefined ||
                                   selectedPrefixOption?.value == "string") ?
                                   "NA" : selectedPrefixOption?.value}
+
                               </h6>
                             </div>
                           </div>

@@ -28,7 +28,6 @@ import {
 } from "services/repairBuilderServices";
 import moment from "moment-timezone";
 import Moment from "react-moment";
-import DynamicSearchComponent from "./components/DynamicSearchComponent";
 import { GRID_STYLE, PARTLIST_BUILDER_SEARCH_Q_OPTIONS } from "./CONSTANTS";
 import { Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
