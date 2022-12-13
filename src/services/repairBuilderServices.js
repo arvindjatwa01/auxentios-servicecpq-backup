@@ -33,7 +33,6 @@ import {
   CONSUMABLE_ITEM,
   CREATE_KIT,
   FETCH_BASE_PRICE,
-  SEARCH_KIT,
 } from "./CONSTANTS";
 const accessToken = localStorage.getItem("access_token");
 
@@ -1195,31 +1194,6 @@ export const builderSearch =  (searchStr) => {
         });
     } catch (error) {
       console.error("in RepairBuilder > builderSearch, Err===", error);
-      reject(SYSTEM_ERROR);
-    }
-  });
-};
-
-//Search Kits
-export const kitSearch =  (searchStr) => {
-  console.log("RepairBuilder > kitSearch called...");
-  return new Promise((resolve, reject) => {
-    try {
-      axios
-        .get(SEARCH_KIT(searchStr), config)
-        .then((res) => {
-          console.log("kitSearch > axios res=", res);
-          if(res.status === 200)
-            resolve(res.data);
-          else
-            reject('Error occurred while fetching builders');
-        })
-        .catch((err) => {
-          console.log("kitSearch > axios err=", err);
-          reject("Error in kitSearch axios!");
-        });
-    } catch (error) {
-      console.error("in RepairBuilder > kitSearch, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });

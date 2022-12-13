@@ -172,7 +172,6 @@ export const EXTWORK_SERVICE = (serviceId) => REPAIR_BUILDER_URI + `service-esti
 export const EXTWORK_ITEM = (extWorkId) => REPAIR_BUILDER_URI + `external-work/${extWorkId}/external-work-item`;
 export const MISC_SERVICE = (serviceId) => REPAIR_BUILDER_URI + `service-estimate/${serviceId}/miscellaneous`;
 export const FETCH_BUILDER_VERSION_DETAILS = (builderNo, versionNo) => REPAIR_BUILDER_URI + `builder/${builderNo}/version/${versionNo}`
-export const CREATE_KIT = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/kit`;
 export const SEARCH_CUSTOMER = (query) => DATA_SERVICE_URI + `customer/search?search=${query}`;
 export const SEARCH_MACHINE = (query) => DATA_SERVICE_URI + `equipment/search?search=${query}`;
 export const SEARCH_SPAREPART = (query) => DATA_SERVICE_URI + `sparepart/search?search=${query}`;
@@ -183,8 +182,18 @@ export const SEARCH_EXTWORK = (query) => DATA_SERVICE_URI + `external-work/searc
 export const SEARCH_JOB_CODE = (query) => DATA_SERVICE_URI + `job-code/search?search=${query}`;
 export const SEARCH_Builder = (query) => REPAIR_BUILDER_URI + `builder/search?search=${query}`;
 export const FETCH_BASE_PRICE = (serviceId) => REPAIR_BUILDER_URI + `service-estimate/${serviceId}/base-price`;
+
+
+// KIT Service
+export const CREATE_KIT = (builderId) => REPAIR_BUILDER_URI + `builder/${builderId}/kit`;
 export const SEARCH_KIT = (query) => REPAIR_BUILDER_URI + `kit/search?search=${query}`;
-export const FETCH_REPAIR_BUILDER_KIT = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}`;
+export const FETCH_KIT = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}`;
+export const UPDATE_KIT_CUSTOMER = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/customer`
+export const UPDATE_KIT_MACHINE = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/machine`
+export const UPDATE_KIT_ESTIMATION = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/estimation-team`
+export const UPDATE_KIT_GENERAL_DETAIL = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/estimation`
+export const UPDATE_KIT_PRICE = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/pricing`
+export const UPDATE_KIT_COVERAGE = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/coverage`
 
 /* ===================== Quote Service ============================= */
 

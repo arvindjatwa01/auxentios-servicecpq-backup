@@ -13,7 +13,7 @@ import { Typography } from "@mui/material";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import Moment from "react-moment";
 import { useDispatch } from "react-redux";
-import { kitSearch } from "services/repairBuilderServices";
+import { kitSearch } from "services/kitService";
 import LoadingProgress from "./components/Loader";
 import SearchComponent from "./components/SearchComponent";
 import { GRID_STYLE, KIT_SEARCH_Q_OPTIONS } from "./CONSTANTS";
@@ -26,7 +26,7 @@ export const RepairKits = () => {
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
-  const [recentBuildersLoading, setRecentBuildersLoading] = useState(false);
+  const [recentKITsLoading, setRecentKITsLoading] = useState(false);
   const handleSnackBarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -44,7 +44,7 @@ export const RepairKits = () => {
   }, []);
 
   const fetcheRecentKits = () => {
-    setRecentBuildersLoading(true);
+    setRecentKITsLoading(true);
 
     kitSearch(`kitId~KT&pageSize=10&sortColumn=updatedAt&orderBY=DESC`)
       .then((result) => {
@@ -53,7 +53,7 @@ export const RepairKits = () => {
       .catch((err) => {
         handleSnack("error", "Error occurred while fetching recent kits");
       });
-    setRecentBuildersLoading(false);
+    setRecentKITsLoading(false);
   };
 
   const handleSnack = (snackSeverity, snackMessage) => {
@@ -157,22 +157,22 @@ export const RepairKits = () => {
 
   const history = useHistory();
 
-  const makeKitEditable = (selectedBuilder) => {
-    let builderDetails = {
+  const makeKitEditable = (selectedKIT) => {
+    let kitDetails = {
       kitId: "",
       kitDBId: "",
       partListNo: "",
       partListId: "",
       type: "fetch",
     };
-    builderDetails.kitId = selectedBuilder.kitId;
-    builderDetails.kitDBId = selectedBuilder.id;
-    // builderDetails.partListNo = builderDetails.;
-    // builderDetails.partListId = selectedBuilder.estimationNumber;
-    builderDetails.versionNumber = selectedBuilder.versionNumber;
+    kitDetails.kitId = selectedKIT.kitId;
+    kitDetails.kitDBId = selectedKIT.id;
+    // kitDetails.partListNo = kitDetails.;
+    // kitDetails.partListId = selectedKIT.estimationNumber;
+    kitDetails.versionNumber = selectedKIT.versionNumber;
     history.push({
       pathname: "/RepairKits/Kits",
-      state: builderDetails,
+      state: kitDetails,
     });
   };
 
@@ -214,10 +214,10 @@ export const RepairKits = () => {
               <div className="recent-div p-3">
                 <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
                 <div className="row">
-                  {recentBuildersLoading ? (
+                  {recentKITsLoading ? (
                     <LoadingProgress />
                   ) : recentKits.length > 0 ? (
-                    recentKits.map((indBuilder) => (
+                    recentKits.map((indKIT) => (
                       <div className="col-md-4">
                         <div className="recent-items mt-3">
                           <div className="d-flex justify-content-between align-items-center ">
@@ -227,7 +227,7 @@ export const RepairKits = () => {
                                 icon={faFileAlt}
                               />
                               <span className="font-weight-500 ml-2">
-                                {indBuilder.kitId}
+                                {indKIT.kitId}
                               </span>
                             </p>
                             <div className="d-flex align-items-center">
@@ -239,7 +239,7 @@ export const RepairKits = () => {
                                 <i
                                   className="fa fa-pencil"
                                   aria-hidden="true"
-                                  onClick={() => makeKitEditable(indBuilder)}
+                                  onClick={() => makeKitEditable(indKIT)}
                                 ></i>
                               </a>
                               <a href="#" className="ml-3 font-size-14">
@@ -260,11 +260,11 @@ export const RepairKits = () => {
                         <div className="d-flex justify-content-between align-items-center mt-2">
                           <p className="font-size-12 mb-0">
                             <Moment format="HH:MM a">
-                              {indBuilder.updatedAt}
+                              {indKIT.updatedAt}
                             </Moment>
                             ,{" "}
                             <Moment format="DD MMM YY">
-                              {indBuilder.updatedAt}
+                              {indKIT.updatedAt}
                             </Moment>
                           </p>
                           <p className="font-size-12 mb-0">Kits</p>

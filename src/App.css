@@ -3478,3 +3478,6 @@ width: 18px;}
 .dateNotEditable .MuiInputBase-input {
   cursor: not-allowed !important;
 }
+.MuiButtonBase-root.MuiPickersDay-root.Mui-selected {
+  color: #fff !important
+}

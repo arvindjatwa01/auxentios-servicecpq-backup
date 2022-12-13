@@ -1,7 +1,7 @@
-import DateFnsUtils from "@date-io/date-fns";
+// import DateFnsUtils from "@date-io/date-fns";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+// import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -13,6 +13,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Tab from "@mui/material/Tab";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MuiMenuComponent } from "pages/Operational";
 import React, { useEffect, useState } from "react";
 import Moment from "react-moment";
@@ -39,7 +40,7 @@ import uploadIcon from "../../assets/icons/svg/upload.svg";
 import SearchBox from "./components/SearchBox";
 import WithoutRepairOption01 from "./WithoutRepairOption01";
 import WithoutSpareParts from "./WithoutSpareParts";
-import { Rating } from "@mui/material";
+import { Rating, TextField } from "@mui/material";
 import { customerSearch, machineSearch } from "services/searchServices";
 import RepairServiceEstimate from "./RepairServiceEstimate";
 import ModalCreateVersion from "./components/ModalCreateVersion";
@@ -51,6 +52,8 @@ import {
   selectPricingMethodList,
 } from "./dropdowns/repairSlice";
 import LoadingProgress from "./components/Loader";
+import { MobileDatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 function WithoutSparePartsHeader(props) {
   const history = useHistory();
@@ -1404,8 +1407,39 @@ function WithoutSparePartsHeader(props) {
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     PREPARED ON
                                   </label>
-
-                                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDateFns}
+                                  >
+                                    <MobileDatePicker
+                                      inputFormat="dd/MM/yyyy"
+                                      className="form-controldate border-radius-10"
+                                      // sx={{
+                                      //   "&& .MuiPickersDay-dayWithMargin": {color: '#fff !important'},
+                                      //   }}
+                                      // InputProps={{style: {...FONT_STYLE, color: '#fff'}}}
+                                      minDate={estimationData.preparedOn}
+                                      maxDate={new Date()}
+                                      closeOnSelect
+                                      value={estimationData.preparedOn}
+                                      onChange={(e) =>
+                                        setEstimationData({
+                                          ...estimationData,
+                                          preparedOn: e,
+                                        })
+                                      }
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          variant="standard"
+                                          inputProps={{
+                                            ...params.inputProps,
+                                            style: FONT_STYLE,
+                                          }}
+                                        />
+                                      )}
+                                    />
+                                  </LocalizationProvider>
+                                  {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                     <DatePicker
                                       variant="inline"
                                       format="dd/MM/yyyy"
@@ -1420,7 +1454,7 @@ function WithoutSparePartsHeader(props) {
                                         })
                                       }
                                     />
-                                  </MuiPickersUtilsProvider>
+                                  </MuiPickersUtilsProvider> */}
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1443,7 +1477,35 @@ function WithoutSparePartsHeader(props) {
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     REVISED ON
                                   </label>
-                                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDateFns}
+                                  >
+                                    <MobileDatePicker
+                                      inputFormat="dd/MM/yyyy"
+                                      className="form-controldate border-radius-10"
+                                      minDate={estimationData.revisedOn}
+                                      maxDate={new Date()}
+                                      closeOnSelect
+                                      value={estimationData.revisedOn}
+                                      onChange={(e) =>
+                                        setEstimationData({
+                                          ...estimationData,
+                                          revisedOn: e,
+                                        })
+                                      }
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          variant="standard"
+                                          inputProps={{
+                                            ...params.inputProps,
+                                            style: FONT_STYLE,
+                                          }}
+                                        />
+                                      )}
+                                    />
+                                  </LocalizationProvider>
+                                  {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                     <DatePicker
                                       variant="inline"
                                       format="dd/MM/yyyy"
@@ -1458,7 +1520,7 @@ function WithoutSparePartsHeader(props) {
                                         })
                                       }
                                     />
-                                  </MuiPickersUtilsProvider>
+                                  </MuiPickersUtilsProvider> */}
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1580,8 +1642,35 @@ function WithoutSparePartsHeader(props) {
                                     </span>
                                   </label>
                                   {/* <div className="form-group w-100"> */}
-
-                                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDateFns}
+                                  >
+                                    <MobileDatePicker
+                                      inputFormat="dd/MM/yyyy"
+                                      className="form-controldate border-radius-10"
+                                      minDate={generalData.estimationDate}
+                                      maxDate={new Date()}
+                                      closeOnSelect
+                                      value={generalData.estimationDate}
+                                      onChange={(e) =>
+                                        setGeneralData({
+                                          ...generalData,
+                                          estimationDate: e,
+                                        })
+                                      }
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          variant="standard"
+                                          inputProps={{
+                                            ...params.inputProps,
+                                            style: FONT_STYLE,
+                                          }}
+                                        />
+                                      )}
+                                    />
+                                  </LocalizationProvider>
+                                  {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                     <DatePicker
                                       variant="inline"
                                       format="dd/MM/yyyy"
@@ -1596,7 +1685,7 @@ function WithoutSparePartsHeader(props) {
                                         })
                                       }
                                     />
-                                  </MuiPickersUtilsProvider>
+                                  </MuiPickersUtilsProvider> */}
                                   {/* </div> */}
                                 </div>
                               </div>
@@ -1803,7 +1892,36 @@ function WithoutSparePartsHeader(props) {
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     PRICE DATE
                                   </label>
-                                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDateFns}
+                                  >
+                                    <MobileDatePicker
+                                      inputFormat="dd/MM/yyyy"
+                                      className="form-controldate border-radius-10"
+                                      minDate={pricingData.priceDate}
+                                      maxDate={new Date()}
+                                      closeOnSelect
+                                      value={pricingData.priceDate}
+                                      onChange={(e) =>
+                                        setPricingData({
+                                          ...pricingData,
+                                          priceDate: e,
+                                        })
+                                      }
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          variant="standard"
+                                          inputProps={{
+                                            ...params.inputProps,
+                                            style: FONT_STYLE,
+                                          }}
+                                        />
+                                      )}
+                                    />
+                                  </LocalizationProvider>
+
+                                  {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                     <DatePicker
                                       variant="inline"
                                       format="dd/MM/yyyy"
@@ -1819,7 +1937,7 @@ function WithoutSparePartsHeader(props) {
                                         })
                                       }
                                     />
-                                  </MuiPickersUtilsProvider>
+                                  </MuiPickersUtilsProvider> */}
                                 </div>
                               </div>
                               {/* <div className="col-md-4 col-sm-4">
