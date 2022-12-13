@@ -121,6 +121,7 @@ import {
   portfolioPriceCreation,
   portfolioItemPriceSjid,
   getItemPriceData,
+  createItemPriceData,
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -324,8 +325,9 @@ export function CreatePortfolio(props) {
 
   const [partsRequired, setPartsRequired] = useState(true);
   const [labourRequired, setlabourRequired] = useState(true);
-  const [serviceRequired, setServiceRequired] = useState(true);
+  const [serviceRequired, setServiceRequired] = useState(false);
   const [miscRequired, setMiscRequired] = useState(true);
+  const [needOnlyParts, setNeedOnlyParts] = useState(false)
 
   //  Set Quotes Data State 
   const [quoteData, setQuoteData] = useState({
@@ -3200,11 +3202,19 @@ export function CreatePortfolio(props) {
     // }
   }
 
-  const Inclusion_Exclusion = (e, data) => {
+  const Inclusion_Exclusion = async (e, data) => {
     console.log("event is : ", e);
     console.log("itemData : ", data);
     if (data.itemBodyModel.itemPrices.length > 0) {
       setEditAblePriceData(data.itemBodyModel.itemPrices)
+
+      var getPriceData = await getItemPriceData(data.itemBodyModel.itemPrices[0].itemPriceDataId);
+
+      setPartsRequired(getPriceData.partsRequired)
+      setlabourRequired(getPriceData.labourRequired)
+      setServiceRequired(getPriceData.serviceRequired)
+      setMiscRequired(getPriceData.miscRequired)
+
     } else {
       setEditAblePriceData([])
     }
@@ -3321,8 +3331,13 @@ export function CreatePortfolio(props) {
   }
   // console.log("generalComponentData ---- : ", generalComponentData)
 
-  const handleWithSparePartsCheckBox = (e) => {
-    setPartsRequired(e.target.checked)
+  const handleWithSparePartsCheckBox = (e, selectToggle) => {
+    if (selectToggle == "with") {
+      setPartsRequired(e.target.checked)
+    } else {
+      var rowChecked = e.target.checked;
+      setPartsRequired(!rowChecked)
+    }
   }
 
   const handleWithLabourCheckBox = (e) => {
@@ -3331,6 +3346,17 @@ export function CreatePortfolio(props) {
 
   const handleWithServiceCheckBox = (e) => {
     setServiceRequired(e.target.checked)
+  }
+  const handleNeedOnlySparePartsCheckBox = (e) => {
+    if (e.target.checked) {
+      setPartsRequired(true)
+      setServiceRequired(false)
+      setlabourRequired(false)
+      setMiscRequired(false)
+      setNeedOnlyParts(true)
+    } else {
+      setNeedOnlyParts(false)
+    }
   }
 
   const handleWithMiscCheckBox = (e) => {
@@ -5984,12 +6010,56 @@ export function CreatePortfolio(props) {
     setEditItemShow(true);
   };
 
-  const getAddportfolioItemDataFun = (data, itemPriceData) => {
+  const getAddportfolioItemDataFun = async (data) => {
     setAddportFolioItem(data);
     // console.log("data------ : ", data)
 
-    setItemPriceData(itemPriceData)
-    handleBundleItemSaveAndContinue(data, itemPriceData);
+    const rObj = {
+      itemPriceDataId: 0,
+      quantity: addPortFolioItem.quantity,
+      startUsage: "",
+      endUsage: "",
+      standardJobId: addPortFolioItem.templateId,
+      repairKitId: "",
+      templateDescription: addPortFolioItem.templateDescription?.value,
+      repairOption: "",
+      additional: "",
+      partListId: "",
+      serviceEstimateId: "",
+      numberOfEvents: 0,
+      priceMethod: "LIST_PRICE",
+      priceType: "FIXED",
+      listPrice: 0,
+      priceEscalation: "",
+      calculatedPrice: 0,
+      flatPrice: 0,
+      discountType: "",
+      year: addPortFolioItem.year,
+      noOfYear: addPortFolioItem.noOfYear,
+      sparePartsPrice: 0,
+      sparePartsPriceBreakDownPercentage: 0,
+      servicePrice: 0,
+      labourPrice: 0,
+      labourPriceBreakDownPercentage: 0,
+      miscPrice: 0,
+      miscPriceBreakDownPercentage: 0,
+      totalPrice: 0,
+      netService: 0,
+      portfolio: {
+        portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
+      },
+      tenantId: 0,
+      createdAt: "2022-12-09T13:52:27.880Z",
+      partsRequired: true,
+      serviceRequired: false,
+      labourRequired: true,
+      miscRequired: true
+    }
+
+    const itemPriceDataRes = await createItemPriceData(rObj)
+
+    setItemPriceData(itemPriceDataRes.data)
+    handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
     setTempBundleService1([]);
     setTempBundleService2([]);
     setTempBundleService3([]);
@@ -6258,6 +6328,10 @@ export function CreatePortfolio(props) {
       ))}
     </div>
   );
+
+  // const expendAbleRowColor = (bool) => {
+  //   alert(bool);
+  // }
 
   const ExpandedComponent = ({ data }) => (
     <div className="scrollbar" id="style">
@@ -7152,6 +7226,7 @@ export function CreatePortfolio(props) {
             itemId: tempBundleItems[i].itemId,
             standardJobId: itemPriceData.standardJobId,
             repairKitId: itemPriceData.repairKitId,
+            itemPriceDataId: itemPriceData.itemPriceDataId
           }
           break;
         }
@@ -11897,19 +11972,22 @@ export function CreatePortfolio(props) {
               <div className="bg-white p-3">
                 <FormGroup>
                   <FormControlLabel
-                    control={<Switch />}
+                    control={<Switch disabled={needOnlyParts} />}
                     label="With Spare Parts"
-                    onChange={(e) => handleWithSparePartsCheckBox(e)}
+                    onChange={(e) => handleWithSparePartsCheckBox(e, "with")}
                     checked={partsRequired}
-
                   />
                   <FormControlLabel
-                    control={<Switch disabled />}
+                    control={<Switch disabled={needOnlyParts} />}
+                    onChange={(e) => handleWithSparePartsCheckBox(e, "without")}
                     label="I have Spare Parts"
+                    checked={!partsRequired && !needOnlyParts}
                   />
                   <FormControlLabel
-                    control={<Switch disabled />}
+                    control={<Switch />}
                     label="I need only Spare Parts"
+                    onChange={(e) => handleNeedOnlySparePartsCheckBox(e)}
+                    checked={needOnlyParts}
                   />
                 </FormGroup>
               </div>
@@ -11923,7 +12001,7 @@ export function CreatePortfolio(props) {
                   <div>
                     <FormGroup>
                       <FormControlLabel
-                        control={<Switch />}
+                        control={<Switch disabled={needOnlyParts} />}
                         label="With Labor"
                         onChange={(e) => handleWithLabourCheckBox(e)}
                         checked={labourRequired}
@@ -11949,14 +12027,18 @@ export function CreatePortfolio(props) {
               </div>
               <div className="bg-white p-3">
                 <FormGroup>
-                  <FormControlLabel control={<Switch disabled />} label=" Lubricants" />
+                  <FormControlLabel
+                    control={<Switch disabled />}
+                    label=" Lubricants" />
                   <FormControlLabel
                     control={<Switch disabled />}
                     label="Travel Expenses"
                   />
-                  <FormControlLabel control={<Switch disabled />} label="Tools" />
                   <FormControlLabel
-                    control={<Switch />}
+                    control={<Switch disabled />}
+                    label="Tools" />
+                  <FormControlLabel
+                    control={<Switch disabled={needOnlyParts} />}
                     label="External Work"
                     onChange={(e) => handleWithMiscCheckBox(e)}
                     checked={miscRequired}
@@ -11979,7 +12061,7 @@ export function CreatePortfolio(props) {
                   <div>
                     <FormGroup>
                       <FormControlLabel
-                        control={<Switch />}
+                        control={<Switch disabled={needOnlyParts} />}
                         label=" Changee Oil and Filter"
                         onChange={(e) => handleWithServiceCheckBox(e)}
                         checked={serviceRequired}
@@ -12007,7 +12089,9 @@ export function CreatePortfolio(props) {
                     control={<Switch disabled />}
                     label="Cabin Air Filter"
                   />
-                  <FormControlLabel control={<Switch disabled />} label="Rotete Tires" />
+                  <FormControlLabel
+                    control={<Switch disabled />}
+                    label="Rotete Tires" />
                 </FormGroup>
                 <h5 className="d-flex align-items-center mb-0">
                   <div className="" style={{ display: "contents" }}>
