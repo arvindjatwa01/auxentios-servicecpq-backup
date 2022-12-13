@@ -6955,6 +6955,17 @@ export function CreatedCustomPortfolioTemplate(props) {
                         <div className="hr"></div>
                         <Modal.Body>
                             <div class="form-group">
+                                <label for="usr">Select Version</label>
+                                <Select
+                                    className="text-primary"
+                                    // value={createServiceOrBundle.customerSegment}
+                                    onChange={(e) => handleOption3(e)}
+                                    options={versionOption}
+                                    value={value3}
+                                    placeholder="Version Type"
+                                />
+                            </div>
+                            <div class="form-group">
                                 <label for="usr">Name</label>
                                 <input type="text" class="form-control" id="usr" placeholder="Enter Name" onChange={(e) => setNewVersionName(e.target.value)} value={newVersionName} />
                             </div>

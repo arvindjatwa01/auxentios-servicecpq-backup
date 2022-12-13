@@ -166,13 +166,14 @@ const AddCustomPortfolioItem = (props) => {
         ...addPortFolioItem,
         id: props.passItemEditRowData.customItemId,
         name: props.passItemEditRowData.itemName,
-        description: itemBodyDescription,
+        // description: itemBodyDescription,
+        description: props.passItemEditRowData.customItemHeaderModel.itemHeaderDescription,
         usageIn: { label: usageIn, value: usageIn },
         taskType: { label: taskType, value: taskType },
         frequency: { label: frequency, value: frequency },
         unit: { label: unit, value: unit },
         recommendedValue: recommendedValue,
-        quantity,
+        quantity: 0,
         numberOfEvents: numberOfEvents,
         templateDescription: {
           label: itemBodyDescription,
@@ -180,7 +181,7 @@ const AddCustomPortfolioItem = (props) => {
         },
         strategyTask: {
           label: props.passItemEditRowData.customItemHeaderModel.itemHeaderStrategy,
-          value: props.passItemEditRowData.itemHeaderModel.itemHeaderStrategy
+          value: props.passItemEditRowData.customItemHeaderModel.itemHeaderStrategy
         },
         // repairOption: { label: repairOption, value: repairOption },
         repairOption: repairOption,
@@ -761,19 +762,42 @@ const AddCustomPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">NAME</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.name}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {addPortFolioItem.name == "" ||
+                          addPortFolioItem.name == null ||
+                          addPortFolioItem.name == "string" ||
+                          addPortFolioItem.name == undefined
+                          ? "NA" : addPortFolioItem.name
+                        }
+                        {/* {addPortFolioItem.name} */}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">DESCRIPTION</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.description}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {addPortFolioItem.description == "" ||
+                          addPortFolioItem.description == null ||
+                          addPortFolioItem.description == undefined ||
+                          addPortFolioItem.description == "string"
+                          ? "NA" : addPortFolioItem.description}
+                        {/* {addPortFolioItem.description} */}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">USAGE IN</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.usageIn?.value}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {addPortFolioItem.usageIn == "" ||
+                          addPortFolioItem.usageIn == null ||
+                          addPortFolioItem.usageIn == undefined ||
+                          addPortFolioItem.usageIn?.value == "" ||
+                          addPortFolioItem.usageIn?.value == "string"
+                          ? "NA" : addPortFolioItem.usageIn?.value}
+                        {/* {addPortFolioItem.usageIn?.value} */}
+                      </h6>
                     </div>
                   </div>
                 </div>
@@ -782,43 +806,85 @@ const AddCustomPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">STRATEGY TASK</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.strategyTask?.value}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {addPortFolioItem.strategyTask == "" ||
+                          addPortFolioItem.strategyTask == null ||
+                          addPortFolioItem.strategyTask == undefined ||
+                          addPortFolioItem.strategyTask?.value == "" ||
+                          addPortFolioItem.strategyTask?.value == "string"
+                          ? "NA" : addPortFolioItem.strategyTask?.value}
+                        {/* {addPortFolioItem.strategyTask?.value} */}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">TASK TYPE</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.taskType?.value}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {addPortFolioItem.taskType == "" ||
+                          addPortFolioItem.taskType == null ||
+                          addPortFolioItem.taskType == undefined ||
+                          addPortFolioItem.taskType?.value == "" ||
+                          addPortFolioItem.taskType?.value == "string"
+                          ? "NA" : addPortFolioItem.taskType?.value}
+                        {/* {addPortFolioItem.taskType?.value} */}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="font-size-12 text-light-dark font-weight-500 mb-2">FREQUENCY</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.frequency?.value}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {addPortFolioItem.frequency == "" ||
+                          addPortFolioItem.frequency == null ||
+                          addPortFolioItem.frequency == undefined ||
+                          addPortFolioItem.frequency?.value == "" ||
+                          addPortFolioItem.frequency?.value == "string"
+                          ? "NA" : addPortFolioItem.frequency?.value}
+                        {/* {addPortFolioItem.frequency?.value} */}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">UNIT</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.unit?.value}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {addPortFolioItem.unit == "" || 
+                        addPortFolioItem.unit == null ||
+                        addPortFolioItem.unit == undefined ||
+                        addPortFolioItem.unit?.value == "" ||
+                        addPortFolioItem.unit?.value == "string" 
+                        ? "NA" : addPortFolioItem.unit?.value}
+                        {/* {addPortFolioItem.unit?.value} */}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">RECOMMENDED VALUE</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.recommendedValue}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {addPortFolioItem.recommendedValue == "" ||
+                          addPortFolioItem.recommendedValue == null ||
+                          addPortFolioItem.recommendedValue == undefined ||
+                          addPortFolioItem.recommendedValue == "string"
+                          ? "NA" : addPortFolioItem.recommendedValue}
+                        {/* {addPortFolioItem.recommendedValue} */}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">QUANTITY</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.quantity}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {/* {addPortFolioItem.quantity} */}
+                        {addPortFolioItem.quantity}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">NO. OF EVENTS</p>
-                      <h6 className="font-weight-500">{addPortFolioItem.numberOfEvents}</h6>
+                      <h6 className="font-weight-500 text-uppercase">{addPortFolioItem.numberOfEvents}</h6>
                     </div>
                   </div>
                 </div>

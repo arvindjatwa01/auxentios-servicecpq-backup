@@ -119,6 +119,8 @@ import {
   escalationPriceCreation,
   additionalPriceCreation,
   portfolioPriceCreation,
+  portfolioItemPriceSjid,
+  getItemPriceData,
 } from "../../services/index";
 import {
   selectCategoryList,
@@ -807,6 +809,10 @@ export function CreatePortfolio(props) {
   };
 
   const handleBundleItemSaveAndContinue = async (data, itemPriceData) => {
+
+    // console.log("data --------- 1234545667", data);
+    // console.log("itemPriceData --------- 1234545667", itemPriceData);
+
     try {
       // let reqObj = {
       //   itemId: 0,
@@ -879,146 +885,150 @@ export function CreatePortfolio(props) {
       //   },
       // };
 
-//  Old Todo
-      let reqObj = {
-        itemId: 0,
-        itemName: data.name,
-        itemHeaderModel: {
-          itemHeaderId: 0,
-          // itemHeaderId: parseInt(generalComponentData.portfolioId),
-          // itemHeaderDescription: generalComponentData.description,
-          itemHeaderDescription: data.headerdescription,
-          bundleFlag: "PORTFOLIO",
-          reference: generalComponentData.externalReference,
-          itemHeaderMake: "",
-          itemHeaderFamily: "",
-          model: "",
-          prefix: "",
-          type: "MACHINE",
-          additional: "",
-          currency: "",
-          netPrice: 0,
-          itemProductHierarchy: generalComponentData.productHierarchy,
-          itemHeaderGeographic: generalComponentData.geographic,
-          responseTime: generalComponentData.responseTime,
-          usage: "",
-          validFrom: generalComponentData.validFrom,
-          validTo: generalComponentData.validTo,
-          estimatedTime: "",
-          servicePrice: 0,
-          status: "NEW",
-        },
-        itemBodyModel: {
-          itemBodyId: parseInt(data.id),
-          itemBodyDescription: data.description,
-          quantity: parseInt(data.quantity),
-          startUsage: priceCalculator.startUsage,
-          endUsage: priceCalculator.endUsage,
-          standardJobId: "",
-          frequency: data.frequency.value,
-          additional: "",
-          spareParts: ["WITH_SPARE_PARTS"],
-          labours: ["WITH_LABOUR"],
-          miscellaneous: ["LUBRICANTS"],
-          taskType: [data.taskType.value],
-          solutionCode: "",
-          usageIn: data.usageIn.value,
-          recommendedValue: 0,
-          usage: "",
-          repairKitId: "",
-          templateDescription: data.description.value,
-          partListId: "",
-          serviceEstimateId: "",
-          numberOfEvents: parseInt(data.numberOfEvents),
-          repairOption: data.repairOption.value,
-          priceMethod: "LIST_PRICE",
-          listPrice: parseInt(priceCalculator.listPrice),
-          priceEscalation: "",
-          calculatedPrice: parseInt(priceCalculator.calculatedPrice),
-          flatPrice: parseInt(priceCalculator.flatPrice),
-          discountType: "",
-          // year: priceCalculator.priceYear.value,
-          year: data.year,
-          avgUsage: 0,
-          unit: data.unit.value,
-          sparePartsPrice: 0,
-          sparePartsPriceBreakDownPercentage: 0,
-          servicePrice: 0,
-          servicePriceBreakDownPercentage: 0,
-          miscPrice: 0,
-          miscPriceBreakDownPercentage: 0,
-          totalPrice: 0,
-        },
-      };
-// New Todo
-
+      //  Old Todo
       // let reqObj = {
       //   itemId: 0,
-      //   // itemName: "",
       //   itemName: data.name,
       //   itemHeaderModel: {
       //     itemHeaderId: 0,
+      //     // itemHeaderId: parseInt(generalComponentData.portfolioId),
+      //     // itemHeaderDescription: generalComponentData.description,
       //     itemHeaderDescription: data.headerdescription,
       //     bundleFlag: "PORTFOLIO",
-      //     portfolioItemId: 0,
-      //     reference: generalComponentData.externalReference,,
-      //     itemHeaderMake: data?.make,
-      //     itemHeaderFamily: data?.family,
-      //     model: data.model,
-      //     prefix: data.prefix,
-      //     type: data.machineComponent != "" ? data.machineComponent?.value : "MACHINE",
-      //     additional: data.additional != "" ? data.additional.value : "",
+      //     reference: generalComponentData.externalReference,
+      //     itemHeaderMake: "",
+      //     itemHeaderFamily: "",
+      //     model: "",
+      //     prefix: "",
+      //     type: "MACHINE",
+      //     additional: "",
       //     currency: "",
       //     netPrice: 0,
-      //     itemProductHierarchy: "END_PRODUCT",
-      //     itemHeaderGeographic: "ONSITE",
-      //     responseTime: "PROACTIVE",
+      //     itemProductHierarchy: generalComponentData.productHierarchy,
+      //     itemHeaderGeographic: generalComponentData.geographic,
+      //     responseTime: generalComponentData.responseTime,
       //     usage: "",
       //     validFrom: generalComponentData.validFrom,
       //     validTo: generalComponentData.validTo,
       //     estimatedTime: "",
       //     servicePrice: 0,
       //     status: "DRAFT",
-      //     itemHeaderStrategy: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.strategyTask.value : "PREVENTIVE_MAINTENANCE",
-      //     componentCode: "",
-      //     componentDescription: "",
-      //     serialNumber: "",
-      //     variant: "",
-      //     itemHeaderCustomerSegment: createServiceOrBundle.customerSegment?.value,
-      //     jobCode: "",
-      //     preparedBy: administrative.preparedBy,
-      //     approvedBy: administrative.approvedBy,
-      //     preparedOn: administrative.preparedOn,
-      //     revisedBy: administrative.revisedBy,
-      //     revisedOn: administrative.revisedOn,
-      //     salesOffice: administrative.branch,
-      //     offerValidity: administrative.offerValidity
       //   },
       //   itemBodyModel: {
-      //     itemBodyId: 0,
+      //     itemBodyId: parseInt(data.id),
       //     itemBodyDescription: data.description,
-      //     frequency: data.frequency?.value,
+      //     quantity: parseInt(data.quantity),
+      //     startUsage: priceCalculator.startUsage,
+      //     endUsage: priceCalculator.endUsage,
+      //     standardJobId: "",
+      //     frequency: data.frequency.value,
+      //     additional: "",
       //     spareParts: ["WITH_SPARE_PARTS"],
       //     labours: ["WITH_LABOUR"],
       //     miscellaneous: ["LUBRICANTS"],
       //     taskType: [data.taskType.value],
       //     solutionCode: "",
       //     usageIn: data.usageIn.value,
-      //     recommendedValue: parseInt(data.recommendedValue),
+      //     recommendedValue: 0,
       //     usage: "",
-      //     year: data.year,,
+      //     repairKitId: "",
+      //     templateDescription: data.description.value,
+      //     partListId: "",
+      //     serviceEstimateId: "",
+      //     numberOfEvents: parseInt(data.numberOfEvents),
+      //     repairOption: data.repairOption.value,
+      //     priceMethod: "LIST_PRICE",
+      //     listPrice: parseInt(priceCalculator.listPrice),
+      //     priceEscalation: "",
+      //     calculatedPrice: parseInt(priceCalculator.calculatedPrice),
+      //     flatPrice: parseInt(priceCalculator.flatPrice),
+      //     discountType: "",
+      //     // year: priceCalculator.priceYear.value,
+      //     year: data.year,
       //     avgUsage: 0,
-      //     unit: data.unit?.value : "",
-      //     itemPrices: [
-      //       {
-      //         itemPriceDataId: itemPriceData.itemPriceDataId
-      //       }
-      //     ],
-      //   }
-      // }
+      //     unit: data.unit.value,
+      //     sparePartsPrice: 0,
+      //     sparePartsPriceBreakDownPercentage: 0,
+      //     servicePrice: 0,
+      //     servicePriceBreakDownPercentage: 0,
+      //     miscPrice: 0,
+      //     miscPriceBreakDownPercentage: 0,
+      //     totalPrice: 0,
+      //   },
+      // };
 
-      // console.log("requested obj : ", reqObj);
-      // console.log("requested obj 2 : ", addPortFolioItem);
+      // New Todo
+      let reqObj = {
+        itemId: 0,
+        // itemName: "",
+        itemName: data.name,
+        itemHeaderModel: {
+          itemHeaderId: 0,
+          itemHeaderDescription: data.headerdescription,
+          bundleFlag: "PORTFOLIO",
+          portfolioItemId: 0,
+          reference: generalComponentData.externalReference,
+          itemHeaderMake: data?.make,
+          itemHeaderFamily: data?.family,
+          model: data.model,
+          prefix: data.prefix,
+          // type: data.machineComponent != "" ? data.machineComponent?.value : "MACHINE",
+          type: "MACHINE",
+          // additional: data.additional != "" ? data.additional.value : "",
+          additional: "",
+          currency: "",
+          netPrice: 0,
+          itemProductHierarchy: "END_PRODUCT",
+          itemHeaderGeographic: "ONSITE",
+          responseTime: "PROACTIVE",
+          usage: "",
+          validFrom: generalComponentData.validFrom,
+          validTo: generalComponentData.validTo,
+          estimatedTime: "",
+          servicePrice: 0,
+          status: "DRAFT",
+          itemHeaderStrategy: data.strategyTask !== "" ? data.strategyTask?.value : "PREVENTIVE_MAINTENANCE",
+          componentCode: "",
+          componentDescription: "",
+          serialNumber: "",
+          variant: "",
+          itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "Customer Segment",
+          jobCode: "",
+          preparedBy: administrative.preparedBy,
+          approvedBy: administrative.approvedBy,
+          preparedOn: administrative.preparedOn,
+          revisedBy: administrative.revisedBy,
+          revisedOn: administrative.revisedOn,
+          salesOffice: administrative.branch,
+          offerValidity: administrative.offerValidity
+        },
+        itemBodyModel: {
+          itemBodyId: 0,
+          itemBodyDescription: data.description,
+          frequency: data.frequency != "" ? data.frequency?.value : "once",
+          spareParts: ["WITH_SPARE_PARTS"],
+          labours: ["WITH_LABOUR"],
+          miscellaneous: ["LUBRICANTS"],
+          taskType: data.taskType != "" ? [data.taskType.value] : ["PM1"],
+          solutionCode: "",
+          usageIn: data.usageIn != "" ? data.usageIn.value : "REPAIR_OR_REPLACE",
+          recommendedValue: parseInt(data.recommendedValue),
+          usage: "",
+          year: data.year,
+          avgUsage: 0,
+          unit: data.unit != "" ? data.unit?.value : "",
+          itemPrices: [
+            {
+              itemPriceDataId: itemPriceData.itemPriceDataId
+            }
+          ],
+        }
+      }
+
+      console.log("new reqObj : 12345 ----- : ", reqObj)
+
+      console.log("requested obj : ", reqObj);
+      console.log("requested obj 2 : ", addPortFolioItem);
       const itemRes = await itemCreation(reqObj);
       if (itemRes.status !== 200) {
         throw "Something went wrong/Item not created"
@@ -7133,10 +7143,15 @@ export function CreatePortfolio(props) {
       let reqObj = {}
       for (let i = 0; i < tempBundleItems.length; i++) {
         if (tempBundleItems[i].itemId === currentItemId) {
+          // reqObj = {
+          //   itemId: tempBundleItems[i].itemId,
+          //   standardJobId: tempBundleItems[i].itemBodyModel.standardJobId,
+          //   repairKitId: tempBundleItems[i].itemBodyModel.repairKitId,
+          // }
           reqObj = {
             itemId: tempBundleItems[i].itemId,
-            standardJobId: tempBundleItems[i].itemBodyModel.standardJobId,
-            repairKitId: tempBundleItems[i].itemBodyModel.repairKitId,
+            standardJobId: itemPriceData.standardJobId,
+            repairKitId: itemPriceData.repairKitId,
           }
           break;
         }
@@ -7152,14 +7167,20 @@ export function CreatePortfolio(props) {
           progress: undefined,
         });
       } else {
-        // console.log("reqObj : ", reqObj)
-        const itemPriceRes = await getItemPrice(reqObj)
+        console.log("reqObj : ", reqObj)
+
+        const res2 = await portfolioItemPriceSjid(reqObj)
+
+        const res = await getItemPriceData(itemPriceData.itemPriceDataId)
+
+
+        // const itemPriceRes = await getItemPrice(reqObj)
         setItemPriceCalculator({
-          netParts: "11",
-          netService: "11",
-          priceType: "11",
-          netPrice: itemPriceRes.itemHeaderModel.netPrice,
-          netAdditionals: "11",
+          netParts: res.data.sparePartsPrice,
+          netService: res.data.netService,
+          priceType: res.data.priceType,
+          netPrice: res.data.totalPrice,
+          netAdditionals: res.data.listPrice,
         })
         setTabs("5")
       }
@@ -7576,7 +7597,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               PORTFOLIO DESCRIPTION
                             </p>
-                            <h6 className="font-weight-500">
+                            <h6 className="font-weight-500 text-uppercase">
                               {generalComponentData.description == "" || generalComponentData.description == null ? "NA" : generalComponentData.description}
                             </h6>
                           </div>
@@ -7594,8 +7615,11 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               REFERENCE
                             </p>
-                            <h6 className="font-weight-500">
-                              {generalComponentData.externalReference == "" || generalComponentData.externalReference == null ? "NA" : generalComponentData.externalReference}
+                            <h6 className="font-weight-500 text-uppercase">
+                              {generalComponentData.externalReference == "" ||
+                                generalComponentData.externalReference == null ||
+                                generalComponentData.externalReference == "string"
+                                ? "NA" : generalComponentData.externalReference}
                             </h6>
                           </div>
                         </div>
@@ -7604,8 +7628,13 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               CUSTOMER SEGMENT
                             </p>
-                            <h6 className="font-weight-500">
-                              {generalComponentData?.customerSegment?.label}
+                            <h6 className="font-weight-500 text-uppercase">
+                              {generalComponentData?.customerSegment == "" ||
+                                generalComponentData?.customerSegment == null ||
+                                generalComponentData?.customerSegment == undefined ||
+                                generalComponentData?.customerSegment?.label == "string"
+                                ? "NA" : generalComponentData?.customerSegment?.label}
+                              {/* {generalComponentData?.customerSegment?.label} */}
                             </h6>
                           </div>
                         </div>
@@ -8037,7 +8066,15 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               CATEGORY USAGE
                             </p>
-                            <h6 className="font-weight-500">{categoryUsageKeyValue1.value}</h6>
+                            <h6 className="font-weight-500 text-uppercase">
+                              {categoryUsageKeyValue1.length == 0 ||
+                                categoryUsageKeyValue1.value == "" ||
+                                categoryUsageKeyValue1.value == "string" ||
+                                categoryUsageKeyValue1.value == null ||
+                                categoryUsageKeyValue1.value == undefined
+                                ? "NA" : categoryUsageKeyValue1.value}
+                              {/* {categoryUsageKeyValue1.value} */}
+                            </h6>
                           </div>
                         </div>
                         <div className="col-md-4 col-sm-4">
@@ -8045,7 +8082,15 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               STRATEGY TASK
                             </p>
-                            <h6 className="font-weight-500">{stratgyTaskUsageKeyValue.value}</h6>
+                            <h6 className="font-weight-500 text-uppercase">
+                              {stratgyTaskUsageKeyValue.length == 0 ||
+                                stratgyTaskUsageKeyValue.value == "" ||
+                                stratgyTaskUsageKeyValue.value == "string" ||
+                                stratgyTaskUsageKeyValue.value == null ||
+                                stratgyTaskUsageKeyValue.value == undefined ?
+                                "NA" : stratgyTaskUsageKeyValue.value}
+                              {/* {stratgyTaskUsageKeyValue.value} */}
+                            </h6>
                           </div>
                         </div>
 
@@ -8062,7 +8107,15 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               TASK TYPE
                             </p>
-                            <h6 className="font-weight-500">{stratgyTaskTypeKeyValue.value}</h6>
+                            <h6 className="font-weight-500 text-uppercase">
+                              {stratgyTaskTypeKeyValue.length == 0 ||
+                                stratgyTaskTypeKeyValue.value == "" ||
+                                stratgyTaskTypeKeyValue.value == "string" ||
+                                stratgyTaskTypeKeyValue.value == null ||
+                                stratgyTaskTypeKeyValue.value == undefined
+                                ? "NA" : stratgyTaskTypeKeyValue.value}
+                              {/* {stratgyTaskTypeKeyValue.value} */}
+                            </h6>
                           </div>
                         </div>
                         <div className="col-md-4 col-sm-4">
@@ -8070,8 +8123,14 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               RESPONSE TIME
                             </p>
-                            <h6 className="font-weight-500">
-                              {stratgyResponseTimeKeyValue.value}
+                            <h6 className="font-weight-500 text-uppercase">
+                              {stratgyResponseTimeKeyValue.length == 0 ||
+                                stratgyResponseTimeKeyValue.value == null ||
+                                stratgyResponseTimeKeyValue.value == "" ||
+                                stratgyResponseTimeKeyValue.value == "string" ||
+                                stratgyResponseTimeKeyValue.value == undefined
+                                ? "NA" : stratgyResponseTimeKeyValue.value}
+                              {/* {stratgyResponseTimeKeyValue.value} */}
                             </h6>
                           </div>
                         </div>
@@ -8080,7 +8139,15 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               PRODUCT HIERARCHY
                             </p>
-                            <h6 className="font-weight-500">{stratgyHierarchyKeyValue.value}</h6>
+                            <h6 className="font-weight-500 text-uppercase">
+                              {stratgyHierarchyKeyValue.length == 0 ||
+                                stratgyHierarchyKeyValue.value == "" ||
+                                stratgyHierarchyKeyValue.value == "string" ||
+                                stratgyHierarchyKeyValue.value == null ||
+                                stratgyHierarchyKeyValue.value == undefined
+                                ? "NA" : stratgyHierarchyKeyValue.value}
+                              {/* {stratgyHierarchyKeyValue.value} */}
+                            </h6>
                           </div>
                         </div>
                         <div className="col-md-4 col-sm-4">
@@ -8088,7 +8155,15 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               GEOGRAPHIC
                             </p>
-                            <h6 className="font-weight-500">{stratgyGeographicKeyValue.value}</h6>
+                            <h6 className="font-weight-500 text-uppercase">
+                              {stratgyGeographicKeyValue.length == 0 ||
+                                stratgyGeographicKeyValue.value == "" ||
+                                stratgyGeographicKeyValue.value == "string" ||
+                                stratgyGeographicKeyValue.value == null ||
+                                stratgyGeographicKeyValue.value == undefined
+                                ? "NA" : stratgyGeographicKeyValue.value}
+                              {/* {stratgyGeographicKeyValue.value} */}
+                            </h6>
                           </div>
 
                         </div>
@@ -8349,8 +8424,14 @@ export function CreatePortfolio(props) {
                                 PREPARED BY
                                 {/* {console.log("new dataa : ", coverageData.machineType)} */}
                               </p>
-                              <h6 className="font-weight-500">
-                                {(administrative.preparedBy == "" || administrative.preparedBy == null ? "NA" : administrative.preparedBy)}
+                              <h6 className="font-weight-500 text-uppercase">
+                                {(
+                                  administrative.preparedBy == "" ||
+                                    administrative.preparedBy == "string" ||
+                                    administrative.preparedBy == undefined ||
+                                    administrative.preparedBy == null
+                                    ? "NA" : administrative.preparedBy
+                                )}
                               </h6>
                             </div>
                           </div>
@@ -8359,8 +8440,14 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 APPROVED BY
                               </p>
-                              <h6 className="font-weight-500">
-                                {(administrative.approvedBy == "" || administrative.approvedBy == null ? "NA" : administrative.approvedBy)}
+                              <h6 className="font-weight-500 text-uppercase">
+                                {(
+                                  administrative.approvedBy == "" ||
+                                    administrative.approvedBy == "string" ||
+                                    administrative.approvedBy == undefined ||
+                                    administrative.approvedBy == null
+                                    ? "NA" : administrative.approvedBy
+                                )}
                                 {/* {Object.keys(stratgyTaskUsageKeyValue).length > 0 ? (stratgyTaskUsageKeyValue.label) : (location.selectedTemplateItems[0].strategyTask)} */}
                               </h6>
                             </div>
@@ -8370,8 +8457,15 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 PREPARED ON
                               </p>
-                              <h6 className="font-weight-500">
-                                {(administrative.preparedOn == "" || administrative.preparedOn == null ? "NA" : getFormattedDateTimeByTimeStamp(administrative.preparedOn))}
+                              <h6 className="font-weight-500 text-uppercase">
+                                {(
+                                  administrative.preparedOn == "" ||
+                                    administrative.preparedOn == "string" ||
+                                    administrative.preparedOn == undefined ||
+                                    administrative.preparedOn == null
+                                    ? "NA" :
+                                    getFormattedDateTimeByTimeStamp(administrative.preparedOn)
+                                )}
                                 {/* {Object.keys(stratgyTaskTypeKeyValue).length > 0 ? (stratgyTaskTypeKeyValue.label) : (location.selectedTemplateItems[0].taskType)} */}
                               </h6>
                             </div>
@@ -8381,8 +8475,13 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 REVISED BY
                               </p>
-                              <h6 className="font-weight-500">
-                                {(administrative.revisedBy == "" || administrative.revisedBy == null ? "NA" : administrative.revisedBy)}
+                              <h6 className="font-weight-500 text-uppercase">
+                                {(
+                                  administrative.revisedBy == "" ||
+                                    administrative.revisedBy == "string" ||
+                                    administrative.revisedBy == undefined ||
+                                    administrative.revisedBy == null ?
+                                    "NA" : administrative.revisedBy)}
                               </h6>
                             </div>
                           </div>
@@ -8391,8 +8490,15 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 REVISED  ON
                               </p>
-                              <h6 className="font-weight-500">
-                                {(administrative.revisedOn == "" || administrative.revisedOn == null ? "NA" : getFormattedDateTimeByTimeStamp(administrative.revisedOn))}
+                              <h6 className="font-weight-500 text-uppercase">
+                                {(
+                                  administrative.revisedOn == "" ||
+                                    administrative.revisedOn == "string" ||
+                                    administrative.revisedOn == undefined ||
+                                    administrative.revisedOn == null
+                                    ? "NA" :
+                                    getFormattedDateTimeByTimeStamp(administrative.revisedOn)
+                                )}
                               </h6>
                             </div>
                           </div>
@@ -8401,8 +8507,13 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 SALSE OFFICE/BRANCH
                               </p>
-                              <h6 className="font-weight-500">
-                                {(administrative.salesOffice == "" || administrative.salesOffice == null ? "NA" : administrative.salesOffice)}
+                              <h6 className="font-weight-500 text-uppercase">
+                                {(
+                                  administrative.salesOffice == "" ||
+                                    administrative.salesOffice == "string" ||
+                                    administrative.salesOffice == undefined ||
+                                    administrative.salesOffice == null
+                                    ? "NA" : administrative.salesOffice)}
                               </h6>
                             </div>
                           </div>
@@ -8411,8 +8522,13 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 OFFER VALIDITY
                               </p>
-                              <h6 className="font-weight-500">
-                                {(administrative.offerValidity == "" || administrative.offerValidity == null ? "NA" : administrative.offerValidity)}
+                              <h6 className="font-weight-500 text-uppercase">
+                                {(
+                                  administrative.offerValidity == "" ||
+                                    administrative.offerValidity == "string" ||
+                                    administrative.offerValidity == undefined ||
+                                    administrative.offerValidity == null
+                                    ? "NA" : administrative.offerValidity)}
                               </h6>
                             </div>
                           </div>
@@ -12929,6 +13045,7 @@ export function CreatePortfolio(props) {
             passItemEditRowData={passItemEditRowData}
             handleItemEditSave={handleItemEditSave}
             compoFlag="itemEdit"
+            compoFlagTest="itemEditPort"
           />
         </Modal.Body>
       </Modal>
@@ -13195,6 +13312,17 @@ export function CreatePortfolio(props) {
         </p>
         <div className="hr"></div>
         <Modal.Body>
+          <div class="form-group">
+            <label for="usr">Select Version</label>
+            <Select
+              className="text-primary"
+              // value={createServiceOrBundle.customerSegment}
+              onChange={(e) => handleOption3(e)}
+              options={versionOption}
+              value={value3}
+              placeholder="Version Type"
+            />
+          </div>
           <div class="form-group">
             <label for="usr">Name</label>
             <input type="text" class="form-control" id="usr" placeholder="Enter Name" onChange={(e) => setNewVersionName(e.target.value)} value={newVersionName} />

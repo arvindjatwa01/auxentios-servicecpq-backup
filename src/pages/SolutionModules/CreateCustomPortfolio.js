@@ -1222,6 +1222,7 @@ export function CreateCustomPortfolio(props) {
     };
 
     const handleSavePrices = async () => {
+        console.log("addPortFolioItem ", addPortFolioItem)
         try {
             let reqObj = {
                 itemId: parseInt(addPortFolioItem.id),
@@ -1313,6 +1314,7 @@ export function CreateCustomPortfolio(props) {
     };
 
     const handleItemEditSave = async (addPortFolioItem, compoFlag) => {
+        console.log("addPortFolioItem ", addPortFolioItem)
         try {
             setEditItemShow(false); //hide screen
             let reqObj = {
@@ -1339,7 +1341,7 @@ export function CreateCustomPortfolio(props) {
                     validTo: generalComponentData.validTo,
                     estimatedTime: "",
                     servicePrice: 0,
-                    status: "NEW",
+                    status: "DRAFT",
                 },
                 customItemBodyModel: {
                     itemBodyId: parseInt(addPortFolioItem.id),
@@ -1382,6 +1384,7 @@ export function CreateCustomPortfolio(props) {
                     totalPrice: 0,
                 },
             };
+            console.log("reqObj : ", reqObj)
             const { data, status } = await updateCustomItemData(
                 addPortFolioItem.id,
                 reqObj
@@ -13185,6 +13188,17 @@ export function CreateCustomPortfolio(props) {
                 </p>
                 <div className="hr"></div>
                 <Modal.Body>
+                    <div class="form-group">
+                        <label for="usr">Select Version</label>
+                        <Select
+                            className="text-primary"
+                            // value={createServiceOrBundle.customerSegment}
+                            onChange={(e) => handleOption3(e)}
+                            options={versionOption}
+                            value={value3}
+                            placeholder="Version Type"
+                        />
+                    </div>
                     <div class="form-group">
                         <label for="usr">Name</label>
                         <input type="text" class="form-control" id="usr" placeholder="Enter Name" onChange={(e) => setNewVersionName(e.target.value)} value={newVersionName} />
