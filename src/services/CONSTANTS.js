@@ -110,6 +110,7 @@ export const GET_RECENT_SOLUTION_PORTFOLIO_LIST = SOLUTION_BUILDER_URI + "portfo
 // Custom Portfolio Item
 export const CREATE_CUSTOM_PORTFOLIO_ITEM = () => SOLUTION_BUILDER_URI + "item/custom";
 export const DELETE_CUSTOM_PORTFOLIO_ITEM = SOLUTION_BUILDER_URI + "item/custom/price/";
+export const GET_CUSTOM_PORTFOLIO_ITEM_PRICE_DATA = SOLUTION_BUILDER_URI + "item/custom/price/";
 
 export const COPY_PORTFOLIO_ITEMS_TO_CUSTOM_PORTFOLIO = SOLUTION_BUILDER_URI + "portfolio/custom/copy-portfolios-items-to-custom-portfolio?"
 export const GET_RECENT_SOLUTION_BUNDLE_SERVICE_URL = SOLUTION_BUILDER_URI + "item/custom";

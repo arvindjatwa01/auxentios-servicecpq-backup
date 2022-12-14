@@ -9,6 +9,8 @@ import { Box, Button, Stack, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import $ from "jquery";
 
+import { ToastContainer, toast } from 'react-toastify';
+
 import { useDispatch, useSelector } from "react-redux";
 
 import { PortfolioContext } from "../PortfolioAndBundle/ProtfolioContext";
@@ -28,10 +30,11 @@ import {
   getTypeKeyValue,
   getSearchStandardJobId,
   getSearchKitId,
+  getCustomItemPriceData,
 } from "../../services/index";
 
 const AddCustomPortfolioItem = (props) => {
-  console.log("props for AddCustomPortfolioItem is : ", props);
+  // console.log("props for AddCustomPortfolioItem is : ", props);
   const [tabs, setTabs] = useState("1");
   const [editable, setEditable] = useState(
     props?.compoFlag === "itemEdit" ? true : false
@@ -41,6 +44,28 @@ const AddCustomPortfolioItem = (props) => {
     useState([]);
   const [querySearchRelatedKitResult, setQuerySearchRelatedKitResult] =
     useState([]);
+
+  const [editAbleItemPrice, setEditAbleItemPrice] = useState({
+    priceMethod: "",
+    listPrice: "",
+    priceAdditionalSelect: "",
+    priceAdditionalInput: "",
+    priceEscalationSelect: "",
+    priceEscalationInput: "",
+    calculatedPrice: "",
+    flatPrice: "",
+    discountTypeSelect: "",
+    discountTypeInput: "",
+    priceYear: "",
+    startUsage: "",
+    endUsage: "",
+    usageType: "",
+    frequency: "",
+    cycle: "",
+    suppresion: "",
+    netPrice: 1200,
+    totalPrice: 1200,
+  })
 
   // const {stratgyTaskTypeKeyValue,categoryUsageKeyValue1} = useContext(PortfolioContext);
   const [addPortFolioItem, setAddportFolioItem] = useState({
@@ -147,6 +172,8 @@ const AddCustomPortfolioItem = (props) => {
 
   useEffect(() => {
     if (props.passItemEditRowData) {
+
+      console.log("props.passItemEditRowData : ", props.passItemEditRowData);
       // setIt accordingly for fields
       const {
         itemBodyDescription,
@@ -168,17 +195,25 @@ const AddCustomPortfolioItem = (props) => {
         name: props.passItemEditRowData.itemName,
         // description: itemBodyDescription,
         description: props.passItemEditRowData.customItemHeaderModel.itemHeaderDescription,
-        usageIn: { label: usageIn, value: usageIn },
+        usageIn: {
+          label: props.passItemEditRowData.customItemBodyModel.usageIn,
+          value: props.passItemEditRowData.customItemBodyModel.usageIn
+        },
         taskType: { label: taskType, value: taskType },
-        frequency: { label: frequency, value: frequency },
-        unit: { label: unit, value: unit },
-        recommendedValue: recommendedValue,
+        frequency: { 
+          label: props.passItemEditRowData.customItemBodyModel.frequency, 
+          value: props.passItemEditRowData.customItemBodyModel.frequency },
+        unit: {
+          label: props.passItemEditRowData.customItemBodyModel.unit,
+          value: props.passItemEditRowData.customItemBodyModel.unit
+        },
+        recommendedValue: props.passItemEditRowData.customItemBodyModel.recommendedValue,
         quantity: 0,
         numberOfEvents: numberOfEvents,
-        templateDescription: {
-          label: itemBodyDescription,
-          value: itemBodyDescription,
-        },
+        // templateDescription: {
+        //   label: itemBodyDescription,
+        //   value: itemBodyDescription,
+        // },
         strategyTask: {
           label: props.passItemEditRowData.customItemHeaderModel.itemHeaderStrategy,
           value: props.passItemEditRowData.customItemHeaderModel.itemHeaderStrategy
@@ -186,8 +221,72 @@ const AddCustomPortfolioItem = (props) => {
         // repairOption: { label: repairOption, value: repairOption },
         repairOption: repairOption,
       });
+
+      if ((props.passItemEditRowData.customItemBodyModel.customItemPrices != null)) {
+        if (props.passItemEditRowData.customItemBodyModel.customItemPrices.length > 0) {
+          ItemPriceDataFetchById();
+        }
+      }
     }
   }, []);
+
+
+  const ItemPriceDataFetchById = async () => {
+
+    console.log("props.passItemEditRowData : ", props.passItemEditRowData)
+    // console.log("props.passItemEditRowData : ", props.passItemEditRowData.customItemBodyModel.customItemPrices[0].customItemPriceDataId)
+
+    const priceId = props.passItemEditRowData.customItemBodyModel.customItemPrices[0].customItemPriceDataId;
+
+    const priceDataId = props.passItemEditRowData.customItemBodyModel.customItemPrices[0].customItemPriceDataId;
+    // getCustomItemPriceData
+
+    const res = await getCustomItemPriceData(priceDataId)
+    setEditAbleItemPrice(res.data)
+    const {
+      itemName,
+      itemBodyDescription,
+      startUsage,
+      endusage,
+      frequency,
+      usageIn,
+      taskType,
+      unit,
+      recommendedValue,
+      quantity,
+      numberOfEvents,
+      templateDescription,
+      // repairOption,
+    } = props.passItemEditRowData.customItemBodyModel;
+    setAddportFolioItem({
+      ...addPortFolioItem,
+      id: props.passItemEditRowData.itemId,
+      name: props.passItemEditRowData.itemName,
+      description: itemBodyDescription,
+      usageIn: { label: usageIn, value: usageIn },
+      taskType: { label: taskType, value: taskType },
+      frequency: { label: frequency, value: frequency },
+      unit: { label: unit, value: unit },
+      recommendedValue: recommendedValue,
+      quantity: res.data.quantity,
+      numberOfEvents: numberOfEvents,
+      strategyTask: { label: props.passItemEditRowData.itemHeaderModel.itemHeaderStrategy, value: props.passItemEditRowData.itemHeaderModel.itemHeaderStrategy },
+      templateId: (res.data.standardJobId == "" || res.data.standardJobId == "string") ? "" : res.data.standardJobId,
+      templateDescription: {
+        label: res.data.templateDescription,
+        value: res.data.templateDescription,
+      },
+      repairOption: (res.data.repairKitId == "" || res.data.repairKitId == "string") ? "" : res.data.repairKitId,
+      kitDescription: (res.data.repairKitId == "" || res.data.repairKitId == "string") ? "" : {
+        label: "rty",
+        value: "rty",
+      },
+
+    });
+
+    console.log("price Result fetch Data : ", res);
+  }
+
 
   useEffect(() => {
     initFetch();
@@ -214,24 +313,59 @@ const AddCustomPortfolioItem = (props) => {
 
   const TabsEnableDisabledFun = () => {
     // console.log("Hello");
-    console.log("tabs : ", tabs);
-    console.log("props.compoFlag : ", props.compoFlag);
-    console.log(
-      "addPortFolioItem.templateId : ",
-      addPortFolioItem.templateId === ""
-    );
+    // console.log("tabs : ", tabs);
+    // console.log("props.compoFlag : ", props.compoFlag);
+    // console.log(
+    //   "addPortFolioItem.templateId : ",
+    //   addPortFolioItem.templateId === ""
+    // );
 
     if (tabs == 1) {
-      setTabs((prev) => `${parseInt(prev) + 1}`);
+      if ((props.compoFlag === "ITEM") &&
+        (addPortFolioItem.name == "" ||
+          addPortFolioItem.description == "" ||
+          addPortFolioItem.usageIn == "" ||
+          addPortFolioItem.taskType == "" ||
+          addPortFolioItem.quantity == "" ||
+          addPortFolioItem.quantity == 0)) {
+        toast("😐" + "Please fill mandatory fields", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else if ((props.compoFlag === "itemEdit") &&
+        (addPortFolioItem.name == "" ||
+          addPortFolioItem.description == "" ||
+          addPortFolioItem.usageIn == "" ||
+          addPortFolioItem.taskType == "" ||
+          addPortFolioItem.quantity == "")) {
+        toast("😐" + "Please fill mandatory fields", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        setTabs((prev) => `${parseInt(prev) + 1}`);
+      }
     } else if (tabs == 2 && addPortFolioItem.templateId == "") {
-      // if(&& props.compoFlag === "ITEM")
       setTabs((prev) => `${parseInt(prev) + 1}`);
     } else if (tabs == 2 && addPortFolioItem.templateId !== "") {
       if (props.compoFlag === "ITEM") {
         props.setTabs("2");
         props.getAddportfolioItemDataFun(addPortFolioItem);
       } else {
-        props.getAddportfolioItemData(addPortFolioItem);
+        if (props.compoFlag === "itemEdit") {
+          props.handleItemEditSave(addPortFolioItem, editAbleItemPrice);
+        }
+        // props.getAddportfolioItemData(addPortFolioItem);
         props.setBundleTabs("3");
       }
     }
@@ -763,10 +897,10 @@ const AddCustomPortfolioItem = (props) => {
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">NAME</p>
                       <h6 className="font-weight-500 text-uppercase">
-                        {addPortFolioItem.name == "" ||
+                        {(addPortFolioItem.name == "" ||
                           addPortFolioItem.name == null ||
                           addPortFolioItem.name == "string" ||
-                          addPortFolioItem.name == undefined
+                          addPortFolioItem.name == undefined)
                           ? "NA" : addPortFolioItem.name
                         }
                         {/* {addPortFolioItem.name} */}
@@ -777,10 +911,10 @@ const AddCustomPortfolioItem = (props) => {
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">DESCRIPTION</p>
                       <h6 className="font-weight-500 text-uppercase">
-                        {addPortFolioItem.description == "" ||
+                        {(addPortFolioItem.description == "" ||
                           addPortFolioItem.description == null ||
                           addPortFolioItem.description == undefined ||
-                          addPortFolioItem.description == "string"
+                          addPortFolioItem.description == "string")
                           ? "NA" : addPortFolioItem.description}
                         {/* {addPortFolioItem.description} */}
                       </h6>
@@ -790,11 +924,11 @@ const AddCustomPortfolioItem = (props) => {
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">USAGE IN</p>
                       <h6 className="font-weight-500 text-uppercase">
-                        {addPortFolioItem.usageIn == "" ||
+                        {(addPortFolioItem.usageIn == "" ||
                           addPortFolioItem.usageIn == null ||
                           addPortFolioItem.usageIn == undefined ||
                           addPortFolioItem.usageIn?.value == "" ||
-                          addPortFolioItem.usageIn?.value == "string"
+                          addPortFolioItem.usageIn?.value == "string")
                           ? "NA" : addPortFolioItem.usageIn?.value}
                         {/* {addPortFolioItem.usageIn?.value} */}
                       </h6>
@@ -807,11 +941,11 @@ const AddCustomPortfolioItem = (props) => {
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">STRATEGY TASK</p>
                       <h6 className="font-weight-500 text-uppercase">
-                        {addPortFolioItem.strategyTask == "" ||
+                        {(addPortFolioItem.strategyTask == "" ||
                           addPortFolioItem.strategyTask == null ||
                           addPortFolioItem.strategyTask == undefined ||
                           addPortFolioItem.strategyTask?.value == "" ||
-                          addPortFolioItem.strategyTask?.value == "string"
+                          addPortFolioItem.strategyTask?.value == "string")
                           ? "NA" : addPortFolioItem.strategyTask?.value}
                         {/* {addPortFolioItem.strategyTask?.value} */}
                       </h6>
@@ -821,11 +955,11 @@ const AddCustomPortfolioItem = (props) => {
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">TASK TYPE</p>
                       <h6 className="font-weight-500 text-uppercase">
-                        {addPortFolioItem.taskType == "" ||
+                        {(addPortFolioItem.taskType == "" ||
                           addPortFolioItem.taskType == null ||
                           addPortFolioItem.taskType == undefined ||
                           addPortFolioItem.taskType?.value == "" ||
-                          addPortFolioItem.taskType?.value == "string"
+                          addPortFolioItem.taskType?.value == "string")
                           ? "NA" : addPortFolioItem.taskType?.value}
                         {/* {addPortFolioItem.taskType?.value} */}
                       </h6>
@@ -835,11 +969,13 @@ const AddCustomPortfolioItem = (props) => {
                     <div className="form-group">
                       <p className="font-size-12 text-light-dark font-weight-500 mb-2">FREQUENCY</p>
                       <h6 className="font-weight-500 text-uppercase">
-                        {addPortFolioItem.frequency == "" ||
+                        {(addPortFolioItem.frequency == "" ||
                           addPortFolioItem.frequency == null ||
                           addPortFolioItem.frequency == undefined ||
                           addPortFolioItem.frequency?.value == "" ||
-                          addPortFolioItem.frequency?.value == "string"
+                          addPortFolioItem.frequency?.value == null ||
+                          addPortFolioItem.frequency?.value == undefined ||
+                          addPortFolioItem.frequency?.value == "string")
                           ? "NA" : addPortFolioItem.frequency?.value}
                         {/* {addPortFolioItem.frequency?.value} */}
                       </h6>
@@ -849,12 +985,14 @@ const AddCustomPortfolioItem = (props) => {
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">UNIT</p>
                       <h6 className="font-weight-500 text-uppercase">
-                        {addPortFolioItem.unit == "" || 
-                        addPortFolioItem.unit == null ||
-                        addPortFolioItem.unit == undefined ||
-                        addPortFolioItem.unit?.value == "" ||
-                        addPortFolioItem.unit?.value == "string" 
-                        ? "NA" : addPortFolioItem.unit?.value}
+                        {(addPortFolioItem.unit == "" ||
+                          addPortFolioItem.unit == null ||
+                          addPortFolioItem.unit == undefined ||
+                          addPortFolioItem.unit?.value == "" ||
+                          addPortFolioItem.unit?.value == null ||
+                          addPortFolioItem.unit?.value == undefined ||
+                          addPortFolioItem.unit?.value == "string")
+                          ? "NA" : addPortFolioItem.unit?.value}
                         {/* {addPortFolioItem.unit?.value} */}
                       </h6>
                     </div>
@@ -877,14 +1015,24 @@ const AddCustomPortfolioItem = (props) => {
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">QUANTITY</p>
                       <h6 className="font-weight-500 text-uppercase">
                         {/* {addPortFolioItem.quantity} */}
-                        {addPortFolioItem.quantity}
+                        {(addPortFolioItem.quantity == "" ||
+                          addPortFolioItem.quantity == null ||
+                          addPortFolioItem.quantity == undefined ||
+                          addPortFolioItem.quantity == "string")
+                          ? "NA" : addPortFolioItem.quantity}
                       </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">NO. OF EVENTS</p>
-                      <h6 className="font-weight-500 text-uppercase">{addPortFolioItem.numberOfEvents}</h6>
+                      <h6 className="font-weight-500 text-uppercase">
+                        {(addPortFolioItem.numberOfEvents == "" ||
+                          addPortFolioItem.numberOfEvents == null ||
+                          addPortFolioItem.numberOfEvents == undefined ||
+                          addPortFolioItem.numberOfEvents == "string")
+                          ? "NA" : addPortFolioItem.numberOfEvents}
+                      </h6>
                     </div>
                   </div>
                 </div>
@@ -1173,13 +1321,25 @@ const AddCustomPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">TEMPLATE ID</p>
-                      <h6 className="font-weight-500">{addPortFolioItem?.templateId}</h6>
+                      <h6 className="font-weight-500">
+                        {(addPortFolioItem?.templateId == "" ||
+                          addPortFolioItem?.templateId == null ||
+                          addPortFolioItem?.templateId == undefined ||
+                          addPortFolioItem?.templateId == "string")
+                          ? "NA" : addPortFolioItem?.templateId}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">TEMPLATE DESCRIPTION</p>
-                      <h6 className="font-weight-500">{addPortFolioItem?.templateDescription?.value}</h6>
+                      <h6 className="font-weight-500">
+                        {(addPortFolioItem?.templateId == "" ||
+                          addPortFolioItem?.templateId == null ||
+                          addPortFolioItem?.templateId == undefined ||
+                          addPortFolioItem?.templateId == "string")
+                          ? "NA" : addPortFolioItem?.templateDescription?.value}
+                      </h6>
                     </div>
                   </div>
                 </div>
@@ -1300,13 +1460,25 @@ const AddCustomPortfolioItem = (props) => {
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">RELATED KIT</p>
                       {/* <h6 className="font-weight-500">CVA</h6> */}
-                      <h6 className="font-weight-500">{addPortFolioItem?.repairOption}</h6>
+                      <h6 className="font-weight-500">
+                        {(addPortFolioItem?.repairOption == "" ||
+                          addPortFolioItem?.repairOption == null ||
+                          addPortFolioItem?.repairOption == undefined ||
+                          addPortFolioItem?.repairOption == "string")
+                          ? "NA" : addPortFolioItem?.repairOption}
+                      </h6>
                     </div>
                   </div>
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">KIT DESCRIPTION</p>
-                      <h6 className="font-weight-500">{addPortFolioItem?.kitDescription?.value}</h6>
+                      <h6 className="font-weight-500">
+                        {(addPortFolioItem?.repairOption == "" ||
+                          addPortFolioItem?.repairOption == null ||
+                          addPortFolioItem?.repairOption == undefined ||
+                          addPortFolioItem?.repairOption == "string")
+                          ? "NA" : addPortFolioItem?.kitDescription?.value}
+                      </h6>
                       {/* <h6 className="font-weight-500">CVA</h6> */}
                     </div>
                   </div>
