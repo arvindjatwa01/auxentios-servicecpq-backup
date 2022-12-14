@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
-import { FETCH_KIT, FETCH_REPAIR_BUILDER_KIT, SEARCH_KIT, UPDATE_KIT_CUSTOMER, UPDATE_KIT_ESTIMATION, UPDATE_KIT_GENERAL_DETAIL, UPDATE_KIT_MACHINE, UPDATE_KIT_PRICE } from "./CONSTANTS";
+import { FETCH_KIT, FETCH_REPAIR_BUILDER_KIT, SEARCH_KIT, UPDATE_KIT_COVERAGE, UPDATE_KIT_CUSTOMER, UPDATE_KIT_ESTIMATION, UPDATE_KIT_GENERAL_DETAIL, UPDATE_KIT_MACHINE, UPDATE_KIT_PRICE } from "./CONSTANTS";
 
 const accessToken = localStorage.getItem("access_token");
 
@@ -148,6 +148,32 @@ export const updateKITCustomer = (kitId, data) => {
     });
   };
   
+  //Update kit with Coverage Details data
+  export const updateKITCoverage = (kitId, data) => {
+    console.log("service Repair > updateKITCoverage called...");
+    return new Promise((resolve, reject) => {
+      try {
+        axios
+          .put(UPDATE_KIT_COVERAGE(kitId), data, config)
+          .then((res) => {
+            console.log("updateKITCoverage > axios res=", res);
+            if (res.status === 200) {
+              resolve(res.data);
+            } else {
+              console.log("Error Status:", res.status);
+              reject("Error in updateKITCoverage axios!");
+            }
+          })
+          .catch((err) => {
+            console.log("updateKITCoverage axios err :", err);
+            reject("Error in updateKITCoverage axios!");
+          });
+      } catch (error) {
+        console.error("Genreal Exception updateKITCoverage : ", error);
+        reject(SYSTEM_ERROR);
+      }
+    });
+  };
   
 //Search Kits
 export const kitSearch =  (searchStr) => {
