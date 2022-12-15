@@ -2,7 +2,7 @@
 
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS } from "./CONSTANTS";
+import { GET_ALL_SOLUTION_PORTFOLIOS, GET_ALL_USERS, GET_USER_DETAILS, CUSTOM_PORTFOLIO_URL } from "./CONSTANTS";
 
 /* ----------------- Authorization ------------------- */
 
@@ -16,6 +16,32 @@ const headersdata = {
 
 /* ------------------------------------------------------------ */
 
+
+/**
+ * Function to fetch the Portfolio by portfolioId.
+ */
+
+
+export const getSolutionPortfolioById = (portfolioId) => {
+  console.log("solutionBuilderServices > getSolutionPortfolio called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(`${CUSTOM_PORTFOLIO_URL()}/${portfolioId}`, { headers: headersdata })
+        .then((res) => {
+          console.log("getSolutionPortfolio > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("getSolutionPortfolio > axios err=", err);
+          reject("Error in getSolutionPortfolio axios!");
+        });
+    } catch (error) {
+      console.error("in solutionBuilderServices > getSolutionPortfolio, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
 
 /**
  * Function to fetch all the Portfolios.

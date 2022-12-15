@@ -568,47 +568,42 @@ export const Analytics = () => {
 
       // To do New API Call
       if (solutionValue == 1) {
+         let solutionPortfolioDetails = {
+            portfolioId: selectedSolutionTempMasterData[0].customPortfolioId,
+            type: "fetch",
+         };
+         // alert()
+         // console.log("selectedSolutionTempMasterData.customPortfolioId : ", selectedSolutionTempMasterData)
          history.push({
             pathname: SOLUTION_TEMPLATE_SELECTED_PORTFOLIO_RESULT,
-            selectedTemplateItems: selectedSolutionTempMasterData,
-            solutionValueIs: solutionValue
+            // selectedTemplateItems: selectedSolutionTempMasterData,
+            // solutionValueIs: solutionValue,
+            state: solutionPortfolioDetails,
          });
          localStorage.setItem("selectedSolutionTemplateItems", JSON.stringify(selectedSolutionTempMasterData));
          localStorage.setItem("solutionValueIs", solutionValue);
-         // localStorage.setItem("autocreatedcustomPortfolioData", JSON.stringify(CreatedcustomPortfolioData));
-         // alert("hello");
       } else if (solutionValue == 0) {
          setPortfolioToSolutionProgress(true)
          var newCustomItemsId = [];
 
          console.log("select Portfolio Items : ", selectedPortfolioTempMasterData);
-
-         /* =============== loop for selected portfolio master Data ============ */
-
-         // var searchStr = querySearchSelector[0].selectFamily.value + "~" + querySearchSelector[0].inputSearch
-
-         // for (let i = 1; i < querySearchSelector.length; i++) {
-         //    searchStr = searchStr + " " + querySearchSelector[i].selectOperator.value + " " + querySearchSelector[i].selectFamily.value + "~" + querySearchSelector[i].inputSearch
-         // }
          var searchUrl = "portfolioIds=" + selectedPortfolioTempMasterData[0].portfolioId;
          for (let x = 1; x < selectedPortfolioTempMasterData.length; x++) {
-            // copyPortfolioICustomPortfolio(selectedPortfolioTempMasterData[x].portfolioId)
             searchUrl = searchUrl + "&portfolioIds=" + selectedPortfolioTempMasterData[x].portfolioId
-            // const copyPortfolioCustomRes = await copyPortfolioICustomPortfolio(selectedPortfolioTempMasterData[x].portfolioId);
-            // newCustomItemsId.push(copyPortfolioCustomRes.data)
-            // console.log("copyPortfolioCustomRes ", x + " : " + copyPortfolioCustomRes);
          }
-         console.log("searchUrl ------- - : ", searchUrl);
+         // console.log("searchUrl ------- - : ", searchUrl);
          const copyPortfolioCustomRes = await copyPortfolioICustomPortfolio(searchUrl);
-         console.log("copyPortfolioCustomRes : ", copyPortfolioCustomRes.data);
-         // setCreatedCustomPortfolio(newCustomItemsId);
-         // setIsCustomPortfolioCreated(true);
-         // localStorage.setItem("createdCustomPortfolioData", copyPortfolioCustomRes.data);
+         // console.log("copyPortfolioCustomRes : ", copyPortfolioCustomRes.data);
          localStorage.setItem("createdCustomPortfolioData", JSON.stringify(copyPortfolioCustomRes.data));
          // localStorage.setItem("solutionValueIs", solutionValue);
          setPortfolioToSolutionProgress(true)
+         let solutionPortfolioDetails = {
+            portfolioId: copyPortfolioCustomRes.data.customPortfolioId,
+            type: "fetch",
+         };
          history.push({
             pathname: CREATED_CUSTOM_PORTFOLIO_DETAILS,
+            state: solutionPortfolioDetails,
             // selectedTemplateItems: createdCustomItems,
             // solutionValueIs: solutionValue,
             // autocreatedcustomPortfolioData: CreatedcustomPortfolioData
