@@ -3478,7 +3478,9 @@ width: 18px;}
 .dateNotEditable .MuiInputBase-input {
   cursor: not-allowed !important;
 }
-
+.MuiButtonBase-root.MuiPickersDay-root.Mui-selected {
+  color: #fff !important
+}
 .customtable-loader{    position: absolute;
   left: 0;
   right: 0;
@@ -3488,4 +3490,4 @@ width: 18px;}
   display: flex;
   justify-content: center;
   align-items: center;}
-
+  
