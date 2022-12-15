@@ -134,6 +134,11 @@ import {
     escalationPriceCreation,
     additionalPriceCreation,
     portfolioPriceCreation,
+    updatePortfolioPrice,
+    updateEscalationPriceById,
+    updateAdditionalPriceById,
+    getPortfolioPriceById,
+    getCustomItemData,
 } from "../../services/index";
 import {
     selectCategoryList,
@@ -219,6 +224,7 @@ export function CreateCustomPortfolio(props) {
 
     const [currentExpendPortfolioItemRow, setCurrentExpendPortfolioItemRow] = useState(null)
 
+    const [itemPriceData, setItemPriceData] = useState({});
 
     const [value1, setValue1] = useState({
         value: "Archived",
@@ -305,6 +311,13 @@ export function CreateCustomPortfolio(props) {
     const [escalationPriceValue, setEscalationPriceValue] = useState()
     const [additionalPriceValue, setAdditionalPriceValue] = useState()
 
+
+    const [pricePriceData, setPricePriceData] = useState("");
+    const [priceCalculatedPrice, setPriceCalculatedPrice] = useState("");
+    const [additionalPriceDataId, setAdditionalPriceDataId] = useState("");
+    const [escalationPriceDataId, setEscalationPriceDataId] = useState("");
+    const [portfolioPriceDataIdForExiting, setPortfolioPriceDataIdForExiting] = useState("");
+
     const [querySearchModelResult, setQuerySearchModelResult] = useState([])
     const [querySearchModelPrefixOption, setQuerySearchModelPrefixOption] = useState([])
     const [selectedPrefixOption, setSelectedPrefixOption] = useState("");
@@ -328,7 +341,7 @@ export function CreateCustomPortfolio(props) {
     );
     const [stratgyOptionalsKeyValue, setStratgyOptionalsKeyValue] = useState([]);
 
-    const [selectedCustomItems, setSelectedCustomItems] = useState([]);
+    // const [selectedCustomItems, setSelectedCustomItems] = useState([]);
     const [createCustomCoverage, setCreateCustomCoverage] = useState([]);
 
     const [masterData, setMasterData] = useState([]);
@@ -342,6 +355,12 @@ export function CreateCustomPortfolio(props) {
 
     const [flagTemplate, setFlagTemplate] = useState(false);
     const [flagCommerce, setFlagCommerce] = useState(false);
+
+    const [selectedSolutionCustomItems, setSelectedSolutionCustomItems] = useState([]);
+    const [selectedSolutionCustomCoverages, setSelectedSolutionCustomCoverages] = useState([]);
+
+    const [selectedSolutionItems, setSelectedSolutionItems] = useState([]);
+    const [editAbleCustomPriceData, setEditAbleCustomPriceData] = useState([]);
 
     const [editAblePriceData, setEditAblePriceData] = useState([]);
 
@@ -379,7 +398,7 @@ export function CreateCustomPortfolio(props) {
         preparedOn: new Date(),
         revisedBy: null,
         revisedOn: new Date(),
-        branch: null,
+        salesOffice: null,
         offerValidity: null,
     });
     const handleOption = (e) => {
@@ -454,7 +473,7 @@ export function CreateCustomPortfolio(props) {
     });
 
     const [portfolioCoverage, setPortfolioCoverage] = useState([]);
-    const [portfolioCustomItems, setPortfolioCustomItems] = useState([]);
+    const [selectedCustomItems, setSelectedCustomItems] = useState([]);
 
     const [addPortFolioItem, setAddportFolioItem] = useState({
         id: 0,
@@ -796,76 +815,140 @@ export function CreateCustomPortfolio(props) {
         }
     };
 
-    const handleBundleItemSaveAndContinue = async () => {
+    const handleBundleItemSaveAndContinue = async (data, itemPriceData) => {
         try {
+
+            // let reqObj = {
+            //     customItemId: 0,
+            //     itemName: "",
+            //     customItemHeaderModel: {
+            //         customItemHeaderId: 0,
+            //         itemHeaderDescription: generalComponentData.description,
+            //         bundleFlag: "PORTFOLIO",
+            //         reference: generalComponentData.externalReference,
+            //         itemHeaderMake: "",
+            //         itemHeaderFamily: "",
+            //         model: "",
+            //         prefix: "",
+            //         type: "MACHINE",
+            //         additional: "",
+            //         currency: "",
+            //         netPrice: 0,
+            //         itemProductHierarchy: generalComponentData.productHierarchy,
+            //         itemHeaderGeographic: generalComponentData.geographic,
+            //         responseTime: generalComponentData.responseTime,
+            //         usage: "",
+            //         validFrom: generalComponentData.validFrom,
+            //         validTo: generalComponentData.validTo,
+            //         estimatedTime: "",
+            //         servicePrice: 0,
+            //         status: "DRAFT",
+            //     },
+            //     customItemBodyModel: {
+            //         customItemBodyId: parseInt(addPortFolioItem.id),
+            //         itemBodyDescription: addPortFolioItem.description,
+            //         quantity: parseInt(addPortFolioItem.quantity),
+            //         startUsage: priceCalculator.startUsage,
+            //         endUsage: priceCalculator.endUsage,
+            //         standardJobId: "",
+            //         frequency: addPortFolioItem.frequency.value,
+            //         additional: "",
+            //         spareParts: ["WITH_SPARE_PARTS"],
+            //         labours: ["WITH_LABOUR"],
+            //         miscellaneous: ["LUBRICANTS"],
+            //         taskType: [addPortFolioItem.taskType.value],
+            //         solutionCode: "",
+            //         usageIn: addPortFolioItem.usageIn.value,
+            //         recommendedValue: 0,
+            //         usage: "",
+            //         repairKitId: "",
+            //         templateDescription: addPortFolioItem.description.value,
+            //         partListId: "",
+            //         serviceEstimateId: "",
+            //         numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
+            //         repairOption: addPortFolioItem.repairOption.value,
+            //         priceMethod: "LIST_PRICE",
+            //         listPrice: parseInt(priceCalculator.listPrice),
+            //         priceEscalation: "",
+            //         calculatedPrice: parseInt(priceCalculator.calculatedPrice),
+            //         flatPrice: parseInt(priceCalculator.flatPrice),
+            //         discountType: "",
+            //         year: priceCalculator.priceYear.value,
+            //         avgUsage: 0,
+            //         unit: addPortFolioItem.unit.value,
+            //         sparePartsPrice: 0,
+            //         sparePartsPriceBreakDownPercentage: 0,
+            //         servicePrice: 0,
+            //         servicePriceBreakDownPercentage: 0,
+            //         miscPrice: 0,
+            //         miscPriceBreakDownPercentage: 0,
+            //         totalPrice: 0,
+            //     },
+            // };
+
             let reqObj = {
                 customItemId: 0,
-                itemName: "",
+                itemName: data.name,
                 customItemHeaderModel: {
                     customItemHeaderId: 0,
-                    // itemHeaderId: parseInt(generalComponentData.portfolioId),
-                    itemHeaderDescription: generalComponentData.description,
+                    itemHeaderDescription: data.headerdescription,
                     bundleFlag: "PORTFOLIO",
+                    portfolioItemId: 0,
                     reference: generalComponentData.externalReference,
-                    itemHeaderMake: "",
-                    itemHeaderFamily: "",
-                    model: "",
-                    prefix: "",
+                    itemHeaderMake: data?.make,
+                    itemHeaderFamily: data?.family,
+                    model: data?.model,
+                    prefix: data?.prefix,
                     type: "MACHINE",
                     additional: "",
                     currency: "",
                     netPrice: 0,
-                    itemProductHierarchy: generalComponentData.productHierarchy,
-                    itemHeaderGeographic: generalComponentData.geographic,
-                    responseTime: generalComponentData.responseTime,
+                    itemProductHierarchy: "END_PRODUCT",
+                    itemHeaderGeographic: "ONSITE",
+                    responseTime: "PROACTIVE",
                     usage: "",
-                    validFrom: generalComponentData.validFrom,
-                    validTo: generalComponentData.validTo,
+                    validFrom: validityData.fromDate,
+                    validTo: validityData.toDate,
                     estimatedTime: "",
                     servicePrice: 0,
                     status: "DRAFT",
+                    componentCode: "",
+                    componentDescription: "",
+                    serialNumber: "",
+                    itemHeaderStrategy: "PREVENTIVE_MAINTENANCE",
+                    variant: "",
+                    itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "Customer Segment",
+                    jobCode: "",
+                    preparedBy: administrative.preparedBy,
+                    approvedBy: administrative.approvedBy,
+                    preparedOn: administrative.preparedOn,
+                    revisedBy: administrative.revisedBy,
+                    revisedOn: administrative.revisedOn,
+                    salesOffice: administrative.salesOffice,
+                    offerValidity: administrative.offerValidity
                 },
                 customItemBodyModel: {
-                    customItemBodyId: parseInt(addPortFolioItem.id),
-                    itemBodyDescription: addPortFolioItem.description,
-                    quantity: parseInt(addPortFolioItem.quantity),
-                    startUsage: priceCalculator.startUsage,
-                    endUsage: priceCalculator.endUsage,
-                    standardJobId: "",
-                    frequency: addPortFolioItem.frequency.value,
-                    additional: "",
-                    spareParts: ["WITH_SPARE_PARTS"],
-                    labours: ["WITH_LABOUR"],
-                    miscellaneous: ["LUBRICANTS"],
-                    taskType: [addPortFolioItem.taskType.value],
+                    customItemBodyId: 0,
+                    itemBodyDescription: data.description,
+                    spareParts: ['WITH_SPARE_PARTS'],
+                    labours: ['WITH_LABOUR'],
+                    miscellaneous: ['LUBRICANTS'],
+                    taskType: data.taskType != "" ? [data.taskType.value] : ["PM1"],
                     solutionCode: "",
-                    usageIn: addPortFolioItem.usageIn.value,
-                    recommendedValue: 0,
+                    usageIn: data.usageIn != "" ? data.usageIn.value : "REPAIR_OR_REPLACE",
                     usage: "",
-                    repairKitId: "",
-                    templateDescription: addPortFolioItem.description.value,
-                    partListId: "",
-                    serviceEstimateId: "",
-                    numberOfEvents: parseInt(addPortFolioItem.strategyEvents),
-                    repairOption: addPortFolioItem.repairOption.value,
-                    priceMethod: "LIST_PRICE",
-                    listPrice: parseInt(priceCalculator.listPrice),
-                    priceEscalation: "",
-                    calculatedPrice: parseInt(priceCalculator.calculatedPrice),
-                    flatPrice: parseInt(priceCalculator.flatPrice),
-                    discountType: "",
-                    year: priceCalculator.priceYear.value,
+                    year: "",
                     avgUsage: 0,
-                    unit: addPortFolioItem.unit.value,
-                    sparePartsPrice: 0,
-                    sparePartsPriceBreakDownPercentage: 0,
-                    servicePrice: 0,
-                    servicePriceBreakDownPercentage: 0,
-                    miscPrice: 0,
-                    miscPriceBreakDownPercentage: 0,
-                    totalPrice: 0,
+                    unit: data.unit != "" ? data.unit?.value : "",
+                    frequency: data.frequency != "" ? data.frequency?.value : "once",
+                    recommendedValue: parseInt(data.recommendedValue),
+                    customItemPrices: [
+                        {
+                            customItemPriceDataId: itemPriceData.customItemId
+                        }
+                    ]
                 },
-            };
+            }
 
             const itemRes = await customitemCreation(reqObj);
             if (itemRes.status !== 200) {
@@ -874,89 +957,160 @@ export function CreateCustomPortfolio(props) {
             // alert("Item created successdully");
             setCurrentItemId(itemRes.data.customItemId);
             const _generalComponentData = { ...generalComponentData };
-            _generalComponentData.items?.push({ customItemId: itemRes.data.customItemId });
+            _generalComponentData.customItems?.push({ customItemId: itemRes.data.customItemId });
             // put API for porfolio update Item id
             // call here
             const { portfolioId, ...res } = generalComponentData;
-            let obj = {
-                ...res,
-                visibleInCommerce: true,
-                customerId: 0,
-                lubricant: true,
-                customerSegment: generalComponentData.customerSegment
-                    ? generalComponentData.customerSegment.value
-                    : "EMPTY",
-                machineType: generalComponentData.machineType
-                    ? generalComponentData.machineType
-                    : "EMPTY",
-                status: generalComponentData.status
-                    ? generalComponentData.status
-                    : "EMPTY",
-                strategyTask: generalComponentData.strategyTask
-                    ? generalComponentData.strategyTask
-                    : "EMPTY",
-                taskType: generalComponentData.taskType
-                    ? generalComponentData.taskType
-                    : "EMPTY",
-                usageCategory: generalComponentData.usageCategory
-                    ? generalComponentData.usageCategory
-                    : "EMPTY",
-                productHierarchy: generalComponentData.productHierarchy
-                    ? generalComponentData.productHierarchy
-                    : "EMPTY",
-                geographic: generalComponentData.geographic
-                    ? generalComponentData.geographic
-                    : "EMPTY",
-                availability: generalComponentData.availability
-                    ? generalComponentData.availability
-                    : "EMPTY",
-                responseTime: generalComponentData.responseTime
-                    ? generalComponentData.responseTime
-                    : "EMPTY",
-                type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                application: generalComponentData.application
-                    ? generalComponentData.application
-                    : "EMPTY",
-                contractOrSupport: generalComponentData.contractOrSupport
-                    ? generalComponentData.contractOrSupport
-                    : "EMPTY",
-                lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                    ? generalComponentData.lifeStageOfMachine
-                    : "EMPTY",
-                supportLevel: generalComponentData.supportLevel
-                    ? generalComponentData.supportLevel
-                    : "EMPTY",
-                customerGroup: generalComponentData.customerGroup
-                    ? generalComponentData.customerGroup
-                    : "EMPTY",
-                searchTerm: "EMPTY",
-                // supportLevel: "PREMIUM",
-                supportLevel: value3.value,
-                // portfolioPrice: {},
-                // additionalPrice: {},
-                // escalationPrice: {},
-                coverages: generalComponentData.coverages
-                    ? generalComponentData.coverages
-                    : [],
-                items: _generalComponentData.items,
-                usageCategory: categoryUsageKeyValue1.value,
-                taskType: stratgyTaskTypeKeyValue.value,
-                strategyTask: stratgyTaskUsageKeyValue.value,
-                responseTime: stratgyResponseTimeKeyValue.value,
-                productHierarchy: stratgyHierarchyKeyValue.value,
-                geographic: stratgyGeographicKeyValue.value,
+
+
+            // let obj = {
+            //     ...res,
+            //     visibleInCommerce: true,
+            //     customerId: 0,
+            //     lubricant: true,
+            //     customerSegment: generalComponentData.customerSegment
+            //         ? generalComponentData.customerSegment.value
+            //         : "EMPTY",
+            //     machineType: generalComponentData.machineType
+            //         ? generalComponentData.machineType
+            //         : "EMPTY",
+            //     status: generalComponentData.status
+            //         ? generalComponentData.status
+            //         : "EMPTY",
+            //     strategyTask: generalComponentData.strategyTask
+            //         ? generalComponentData.strategyTask
+            //         : "EMPTY",
+            //     taskType: generalComponentData.taskType
+            //         ? generalComponentData.taskType
+            //         : "EMPTY",
+            //     usageCategory: generalComponentData.usageCategory
+            //         ? generalComponentData.usageCategory
+            //         : "EMPTY",
+            //     productHierarchy: generalComponentData.productHierarchy
+            //         ? generalComponentData.productHierarchy
+            //         : "EMPTY",
+            //     geographic: generalComponentData.geographic
+            //         ? generalComponentData.geographic
+            //         : "EMPTY",
+            //     availability: generalComponentData.availability
+            //         ? generalComponentData.availability
+            //         : "EMPTY",
+            //     responseTime: generalComponentData.responseTime
+            //         ? generalComponentData.responseTime
+            //         : "EMPTY",
+            //     type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+            //     application: generalComponentData.application
+            //         ? generalComponentData.application
+            //         : "EMPTY",
+            //     contractOrSupport: generalComponentData.contractOrSupport
+            //         ? generalComponentData.contractOrSupport
+            //         : "EMPTY",
+            //     lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+            //         ? generalComponentData.lifeStageOfMachine
+            //         : "EMPTY",
+            //     supportLevel: generalComponentData.supportLevel
+            //         ? generalComponentData.supportLevel
+            //         : "EMPTY",
+            //     customerGroup: generalComponentData.customerGroup
+            //         ? generalComponentData.customerGroup
+            //         : "EMPTY",
+            //     searchTerm: "EMPTY",
+            //     // supportLevel: "PREMIUM",
+            //     supportLevel: value3.value,
+            //     // portfolioPrice: {},
+            //     // additionalPrice: {},
+            //     // escalationPrice: {},
+            //     coverages: generalComponentData.coverages
+            //         ? generalComponentData.coverages
+            //         : [],
+            //     items: _generalComponentData.items,
+            //     usageCategory: categoryUsageKeyValue1.value,
+            //     taskType: stratgyTaskTypeKeyValue.value,
+            //     strategyTask: stratgyTaskUsageKeyValue.value,
+            //     responseTime: stratgyResponseTimeKeyValue.value,
+            //     productHierarchy: stratgyHierarchyKeyValue.value,
+            //     geographic: stratgyGeographicKeyValue.value,
+            //     preparedBy: administrative.preparedBy,
+            //     approvedBy: administrative.approvedBy,
+            //     preparedOn: administrative.preparedOn,
+            //     revisedBy: administrative.revisedBy,
+            //     revisedOn: administrative.revisedOn,
+            //     salesOffice: administrative.salesOffice,
+            //     offerValidity: administrative.offerValidity
+            // };
+
+            let reqData = {
+                name: generalComponentData.name,
+                description: generalComponentData.description,
+                externalReference: generalComponentData.externalReference,
+                customerSegment: generalComponentData?.customerSegment?.value,
+                template: flagTemplate,
+                visibleInCommerce: flagCommerce,
+
+                validFrom: validityData.fromDate,
+                validTo: validityData.toDate,
+
+
+                responseTime: stratgyResponseTimeKeyValue?.value ?
+                    stratgyResponseTimeKeyValue?.value : "PROACTIVE",
+                productHierarchy: stratgyHierarchyKeyValue?.value ?
+                    stratgyHierarchyKeyValue?.value : "END_PRODUCT",
+                geographic: stratgyGeographicKeyValue?.value ?
+                    stratgyGeographicKeyValue?.value : "ONSITE",
+                solutionType: solutionTypeListKeyValue?.value ?
+                    solutionTypeListKeyValue?.value : "CONTRACT",
+                solutionLevel: solutionLevelListKeyValue?.value ?
+                    solutionLevelListKeyValue?.value : "LEVEL_I",
+
                 preparedBy: administrative.preparedBy,
                 approvedBy: administrative.approvedBy,
                 preparedOn: administrative.preparedOn,
                 revisedBy: administrative.revisedBy,
                 revisedOn: administrative.revisedOn,
-                salesOffice: administrative.branch,
-                offerValidity: administrative.offerValidity
+                salesOffice: administrative.salesOffice,
+                offerValidity: administrative.offerValidity,
+
+                portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+                    ? portfolioPriceDataId : null,
+                additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+                    ? portfolioAdditionalPriceDataId : null,
+                escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+                    ? portfolioEscalationPriceDataId : null,
+
+
+                supportLevel: value3.value,
+                status: value2.value,
+
+                machineType: "NEW",
+                searchTerm: "",
+                lubricant: true,
+                customerId: 0,
+                customerGroup: "",
+                strategyTask: "PREVENTIVE_MAINTENANCE",
+                taskType: "PM1",
+                usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+                availability: "AVAILABILITY_GREATER_95",
+                type: "MACHINE",
+                application: "HILL",
+                contractOrSupport: "LEVEL_I",
+                lifeStageOfMachine: "NEW_BREAKIN",
+                numberOfEvents: 0,
+                rating: "",
+                startUsage: 0,
+                endUsage: 0,
+                unit: "HOURS",
+                additionals: "",
+
+                customItems: _generalComponentData.customItems,
+                customCoverages: selectedSolutionCustomCoverages,
+
             };
-            if (generalComponentData.portfolioId) {
+            // if (generalComponentData.portfolioId) {
+            if (portfolioId != "") {
                 const updatePortfolioRes = await updateCustomPortfolio(
-                    generalComponentData.portfolioId,
-                    obj
+                    // generalComponentData.portfolioId,
+                    portfolioId,
+                    reqData
                 );
                 if (updatePortfolioRes.status != 200) {
                     throw `${updatePortfolioRes.status}:Something went wrong`;
@@ -1496,9 +1650,26 @@ export function CreateCustomPortfolio(props) {
         setOpenAddBundleItemHeader("Add New Portfolio Item");
     };
 
-    const handleServiceItemEdit = (e, row) => {
-        setEditItemShow(true);
-        setPassItemEditRowData({ ...row, _itemId: row.customtemId });
+    const handleServiceItemEdit = async (e, row) => {
+
+        console.log("row ------ : ", row);
+        const editAbleRow = await getCustomItemData(row.customItemId);
+        if (editAbleRow.status === 200) {
+            setEditItemShow(true);
+            setPassItemEditRowData({ ...editAbleRow.data, _itemId: editAbleRow.data.customItemId });
+        } else {
+            toast("😐" + "Something went wrong!", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+        }
+        // setEditItemShow(true);
+        // setPassItemEditRowData({ ...row, _itemId: row.customtemId });
     };
     const handleServiceItemDelete = async (e, row) => {
         // try {
@@ -1685,13 +1856,13 @@ export function CreateCustomPortfolio(props) {
                     generalComponentData.name == null ||
                     generalComponentData.externalReference === "" ||
                     generalComponentData.externalReference === null
-                    // ||
-                    // prefilgabelGeneral === ""
                 ) {
                     throw "Please fill required field properly";
                 }
 
                 if (state && state.type === "new") {
+
+                    // Old Todo
                     let reqData = {
                         type: prefilgabelGeneral,
                         name: generalComponentData.name,
@@ -1713,11 +1884,77 @@ export function CreateCustomPortfolio(props) {
                         contractOrSupport: "LEVEL_I",
                         lifeStageOfMachine: "NEW_BREAKIN",
                         supportLevel: value3.value,
+                        status: value2.value,
                         serviceProgramDescription: "SERVICE_PROGRAM_DESCRIPTION",
 
                         template: flagTemplate,
                         visibleInCommerce: flagCommerce,
                     };
+
+                    // New Todo
+                    // let reqData = {
+                    //     name: generalComponentData.name,
+                    //     description: generalComponentData.description,
+                    //     externalReference: generalComponentData.externalReference,
+                    //     customerSegment: generalComponentData?.customerSegment?.value,
+                    //     template: flagTemplate,
+                    //     visibleInCommerce: flagCommerce,
+
+                    //     validFrom: validityData.fromDate,
+                    //     validTo: validityData.toDate,
+
+
+                    //     responseTime: stratgyResponseTimeKeyValue?.value ?
+                    //         stratgyResponseTimeKeyValue?.value : "PROACTIVE",
+                    //     productHierarchy: stratgyHierarchyKeyValue?.value ?
+                    //         stratgyHierarchyKeyValue?.value : "END_PRODUCT",
+                    //     geographic: stratgyGeographicKeyValue?.value ?
+                    //         stratgyGeographicKeyValue?.value : "ONSITE",
+                    //     solutionType: solutionTypeListKeyValue?.value ?
+                    //         solutionTypeListKeyValue?.value : "CONTRACT",
+                    //     solutionLevel: solutionLevelListKeyValue?.value ?
+                    //         solutionLevelListKeyValue?.value : "LEVEL_I",
+
+                    //     preparedBy: administrative.preparedBy,
+                    //     approvedBy: administrative.approvedBy,
+                    //     preparedOn: administrative.preparedOn,
+                    //     revisedBy: administrative.revisedBy,
+                    //     revisedOn: administrative.revisedOn,
+                    //     salesOffice: administrative.salesOffice,
+                    //     offerValidity: administrative.offerValidity,
+
+                    //     portfolioPrice: portfolioPriceDataId,
+                    //     additionalPrice: portfolioAdditionalPriceDataId,
+                    //     escalationPrice: portfolioEscalationPriceDataId,
+
+
+                    //     supportLevel: value3.value,
+                    //     status: value2.value,
+
+                    //     machineType: "NEW",
+                    //     searchTerm: "",
+                    //     lubricant: true,
+                    //     customerId: 0,
+                    //     customerGroup: "",
+                    //     strategyTask: "PREVENTIVE_MAINTENANCE",
+                    //     taskType: "PM1",
+                    //     usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+                    //     availability: "AVAILABILITY_GREATER_95",
+                    //     type: "MACHINE",
+                    //     application: "HILL",
+                    //     contractOrSupport: "LEVEL_I",
+                    //     lifeStageOfMachine: "NEW_BREAKIN",
+                    //     numberOfEvents: 0,
+                    //     rating: "",
+                    //     startUsage: 0,
+                    //     endUsage: 0,
+                    //     unit: "HOURS",
+                    //     additionals: "",
+
+                    //     customItems: selectedSolutionCustomItems,
+                    //     customCoverages: selectedSolutionCustomCoverages,
+
+                    // };
                     const portfolioRes = await createCustomPortfolio(reqData);
                     if (portfolioRes.status === 200) {
                         toast("👏 Portfolio Created", {
@@ -1740,83 +1977,153 @@ export function CreateCustomPortfolio(props) {
                         throw `${portfolioRes.status}:error in portfolio creation`;
                     }
                 } else {
+                    // Old Todo
+                    // let reqObj = {
+                    //     customPortfolioId: portfolioId,
+                    //     name: generalComponentData.name,
+                    //     description: generalComponentData.description,
+                    //     externalReference: generalComponentData.externalReference,
+                    //     customerSegment: generalComponentData.customerSegment?.value,
+                    //     template: flagTemplate,
+                    //     visibleInCommerce: flagCommerce,
+
+                    //     validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                    //     validTo: validityData.fromDate.toISOString().substring(0, 10),
+
+                    //     responseTime: stratgyResponseTimeKeyValue.value
+                    //         ? stratgyResponseTimeKeyValue.value : "EMPTY",
+                    //     productHierarchy: stratgyHierarchyKeyValue.value ?
+                    //         stratgyHierarchyKeyValue.value : "EMPTY",
+                    //     geographic: stratgyGeographicKeyValue.value ?
+                    //         stratgyGeographicKeyValue.value : "EMPTY",
+                    //     solutionType: solutionTypeListKeyValue.value ?
+                    //         solutionTypeListKeyValue.value : "EMPTY",
+                    //     solutionLevel: solutionLevelListKeyValue.value ?
+                    //         solutionLevelListKeyValue.value : "EMPTY",
+
+                    //     preparedBy: administrative.preparedBy,
+                    //     approvedBy: administrative.approvedBy,
+                    //     preparedOn: administrative.preparedOn,
+                    //     revisedBy: administrative.revisedBy,
+                    //     revisedOn: administrative.revisedOn,
+                    //     offerValidity: administrative.offerValidity,
+                    //     salesOffice: administrative.salesOffice,
+
+                    //     machineType: "NEW",
+                    //     searchTerm: "EMPTY",
+                    //     lubricant: false,
+                    //     customerId: 0,
+                    //     customerGroup: generalComponentData?.customerGroup
+                    //         ? generalComponentData?.customerGroup
+                    //         : "EMPTY",
+                    //     status: generalComponentData?.status
+                    //         ? generalComponentData?.status
+                    //         : "EMPTY",
+                    //     strategyTask: stratgyTaskUsageKeyValue.value
+                    //         ? stratgyTaskUsageKeyValue.value : "EMPTY",
+                    //     taskType: stratgyTaskTypeKeyValue.value
+                    //         ? stratgyTaskTypeKeyValue.value : "EMPTY",
+                    //     usageCategory: categoryUsageKeyValue1.value
+                    //         ? categoryUsageKeyValue1.value : "EMPTY",
+                    //     availability: generalComponentData?.availability
+                    //         ? generalComponentData?.availability
+                    //         : "EMPTY",
+                    //     type: "MACHINE",
+                    //     application: generalComponentData?.application
+                    //         ? generalComponentData?.application
+                    //         : "EMPTY",
+                    //     contractOrSupport: generalComponentData?.contractOrSupport
+                    //         ? generalComponentData?.contractOrSupport
+                    //         : "EMPTY",
+                    //     lifeStageOfMachine: "NEW_BREAKIN",
+                    //     // supportLevel: "PREMIUM",
+                    //     supportLevel: value3.value,
+                    //     numberOfEvents: 0,
+                    //     itemRelations: [],
+                    //     rating: "string",
+                    //     startUsage: 0,
+                    //     endUsage: 0,
+                    //     unit: "HOURS",
+                    //     additionals: "string",
+                    //     customItems: selectedCustomItems.length > 0
+                    //         ? selectedCustomItems : [],
+                    //     customCoverages: selectedCustomItems.length > 0
+                    //         ? selectedCustomItems : [],
+                    //     // portfolioPrice: null,
+                    //     // additionalPrice: null,
+                    //     // escalationPrice: null,
+                    //     saveState: false,
+                    //     userId: null,
+                    // }
+
+                    // New Todo
+                    // New Todo
                     let reqObj = {
                         customPortfolioId: portfolioId,
                         name: generalComponentData.name,
                         description: generalComponentData.description,
                         externalReference: generalComponentData.externalReference,
-                        customerSegment: generalComponentData.customerSegment?.value,
+                        customerSegment: generalComponentData?.customerSegment?.value,
                         template: flagTemplate,
                         visibleInCommerce: flagCommerce,
 
-                        validFrom: validityData.fromDate.toISOString().substring(0, 10),
-                        validTo: validityData.fromDate.toISOString().substring(0, 10),
+                        validFrom: validityData.fromDate,
+                        validTo: validityData.toDate,
 
-                        responseTime: stratgyResponseTimeKeyValue.value
-                            ? stratgyResponseTimeKeyValue.value : "EMPTY",
-                        productHierarchy: stratgyHierarchyKeyValue.value ?
-                            stratgyHierarchyKeyValue.value : "EMPTY",
-                        geographic: stratgyGeographicKeyValue.value ?
-                            stratgyGeographicKeyValue.value : "EMPTY",
-                        solutionType: solutionTypeListKeyValue.value ?
-                            solutionTypeListKeyValue.value : "EMPTY",
-                        solutionLevel: solutionLevelListKeyValue.value ?
-                            solutionLevelListKeyValue.value : "EMPTY",
+
+                        responseTime: stratgyResponseTimeKeyValue?.value ?
+                            stratgyResponseTimeKeyValue?.value : "PROACTIVE",
+                        productHierarchy: stratgyHierarchyKeyValue?.value ?
+                            stratgyHierarchyKeyValue?.value : "END_PRODUCT",
+                        geographic: stratgyGeographicKeyValue?.value ?
+                            stratgyGeographicKeyValue?.value : "ONSITE",
+                        solutionType: solutionTypeListKeyValue?.value ?
+                            solutionTypeListKeyValue?.value : "CONTRACT",
+                        solutionLevel: solutionLevelListKeyValue?.value ?
+                            solutionLevelListKeyValue?.value : "LEVEL_I",
 
                         preparedBy: administrative.preparedBy,
                         approvedBy: administrative.approvedBy,
                         preparedOn: administrative.preparedOn,
                         revisedBy: administrative.revisedBy,
                         revisedOn: administrative.revisedOn,
-                        offerValidity: administrative.offerValidity,
                         salesOffice: administrative.salesOffice,
+                        offerValidity: administrative.offerValidity,
+
+                        portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+                            ? portfolioPriceDataId : null,
+                        additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+                            ? portfolioAdditionalPriceDataId : null,
+                        escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+                            ? portfolioEscalationPriceDataId : null,
+
+                        supportLevel: value3.value,
+                        status: value2.value,
 
                         machineType: "NEW",
-                        searchTerm: "EMPTY",
-                        lubricant: false,
+                        searchTerm: "",
+                        lubricant: true,
                         customerId: 0,
-                        customerGroup: generalComponentData?.customerGroup
-                            ? generalComponentData?.customerGroup
-                            : "EMPTY",
-                        status: generalComponentData?.status
-                            ? generalComponentData?.status
-                            : "EMPTY",
-                        strategyTask: stratgyTaskUsageKeyValue.value
-                            ? stratgyTaskUsageKeyValue.value : "EMPTY",
-                        taskType: stratgyTaskTypeKeyValue.value
-                            ? stratgyTaskTypeKeyValue.value : "EMPTY",
-                        usageCategory: categoryUsageKeyValue1.value
-                            ? categoryUsageKeyValue1.value : "EMPTY",
-                        availability: generalComponentData?.availability
-                            ? generalComponentData?.availability
-                            : "EMPTY",
+                        customerGroup: "",
+                        strategyTask: "PREVENTIVE_MAINTENANCE",
+                        taskType: "PM1",
+                        usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+                        availability: "AVAILABILITY_GREATER_95",
                         type: "MACHINE",
-                        application: generalComponentData?.application
-                            ? generalComponentData?.application
-                            : "EMPTY",
-                        contractOrSupport: generalComponentData?.contractOrSupport
-                            ? generalComponentData?.contractOrSupport
-                            : "EMPTY",
+                        application: "HILL",
+                        contractOrSupport: "LEVEL_I",
                         lifeStageOfMachine: "NEW_BREAKIN",
-                        // supportLevel: "PREMIUM",
-                        supportLevel: value3.value,
                         numberOfEvents: 0,
-                        itemRelations: [],
-                        rating: "string",
+                        rating: "",
                         startUsage: 0,
                         endUsage: 0,
                         unit: "HOURS",
-                        additionals: "string",
-                        customItems: portfolioCustomItems.length > 0
-                            ? portfolioCustomItems : [],
-                        customCoverages: selectedCustomItems.length > 0
-                            ? selectedCustomItems : [],
-                        // portfolioPrice: null,
-                        // additionalPrice: null,
-                        // escalationPrice: null,
-                        saveState: false,
-                        userId: null,
-                    }
+                        additionals: "",
+
+                        customItems: selectedSolutionCustomItems,
+                        customCoverages: selectedSolutionCustomCoverages,
+
+                    };
                     const exitsPortfolioUpdate = await updateCustomPortfolio(
                         portfolioId,
                         reqObj
@@ -1831,7 +2138,6 @@ export function CreateCustomPortfolio(props) {
                             draggable: true,
                             progress: undefined,
                         });
-                        // setValue("administrative");
                         setValue("validity");
                         setViewOnlyTab({ ...viewOnlyTab, generalViewOnly: true });
                     } else {
@@ -1840,37 +2146,38 @@ export function CreateCustomPortfolio(props) {
                 }
             } else if (e.target.id == "validity") {
                 let reqData;
-                if (
-                    validityData.fromInput &&
-                    validityData.toInput &&
-                    validityData.inputFlag
-                ) {
-                    reqData = {
-                        validFrom: validityData.fromInput + validityData.from,
-                        validTo: validityData.toInput + validityData.from,
-                    };
-                } else if (
-                    validityData.fromDate &&
-                    validityData.toDate &&
-                    validityData.dateFlag
-                ) {
-                    reqData = {
-                        validFrom: validityData.fromDate.toISOString().substring(0, 10),
-                        validTo: validityData.toDate.toISOString().substring(0, 10),
-                    };
-                } else {
-                    throw "Please fill date fields";
+                if (!viewOnlyTab.validityViewOnly) {
+                    if (
+                        validityData.fromInput &&
+                        validityData.toInput &&
+                        validityData.inputFlag
+                    ) {
+                        reqData = {
+                            validFrom: validityData.fromInput + validityData.from,
+                            validTo: validityData.toInput + validityData.from,
+                        };
+                    } else if (
+                        validityData.fromDate &&
+                        validityData.toDate &&
+                        validityData.dateFlag
+                    ) {
+                        reqData = {
+                            validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                            validTo: validityData.toDate.toISOString().substring(0, 10),
+                        };
+                    } else {
+                        throw "Please fill date fields";
+                    }
                 }
+
                 setValue("strategy");
+                setViewOnlyTab({ ...viewOnlyTab, validityViewOnly: true });
                 setGeneralComponentData({
                     ...generalComponentData,
                     ...reqData,
                 });
             } else if (e.target.id == "strategy") {
-                console.log(
-                    categoryUsageKeyValue1.value,
-                    stratgyTaskUsageKeyValue.value
-                );
+
                 // if (
                 //     categoryUsageKeyValue1.value == "" ||
                 //     stratgyTaskUsageKeyValue.value == "" ||
@@ -1879,6 +2186,7 @@ export function CreateCustomPortfolio(props) {
                 // ) {
                 //     throw "Please fill manditory fields properly";
                 // }
+
                 if (state && state.type === "new") {
                     setGeneralComponentData({
                         ...generalComponentData,
@@ -1894,99 +2202,171 @@ export function CreateCustomPortfolio(props) {
                     });
 
                     const { portfolioId, ...res } = generalComponentData;
-                    let obj = {
-                        ...res,
-                        visibleInCommerce: true,
-                        customerId: 0,
-                        lubricant: true,
-                        customerSegment: generalComponentData.customerSegment.value
-                            ? generalComponentData.customerSegment.value
-                            : "EMPTY",
-                        // machineType: generalComponentData.machineType
-                        //     ? generalComponentData.machineType
-                        //     : "EMPTY",
-                        status: generalComponentData.status
-                            ? generalComponentData.status
-                            : "EMPTY",
-                        strategyTask: generalComponentData.strategyTask
-                            ? generalComponentData.strategyTask
-                            : "EMPTY",
-                        taskType: generalComponentData.taskType
-                            ? generalComponentData.taskType
-                            : "EMPTY",
-                        usageCategory: generalComponentData.usageCategory
-                            ? generalComponentData.usageCategory
-                            : "EMPTY",
-                        productHierarchy: generalComponentData.productHierarchy
-                            ? generalComponentData.productHierarchy
-                            : "EMPTY",
-                        geographic: generalComponentData.geographic
-                            ? generalComponentData.geographic
-                            : "EMPTY",
-                        availability: generalComponentData.availability
-                            ? generalComponentData.availability
-                            : "EMPTY",
-                        responseTime: generalComponentData.responseTime
-                            ? generalComponentData.responseTime
-                            : "EMPTY",
-                        type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                        application: generalComponentData.application
-                            ? generalComponentData.application
-                            : "EMPTY",
-                        contractOrSupport: generalComponentData.contractOrSupport
-                            ? generalComponentData.contractOrSupport
-                            : "EMPTY",
-                        // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                        //     ? generalComponentData.lifeStageOfMachine
-                        //     : "EMPTY",
-                        machineType: machineTypeKeyValue.value,
-                        lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                        supportLevel: generalComponentData.supportLevel
-                            ? generalComponentData.supportLevel
-                            : "EMPTY",
-                        items: [],
-                        customItems: [],
-                        customCoverages: [],
-                        customerGroup: generalComponentData.customerGroup
-                            ? generalComponentData.customerGroup
-                            : "EMPTY",
-                        searchTerm: "EMPTY",
-                        // supportLevel: "PREMIUM",
-                        supportLevel: value3.value,
-                        // portfolioPrice: { "portfolioPriceId": 92 },
-                        // additionalPrice: { "additionalPriceId": 1 },
-                        // escalationPrice: { "escalationPriceId": 1 },
+                    // Old Todo
+                    // let reqData = {
+                    //     ...res,
+                    //     visibleInCommerce: true,
+                    //     customerId: 0,
+                    //     lubricant: true,
+                    //     customerSegment: generalComponentData.customerSegment.value
+                    //         ? generalComponentData.customerSegment.value
+                    //         : "EMPTY",
+                    //     // machineType: generalComponentData.machineType
+                    //     //     ? generalComponentData.machineType
+                    //     //     : "EMPTY",
+                    //     status: generalComponentData.status
+                    //         ? generalComponentData.status
+                    //         : "EMPTY",
+                    //     strategyTask: generalComponentData.strategyTask
+                    //         ? generalComponentData.strategyTask
+                    //         : "EMPTY",
+                    //     taskType: generalComponentData.taskType
+                    //         ? generalComponentData.taskType
+                    //         : "EMPTY",
+                    //     usageCategory: generalComponentData.usageCategory
+                    //         ? generalComponentData.usageCategory
+                    //         : "EMPTY",
+                    //     productHierarchy: generalComponentData.productHierarchy
+                    //         ? generalComponentData.productHierarchy
+                    //         : "EMPTY",
+                    //     geographic: generalComponentData.geographic
+                    //         ? generalComponentData.geographic
+                    //         : "EMPTY",
+                    //     availability: generalComponentData.availability
+                    //         ? generalComponentData.availability
+                    //         : "EMPTY",
+                    //     responseTime: generalComponentData.responseTime
+                    //         ? generalComponentData.responseTime
+                    //         : "EMPTY",
+                    //     type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                    //     application: generalComponentData.application
+                    //         ? generalComponentData.application
+                    //         : "EMPTY",
+                    //     contractOrSupport: generalComponentData.contractOrSupport
+                    //         ? generalComponentData.contractOrSupport
+                    //         : "EMPTY",
+                    //     // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                    //     //     ? generalComponentData.lifeStageOfMachine
+                    //     //     : "EMPTY",
+                    //     machineType: machineTypeKeyValue.value,
+                    //     lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                    //     supportLevel: generalComponentData.supportLevel
+                    //         ? generalComponentData.supportLevel
+                    //         : "EMPTY",
+                    //     items: [],
+                    //     customItems: [],
+                    //     customCoverages: [],
+                    //     customerGroup: generalComponentData.customerGroup
+                    //         ? generalComponentData.customerGroup
+                    //         : "EMPTY",
+                    //     searchTerm: "EMPTY",
+                    //     // supportLevel: "PREMIUM",
+                    //     supportLevel: value3.value,
+                    //     // portfolioPrice: { "portfolioPriceId": 92 },
+                    //     // additionalPrice: { "additionalPriceId": 1 },
+                    //     // escalationPrice: { "escalationPriceId": 1 },
 
-                        usageCategory: categoryUsageKeyValue1.value,
-                        taskType: stratgyTaskTypeKeyValue.value,
-                        strategyTask: stratgyTaskUsageKeyValue.value,
-                        responseTime: stratgyResponseTimeKeyValue.value,
-                        productHierarchy: stratgyHierarchyKeyValue.value,
-                        geographic: stratgyGeographicKeyValue.value,
-                        numberOfEvents: 0,
-                        rating: "",
-                        startUsage: "",
-                        endUsage: "",
-                        unit: "HOURS",
-                        additionals: "",
-                        solutionType: solutionTypeListKeyValue.value ?
-                            solutionTypeListKeyValue.value : "EMPTY",
-                        solutionLevel: solutionLevelListKeyValue.value ?
-                            solutionLevelListKeyValue.value : "EMPTY",
+                    //     usageCategory: categoryUsageKeyValue1.value,
+                    //     taskType: stratgyTaskTypeKeyValue.value,
+                    //     strategyTask: stratgyTaskUsageKeyValue.value,
+                    //     responseTime: stratgyResponseTimeKeyValue.value,
+                    //     productHierarchy: stratgyHierarchyKeyValue.value,
+                    //     geographic: stratgyGeographicKeyValue.value,
+                    //     numberOfEvents: 0,
+                    //     rating: "",
+                    //     startUsage: "",
+                    //     endUsage: "",
+                    //     unit: "HOURS",
+                    //     additionals: "",
+                    //     solutionType: solutionTypeListKeyValue.value ?
+                    //         solutionTypeListKeyValue.value : "EMPTY",
+                    //     solutionLevel: solutionLevelListKeyValue.value ?
+                    //         solutionLevelListKeyValue.value : "EMPTY",
+                    //     preparedBy: administrative.preparedBy,
+                    //     approvedBy: administrative.approvedBy,
+                    //     preparedOn: administrative.preparedOn,
+                    //     revisedBy: administrative.revisedBy,
+                    //     revisedOn: administrative.revisedOn,
+                    //     salesOffice: administrative.salesOffice,
+                    //     offerValidity: administrative.offerValidity,
+
+                    //     template: flagTemplate,
+                    //     visibleInCommerce: flagCommerce,
+                    // };
+
+
+                    // New Todo
+                    let reqData = {
+                        name: generalComponentData.name,
+                        description: generalComponentData.description,
+                        externalReference: generalComponentData.externalReference,
+                        customerSegment: generalComponentData?.customerSegment?.value,
+                        template: flagTemplate,
+                        visibleInCommerce: flagCommerce,
+
+                        validFrom: validityData.fromDate,
+                        validTo: validityData.toDate,
+
+
+                        responseTime: stratgyResponseTimeKeyValue?.value ?
+                            stratgyResponseTimeKeyValue?.value : "PROACTIVE",
+                        productHierarchy: stratgyHierarchyKeyValue?.value ?
+                            stratgyHierarchyKeyValue?.value : "END_PRODUCT",
+                        geographic: stratgyGeographicKeyValue?.value ?
+                            stratgyGeographicKeyValue?.value : "ONSITE",
+                        solutionType: solutionTypeListKeyValue?.value ?
+                            solutionTypeListKeyValue?.value : "CONTRACT",
+                        solutionLevel: solutionLevelListKeyValue?.value ?
+                            solutionLevelListKeyValue?.value : "LEVEL_I",
+
                         preparedBy: administrative.preparedBy,
                         approvedBy: administrative.approvedBy,
                         preparedOn: administrative.preparedOn,
                         revisedBy: administrative.revisedBy,
                         revisedOn: administrative.revisedOn,
-                        salesOffice: administrative.branch,
+                        salesOffice: administrative.salesOffice,
                         offerValidity: administrative.offerValidity,
 
-                        template: flagTemplate,
-                        visibleInCommerce: flagCommerce,
+                        portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+                            ? portfolioPriceDataId : null,
+                        additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+                            ? portfolioAdditionalPriceDataId : null,
+                        escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+                            ? portfolioEscalationPriceDataId : null,
+
+
+                        supportLevel: value3.value,
+                        status: value2.value,
+
+                        machineType: "NEW",
+                        searchTerm: "",
+                        lubricant: true,
+                        customerId: 0,
+                        customerGroup: "",
+                        strategyTask: "PREVENTIVE_MAINTENANCE",
+                        taskType: "PM1",
+                        usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+                        availability: "AVAILABILITY_GREATER_95",
+                        type: "MACHINE",
+                        application: "HILL",
+                        contractOrSupport: "LEVEL_I",
+                        lifeStageOfMachine: "NEW_BREAKIN",
+                        numberOfEvents: 0,
+                        rating: "",
+                        startUsage: 0,
+                        endUsage: 0,
+                        unit: "HOURS",
+                        additionals: "",
+
+                        customItems: selectedSolutionCustomItems,
+                        customCoverages: selectedSolutionCustomCoverages,
+
                     };
+
                     const strategyRes = await updateCustomPortfolio(
-                        generalComponentData.portfolioId,
-                        obj
+                        // generalComponentData.portfolioId,
+                        portfolioId,
+                        reqData
                     );
                     if (strategyRes.status === 200) {
                         toast("👏 Portfolio updated", {
@@ -2005,83 +2385,154 @@ export function CreateCustomPortfolio(props) {
                         throw `${strategyRes.status}:error in update portfolio`;
                     }
                 } else {
+                    // Old Todo
+                    // let reqObj = {
+                    //     customPortfolioId: portfolioId,
+                    //     name: generalComponentData.name,
+                    //     description: generalComponentData.description,
+                    //     externalReference: generalComponentData.externalReference,
+                    //     customerSegment: generalComponentData.customerSegment?.value,
+                    //     template: flagTemplate,
+                    //     visibleInCommerce: flagCommerce,
+
+                    //     validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                    //     validTo: validityData.fromDate.toISOString().substring(0, 10),
+
+                    //     responseTime: stratgyResponseTimeKeyValue.value
+                    //         ? stratgyResponseTimeKeyValue.value : "EMPTY",
+                    //     productHierarchy: stratgyHierarchyKeyValue.value ?
+                    //         stratgyHierarchyKeyValue.value : "EMPTY",
+                    //     geographic: stratgyGeographicKeyValue.value ?
+                    //         stratgyGeographicKeyValue.value : "EMPTY",
+                    //     solutionType: solutionTypeListKeyValue.value ?
+                    //         solutionTypeListKeyValue.value : "EMPTY",
+                    //     solutionLevel: solutionLevelListKeyValue.value ?
+                    //         solutionLevelListKeyValue.value : "EMPTY",
+
+                    //     preparedBy: administrative.preparedBy,
+                    //     approvedBy: administrative.approvedBy,
+                    //     preparedOn: administrative.preparedOn,
+                    //     revisedBy: administrative.revisedBy,
+                    //     revisedOn: administrative.revisedOn,
+                    //     offerValidity: administrative.offerValidity,
+                    //     salesOffice: administrative.salesOffice,
+
+                    //     machineType: "NEW",
+                    //     searchTerm: "EMPTY",
+                    //     lubricant: false,
+                    //     customerId: 0,
+                    //     customerGroup: generalComponentData?.customerGroup
+                    //         ? generalComponentData?.customerGroup
+                    //         : "EMPTY",
+                    //     status: generalComponentData?.status
+                    //         ? generalComponentData?.status
+                    //         : "EMPTY",
+                    //     strategyTask: stratgyTaskUsageKeyValue.value
+                    //         ? stratgyTaskUsageKeyValue.value : "EMPTY",
+                    //     taskType: stratgyTaskTypeKeyValue.value
+                    //         ? stratgyTaskTypeKeyValue.value : "EMPTY",
+                    //     usageCategory: categoryUsageKeyValue1.value
+                    //         ? categoryUsageKeyValue1.value : "EMPTY",
+                    //     availability: generalComponentData?.availability
+                    //         ? generalComponentData?.availability
+                    //         : "EMPTY",
+                    //     type: "MACHINE",
+                    //     application: generalComponentData?.application
+                    //         ? generalComponentData?.application
+                    //         : "EMPTY",
+                    //     contractOrSupport: generalComponentData?.contractOrSupport
+                    //         ? generalComponentData?.contractOrSupport
+                    //         : "EMPTY",
+                    //     lifeStageOfMachine: "NEW_BREAKIN",
+                    //     // supportLevel: "PREMIUM",
+                    //     supportLevel: value3.value,
+                    //     numberOfEvents: 0,
+                    //     itemRelations: [],
+                    //     rating: "string",
+                    //     startUsage: 0,
+                    //     endUsage: 0,
+                    //     unit: "HOURS",
+                    //     additionals: "string",
+                    //     customItems: selectedCustomItems.length > 0
+                    //         ? selectedCustomItems : [],
+                    //     customCoverages: selectedCustomItems.length > 0
+                    //         ? selectedCustomItems : [],
+                    //     // portfolioPrice: null,
+                    //     // additionalPrice: null,
+                    //     // escalationPrice: null,
+                    //     saveState: false,
+                    //     userId: null,
+                    // }
+
+                    // New Todo
                     let reqObj = {
                         customPortfolioId: portfolioId,
                         name: generalComponentData.name,
                         description: generalComponentData.description,
                         externalReference: generalComponentData.externalReference,
-                        customerSegment: generalComponentData.customerSegment?.value,
+                        customerSegment: generalComponentData?.customerSegment?.value,
                         template: flagTemplate,
                         visibleInCommerce: flagCommerce,
 
-                        validFrom: validityData.fromDate.toISOString().substring(0, 10),
-                        validTo: validityData.fromDate.toISOString().substring(0, 10),
+                        validFrom: validityData.fromDate,
+                        validTo: validityData.toDate,
 
-                        responseTime: stratgyResponseTimeKeyValue.value
-                            ? stratgyResponseTimeKeyValue.value : "EMPTY",
-                        productHierarchy: stratgyHierarchyKeyValue.value ?
-                            stratgyHierarchyKeyValue.value : "EMPTY",
-                        geographic: stratgyGeographicKeyValue.value ?
-                            stratgyGeographicKeyValue.value : "EMPTY",
-                        solutionType: solutionTypeListKeyValue.value ?
-                            solutionTypeListKeyValue.value : "EMPTY",
-                        solutionLevel: solutionLevelListKeyValue.value ?
-                            solutionLevelListKeyValue.value : "EMPTY",
+
+                        responseTime: stratgyResponseTimeKeyValue?.value ?
+                            stratgyResponseTimeKeyValue?.value : "PROACTIVE",
+                        productHierarchy: stratgyHierarchyKeyValue?.value ?
+                            stratgyHierarchyKeyValue?.value : "END_PRODUCT",
+                        geographic: stratgyGeographicKeyValue?.value ?
+                            stratgyGeographicKeyValue?.value : "ONSITE",
+                        solutionType: solutionTypeListKeyValue?.value ?
+                            solutionTypeListKeyValue?.value : "CONTRACT",
+                        solutionLevel: solutionLevelListKeyValue?.value ?
+                            solutionLevelListKeyValue?.value : "LEVEL_I",
 
                         preparedBy: administrative.preparedBy,
                         approvedBy: administrative.approvedBy,
                         preparedOn: administrative.preparedOn,
                         revisedBy: administrative.revisedBy,
                         revisedOn: administrative.revisedOn,
-                        offerValidity: administrative.offerValidity,
                         salesOffice: administrative.salesOffice,
+                        offerValidity: administrative.offerValidity,
+
+                        portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+                            ? portfolioPriceDataId : null,
+                        additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+                            ? portfolioAdditionalPriceDataId : null,
+                        escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+                            ? portfolioEscalationPriceDataId : null,
+
+
+                        supportLevel: value3.value,
+                        status: value2.value,
 
                         machineType: "NEW",
-                        searchTerm: "EMPTY",
-                        lubricant: false,
+                        searchTerm: "",
+                        lubricant: true,
                         customerId: 0,
-                        customerGroup: generalComponentData?.customerGroup
-                            ? generalComponentData?.customerGroup
-                            : "EMPTY",
-                        status: generalComponentData?.status
-                            ? generalComponentData?.status
-                            : "EMPTY",
-                        strategyTask: stratgyTaskUsageKeyValue.value
-                            ? stratgyTaskUsageKeyValue.value : "EMPTY",
-                        taskType: stratgyTaskTypeKeyValue.value
-                            ? stratgyTaskTypeKeyValue.value : "EMPTY",
-                        usageCategory: categoryUsageKeyValue1.value
-                            ? categoryUsageKeyValue1.value : "EMPTY",
-                        availability: generalComponentData?.availability
-                            ? generalComponentData?.availability
-                            : "EMPTY",
+                        customerGroup: "",
+                        strategyTask: "PREVENTIVE_MAINTENANCE",
+                        taskType: "PM1",
+                        usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+                        availability: "AVAILABILITY_GREATER_95",
                         type: "MACHINE",
-                        application: generalComponentData?.application
-                            ? generalComponentData?.application
-                            : "EMPTY",
-                        contractOrSupport: generalComponentData?.contractOrSupport
-                            ? generalComponentData?.contractOrSupport
-                            : "EMPTY",
+                        application: "HILL",
+                        contractOrSupport: "LEVEL_I",
                         lifeStageOfMachine: "NEW_BREAKIN",
-                        // supportLevel: "PREMIUM",
-                        supportLevel: value3.value,
                         numberOfEvents: 0,
-                        itemRelations: [],
-                        rating: "string",
+                        rating: "",
                         startUsage: 0,
                         endUsage: 0,
                         unit: "HOURS",
-                        additionals: "string",
-                        customItems: portfolioCustomItems.length > 0
-                            ? portfolioCustomItems : [],
-                        customCoverages: selectedCustomItems.length > 0
-                            ? selectedCustomItems : [],
-                        // portfolioPrice: null,
-                        // additionalPrice: null,
-                        // escalationPrice: null,
-                        saveState: false,
-                        userId: null,
-                    }
+                        additionals: "",
+
+                        customItems: selectedSolutionCustomItems,
+                        customCoverages: selectedSolutionCustomCoverages,
+
+                    };
+
                     const exitsPortfolioUpdate = await updateCustomPortfolio(
                         portfolioId,
                         reqObj
@@ -2096,7 +2547,6 @@ export function CreateCustomPortfolio(props) {
                             draggable: true,
                             progress: undefined,
                         });
-                        // setValue("administrative");
                         setValue("administrative");
                         setViewOnlyTab({ ...viewOnlyTab, validityViewOnly: true });
                     } else {
@@ -2116,10 +2566,8 @@ export function CreateCustomPortfolio(props) {
                     (administrative.revisedBy != "" &&
                         administrative.revisedBy != undefined &&
                         !validator.emailValidation(administrative.revisedBy)) ||
-                    (administrative.branch == "" ||
-                        administrative.branch == undefined)
-                    // || (administrative.offerValidity == "" ||
-                    // administrative.offerValidity == undefined)
+                    (administrative.salesOffice == "" ||
+                        administrative.salesOffice == undefined)
                 ) {
                     throw "Please fill mandatory fields with valid data";
                 }
@@ -2132,106 +2580,177 @@ export function CreateCustomPortfolio(props) {
                         preparedOn: administrative.preparedOn,
                         revisedBy: administrative.revisedBy,
                         revisedOn: administrative.revisedOn,
-                        salesOffice: administrative.branch,
+                        salesOffice: administrative.salesOffice,
                         offerValidity: administrative.offerValidity,
                     });
 
                     const { portfolioId, ...res } = generalComponentData;
 
-                    let Administryobj = {
-                        ...res,
-                        visibleInCommerce: true,
-                        customerId: 0,
-                        lubricant: true,
-                        customerSegment: generalComponentData.customerSegment.value
-                            ? generalComponentData.customerSegment.value
-                            : "EMPTY",
-                        // machineType: generalComponentData.machineType
-                        //     ? generalComponentData.machineType
-                        //     : "EMPTY",
-                        status: generalComponentData.status
-                            ? generalComponentData.status
-                            : "EMPTY",
-                        strategyTask: generalComponentData.strategyTask
-                            ? generalComponentData.strategyTask
-                            : "EMPTY",
-                        taskType: generalComponentData.taskType
-                            ? generalComponentData.taskType
-                            : "EMPTY",
-                        usageCategory: generalComponentData.usageCategory
-                            ? generalComponentData.usageCategory
-                            : "EMPTY",
-                        productHierarchy: generalComponentData.productHierarchy
-                            ? generalComponentData.productHierarchy
-                            : "EMPTY",
-                        geographic: generalComponentData.geographic
-                            ? generalComponentData.geographic
-                            : "EMPTY",
-                        availability: generalComponentData.availability
-                            ? generalComponentData.availability
-                            : "EMPTY",
-                        responseTime: generalComponentData.responseTime
-                            ? generalComponentData.responseTime
-                            : "EMPTY",
-                        type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                        application: generalComponentData.application
-                            ? generalComponentData.application
-                            : "EMPTY",
-                        contractOrSupport: generalComponentData.contractOrSupport
-                            ? generalComponentData.contractOrSupport
-                            : "EMPTY",
-                        // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                        //     ? generalComponentData.lifeStageOfMachine
-                        //     : "EMPTY",
-                        supportLevel: generalComponentData.supportLevel
-                            ? generalComponentData.supportLevel
-                            : "EMPTY",
-                        customItems: [],
-                        items: [],
-                        customCoverages: [],
-                        customerGroup: generalComponentData.customerGroup
-                            ? generalComponentData.customerGroup
-                            : "EMPTY",
-                        searchTerm: "EMPTY",
-                        // supportLevel: "PREMIUM",
-                        supportLevel: value3.value,
-                        // portfolioPrice: {},
-                        // additionalPrice: {},
-                        // escalationPrice: {},
+                    // Old Todo
+                    // let Administryobj = {
+                    //     ...res,
+                    //     visibleInCommerce: true,
+                    //     customerId: 0,
+                    //     lubricant: true,
+                    //     customerSegment: generalComponentData.customerSegment.value
+                    //         ? generalComponentData.customerSegment.value
+                    //         : "EMPTY",
+                    //     // machineType: generalComponentData.machineType
+                    //     //     ? generalComponentData.machineType
+                    //     //     : "EMPTY",
+                    //     status: generalComponentData.status
+                    //         ? generalComponentData.status
+                    //         : "EMPTY",
+                    //     strategyTask: generalComponentData.strategyTask
+                    //         ? generalComponentData.strategyTask
+                    //         : "EMPTY",
+                    //     taskType: generalComponentData.taskType
+                    //         ? generalComponentData.taskType
+                    //         : "EMPTY",
+                    //     usageCategory: generalComponentData.usageCategory
+                    //         ? generalComponentData.usageCategory
+                    //         : "EMPTY",
+                    //     productHierarchy: generalComponentData.productHierarchy
+                    //         ? generalComponentData.productHierarchy
+                    //         : "EMPTY",
+                    //     geographic: generalComponentData.geographic
+                    //         ? generalComponentData.geographic
+                    //         : "EMPTY",
+                    //     availability: generalComponentData.availability
+                    //         ? generalComponentData.availability
+                    //         : "EMPTY",
+                    //     responseTime: generalComponentData.responseTime
+                    //         ? generalComponentData.responseTime
+                    //         : "EMPTY",
+                    //     type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                    //     application: generalComponentData.application
+                    //         ? generalComponentData.application
+                    //         : "EMPTY",
+                    //     contractOrSupport: generalComponentData.contractOrSupport
+                    //         ? generalComponentData.contractOrSupport
+                    //         : "EMPTY",
+                    //     // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                    //     //     ? generalComponentData.lifeStageOfMachine
+                    //     //     : "EMPTY",
+                    //     supportLevel: generalComponentData.supportLevel
+                    //         ? generalComponentData.supportLevel
+                    //         : "EMPTY",
+                    //     customItems: [],
+                    //     items: [],
+                    //     customCoverages: [],
+                    //     customerGroup: generalComponentData.customerGroup
+                    //         ? generalComponentData.customerGroup
+                    //         : "EMPTY",
+                    //     searchTerm: "EMPTY",
+                    //     // supportLevel: "PREMIUM",
+                    //     supportLevel: value3.value,
+                    //     // portfolioPrice: {},
+                    //     // additionalPrice: {},
+                    //     // escalationPrice: {},
 
-                        solutionType: solutionTypeListKeyValue.value ?
-                            solutionTypeListKeyValue.value : "EMPTY",
-                        solutionLevel: solutionLevelListKeyValue.value ?
-                            solutionLevelListKeyValue.value : "EMPTY",
-                        usageCategory: categoryUsageKeyValue1.value,
-                        taskType: stratgyTaskTypeKeyValue.value,
-                        strategyTask: stratgyTaskUsageKeyValue.value,
-                        responseTime: stratgyResponseTimeKeyValue.value,
-                        productHierarchy: stratgyHierarchyKeyValue.value,
-                        geographic: stratgyGeographicKeyValue.value,
-                        numberOfEvents: 0,
-                        rating: "",
-                        startUsage: "",
-                        endUsage: "",
-                        unit: "HOURS",
-                        additionals: "",
+                    //     solutionType: solutionTypeListKeyValue.value ?
+                    //         solutionTypeListKeyValue.value : "EMPTY",
+                    //     solutionLevel: solutionLevelListKeyValue.value ?
+                    //         solutionLevelListKeyValue.value : "EMPTY",
+                    //     usageCategory: categoryUsageKeyValue1.value,
+                    //     taskType: stratgyTaskTypeKeyValue.value,
+                    //     strategyTask: stratgyTaskUsageKeyValue.value,
+                    //     responseTime: stratgyResponseTimeKeyValue.value,
+                    //     productHierarchy: stratgyHierarchyKeyValue.value,
+                    //     geographic: stratgyGeographicKeyValue.value,
+                    //     numberOfEvents: 0,
+                    //     rating: "",
+                    //     startUsage: "",
+                    //     endUsage: "",
+                    //     unit: "HOURS",
+                    //     additionals: "",
+                    //     preparedBy: administrative.preparedBy,
+                    //     approvedBy: administrative.approvedBy,
+                    //     preparedOn: administrative.preparedOn,
+                    //     revisedBy: administrative.revisedBy,
+                    //     revisedOn: administrative.revisedOn,
+                    //     salesOffice: administrative.salesOffice,
+                    //     offerValidity: administrative.offerValidity,
+
+                    //     template: flagTemplate,
+                    //     visibleInCommerce: flagCommerce,
+                    // };
+
+
+                    // New Todo
+                    let administrativeObj = {
+                        name: generalComponentData.name,
+                        description: generalComponentData.description,
+                        externalReference: generalComponentData.externalReference,
+                        customerSegment: generalComponentData?.customerSegment?.value,
+                        template: flagTemplate,
+                        visibleInCommerce: flagCommerce,
+
+                        validFrom: validityData.fromDate,
+                        validTo: validityData.toDate,
+
+
+                        responseTime: stratgyResponseTimeKeyValue?.value ?
+                            stratgyResponseTimeKeyValue?.value : "PROACTIVE",
+                        productHierarchy: stratgyHierarchyKeyValue?.value ?
+                            stratgyHierarchyKeyValue?.value : "END_PRODUCT",
+                        geographic: stratgyGeographicKeyValue?.value ?
+                            stratgyGeographicKeyValue?.value : "ONSITE",
+                        solutionType: solutionTypeListKeyValue?.value ?
+                            solutionTypeListKeyValue?.value : "CONTRACT",
+                        solutionLevel: solutionLevelListKeyValue?.value ?
+                            solutionLevelListKeyValue?.value : "LEVEL_I",
+
                         preparedBy: administrative.preparedBy,
                         approvedBy: administrative.approvedBy,
                         preparedOn: administrative.preparedOn,
                         revisedBy: administrative.revisedBy,
                         revisedOn: administrative.revisedOn,
-                        salesOffice: administrative.branch,
+                        salesOffice: administrative.salesOffice,
                         offerValidity: administrative.offerValidity,
 
-                        template: flagTemplate,
-                        visibleInCommerce: flagCommerce,
+                        portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+                            ? portfolioPriceDataId : null,
+                        additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+                            ? portfolioAdditionalPriceDataId : null,
+                        escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+                            ? portfolioEscalationPriceDataId : null,
+
+
+                        supportLevel: value3.value,
+                        status: value2.value,
+
+                        machineType: "NEW",
+                        searchTerm: "",
+                        lubricant: true,
+                        customerId: 0,
+                        customerGroup: "",
+                        strategyTask: "PREVENTIVE_MAINTENANCE",
+                        taskType: "PM1",
+                        usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+                        availability: "AVAILABILITY_GREATER_95",
+                        type: "MACHINE",
+                        application: "HILL",
+                        contractOrSupport: "LEVEL_I",
+                        lifeStageOfMachine: "NEW_BREAKIN",
+                        numberOfEvents: 0,
+                        rating: "",
+                        startUsage: 0,
+                        endUsage: 0,
+                        unit: "HOURS",
+                        additionals: "",
+
+                        customItems: selectedSolutionCustomItems,
+                        customCoverages: selectedSolutionCustomCoverages,
+
                     };
 
-                    const administryRes = await updateCustomPortfolio(
-                        generalComponentData.portfolioId,
-                        Administryobj
+                    const administrativeRes = await updateCustomPortfolio(
+                        // generalComponentData.portfolioId,
+                        portfolioId,
+                        administrativeObj
                     );
-                    if (administryRes.status === 200) {
+                    if (administrativeRes.status === 200) {
                         toast("👏 Portfolio updated", {
                             position: "top-right",
                             autoClose: 5000,
@@ -2244,92 +2763,163 @@ export function CreateCustomPortfolio(props) {
                         // setValue("administrative");
                         setValue("price");
                         setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: true });
-                        console.log("administryRes updating", administryRes.data);
+                        console.log("administrativeRes updating", administrativeRes.data);
                     } else {
-                        throw `${administryRes.status}:error in update portfolio`;
+                        throw `${administrativeRes.status}:error in update portfolio`;
                     };
 
 
                     console.log("administrative", administrative);
                     // setValue("price");
                 } else {
+
+                    // Old Todo
+                    // let reqObj = {
+                    //     customPortfolioId: portfolioId,
+                    //     name: generalComponentData.name,
+                    //     description: generalComponentData.description,
+                    //     externalReference: generalComponentData.externalReference,
+                    //     customerSegment: generalComponentData.customerSegment?.value,
+                    //     template: flagTemplate,
+                    //     visibleInCommerce: flagCommerce,
+
+                    //     validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                    //     validTo: validityData.fromDate.toISOString().substring(0, 10),
+
+                    //     responseTime: stratgyResponseTimeKeyValue.value
+                    //         ? stratgyResponseTimeKeyValue.value : "EMPTY",
+                    //     productHierarchy: stratgyHierarchyKeyValue.value ?
+                    //         stratgyHierarchyKeyValue.value : "EMPTY",
+                    //     geographic: stratgyGeographicKeyValue.value ?
+                    //         stratgyGeographicKeyValue.value : "EMPTY",
+                    //     solutionType: solutionTypeListKeyValue.value ?
+                    //         solutionTypeListKeyValue.value : "EMPTY",
+                    //     solutionLevel: solutionLevelListKeyValue.value ?
+                    //         solutionLevelListKeyValue.value : "EMPTY",
+
+                    //     preparedBy: administrative.preparedBy,
+                    //     approvedBy: administrative.approvedBy,
+                    //     preparedOn: administrative.preparedOn,
+                    //     revisedBy: administrative.revisedBy,
+                    //     revisedOn: administrative.revisedOn,
+                    //     offerValidity: administrative.offerValidity,
+                    //     salesOffice: administrative.salesOffice,
+
+                    //     machineType: "NEW",
+                    //     searchTerm: "EMPTY",
+                    //     lubricant: false,
+                    //     customerId: 0,
+                    //     customerGroup: generalComponentData?.customerGroup
+                    //         ? generalComponentData?.customerGroup
+                    //         : "EMPTY",
+                    //     status: generalComponentData?.status
+                    //         ? generalComponentData?.status
+                    //         : "EMPTY",
+                    //     strategyTask: stratgyTaskUsageKeyValue.value
+                    //         ? stratgyTaskUsageKeyValue.value : "EMPTY",
+                    //     taskType: stratgyTaskTypeKeyValue.value
+                    //         ? stratgyTaskTypeKeyValue.value : "EMPTY",
+                    //     usageCategory: categoryUsageKeyValue1.value
+                    //         ? categoryUsageKeyValue1.value : "EMPTY",
+                    //     availability: generalComponentData?.availability
+                    //         ? generalComponentData?.availability
+                    //         : "EMPTY",
+                    //     type: "MACHINE",
+                    //     application: generalComponentData?.application
+                    //         ? generalComponentData?.application
+                    //         : "EMPTY",
+                    //     contractOrSupport: generalComponentData?.contractOrSupport
+                    //         ? generalComponentData?.contractOrSupport
+                    //         : "EMPTY",
+                    //     lifeStageOfMachine: "NEW_BREAKIN",
+                    //     // supportLevel: "PREMIUM",
+                    //     supportLevel: value3.value,
+                    //     numberOfEvents: 0,
+                    //     itemRelations: [],
+                    //     rating: "string",
+                    //     startUsage: 0,
+                    //     endUsage: 0,
+                    //     unit: "HOURS",
+                    //     additionals: "string",
+                    //     customItems: selectedCustomItems.length > 0
+                    //         ? selectedCustomItems : [],
+                    //     customCoverages: selectedCustomItems.length > 0
+                    //         ? selectedCustomItems : [],
+                    //     // portfolioPrice: null,
+                    //     // additionalPrice: null,
+                    //     // escalationPrice: null,
+                    //     saveState: false,
+                    //     userId: null,
+                    // }
+
+                    // New Todo
                     let reqObj = {
                         customPortfolioId: portfolioId,
                         name: generalComponentData.name,
                         description: generalComponentData.description,
                         externalReference: generalComponentData.externalReference,
-                        customerSegment: generalComponentData.customerSegment?.value,
+                        customerSegment: generalComponentData?.customerSegment?.value,
                         template: flagTemplate,
                         visibleInCommerce: flagCommerce,
 
-                        validFrom: validityData.fromDate.toISOString().substring(0, 10),
-                        validTo: validityData.fromDate.toISOString().substring(0, 10),
+                        validFrom: validityData.fromDate,
+                        validTo: validityData.toDate,
 
-                        responseTime: stratgyResponseTimeKeyValue.value
-                            ? stratgyResponseTimeKeyValue.value : "EMPTY",
-                        productHierarchy: stratgyHierarchyKeyValue.value ?
-                            stratgyHierarchyKeyValue.value : "EMPTY",
-                        geographic: stratgyGeographicKeyValue.value ?
-                            stratgyGeographicKeyValue.value : "EMPTY",
-                        solutionType: solutionTypeListKeyValue.value ?
-                            solutionTypeListKeyValue.value : "EMPTY",
-                        solutionLevel: solutionLevelListKeyValue.value ?
-                            solutionLevelListKeyValue.value : "EMPTY",
+
+                        responseTime: stratgyResponseTimeKeyValue?.value ?
+                            stratgyResponseTimeKeyValue?.value : "PROACTIVE",
+                        productHierarchy: stratgyHierarchyKeyValue?.value ?
+                            stratgyHierarchyKeyValue?.value : "END_PRODUCT",
+                        geographic: stratgyGeographicKeyValue?.value ?
+                            stratgyGeographicKeyValue?.value : "ONSITE",
+                        solutionType: solutionTypeListKeyValue?.value ?
+                            solutionTypeListKeyValue?.value : "CONTRACT",
+                        solutionLevel: solutionLevelListKeyValue?.value ?
+                            solutionLevelListKeyValue?.value : "LEVEL_I",
 
                         preparedBy: administrative.preparedBy,
                         approvedBy: administrative.approvedBy,
                         preparedOn: administrative.preparedOn,
                         revisedBy: administrative.revisedBy,
                         revisedOn: administrative.revisedOn,
-                        offerValidity: administrative.offerValidity,
                         salesOffice: administrative.salesOffice,
+                        offerValidity: administrative.offerValidity,
+
+                        portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+                            ? portfolioPriceDataId : null,
+                        additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+                            ? portfolioAdditionalPriceDataId : null,
+                        escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+                            ? portfolioEscalationPriceDataId : null,
+
+
+                        supportLevel: value3.value,
+                        status: value2.value,
 
                         machineType: "NEW",
-                        searchTerm: "EMPTY",
-                        lubricant: false,
+                        searchTerm: "",
+                        lubricant: true,
                         customerId: 0,
-                        customerGroup: generalComponentData?.customerGroup
-                            ? generalComponentData?.customerGroup
-                            : "EMPTY",
-                        status: generalComponentData?.status
-                            ? generalComponentData?.status
-                            : "EMPTY",
-                        strategyTask: stratgyTaskUsageKeyValue.value
-                            ? stratgyTaskUsageKeyValue.value : "EMPTY",
-                        taskType: stratgyTaskTypeKeyValue.value
-                            ? stratgyTaskTypeKeyValue.value : "EMPTY",
-                        usageCategory: categoryUsageKeyValue1.value
-                            ? categoryUsageKeyValue1.value : "EMPTY",
-                        availability: generalComponentData?.availability
-                            ? generalComponentData?.availability
-                            : "EMPTY",
+                        customerGroup: "",
+                        strategyTask: "PREVENTIVE_MAINTENANCE",
+                        taskType: "PM1",
+                        usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+                        availability: "AVAILABILITY_GREATER_95",
                         type: "MACHINE",
-                        application: generalComponentData?.application
-                            ? generalComponentData?.application
-                            : "EMPTY",
-                        contractOrSupport: generalComponentData?.contractOrSupport
-                            ? generalComponentData?.contractOrSupport
-                            : "EMPTY",
+                        application: "HILL",
+                        contractOrSupport: "LEVEL_I",
                         lifeStageOfMachine: "NEW_BREAKIN",
-                        // supportLevel: "PREMIUM",
-                        supportLevel: value3.value,
                         numberOfEvents: 0,
-                        itemRelations: [],
-                        rating: "string",
+                        rating: "",
                         startUsage: 0,
                         endUsage: 0,
                         unit: "HOURS",
-                        additionals: "string",
-                        customItems: portfolioCustomItems.length > 0
-                            ? portfolioCustomItems : [],
-                        customCoverages: selectedCustomItems.length > 0
-                            ? selectedCustomItems : [],
-                        // portfolioPrice: null,
-                        // additionalPrice: null,
-                        // escalationPrice: null,
-                        saveState: false,
-                        userId: null,
-                    }
+                        additionals: "",
+
+                        customItems: selectedSolutionCustomItems,
+                        customCoverages: selectedSolutionCustomCoverages,
+
+                    };
                     const exitsPortfolioUpdate = await updateCustomPortfolio(
                         portfolioId,
                         reqObj
@@ -2344,8 +2934,7 @@ export function CreateCustomPortfolio(props) {
                             draggable: true,
                             progress: undefined,
                         });
-                        // setValue("administrative");
-                        setValue("validity");
+                        setValue("price");
                         setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: true });
 
                     } else {
@@ -2354,39 +2943,63 @@ export function CreateCustomPortfolio(props) {
                 }
             } else if (e.target.id == "price") {
 
+                if ((priceMethodKeyValue1.length === 0 ||
+                    priceMethodKeyValue1?.value === "" ||
+                    priceMethodKeyValue1?.value === null ||
+                    priceMethodKeyValue1?.value === undefined)
+                ) {
+                    throw "Please fill required field properly";
+                }
                 if (state && state.type === "new") {
+
+
                     let priceEscalation = {
                         priceMethod: priceMethodKeyValue1.value,
-                        priceHeadType: priceEscalationHeadKeyValue1.value,
-                        escalationPercentage: parseInt(escalationPriceValue),
-                        validFrom: validityData.fromDate.toISOString().substring(0, 10),
-                        validTo: validityData.toDate.toISOString().substring(0, 10),
+                        priceHeadType: (priceEscalationHeadKeyValue1?.value == "" ||
+                            priceEscalationHeadKeyValue1?.value == null ||
+                            priceEscalationHeadKeyValue1?.value == undefined) ?
+                            "LABOR" : priceEscalationHeadKeyValue1?.value,
+                        escalationPercentage: (escalationPriceValue === "" ||
+                            escalationPriceValue === null ||
+                            escalationPriceValue === undefined) ? 0 : parseInt(escalationPriceValue),
+                        validFrom: validityData.fromDate,
+                        validTo: validityData.toDate,
                         userId: "string"
                     }
 
                     let priceAdditional = {
                         priceMethod: priceMethodKeyValue1.value,
-                        priceHeadType: priceAdditionalHeadKeyValue1.value,
-                        additionalPercentage: parseInt(additionalPriceValue),
-                        validFrom: validityData.fromDate.toISOString().substring(0, 10),
-                        validTo: validityData.toDate.toISOString().substring(0, 10),
+                        priceHeadType: (priceAdditionalHeadKeyValue1?.value === "" ||
+                            priceAdditionalHeadKeyValue1?.value === null ||
+                            priceAdditionalHeadKeyValue1?.value === undefined)
+                            ? "LABOR" : priceAdditionalHeadKeyValue1?.value,
+                        additionalPercentage: (additionalPriceValue === "" ||
+                            additionalPriceValue === null ||
+                            additionalPriceValue === undefined)
+                            ? 0 : parseInt(additionalPriceValue),
+                        validFrom: validityData.fromDate,
+                        validTo: validityData.toDate,
                         userId: "string"
                     }
 
                     let portfolioPriceCreate = {
                         priceMethod: priceMethodKeyValue1.value,
-                        priceType: priceTypeKeyValue1.value,
-                        priceList: priceListKeyValue1.value,
+                        priceType: (priceTypeKeyValue1?.value === "" ||
+                            priceTypeKeyValue1?.value === null ||
+                            priceTypeKeyValue1?.value === undefined) ?
+                            "FIXED" : priceTypeKeyValue1?.value,
+                        priceList: (priceListKeyValue1?.value === "" ||
+                            priceListKeyValue1?.value === null ||
+                            priceListKeyValue1?.value === undefined)
+                            ? "CUSTOMER_SEGMENT" : priceListKeyValue1?.value,
                         priceDate: priceDetails.priceDate,
                     }
+
 
                     console.log("portfolioPriceCreate --- : ", portfolioPriceCreate)
 
                     const escalationPrice = await escalationPriceCreation(priceEscalation);
-
-
                     const additionalPrice = await additionalPriceCreation(priceAdditional);
-
                     const portfolioPriceAPIData = await portfolioPriceCreation(portfolioPriceCreate);
 
                     setPortfolioEscalationPriceDataId({
@@ -2398,70 +3011,137 @@ export function CreateCustomPortfolio(props) {
                     setPortfolioPriceDataId({
                         portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
                     })
-                    const { portfolioId, ...res } = generalComponentData;
+                    setPortfolioPriceDataIdForExiting(portfolioPriceAPIData.data.portfolioPriceId);
+                    setEscalationPriceDataId(escalationPrice.data.escalationPriceId);
+                    setAdditionalPriceDataId(additionalPrice.data.additionalPriceId);
 
-                    let priceobjData = {
-                        ...res,
-                        visibleInCommerce: true,
-                        customerId: 0,
-                        lubricant: true,
-                        customerSegment: generalComponentData.customerSegment.value
-                            ? generalComponentData.customerSegment.value
-                            : "EMPTY",
-                        // machineType: generalComponentData.machineType
-                        //     ? generalComponentData.machineType
-                        //     : "EMPTY",
-                        machineType: machineTypeKeyValue.value,
-                        status: generalComponentData.status
-                            ? generalComponentData.status
-                            : "EMPTY",
-                        strategyTask: generalComponentData.strategyTask
-                            ? generalComponentData.strategyTask
-                            : "EMPTY",
-                        taskType: generalComponentData.taskType
-                            ? generalComponentData.taskType
-                            : "EMPTY",
-                        usageCategory: generalComponentData.usageCategory
-                            ? generalComponentData.usageCategory
-                            : "EMPTY",
-                        productHierarchy: generalComponentData.productHierarchy
-                            ? generalComponentData.productHierarchy
-                            : "EMPTY",
-                        geographic: generalComponentData.geographic
-                            ? generalComponentData.geographic
-                            : "EMPTY",
-                        availability: generalComponentData.availability
-                            ? generalComponentData.availability
-                            : "EMPTY",
-                        responseTime: generalComponentData.responseTime
-                            ? generalComponentData.responseTime
-                            : "EMPTY",
-                        type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                        application: generalComponentData.application
-                            ? generalComponentData.application
-                            : "EMPTY",
-                        contractOrSupport: generalComponentData.contractOrSupport
-                            ? generalComponentData.contractOrSupport
-                            : "EMPTY",
-                        // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                        //     ? generalComponentData.lifeStageOfMachine
-                        //     : "EMPTY",
-                        lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                        supportLevel: generalComponentData.supportLevel
-                            ? generalComponentData.supportLevel
-                            : "EMPTY",
-                        items: [],
-                        customCoverages: [],
-                        customerGroup: generalComponentData.customerGroup
-                            ? generalComponentData.customerGroup
-                            : "EMPTY",
-                        searchTerm: "EMPTY",
-                        // supportLevel: "PREMIUM",
-                        supportLevel: value3.value,
-                        solutionType: solutionTypeListKeyValue.value ?
-                            solutionTypeListKeyValue.value : "EMPTY",
-                        solutionLevel: solutionLevelListKeyValue.value ?
-                            solutionLevelListKeyValue.value : "EMPTY",
+                    const { portfolioId, ...res } = generalComponentData;
+                    // Old Todo
+                    // let priceobjData = {
+                    //     ...res,
+                    //     visibleInCommerce: true,
+                    //     customerId: 0,
+                    //     lubricant: true,
+                    //     customerSegment: generalComponentData.customerSegment.value
+                    //         ? generalComponentData.customerSegment.value
+                    //         : "EMPTY",
+                    //     // machineType: generalComponentData.machineType
+                    //     //     ? generalComponentData.machineType
+                    //     //     : "EMPTY",
+                    //     machineType: machineTypeKeyValue.value,
+                    //     status: generalComponentData.status
+                    //         ? generalComponentData.status
+                    //         : "EMPTY",
+                    //     strategyTask: generalComponentData.strategyTask
+                    //         ? generalComponentData.strategyTask
+                    //         : "EMPTY",
+                    //     taskType: generalComponentData.taskType
+                    //         ? generalComponentData.taskType
+                    //         : "EMPTY",
+                    //     usageCategory: generalComponentData.usageCategory
+                    //         ? generalComponentData.usageCategory
+                    //         : "EMPTY",
+                    //     productHierarchy: generalComponentData.productHierarchy
+                    //         ? generalComponentData.productHierarchy
+                    //         : "EMPTY",
+                    //     geographic: generalComponentData.geographic
+                    //         ? generalComponentData.geographic
+                    //         : "EMPTY",
+                    //     availability: generalComponentData.availability
+                    //         ? generalComponentData.availability
+                    //         : "EMPTY",
+                    //     responseTime: generalComponentData.responseTime
+                    //         ? generalComponentData.responseTime
+                    //         : "EMPTY",
+                    //     type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                    //     application: generalComponentData.application
+                    //         ? generalComponentData.application
+                    //         : "EMPTY",
+                    //     contractOrSupport: generalComponentData.contractOrSupport
+                    //         ? generalComponentData.contractOrSupport
+                    //         : "EMPTY",
+                    //     // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                    //     //     ? generalComponentData.lifeStageOfMachine
+                    //     //     : "EMPTY",
+                    //     lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                    //     supportLevel: generalComponentData.supportLevel
+                    //         ? generalComponentData.supportLevel
+                    //         : "EMPTY",
+                    //     items: [],
+                    //     customCoverages: [],
+                    //     customerGroup: generalComponentData.customerGroup
+                    //         ? generalComponentData.customerGroup
+                    //         : "EMPTY",
+                    //     searchTerm: "EMPTY",
+                    //     // supportLevel: "PREMIUM",
+                    //     supportLevel: value3.value,
+                    //     solutionType: solutionTypeListKeyValue.value ?
+                    //         solutionTypeListKeyValue.value : "EMPTY",
+                    //     solutionLevel: solutionLevelListKeyValue.value ?
+                    //         solutionLevelListKeyValue.value : "EMPTY",
+                    //     portfolioPrice: {
+                    //         portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
+                    //     },
+                    //     additionalPrice: {
+                    //         additionalPriceId: additionalPrice.data.additionalPriceId,
+                    //     },
+                    //     escalationPrice: {
+                    //         escalationPriceId: escalationPrice.data.escalationPriceId,
+                    //     },
+
+                    //     usageCategory: categoryUsageKeyValue1.value,
+                    //     taskType: stratgyTaskTypeKeyValue.value,
+                    //     strategyTask: stratgyTaskUsageKeyValue.value,
+                    //     responseTime: stratgyResponseTimeKeyValue.value,
+                    //     productHierarchy: stratgyHierarchyKeyValue.value,
+                    //     geographic: stratgyGeographicKeyValue.value,
+                    //     customItems: selectedCustomItems,
+
+                    //     preparedBy: administrative.preparedBy,
+                    //     approvedBy: administrative.approvedBy,
+                    //     preparedOn: administrative.preparedOn,
+                    //     revisedBy: administrative.revisedBy,
+                    //     revisedOn: administrative.revisedOn,
+                    //     salesOffice: administrative.salesOffice,
+                    //     offerValidity: administrative.offerValidity,
+                    //     template: flagTemplate,
+                    //     visibleInCommerce: flagCommerce,
+                    // };
+
+
+                    // New Todo
+                    let priceObjData = {
+                        name: generalComponentData.name,
+                        description: generalComponentData.description,
+                        externalReference: generalComponentData.externalReference,
+                        customerSegment: generalComponentData?.customerSegment?.value,
+                        template: flagTemplate,
+                        visibleInCommerce: flagCommerce,
+
+                        validFrom: validityData.fromDate,
+                        validTo: validityData.toDate,
+
+
+                        responseTime: stratgyResponseTimeKeyValue?.value ?
+                            stratgyResponseTimeKeyValue?.value : "PROACTIVE",
+                        productHierarchy: stratgyHierarchyKeyValue?.value ?
+                            stratgyHierarchyKeyValue?.value : "END_PRODUCT",
+                        geographic: stratgyGeographicKeyValue?.value ?
+                            stratgyGeographicKeyValue?.value : "ONSITE",
+                        solutionType: solutionTypeListKeyValue?.value ?
+                            solutionTypeListKeyValue?.value : "CONTRACT",
+                        solutionLevel: solutionLevelListKeyValue?.value ?
+                            solutionLevelListKeyValue?.value : "LEVEL_I",
+
+                        preparedBy: administrative.preparedBy,
+                        approvedBy: administrative.approvedBy,
+                        preparedOn: administrative.preparedOn,
+                        revisedBy: administrative.revisedBy,
+                        revisedOn: administrative.revisedOn,
+                        salesOffice: administrative.salesOffice,
+                        offerValidity: administrative.offerValidity,
+
+
                         portfolioPrice: {
                             portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
                         },
@@ -2472,28 +3152,39 @@ export function CreateCustomPortfolio(props) {
                             escalationPriceId: escalationPrice.data.escalationPriceId,
                         },
 
-                        usageCategory: categoryUsageKeyValue1.value,
-                        taskType: stratgyTaskTypeKeyValue.value,
-                        strategyTask: stratgyTaskUsageKeyValue.value,
-                        responseTime: stratgyResponseTimeKeyValue.value,
-                        productHierarchy: stratgyHierarchyKeyValue.value,
-                        geographic: stratgyGeographicKeyValue.value,
-                        customItems: selectedCustomItems,
 
-                        preparedBy: administrative.preparedBy,
-                        approvedBy: administrative.approvedBy,
-                        preparedOn: administrative.preparedOn,
-                        revisedBy: administrative.revisedBy,
-                        revisedOn: administrative.revisedOn,
-                        salesOffice: administrative.salesOffice,
-                        offerValidity: administrative.offerValidity,
-                        template: flagTemplate,
-                        visibleInCommerce: flagCommerce,
+                        supportLevel: value3.value,
+                        status: value2.value,
+
+                        machineType: "NEW",
+                        searchTerm: "",
+                        lubricant: true,
+                        customerId: 0,
+                        customerGroup: "",
+                        strategyTask: "PREVENTIVE_MAINTENANCE",
+                        taskType: "PM1",
+                        usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+                        availability: "AVAILABILITY_GREATER_95",
+                        type: "MACHINE",
+                        application: "HILL",
+                        contractOrSupport: "LEVEL_I",
+                        lifeStageOfMachine: "NEW_BREAKIN",
+                        numberOfEvents: 0,
+                        rating: "",
+                        startUsage: 0,
+                        endUsage: 0,
+                        unit: "HOURS",
+                        additionals: "",
+
+                        customItems: selectedSolutionCustomItems,
+                        customCoverages: selectedSolutionCustomCoverages,
+
                     };
 
                     const priceObjRes = await updateCustomPortfolio(
-                        generalComponentData.portfolioId,
-                        priceobjData
+                        // generalComponentData.portfolioId,
+                        portfolioId,
+                        priceObjData
                     )
                     if (priceObjRes.status === 200) {
                         toast("👏 Portfolio updated", {
@@ -2505,173 +3196,463 @@ export function CreateCustomPortfolio(props) {
                             draggable: true,
                             progress: undefined,
                         });
-                        // setValue("administrative");
                         setValue("priceAgreement");
-                        // setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: true });
-                        // console.log("administryRes updating", administryRes.data);
+                        setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
                     } else {
                         throw `${priceObjRes.status}:error in update portfolio`;
                     };
 
                 } else {
+                    // update Exiting Escalation Price (Todo Future requirement)
+                    // if (escalationPriceDataId !== "" ||
+                    //     escalationPriceDataId !== null ||
+                    //     escalationPriceDataId !== "string" ||
+                    //     escalationPriceDataId !== undefined
+                    // ) {
+                    //     let exitingEscalationPriceObj = {
+                    //         escalationPriceId: escalationPriceDataId,
+                    //         priceMethod: priceMethodKeyValue1.value,
+                    //         priceHeadType: priceEscalationHeadKeyValue1.value,
+                    //         escalationPercentage: parseInt(escalationPriceValue),
+                    //         validFrom: validityData.fromDate,
+                    //         validTo: validityData.toDate,
+                    //         userId: "string"
+                    //     };
 
-                    let priceEscalation = {
-                        priceMethod: priceMethodKeyValue1.value,
-                        priceHeadType: priceEscalationHeadKeyValue1.value,
-                        escalationPercentage: parseInt(escalationPriceValue),
-                        validFrom: validityData.fromDate.toISOString().substring(0, 10),
-                        validTo: validityData.toDate.toISOString().substring(0, 10),
-                        userId: "string"
-                    }
+                    //     const updateEscalationPriceData = await updateEscalationPriceById(
+                    //         exitingEscalationPriceObj,
+                    //         escalationPriceDataId
+                    //     );
+                    // }
 
-                    let priceAdditional = {
-                        priceMethod: priceMethodKeyValue1.value,
-                        priceHeadType: priceAdditionalHeadKeyValue1.value,
-                        additionalPercentage: parseInt(additionalPriceValue),
-                        validFrom: validityData.fromDate.toISOString().substring(0, 10),
-                        validTo: validityData.toDate.toISOString().substring(0, 10),
-                        userId: "string"
-                    }
+                    // update Additional Price (Todo Future requirement)
+                    // if (additionalPriceDataId !== "" ||
+                    //     additionalPriceDataId !== null ||
+                    //     additionalPriceDataId !== "string" ||
+                    //     additionalPriceDataId !== undefined
+                    // ) {
+                    //     let exitingAdditionalPriceObj = {
+                    //         additionalPriceId: additionalPriceDataId,
+                    //         priceMethod: priceMethodKeyValue1.value,
+                    //         priceHeadType: priceAdditionalHeadKeyValue1.value,
+                    //         additionalPercentage: parseInt(additionalPriceValue),
+                    //         validFrom: validityData.fromDate,
+                    //         validTo: validityData.toDate,
+                    //         userId: "string"
+                    //     }
 
-                    let portfolioPriceCreate = {
-                        priceMethod: priceMethodKeyValue1.value,
-                        priceType: priceTypeKeyValue1.value,
-                        priceList: priceListKeyValue1.value,
-                        priceDate: priceDetails.priceDate,
-                    }
+                    //     const updateAdditionalPriceData = await updateAdditionalPriceById(
+                    //         exitingAdditionalPriceObj,
+                    //         additionalPriceDataId
+                    //     )
+                    // }
 
-                    console.log("portfolioPriceCreate --- : ", portfolioPriceCreate)
+                    // update Portfolio Price (Todo Future requirement)
+                    // if (portfolioPriceDataIdForExiting !== "" ||
+                    //     portfolioPriceDataIdForExiting !== null ||
+                    //     portfolioPriceDataIdForExiting !== "string" ||
+                    //     portfolioPriceDataIdForExiting !== undefined
+                    // ) {
+                    //     let exitingPortfolioPriceObj = {
+                    //         portfolioPriceId: portfolioPriceDataIdForExiting,
+                    //         priceMethod: priceMethodKeyValue1.value,
+                    //         priceType: priceTypeKeyValue1.value,
+                    //         priceList: priceListKeyValue1.value,
+                    //         priceDate: priceDetails.priceDate,
+                    //     }
 
-                    const escalationPrice = await escalationPriceCreation(priceEscalation);
+                    //     const updatePortfolioPriceData = await updatePortfolioPrice(
+                    //         exitingPortfolioPriceObj,
+                    //         portfolioPriceDataIdForExiting
+                    //     )
+                    // }
+
+                    // (Todo Future requirement if Error Occurred)
+                    // if (
+                    //     (portfolioPriceDataIdForExiting !== "" ||
+                    //         portfolioPriceDataIdForExiting !== null ||
+                    //         portfolioPriceDataIdForExiting !== "string" ||
+                    //         portfolioPriceDataIdForExiting !== undefined
+                    //     ) ||
+                    //     (additionalPriceDataId !== "" ||
+                    //         additionalPriceDataId !== null ||
+                    //         additionalPriceDataId !== "string" ||
+                    //         additionalPriceDataId !== undefined
+                    //     ) ||
+                    //     (escalationPriceDataId !== "" ||
+                    //         escalationPriceDataId !== null ||
+                    //         escalationPriceDataId !== "string" ||
+                    //         escalationPriceDataId !== undefined
+                    //     )
+                    // )
+
+                    if (
+                        (portfolioPriceDataIdForExiting !== "") ||
+                        (additionalPriceDataId !== "") ||
+                        (escalationPriceDataId !== "")
+                    ) {
+
+                        // update Exiting Escalation Price
+                        let exitingEscalationPriceObj = {
+                            escalationPriceId: escalationPriceDataId,
+                            priceMethod: priceMethodKeyValue1.value,
+                            priceHeadType: priceEscalationHeadKeyValue1.value,
+                            escalationPercentage: parseInt(escalationPriceValue),
+                            validFrom: validityData.fromDate,
+                            validTo: validityData.toDate,
+                            userId: "string"
+                        };
+                        const updateEscalationPriceData = await updateEscalationPriceById(
+                            exitingEscalationPriceObj,
+                            escalationPriceDataId
+                        );
+
+                        // update Additional Price
+                        let exitingAdditionalPriceObj = {
+                            additionalPriceId: additionalPriceDataId,
+                            priceMethod: priceMethodKeyValue1.value,
+                            priceHeadType: priceAdditionalHeadKeyValue1.value,
+                            additionalPercentage: parseInt(additionalPriceValue),
+                            validFrom: validityData.fromDate,
+                            validTo: validityData.toDate,
+                            userId: "string"
+                        }
+                        const updateAdditionalPriceData = await updateAdditionalPriceById(
+                            exitingAdditionalPriceObj,
+                            additionalPriceDataId
+                        )
+
+                        // update Portfolio Price 
+                        let exitingPortfolioPriceObj = {
+                            portfolioPriceId: portfolioPriceDataIdForExiting,
+                            priceMethod: priceMethodKeyValue1.value,
+                            priceType: priceTypeKeyValue1.value,
+                            priceList: priceListKeyValue1.value,
+                            priceDate: priceDetails.priceDate,
+                        }
+                        const updatePortfolioPriceData = await updatePortfolioPrice(
+                            exitingPortfolioPriceObj,
+                            portfolioPriceDataIdForExiting
+                        )
+
+                        // New Todo
+                        let priceObjData = {
+                            name: generalComponentData.name,
+                            description: generalComponentData.description,
+                            externalReference: generalComponentData.externalReference,
+                            customerSegment: generalComponentData?.customerSegment?.value,
+                            template: flagTemplate,
+                            visibleInCommerce: flagCommerce,
+
+                            validFrom: validityData.fromDate,
+                            validTo: validityData.toDate,
 
 
-                    const additionalPrice = await additionalPriceCreation(priceAdditional);
+                            responseTime: stratgyResponseTimeKeyValue?.value ?
+                                stratgyResponseTimeKeyValue?.value : "PROACTIVE",
+                            productHierarchy: stratgyHierarchyKeyValue?.value ?
+                                stratgyHierarchyKeyValue?.value : "END_PRODUCT",
+                            geographic: stratgyGeographicKeyValue?.value ?
+                                stratgyGeographicKeyValue?.value : "ONSITE",
+                            solutionType: solutionTypeListKeyValue?.value ?
+                                solutionTypeListKeyValue?.value : "CONTRACT",
+                            solutionLevel: solutionLevelListKeyValue?.value ?
+                                solutionLevelListKeyValue?.value : "LEVEL_I",
 
-                    const portfolioPriceAPIData = await portfolioPriceCreation(portfolioPriceCreate);
+                            preparedBy: administrative.preparedBy,
+                            approvedBy: administrative.approvedBy,
+                            preparedOn: administrative.preparedOn,
+                            revisedBy: administrative.revisedBy,
+                            revisedOn: administrative.revisedOn,
+                            salesOffice: administrative.salesOffice,
+                            offerValidity: administrative.offerValidity,
 
-                    setPortfolioEscalationPriceDataId({
-                        escalationPriceId: escalationPrice.data.escalationPriceId,
-                    })
-                    setPortfolioAdditionalPriceDataId({
-                        additionalPriceId: additionalPrice.data.additionalPriceId,
-                    })
-                    setPortfolioPriceDataId({
-                        portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
-                    })
-                    const { portfolioId, ...res } = generalComponentData;
+                            portfolioPrice: portfolioPriceDataId,
+                            additionalPrice: portfolioAdditionalPriceDataId,
+                            escalationPrice: portfolioEscalationPriceDataId,
 
-                    let priceobjData = {
-                        ...res,
-                        visibleInCommerce: true,
-                        customerId: 0,
-                        lubricant: true,
-                        customerSegment: generalComponentData.customerSegment.value
-                            ? generalComponentData.customerSegment.value
-                            : "EMPTY",
-                        // machineType: generalComponentData.machineType
-                        //     ? generalComponentData.machineType
-                        //     : "EMPTY",
-                        machineType: machineTypeKeyValue.value,
-                        status: generalComponentData.status
-                            ? generalComponentData.status
-                            : "EMPTY",
-                        strategyTask: generalComponentData.strategyTask
-                            ? generalComponentData.strategyTask
-                            : "EMPTY",
-                        taskType: generalComponentData.taskType
-                            ? generalComponentData.taskType
-                            : "EMPTY",
-                        usageCategory: generalComponentData.usageCategory
-                            ? generalComponentData.usageCategory
-                            : "EMPTY",
-                        productHierarchy: generalComponentData.productHierarchy
-                            ? generalComponentData.productHierarchy
-                            : "EMPTY",
-                        geographic: generalComponentData.geographic
-                            ? generalComponentData.geographic
-                            : "EMPTY",
-                        availability: generalComponentData.availability
-                            ? generalComponentData.availability
-                            : "EMPTY",
-                        responseTime: generalComponentData.responseTime
-                            ? generalComponentData.responseTime
-                            : "EMPTY",
-                        type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                        application: generalComponentData.application
-                            ? generalComponentData.application
-                            : "EMPTY",
-                        contractOrSupport: generalComponentData.contractOrSupport
-                            ? generalComponentData.contractOrSupport
-                            : "EMPTY",
-                        // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                        //     ? generalComponentData.lifeStageOfMachine
-                        //     : "EMPTY",
-                        lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                        supportLevel: generalComponentData.supportLevel
-                            ? generalComponentData.supportLevel
-                            : "EMPTY",
-                        items: [],
-                        customCoverages: [],
-                        customerGroup: generalComponentData.customerGroup
-                            ? generalComponentData.customerGroup
-                            : "EMPTY",
-                        searchTerm: "EMPTY",
-                        // supportLevel: "PREMIUM",
-                        supportLevel: value3.value,
-                        solutionType: solutionTypeListKeyValue.value ?
-                            solutionTypeListKeyValue.value : "EMPTY",
-                        solutionLevel: solutionLevelListKeyValue.value ?
-                            solutionLevelListKeyValue.value : "EMPTY",
-                        portfolioPrice: {
-                            portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
-                        },
-                        additionalPrice: {
-                            additionalPriceId: additionalPrice.data.additionalPriceId,
-                        },
-                        escalationPrice: {
-                            escalationPriceId: escalationPrice.data.escalationPriceId,
-                        },
+                            supportLevel: value3.value,
+                            status: value2.value,
 
-                        usageCategory: categoryUsageKeyValue1.value,
-                        taskType: stratgyTaskTypeKeyValue.value,
-                        strategyTask: stratgyTaskUsageKeyValue.value,
-                        responseTime: stratgyResponseTimeKeyValue.value,
-                        productHierarchy: stratgyHierarchyKeyValue.value,
-                        geographic: stratgyGeographicKeyValue.value,
-                        customItems: selectedCustomItems,
+                            machineType: "NEW",
+                            searchTerm: "",
+                            lubricant: true,
+                            customerId: 0,
+                            customerGroup: "",
+                            strategyTask: "PREVENTIVE_MAINTENANCE",
+                            taskType: "PM1",
+                            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+                            availability: "AVAILABILITY_GREATER_95",
+                            type: "MACHINE",
+                            application: "HILL",
+                            contractOrSupport: "LEVEL_I",
+                            lifeStageOfMachine: "NEW_BREAKIN",
+                            numberOfEvents: 0,
+                            rating: "",
+                            startUsage: 0,
+                            endUsage: 0,
+                            unit: "HOURS",
+                            additionals: "",
 
-                        preparedBy: administrative.preparedBy,
-                        approvedBy: administrative.approvedBy,
-                        preparedOn: administrative.preparedOn,
-                        revisedBy: administrative.revisedBy,
-                        revisedOn: administrative.revisedOn,
-                        salesOffice: administrative.salesOffice,
-                        offerValidity: administrative.offerValidity,
-                        template: flagTemplate,
-                        visibleInCommerce: flagCommerce,
-                    };
+                            customItems: selectedSolutionCustomItems,
+                            customCoverages: selectedSolutionCustomCoverages,
 
-                    const priceObjRes = await updateCustomPortfolio(
-                        portfolioId,
-                        priceobjData
-                    )
-                    if (priceObjRes.status === 200) {
-                        toast("👏 Portfolio updated", {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                            progress: undefined,
-                        });
-                        // setValue("administrative");
-                        setValue("priceAgreement");
-                        // setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: true });
-                        // console.log("administryRes updating", administryRes.data);
+                        };
+
+
+                        const priceObjRes = await updateCustomPortfolio(
+                            portfolioId,
+                            priceObjData
+                        )
+                        if (priceObjRes.status === 200) {
+                            toast("👏 Portfolio updated", {
+                                position: "top-right",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                                progress: undefined,
+                            });
+                            setValue("priceAgreement");
+                            setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
+                        } else {
+                            throw `${priceObjRes.status}:error in update portfolio`;
+                        };
                     } else {
-                        throw `${priceObjRes.status}:error in update portfolio`;
-                    };
+
+                        let priceEscalation = {
+                            priceMethod: priceMethodKeyValue1.value,
+                            priceHeadType: priceEscalationHeadKeyValue1.value,
+                            escalationPercentage: parseInt(escalationPriceValue),
+                            validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                            validTo: validityData.toDate.toISOString().substring(0, 10),
+                            userId: "string"
+                        }
+
+                        let priceAdditional = {
+                            priceMethod: priceMethodKeyValue1.value,
+                            priceHeadType: priceAdditionalHeadKeyValue1.value,
+                            additionalPercentage: parseInt(additionalPriceValue),
+                            validFrom: validityData.fromDate.toISOString().substring(0, 10),
+                            validTo: validityData.toDate.toISOString().substring(0, 10),
+                            userId: "string"
+                        }
+
+                        let portfolioPriceCreate = {
+                            priceMethod: priceMethodKeyValue1.value,
+                            priceType: priceTypeKeyValue1.value,
+                            priceList: priceListKeyValue1.value,
+                            priceDate: priceDetails.priceDate,
+                        }
+
+                        const escalationPrice = await escalationPriceCreation(priceEscalation);
+                        const additionalPrice = await additionalPriceCreation(priceAdditional);
+                        const portfolioPriceAPIData = await portfolioPriceCreation(portfolioPriceCreate);
+
+                        setPortfolioEscalationPriceDataId({
+                            escalationPriceId: escalationPrice.data.escalationPriceId,
+                        })
+                        setPortfolioAdditionalPriceDataId({
+                            additionalPriceId: additionalPrice.data.additionalPriceId,
+                        })
+                        setPortfolioPriceDataId({
+                            portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
+                        })
+
+                        setPortfolioPriceDataIdForExiting(portfolioPriceAPIData.data.portfolioPriceId);
+                        setEscalationPriceDataId(escalationPrice.data.escalationPriceId);
+                        setAdditionalPriceDataId(additionalPrice.data.additionalPriceId);
+                        const { portfolioId, ...res } = generalComponentData;
+
+                        // Old Todo
+
+                        // let priceobjData = {
+                        //     ...res,
+                        //     visibleInCommerce: true,
+                        //     customerId: 0,
+                        //     lubricant: true,
+                        //     customerSegment: generalComponentData.customerSegment.value
+                        //         ? generalComponentData.customerSegment.value
+                        //         : "EMPTY",
+                        //     // machineType: generalComponentData.machineType
+                        //     //     ? generalComponentData.machineType
+                        //     //     : "EMPTY",
+                        //     machineType: machineTypeKeyValue.value,
+                        //     status: generalComponentData.status
+                        //         ? generalComponentData.status
+                        //         : "EMPTY",
+                        //     strategyTask: generalComponentData.strategyTask
+                        //         ? generalComponentData.strategyTask
+                        //         : "EMPTY",
+                        //     taskType: generalComponentData.taskType
+                        //         ? generalComponentData.taskType
+                        //         : "EMPTY",
+                        //     usageCategory: generalComponentData.usageCategory
+                        //         ? generalComponentData.usageCategory
+                        //         : "EMPTY",
+                        //     productHierarchy: generalComponentData.productHierarchy
+                        //         ? generalComponentData.productHierarchy
+                        //         : "EMPTY",
+                        //     geographic: generalComponentData.geographic
+                        //         ? generalComponentData.geographic
+                        //         : "EMPTY",
+                        //     availability: generalComponentData.availability
+                        //         ? generalComponentData.availability
+                        //         : "EMPTY",
+                        //     responseTime: generalComponentData.responseTime
+                        //         ? generalComponentData.responseTime
+                        //         : "EMPTY",
+                        //     type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                        //     application: generalComponentData.application
+                        //         ? generalComponentData.application
+                        //         : "EMPTY",
+                        //     contractOrSupport: generalComponentData.contractOrSupport
+                        //         ? generalComponentData.contractOrSupport
+                        //         : "EMPTY",
+                        //     // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                        //     //     ? generalComponentData.lifeStageOfMachine
+                        //     //     : "EMPTY",
+                        //     lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                        //     supportLevel: generalComponentData.supportLevel
+                        //         ? generalComponentData.supportLevel
+                        //         : "EMPTY",
+                        //     items: [],
+                        //     customCoverages: [],
+                        //     customerGroup: generalComponentData.customerGroup
+                        //         ? generalComponentData.customerGroup
+                        //         : "EMPTY",
+                        //     searchTerm: "EMPTY",
+                        //     // supportLevel: "PREMIUM",
+                        //     supportLevel: value3.value,
+                        //     solutionType: solutionTypeListKeyValue.value ?
+                        //         solutionTypeListKeyValue.value : "EMPTY",
+                        //     solutionLevel: solutionLevelListKeyValue.value ?
+                        //         solutionLevelListKeyValue.value : "EMPTY",
+                        //     portfolioPrice: {
+                        //         portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
+                        //     },
+                        //     additionalPrice: {
+                        //         additionalPriceId: additionalPrice.data.additionalPriceId,
+                        //     },
+                        //     escalationPrice: {
+                        //         escalationPriceId: escalationPrice.data.escalationPriceId,
+                        //     },
+
+                        //     usageCategory: categoryUsageKeyValue1.value,
+                        //     taskType: stratgyTaskTypeKeyValue.value,
+                        //     strategyTask: stratgyTaskUsageKeyValue.value,
+                        //     responseTime: stratgyResponseTimeKeyValue.value,
+                        //     productHierarchy: stratgyHierarchyKeyValue.value,
+                        //     geographic: stratgyGeographicKeyValue.value,
+                        //     customItems: selectedCustomItems,
+
+                        //     preparedBy: administrative.preparedBy,
+                        //     approvedBy: administrative.approvedBy,
+                        //     preparedOn: administrative.preparedOn,
+                        //     revisedBy: administrative.revisedBy,
+                        //     revisedOn: administrative.revisedOn,
+                        //     salesOffice: administrative.salesOffice,
+                        //     offerValidity: administrative.offerValidity,
+                        //     template: flagTemplate,
+                        //     visibleInCommerce: flagCommerce,
+                        // };
+
+
+
+                        // New Todo
+                        let priceObjData = {
+                            name: generalComponentData.name,
+                            description: generalComponentData.description,
+                            externalReference: generalComponentData.externalReference,
+                            customerSegment: generalComponentData?.customerSegment?.value,
+                            template: flagTemplate,
+                            visibleInCommerce: flagCommerce,
+
+                            validFrom: validityData.fromDate,
+                            validTo: validityData.toDate,
+
+
+                            responseTime: stratgyResponseTimeKeyValue?.value ?
+                                stratgyResponseTimeKeyValue?.value : "PROACTIVE",
+                            productHierarchy: stratgyHierarchyKeyValue?.value ?
+                                stratgyHierarchyKeyValue?.value : "END_PRODUCT",
+                            geographic: stratgyGeographicKeyValue?.value ?
+                                stratgyGeographicKeyValue?.value : "ONSITE",
+                            solutionType: solutionTypeListKeyValue?.value ?
+                                solutionTypeListKeyValue?.value : "CONTRACT",
+                            solutionLevel: solutionLevelListKeyValue?.value ?
+                                solutionLevelListKeyValue?.value : "LEVEL_I",
+
+                            preparedBy: administrative.preparedBy,
+                            approvedBy: administrative.approvedBy,
+                            preparedOn: administrative.preparedOn,
+                            revisedBy: administrative.revisedBy,
+                            revisedOn: administrative.revisedOn,
+                            salesOffice: administrative.salesOffice,
+                            offerValidity: administrative.offerValidity,
+
+
+                            portfolioPrice: {
+                                portfolioPriceId: portfolioPriceAPIData.data.portfolioPriceId,
+                            },
+                            additionalPrice: {
+                                additionalPriceId: additionalPrice.data.additionalPriceId,
+                            },
+                            escalationPrice: {
+                                escalationPriceId: escalationPrice.data.escalationPriceId,
+                            },
+
+
+                            supportLevel: value3.value,
+                            status: value2.value,
+
+                            machineType: "NEW",
+                            searchTerm: "",
+                            lubricant: true,
+                            customerId: 0,
+                            customerGroup: "",
+                            strategyTask: "PREVENTIVE_MAINTENANCE",
+                            taskType: "PM1",
+                            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+                            availability: "AVAILABILITY_GREATER_95",
+                            type: "MACHINE",
+                            application: "HILL",
+                            contractOrSupport: "LEVEL_I",
+                            lifeStageOfMachine: "NEW_BREAKIN",
+                            numberOfEvents: 0,
+                            rating: "",
+                            startUsage: 0,
+                            endUsage: 0,
+                            unit: "HOURS",
+                            additionals: "",
+
+                            customItems: selectedSolutionCustomItems,
+                            customCoverages: selectedSolutionCustomCoverages,
+
+                        };
+
+                        const priceObjRes = await updateCustomPortfolio(
+                            portfolioId,
+                            priceObjData
+                        )
+                        if (priceObjRes.status === 200) {
+                            toast("👏 Portfolio updated", {
+                                position: "top-right",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                                progress: undefined,
+                            });
+                            setValue("priceAgreement");
+                            setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
+                        } else {
+                            throw `${priceObjRes.status}:error in update portfolio`;
+                        };
+                    }
+
                 }
 
 
@@ -2709,7 +3690,8 @@ export function CreateCustomPortfolio(props) {
                     cvgIds.push({ coverageId: cvgRes.customCoverageId });
                 }
                 console.log("cvgIds : ", cvgIds);
-                setPortfolioCoverage(cvgIds);
+                // setPortfolioCoverage(cvgIds);
+                setSelectedSolutionCustomCoverages(cvgIds);
 
 
                 setGeneralComponentData({
@@ -2717,93 +3699,165 @@ export function CreateCustomPortfolio(props) {
                     customCoverageId: cvgIds,
                 });
                 const { portfolioId, ...res } = generalComponentData;
-                let obj = {
-                    ...res,
-                    visibleInCommerce: true,
-                    customerId: 0,
-                    lubricant: true,
-                    customerSegment: generalComponentData.customerSegment
-                        ? generalComponentData.customerSegment.value
-                        : "EMPTY",
-                    // machineType: generalComponentData.machineType
-                    //     ? generalComponentData.machineType
-                    //     : "EMPTY",
-                    status: generalComponentData.status
-                        ? generalComponentData.status
-                        : "EMPTY",
-                    strategyTask: generalComponentData.strategyTask
-                        ? generalComponentData.strategyTask
-                        : "EMPTY",
-                    taskType: generalComponentData.taskType
-                        ? generalComponentData.taskType
-                        : "EMPTY",
-                    usageCategory: generalComponentData.usageCategory
-                        ? generalComponentData.usageCategory
-                        : "EMPTY",
-                    productHierarchy: generalComponentData.productHierarchy
-                        ? generalComponentData.productHierarchy
-                        : "EMPTY",
-                    geographic: generalComponentData.geographic
-                        ? generalComponentData.geographic
-                        : "EMPTY",
-                    availability: generalComponentData.availability
-                        ? generalComponentData.availability
-                        : "EMPTY",
-                    responseTime: generalComponentData.responseTime
-                        ? generalComponentData.responseTime
-                        : "EMPTY",
-                    type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-                    application: generalComponentData.application
-                        ? generalComponentData.application
-                        : "EMPTY",
-                    contractOrSupport: generalComponentData.contractOrSupport
-                        ? generalComponentData.contractOrSupport
-                        : "EMPTY",
-                    // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
-                    //     ? generalComponentData.lifeStageOfMachine
-                    //     : "EMPTY",
-                    machineType: machineTypeKeyValue.value,
-                    lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
-                    supportLevel: generalComponentData.supportLevel
-                        ? generalComponentData.supportLevel
-                        : "EMPTY",
-                    customerGroup: generalComponentData.customerGroup
-                        ? generalComponentData.customerGroup
-                        : "EMPTY",
-                    searchTerm: "EMPTY",
-                    // supportLevel: "PREMIUM",
-                    supportLevel: value3.value,
 
-                    portfolioPrice: portfolioPriceDataId,
-                    additionalPrice: portfolioAdditionalPriceDataId,
-                    escalationPrice: portfolioEscalationPriceDataId,
+                // Old Todo
+                // let obj = {
+                //     ...res,
+                //     visibleInCommerce: true,
+                //     customerId: 0,
+                //     lubricant: true,
+                //     customerSegment: generalComponentData.customerSegment
+                //         ? generalComponentData.customerSegment.value
+                //         : "EMPTY",
+                //     // machineType: generalComponentData.machineType
+                //     //     ? generalComponentData.machineType
+                //     //     : "EMPTY",
+                //     status: generalComponentData.status
+                //         ? generalComponentData.status
+                //         : "EMPTY",
+                //     strategyTask: generalComponentData.strategyTask
+                //         ? generalComponentData.strategyTask
+                //         : "EMPTY",
+                //     taskType: generalComponentData.taskType
+                //         ? generalComponentData.taskType
+                //         : "EMPTY",
+                //     usageCategory: generalComponentData.usageCategory
+                //         ? generalComponentData.usageCategory
+                //         : "EMPTY",
+                //     productHierarchy: generalComponentData.productHierarchy
+                //         ? generalComponentData.productHierarchy
+                //         : "EMPTY",
+                //     geographic: generalComponentData.geographic
+                //         ? generalComponentData.geographic
+                //         : "EMPTY",
+                //     availability: generalComponentData.availability
+                //         ? generalComponentData.availability
+                //         : "EMPTY",
+                //     responseTime: generalComponentData.responseTime
+                //         ? generalComponentData.responseTime
+                //         : "EMPTY",
+                //     type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+                //     application: generalComponentData.application
+                //         ? generalComponentData.application
+                //         : "EMPTY",
+                //     contractOrSupport: generalComponentData.contractOrSupport
+                //         ? generalComponentData.contractOrSupport
+                //         : "EMPTY",
+                //     // lifeStageOfMachine: generalComponentData.lifeStageOfMachine
+                //     //     ? generalComponentData.lifeStageOfMachine
+                //     //     : "EMPTY",
+                //     machineType: machineTypeKeyValue.value,
+                //     lifeStageOfMachine: lifeStageOfMachineKeyValue.value,
+                //     supportLevel: generalComponentData.supportLevel
+                //         ? generalComponentData.supportLevel
+                //         : "EMPTY",
+                //     customerGroup: generalComponentData.customerGroup
+                //         ? generalComponentData.customerGroup
+                //         : "EMPTY",
+                //     searchTerm: "EMPTY",
+                //     // supportLevel: "PREMIUM",
+                //     supportLevel: value3.value,
 
-                    customeItems: portfolioCustomItems,
-                    items: [],
-                    customCoverages: cvgIds,
-                    usageCategory: categoryUsageKeyValue1.value,
-                    taskType: stratgyTaskTypeKeyValue.value,
-                    strategyTask: stratgyTaskUsageKeyValue.value,
-                    responseTime: stratgyResponseTimeKeyValue.value,
-                    productHierarchy: stratgyHierarchyKeyValue.value,
-                    geographic: stratgyGeographicKeyValue.value,
+                //     portfolioPrice: portfolioPriceDataId,
+                //     additionalPrice: portfolioAdditionalPriceDataId,
+                //     escalationPrice: portfolioEscalationPriceDataId,
+
+                //     customeItems: selectedCustomItems,
+                //     items: [],
+                //     customCoverages: cvgIds,
+                //     usageCategory: categoryUsageKeyValue1.value,
+                //     taskType: stratgyTaskTypeKeyValue.value,
+                //     strategyTask: stratgyTaskUsageKeyValue.value,
+                //     responseTime: stratgyResponseTimeKeyValue.value,
+                //     productHierarchy: stratgyHierarchyKeyValue.value,
+                //     geographic: stratgyGeographicKeyValue.value,
+                //     preparedBy: administrative.preparedBy,
+                //     approvedBy: administrative.approvedBy,
+                //     preparedOn: administrative.preparedOn,
+                //     revisedBy: administrative.revisedBy,
+                //     revisedOn: administrative.revisedOn,
+                //     salesOffice: administrative.salesOffice,
+                //     offerValidity: administrative.offerValidity,
+
+                //     template: flagTemplate,
+                //     visibleInCommerce: flagCommerce,
+                // };
+
+                // New Todo
+                let reqObj = {
+                    customPortfolioId: portfolioId,
+                    name: generalComponentData.name,
+                    description: generalComponentData.description,
+                    externalReference: generalComponentData.externalReference,
+                    customerSegment: generalComponentData?.customerSegment?.value,
+                    template: flagTemplate,
+                    visibleInCommerce: flagCommerce,
+
+                    validFrom: validityData.fromDate,
+                    validTo: validityData.toDate,
+
+
+                    responseTime: stratgyResponseTimeKeyValue?.value ?
+                        stratgyResponseTimeKeyValue?.value : "PROACTIVE",
+                    productHierarchy: stratgyHierarchyKeyValue?.value ?
+                        stratgyHierarchyKeyValue?.value : "END_PRODUCT",
+                    geographic: stratgyGeographicKeyValue?.value ?
+                        stratgyGeographicKeyValue?.value : "ONSITE",
+                    solutionType: solutionTypeListKeyValue?.value ?
+                        solutionTypeListKeyValue?.value : "CONTRACT",
+                    solutionLevel: solutionLevelListKeyValue?.value ?
+                        solutionLevelListKeyValue?.value : "LEVEL_I",
+
                     preparedBy: administrative.preparedBy,
                     approvedBy: administrative.approvedBy,
                     preparedOn: administrative.preparedOn,
                     revisedBy: administrative.revisedBy,
                     revisedOn: administrative.revisedOn,
-                    salesOffice: administrative.branch,
+                    salesOffice: administrative.salesOffice,
                     offerValidity: administrative.offerValidity,
 
-                    template: flagTemplate,
-                    visibleInCommerce: flagCommerce,
+                    portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+                        ? portfolioPriceDataId : null,
+                    additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+                        ? portfolioAdditionalPriceDataId : null,
+                    escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+                        ? portfolioEscalationPriceDataId : null,
+
+
+                    supportLevel: value3.value,
+                    status: value2.value,
+
+                    machineType: "NEW",
+                    searchTerm: "",
+                    lubricant: true,
+                    customerId: 0,
+                    customerGroup: "",
+                    strategyTask: "PREVENTIVE_MAINTENANCE",
+                    taskType: "PM1",
+                    usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+                    availability: "AVAILABILITY_GREATER_95",
+                    type: "MACHINE",
+                    application: "HILL",
+                    contractOrSupport: "LEVEL_I",
+                    lifeStageOfMachine: "NEW_BREAKIN",
+                    numberOfEvents: 0,
+                    rating: "",
+                    startUsage: 0,
+                    endUsage: 0,
+                    unit: "HOURS",
+                    additionals: "",
+                    customItems: selectedSolutionCustomItems,
+                    customCoverages: cvgIds,
                 };
 
-                console.log("Update able obj : ", obj);
-                if (generalComponentData.portfolioId) {
+
+                console.log("Update able obj : ", reqObj);
+                // if (generalComponentData.portfolioId) {
+                if (portfolioId != "") {
                     const updatePortfolioRes = await updateCustomPortfolio(
-                        generalComponentData.portfolioId,
-                        obj
+                        // generalComponentData.portfolioId,
+                        portfolioId,
+                        reqObj
                     );
                     if (updatePortfolioRes.status === 200) {
                         toast("👏 Portfolio updated", {
@@ -2997,101 +4051,6 @@ export function CreateCustomPortfolio(props) {
 
     }
 
-    const populateHeader = (result) => {
-        console.log("result ----", result);
-        setViewOnlyTab({
-            generalViewOnly: true,
-            validityViewOnly: true,
-            strategyViewOnly: true,
-            administrativeViewOnly: true,
-            priceViewOnly: true,
-            priceAgreementViewOnly: true,
-            coverageViewOnly: true,
-        });
-        setGeneralComponentData({
-            name: result.name,
-            description: result.description,
-            serviceDescription: "",
-            externalReference: result.externalReference,
-            customerSegment: { label: result.customerSegment, value: result.customerSegment },
-            // customerSegment: null,
-            items: result.customItems,
-            coverages: result.customCoverages,
-        })
-        // setPortfolioCoverage(result.coverages);
-
-        // // categoryUsageKeyValue1
-        // setCategoryUsageKeyValue1({ label: result.usageCategory, value: result.usageCategory })
-        // setStratgyTaskUsageKeyValue({ label: result.strategyTask, value: result.strategyTask })
-        // setStratgyTaskTypeKeyValue({ label: result.taskType, value: result.taskType })
-        setStratgyResponseTimeKeyValue({ label: result.responseTime, value: result.responseTime })
-        setStratgyHierarchyKeyValue({ label: result.productHierarchy, value: result.productHierarchy })
-        setStratgyGeographicKeyValue({ label: result.geographic, value: result.geographic })
-
-        setAdministrative({
-            preparedBy: result.preparedBy,
-            approvedBy: result.approvedBy,
-            preparedOn: result.preparedOn,
-            revisedBy: result.revisedBy,
-            revisedOn: result.revisedOn,
-            branch: result.salesOffice,
-            offerValidity: result.offerValidity,
-        });
-        setFlagCommerce(result.visibleInCommerce);
-        setFlagTemplate(result.template);
-        setSelectedCustomItems(result.customItems)
-        setCreateCustomCoverage(result.customCoverages)
-        // setSelectedMasterData(result.coverages);
-        setSelectedMasterData(result.customCoverages)
-        setBundleItems(result.customItems)
-
-
-        let itemsArrData = [];
-
-        // console.log("result 123344 ---- : ", result)
-
-        for (let b = 0; b < result.itemRelations.length; b++) {
-            // console.log("item relations ", b + ": " + result.itemRelations[b].portfolioItemId)
-            // console.log("hello user -----", b)
-            let expendedArrObj = [];
-            let obj = result.customItems.find(obj => obj.customItemId == result.itemRelations[b].portfolioItemId);
-            for (let c = 0; c < result.itemRelations[b].bundles.length; c++) {
-
-                let bundleObj = result.customItems.find((objBundle, i) => {
-                    if (objBundle.customItemId == result.itemRelations[b].bundles[c]) {
-
-                        return objBundle; // stop searching
-                    }
-                });
-                expendedArrObj.push(bundleObj);
-            }
-
-            for (let d = 0; d < result.itemRelations[b].services.length; d++) {
-
-                let serviceObj = result.customItems.find((objService, i) => {
-                    if (objService.customItemId == result.itemRelations[b].services[d]) {
-
-                        return objService; // stop searching
-                    }
-                });
-                expendedArrObj.push(serviceObj);
-            }
-            obj.associatedServiceOrBundle = expendedArrObj;
-            itemsArrData.push(obj);
-        }
-
-        // setPortfolioCustomItems(result.customItems)
-        setPortfolioCustomItems(itemsArrData);
-    }
-
-
-
-    const handleSnack = (snackSeverity, snackMessage) => {
-        setSnackMessage(snackMessage);
-        setSeverity(snackSeverity);
-        setOpenSnack(true);
-    };
-
     const makeHeaderEditable = () => {
         // console.log("Data is : ", "helloooooo")
         if (value === "general" && viewOnlyTab.generalViewOnly)
@@ -3104,6 +4063,9 @@ export function CreateCustomPortfolio(props) {
         }
         else if (value === "administrative" && viewOnlyTab.administrativeViewOnly) {
             setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: false });
+        }
+        else if (value === "price" && viewOnlyTab.priceViewOnly) {
+            setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: false });
         }
     }
 
@@ -3509,6 +4471,46 @@ export function CreateCustomPortfolio(props) {
     }, [dispatch]);
 
     useEffect(() => {
+
+        if (
+            (state && state.type == "fetch") &&
+            (portfolioPriceDataIdForExiting !== ""
+                // ||
+                //     portfolioPriceDataIdForExiting == null ||
+                //     portfolioPriceDataIdForExiting == "string" ||
+                //     portfolioPriceDataIdForExiting == undefined
+            )
+        ) {
+            // if  {
+            fetchPortfolioPriceDataById(portfolioPriceDataIdForExiting);
+            // }
+        } else if (
+            (state && state.type == "new") &&
+            (portfolioPriceDataIdForExiting !== ""
+                // ||
+                //     portfolioPriceDataIdForExiting !== null ||
+                //     portfolioPriceDataIdForExiting !== "string" ||
+                //     portfolioPriceDataIdForExiting !== undefined
+            )
+        ) {
+            // if  {
+            fetchPortfolioPriceDataById(portfolioPriceDataIdForExiting);
+            // }
+        }
+        // 
+    }, [value]);
+
+    const fetchPortfolioPriceDataById = async (id) => {
+
+        // alert(id)
+        const portfolioPriceDataFetch = await getPortfolioPriceById(id);
+
+        setPricePriceData(portfolioPriceDataFetch.data.price)
+        setPriceCalculatedPrice(portfolioPriceDataFetch.data.calculatedPrice);
+
+    };
+
+    useEffect(() => {
         if (state && state.type === "new") {
             // setPortfolioId(state.portfolioId);
             // setGeneralData({ ...generalData, estimationNo: state.builderId });
@@ -3536,6 +4538,267 @@ export function CreateCustomPortfolio(props) {
                 });
             setHeaderLoading(false);
         }
+    };
+
+
+    const populateHeader = (result) => {
+        console.log("result ----", result);
+
+        setViewOnlyTab({
+            generalViewOnly: true,
+            validityViewOnly: true,
+            strategyViewOnly: true,
+            administrativeViewOnly: true,
+            priceViewOnly: true,
+            priceAgreementViewOnly: true,
+            coverageViewOnly: true,
+        });
+
+        // For set Status state 
+        var statusVal, statusLabel;
+        if (result.status == "" || result.status == "EMPTY" || result.status == null) {
+            statusVal = "DRAFT";
+            statusLabel = "Draft";
+        } else {
+            statusVal = result.status;
+            statusLabel = result.status;
+        }
+        setValue2({ label: statusLabel, value: statusVal })
+
+        // For set SupportLevel state
+        var supportLevelVal, supportLevelLabel;
+        if (result.supportLevel == "" || result.supportLevel == "EMPTY" || result.supportLevel == null) {
+            supportLevelVal = "STANDARD";
+            supportLevelLabel = "Standard (Bronze)";
+        } else {
+            supportLevelVal = result.supportLevel;
+            supportLevelLabel = result.supportLevel;
+        }
+        setValue3({ label: supportLevelLabel, value: supportLevelVal })
+
+        // set General Tab states Data 
+        setGeneralComponentData({
+            name: result.name,
+            description: result.description,
+            serviceDescription: "",
+            externalReference: result.externalReference,
+            customerSegment: { label: result.customerSegment, value: result.customerSegment },
+            items: [],
+            coverages: [],
+        })
+
+        // set Validity Tab States Data
+        setValidityData({
+            fromDate: result.validFrom,
+            toDate: result.validTo,
+            from: null,
+            to: null,
+            fromInput: "",
+            toInput: "",
+        })
+
+        // set Category Usage Key-Value 
+        setCategoryUsageKeyValue1({
+            label: result.usageCategory,
+            value: result.usageCategory
+        });
+
+        // set StratgyTask Usage Key-Value 
+        setStratgyTaskUsageKeyValue({
+            label: result.strategyTask,
+            value: result.strategyTask
+        });
+
+        // set Stratgy Task-Type Key-Value
+        setStratgyTaskTypeKeyValue({
+            label: result.taskType,
+            value: result.taskType
+        });
+
+        // set Stratgy Response-Time Key-Value
+        setStratgyResponseTimeKeyValue({
+            label: result.responseTime,
+            value: result.responseTime
+        });
+
+        // set Stratgy Product-Hierarchy Key-Value
+        setStratgyHierarchyKeyValue({
+            label: result.productHierarchy,
+            value: result.productHierarchy
+        });
+
+        // set Stratgy Geographic Key-Value
+        setStratgyGeographicKeyValue({
+            label: result.geographic,
+            value: result.geographic
+        });
+
+        // set Stratgy Machine-Type Key-Value
+        setMachineTypeKeyValue({
+            label: result.machineType,
+            value: result.machineType
+        });
+
+        // set Stratgy LifeStage-of-Machine Key-Value
+        setLifeStageOfMachineKeyValue({
+            label: result.lifeStageOfMachine,
+            value: result.lifeStageOfMachine
+        });
+
+        // set Stratgy Solution-Type Key-Value
+        setSolutionTypeListKeyValue({
+            label: result.solutionType,
+            value: result.solutionType
+        });
+
+        // set Stratgy Solution-Level Key-Value
+        setSolutionLevelListKeyValue({
+            label: result.solutionLevel,
+            value: result.solutionLevel
+        });
+
+        // set FlagTemplate 
+        setFlagTemplate(result.template);
+
+        // set Flag-Commerce 
+        setFlagCommerce(result.visibleInCommerce);
+
+        // set Administrative Tab state Value
+        setAdministrative({
+            preparedBy: result.preparedBy,
+            approvedBy: result.approvedBy,
+            preparedOn: result.preparedOn,
+            revisedBy: result.revisedBy,
+            revisedOn: result.revisedOn,
+            salesOffice: result.salesOffice,
+            offerValidity: result.offerValidity,
+        });
+
+        // set Portfolio Id 
+        setPortfolioId(result.customPortfolioId);
+
+
+        let itemsArrData = [];
+        let customItemArr = [];
+        let createdCustomCoverages = [];
+
+        // Set Data By Item Relation Data Data
+        for (let b = 0; b < result.itemRelations.length; b++) {
+            let expendedArrObj = [];
+            let obj = result.customItems.find(obj => obj.customItemId == result.itemRelations[b].portfolioItemId);
+            for (let c = 0; c < result.itemRelations[b].bundles.length; c++) {
+
+                let bundleObj = result.customItems.find((objBundle, i) => {
+                    if (objBundle.customItemId == result.itemRelations[b].bundles[c]) {
+
+                        return objBundle; // stop searching
+                    }
+                });
+                expendedArrObj.push(bundleObj);
+            }
+
+            for (let d = 0; d < result.itemRelations[b].services.length; d++) {
+                let serviceObj = result.customItems.find((objService, i) => {
+                    if (objService.customItemId == result.itemRelations[b].services[d]) {
+                        return objService; // stop searching
+                    }
+                });
+                expendedArrObj.push(serviceObj);
+            }
+
+            obj.associatedServiceOrBundle = expendedArrObj;
+            itemsArrData.push(obj);
+        }
+        setSelectedSolutionItems(itemsArrData);
+
+        // for Update  Custom-Item in Portfolio Item Data BY Id 
+        for (let i = 0; i < result.customItems.length; i++) {
+            customItemArr.push({ customItemId: result.customItems[i].customItemId })
+        }
+        setSelectedSolutionCustomItems(customItemArr)
+
+        // for Update custom-Coverage in Portfolio Coverage Data BY Id
+        for (let k = 0; k < result.customCoverages.length; k++) {
+            createdCustomCoverages.push({ coverageId: result.customCoverages[k].customCoverageId })
+        }
+        setSelectedSolutionCustomCoverages(createdCustomCoverages)
+
+        setSelectedMasterData(result.customCoverages)
+        // setCreateCustomCoverage(result.customCoverages)
+
+        if (Object.keys(result.additionalPrice).length > 0) {
+            setAdditionalPriceValue(result.additionalPrice.additionalPercentage);
+            setPriceAdditionalHeadKeyValue1(
+                {
+                    label: result.additionalPrice.priceHeadType,
+                    value: result.additionalPrice.priceHeadType
+                }
+            );
+            setAdditionalPriceDataId(result.additionalPrice.additionalPriceId);
+            setPortfolioAdditionalPriceDataId({
+                additionalPriceId: result.additionalPrice.additionalPriceId,
+            })
+        }
+
+        if (Object.keys(result.escalationPrice).length > 0) {
+            setEscalationPriceValue(result.escalationPrice.escalationPercentage);
+            setPriceEscalationKeyValue1({
+                label: result.escalationPrice.priceHeadType,
+                value: result.escalationPrice.priceHeadType
+            });
+            setEscalationPriceDataId(result.escalationPrice.escalationPriceId);
+            setPortfolioEscalationPriceDataId({
+                escalationPriceId: result.escalationPrice.escalationPriceId,
+            })
+        }
+
+        if (Object.keys(result.portfolioPrice).length > 0) {
+
+            setPriceListKeyValue1({
+                label: result.portfolioPrice.priceList,
+                value: result.portfolioPrice.priceList
+            });
+
+            setPriceMethodKeyValue1({
+                label: result.portfolioPrice.priceMethod,
+                value: result.portfolioPrice.priceMethod
+            });
+
+            setPriceDetails({
+                ...priceDetails,
+                priceDate: result.portfolioPrice.priceDate,
+            });
+
+            setPriceTypeKeyValue1({
+                label: result.portfolioPrice.priceType,
+                value: result.portfolioPrice.priceType
+            });
+
+            setPricePriceData(result.portfolioPrice.price)
+            setPriceCalculatedPrice(result.portfolioPrice.calculatedPrice);
+            setPortfolioPriceDataIdForExiting(result.portfolioPrice.portfolioPriceId);
+            setPortfolioPriceDataId({
+                portfolioPriceId: result.portfolioPrice.portfolioPriceId,
+            })
+        }
+
+
+        // setSelectedCustomItems(result.customItems)
+
+        // // setSelectedMasterData(result.coverages);
+
+        // setBundleItems(result.customItems)
+
+    }
+
+    // console.log("setSelectedMasterData 12345676 : ", selectedMasterData);
+
+
+
+    const handleSnack = (snackSeverity, snackMessage) => {
+        setSnackMessage(snackMessage);
+        setSeverity(snackSeverity);
+        setOpenSnack(true);
     };
 
     const strategyList = useAppSelector(
@@ -3893,7 +5156,7 @@ export function CreateCustomPortfolio(props) {
         }
 
         console.log("customItemsData : ", customItemsData);
-        setPortfolioCustomItems(customItemsData);
+        setSelectedCustomItems(customItemsData);
 
         // const { portfolioId, ...res } = generalComponentData;
 
@@ -3973,7 +5236,7 @@ export function CreateCustomPortfolio(props) {
         //     preparedOn: administrative.preparedOn,
         //     revisedBy: administrative.revisedBy,
         //     revisedOn: administrative.revisedOn,
-        //     salesOffice: administrative.branch,
+        //     salesOffice: administrative.salesOffice,
         //     offerValidity: administrative.offerValidity,
         // };
 
@@ -4025,7 +5288,7 @@ export function CreateCustomPortfolio(props) {
             preparedOn: administrative.preparedOn,
             revisedBy: administrative.revisedBy,
             revisedOn: administrative.revisedOn,
-            salesOffice: administrative.branch,
+            salesOffice: administrative.salesOffice,
             offerValidity: administrative.offerValidity,
             customItems: customItemsData,
             customCoverages: portfolioCoverage,
@@ -4064,9 +5327,9 @@ export function CreateCustomPortfolio(props) {
             //     console.log("tempBundleItems[i].customItemId :", tempBundleItems[i].customItemId)
             createdItemId = tempBundleItems[i].customItemId;
 
-            if (tempBundleItems[i].itemId === currentItemId) {
+            if (tempBundleItems[i].customItemId === currentItemId) {
                 reqObj = {
-                    itemId: tempBundleItems[i].itemId,
+                    itemId: tempBundleItems[i].customItemId,
                     standardJobId: tempBundleItems[i].itemBodyModel.standardJobId,
                     repairKitId: tempBundleItems[i].itemBodyModel.repairKitId,
                 }
@@ -6154,9 +7417,55 @@ export function CreateCustomPortfolio(props) {
         setEditItemShow(true);
     };
 
-    const getAddportfolioItemDataFun = (data) => {
+    const getAddportfolioItemDataFun = async (data) => {
         setAddportFolioItem(data);
-        handleBundleItemSaveAndContinue();
+
+        const rObj = {
+            itemPriceDataId: 0,
+            quantity: addPortFolioItem.quantity,
+            startUsage: "",
+            endUsage: "",
+            standardJobId: addPortFolioItem.templateId,
+            repairKitId: "",
+            templateDescription: addPortFolioItem.templateDescription?.value,
+            repairOption: "",
+            additional: "",
+            partListId: "",
+            serviceEstimateId: "",
+            numberOfEvents: 0,
+            priceMethod: "LIST_PRICE",
+            priceType: "FIXED",
+            listPrice: 0,
+            priceEscalation: "",
+            calculatedPrice: 0,
+            flatPrice: 0,
+            discountType: "",
+            year: addPortFolioItem.year,
+            noOfYear: addPortFolioItem.noOfYear,
+            sparePartsPrice: 0,
+            sparePartsPriceBreakDownPercentage: 0,
+            servicePrice: 0,
+            labourPrice: 0,
+            labourPriceBreakDownPercentage: 0,
+            miscPrice: 0,
+            miscPriceBreakDownPercentage: 0,
+            totalPrice: 0,
+            netService: 0,
+            portfolio: {
+                portfolioId: ((portfolioId == 0 || portfolioId == null || portfolioId == undefined) ? 1 : portfolioId)
+            },
+            tenantId: 0,
+            createdAt: "2022-12-09T13:52:27.880Z",
+            partsRequired: true,
+            serviceRequired: false,
+            labourRequired: true,
+            miscRequired: true
+        };
+
+        const itemPriceDataRes = await customPriceCreation(rObj)
+
+        setItemPriceData(itemPriceDataRes.data)
+        handleBundleItemSaveAndContinue(data, itemPriceDataRes.data);
         setTempBundleService1([]);
         setTempBundleService2([]);
         setTempBundleService3([]);
@@ -7132,62 +8441,42 @@ export function CreateCustomPortfolio(props) {
         }
     }
 
-    // const handleContinueOfServiceOrBundle = async () => {
-    //     // setTempBundleService3([])
-    //     if (categoryUsageKeyValue1.value === "REPAIR_OR_REPLACE") {
-    //         setTabs("4")//navigate to component data tab
-    //     } else {
-    //         // let find that id and get reqData for API
-    //         let reqObj = {}
-    //         for (let i = 0; i < tempBundleItems.length; i++) {
-    //             if (tempBundleItems[i].customItemId === currentItemId) {
-    //                 reqObj = {
-    //                     itemId: tempBundleItems[i].customItemId,
-    //                     standardJobId: tempBundleItems[i].customItemBodyModel.standardJobId,
-    //                     repairKitId: tempBundleItems[i].customItemBodyModel.repairKitId,
-    //                 }
-    //                 break;
-    //             }
-    //         }
-    //         const itemPriceRes = await getcustomItemPrice(reqObj)
-    //         setItemPriceCalculator({
-    //             netParts: "11",
-    //             netService: "11",
-    //             priceType: "11",
-    //             netPrice: itemPriceRes.customItemHeaderModel.netPrice,
-    //             netAdditionals: "11",
-    //         })
+    const getFormattedDateTimeByTimeStamp = (timeStamp) => {
 
-    //         // call put  rkid API to get price and populate it in tab 5
-    //         // const itemPriceRes = await getItemPrice({
-    //         //   standardJobId: itemRes.data.itemBodyModel.standardJobId,
-    //         //   repairKitId: itemRes.data.itemBodyModel.repairKitId,
-    //         //   itemId: itemRes.data.itemId,
-    //         // });
-    //         // const {priceMethod,listPrice,priceEscalation,additional,calculatedPrice,flatPrice,discountType,year,totalPrice,usage,avgUsage,frequency,} = itemPriceRes.itemBodyModel;
-    //         // setPriceCalculator({
-    //         //   ...priceCalculator,
-    //         //   priceMethod: { label: priceMethod, value: priceMethod },
-    //         //   listPrice,
-    //         //   priceEscalationInput: priceEscalation,
-    //         //   priceAdditionalInput: additional,
-    //         //   calculatedPrice,
-    //         //   flatPrice,
-    //         //   discountTypeInput: discountType,
-    //         //   priceYear: { label: year, value: year },
-    //         //   totalPrice,
-    //         //   frequency: { label: frequency, value: frequency },
-    //         //   usageType: { label: usage, value: usage },
-    //         //   startUsage: avgUsage,
-    //         //   endUsage: avgUsage,
-    //         // });
+        var date = new Date(timeStamp);
+        var year = date.getFullYear();
+        // var m = date.getMonth() + 1;
+        var m = date.getMonth();
+        // var month = m < 10 ? '0' + m : m;
+        var month = m;
+        var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+        var format = "AM";
+        var hour = date.getHours();
+        var minutes = date.getMinutes();
 
+        var monthName = ["Jan", "Feb", "Mar", "April", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-    //         setTabs("5")
+        if (hour > 11) {
+            format = "PM";
+        }
+        if (hour > 12) {
+            hour = hour - 12;
+        } else if (hour === 0) {
+            hour = 12;
+        }
 
+        if (hour < 10) {
+            hour = "0" + hour;
+        }
 
-    //     }
-    // }
+        if (minutes < 10) {
+            minutes = "0" + minutes;
+        }
+
+        // var finalDateString = day + "-" + month + "-" + year + " " + hour + ":" + minutes + " " + format;
+        var finalDateString = year + "-" + month + "-" + day;
+        return finalDateString;
+    }
     const handleContinueOfServiceOrBundle = async () => {
         setTabs("4")
     }
@@ -7561,8 +8850,12 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             SOLUTION NAME
                                                         </p>
-                                                        <h6 className="font-weight-500">
-                                                            {generalComponentData.name}
+                                                        <h6 className="font-weight-500 text-uppercase">
+                                                            {(generalComponentData.name == "" ||
+                                                                generalComponentData.name == null ||
+                                                                generalComponentData.name == "string" ||
+                                                                generalComponentData.name == undefined
+                                                            ) ? "NA" : generalComponentData.name}
                                                         </h6>
                                                     </div>
                                                 </div>
@@ -7571,26 +8864,26 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             SOLUTION DESCRIPTION
                                                         </p>
-                                                        <h6 className="font-weight-500">
-                                                            {generalComponentData.description}
+                                                        <h6 className="font-weight-500 text-uppercase">
+                                                            {(generalComponentData.description == "" ||
+                                                                generalComponentData.description == null ||
+                                                                generalComponentData.description == "string" ||
+                                                                generalComponentData.description == undefined
+                                                            ) ? "NA" : generalComponentData.description}
                                                         </h6>
                                                     </div>
                                                 </div>
-                                                {/* <div className="col-md-4 col-sm-3">
-                                                <div className="form-group">
-                                                    <p className="font-size-12 font-weight-500 mb-2">
-                                                        SERVICE PROGRAM DESCRIPTION (IF ANY)
-                                                    </p>
-                                                    <h6 className="font-weight-500">NA</h6>
-                                                </div>
-                                            </div> */}
                                                 <div className="col-md-4 col-sm-3">
                                                     <div className="form-group">
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             REFERENCE
                                                         </p>
-                                                        <h6 className="font-weight-500">
-                                                            {generalComponentData.externalReference}
+                                                        <h6 className="font-weight-500 text-uppercase">
+                                                            {(generalComponentData.externalReference == "" ||
+                                                                generalComponentData.externalReference == null ||
+                                                                generalComponentData.externalReference == "string" ||
+                                                                generalComponentData.externalReference == undefined
+                                                            ) ? "NA" : generalComponentData.externalReference}
                                                         </h6>
                                                     </div>
                                                 </div>
@@ -7599,8 +8892,14 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             CUSTOMER SEGMENT
                                                         </p>
-                                                        <h6 className="font-weight-500">
-                                                            {generalComponentData?.customerSegment?.label}
+                                                        <h6 className="font-weight-500 text-uppercase">
+                                                            {(generalComponentData?.customerSegment == "" ||
+                                                                generalComponentData?.customerSegment == null ||
+                                                                generalComponentData?.customerSegment?.label == null ||
+                                                                generalComponentData?.customerSegment?.label == "" ||
+                                                                generalComponentData?.customerSegment?.label == "string" ||
+                                                                generalComponentData?.customerSegment?.label == undefined
+                                                            ) ? "NA" : generalComponentData?.customerSegment?.label}
                                                         </h6>
                                                     </div>
                                                 </div>
@@ -7609,7 +8908,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             FLAG FOR TEMPLATE
                                                         </p>
-                                                        <h6 className="font-weight-500">
+                                                        <h6 className="font-weight-500 text-uppercase">
                                                             {flagTemplate ? "True" : "False"}
                                                         </h6>
                                                     </div>
@@ -7619,7 +8918,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             CUSTOMER SEGMENT
                                                         </p>
-                                                        <h6 className="font-weight-500">
+                                                        <h6 className="font-weight-500 text-uppercase">
                                                             {flagCommerce ? "True" : "False"}
                                                         </h6>
                                                     </div>
@@ -8113,37 +9412,18 @@ export function CreateCustomPortfolio(props) {
                                             </div>
                                         </> : <>
                                             <div className="row">
-                                                {/* <div className="col-md-4 col-sm-4">
-                                                <div className="form-group">
-                                                    <p className="font-size-12 font-weight-500 mb-2">
-                                                        STRATEGY TASK
-                                                    </p>
-                                                    <h6 className="font-weight-500">PM</h6>
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-4">
-                                                <div className="form-group">
-                                                    <p className="font-size-12 font-weight-500 mb-2">
-                                                        CATEGORY USAGE
-                                                    </p>
-                                                    <h6 className="font-weight-500">Contract</h6>
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-4">
-                                                <div className="form-group">
-                                                    <p className="font-size-12 font-weight-500 mb-2">
-                                                        OPTIONALS
-                                                    </p>
-                                                    <h6 className="font-weight-500">Misc</h6>
-                                                </div>
-                                            </div> */}
                                                 <div className="col-md-4 col-sm-4">
                                                     <div className="form-group">
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             RESPONSE TIME
                                                         </p>
-                                                        <h6 className="font-weight-500">
-                                                            {stratgyResponseTimeKeyValue?.value}
+                                                        <h6 className="font-weight-500 text-uppercase">
+                                                            {(stratgyResponseTimeKeyValue?.length == 0 ||
+                                                                stratgyResponseTimeKeyValue?.value == null ||
+                                                                stratgyResponseTimeKeyValue?.value == "string" ||
+                                                                stratgyResponseTimeKeyValue?.value == "" ||
+                                                                stratgyResponseTimeKeyValue?.value == undefined
+                                                            ) ? "NA" : stratgyResponseTimeKeyValue?.value}
                                                         </h6>
                                                     </div>
                                                 </div>
@@ -8152,7 +9432,14 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             PRODUCT HIERARCHY
                                                         </p>
-                                                        <h6 className="font-weight-500">{stratgyHierarchyKeyValue?.value}</h6>
+                                                        <h6 className="font-weight-500 text-uppercase">
+                                                            {(stratgyHierarchyKeyValue?.length == 0 ||
+                                                                stratgyHierarchyKeyValue?.value == "" ||
+                                                                stratgyHierarchyKeyValue?.value == null ||
+                                                                stratgyHierarchyKeyValue?.value == "string" ||
+                                                                stratgyHierarchyKeyValue?.value == undefined
+                                                            ) ? "NA" : stratgyHierarchyKeyValue?.value}
+                                                        </h6>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4 col-sm-4">
@@ -8160,7 +9447,14 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             GEOGRAPHIC
                                                         </p>
-                                                        <h6 className="font-weight-500">{stratgyGeographicKeyValue?.value}</h6>
+                                                        <h6 className="font-weight-500 text-uppercase">
+                                                            {(stratgyGeographicKeyValue?.length == 0 ||
+                                                                stratgyGeographicKeyValue?.value == "" ||
+                                                                stratgyGeographicKeyValue?.value == null ||
+                                                                stratgyGeographicKeyValue?.value == "string" ||
+                                                                stratgyGeographicKeyValue?.value == undefined
+                                                            ) ? "NA" : stratgyGeographicKeyValue?.value}
+                                                        </h6>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4 col-sm-4">
@@ -8168,7 +9462,14 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             SOLUTION TYPE
                                                         </p>
-                                                        <h6 className="font-weight-500">{solutionTypeListKeyValue?.value}</h6>
+                                                        <h6 className="font-weight-500 text-uppercase">
+                                                            {(solutionTypeListKeyValue?.length == 0 ||
+                                                                solutionTypeListKeyValue?.value == "" ||
+                                                                solutionTypeListKeyValue?.value == "string" ||
+                                                                solutionTypeListKeyValue?.value == null ||
+                                                                solutionTypeListKeyValue?.value == undefined
+                                                            ) ? "NA" : solutionTypeListKeyValue?.value}
+                                                        </h6>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4 col-sm-4">
@@ -8176,7 +9477,14 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             SOLUTION LEVEL
                                                         </p>
-                                                        <h6 className="font-weight-500">{solutionLevelListKeyValue?.value}</h6>
+                                                        <h6 className="font-weight-500 text-uppercase">
+                                                            {(solutionLevelListKeyValue?.length == 0 ||
+                                                                solutionLevelListKeyValue?.value == "" ||
+                                                                solutionLevelListKeyValue?.value == null ||
+                                                                solutionLevelListKeyValue?.value == "string" ||
+                                                                solutionLevelListKeyValue?.value == undefined
+                                                            ) ? "NA" : solutionLevelListKeyValue?.value}
+                                                        </h6>
                                                     </div>
                                                 </div>
                                             </div>
@@ -8188,7 +9496,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             STRATEGY TASK
                                                         </p>
-                                                        <h6 className="font-weight-500">PM</h6>
+                                                        <h6 className="font-weight-500 text-uppercase">PM</h6>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4 col-sm-4">
@@ -8196,7 +9504,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             CATEGORY USAGE
                                                         </p>
-                                                        <h6 className="font-weight-500">Contract</h6>
+                                                        <h6 className="font-weight-500 text-uppercase">Contract</h6>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4 col-sm-4">
@@ -8204,7 +9512,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             OPTIONALS
                                                         </p>
-                                                        <h6 className="font-weight-500">Misc</h6>
+                                                        <h6 className="font-weight-500 text-uppercase">Misc</h6>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4 col-sm-4">
@@ -8212,7 +9520,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             RESPONSE TIME
                                                         </p>
-                                                        <h6 className="font-weight-500">
+                                                        <h6 className="font-weight-500 text-uppercase">
                                                             Fast - 24x7 available,response within 4 hours of
                                                             call
                                                         </h6>
@@ -8223,7 +9531,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             PRODUCT HIERARCHY
                                                         </p>
-                                                        <h6 className="font-weight-500">End Product</h6>
+                                                        <h6 className="font-weight-500 text-uppercase">End Product</h6>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4 col-sm-4">
@@ -8231,7 +9539,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             GEOGRAPHIC
                                                         </p>
-                                                        <h6 className="font-weight-500">Field Support</h6>
+                                                        <h6 className="font-weight-500 text-uppercase">Field Support</h6>
                                                     </div>
                                                 </div>
                                             </div>
@@ -8288,14 +9596,6 @@ export function CreateCustomPortfolio(props) {
                                                     >
                                                         PREPARED ON
                                                     </label>
-                                                    {/* <input
-                          type="text"
-                          className="form-control border-radius-10"
-                          placeholder="Optional"
-                          name="preparedOn"
-                          value={administrative.preparedOn}
-                          onChange={handleAdministrativreChange}
-                        /> */}
                                                     <div className="d-flex align-items-center date-box w-100">
                                                         <div className="form-group w-100">
                                                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -8387,9 +9687,9 @@ export function CreateCustomPortfolio(props) {
                                                         <input
                                                             type="text"
                                                             className="form-control border-radius-10 text-primary"
-                                                            name="branch"
+                                                            name="salesOffice"
                                                             placeholder="Required"
-                                                            value={administrative.branch}
+                                                            value={administrative.salesOffice}
                                                             onChange={handleAdministrativreChange}
                                                         />
                                                     </div>
@@ -8431,10 +9731,13 @@ export function CreateCustomPortfolio(props) {
                                                     <div className="form-group">
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             PREPARED BY
-                                                            {/* {console.log("new dataa : ", coverageData.machineType)} */}
                                                         </p>
                                                         <h6 className="font-weight-500">
-                                                            {(administrative.preparedBy)}
+                                                            {(administrative.preparedBy == "" ||
+                                                                administrative.preparedBy == null ||
+                                                                administrative.preparedBy == "string" ||
+                                                                administrative.preparedBy == undefined
+                                                            ) ? "NA" : administrative.preparedBy}
                                                         </h6>
                                                     </div>
                                                 </div>
@@ -8444,8 +9747,11 @@ export function CreateCustomPortfolio(props) {
                                                             APPROVED BY
                                                         </p>
                                                         <h6 className="font-weight-500">
-                                                            {(administrative.approvedBy)}
-                                                            {/* {Object.keys(stratgyTaskUsageKeyValue).length > 0 ? (stratgyTaskUsageKeyValue.label) : (location.selectedTemplateItems[0].strategyTask)} */}
+                                                            {(administrative.approvedBy == "" ||
+                                                                administrative.approvedBy == null ||
+                                                                administrative.approvedBy == "string" ||
+                                                                administrative.approvedBy == undefined
+                                                            ) ? "NA" : administrative.approvedBy}
                                                         </h6>
                                                     </div>
                                                 </div>
@@ -8455,8 +9761,11 @@ export function CreateCustomPortfolio(props) {
                                                             PREPARED ON
                                                         </p>
                                                         <h6 className="font-weight-500">
-                                                            {(administrative.preparedOn)}
-                                                            {/* {Object.keys(stratgyTaskTypeKeyValue).length > 0 ? (stratgyTaskTypeKeyValue.label) : (location.selectedTemplateItems[0].taskType)} */}
+                                                            {(administrative.preparedOn == "" ||
+                                                                administrative.preparedOn == null ||
+                                                                administrative.preparedOn == "string" ||
+                                                                administrative.preparedOn == undefined
+                                                            ) ? "NA" : getFormattedDateTimeByTimeStamp(administrative.preparedOn)}
                                                         </h6>
                                                     </div>
                                                 </div>
@@ -8466,7 +9775,11 @@ export function CreateCustomPortfolio(props) {
                                                             REVISED BY
                                                         </p>
                                                         <h6 className="font-weight-500">
-                                                            {administrative.revisedBy}
+                                                            {(administrative.revisedBy == "" ||
+                                                                administrative.revisedBy == null ||
+                                                                administrative.revisedBy == undefined ||
+                                                                administrative.revisedBy == "string"
+                                                            ) ? "NA" : administrative.revisedBy}
                                                         </h6>
                                                     </div>
                                                 </div>
@@ -8476,7 +9789,11 @@ export function CreateCustomPortfolio(props) {
                                                             REVISED  ON
                                                         </p>
                                                         <h6 className="font-weight-500">
-                                                            {administrative.revisedOn}
+                                                            {(administrative.revisedOn == "" ||
+                                                                administrative.revisedOn == null ||
+                                                                administrative.revisedOn == "string" ||
+                                                                administrative.revisedOn == undefined
+                                                            ) ? "NA" : getFormattedDateTimeByTimeStamp(administrative.revisedOn)}
                                                         </h6>
                                                     </div>
                                                 </div>
@@ -8486,7 +9803,11 @@ export function CreateCustomPortfolio(props) {
                                                             SALSE OFFICE/BRANCH
                                                         </p>
                                                         <h6 className="font-weight-500">
-                                                            {administrative.salesOffice}
+                                                            {(administrative.salesOffice == "" ||
+                                                                administrative.salesOffice == null ||
+                                                                administrative.salesOffice == "string" ||
+                                                                administrative.salesOffice == undefined
+                                                            ) ? "NA" : administrative.salesOffice}
                                                         </h6>
                                                     </div>
                                                 </div>
@@ -8496,7 +9817,11 @@ export function CreateCustomPortfolio(props) {
                                                             OFFER VALIDITY
                                                         </p>
                                                         <h6 className="font-weight-500">
-                                                            {administrative.offerValidity}
+                                                            {(administrative.offerValidity == "" ||
+                                                                administrative.offerValidity == null ||
+                                                                administrative.offerValidity == "string" ||
+                                                                administrative.offerValidity == undefined
+                                                            ) ? "NA" : administrative.offerValidity}
                                                         </h6>
                                                     </div>
                                                 </div>
@@ -8504,225 +9829,236 @@ export function CreateCustomPortfolio(props) {
                                         </>}
                                     </TabPanel>
                                     <TabPanel value={"price"}>
-                                        <div className="row input-fields">
-                                            <div className="col-md-4 col-sm-4">
-                                                <div className="form-group">
-                                                    <label
-                                                        className="text-light-dark font-size-14 font-weight-500"
-                                                        htmlFor="exampleInputEmail1"
-                                                    >
-                                                        PRICE LIST
-                                                    </label>
-                                                    <Select
-                                                        // defaultValue={priceListKeyValue}
-                                                        onChange={(e) => setPriceListKeyValue1(e)}
-                                                        className="text-primary"
-                                                        options={priceListKeyValue}
-                                                        placeholder="placeholder (Optional)"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-4">
-                                                <div className="form-group">
-                                                    <label
-                                                        className="text-light-dark font-size-14 font-weight-500"
-                                                        htmlFor="exampleInputEmail1"
-                                                    >
-                                                        PRICE METHOD
-                                                    </label>
-                                                    <Select
-                                                        // defaultValue={selectedOption}
-                                                        className="text-primary"
-                                                        onChange={(e) => setPriceMethodKeyValue1(e)}
-                                                        options={priceMethodKeyValue}
-                                                        placeholder="required"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-4">
-                                                <div className="form-group">
-                                                    <label
-                                                        className="text-light-dark font-size-14 font-weight-500"
-                                                        htmlFor="exampleInputEmail1"
-                                                    >
-                                                        PRICE DATE
-                                                    </label>
-                                                    <div className="d-flex align-items-center date-box w-100">
-                                                        <div className="form-group w-100">
-                                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                                                <DatePicker
-                                                                    variant="inline"
-                                                                    format="dd/MM/yyyy"
-                                                                    className="form-controldate border-radius-10"
-                                                                    label=""
-                                                                    name="preparedOn"
-                                                                    value={setPriceDetails.priceDate}
-                                                                    onChange={(e) =>
-                                                                        setPriceDetails({
-                                                                            ...priceDetails,
-                                                                            priceDate: e,
-                                                                        })
-                                                                    }
-                                                                />
-                                                            </MuiPickersUtilsProvider>
+                                        {!viewOnlyTab.priceViewOnly ?
+                                            <>
+                                                <div className="row input-fields">
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <label
+                                                                className="text-light-dark font-size-14 font-weight-500"
+                                                                htmlFor="exampleInputEmail1"
+                                                            >
+                                                                PRICE LIST
+                                                            </label>
+                                                            <Select
+                                                                // defaultValue={priceListKeyValue}
+                                                                onChange={(e) => setPriceListKeyValue1(e)}
+                                                                className="text-primary"
+                                                                options={priceListKeyValue}
+                                                                placeholder="placeholder (Optional)"
+                                                                value={priceListKeyValue1}
+                                                            />
                                                         </div>
                                                     </div>
-                                                    {/* <Select
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <label
+                                                                className="text-light-dark font-size-14 font-weight-500"
+                                                                htmlFor="exampleInputEmail1"
+                                                            >
+                                                                PRICE METHOD
+                                                            </label>
+                                                            <Select
+                                                                // defaultValue={selectedOption}
+                                                                className="text-primary"
+                                                                onChange={(e) => setPriceMethodKeyValue1(e)}
+                                                                options={priceMethodKeyValue}
+                                                                placeholder="required"
+                                                                value={priceMethodKeyValue1}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <label
+                                                                className="text-light-dark font-size-14 font-weight-500"
+                                                                htmlFor="exampleInputEmail1"
+                                                            >
+                                                                PRICE DATE
+                                                            </label>
+                                                            <div className="d-flex align-items-center date-box w-100">
+                                                                <div className="form-group w-100">
+                                                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                                        <DatePicker
+                                                                            variant="inline"
+                                                                            format="dd/MM/yyyy"
+                                                                            className="form-controldate border-radius-10"
+                                                                            label=""
+                                                                            name="preparedOn"
+                                                                            value={priceDetails.priceDate}
+                                                                            onChange={(e) =>
+                                                                                setPriceDetails({
+                                                                                    ...priceDetails,
+                                                                                    priceDate: e,
+                                                                                })
+                                                                            }
+                                                                        />
+                                                                    </MuiPickersUtilsProvider>
+                                                                </div>
+                                                            </div>
+                                                            {/* <Select
                                                         defaultValue={selectedOption}
                                                         className="text-primary"
                                                         onChange={setSelectedOption}
                                                         options={options}
                                                         placeholder="placeholder (Optional)"
                                                     /> */}
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        {/* <hr />
+                                                {/* <hr />
                                     <h6>PRICES</h6> */}
-                                        <div className="row input-fields">
-                                            <div className="col-md-4 col-sm-4">
-                                                <div className="form-group">
-                                                    <label
-                                                        className="text-light-dark font-size-14 font-weight-500"
-                                                        htmlFor="exampleInputEmail1"
-                                                    >
-                                                        PRICE TYPE
-                                                    </label>
-                                                    <Select
-                                                        // defaultValue={priceTypeKeyValue}
-                                                        className="text-primary"
-                                                        onChange={(e) => setPriceTypeKeyValue1(e)}
-                                                        options={priceTypeKeyValue}
-                                                        placeholder="placeholder (Optional)"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-4">
-                                                <div className="form-group">
-                                                    <label
-                                                        className="text-light-dark font-size-14 font-weight-500"
-                                                        htmlFor="exampleInputEmail1"
-                                                    >
-                                                        PRICE{" "}
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10 text-primary"
-                                                        id="exampleInputEmail1"
-                                                        aria-describedby="emailHelp"
-                                                        placeholder="Optional"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-4">
-                                                <div className="form-group date-box">
-                                                    <label
-                                                        className="text-light-dark font-size-12 font-weight-500"
-                                                        htmlFor="exampleInputEmail1"
-                                                    >
-                                                        ADDITIONAL
-                                                    </label>
-                                                    <div className=" d-flex form-control-date">
-
-                                                        <div className="">
+                                                <div className="row input-fields">
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <label
+                                                                className="text-light-dark font-size-14 font-weight-500"
+                                                                htmlFor="exampleInputEmail1"
+                                                            >
+                                                                PRICE TYPE
+                                                            </label>
                                                             <Select
-                                                                onChange={(e) => setPriceAdditionalHeadKeyValue1(e)}
+                                                                // defaultValue={priceTypeKeyValue}
                                                                 className="text-primary"
-                                                                isClearable={true}
-                                                                // value={options}
-                                                                options={priceHeadTypeKeyValue}
-                                                                placeholder="Select"
+                                                                onChange={(e) => setPriceTypeKeyValue1(e)}
+                                                                options={priceTypeKeyValue}
+                                                                placeholder="placeholder (Optional)"
+                                                                value={priceTypeKeyValue1}
                                                             />
                                                         </div>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control rounded-top-left-0 text-primary rounded-bottom-left-0"
-                                                            id="exampleInputEmail1"
-                                                            aria-describedby="emailHelp"
-                                                            placeholder="optional"
-                                                            value={additionalPriceValue}
-                                                            onChange={(e) => setAdditionalPriceValue(e.target.value)}
-                                                        />
                                                     </div>
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-4">
-                                                <div className="form-group date-box">
-                                                    <label
-                                                        className="text-light-dark font-size-12 font-weight-500"
-                                                        htmlFor="exampleInputEmail1"
-                                                    >
-                                                        PRICE ESCALATON
-                                                    </label>
-                                                    <div className=" d-flex align-items-center form-control-date">
-                                                        <Select
-                                                            className="select-input text-primary"
-                                                            // defaultValue={selectedOption}
-                                                            onChange={(e) => setPriceEscalationKeyValue1(e)}
-                                                            options={priceHeadTypeKeyValue}
-                                                            placeholder="Select "
-                                                        />
-                                                        <input
-                                                            type="text"
-                                                            className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
-                                                            id="exampleInputEmail1"
-                                                            aria-describedby="emailHelp"
-                                                            placeholder="optional"
-                                                            value={escalationPriceValue}
-                                                            onChange={(e) => setEscalationPriceValue(e.target.value)}
-                                                        />
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <label
+                                                                className="text-light-dark font-size-14 font-weight-500"
+                                                                htmlFor="exampleInputEmail1"
+                                                            >
+                                                                PRICE{" "}
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control border-radius-10 text-primary"
+                                                                id="exampleInputEmail1"
+                                                                aria-describedby="emailHelp"
+                                                                // placeholder="Optional"
+                                                                placeholder="Auto Generated"
+                                                                disabled
+                                                                value={pricePriceData}
+                                                            />
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="row input-fields">
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group date-box">
+                                                            <label
+                                                                className="text-light-dark font-size-12 font-weight-500"
+                                                                htmlFor="exampleInputEmail1"
+                                                            >
+                                                                ADDITIONAL
+                                                            </label>
+                                                            <div className=" d-flex form-control-date">
 
-                                        </div>
-                                        {/* <hr /> */}
-                                        <div className="row input-fields">
-                                            <div className="col-md-4 col-sm-4">
-                                                <div className="form-group">
-                                                    <label
-                                                        className="text-light-dark font-size-12 font-weight-500"
-                                                        htmlFor="exampleInputEmail1"
-                                                    >
-                                                        CALCULATED PRICE
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        className="form-control border-radius-10 text-primary"
-                                                        id="exampleInputEmail1"
-                                                        placeholder="required"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="col-md-4 col-sm-4">
-                                                <div className="form-group date-box">
-                                                    <label
-                                                        className="text-light-dark font-size-12 font-weight-500"
-                                                        htmlFor="exampleInputEmail1"
-                                                    >
-                                                        PRICE BREAK DOWN
-                                                    </label>
-                                                    <div className=" d-flex form-control-date">
-                                                        <Select
-                                                            className="select-input text-primary"
-                                                            defaultValue={selectedOption}
-                                                            onChange={setSelectedOption}
-                                                            options={options}
-                                                            placeholder="placeholder "
-                                                        />
-                                                        <input
-                                                            type="text"
-                                                            className="text-primary form-control rounded-top-left-0 rounded-bottom-left-0"
-                                                            id="exampleInputEmail1"
-                                                            aria-describedby="emailHelp"
-                                                            placeholder="optional"
-                                                        />
+                                                                <div className="">
+                                                                    <Select
+                                                                        onChange={(e) => setPriceAdditionalHeadKeyValue1(e)}
+                                                                        className="text-primary"
+                                                                        isClearable={true}
+                                                                        // value={options}
+                                                                        options={priceHeadTypeKeyValue}
+                                                                        placeholder="Select"
+                                                                        value={priceAdditionalHeadKeyValue1}
+                                                                    />
+                                                                </div>
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control rounded-top-left-0 text-primary rounded-bottom-left-0"
+                                                                    id="exampleInputEmail1"
+                                                                    aria-describedby="emailHelp"
+                                                                    placeholder="optional"
+                                                                    value={additionalPriceValue}
+                                                                    onChange={(e) => setAdditionalPriceValue(e.target.value)}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group date-box">
+                                                            <label
+                                                                className="text-light-dark font-size-12 font-weight-500"
+                                                                htmlFor="exampleInputEmail1"
+                                                            >
+                                                                PRICE ESCALATON
+                                                            </label>
+                                                            <div className=" d-flex align-items-center form-control-date">
+                                                                <Select
+                                                                    className="select-input text-primary"
+                                                                    // defaultValue={selectedOption}
+                                                                    onChange={(e) => setPriceEscalationKeyValue1(e)}
+                                                                    options={priceHeadTypeKeyValue}
+                                                                    placeholder="Select "
+                                                                    value={priceEscalationHeadKeyValue1}
+                                                                />
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                                                    id="exampleInputEmail1"
+                                                                    aria-describedby="emailHelp"
+                                                                    placeholder="optional"
+                                                                    value={escalationPriceValue}
+                                                                    onChange={(e) => setEscalationPriceValue(e.target.value)}
+                                                                />
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            {/* <div className="col-md-4 col-sm-4">
+                                                <div className="row input-fields">
+
+                                                </div>
+                                                {/* <hr /> */}
+                                                <div className="row input-fields">
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <label
+                                                                className="text-light-dark font-size-12 font-weight-500"
+                                                                htmlFor="exampleInputEmail1"
+                                                            >
+                                                                CALCULATED PRICE
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                className="form-control border-radius-10 text-primary"
+                                                                id="exampleInputEmail1"
+                                                                placeholder="Auto generated"
+                                                                value={priceCalculatedPrice}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group date-box">
+                                                            <label
+                                                                className="text-light-dark font-size-12 font-weight-500"
+                                                                htmlFor="exampleInputEmail1"
+                                                            >
+                                                                PRICE BREAK DOWN
+                                                            </label>
+                                                            <div className=" d-flex form-control-date">
+                                                                <Select
+                                                                    className="select-input text-primary"
+                                                                    defaultValue={selectedOption}
+                                                                    onChange={setSelectedOption}
+                                                                    options={options}
+                                                                    placeholder="placeholder "
+                                                                />
+                                                                <input
+                                                                    type="text"
+                                                                    className="text-primary form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                                    id="exampleInputEmail1"
+                                                                    aria-describedby="emailHelp"
+                                                                    placeholder="optional"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {/* <div className="col-md-4 col-sm-4">
                                             <div className="form-group date-box">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
@@ -8748,18 +10084,166 @@ export function CreateCustomPortfolio(props) {
                                                 </div>
                                             </div>
                                         </div> */}
-                                        </div>
-                                        <div className="row" style={{ justifyContent: "right" }}>
-                                            <button
-                                                type="button"
-                                                onClick={handleNextClick}
-                                                className="btn btn-light"
-                                                id="price"
-                                            >
-                                                {" "}
-                                                Save & Next
-                                            </button>
-                                        </div>
+                                                </div>
+                                                <div className="row" style={{ justifyContent: "right" }}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleNextClick}
+                                                        className="btn btn-light"
+                                                        id="price"
+                                                    >
+                                                        {" "}
+                                                        Save & Next
+                                                    </button>
+                                                </div>
+                                            </> :
+                                            <>
+                                                <div className="row">
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <p className="font-size-12 font-weight-500 mb-2">
+                                                                PRICE LIST
+                                                            </p>
+                                                            <h6 className="font-weight-500 text-uppercase">
+                                                                {(
+                                                                    priceListKeyValue1?.label == "" ||
+                                                                        priceListKeyValue1?.label == "string" ||
+                                                                        priceListKeyValue1?.label == undefined ||
+                                                                        priceListKeyValue1?.label == null
+                                                                        ? "NA" : priceListKeyValue1?.label)}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <p className="font-size-12 font-weight-500 mb-2">
+                                                                PRICE METHOD
+                                                            </p>
+                                                            <h6 className="font-weight-500 text-uppercase">
+                                                                {(
+                                                                    priceMethodKeyValue1?.label == "" ||
+                                                                        priceMethodKeyValue1?.label == "string" ||
+                                                                        priceMethodKeyValue1?.label == undefined ||
+                                                                        priceMethodKeyValue1?.label == null
+                                                                        ? "NA" : priceMethodKeyValue1?.label)}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <p className="font-size-12 font-weight-500 mb-2">
+                                                                PRICE DATE
+                                                            </p>
+                                                            <h6 className="font-weight-500 text-uppercase">
+                                                                {(
+                                                                    priceDetails?.priceDate == "" ||
+                                                                        priceDetails?.priceDate == "string" ||
+                                                                        priceDetails?.priceDate == undefined ||
+                                                                        priceDetails?.priceDate == null
+                                                                        ? "NA"
+                                                                        : getFormattedDateTimeByTimeStamp(priceDetails?.priceDate))}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                                <div className="row">
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <p className="font-size-12 font-weight-500 mb-2">
+                                                                PRICE TYPE
+                                                            </p>
+                                                            <h6 className="font-weight-500 text-uppercase">
+                                                                {(
+                                                                    priceTypeKeyValue1?.label == "" ||
+                                                                        priceTypeKeyValue1?.label == "string" ||
+                                                                        priceTypeKeyValue1?.label == undefined ||
+                                                                        priceTypeKeyValue1?.label == null
+                                                                        ? "NA" : priceTypeKeyValue1?.label)}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <p className="font-size-12 font-weight-500 mb-2">
+                                                                PRICE{" "}
+                                                            </p>
+                                                            <h6 className="font-weight-500 text-uppercase">
+                                                                {(
+                                                                    pricePriceData == "" ||
+                                                                        pricePriceData == "string" ||
+                                                                        pricePriceData == undefined ||
+                                                                        pricePriceData == null
+                                                                        ? "NA" : parseInt(pricePriceData))}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group date-box">
+                                                            <p className="font-size-12 font-weight-500 mb-2">
+                                                                ADDITIONAL
+                                                            </p>
+                                                            <h6 className="font-weight-500 text-uppercase">
+                                                                {(
+                                                                    additionalPriceValue == "" ||
+                                                                        additionalPriceValue == "string" ||
+                                                                        additionalPriceValue == undefined ||
+                                                                        additionalPriceValue == null
+                                                                        ? "NA" : parseInt(additionalPriceValue))}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group date-box">
+                                                            <p className="font-size-12 font-weight-500 mb-2">
+                                                                PRICE ESCALATON
+                                                            </p>
+                                                            <h6 className="font-weight-500 text-uppercase">
+                                                                {(escalationPriceValue == "" ||
+                                                                    escalationPriceValue == "string" ||
+                                                                    escalationPriceValue == undefined ||
+                                                                    escalationPriceValue == null
+                                                                    ? "NA" : parseInt(escalationPriceValue))}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                                <div className="row">
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group">
+                                                            <p className="font-size-12 font-weight-500 mb-2">
+                                                                CALCULATED PRICE
+                                                            </p>
+                                                            <h6 className="font-weight-500 text-uppercase">
+                                                                {(priceCalculatedPrice == "" ||
+                                                                    priceCalculatedPrice == "string" ||
+                                                                    priceCalculatedPrice == undefined ||
+                                                                    priceCalculatedPrice == null
+                                                                    ? "NA" : parseInt(priceCalculatedPrice)
+                                                                )}
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-md-4 col-sm-4">
+                                                        <div className="form-group date-box">
+                                                            <p className="font-size-12 font-weight-500 mb-2">
+                                                                PRICE BREAK DOWN
+                                                            </p>
+                                                            <h6 className="font-weight-500 text-uppercase">
+                                                                {/* {(priceTypeKeyValue1?.label == "" ||
+                                                        priceTypeKeyValue1?.label == "string" ||
+                                                        priceTypeKeyValue1?.label == undefined ||
+                                                        priceTypeKeyValue1?.label == null
+                                                        ? "NA" : priceTypeKeyValue1?.label
+                                                     )} */} NA
+                                                            </h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        }
+
                                     </TabPanel>
 
                                     <TabPanel value={"priceAgreement"} className="customTabPanel">
@@ -9170,26 +10654,31 @@ export function CreateCustomPortfolio(props) {
                     </div>
 
                     {/* hide portfolio item querySearch */}
-                    <div className="card mt-4 px-4">
-                        <div className="row align-items-center mt-3">
-                            <div className="col-11 mx-1">
-                                <div className="d-flex align-items-center w-100">
-                                    <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
-                                        <h5 className="mb-0 text-black">
-                                            <span>Portfolio Items</span>
-                                        </h5>
+                    {headerLoading ? <></> : <>
+                        <div className="card mt-4 px-4">
+                            {headerLoading ? <></> :
+                                <>
+                                    <div className="row align-items-center mt-3">
+                                        <div className="col-11 mx-1">
+                                            <div className="d-flex align-items-center w-100">
+                                                <div className="d-flex mr-3" style={{ whiteSpace: "pre" }}>
+                                                    <h5 className="mb-0 text-black">
+                                                        <span>Portfolio Items</span>
+                                                    </h5>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
+                                </>
+                            }
 
-                        {bundleItems.length > 0 ? (
-                            <div>
-                                <div
-                                    className="custom-table  card"
-                                    style={{ minHeight: 200, height: "auto", width: "100%" }}
-                                >
-                                    <DataTable
+                            {selectedSolutionItems.length > 0 ? (
+                                <div>
+                                    <div
+                                        className="custom-table  card"
+                                        style={{ minHeight: 200, height: "auto", width: "100%" }}
+                                    >
+                                        {/* <DataTable
                                         title=""
                                         columns={bundleItemColumns}
                                         data={bundleItems}
@@ -9201,62 +10690,76 @@ export function CreateCustomPortfolio(props) {
                                         expandableRowsComponent={ExpandedComponent}
                                         onRowExpandToggled={(bool, row) => setCurrentExpendPortfolioItemRow(row)}
                                         pagination
+                                    /> */}
+                                        <DataTable
+                                            title=""
+                                            columns={bundleItemColumns}
+                                            data={selectedSolutionItems}
+                                            customStyles={customStyles}
+                                            expandableRows
+                                            expandableRowExpanded={(row) => (row === currentExpendPortfolioItemRow)}
+                                            expandOnRowClicked
+                                            onRowClicked={(row) => setCurrentExpendPortfolioItemRow(row)}
+                                            expandableRowsComponent={ExpandedComponent}
+                                            onRowExpandToggled={(bool, row) => setCurrentExpendPortfolioItemRow(row)}
+                                            pagination
+                                        />
+                                    </div>
+                                </div>
+                            ) : loadingItem === "03" ? (
+                                <div className="d-flex align-items-center justify-content-center">
+                                    <Loader
+                                        type="spinner-default"
+                                        bgColor={"#872ff7"}
+                                        title={"spinner-default"}
+                                        color={"#FFFFFF"}
+                                        size={35}
                                     />
                                 </div>
-                            </div>
-                        ) : loadingItem === "03" ? (
-                            <div className="d-flex align-items-center justify-content-center">
-                                <Loader
-                                    type="spinner-default"
-                                    bgColor={"#872ff7"}
-                                    title={"spinner-default"}
-                                    color={"#FFFFFF"}
-                                    size={35}
-                                />
-                            </div>
-                        ) : (
-                            <div className="p-4  row">
-                                <div
-                                    className="col-md-6 col-sm-6"
-                                    onClick={handleNewBundleItem}
-                                >
-                                    <Link to="#" className="add-new-recod">
-                                        <div>
-                                            <FontAwesomeIcon icon={faPlus} />
-                                            <p className="font-weight-600">Add Portfolio Item</p>
-                                        </div>
-                                    </Link>
-                                </div>
-                                <div className="col-md-6 col-sm-6">
-                                    <div className="add-new-recod">
-                                        <div>
-                                            <FontAwesomeIcon
-                                                className="cloudupload"
-                                                icon={faCloudUploadAlt}
-                                            />
-                                            <h6 className="font-weight-500 mt-3">
-                                                Drag and drop files to upload <br /> or
-                                            </h6>
-                                            <a
-                                                onClick={() => setOpen3(true)}
-                                                style={{ cursor: "pointer" }}
-                                                className="btn text-light border-light font-weight-500 border-radius-10 mt-3"
-                                            >
-                                                <span className="mr-2">
-                                                    <FontAwesomeIcon icon={faPlus} />
-                                                </span>
-                                                Select files to upload
-                                            </a>
-                                            <p className="mt-3">
-                                                Single upload file should not be more than <br />
-                                                10MB. Only the .lgs, .lgsx file types are allowed
-                                            </p>
+                            ) : (
+                                <div className="p-4  row">
+                                    <div
+                                        className="col-md-6 col-sm-6"
+                                        onClick={handleNewBundleItem}
+                                    >
+                                        <Link to="#" className="add-new-recod">
+                                            <div>
+                                                <FontAwesomeIcon icon={faPlus} />
+                                                <p className="font-weight-600">Add Portfolio Item</p>
+                                            </div>
+                                        </Link>
+                                    </div>
+                                    <div className="col-md-6 col-sm-6">
+                                        <div className="add-new-recod">
+                                            <div>
+                                                <FontAwesomeIcon
+                                                    className="cloudupload"
+                                                    icon={faCloudUploadAlt}
+                                                />
+                                                <h6 className="font-weight-500 mt-3">
+                                                    Drag and drop files to upload <br /> or
+                                                </h6>
+                                                <a
+                                                    onClick={() => setOpen3(true)}
+                                                    style={{ cursor: "pointer" }}
+                                                    className="btn text-light border-light font-weight-500 border-radius-10 mt-3"
+                                                >
+                                                    <span className="mr-2">
+                                                        <FontAwesomeIcon icon={faPlus} />
+                                                    </span>
+                                                    Select files to upload
+                                                </a>
+                                                <p className="mt-3">
+                                                    Single upload file should not be more than <br />
+                                                    10MB. Only the .lgs, .lgsx file types are allowed
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
-                    </div>
+                            )}
+                        </div>
+                    </>}
                 </div>
             </div>
             <Modal

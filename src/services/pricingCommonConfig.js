@@ -18,9 +18,12 @@ const headersdata = {
 //To get portfolio common config -"item-type","customer-segment","price-method"
 // value of endpath= "item-type","customer-segment","price-method"
 
+/**
+ * Function to fetch the Portfolio Price Select Option List.
+ */
+
 export const getPortfolioCommonConfig = (endpath) => {
   console.log("pricingCommonConfig > getPortfolioCommonConfig called...");
-  console.log("PRICING_COMMON_CONFIG + endpath : ", PRICING_COMMON_CONFIG + endpath);
   return new Promise((resolve, reject) => {
     try {
       axios
@@ -40,9 +43,11 @@ export const getPortfolioCommonConfig = (endpath) => {
   });
 };
 
+/**
+ * Function to fetch the Solution Portfolio Price Select Option List.
+ */
 export const getSolutionPriceCommonConfig = (endpath) => {
   console.log("pricingCommonConfig > getSolutionPriceCommonConfig called...");
-  console.log("SOLUTION_PRICING_COMMON_CONFIG + endpath : ", SOLUTION_PRICING_COMMON_CONFIG + endpath)
   return new Promise((resolve, reject) => {
     try {
       axios
@@ -62,6 +67,9 @@ export const getSolutionPriceCommonConfig = (endpath) => {
   });
 };
 
+/**
+ * Function to fetch the Solution Portfolio Price Type Select Option List.
+ */
 export const getPortfolioPriceTypeCommonConfig = (endpath) => {
   console.log("pricingCommonConfig > getPortfolioPriceTypeCommonConfig called...");
   return new Promise((resolve, reject) => {
@@ -83,6 +91,9 @@ export const getPortfolioPriceTypeCommonConfig = (endpath) => {
   });
 };
 
+/**
+ * Function to fetch the Solution Portfolio Price Head-Type Select Option List.
+ */
 export const getPortfolioPriceHeadTypeCommonConfig = (endpath) => {
   console.log("pricingCommonConfig > getPortfolioPriceHeadTypeCommonConfig called...");
   return new Promise((resolve, reject) => {
@@ -104,7 +115,9 @@ export const getPortfolioPriceHeadTypeCommonConfig = (endpath) => {
   });
 };
 
-
+/**
+ * Function to Create the Additional Price.
+ */
 export const additionalPriceCreation = (payLoad) => {
   console.log("pricingCommonConfig > additionalPriceCreation called...");
   return new Promise((resolve, reject) => {
@@ -126,28 +139,9 @@ export const additionalPriceCreation = (payLoad) => {
   });
 };
 
-
-// export const escalationPriceCreation = (payLoad) => {
-//   console.log("pricingCommonConfig > escalationPriceCreation called...");
-//   return new Promise((resolve, reject) => {
-//     try {
-//       axios
-//         .post(ESCALATION_PRICE_GET(), payLoad, { headers: headersdata })
-//         .then((res) => {
-//           console.log("escalationPriceCreation > axios res=", res);
-//           resolve(res);
-//         })
-//         .catch((err) => {
-//           console.log("escalationPriceCreation > axios err=", err);
-//           reject("Error in escalationPriceCreation axios!");
-//         });
-//     } catch (error) {
-//       console.error("in pricingCommonConfig > escalationPriceCreation, Err===", error);
-//       reject(SYSTEM_ERROR);
-//     }
-//   });
-// };
-
+/**
+ * Function to Create the Escalation Price.
+ */
 export const escalationPriceCreation = (data) => {
   console.log("pricingCommonConfig > escalationPriceCreation called...");
   return new Promise((resolve, reject) => {
@@ -169,6 +163,9 @@ export const escalationPriceCreation = (data) => {
   });
 };
 
+/**
+ * Function to Create the Portfolio Price.
+ */
 export const portfolioPriceCreation = (data) => {
   console.log("pricingCommonConfig > portfolioPriceCreation called...");
   return new Promise((resolve, reject) => {
@@ -189,6 +186,10 @@ export const portfolioPriceCreation = (data) => {
     }
   });
 };
+
+/**
+ * Function to Create the Portfolio Item Price SJId.
+ */
 export const portfolioItemPriceSjid = (data) => {
   console.log("pricingCommonConfig > portfolioItemPriceSjid called...");
   return new Promise((resolve, reject) => {
@@ -210,7 +211,9 @@ export const portfolioItemPriceSjid = (data) => {
   });
 };
 
-// get Portfolio Item Price Data
+/**
+ * Function to fetch the Portfolio Item Price Data.
+ */
 export const getItemPriceData = (id) => {
   console.log("pricingCommonConfig > getItemPriceData called...");
   return new Promise((resolve, reject) => {
@@ -232,8 +235,9 @@ export const getItemPriceData = (id) => {
   });
 };
 
-
-// get Custom Portfolio Item Price Data
+/**
+ * Function to fetch the Custom Portfolio Item Price Data.
+ */
 export const getCustomItemPriceData = (id) => {
   console.log("pricingCommonConfig > getCustomItemPriceData called...");
   return new Promise((resolve, reject) => {
@@ -250,6 +254,104 @@ export const getCustomItemPriceData = (id) => {
         });
     } catch (error) {
       console.error("in pricingCommonConfig > getCustomItemPriceData, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+/**
+ * Function to update the Additional Price Data.
+ */
+export const updateAdditionalPriceById = (payLoad, id) => {
+  console.log("pricingCommonConfig > updateAdditionalPriceById called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(`${ADDITIONAL_PRICE_GET()}/${id}`, payLoad, { headers: headersdata })
+        .then((res) => {
+          console.log("updateAdditionalPriceById > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("updateAdditionalPriceById > axios err=", err);
+          reject("Error in updateAdditionalPriceById axios!");
+        });
+    } catch (error) {
+      console.error("in pricingCommonConfig > updateAdditionalPriceById, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+/**
+ * Function to update the Escalation Price.
+ */
+export const updateEscalationPriceById = (data, id) => {
+  console.log("pricingCommonConfig > updateEscalationPriceById called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(`${ESCALATION_PRICE_GET()}/${id}`, data, { headers: headersdata })
+        .then((res) => {
+          console.log("updateEscalationPriceById > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("updateEscalationPriceById > axios err=", err);
+          reject("Error in updateEscalationPriceById axios!");
+        });
+    } catch (error) {
+      console.error("in pricingCommonConfig > updateEscalationPriceById, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+/**
+ * Function to update the Portfolio Price.
+ */
+export const updatePortfolioPrice = (data, id) => {
+  console.log("pricingCommonConfig > updatePortfolioPrice called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(`${PORTFOLIO_PRICE_CREATE()}/${id}`, data, { headers: headersdata })
+        .then((res) => {
+          console.log("updatePortfolioPrice > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("updatePortfolioPrice > axios err=", err);
+          reject("Error in updatePortfolioPrice axios!");
+        });
+    } catch (error) {
+      console.error("in pricingCommonConfig > updatePortfolioPrice, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+/**
+ * Function to fetch the Portfolio Price By Id.
+ */
+export const getPortfolioPriceById = (id) => {
+  console.log("pricingCommonConfig > getPortfolioPriceById called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .get(`${PORTFOLIO_PRICE_CREATE()}/${id}`, { headers: headersdata })
+        .then((res) => {
+          console.log("getPortfolioPriceById > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("getPortfolioPriceById > axios err=", err);
+          reject("Error in getPortfolioPriceById axios!");
+        });
+    } catch (error) {
+      console.error("in pricingCommonConfig > getPortfolioPriceById, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });
