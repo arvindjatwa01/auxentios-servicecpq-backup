@@ -1362,8 +1362,8 @@ export function SolutionTemplateResult(props) {
       console.log("row ------ : ", row);
       const editAbleRow = await getCustomItemData(row.customItemId);
       if (editAbleRow.status === 200) {
-         setEditItemShow(true);
          setPassItemEditRowData({ ...editAbleRow.data, _itemId: editAbleRow.data.customItemId });
+         setEditItemShow(true);
       } else {
          toast("😐" + "Something went wrong!", {
             position: "top-right",
