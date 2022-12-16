@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SYSTEM_ERROR } from "config/CONSTANTS";
-import { FETCH_KIT, FETCH_REPAIR_BUILDER_KIT, SEARCH_KIT, UPDATE_KIT_COVERAGE, UPDATE_KIT_CUSTOMER, UPDATE_KIT_ESTIMATION, UPDATE_KIT_GENERAL_DETAIL, UPDATE_KIT_MACHINE, UPDATE_KIT_PRICE } from "./CONSTANTS";
+import { FETCH_KIT, FETCH_REPAIR_BUILDER_KIT, SEARCH_KIT, UPDATE_KIT_COVERAGE, UPDATE_KIT_CUSTOMER, UPDATE_KIT_ESTIMATION, UPDATE_KIT_GENERAL_DETAIL, UPDATE_KIT_MACHINE, UPDATE_KIT_PRICE, UPDATE_KIT_STATUS } from "./CONSTANTS";
 
 const accessToken = localStorage.getItem("access_token");
 
@@ -224,3 +224,30 @@ export const fetchKITDetails =  (kitId) => {
       }
     });
   };
+
+  
+//update status of the KIT (Active, Draft, Revised, Archived)
+export const updateKITStatus =  (kitId, status) => {
+    console.log("KIT > updateKITStatus called...");
+    return new Promise((resolve, reject) => {
+      try {
+        axios
+          .put(UPDATE_KIT_STATUS(kitId, status), {}, config)
+          .then((res) => {
+            console.log("updateKITStatus > axios res=", res);
+            if(res.status === 200)
+              resolve(res.data);
+            else
+              reject('Error occurred while calling updateKITStatus');
+          })
+          .catch((err) => {
+            console.log("updateKITStatus > axios err=", err);
+            reject("Error in updateKITStatus axios!");
+          });
+      } catch (error) {
+        console.error("in KIT > updateKITStatus, Err===", error);
+        reject(SYSTEM_ERROR);
+      }
+    });
+  };
+  

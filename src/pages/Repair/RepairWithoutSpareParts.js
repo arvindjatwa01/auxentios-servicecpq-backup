@@ -217,7 +217,7 @@ export const RepairWithoutSpareParts = () => {
       <div className="content-body" style={{ minHeight: "884px" }}>
         <div className="container-fluid">
           <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0">Without Spare Parts</h5>
+            <h5 className="font-weight-600 mb-0">Repair option (without spare parts)</h5>
             <div>
               <button
                 onClick={createNewBuilder}

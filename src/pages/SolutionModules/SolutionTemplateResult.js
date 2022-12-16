@@ -1375,7 +1375,6 @@ export function SolutionTemplateResult(props) {
             progress: undefined,
          });
       }
-
       // setEditItemShow(true);
       // setPassItemEditRowData({ ...row, _itemId: row.customtemId });
    };
@@ -2698,7 +2697,6 @@ export function SolutionTemplateResult(props) {
                //    escalationPriceId: escalationPrice.data.escalationPriceId,
                // },
 
-
                supportLevel: value3.value,
                status: value2.value,
 
@@ -3353,7 +3351,6 @@ export function SolutionTemplateResult(props) {
       getPortfolioDetails(portfolioId);
       initFetch();
       dispatch(taskActions.fetchTaskList());
-
    }, [dispatch]);
 
    useEffect(() => {
@@ -3820,7 +3817,6 @@ export function SolutionTemplateResult(props) {
       }
 
    }
-
 
    const handleSnack = (snackSeverity, snackMessage) => {
       setSnackMessage(snackMessage);
@@ -5960,9 +5956,7 @@ export function SolutionTemplateResult(props) {
                                              <label
                                                 className="text-light-dark font-size-12 font-weight-500  mx-2 form-group"
                                                 htmlFor="exampleInputEmail1"
-                                             >
-                                                TO
-                                             </label>
+                                             >TO</label>
                                              <div className="form-group w-100">
                                                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                                    <DatePicker
@@ -6517,7 +6511,6 @@ export function SolutionTemplateResult(props) {
                                     ) : (
                                         <></>
                                     )} */}
-
                            </TabPanel>
                            <TabPanel value={"administrative"}>
                               {!viewOnlyTab.administryViewOnly ?

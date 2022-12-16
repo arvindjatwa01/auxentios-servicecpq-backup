@@ -66,7 +66,13 @@ import {
   getExtWork,
   getVendors,
 } from "services/searchServices";
-import { FormControlLabel, FormGroup, Switch, Tooltip } from "@mui/material";
+import {
+  FormControlLabel,
+  FormGroup,
+  Switch,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import AddLaborItemModal from "./components/AddLaborItem";
 import {
   CONSEXT_PRICE_OPTIONS_NOLABOR,
@@ -84,6 +90,8 @@ import SearchComponent from "./components/SearchComponent";
 import AddExtWorkItemModal from "./components/AddExtWorkItem";
 import AddConsumableItemModal from "./components/AddConsumableItem";
 import LoadingProgress from "./components/Loader";
+import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 function RepairServiceEstimate(props) {
   const { activeElement, setActiveElement } = props.builderDetails;
@@ -1558,13 +1566,13 @@ function RepairServiceEstimate(props) {
                       <label className="text-light-dark font-size-12 font-weight-500">
                         PRICE DATE
                       </label>
-                      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <DatePicker
-                          inputProps={{ style: FONT_STYLE }}
-                          variant="inline"
-                          format="dd/MM/yyyy"
+                      <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <MobileDatePicker
+                          inputFormat="dd/MM/yyyy"
                           className="form-controldate border-radius-10"
-                          label=""
+                          minDate={serviceEstimateData.priceDate}
+                          maxDate={new Date()}
+                          closeOnSelect
                           value={serviceEstimateData.priceDate}
                           onChange={(e) =>
                             setServiceEstimateData({
@@ -1572,8 +1580,18 @@ function RepairServiceEstimate(props) {
                               priceDate: e,
                             })
                           }
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              variant="standard"
+                              inputProps={{
+                                ...params.inputProps,
+                                style: FONT_STYLE,
+                              }}
+                            />
+                          )}
                         />
-                      </MuiPickersUtilsProvider>
+                      </LocalizationProvider>
                     </div>
                   </div>
                   <div className="col-md-4 col-sm-4">

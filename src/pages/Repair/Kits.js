@@ -15,7 +15,6 @@ import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import shareIcon from "../../assets/icons/svg/share.svg";
 import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
 import uploadIcon from "../../assets/icons/svg/upload.svg";
-import cpqIcon from "../../assets/icons/svg/CPQ.svg";
 import deleteIcon from "../../assets/icons/svg/delete.svg";
 import copyIcon from "../../assets/icons/svg/Copy.svg";
 // import { Link } from 'react-router-dom'
@@ -85,6 +84,7 @@ import {
   updateKITGeneralDet,
   updateKITMachine,
   updateKITPrice,
+  updateKITStatus,
 } from "services/kitService";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
 import {
@@ -98,7 +98,7 @@ import { customerSearch, machineSearch } from "services/searchServices";
 import Validator from "utils/validator";
 import Moment from "react-moment";
 import { FONT_STYLE, FONT_STYLE_SELECT } from "./CONSTANTS";
-import { TextField } from "@mui/material";
+import { Rating, TextField } from "@mui/material";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import QuerySearchComp from "./components/QuerySearchComp";
@@ -143,9 +143,6 @@ function Kits(props) {
   const activityOptions = ["Create Versions", "Show Errors", "Review"];
   const [openCoverage, setOpenCoveragetable] = React.useState(false);
 
-  const handleOption2 = (e) => {
-    setValue2(e);
-  };
   const handleOption3 = (e) => {
     setValue3(e);
   };
@@ -154,14 +151,32 @@ function Kits(props) {
   };
   const [version, setVersion] = useState({ value: "Gold", label: "Gold" });
   const versionOptions = [
-    { value: "Gold", label: "Gold" },
-    { value: "Silver", label: "Silver" },
-    { value: "Bronze", label: "Bronze" },
+    { value: "GOLD", label: "Gold" },
+    { value: "SILVER", label: "Silver" },
+    { value: "BRONZE", label: "Bronze" },
   ];
-  const [value2, setValue2] = useState({
-    value: "Archived",
-    label: "Archived",
+  const [selKITStatus, setSelKITStatus] = useState({
+    value: "DRAFT",
+    label: "Draft",
   });
+  // Update the status of the builder : Active, Revised etc.
+  const handleBuilderStatus = async (e) => {
+    await updateKITStatus(kitDBId, e.value)
+      .then((result) => {
+        setSelKITStatus(e);
+        handleSnack("success", "Status has been updated!");
+      })
+      .catch((err) => {
+        handleSnack("error", `Failed to update the status!`);
+      });
+  };
+  const builderStatusOptions = [
+    { value: "DRAFT", label: "Draft" },
+    { value: "ACTIVE", label: "Active" },
+    { value: "REVISED", label: "Revised" },
+    { value: "ARCHIVED", label: "Archived" },
+  ];
+
   const [rating, setRating] = useState(null);
 
   const [value3, setValue3] = useState({ value: "Gold", label: "Gold" });
@@ -678,9 +693,9 @@ function Kits(props) {
           : false,
     });
     setRating(result.rating);
-    // setSelBuilderStatus(
-    //   builderStatusOptions.filter((x) => x.value === result.status)[0]
-    // );
+    setSelKITStatus(
+      builderStatusOptions.filter((x) => x.value === result.status)[0]
+    );
     // let versions = result.versionList?.map((versionNo) => ({
     //   value: versionNo,
     //   label: "Version " + versionNo,
@@ -750,24 +765,6 @@ function Kits(props) {
     });
     setSelectedCoverageData(result.coverages);
   };
-  const options2 = [
-    { value: "chocolate", label: "Archived" },
-    { value: "strawberry", label: "Draft" },
-    { value: "vanilla", label: "Active" },
-    { value: "Construction", label: "Revised" },
-  ];
-  const options3 = [
-    { value: "chocolate", label: "Gold" },
-    { value: "strawberry", label: "1" },
-    { value: "vanilla", label: "2" },
-    { value: "Construction", label: "3" },
-  ];
-  const options4 = [
-    { value: "chocolate", label: "Gold" },
-    { value: "strawberry", label: "1" },
-    { value: "vanilla", label: "2" },
-    { value: "Construction", label: "3" },
-  ];
 
   const options = [
     { value: "chocolate", label: "Construction-Heavy" },
@@ -1495,18 +1492,12 @@ function Kits(props) {
                 <div className="ml-3">
                   <Select
                     className="customselectbtn"
-                    onChange={(e) => handleOption2(e)}
-                    options={options2}
-                    value={value2}
+                    onChange={(e) => handleBuilderStatus(e)}
+                    options={builderStatusOptions}
+                    value={selKITStatus}
                   />
                 </div>
-                <div className="rating-star">
-                  <span class="fa fa-star checked"></span>
-                  <span class="fa fa-star checked"></span>
-                  <span class="fa fa-star checked"></span>
-                  <span class="fa fa-star"></span>
-                  <span class="fa fa-star"></span>
-                </div>
+                <Rating value={rating} readOnly size="small" sx={{ ml: 2 }} />
               </div>
             </div>
             <div className="d-flex">
@@ -3355,10 +3346,7 @@ function Kits(props) {
                   <div className="row mt-4">
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           GROUP NUMBER
                         </label>
                         <input
@@ -3372,10 +3360,7 @@ function Kits(props) {
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           TYPE
                         </label>
                         <input
@@ -3389,10 +3374,7 @@ function Kits(props) {
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           PART NUMBER
                         </label>
                         <input
@@ -3406,10 +3388,7 @@ function Kits(props) {
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           QTY
                         </label>
                         <input
@@ -3423,10 +3402,7 @@ function Kits(props) {
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           UNIT OF MEASURES
                         </label>
                         <input
@@ -3440,10 +3416,7 @@ function Kits(props) {
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           UNIT PRICE
                         </label>
                         <input
@@ -3457,10 +3430,7 @@ function Kits(props) {
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           EXTENDED PRICE
                         </label>
                         <input
@@ -3474,10 +3444,7 @@ function Kits(props) {
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           CURRENCY
                         </label>
                         <input
@@ -3491,10 +3458,7 @@ function Kits(props) {
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           % USAGE
                         </label>
                         <input
@@ -3508,10 +3472,7 @@ function Kits(props) {
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           TOTAL PRICE
                         </label>
                         <input
@@ -3525,10 +3486,7 @@ function Kits(props) {
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           COMMENTS
                         </label>
                         <input
@@ -3542,10 +3500,7 @@ function Kits(props) {
                     </div>
                     <div className="col-md-6 col-sm-6">
                       <div class="form-group w-100">
-                        <label
-                          className="text-light-dark font-size-12 font-weight-500"
-                          for="exampleInputEmail1"
-                        >
+                        <label className="text-light-dark font-size-12 font-weight-500">
                           DESCRIPTION
                         </label>
                         <input
@@ -3889,9 +3844,6 @@ function Kits(props) {
                           id="flexRadioDefault1"
                         ></input>
                       </div>
-                      {/* <div className="listcheckbox">
-            <input class="form-check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="..." />
-            </div> */}
                     </div>
                   </div>
                   <div className="hr w-100"></div>
@@ -3921,9 +3873,6 @@ function Kits(props) {
                           id="flexRadioDefault1"
                         ></input>
                       </div>
-                      {/* <div className="listcheckbox">
-            <input class="form-check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="..." />
-            </div> */}
                     </div>
                   </div>
                   <div className="hr w-100"></div>
@@ -3953,9 +3902,6 @@ function Kits(props) {
                           id="flexRadioDefault1"
                         ></input>
                       </div>
-                      {/* <div className="listcheckbox">
-            <input class="form-check-input" type="checkbox" id="checkboxNoLabel" value="" aria-label="..." />
-            </div> */}
                     </div>
                   </div>
                 </div>
@@ -4007,10 +3953,7 @@ function Kits(props) {
                 <div className="row">
                   <div className="col-md-12 col-sm-12">
                     <div className="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
+                      <label className="text-light-dark font-size-12 font-weight-500">
                         Quote Type
                       </label>
                       <Select
@@ -4023,10 +3966,7 @@ function Kits(props) {
                   </div>
                   <div className="col-md-12 col-sm-12">
                     <div class="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
+                      <label className="text-light-dark font-size-12 font-weight-500">
                         Quote ID
                       </label>
                       <input
@@ -4040,10 +3980,7 @@ function Kits(props) {
                   </div>
                   <div className="col-md-12 col-sm-12">
                     <div class="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
+                      <label className="text-light-dark font-size-12 font-weight-500">
                         Description
                       </label>
                       <textarea
@@ -4055,10 +3992,7 @@ function Kits(props) {
                   </div>
                   <div className="col-md-12 col-sm-12">
                     <div class="form-group">
-                      <label
-                        className="text-light-dark font-size-12 font-weight-500"
-                        for="exampleInputEmail1"
-                      >
+                      <label className="text-light-dark font-size-12 font-weight-500">
                         Reference
                       </label>
                       <input
@@ -4175,7 +4109,6 @@ function Kits(props) {
                         defaultValue={coverageRowData.make}
                         disabled
                       />
-                     
                     </div>
                   </div>
                   <div className="col-md-4 col-sm-4">
@@ -4195,7 +4128,6 @@ function Kits(props) {
                         defaultValue={coverageRowData.family}
                         disabled
                       />
-                     
                     </div>
                   </div>
                   <div className="col-md-4 col-sm-4">
@@ -4333,10 +4265,8 @@ function Kits(props) {
                           })
                         }
                       />
-                      
                     </div>
                   </div>
-                  
                 </div>
               </div>
               <div className="modal-footer">

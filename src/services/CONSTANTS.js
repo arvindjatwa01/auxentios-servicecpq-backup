@@ -195,6 +195,7 @@ export const UPDATE_KIT_ESTIMATION = (kitId) => REPAIR_BUILDER_URI + `kit/${kitI
 export const UPDATE_KIT_GENERAL_DETAIL = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/estimation`
 export const UPDATE_KIT_PRICE = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/pricing`
 export const UPDATE_KIT_COVERAGE = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/coverage`
+export const UPDATE_KIT_STATUS = (kitId, status) => REPAIR_BUILDER_URI + `kit/${kitId}/status/${status}`;
 
 /* ===================== Quote Service ============================= */
 
