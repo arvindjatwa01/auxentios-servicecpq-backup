@@ -18,6 +18,6 @@ export { getUsageCategoryKeyValue, getStrategyTaskKeyValue, getTaskTypeKeyValue,
 export { getSearchQueryCoverage, getSearchCoverageForFamily, getSearchForPortfolio, getSearchForRecentPortfolio, getSearchForRecentBundleService, getSearchStandardJobId, getSearchKitId } from "./searchQueryService"
 export { itemCreation, itemSearchSuggestion, itemSearch, getItemPrice, updateItemData, deleteItem, itemPriceDataId, updateItemPriceData, createItemPriceData } from './portFolioItemService';
 export { getComponentCodeSuggetions } from './masterComponentCode';
-export { customitemCreation, getcustomItemPrice, updateCustomItemData, deleteCustomItem, customPriceCreation, getSearchCustomPortfolio, getCustomItemData, getcustomItemPriceById, updateCustomPriceData } from './customPortfolioItemService'
+export { customitemCreation, getcustomItemPrice, updateCustomItemData, deleteCustomItem, customPriceCreation, getSearchCustomPortfolio, getCustomItemData, getcustomItemPriceById, updateCustomPriceData, customPortfolioItemPriceSJID } from './customPortfolioItemService'
 export { quoteCreation, getQuoteMasterData, getSearchQuoteData, updateMasterQuoteData, deleteMasterQuote, convertPortfolioToQuoteData, getConvertQuoteData } from "./quoteService";
 

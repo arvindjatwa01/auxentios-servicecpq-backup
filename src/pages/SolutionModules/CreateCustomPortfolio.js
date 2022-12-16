@@ -82,6 +82,9 @@ import Tooltip from "@mui/material/Tooltip";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import Loader from "react-js-loader";
 
+
+import SearchBox from "../Repair/components/SearchBox";
+
 import LoadingProgress from "../Repair/components/Loader";
 import ExpendCustomItemTablePopup from "./ExpendCustomItemTablePopup";
 
@@ -139,6 +142,9 @@ import {
     updateAdditionalPriceById,
     getPortfolioPriceById,
     getCustomItemData,
+    customPortfolioItemPriceSJID,
+    getcustomItemPriceById,
+    updateCustomPriceData,
 } from "../../services/index";
 import {
     selectCategoryList,
@@ -327,6 +333,12 @@ export function CreateCustomPortfolio(props) {
     const [strategyOptionals, setStrategyOptionals] = useState([]);
 
 
+    const [searchModelResults, setSearchModelResults] = useState([]);
+    const [searchSerialResults, setSearchSerialResults] = useState([]);
+    const [noOptionsModel, setNoOptionsModel] = useState(false);
+    const [noOptionsSerial, setNoOptionsSerial] = useState(false);
+
+
     const [searchCoverageSerialResults, setSearchCoverageSerialResults] = useState([]);
     const [coverageSerialResultList, setCoverageSerialResultList] = useState([]);
 
@@ -448,6 +460,7 @@ export function CreateCustomPortfolio(props) {
         customerSegment: null,
         items: [],
         coverages: [],
+        customItems: [],
     });
 
     const [newBundle, setNewBundle] = useState({
@@ -615,6 +628,7 @@ export function CreateCustomPortfolio(props) {
         { label: "Custom", value: "Custom" },
     ];
     const handleCustomerSegmentChange = (e) => {
+        console.log("event is : ", e);
         setGeneralComponentData({
             ...generalComponentData,
             customerSegment: e,
@@ -891,7 +905,8 @@ export function CreateCustomPortfolio(props) {
                 itemName: data.name,
                 customItemHeaderModel: {
                     customItemHeaderId: 0,
-                    itemHeaderDescription: data.headerdescription,
+                    itemHeaderDescription: data.description,
+                    // itemHeaderDescription: data.headerdescription,
                     bundleFlag: "PORTFOLIO",
                     portfolioItemId: 0,
                     reference: generalComponentData.externalReference,
@@ -944,7 +959,7 @@ export function CreateCustomPortfolio(props) {
                     recommendedValue: parseInt(data.recommendedValue),
                     customItemPrices: [
                         {
-                            customItemPriceDataId: itemPriceData.customItemId
+                            customItemPriceDataId: itemPriceData.customItemPriceDataId
                         }
                     ]
                 },
@@ -957,6 +972,8 @@ export function CreateCustomPortfolio(props) {
             // alert("Item created successdully");
             setCurrentItemId(itemRes.data.customItemId);
             const _generalComponentData = { ...generalComponentData };
+            console.log("_generalComponentData : ", _generalComponentData);
+            console.log("selectedSolutionCustomItems : ", selectedSolutionCustomItems);
             _generalComponentData.customItems?.push({ customItemId: itemRes.data.customItemId });
             // put API for porfolio update Item id
             // call here
@@ -1471,75 +1488,199 @@ export function CreateCustomPortfolio(props) {
 
     const handleItemEditSave = async (addPortFolioItem, compoFlag) => {
         console.log("addPortFolioItem ", addPortFolioItem)
+        console.log("compoFlag ------4234343 ", compoFlag)
         try {
             setEditItemShow(false); //hide screen
+            if ((compoFlag?.customItemPriceDataId == "" ||
+                compoFlag.customItemPriceDataId == null ||
+                compoFlag.customItemPriceDataId == "string" ||
+                compoFlag.customItemPriceDataId == undefined)
+            ) {
+                // throw "Something went Wrong"
+            } else {
+                let priceUpdateData = {
+                    customItemPriceDataId: compoFlag.customItemPriceDataId,
+                    quantity: parseInt(addPortFolioItem.quantity),
+                    startUsage: compoFlag.startUsage,
+                    endUsage: compoFlag.endUsage,
+                    standardJobId: addPortFolioItem.templateId,
+                    repairKitId: addPortFolioItem.repairOption,
+                    templateDescription: addPortFolioItem.templateDescription?.value,
+                    repairOption: compoFlag.repairOption,
+                    additional: compoFlag.additional,
+                    partListId: compoFlag.partListId,
+                    serviceEstimateId: compoFlag.serviceEstimateId,
+                    numberOfEvents: addPortFolioItem.numberOfEvents,
+                    priceMethod: compoFlag.priceMethod,
+                    priceType: compoFlag.priceType,
+                    listPrice: compoFlag.listPrice,
+                    priceEscalation: compoFlag.priceEscalation,
+                    calculatedPrice: compoFlag.calculatedPrice,
+                    flatPrice: compoFlag.flatPrice,
+                    discountType: compoFlag.discountType,
+                    year: compoFlag.year,
+                    noOfYear: compoFlag.noOfYear,
+                    sparePartsPrice: compoFlag.sparePartsPrice,
+                    sparePartsPriceBreakDownPercentage: compoFlag.sparePartsPriceBreakDownPercentage,
+                    servicePrice: compoFlag.servicePrice,
+                    labourPrice: compoFlag.labourPrice,
+                    labourPriceBreakDownPercentage: compoFlag.labourPriceBreakDownPercentage,
+                    miscPrice: compoFlag.miscPrice,
+                    miscPriceBreakDownPercentage: compoFlag.miscPriceBreakDownPercentage,
+                    totalPrice: compoFlag.totalPrice,
+                    netService: compoFlag.netService,
+                    customPortfolio: {
+                        // compoFlag.customPortfolio,
+                        portfolioId: portfolioId
+                    },
+                    tenantId: compoFlag.tenantId,
+                    partsRequired: true,
+                    serviceRequired: false,
+                    labourRequired: true,
+                    miscRequired: true
+                }
+
+                const updateCustomPriceId = await updateCustomPriceData(
+                    compoFlag.customItemPriceDataId,
+                    priceUpdateData
+                );
+            }
+
             let reqObj = {
                 customItemId: parseInt(addPortFolioItem.id),
-                itemName: "",
+                itemName: addPortFolioItem.name,
                 customItemHeaderModel: {
-                    itemHeaderId: 0,
-                    itemHeaderDescription: createServiceOrBundle.description,
+                    customItemHeaderId: 0,
+                    itemHeaderDescription: addPortFolioItem.description,
+                    // itemHeaderDescription: data.headerdescription,
                     bundleFlag: "PORTFOLIO",
-                    reference: createServiceOrBundle.reference,
-                    itemHeaderMake: createServiceOrBundle.make,
-                    itemHeaderFamily: "",
-                    model: createServiceOrBundle.models,
-                    prefix: createServiceOrBundle.prefix,
+                    portfolioItemId: 0,
+                    reference: createServiceOrBundle.externalReference,
+                    itemHeaderMake: createServiceOrBundle?.make,
+                    itemHeaderFamily: createServiceOrBundle?.family,
+                    model: createServiceOrBundle?.model,
+                    prefix: createServiceOrBundle?.prefix,
                     type: "MACHINE",
-                    additional: createServiceOrBundle.additional.value,
+                    additional: createServiceOrBundle?.additional?.value,
                     currency: "",
                     netPrice: 0,
-                    itemProductHierarchy: generalComponentData.productHierarchy,
-                    itemHeaderGeographic: generalComponentData.geographic,
-                    responseTime: generalComponentData.responseTime,
+                    itemProductHierarchy: "END_PRODUCT",
+                    itemHeaderGeographic: "ONSITE",
+                    responseTime: "PROACTIVE",
                     usage: "",
-                    validFrom: generalComponentData.validFrom,
-                    validTo: generalComponentData.validTo,
+                    validFrom: validityData.fromDate,
+                    validTo: validityData.toDate,
                     estimatedTime: "",
                     servicePrice: 0,
                     status: "DRAFT",
+                    componentCode: "",
+                    componentDescription: "",
+                    serialNumber: "",
+                    itemHeaderStrategy: "PREVENTIVE_MAINTENANCE",
+                    variant: "",
+                    itemHeaderCustomerSegment: createServiceOrBundle.customerSegment != "" ? createServiceOrBundle.customerSegment?.value : "Customer Segment",
+                    jobCode: "",
+                    preparedBy: administrative.preparedBy,
+                    approvedBy: administrative.approvedBy,
+                    preparedOn: administrative.preparedOn,
+                    revisedBy: administrative.revisedBy,
+                    revisedOn: administrative.revisedOn,
+                    salesOffice: administrative.salesOffice,
+                    offerValidity: administrative.offerValidity
                 },
                 customItemBodyModel: {
-                    itemBodyId: parseInt(addPortFolioItem.id),
+                    customItemBodyId: 0,
                     itemBodyDescription: addPortFolioItem.description,
-                    quantity: parseInt(addPortFolioItem.quantity),
-                    startUsage: priceCalculator.startUsage,
-                    endUsage: priceCalculator.endUsage,
-                    standardJobId: "",
-                    frequency: addPortFolioItem.frequency.value,
-                    additional: "",
-                    spareParts: ["WITH_SPARE_PARTS"],
-                    labours: ["WITH_LABOUR"],
-                    miscellaneous: ["LUBRICANTS"],
-                    taskType: [...addPortFolioItem.taskType.value],
+                    spareParts: ['WITH_SPARE_PARTS'],
+                    labours: ['WITH_LABOUR'],
+                    miscellaneous: ['LUBRICANTS'],
+                    taskType: addPortFolioItem.taskType != "" ? [addPortFolioItem.taskType.value] : ["PM1"],
                     solutionCode: "",
-                    usageIn: addPortFolioItem.usageIn.value,
-                    recommendedValue: 0,
+                    usageIn: addPortFolioItem.usageIn != "" ? addPortFolioItem.usageIn.value : "REPAIR_OR_REPLACE",
                     usage: "",
-                    repairKitId: "",
-                    templateDescription: addPortFolioItem.description.value,
-                    partListId: "",
-                    serviceEstimateId: "",
-                    numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
-                    repairOption: addPortFolioItem.repairOption.value,
-                    priceMethod: "LIST_PRICE",
-                    listPrice: parseInt(priceCalculator.listPrice),
-                    priceEscalation: "",
-                    calculatedPrice: parseInt(priceCalculator.calculatedPrice),
-                    flatPrice: parseInt(priceCalculator.flatPrice),
-                    discountType: "",
-                    year: priceCalculator.priceYear.value,
+                    year: "",
                     avgUsage: 0,
-                    unit: addPortFolioItem.unit.value,
-                    sparePartsPrice: 0,
-                    sparePartsPriceBreakDownPercentage: 0,
-                    servicePrice: 0,
-                    servicePriceBreakDownPercentage: 0,
-                    miscPrice: 0,
-                    miscPriceBreakDownPercentage: 0,
-                    totalPrice: 0,
+                    unit: addPortFolioItem.unit != "" ? addPortFolioItem.unit?.value : "",
+                    frequency: addPortFolioItem.frequency != "" ? addPortFolioItem.frequency?.value : "once",
+                    recommendedValue: parseInt(addPortFolioItem.recommendedValue),
+                    customItemPrices: compoFlag?.customItemPriceDataId != "" ? [
+                        {
+                            customItemPriceDataId: itemPriceData.customItemPriceDataId
+                        }
+                    ] : [],
                 },
             };
+
+
+            // Old Todo
+
+            // let reqObj = {
+            //     customItemId: parseInt(addPortFolioItem.id),
+            //     itemName: addPortFolioItem.name,
+            //     customItemHeaderModel: {
+            //         itemHeaderId: 0,
+            //         itemHeaderDescription: createServiceOrBundle.description,
+            //         bundleFlag: "PORTFOLIO",
+            //         reference: createServiceOrBundle.reference,
+            //         itemHeaderMake: createServiceOrBundle.make,
+            //         itemHeaderFamily: "",
+            //         model: createServiceOrBundle.models,
+            //         prefix: createServiceOrBundle.prefix,
+            //         type: "MACHINE",
+            //         additional: createServiceOrBundle.additional.value,
+            //         currency: "",
+            //         netPrice: 0,
+            //         itemProductHierarchy: generalComponentData.productHierarchy,
+            //         itemHeaderGeographic: generalComponentData.geographic,
+            //         responseTime: generalComponentData.responseTime,
+            //         usage: "",
+            //         validFrom: generalComponentData.validFrom,
+            //         validTo: generalComponentData.validTo,
+            //         estimatedTime: "",
+            //         servicePrice: 0,
+            //         status: "DRAFT",
+            //     },
+            //     customItemBodyModel: {
+            //         itemBodyId: parseInt(addPortFolioItem.id),
+            //         itemBodyDescription: addPortFolioItem.description,
+            //         quantity: parseInt(addPortFolioItem.quantity),
+            //         startUsage: priceCalculator.startUsage,
+            //         endUsage: priceCalculator.endUsage,
+            //         standardJobId: "",
+            //         frequency: addPortFolioItem.frequency.value,
+            //         additional: "",
+            //         spareParts: ["WITH_SPARE_PARTS"],
+            //         labours: ["WITH_LABOUR"],
+            //         miscellaneous: ["LUBRICANTS"],
+            //         taskType: [...addPortFolioItem.taskType.value],
+            //         solutionCode: "",
+            //         usageIn: addPortFolioItem.usageIn.value,
+            //         recommendedValue: 0,
+            //         usage: "",
+            //         repairKitId: "",
+            //         templateDescription: addPortFolioItem.description.value,
+            //         partListId: "",
+            //         serviceEstimateId: "",
+            //         numberOfEvents: parseInt(addPortFolioItem.numberOfEvents),
+            //         repairOption: addPortFolioItem.repairOption.value,
+            //         priceMethod: "LIST_PRICE",
+            //         listPrice: parseInt(priceCalculator.listPrice),
+            //         priceEscalation: "",
+            //         calculatedPrice: parseInt(priceCalculator.calculatedPrice),
+            //         flatPrice: parseInt(priceCalculator.flatPrice),
+            //         discountType: "",
+            //         year: priceCalculator.priceYear.value,
+            //         avgUsage: 0,
+            //         unit: addPortFolioItem.unit.value,
+            //         sparePartsPrice: 0,
+            //         sparePartsPriceBreakDownPercentage: 0,
+            //         servicePrice: 0,
+            //         servicePriceBreakDownPercentage: 0,
+            //         miscPrice: 0,
+            //         miscPriceBreakDownPercentage: 0,
+            //         totalPrice: 0,
+            //     },
+            // };
             console.log("reqObj : ", reqObj)
             const { data, status } = await updateCustomItemData(
                 addPortFolioItem.id,
@@ -4532,6 +4673,8 @@ export function CreateCustomPortfolio(props) {
             await getCustomPortfolio(PortfolioId)
                 .then((result) => {
                     populateHeader(result);
+                    setPortfolioId(PortfolioId)
+
                 })
                 .catch((err) => {
                     handleSnack("error", "Error occured while fetching header details");
@@ -4543,6 +4686,7 @@ export function CreateCustomPortfolio(props) {
 
     const populateHeader = (result) => {
         console.log("result ----", result);
+        setPortfolioId(result.customPortfolioId);
 
         setViewOnlyTab({
             generalViewOnly: true,
@@ -5139,9 +5283,12 @@ export function CreateCustomPortfolio(props) {
         for (let key1 in tempBundleItemCheckList) {
             for (let i = 0; i < tempBundleItems.length; i++) {
                 customItemsData.push({ customItemId: tempBundleItems[i].customItemId })
-                for (let k = 0; k < tempBundleItems[i].associatedServiceOrBundle.length; k++) {
-                    customItemsData.push({ customItemId: tempBundleItems[i].associatedServiceOrBundle[k].customItemId })
+                if (tempBundleItems[i]?.associatedServiceOrBundle && tempBundleItems[i]?.associatedServiceOrBundle.length > 0) {
+                    for (let k = 0; k < tempBundleItems[i].associatedServiceOrBundle.length; k++) {
+                        customItemsData.push({ customItemId: tempBundleItems[i].associatedServiceOrBundle[k].customItemId })
+                    }
                 }
+
                 if (
                     (tempBundleItems[i].customItemId == key1 &&
                         tempBundleItemCheckList[key1]) ||
@@ -5157,6 +5304,10 @@ export function CreateCustomPortfolio(props) {
 
         console.log("customItemsData : ", customItemsData);
         setSelectedCustomItems(customItemsData);
+
+        setSelectedSolutionItems(temp)
+        setSelectedSolutionCustomItems(customItemsData);
+
 
         // const { portfolioId, ...res } = generalComponentData;
 
@@ -5240,49 +5391,92 @@ export function CreateCustomPortfolio(props) {
         //     offerValidity: administrative.offerValidity,
         // };
 
-        let myObjData = {
+        // Old Obj Data
+        // let myObjData = {
+        //     name: generalComponentData.name,
+        //     description: generalComponentData.description,
+        //     machineType: "NEW",
+        //     searchTerm: "EMPTY",
+        //     lubricant: true,
+        //     customerId: 0,
+        //     customerGroup: generalComponentData.customerGroup
+        //         ? generalComponentData.customerGroup
+        //         : "EMPTY",
+        //     customerSegment: generalComponentData.customerSegment
+        //         ? generalComponentData.customerSegment.value
+        //         : "EMPTY",
+        //     externalReference: generalComponentData.externalReference,
+        //     status: generalComponentData.status
+        //         ? generalComponentData.status
+        //         : "EMPTY",
+        //     validFrom: generalComponentData.validFrom,
+        //     validTo: generalComponentData.validTo,
+        //     strategyTask: stratgyTaskUsageKeyValue.value ? stratgyTaskUsageKeyValue.value : "EMPTY",
+        //     taskType: stratgyTaskTypeKeyValue.value ? stratgyTaskTypeKeyValue.value : "EMPTY",
+        //     usageCategory: categoryUsageKeyValue1.value ? categoryUsageKeyValue1.value : "EMPTY",
+        //     productHierarchy: stratgyHierarchyKeyValue.value,
+        //     geographic: stratgyGeographicKeyValue.value,
+        //     availability: generalComponentData.availability
+        //         ? generalComponentData.availability
+        //         : "EMPTY",
+        //     responseTime: stratgyResponseTimeKeyValue.value,
+        //     type: generalComponentData.type ? generalComponentData.type : "EMPTY",
+        //     application: generalComponentData.application
+        //         ? generalComponentData.application
+        //         : "EMPTY",
+        //     contractOrSupport: generalComponentData.contractOrSupport
+        //         ? generalComponentData.contractOrSupport
+        //         : "EMPTY",
+        //     lifeStageOfMachine: lifeStageOfMachineKeyValue.value ? lifeStageOfMachineKeyValue.value : "EMPTY",
+        //     supportLevel: "EMPTY",
+        //     numberOfEvents: 0,
+        //     rating: "string",
+        //     startUsage: 0,
+        //     endUsage: 0,
+        //     unit: "HOURS",
+        //     additionals: "string",
+        //     preparedBy: administrative.preparedBy,
+        //     approvedBy: administrative.approvedBy,
+        //     preparedOn: administrative.preparedOn,
+        //     revisedBy: administrative.revisedBy,
+        //     revisedOn: administrative.revisedOn,
+        //     salesOffice: administrative.salesOffice,
+        //     offerValidity: administrative.offerValidity,
+        //     customItems: customItemsData,
+        //     customCoverages: portfolioCoverage,
+        //     portfolioPrice: {},
+        //     additionalPrice: {},
+        //     escalationPrice: {},
+        //     visibleInCommerce: true,
+        //     template: true
+        // }
+
+        // New Obj Data
+
+        let reqObj = {
+            customPortfolioId: portfolioId,
             name: generalComponentData.name,
             description: generalComponentData.description,
-            machineType: "NEW",
-            searchTerm: "EMPTY",
-            lubricant: true,
-            customerId: 0,
-            customerGroup: generalComponentData.customerGroup
-                ? generalComponentData.customerGroup
-                : "EMPTY",
-            customerSegment: generalComponentData.customerSegment
-                ? generalComponentData.customerSegment.value
-                : "EMPTY",
             externalReference: generalComponentData.externalReference,
-            status: generalComponentData.status
-                ? generalComponentData.status
-                : "EMPTY",
-            validFrom: generalComponentData.validFrom,
-            validTo: generalComponentData.validTo,
-            strategyTask: stratgyTaskUsageKeyValue.value ? stratgyTaskUsageKeyValue.value : "EMPTY",
-            taskType: stratgyTaskTypeKeyValue.value ? stratgyTaskTypeKeyValue.value : "EMPTY",
-            usageCategory: categoryUsageKeyValue1.value ? categoryUsageKeyValue1.value : "EMPTY",
-            productHierarchy: stratgyHierarchyKeyValue.value,
-            geographic: stratgyGeographicKeyValue.value,
-            availability: generalComponentData.availability
-                ? generalComponentData.availability
-                : "EMPTY",
-            responseTime: stratgyResponseTimeKeyValue.value,
-            type: generalComponentData.type ? generalComponentData.type : "EMPTY",
-            application: generalComponentData.application
-                ? generalComponentData.application
-                : "EMPTY",
-            contractOrSupport: generalComponentData.contractOrSupport
-                ? generalComponentData.contractOrSupport
-                : "EMPTY",
-            lifeStageOfMachine: lifeStageOfMachineKeyValue.value ? lifeStageOfMachineKeyValue.value : "EMPTY",
-            supportLevel: "EMPTY",
-            numberOfEvents: 0,
-            rating: "string",
-            startUsage: 0,
-            endUsage: 0,
-            unit: "HOURS",
-            additionals: "string",
+            customerSegment: generalComponentData?.customerSegment?.value,
+            template: flagTemplate,
+            visibleInCommerce: flagCommerce,
+
+            validFrom: validityData.fromDate,
+            validTo: validityData.toDate,
+
+
+            responseTime: stratgyResponseTimeKeyValue?.value ?
+                stratgyResponseTimeKeyValue?.value : "PROACTIVE",
+            productHierarchy: stratgyHierarchyKeyValue?.value ?
+                stratgyHierarchyKeyValue?.value : "END_PRODUCT",
+            geographic: stratgyGeographicKeyValue?.value ?
+                stratgyGeographicKeyValue?.value : "ONSITE",
+            solutionType: solutionTypeListKeyValue?.value ?
+                solutionTypeListKeyValue?.value : "CONTRACT",
+            solutionLevel: solutionLevelListKeyValue?.value ?
+                solutionLevelListKeyValue?.value : "LEVEL_I",
+
             preparedBy: administrative.preparedBy,
             approvedBy: administrative.approvedBy,
             preparedOn: administrative.preparedOn,
@@ -5290,19 +5484,46 @@ export function CreateCustomPortfolio(props) {
             revisedOn: administrative.revisedOn,
             salesOffice: administrative.salesOffice,
             offerValidity: administrative.offerValidity,
+
+            portfolioPrice: Object.keys(portfolioPriceDataId).length > 0
+                ? portfolioPriceDataId : null,
+            additionalPrice: Object.keys(portfolioAdditionalPriceDataId).length > 0
+                ? portfolioAdditionalPriceDataId : null,
+            escalationPrice: Object.keys(portfolioEscalationPriceDataId).length > 0
+                ? portfolioEscalationPriceDataId : null,
+
+            supportLevel: value3.value,
+            status: value2.value,
+
+            machineType: "NEW",
+            searchTerm: "",
+            lubricant: true,
+            customerId: 0,
+            customerGroup: "",
+            strategyTask: "PREVENTIVE_MAINTENANCE",
+            taskType: "PM1",
+            usageCategory: "ROUTINE_MAINTENANCE_OR_TASK",
+            availability: "AVAILABILITY_GREATER_95",
+            type: "MACHINE",
+            application: "HILL",
+            contractOrSupport: "LEVEL_I",
+            lifeStageOfMachine: "NEW_BREAKIN",
+            numberOfEvents: 0,
+            rating: "",
+            startUsage: 0,
+            endUsage: 0,
+            unit: "HOURS",
+            additionals: "",
+
             customItems: customItemsData,
             customCoverages: portfolioCoverage,
-            portfolioPrice: {},
-            additionalPrice: {},
-            escalationPrice: {},
-            visibleInCommerce: true,
-            template: true
-        }
 
-        console.log("newUpdatedPortfolio : ", myObjData);
+        };
+
+        console.log("newUpdatedPortfolio : ", reqObj);
         const portfolioUpdateWithItems = await updateCustomPortfolio(
             portfolioId,
-            myObjData
+            reqObj
         );
         // const portfolioUpdateWithItems = await createCutomCoverage(newUpdatedPortfolio);
         console.log("final Update portfolioUpdateWithItems : ", portfolioUpdateWithItems);
@@ -5313,30 +5534,24 @@ export function CreateCustomPortfolio(props) {
     // console.log("portfolioId -------------- ", portfolioId);
 
     const handleCreateCustomItem_SearchResult = async () => {
-        // setTempBundleService3(tempBundleService2)
-        // setTempBundleService1([])
-        // alert("hello");
+        console.log("tempBundleItems[i].customItemId 12345 : ", tempBundleItems)
         let reqObj = {};
         for (let i = 0; i < tempBundleItems.length; i++) {
-            console.log("tempBundleItems[i].customItemId : ", tempBundleItems[i].customItemId)
-            // if (
-            //     (tempBundleItems[i].customItemId == key1 &&
-            //         tempBundleItemCheckList[key1]) ||
-            //     tempBundleItems[i].customItemId == tempBundleItemCheckList.selectedId
-            // ) {
-            //     console.log("tempBundleItems[i].customItemId :", tempBundleItems[i].customItemId)
             createdItemId = tempBundleItems[i].customItemId;
-
             if (tempBundleItems[i].customItemId === currentItemId) {
+                // reqObj = {
+                //     itemId: tempBundleItems[i].customItemId,
+                //     standardJobId: tempBundleItems[i].customItemBodyModel.standardJobId,
+                //     repairKitId: tempBundleItems[i].customItemBodyModel.repairKitId,
+                // }
                 reqObj = {
                     itemId: tempBundleItems[i].customItemId,
-                    standardJobId: tempBundleItems[i].itemBodyModel.standardJobId,
-                    repairKitId: tempBundleItems[i].itemBodyModel.repairKitId,
+                    standardJobId: itemPriceData.standardJobId,
+                    repairKitId: itemPriceData.repairKitId,
+                    itemPriceDataId: itemPriceData.customItemPriceDataId
                 }
                 break;
             }
-            // break;
-            // }
         }
         if (portfolioId === undefined || portfolioId == null) {
             toast("😐 Please Create Portfolio First", {
@@ -5349,14 +5564,31 @@ export function CreateCustomPortfolio(props) {
                 progress: undefined,
             });
         } else {
+            // if (Object.keys(reqObj).length === 0) {
+            //     toast("😐" + " Please Create an Item first", {
+            //         position: "top-right",
+            //         autoClose: 3000,
+            //         hideProgressBar: false,
+            //         closeOnClick: true,
+            //         pauseOnHover: true,
+            //         draggable: true,
+            //         progress: undefined,
+            //     });
+            // } else {
+            //     console.log("reqObj : ", reqObj)
+            //     const res2 = await customPortfolioItemPriceSJID(reqObj)
+            //     const res = await getcustomItemPriceById(itemPriceData.customItemPriceDataId)
+            //     setItemPriceCalculator({
+            //         netParts: res.data.sparePartsPrice,
+            //         netService: res.data.netService,
+            //         priceType: res.data.priceType,
+            //         netPrice: res.data.totalPrice,
+            //         netAdditionals: res.data.listPrice,
+            //     })
+            // }
 
 
             var createdItemId = 0;
-            // currentItemId
-            // for (let key1 in tempBundleItemCheckList) {
-            // console.log("key1 : ", key1);
-
-            // }
 
             console.log("CreatedItemId : ", createdItemId);
 
@@ -5424,15 +5656,6 @@ export function CreateCustomPortfolio(props) {
 
                 }
 
-                for (let p = 0; p < customItemsIdData.length; p++) {
-                    var customPriceDataCreate = await customPriceCreation(customItemsIdData[p])
-                    console.log("customPriceDataCreate REponse is ", customPriceDataCreate);
-
-                    customPriceIdArr.push({
-                        customItemPriceDataId: parseInt(customPriceDataCreate.data.customItemPriceDataId),
-                    })
-                }
-
 
                 let customItemObj = {
                     customItemId: 0,
@@ -5441,7 +5664,7 @@ export function CreateCustomPortfolio(props) {
                         customItemHeaderId: 0,
                         itemHeaderDescription: tempBundleService2[i].itemHeaderModel.itemHeaderDescription,
                         bundleFlag: tempBundleService2[i].itemHeaderModel.bundleFlag,
-                        portfolioItemId: createdItemId,
+                        portfolioItemId: currentItemId,
                         // portfolioItemId: tempBundleService2[i].itemHeaderModel.portfolioItemId,
                         reference: tempBundleService2[i].itemHeaderModel.reference,
                         itemHeaderMake: tempBundleService2[i].itemHeaderModel.itemHeaderMake,
@@ -5495,17 +5718,6 @@ export function CreateCustomPortfolio(props) {
 
                 const itemRes = await customitemCreation(customItemObj)
 
-                // console.log(" Response is : ", itemRes.data)
-
-                // createdCustomItems.push(itemRes.data)
-                // tempBundleService3.push(itemRes.data)
-
-                // ;
-
-                // setTempBundleService3([
-                //     ...tempBundleService3,
-                //     itemRes.data,
-                // ]);
                 createdNewCustomItems.push(itemRes.data)
 
             }
@@ -7419,20 +7631,21 @@ export function CreateCustomPortfolio(props) {
 
     const getAddportfolioItemDataFun = async (data) => {
         setAddportFolioItem(data);
+        console.log("dataaaaa23324442", data)
 
         const rObj = {
             itemPriceDataId: 0,
-            quantity: addPortFolioItem.quantity,
+            quantity: parseInt(data.quantity),
             startUsage: "",
             endUsage: "",
-            standardJobId: addPortFolioItem.templateId,
+            standardJobId: data.templateId,
             repairKitId: "",
-            templateDescription: addPortFolioItem.templateDescription?.value,
+            templateDescription: data.templateDescription?.value,
             repairOption: "",
             additional: "",
             partListId: "",
             serviceEstimateId: "",
-            numberOfEvents: 0,
+            numberOfEvents: parseInt(data.numberOfEvents),
             priceMethod: "LIST_PRICE",
             priceType: "FIXED",
             listPrice: 0,
@@ -7440,8 +7653,8 @@ export function CreateCustomPortfolio(props) {
             calculatedPrice: 0,
             flatPrice: 0,
             discountType: "",
-            year: addPortFolioItem.year,
-            noOfYear: addPortFolioItem.noOfYear,
+            year: data.year,
+            noOfYear: data.noOfYear,
             sparePartsPrice: 0,
             sparePartsPriceBreakDownPercentage: 0,
             servicePrice: 0,
@@ -8299,16 +8512,17 @@ export function CreateCustomPortfolio(props) {
                     codeSuggestions: res
                 })
             }
-            if (e.target.name === 'make') {
-                const res = await getSearchQueryCoverage(`make~${e.target.value}`)
-                $(`#scrollbarMake`).css("display", "block");
-                setComponentData({ ...componentData, [e.target.name]: e.target.value, makeSuggestions: res })
-            }
+            // if (e.target.name === 'make') {
+            //     const res = await getSearchQueryCoverage(`make~${e.target.value}`)
+            //     $(`#scrollbarMake`).css("display", "block");
+            //     setComponentData({ ...componentData, [e.target.name]: e.target.value, makeSuggestions: res })
+            // }
             if (e.target.name === 'model') {
-                if (componentData.make == "") {
-                    throw "Please select make"
-                }
-                const res = await getSearchQueryCoverage(`make:\"${componentData.make}\" AND model~${e.target.value}`)
+                // if (componentData.make == "") {
+                //     throw "Please select make"
+                // }
+                // const res = await getSearchQueryCoverage(`make:\"${componentData.make}\" AND model~${e.target.value}`)
+                const res = await getSearchQueryCoverage(`model~${e.target.value}`)
                 $(`#scrollbarModel`).css("display", "block");
                 setComponentData({ ...componentData, [e.target.name]: e.target.value, modelSuggestions: res })
             }
@@ -8316,6 +8530,9 @@ export function CreateCustomPortfolio(props) {
                 // if(componentData.make=="" || componentData.model==""){
                 //   throw "Please select make/model"
                 // }
+                if (componentData.model == "") {
+                    throw "Please select model"
+                }
                 const res = await getSearchQueryCoverage(`family~${e.target.value}`)
                 // const res = await getSearchQueryCoverage(`make:\"${componentData.make}\" AND model:\"${componentData.model}\" AND family~${e.target.value}`)
                 $(`#scrolbarSerialNo`).css("display", "block");
@@ -8338,6 +8555,89 @@ export function CreateCustomPortfolio(props) {
 
     }
 
+    // Machine search based on model and serial number
+    const handleMachineSearch = async (searchMachinefieldName, searchText) => {
+        let searchQueryMachine = "";
+        setSearchModelResults([]);
+        setSearchSerialResults([]);
+
+        if (searchMachinefieldName === "model") {
+            componentData.model = searchText;
+            searchQueryMachine = searchText
+                ? searchMachinefieldName + "~" + searchText
+                : "";
+        } else if (searchMachinefieldName === "serialNo") {
+            componentData.serialNo = searchText;
+            searchQueryMachine = searchText
+                ? componentData.model
+                    ? `model:${componentData.model} AND equipmentNumber~` + searchText
+                    : "equipmentNumber~" + searchText
+                : "";
+        }
+        if (searchQueryMachine) {
+            await machineSearch(searchQueryMachine)
+                .then((result) => {
+                    if (result) {
+                        if (searchMachinefieldName === "model") {
+                            if (result && result.length > 0) {
+                                setSearchModelResults(result);
+                                setNoOptionsModel(false);
+                            } else {
+                                setNoOptionsModel(true);
+                            }
+                        } else if (searchMachinefieldName === "serialNo") {
+                            if (result && result.length > 0) {
+                                setSearchSerialResults(result);
+                                setNoOptionsSerial(false);
+                            } else {
+                                setNoOptionsSerial(true);
+                            }
+                        }
+                    }
+                })
+                .catch((e) => {
+                    handleSnack("error", "Error occurred while searching the machine!");
+                });
+        } else {
+            searchMachinefieldName === "model"
+                ? setSearchModelResults([])
+                : setSearchSerialResults([]);
+        }
+    };
+
+    // Select machine from the search result
+    const handleModelSelect = (type, currentItem) => {
+        if (type === "model") {
+            setComponentData({
+                ...componentData,
+                model: currentItem.model,
+                make: currentItem.maker,
+                family: currentItem.family,
+                prefix: currentItem.prefix,
+            });
+            setSearchModelResults([]);
+        } else if (type === "equipmentNumber") {
+            setComponentData({
+                ...componentData,
+                model: currentItem.model,
+                serialNo: currentItem.equipmentNumber,
+                make: currentItem.maker,
+                // family: currentItem.market,
+            });
+            setSearchSerialResults([]);
+        }
+    };
+
+    //Individual machine field value change
+    const handleMachineDataChange = (e) => {
+        var value = e.target.value;
+        var name = e.target.name;
+        setComponentData({
+            ...componentData,
+            [name]: value,
+        });
+    };
+
 
 
     const handleComponentDataSave = async () => {
@@ -8346,22 +8646,48 @@ export function CreateCustomPortfolio(props) {
             let reqObj = {}
             for (let i = 0; i < tempBundleItems.length; i++) {
                 if (tempBundleItems[i].customItemId === currentItemId) {
+                    // reqObj = {
+                    //     itemId: tempBundleItems[i].customItemId,
+                    //     standardJobId: tempBundleItems[i].customItemBodyModel.standardJobId,
+                    //     repairKitId: tempBundleItems[i].customItemBodyModel.repairKitId,
+                    // }
                     reqObj = {
                         itemId: tempBundleItems[i].customItemId,
-                        standardJobId: tempBundleItems[i].customItemBodyModel.standardJobId,
-                        repairKitId: tempBundleItems[i].customItemBodyModel.repairKitId,
+                        standardJobId: itemPriceData.standardJobId,
+                        repairKitId: itemPriceData.repairKitId,
+                        itemPriceDataId: itemPriceData.customItemPriceDataId
                     }
                     break;
                 }
             }
-            const itemPriceRes = await getcustomItemPrice(reqObj)
+
+            const res2 = await customPortfolioItemPriceSJID(reqObj)
+
+            const res = await getcustomItemPriceById(itemPriceData.customItemPriceDataId)
+            // const itemPriceRes = await getcustomItemPrice(reqObj)
+            // setItemPriceCalculator({
+            //     netParts: "11",
+            //     netService: "11",
+            //     priceType: "11",
+            //     netPrice: itemPriceRes.customItemHeaderModel.netPrice,
+            //     netAdditionals: "11",
+            // })
+            console.log("res 2 : ", res2)
+            console.log("res 1 : ", res)
+            // setItemPriceCalculator({
+            //     netParts: res.data.sparePartsPrice,
+            //     netService: res.data.netService,
+            //     priceType: res.data.priceType,
+            //     netPrice: res.data.totalPrice,
+            //     netAdditionals: res.data.listPrice,
+            // });
             setItemPriceCalculator({
-                netParts: "11",
-                netService: "11",
-                priceType: "11",
-                netPrice: itemPriceRes.customItemHeaderModel.netPrice,
-                netAdditionals: "11",
-            })
+                netParts: res.sparePartsPrice,
+                netService: res.netService,
+                priceType: res.priceType,
+                netPrice: res.totalPrice,
+                netAdditionals: res.listPrice,
+            });
             setTabs("5")
 
 
@@ -8770,10 +9096,10 @@ export function CreateCustomPortfolio(props) {
                                                 <div className="col-md-3 col-sm-3">
                                                     <div className="form-group">
                                                         <label className="text-light-dark font-size-12 font-weight-500">
-                                                            CUSTOMER
+                                                            CUSTOMER SEGMENT
                                                         </label>
                                                         <Select
-                                                            onChange={handleCustomerSegmentChange}
+                                                            onChange={(e) => handleCustomerSegmentChange(e)}
                                                             className="text-primary"
                                                             value={generalComponentData.customerSegment}
                                                             options={customerSegmentKeyValue}
@@ -13632,7 +13958,7 @@ export function CreateCustomPortfolio(props) {
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="row">
+                                    <div className="row input-fields">
                                         <div className="col-md-6 col-sm-6">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-14 font-weight-500">
@@ -13642,11 +13968,12 @@ export function CreateCustomPortfolio(props) {
                                                 <div className="customselectsearch">
                                                     <input
                                                         type="text"
-                                                        className="form-control border-radius-10"
+                                                        className="form-control border-radius-10 text-primary"
                                                         name="componentCode"
                                                         value={componentData.componentCode}
                                                         onChange={handleComponentChange}
                                                         autoComplete="off"
+                                                        placeholder="Search Component Code Here"
                                                     />
 
                                                     {<ul className={`list-group customselectsearch-list scrollbar scrolbarCode style`}>
@@ -13674,10 +14001,11 @@ export function CreateCustomPortfolio(props) {
                                                     value={componentData.description}
                                                     onChange={handleComponentChange}
                                                     placeholder="Optional"
+                                                    disabled
                                                 />
                                             </div>
                                         </div>
-                                        <div className="col-md-6 col-sm-6">
+                                        {/* <div className="col-md-6 col-sm-6">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-14 font-weight-500">
                                                     Make
@@ -13685,11 +14013,12 @@ export function CreateCustomPortfolio(props) {
                                                 <div className="customselectsearch">
                                                     <input
                                                         type="text"
-                                                        className="form-control border-radius-10"
+                                                        className="form-control border-radius-10 text-primary"
                                                         name="make"
                                                         value={componentData.make}
                                                         onChange={handleComponentChange}
                                                         autoComplete="off"
+                                                    // disable
                                                     />
                                                     {<ul className={`list-group customselectsearch-list scrollbar style`} id="scrollbarMake">
                                                         {componentData.makeSuggestions.map(
@@ -13711,7 +14040,7 @@ export function CreateCustomPortfolio(props) {
                                                 <div className="customselectsearch">
                                                     <input
                                                         type="text"
-                                                        className="form-control border-radius-10"
+                                                        className="form-control border-radius-10 text-primary"
                                                         name="model"
                                                         value={componentData.model}
                                                         onChange={handleComponentChange}
@@ -13729,7 +14058,6 @@ export function CreateCustomPortfolio(props) {
                                                 </div>
                                             </div>
                                         </div>
-
                                         <div className="col-md-6 col-sm-6">
                                             <div className="form-group">
                                                 <label className="text-light-dark font-size-14 font-weight-500">
@@ -13738,7 +14066,7 @@ export function CreateCustomPortfolio(props) {
                                                 <div className="customselectsearch">
                                                     <input
                                                         type="text"
-                                                        className="form-control border-radius-10"
+                                                        className="form-control border-radius-10 text-primary"
                                                         name="serialNo"
                                                         value={componentData.serialNo}
                                                         onChange={handleComponentChange}
@@ -13756,11 +14084,68 @@ export function CreateCustomPortfolio(props) {
                                                     </ul>}
                                                 </div>
                                             </div>
+                                        </div> */}
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-12 font-weight-500">
+                                                    Make
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control border-radius-10 text-primary"
+                                                    id="make-id"
+                                                    name="make"
+                                                    value={componentData.make}
+                                                    onChange={handleMachineDataChange}
+                                                    placeholder="Auto Filled"
+                                                    disabled
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-12 font-weight-500">
+                                                    MODEL
+                                                </label>
+                                                <SearchBox
+                                                    value={componentData.model}
+                                                    onChange={(e) =>
+                                                        handleMachineSearch(
+                                                            "model",
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    type="model"
+                                                    result={searchModelResults}
+                                                    onSelect={handleModelSelect}
+                                                    noOptions={noOptionsModel}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-6">
+                                            <div className="form-group">
+                                                <label className="text-light-dark font-size-12 font-weight-500">
+                                                    SERIAL #
+                                                </label>
+                                                <SearchBox
+                                                    value={componentData.serialNo}
+                                                    onChange={(e) =>
+                                                        handleMachineSearch(
+                                                            "serialNo",
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    type="equipmentNumber"
+                                                    result={searchSerialResults}
+                                                    onSelect={handleModelSelect}
+                                                    noOptions={noOptionsSerial}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                     <hr />
-                                    <div className="row mt-2">
-                                        <div className="col-md-6 col-sm-6">
+                                    <div className="row mt-2 input-fields">
+                                        <div className="col-md-6 col-sm-6 input-fields">
                                             <div className="form-group">
                                                 <label
                                                     className="text-light-dark font-size-12 font-weight-500"
@@ -13774,6 +14159,7 @@ export function CreateCustomPortfolio(props) {
                                                     name="priceMethod"
                                                     onChange={(e) => setComponentData({ ...componentData, priceMethod: e })}
                                                     placeholder="placeholder (Optional)"
+                                                    className="text-primary"
                                                 />
                                             </div>
                                         </div>
@@ -13794,11 +14180,12 @@ export function CreateCustomPortfolio(props) {
                                                             onChange={(e) => setComponentData({ ...componentData, priceAdditionalSelect: e })}
                                                             options={options}
                                                             placeholder="Select"
+                                                            className="text-primary"
                                                         />
                                                     </div>
                                                     <input
                                                         type="text"
-                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                                                         placeholder="10%"
                                                         // defaultValue={props?.priceCalculator?.priceAdditionalInput}
                                                         value={componentData.priceAdditionalInput}
@@ -13818,7 +14205,7 @@ export function CreateCustomPortfolio(props) {
                                                 </label>
                                                 <div className=" d-flex align-items-center form-control-date">
                                                     <Select
-                                                        className="select-input"
+                                                        className="select-input text-primary"
                                                         value={componentData.priceEscalationSelect}
                                                         name="priceEscalationSelect"
                                                         onChange={(e) => setComponentData({ ...componentData, priceEscalationSelect: e })}
@@ -13827,7 +14214,7 @@ export function CreateCustomPortfolio(props) {
                                                     />
                                                     <input
                                                         type="text"
-                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                                                         placeholder="20%"
                                                         // defaultValue={props?.priceCalculator?.priceEscalationInput}
                                                         value={componentData.priceEscalationInput}
@@ -13847,7 +14234,7 @@ export function CreateCustomPortfolio(props) {
                                                 </label>
                                                 <input
                                                     type="text"
-                                                    className="form-control border-radius-10"
+                                                    className="form-control border-radius-10 text-primary"
                                                     // defaultValue={props?.priceCalculator?.calculatedPrice}
                                                     value={componentData.calculatedPrice}
                                                     name="calculatedPrice"
@@ -13866,7 +14253,7 @@ export function CreateCustomPortfolio(props) {
                                                 </label>
                                                 <input
                                                     type="text"
-                                                    className="form-control border-radius-10"
+                                                    className="form-control border-radius-10 text-primary"
                                                     value={componentData.flatPrice}
                                                     name="flatPrice"
                                                     onChange={handleComponentChange}
@@ -13891,11 +14278,12 @@ export function CreateCustomPortfolio(props) {
                                                             isClearable={true}
                                                             options={options}
                                                             placeholder="Select"
+                                                            className="text-primary"
                                                         />
                                                     </div>
                                                     <input
                                                         type="text"
-                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0"
+                                                        className="form-control rounded-top-left-0 rounded-bottom-left-0 text-primary"
                                                         value={componentData.discountTypeInput}
                                                         name="discountTypeInput"
                                                         onChange={handleComponentChange}

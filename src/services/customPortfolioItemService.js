@@ -1,6 +1,6 @@
 import { SYSTEM_ERROR } from "../config/CONSTANTS";
 import axios from 'axios'
-import { CREATE_CUSTOM_PORTFOLIO_ITEM, DELETE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID, CREATE_CUSTOM_PRICE, CUSTOM_PORTFOLIO_SEARCH_QUERY } from "./CONSTANTS";
+import { CREATE_CUSTOM_PORTFOLIO_ITEM, DELETE_CUSTOM_PORTFOLIO_ITEM, CUSTOM_PORTFOLIO_ITEM_PRICE_RKID, CREATE_CUSTOM_PRICE, CUSTOM_PORTFOLIO_SEARCH_QUERY, CUSTOM_PORTFOLIO_ITEM_PRICE_SJID } from "./CONSTANTS";
 
 /* ----------------- Authorization ------------------- */
 
@@ -201,6 +201,28 @@ export const updateCustomPriceData = (id, payLoad) => {
         });
     } catch (error) {
       console.error("in customportfolioItemService > updateCustomPriceData, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+export const customPortfolioItemPriceSJID = (data) => {
+  console.log("customportfolioItemService > customPortfolioItemPriceSJID called...");
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(CUSTOM_PORTFOLIO_ITEM_PRICE_SJID(), data, { headers: headersdata })
+        .then((res) => {
+          console.log("customPortfolioItemPriceSJID > axios res=", res);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("customPortfolioItemPriceSJID > axios err=", err);
+          reject("Error in customPortfolioItemPriceSJID axios!");
+        });
+    } catch (error) {
+      console.error("in customportfolioItemService > customPortfolioItemPriceSJID, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });
