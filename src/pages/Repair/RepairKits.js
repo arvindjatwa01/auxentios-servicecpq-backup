@@ -1,4 +1,10 @@
-import { faFileAlt, faFolderPlus, faPlus, faShareAlt, faUpload } from "@fortawesome/free-solid-svg-icons";
+import {
+  faFileAlt,
+  faFolderPlus,
+  faPlus,
+  faShareAlt,
+  faUpload,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import "owl.carousel/dist/assets/owl.carousel.css";
@@ -16,7 +22,13 @@ import { useDispatch } from "react-redux";
 import { kitSearch } from "services/kitService";
 import LoadingProgress from "./components/Loader";
 import SearchComponent from "./components/SearchComponent";
-import { GRID_STYLE, KIT_SEARCH_Q_OPTIONS } from "./CONSTANTS";
+import {
+  COLOR_BRONZE,
+  COLOR_GOLD,
+  COLOR_SILVER,
+  GRID_STYLE,
+  KIT_SEARCH_Q_OPTIONS,
+} from "./CONSTANTS";
 import { repairActions } from "./dropdowns/repairSlice";
 
 export const RepairKits = () => {
@@ -38,8 +50,8 @@ export const RepairKits = () => {
   useEffect(() => {
     dispatch(repairActions.fetchDropdowns());
     fetcheRecentKits();
-    if (JSON.parse(localStorage.getItem('exitingType'))) {
-      localStorage.removeItem('exitingType');
+    if (JSON.parse(localStorage.getItem("exitingType"))) {
+      localStorage.removeItem("exitingType");
     }
   }, []);
 
@@ -157,6 +169,13 @@ export const RepairKits = () => {
 
   const history = useHistory();
 
+  function versionColor(versionType) {
+    console.log(versionType);
+    if (versionType === "BRONZE") return COLOR_BRONZE;
+    else if (versionType === "GOLD") return COLOR_GOLD;
+    else return COLOR_SILVER;
+  }
+
   const makeKitEditable = (selectedKIT) => {
     let kitDetails = {
       kitId: "",
@@ -169,7 +188,7 @@ export const RepairKits = () => {
     kitDetails.kitDBId = selectedKIT.id;
     // kitDetails.partListNo = kitDetails.;
     // kitDetails.partListId = selectedKIT.estimationNumber;
-    kitDetails.versionNumber = selectedKIT.versionNumber;
+    // kitDetails.versionNumber = selectedKIT.versionNumber;
     history.push({
       pathname: "/RepairKits/Kits",
       state: kitDetails,
@@ -194,7 +213,7 @@ export const RepairKits = () => {
         <div class="container-fluid">
           <div className="d-flex align-items-center justify-content-between mt-2">
             <h5 className="font-weight-600 mb-0">Kits</h5>
-            <div>
+            {/* <div>
               <Link
                 to="/RepairKits/Kits"
                 style={{ cursor: "pointer" }}
@@ -205,7 +224,7 @@ export const RepairKits = () => {
                 </span>
                 Create New<span className="ml-2"></span>
               </Link>
-            </div>
+            </div> */}
           </div>
 
           <div className="card p-4 mt-5">
@@ -228,6 +247,16 @@ export const RepairKits = () => {
                               />
                               <span className="font-weight-500 ml-2">
                                 {indKIT.kitId}
+                              </span>
+                              <span
+                                className="ml-2"
+                                style={{
+                                  fontSize: 9,
+                                  color: versionColor(indKIT.version),
+                                  fontWeight: 800,
+                                }}
+                              >
+                                {indKIT.version}
                               </span>
                             </p>
                             <div className="d-flex align-items-center">
@@ -259,9 +288,7 @@ export const RepairKits = () => {
                         </div>
                         <div className="d-flex justify-content-between align-items-center mt-2">
                           <p className="font-size-12 mb-0">
-                            <Moment format="HH:MM a">
-                              {indKIT.updatedAt}
-                            </Moment>
+                            <Moment format="HH:MM a">{indKIT.updatedAt}</Moment>
                             ,{" "}
                             <Moment format="DD MMM YY">
                               {indKIT.updatedAt}

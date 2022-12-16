@@ -96,6 +96,7 @@ import {
   selectDropdownOption,
   selectPricingMethodList,
 } from "./dropdowns/repairSlice";
+import CreateKIT from "./components/CreateKIT";
 
 function CommentEditInputCell(props) {
   const { id, value, field } = props;
@@ -202,6 +203,10 @@ function PartList(props) {
   const activityOptions = ["New Versions", "Show Errors", "Review"];
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [versionOpen, setVersionOpen] = useState(false);
+  const [kitVersionOpen, setKitVersionOpen] = useState(false);
+  const [kitVersion, setKitVersion] = useState({ value: "Gold", label: "Gold" });
+  const [kitReference, setKitReference] = useState("");
+  const [kitDescription, setKitDescription] = useState("");
   const [shareOpen, setShareOpen] = useState(false);
   const [viewOnlyTab, setViewOnlyTab] = useState({
     custViewOnly: false,
@@ -1100,12 +1105,33 @@ function PartList(props) {
 
   const handleCreateKIT = () => {
     if (selBuilderStatus?.value === "ACTIVE") {
-      createKIT(bId)
+      const data = {
+        description: kitDescription,
+        reference: kitReference,
+        versionType: kitVersion?.value
+      }
+      createKIT(bId, data)
         .then((res) => {
           handleSnack(
             "success",
             `KIT ${res.kitId} has been successfully created!`
           );
+          let kitDetails = {
+            kitId: "",
+            kitDBId: "",
+            partListNo: "",
+            partListId: "",
+            type: "fetch",
+          };
+          kitDetails.kitId = res.kitId;
+          kitDetails.kitDBId = res.id;
+          // kitDetails.partListNo = kitDetails.;
+          // kitDetails.partListId = selectedKIT.estimationNumber;
+          // kitDetails.versionNumber = selectedKIT.versionNumber;
+          history.push({
+            pathname: "/RepairKits/Kits",
+            state: kitDetails,
+          });
         })
         .catch((e) => {
           handleSnack("error", "Conversion to KIt has been failed!");
@@ -1386,6 +1412,17 @@ function PartList(props) {
         description={versionDescription}
         setDescription={setVersionDescription}
       />
+      <CreateKIT
+        kitVersionOpen={kitVersionOpen}
+        handleCloseVersion={() => setKitVersionOpen(false)}
+        handleCreateKIT={handleCreateKIT}
+        version={kitVersion}
+        setVersion = {setKitVersion}
+        description={kitDescription}
+        setDescription={setKitDescription}
+        reference = {kitReference}
+        setReference = {setKitReference}
+      />
       <ModalShare
         shareOpen={shareOpen}
         handleCloseShare={() => setShareOpen(false)}
@@ -1486,7 +1523,7 @@ function PartList(props) {
                   >
                     <MenuItem
                       className="custommenu ml-2 mr-5"
-                      onClick={handleCreateKIT}
+                      onClick={() => setKitVersionOpen(true)}
                     >
                       Kit
                     </MenuItem>

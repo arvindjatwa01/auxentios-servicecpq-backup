@@ -1,16 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 import Select from "react-select";
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 import $ from "jquery";
 import SearchIcon from "@mui/icons-material/Search";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getSearchCoverageForFamily, getSearchQueryCoverage } from "../../../services/index"
-import { useEffect } from 'react';
-
+import {
+  getSearchCoverageForFamily,
+  getSearchQueryCoverage,
+} from "../../../services/index";
 
 const QuerySearchComp = (props) => {
-  const [count, setCount] = useState(1)
+  const [count, setCount] = useState(1);
   const [querySearchSelector, setQuerySearchSelector] = useState([
     {
       id: 0,
@@ -19,8 +20,8 @@ const QuerySearchComp = (props) => {
       inputSearch: "",
       selectOptions: [],
       selectedOption: "",
-      itemType: { label: '', value: '' },
-      itemTypeOperator: ""
+      itemType: { label: "", value: "" },
+      itemTypeOperator: "",
     },
   ]);
 
@@ -28,23 +29,24 @@ const QuerySearchComp = (props) => {
     { label: "Make", value: "make" },
     { label: "Model", value: "model" },
     { label: "Prefix", value: "prefix" },
-    { label: "Family", value: "family" }]
+    { label: "Family", value: "family" },
+  ];
 
   const handleItemType = (e, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
     obj.itemType = e;
     tempArray[id] = obj;
-    console.log("tempArray : ", tempArray)
+    console.log("tempArray : ", tempArray);
     setQuerySearchSelector(tempArray);
-  }
+  };
   const handleitemTypeOperator = (e, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
     obj.itemTypeOperator = e;
     tempArray[id] = obj;
     setQuerySearchSelector(tempArray);
-  }
+  };
 
   const handleOperator = (e, id) => {
     let tempArray = [...querySearchSelector];
@@ -64,40 +66,17 @@ const QuerySearchComp = (props) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
 
-    if (props.compoFlag === "coverage") {
-      getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
-        .then((res) => {
-          obj.selectOptions = res;
-          tempArray[id] = obj;
-          setQuerySearchSelector([...tempArray]);
-          $(`.scrollbar-${id}`).css("display", "block");
-        })
-        .catch((err) => {
-          console.log("err in api call", err);
-        });
-      obj.inputSearch = e.target.value;
-    } else if (props.compoFlag === "solutionTempItemSearch") {
-      obj.inputSearch = e.target.value;
-      setQuerySearchSelector([...tempArray]);
-    }
-    else if (props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch" || props.compoFlag === "portfolioTempItemSearch") {
-      // itemSearchSuggestion(tempArray[id].selectFamily.value, e.target.value)
-      //   .then((res) => {
-      //     // obj.selectOptions = [...res];
-      //     tempArray[id] = obj;
-      //     setQuerySearchSelector([...tempArray]);
-      //     $(`.scrollbar-${id}`).css("display", "block");
-      //   })
-      //   .catch((err) => {
-      //     alert(err)
-      //     console.log("err in api call", err);
-      //     return
-      //   });
-      obj.inputSearch = e.target.value;
-      setQuerySearchSelector([...tempArray]);
-
-    }
-
+    getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
+      .then((res) => {
+        obj.selectOptions = res;
+        tempArray[id] = obj;
+        setQuerySearchSelector([...tempArray]);
+        $(`.scrollbar-${id}`).css("display", "block");
+      })
+      .catch((err) => {
+        console.log("err in api call", err);
+      });
+    obj.inputSearch = e.target.value;
   };
 
   const handleSearchListClick = (e, currentItem, obj1, id) => {
@@ -128,33 +107,17 @@ const QuerySearchComp = (props) => {
   const handleDeletQuerySearch = () => {
     setQuerySearchSelector([]);
     setCount(0);
-    props.compoFlag === "coverage" && props?.setMasterData([]);
-    props.compoFlag === "coverage" && props?.setFilterMasterData([]);
-    props.compoFlag === "coverage" && props?.setSelectedMasterData([]);
-    props.compoFlag === "itemSearch" && props?.setBundleItems([]);
-    props.compoFlag === "coverage" && props?.setOpenedModelBoxData([]);
-
-    props.compoFlag === "portfolioTempItemSearch" && props?.setPortfolioTempMasterData([]);
-    props.compoFlag === "portfolioTempItemSearch" && props?.setSelectedPortfolioTempMasterData([]);
-    props.compoFlag === "portfolioTempItemSearch" && props?.setPortfolioTempFilterMasterData([]);
-    
-    props.compoFlag === "solutionTempItemSearch" && props?.setSolutionTempMasterData([]);
-    props.compoFlag === "solutionTempItemSearch" && props?.setSelectedSolutionTempMasterData([]);
-
-    props.compoFlag === "bundleSearch" && props?.setTempBundleService1([]);
-    props.compoFlag === "bundleSearch" && props?.setTempBundleService2([]);
-    props.compoFlag === "bundleSearch" && props?.setTempBundleService3([]);
-
-    
-    props.setTempBundleService1([])
-
+    props?.setMasterData([]);
+    props?.setFilterMasterData([]);
+    props?.setSelectedMasterData([]);
+    props?.setOpenedModelBoxData([]);
+    props.setTempBundleService1([]);
   };
 
   const handleQuerySearchClick = async () => {
     // let searchStr;
     try {
-
-     $(".scrollbar").css("display", "none");
+      $(".scrollbar").css("display", "none");
       console.log("handleQuerySearchClick", querySearchSelector);
       // props.setQuerySearchSelectItem({querySearchSelector});
       if (
@@ -162,23 +125,10 @@ const QuerySearchComp = (props) => {
         querySearchSelector[0]?.inputSearch == "" ||
         querySearchSelector[0]?.selectFamily?.value === undefined
       ) {
-        throw "Please fill data properly"
+        throw "Please fill data properly";
       }
 
-      // console.log("Try here1 ", querySearchSelector[0].selectFamily.value);
-      // var  searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
-      // var searchStr =
-      //   querySearchSelector[0]?.selectFamily?.value +
-      //   "~" +
-      //   querySearchSelector[0]?.inputSearch;
-
-      if (props.compoFlag === "solutionTempItemSearch") {
-        var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:${querySearchSelector[0]?.inputSearch}`;
-
-      } else {
-        var searchStr = `bundleFlag:${querySearchSelector[0]?.itemType?.value} ${querySearchSelector[0]?.itemTypeOperator?.value} ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
-
-      }
+      var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:${querySearchSelector[0]?.inputSearch}`;
       console.log("searchStr  try : ", searchStr);
       // var searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
 
@@ -188,7 +138,7 @@ const QuerySearchComp = (props) => {
           querySearchSelector[i]?.selectFamily?.value == "" ||
           querySearchSelector[i]?.inputSearch == ""
         ) {
-          throw "Please fill data properly"
+          throw "Please fill data properly";
         }
         searchStr =
           searchStr +
@@ -199,13 +149,8 @@ const QuerySearchComp = (props) => {
           "~" +
           querySearchSelector[i].inputSearch;
       }
-      // searchStr is ready call API 
-      if (props.compoFlag === "coverage") {
-        const res1 = await getSearchQueryCoverage(searchStr)
-        props?.setMasterData(res1);
-      } 
-        
-
+      const res1 = await getSearchQueryCoverage(searchStr);
+      props?.setMasterData(res1);
     } catch (error) {
       // console.log("searchStr catch : ", searchStr);
       console.log("error in getSearchQueryCoverage", error);
@@ -218,12 +163,9 @@ const QuerySearchComp = (props) => {
         draggable: true,
         progress: undefined,
       });
-      return
+      return;
     }
   };
-
-  
-
 
   return (
     <>
@@ -233,12 +175,18 @@ const QuerySearchComp = (props) => {
             <div className="row align-items-center m-0">
               {querySearchSelector.map((obj, i) => {
                 return (
-                  <div className="customselect d-flex align-items-center mr-3 my-2" key={i}>
+                  <div
+                    className="customselect d-flex align-items-center mr-3 my-2"
+                    key={i}
+                  >
                     {i > 0 ? (
                       <Select
                         isClearable={true}
                         defaultValue={{ label: "And", value: "AND" }}
-                        options={[{ label: "And", value: "AND", id: i }, { label: "Or", value: "OR", id: i }]}
+                        options={[
+                          { label: "And", value: "AND", id: i },
+                          { label: "Or", value: "OR", id: i },
+                        ]}
                         placeholder="&amp;"
                         onChange={(e) => handleOperator(e, i)}
                         value={obj.selectOperator}
@@ -246,79 +194,13 @@ const QuerySearchComp = (props) => {
                     ) : (
                       <></>
                     )}
-                    {i === 0 ? <>
-                      {(props.compoFlag === "itemSearch" || props.compoFlag === "bundleSearch") &&
-                        <>
-                          <Select
-                            placeholder="Bundle Flag"
-                            options={(props.compoFlag === "bundleSearch") ? ([
-                              { label: "Bundle", value: "BUNDLE_ITEM" },
-                              { label: "Service", value: "SERVICE" },
-                            ]) : ([
-                              // { label: "Bundle", value: "bundle" },
-                              // { label: "Service", value: "service" },
-                              // { label: "Portfolio Item", value: "portfolioItem" },
-                              { label: "Bundle", value: "BUNDLE_ITEM" },
-                              { label: "Service", value: "SERVICE" },
-                              { label: "Portfolio Item", value: "PORTFOLIO" },
-                            ])}
-                            value={querySearchSelector.itemType}
-                            onChange={(e) => handleItemType(e, i)}
-                          />
-                          <Select
-                            options={[
-                              { label: "AND", value: "AND" },
-                              { label: "OR", value: "OR" },
-                            ]}
-                            placeholder="And/OR"
-                            value={querySearchSelector.itemTypeOperator}
-                            onChange={(e) => handleitemTypeOperator(e, i)}
-                          />
-                        </>
-                      }
-
-                      {(props.compoFlag === "portfolioTempItemSearch") &&
-                        <>
-                          <Select
-                            placeholder="Bundle Flag"
-                            options={([
-                              // { label: "Bundle", value: "bundle" },
-                              // { label: "Service", value: "service" },
-                              // { label: "Portfolio Item", value: "portfolioItem" },
-                              // { label: "Bundle", value: "BUNDLE_ITEM" },
-                              // { label: "Service", value: "SERVICE" },
-                              { label: "Portfolio", value: "PORTFOLIO" },
-
-                            ])}
-
-                            // defaultValue={props.compoFlag === "portfolioTempItemSearch" ? ({ label: "Portfolio", value: "PORTFOLIO" }) : ""}
-                            value={querySearchSelector.itemType}
-                            onChange={(e) => handleItemType(e, i)}
-                          // autoSelect={props.compoFlag === "portfolioTempItemSearch"}
-                          />
-                          <Select
-                            options={[
-                              { label: "AND", value: "AND" },
-                              { label: "OR", value: "OR" },
-                            ]}
-                            placeholder="And/OR"
-                            value={querySearchSelector.itemTypeOperator}
-                            onChange={(e) => handleitemTypeOperator(e, i)}
-                          />
-                        </>
-                      }
-
-                    </> : <></>}
-
                     <div>
-                      {(props.compoFlag === "itemSearch" && querySearchSelector[i].itemType?.value === "portfolioItem") || (props.compoFlag !== "itemSearch") ? (
-                        <Select
-                          isClearable={true}
-                          options={props.options ? props.options : options}
-                          onChange={(e) => handleFamily(e, i)}
-                          value={obj.selectFamily}
-                        />) : ('')}
-
+                      <Select
+                        isClearable={true}
+                        options={props.options ? props.options : options}
+                        onChange={(e) => handleFamily(e, i)}
+                        value={obj.selectFamily}
+                      />
                     </div>
                     <div className="customselectsearch">
                       <input
@@ -326,9 +208,7 @@ const QuerySearchComp = (props) => {
                         type="text"
                         placeholder="Search string"
                         value={obj.inputSearch}
-                        onChange={(e) =>
-                          handleInputSearch(e, i)
-                        }
+                        onChange={(e) => handleInputSearch(e, i)}
                         id={"inputSearch-" + i}
                         autoComplete="off"
                       />
@@ -336,21 +216,23 @@ const QuerySearchComp = (props) => {
                       {
                         <ul
                           className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
-
                         >
-                          {console.log("Obje obj.selectOptions : ", obj.selectOptions)}
-
-                          {obj.selectOptions.map(
-                            (currentItem, j) => (
-                              <li
-                                className="list-group-item"
-                                key={j}
-                                onClick={(e) => handleSearchListClick(e, currentItem, obj, i)}
-                              >
-                                {currentItem}
-                              </li>
-                            )
+                          {console.log(
+                            "Obje obj.selectOptions : ",
+                            obj.selectOptions
                           )}
+
+                          {obj.selectOptions.map((currentItem, j) => (
+                            <li
+                              className="list-group-item"
+                              key={j}
+                              onClick={(e) =>
+                                handleSearchListClick(e, currentItem, obj, i)
+                              }
+                            >
+                              {currentItem}
+                            </li>
+                          ))}
                         </ul>
                       }
                     </div>
@@ -404,9 +286,8 @@ const QuerySearchComp = (props) => {
           </div>
         </div>
       </div>
-
     </>
-  )
-}
+  );
+};
 
-export default QuerySearchComp
+export default QuerySearchComp;
