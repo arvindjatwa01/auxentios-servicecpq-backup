@@ -5,15 +5,15 @@ import SearchBox from "./SearchBox";
 const AddConsumableItemModal = (props) => {
   const data = props.serviceEstimateData;
   const title =
-    data.jobCode +
-    "-" +
-    data.jobCodeDescription +
-    " | " +
+    // data.jobCode +
+    // "-" +
+    // data.jobCodeDescription +
+    // " | " +
     data.componentCode +
     "-" +
-    data.componentCodeDescription +
-    " | " +
-    data.jobOperation;
+    data.componentCodeDescription 
+    // + " | " +
+    // data.jobOperation;
     const calculateTotalPrice = (extendedPrice, usage) => {
       return usage > 0 ? (usage / 100) * extendedPrice : extendedPrice;
     };

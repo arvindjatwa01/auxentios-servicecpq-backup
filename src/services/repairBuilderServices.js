@@ -73,12 +73,12 @@ export const createBuilder = (data) => {
 
 
 //Create Kit
-export const createKIT = (builderId) => {
+export const createKIT = (builderId, data) => {
   console.log("service repairbuilder > createKIT called...");
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(CREATE_KIT(builderId),null, config)
+        .post(CREATE_KIT(builderId), data, config)
         .then((res) => {
           console.log("repairbuilder -> createKIT response: ", res);
           if (res.status === 200) {

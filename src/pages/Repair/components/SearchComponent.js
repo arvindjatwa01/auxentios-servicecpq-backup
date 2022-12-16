@@ -180,7 +180,7 @@ const SearchComponent = (props) => {
                           handleSearchListClick(e, currentItem, obj, i)
                         }
                       >
-                        {currentItem[obj.selectCategory.value]}
+                        {props.type === "consumables" && obj.selectCategory.value === "consumableId" ? currentItem[obj.selectCategory.value] + " " + currentItem["name"]: currentItem[obj.selectCategory.value]}
                       </li>
                     ))}
                   </ul>

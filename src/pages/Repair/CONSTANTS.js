@@ -126,6 +126,10 @@ export const CONSUMABLE_SEARCH_Q_OPTIONS = [
   },
 ];
 
+export const COLOR_BRONZE = "#CD7F32";
+export const COLOR_GOLD = "#FFD700";
+export const COLOR_SILVER = "#C0C0C0";
+
 export const EXTWORK_SEARCH_Q_OPTIONS = [
   {
     label: "Id",

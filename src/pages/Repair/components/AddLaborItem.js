@@ -28,16 +28,8 @@ const AddLaborItemModal = (props) => {
     
   }
   const data = props.serviceEstimateData;
-  const title =
-    data.jobCode +
-    "-" +
-    data.jobCodeDescription +
-    " | " +
-    data.componentCode +
-    "-" +
-    data.componentCodeDescription +
-    " | " +
-    data.jobOperation;
+  const title = data.componentCode +  "-" +  data.componentCodeDescription ;
+
   return (
     <Modal
       show={props.laborItemOpen}
