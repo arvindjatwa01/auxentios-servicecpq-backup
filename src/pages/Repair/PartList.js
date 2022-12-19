@@ -44,7 +44,13 @@ import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
 import shareIcon from "../../assets/icons/svg/share.svg";
 import uploadIcon from "../../assets/icons/svg/upload.svg";
 // import SearchIcon from "@mui/icons-material/Search";
-import { debounce, Rating, TextareaAutosize, TextField, Tooltip } from "@mui/material";
+import {
+  debounce,
+  Rating,
+  TextareaAutosize,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Moment from "react-moment";
@@ -204,7 +210,10 @@ function PartList(props) {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [versionOpen, setVersionOpen] = useState(false);
   const [kitVersionOpen, setKitVersionOpen] = useState(false);
-  const [kitVersion, setKitVersion] = useState({ value: "Gold", label: "Gold" });
+  const [kitVersion, setKitVersion] = useState({
+    value: "Gold",
+    label: "Gold",
+  });
   const [kitReference, setKitReference] = useState("");
   const [kitDescription, setKitDescription] = useState("");
   const [shareOpen, setShareOpen] = useState(false);
@@ -1108,8 +1117,8 @@ function PartList(props) {
       const data = {
         description: kitDescription,
         reference: kitReference,
-        versionType: kitVersion?.value
-      }
+        versionType: kitVersion?.value,
+      };
       createKIT(bId, data)
         .then((res) => {
           handleSnack(
@@ -1417,11 +1426,11 @@ function PartList(props) {
         handleCloseVersion={() => setKitVersionOpen(false)}
         handleCreateKIT={handleCreateKIT}
         version={kitVersion}
-        setVersion = {setKitVersion}
+        setVersion={setKitVersion}
         description={kitDescription}
         setDescription={setKitDescription}
-        reference = {kitReference}
-        setReference = {setKitReference}
+        reference={kitReference}
+        setReference={setKitReference}
       />
       <ModalShare
         shareOpen={shareOpen}
@@ -1582,12 +1591,17 @@ function PartList(props) {
           </div>
 
           <div className="card p-4 mt-5">
-            <h5 className="d-flex align-items-center mb-0">
+            <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
               <div className="" style={{ display: "contents" }}>
-                <span className="mr-3">Header</span>
+                <span
+                  className="mr-3 ml-2 text-white"
+                  style={{ fontSize: "20px" }}
+                >
+                  Header
+                </span>
                 <a
                   href={undefined}
-                  className="btn-sm"
+                  className="btn-sm text-white"
                   style={{ cursor: "pointer" }}
                 >
                   <i
@@ -1603,16 +1617,20 @@ function PartList(props) {
                 </a>{" "}
                 <a
                   href={undefined}
-                  className="btn-sm"
+                  className="btn-sm text-white"
                   style={{ cursor: "pointer" }}
                 >
                   <i className="fa fa-bookmark-o" aria-hidden="true"></i>
                 </a>{" "}
-                <a href="#" className="btn-sm" style={{ cursor: "pointer" }}>
+                <a
+                  href="#"
+                  className="btn-sm text-white"
+                  style={{ cursor: "pointer" }}
+                >
                   <i className="fa fa-folder-o" aria-hidden="true"></i>
                 </a>
               </div>
-              <div className="hr"></div>
+              {/* <div className="hr"></div> */}
             </h5>
             <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
               {headerLoading ? (
@@ -2128,37 +2146,37 @@ function PartList(props) {
                               </label>
 
                               <LocalizationProvider
-                                    dateAdapter={AdapterDateFns}
-                                  >
-                                    <MobileDatePicker
-                                      inputFormat="dd/MM/yyyy"
-                                      className="form-controldate border-radius-10"
-                                      // sx={{
-                                      //   "&& .MuiPickersDay-dayWithMargin": {color: '#fff !important'},
-                                      //   }}
-                                      // InputProps={{style: {...FONT_STYLE, color: '#fff'}}}
-                                      minDate={estimationData.preparedOn}
-                                      maxDate={new Date()}
-                                      closeOnSelect
-                                      value={estimationData.preparedOn}
-                                      onChange={(e) =>
-                                        setEstimationData({
-                                          ...estimationData,
-                                          preparedOn: e,
-                                        })
-                                      }
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          variant="standard"
-                                          inputProps={{
-                                            ...params.inputProps,
-                                            style: FONT_STYLE,
-                                          }}
-                                        />
-                                      )}
+                                dateAdapter={AdapterDateFns}
+                              >
+                                <MobileDatePicker
+                                  inputFormat="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  // sx={{
+                                  //   "&& .MuiPickersDay-dayWithMargin": {color: '#fff !important'},
+                                  //   }}
+                                  // InputProps={{style: {...FONT_STYLE, color: '#fff'}}}
+                                  minDate={estimationData.preparedOn}
+                                  maxDate={new Date()}
+                                  closeOnSelect
+                                  value={estimationData.preparedOn}
+                                  onChange={(e) =>
+                                    setEstimationData({
+                                      ...estimationData,
+                                      preparedOn: e,
+                                    })
+                                  }
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      variant="standard"
+                                      inputProps={{
+                                        ...params.inputProps,
+                                        style: FONT_STYLE,
+                                      }}
                                     />
-                                  </LocalizationProvider>
+                                  )}
+                                />
+                              </LocalizationProvider>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -2182,33 +2200,33 @@ function PartList(props) {
                                 REVISED ON
                               </label>
                               <LocalizationProvider
-                                    dateAdapter={AdapterDateFns}
-                                  >
-                                    <MobileDatePicker
-                                      inputFormat="dd/MM/yyyy"
-                                      className="form-controldate border-radius-10"
-                                      minDate={estimationData.revisedOn}
-                                      maxDate={new Date()}
-                                      closeOnSelect
-                                      value={estimationData.revisedOn}
-                                      onChange={(e) =>
-                                        setEstimationData({
-                                          ...estimationData,
-                                          revisedOn: e,
-                                        })
-                                      }
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          variant="standard"
-                                          inputProps={{
-                                            ...params.inputProps,
-                                            style: FONT_STYLE,
-                                          }}
-                                        />
-                                      )}
+                                dateAdapter={AdapterDateFns}
+                              >
+                                <MobileDatePicker
+                                  inputFormat="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  minDate={estimationData.revisedOn}
+                                  maxDate={new Date()}
+                                  closeOnSelect
+                                  value={estimationData.revisedOn}
+                                  onChange={(e) =>
+                                    setEstimationData({
+                                      ...estimationData,
+                                      revisedOn: e,
+                                    })
+                                  }
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      variant="standard"
+                                      inputProps={{
+                                        ...params.inputProps,
+                                        style: FONT_STYLE,
+                                      }}
                                     />
-                                  </LocalizationProvider>
+                                  )}
+                                />
+                              </LocalizationProvider>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -2363,33 +2381,33 @@ function PartList(props) {
                                 <span className=" mr-2">ESTIMATION DATE</span>
                               </label>
                               <LocalizationProvider
-                                    dateAdapter={AdapterDateFns}
-                                  >
-                                    <MobileDatePicker
-                                      inputFormat="dd/MM/yyyy"
-                                      className="form-controldate border-radius-10"
-                                      minDate={generalData.estimationDate}
-                                      maxDate={new Date()}
-                                      closeOnSelect
-                                      value={generalData.estimationDate}
-                                      onChange={(e) =>
-                                        setGeneralData({
-                                          ...generalData,
-                                          estimationDate: e,
-                                        })
-                                      }
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          variant="standard"
-                                          inputProps={{
-                                            ...params.inputProps,
-                                            style: FONT_STYLE,
-                                          }}
-                                        />
-                                      )}
+                                dateAdapter={AdapterDateFns}
+                              >
+                                <MobileDatePicker
+                                  inputFormat="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  minDate={generalData.estimationDate}
+                                  maxDate={new Date()}
+                                  closeOnSelect
+                                  value={generalData.estimationDate}
+                                  onChange={(e) =>
+                                    setGeneralData({
+                                      ...generalData,
+                                      estimationDate: e,
+                                    })
+                                  }
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      variant="standard"
+                                      inputProps={{
+                                        ...params.inputProps,
+                                        style: FONT_STYLE,
+                                      }}
                                     />
-                                  </LocalizationProvider>
+                                  )}
+                                />
+                              </LocalizationProvider>
                             </div>
                           </div>
                           <div className="col-md-6 col-sm-6">
@@ -2561,33 +2579,33 @@ function PartList(props) {
                                 PRICE DATE
                               </label>
                               <LocalizationProvider
-                                    dateAdapter={AdapterDateFns}
-                                  >
-                                    <MobileDatePicker
-                                      inputFormat="dd/MM/yyyy"
-                                      className="form-controldate border-radius-10"
-                                      minDate={pricingData.priceDate}
-                                      maxDate={new Date()}
-                                      closeOnSelect
-                                      value={pricingData.priceDate}
-                                      onChange={(e) =>
-                                        setPricingData({
-                                          ...pricingData,
-                                          priceDate: e,
-                                        })
-                                      }
-                                      renderInput={(params) => (
-                                        <TextField
-                                          {...params}
-                                          variant="standard"
-                                          inputProps={{
-                                            ...params.inputProps,
-                                            style: FONT_STYLE,
-                                          }}
-                                        />
-                                      )}
+                                dateAdapter={AdapterDateFns}
+                              >
+                                <MobileDatePicker
+                                  inputFormat="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  minDate={pricingData.priceDate}
+                                  maxDate={new Date()}
+                                  closeOnSelect
+                                  value={pricingData.priceDate}
+                                  onChange={(e) =>
+                                    setPricingData({
+                                      ...pricingData,
+                                      priceDate: e,
+                                    })
+                                  }
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      variant="standard"
+                                      inputProps={{
+                                        ...params.inputProps,
+                                        style: FONT_STYLE,
+                                      }}
                                     />
-                                  </LocalizationProvider>
+                                  )}
+                                />
+                              </LocalizationProvider>
                             </div>
                           </div>
                           {/* <div className="col-md-4 col-sm-4">

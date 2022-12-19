@@ -19,7 +19,7 @@ import {
   getSearchCoverageForFamily
 } from "../../services/index";
 
-export const RepairStandardJobs = () => {
+export const RepairServiceOnlyTemplate = () => {
 
   useEffect(() => {
 
@@ -306,7 +306,7 @@ export const RepairStandardJobs = () => {
             <h5 className="font-weight-600 mb-0">Standard Jobs</h5>
             <div>
               <Link
-                to="/StandardJobs"
+                to="/RepairServiceOnlyTemplate/ServiceOnlyTemplates"
                 style={{ cursor: "pointer" }}
                 className="btn bg-primary text-white"
               >

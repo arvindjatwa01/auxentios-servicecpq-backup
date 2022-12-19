@@ -41,23 +41,6 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import {Link, useHistory} from 'react-router-dom'
 import $ from "jquery"
 import {
-  createPortfolio,
-  getPortfolio,
-  getPortfolioSchema,
-  getMakeKeyValue,
-  getModelKeyValue,
-  getPrefixKeyValue,
-  updatePortfolio,
-  getUsageCategoryKeyValue,
-  getTaskTypeKeyValue,
-  getResponseTimeTaskKeyValue,
-  getValidityKeyValue,
-  getStrategyTaskKeyValue,
-  getProductHierarchyKeyValue,
-  getGergraphicKeyValue,
-  getMachineTypeKeyValue,
-  getTypeKeyValue,
-  getPortfolioCommonConfig,
   getSearchQueryCoverage,
   getSearchCoverageForFamily,
   itemCreation

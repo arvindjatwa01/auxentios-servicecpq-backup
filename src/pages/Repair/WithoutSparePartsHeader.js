@@ -715,7 +715,9 @@ function WithoutSparePartsHeader(props) {
         <div className="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
             <div className="d-flex justify-content-center align-items-center">
-              <h5 className="font-weight-600 mb-0">Repair option (without spare parts)</h5>
+              <h5 className="font-weight-600 mb-0">
+                Repair option (without spare parts)
+              </h5>
               <div className="d-flex justify-content-center align-items-center">
                 <div className="ml-3">
                   <Select
@@ -854,12 +856,17 @@ function WithoutSparePartsHeader(props) {
           {activeElement.name === "header" && (
             <React.Fragment>
               <div className="card p-4 mt-5">
-                <h5 className="d-flex align-items-center mb-0">
+                <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
                   <div className="" style={{ display: "contents" }}>
-                    <span className="mr-3">Header</span>
+                    <span
+                      className="mr-3 ml-2 text-white"
+                      style={{ fontSize: "20px" }}
+                    >
+                      Header
+                    </span>
                     <a
                       href={undefined}
-                      className="btn-sm"
+                      className="btn-sm text-white"
                       style={{ cursor: "pointer" }}
                     >
                       <i
@@ -873,14 +880,22 @@ function WithoutSparePartsHeader(props) {
                         }
                       ></i>
                     </a>{" "}
-                    <a href="#" className="btn-sm">
+                    <a
+                      href="#"
+                      className="btn-sm text-white"
+                      style={{ cursor: "pointer" }}
+                    >
                       <i className="fa fa-bookmark-o" aria-hidden="true"></i>
                     </a>{" "}
-                    <a href="#" className="btn-sm">
+                    <a
+                      href="#"
+                      className="btn-sm text-white"
+                      style={{ cursor: "pointer" }}
+                    >
                       <i className="fa fa-folder-o" aria-hidden="true"></i>
                     </a>
                   </div>
-                  <div className="hr"></div>
+                  {/* <div className="hr"></div> */}
                 </h5>
                 <Box
                   className="mt-4"

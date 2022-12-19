@@ -141,14 +141,11 @@ function Kits(props) {
     setOpenSnack(true);
   };
   const activityOptions = ["Create Versions", "Show Errors", "Review"];
-  const [openCoverage, setOpenCoveragetable] = React.useState(false);
 
-  const handleOption3 = (e) => {
-    setValue3(e);
-  };
   const handleVersionKit = (e) => {
     setVersion(e);
   };
+  const [kitDBId, setKITDBId] = useState("");
   const [version, setVersion] = useState({ value: "Gold", label: "Gold" });
   const versionOptions = [
     { value: "GOLD", label: "Gold" },
@@ -178,11 +175,8 @@ function Kits(props) {
   ];
 
   const [rating, setRating] = useState(null);
-
-  const [value3, setValue3] = useState({ value: "Gold", label: "Gold" });
   const [headerLoading, setHeaderLoading] = useState(false);
   const [kitId, setKITId] = useState("");
-  const [kitDBId, setKITDBId] = useState("");
   useEffect(() => {
     if (state) {
       setHeaderLoading(true);
@@ -235,9 +229,9 @@ function Kits(props) {
   ];
 
   const APPLICATION_OPTIONS = [
-    { value: "MAINTENANCE", label: "Routine Maintenance" },
-    { value: "REPAIR", label: "General Repair" },
-    { value: "CONTRACTS", label: "Maintenance Contracts" },
+    { value: "ROUTINE_MAINTENANCE", label: "Routine Maintenance" },
+    { value: "GENERAL_REPAIR", label: "General Repair" },
+    { value: "MAINTENANCE_CONTRACTS", label: "Maintenance Contracts" },
     { value: "SALES", label: "Sales" },
     { value: "OTHERS", label: "Others" },
   ];
@@ -894,7 +888,6 @@ function Kits(props) {
     //   cell: (row) => <div><img className="mr-2" src={penIcon} /><img className="mr-2" src={deleticon} /><img src={link1Icon} /></div>,
     // },
   ];
-  const fileTypes = ["JPG", "PNG", "GIF"];
   const handleQuerySearchClick = () => {
     $(".scrollbar").css("display", "none");
     console.log("handleQuerySearchClick", querySearchSelector);
@@ -1169,7 +1162,6 @@ function Kits(props) {
   );
 
   const handleEditCoverageRow = (e, row) => {
-    console.log("handleEditIncludeSerialNo row:", row);
     setCoverageRowData(initialCoverageRowData);
     let obj = {
       id: row.id,
@@ -1625,24 +1617,38 @@ function Kits(props) {
             </div>
           </div>
           <div className="card p-4 mt-5">
-            <h5 className="d-flex align-items-center mb-0">
+            <h5 className="d-flex align-items-center mb-0 bg-primary p-2 border-radius-10">
               <div className="" style={{ display: "contents" }}>
-                <span className="mr-3">Header</span>
-                <a href="#" className="btn-sm">
+                <span
+                  className="mr-3 ml-2 text-white"
+                  style={{ fontSize: "20px" }}
+                >
+                  Header
+                </span>
+                <a
+                  href={undefined}
+                  className="btn-sm text-white"
+                  style={{ cursor: "pointer" }}
+                >
                   <i
                     className="fa fa-pencil"
-                    aria-hidden="true"
-                    onClick={() => makeHeaderEditable()}
+                    style={{ cursor: "pointer" }}
+                    onClick={() =>
+                      selKITStatus?.value === "DRAFT" ||
+                      selKITStatus?.value === "REVISED"
+                        ? makeHeaderEditable()
+                        : handleSnack("info", "Builder is active!")
+                    }
                   ></i>
                 </a>{" "}
-                <a href="#" className="btn-sm">
+                <a href="#" className="btn-sm text-white">
                   <i class="fa fa-bookmark-o" aria-hidden="true"></i>
                 </a>{" "}
-                <a href="#" className="btn-sm">
+                <a href="#" className="btn-sm text-white">
                   <i class="fa fa-folder-o" aria-hidden="true"></i>
                 </a>
               </div>
-              <div className="hr"></div>
+              {/* <div className="hr"></div> */}
             </h5>
             <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
               {headerLoading ? (
@@ -3630,140 +3636,6 @@ function Kits(props) {
                 </div>
               </div>
             </Modal.Body>
-          </Modal>
-
-          <Modal
-            show={open3}
-            onHide={() => setOpen3(false)}
-            size="md"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-          >
-            <Modal.Header>
-              <Modal.Title>Import Files</Modal.Title>
-            </Modal.Header>
-            <Modal.Body className="p-0">
-              <div className="p-3">
-                <div className="add-new-recod">
-                  <div>
-                    <FontAwesomeIcon
-                      className="cloudupload"
-                      icon={faCloudUploadAlt}
-                    />
-                    <h6 className="font-weight-500 mt-3">
-                      Drag and drop files to upload <br /> or
-                    </h6>
-                    <FileUploader
-                      handleChange={handleChange}
-                      name="file"
-                      types={fileTypes}
-                    />
-                  </div>
-                </div>
-                <p className="mt-3">
-                  Single upload file should not be more than 10MB. Only the
-                  .xls, .xlsx file types are allowed
-                </p>
-              </div>
-              <div className="recent-div p-3">
-                <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
-                <div className="recent-items mt-3">
-                  <div className="d-flex justify-content-between align-items-center ">
-                    <p className="mb-0 ">
-                      <FontAwesomeIcon
-                        className=" font-size-14"
-                        icon={faFileAlt}
-                      />
-                      <span className="font-weight-500 ml-2">
-                        Engine Partlist
-                      </span>
-                    </p>
-                    <div className="d-flex align-items-center">
-                      <div className="white-space custom-checkbox">
-                        <FormGroup>
-                          <FormControlLabel
-                            control={<Checkbox defaultChecked />}
-                            label=""
-                          />
-                        </FormGroup>
-                      </div>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faShareAlt} />
-                      </a>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faFolderPlus} />
-                      </a>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faUpload} />
-                      </a>
-                      <a href="#" className="ml-2">
-                        <MuiMenuComponent options={activityOptions} />
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-between align-items-center mt-2">
-                  <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                  <p className="font-size-12 mb-0">Part List </p>
-                </div>
-                <div className="recent-items mt-3">
-                  <div className="d-flex justify-content-between align-items-center ">
-                    <p className="mb-0 ">
-                      <FontAwesomeIcon
-                        className=" font-size-14"
-                        icon={faFileAlt}
-                      />
-                      <span className="font-weight-500 ml-2">
-                        Engine Partlist
-                      </span>
-                    </p>
-                    <div className="d-flex align-items-center">
-                      <div className="white-space custom-checkbox">
-                        <FormGroup>
-                          <FormControlLabel control={<Checkbox />} label="" />
-                        </FormGroup>
-                      </div>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faShareAlt} />
-                      </a>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faFolderPlus} />
-                      </a>
-                      <a href="#" className="ml-3 font-size-14">
-                        <FontAwesomeIcon icon={faUpload} />
-                      </a>
-                      <a href="#" className="ml-2">
-                        <MuiMenuComponent options={activityOptions} />
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div className="d-flex justify-content-between align-items-center mt-2">
-                  <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                  <p className="font-size-12 mb-0">Part List </p>
-                </div>
-              </div>
-            </Modal.Body>
-            <div className="row m-0 p-3">
-              <div className="col-md-6 col-sm-6">
-                <button
-                  className="btn border w-100 bg-white"
-                  onClick={handleClose}
-                >
-                  Cancel
-                </button>
-              </div>
-              <div className="col-md-6 col-sm-6">
-                <button
-                  className="btn btn-primary w-100"
-                  onClick={() => setOpenCoveragetable(true)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <FontAwesomeIcon className="mr-2" icon={faCloudUploadAlt} />
-                  Upload
-                </button>
-              </div>
-            </div>
           </Modal>
 
           {/* comment below code on 12/08 */}

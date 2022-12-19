@@ -15,9 +15,7 @@ import $ from "jquery";
 import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { default as Select, default as SelectFilter } from "react-select";
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
+import { default as Select } from "react-select";
 import { useEffect } from "react";
 import {
   AddServiceHeader,
@@ -57,10 +55,7 @@ import {
   selectDimensionList,
   selectConsumableTypeList,
 } from "pages/Repair/dropdowns/repairSlice";
-
-import Loader from "react-js-loader";
 import CustomizedSnackbar from "pages/Common/CustomSnackBar";
-import SearchBox from "./components/SearchBox";
 import {
   getConsumables,
   getExtWork,
