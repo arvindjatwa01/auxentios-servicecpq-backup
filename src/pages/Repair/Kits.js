@@ -234,6 +234,14 @@ function Kits(props) {
     { value: "60", label: "2 months" },
   ];
 
+  const APPLICATION_OPTIONS = [
+    { value: "MAINTENANCE", label: "Routine Maintenance" },
+    { value: "REPAIR", label: "General Repair" },
+    { value: "CONTRACTS", label: "Maintenance Contracts" },
+    { value: "SALES", label: "Sales" },
+    { value: "OTHERS", label: "Others" },
+  ];
+
   // Retrieve price methods
   const priceMethodOptions = useAppSelector(
     selectDropdownOption(selectPricingMethodList)
@@ -280,6 +288,9 @@ function Kits(props) {
     reference: "",
     validity: null,
     version: "",
+    owner: "",
+    application: "",
+    nextRivisionDate: new Date(),
   });
   const [estimationData, setEstimationData] = useState({
     preparedBy: "user1",
@@ -365,7 +376,8 @@ function Kits(props) {
     } else {
       updateKITCustomer(kitDBId, data)
         .then((result) => {
-          setValue("machine");
+          // setValue("machine");
+          setValue("estimation");
           setViewOnlyTab({ ...viewOnlyTab, custViewOnly: true });
           handleSnack("success", "Customer details updated!");
         })
@@ -591,6 +603,9 @@ function Kits(props) {
       reference: generalData.reference,
       validityDays: generalData.validity?.value,
       estimationNumber: generalData.estimationNo,
+      owner: generalData.owner,
+      application: generalData.application?.value,
+      nextRivisionDate: generalData.nextRivisionDate,
     };
     updateKITGeneralDet(kitDBId, data)
       .then((result) => {
@@ -696,6 +711,9 @@ function Kits(props) {
     setSelKITStatus(
       builderStatusOptions.filter((x) => x.value === result.status)[0]
     );
+    setVersion(
+      versionOptions.find((element) => element.value === result.version)
+    );
     // let versions = result.versionList?.map((versionNo) => ({
     //   value: versionNo,
     //   label: "Version " + versionNo,
@@ -741,6 +759,13 @@ function Kits(props) {
         (element) => element.value == result.validityDays
       ),
       version: result.version,
+      application: APPLICATION_OPTIONS.find(
+        (element) => element.value === result.application
+      ),
+      owner: result.owner,
+      nextRivisionDate: result.nextRivisionDate
+        ? result.nextRivisionDate
+        : new Date(), // Change it to created date + 1 year once API is ready
     });
     setEstimationData({
       approvedBy: result.approver,
@@ -1631,7 +1656,7 @@ function Kits(props) {
                       aria-label="lab API tabs example"
                     >
                       <Tab label="Customer" value="customer" />
-                      <Tab label="Machine " value="machine" />
+                      {/* <Tab label="Machine " value="machine" /> */}
                       <Tab label="Estimation Details" value="estimation" />
                       <Tab label="General Details" value="general" />
                       <Tab label="Price" value="price" />
@@ -2462,6 +2487,82 @@ function Kits(props) {
                                 placeholder="Placeholder (Optional)"
                                 disabled
                                 value={generalData.version}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                APPLICATION
+                              </label>
+                              <Select
+                                // defaultValue={selectedOption}
+                                onChange={(e) =>
+                                  setGeneralData({
+                                    ...generalData,
+                                    application: e,
+                                  })
+                                }
+                                options={APPLICATION_OPTIONS}
+                                placeholder="Required"
+                                value={generalData.application}
+                                styles={FONT_STYLE_SELECT}
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="align-items-center date-box">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                <span className=" mr-2">
+                                  NEXT REVISION DATE
+                                </span>
+                              </label>
+                              <LocalizationProvider
+                                dateAdapter={AdapterDateFns}
+                              >
+                                <MobileDatePicker
+                                  inputFormat="dd/MM/yyyy"
+                                  className="form-controldate border-radius-10"
+                                  minDate={new Date()}
+                                  closeOnSelect
+                                  value={generalData.nextRivisionDate}
+                                  onChange={(e) =>
+                                    setGeneralData({
+                                      ...generalData,
+                                      estimationDate: e,
+                                    })
+                                  }
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      variant="standard"
+                                      inputProps={{
+                                        ...params.inputProps,
+                                        style: FONT_STYLE,
+                                      }}
+                                    />
+                                  )}
+                                />
+                              </LocalizationProvider>
+                            </div>
+                          </div>
+                          <div className="col-md-6 col-sm-6">
+                            <div className="form-group">
+                              <label className="text-light-dark font-size-12 font-weight-500">
+                                OWNER
+                              </label>
+                              <input
+                                type="text"
+                                value={generalData.owner}
+                                name="owner"
+                                onChange={(e) =>
+                                  setGeneralData({
+                                    ...generalData,
+                                    owner: e.target.value,
+                                  })
+                                }
+                                className="form-control border-radius-10 text-primary"
+                                placeholder="Placeholder (Required)"
                               />
                             </div>
                           </div>

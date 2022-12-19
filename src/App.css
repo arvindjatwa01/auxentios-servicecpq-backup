@@ -3481,6 +3481,17 @@ width: 18px;}
 .MuiButtonBase-root.MuiPickersDay-root.Mui-selected {
   color: #fff !important
 }
+.form-control-search {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  width: 190%;
+  height: 2.375rem;
+  line-height: 2.375rem;
+  text-align: center;
+  pointer-events: none;
+  color: #aaa;
+}
 .customtable-loader{    position: absolute;
   left: 0;
   right: 0;

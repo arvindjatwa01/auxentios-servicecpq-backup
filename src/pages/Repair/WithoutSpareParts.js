@@ -36,6 +36,9 @@ function WithoutSpareParts(props) {
     }
     setOpenSnack(false);
   };
+  function formatSegmentHeader(convertSegment){
+    return "Segment " + String(convertSegment.segmentNumber).padStart(2, '0') + " - " + convertSegment.description
+  }
   const newSegment = {
     header: NEW_SEGMENT,
     segmentNumber: "",
@@ -63,11 +66,11 @@ function WithoutSpareParts(props) {
             )[0] : result[result.length - 1];
             setSegmentData({
               ...segmentToLoad,
-              header:
-                "Segment " +
-                segmentToLoad.segmentNumber +
-                " - " +
-                segmentToLoad.description,
+              header: formatSegmentHeader(segmentToLoad)
+                // "Segment " +
+                // segmentToLoad.segmentNumber +
+                // " - " +
+                // segmentToLoad.description,
             });
           } else {
             loadNewSegmentUI();
@@ -165,11 +168,11 @@ function WithoutSpareParts(props) {
 
       setSegmentData({
         ...segmentToLoad[0],
-        header:
-          "Segment " +
-          segmentToLoad[0].segmentNumber +
-          " - " +
-          segmentToLoad[0].description,
+        header: formatSegmentHeader(segmentToLoad[0])
+          // "Segment " +
+          // segmentToLoad[0].segmentNumber +
+          // " - " +
+          // segmentToLoad[0].description,
       });
     } else if (direction === "forward") {
       let segmentToLoad = [];
@@ -185,11 +188,11 @@ function WithoutSpareParts(props) {
         );
         setSegmentData({
           ...segmentToLoad[0],
-          header:
-            "Segment " +
-            segmentToLoad[0].segmentNumber +
-            " - " +
-            segmentToLoad[0].description,
+          header: formatSegmentHeader(segmentToLoad[0])
+            // "Segment " +
+            // segmentToLoad[0].segmentNumber +
+            // " - " +
+            // segmentToLoad[0].description,
         });
       }
     }
@@ -209,8 +212,8 @@ function WithoutSpareParts(props) {
           ...segmentData,
           segmentNumber: result.segmentNumber,
           id: result.id,
-          header:
-            "Segment " + result.segmentNumber + " - " + result.description,
+          header: formatSegmentHeader(result)
+            // "Segment " + result.segmentNumber + " - " + result.description,
         });
         // fetchSegmentsOfBuilder();
         segments[segments.length - 1] = result;
@@ -240,11 +243,11 @@ function WithoutSpareParts(props) {
       );
       setSegmentData({
         ...segments[segments.length - 1],
-        header:
-          "Segment " +
-          segments[segments.length - 1].segmentNumber +
-          " - " +
-          segments[segments.length - 1].description,
+        header: formatSegmentHeader(segments[segments.length - 1])
+          // "Segment " +
+          // segments[segments.length - 1].segmentNumber +
+          // " - " +
+          // segments[segments.length - 1].description,
       });
       setShowAddNewButton(true);
       setSegmentViewOnly(true);

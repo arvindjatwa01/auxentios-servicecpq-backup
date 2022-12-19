@@ -715,7 +715,7 @@ function WithoutSparePartsHeader(props) {
         <div className="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
             <div className="d-flex justify-content-center align-items-center">
-              <h5 className="font-weight-600 mb-0">Without Spare Parts</h5>
+              <h5 className="font-weight-600 mb-0">Repair option (without spare parts)</h5>
               <div className="d-flex justify-content-center align-items-center">
                 <div className="ml-3">
                   <Select

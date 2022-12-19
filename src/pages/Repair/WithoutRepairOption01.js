@@ -70,8 +70,8 @@ function WithoutRepairOption01(props) {
               setOperationData({
                 ...opToLoad,
                 header:
-                  "Operation " +
-                  opToLoad.operationNumber +
+                  "Operation " +                  
+                  formatOperationNum(opToLoad.operationNumber) +
                   " - " +
                   opToLoad.description, //Rename after modifications in UI
               });
@@ -94,6 +94,10 @@ function WithoutRepairOption01(props) {
       handleSnack("error", "Not a valid segment!");
     }
   };
+
+  function formatOperationNum(num){
+    return String(num).padStart(3, '0') 
+  }
 
   // Search Job Code
   const handleJobCodeSearch = async (searchText) => {
@@ -184,7 +188,7 @@ function WithoutRepairOption01(props) {
         ...operationToLoad[0],
         header:
           "Operation " +
-          operationToLoad[0].operationNumber +
+          formatOperationNum(operationToLoad[0].operationNumber) +
           " - " +
           operationToLoad[0].description, //Rename once changed in API
       });
@@ -204,7 +208,7 @@ function WithoutRepairOption01(props) {
           ...operationToLoad[0],
           header:
             "Operation " +
-            operationToLoad[0].operationNumber +
+            formatOperationNum(operationToLoad[0].operationNumber) +
             " - " +
             operationToLoad[0].description, //Rename
         });
@@ -231,7 +235,7 @@ function WithoutRepairOption01(props) {
           id: result.id,
           header:
             "Operation " +
-            result.operationNumber +
+            formatOperationNum(result.operationNumber) +
             " - " +
             result.description, //Rename to description once API is changed
         });
@@ -264,7 +268,7 @@ function WithoutRepairOption01(props) {
         ...operations[operations.length - 1],
         header:
           "Operation " +
-          operations[operations.length - 1].operationNumber +
+          formatOperationNum(operations[operations.length - 1].operationNumber) +
           " - " +
           operations[operations.length - 1].description,
       });

@@ -838,6 +838,9 @@ function RepairServiceEstimate(props) {
 
   // Add or Update misc data
   const updateMiscHeader = () => {
+    // console.log(miscData.type);
+    // let miscTypes = []
+    // miscData.type?.map(element => miscTypes.push(element.value));
     let data = {
       // ...miscData,
       ...(miscData.id && { id: miscData.id }),
@@ -852,6 +855,7 @@ function RepairServiceEstimate(props) {
       adjustedPrice: miscData.flatRateIndicator ? miscData.adjustedPrice : 0.0,
       payer: miscData.payer,
       type: miscData.type?.value,
+      // type: miscTypes,
     };
     AddMiscToService(serviceEstimateData.id, data)
       .then((result) => {
@@ -3149,14 +3153,16 @@ function RepairServiceEstimate(props) {
                             <div className="col-md-4 col-sm-4">
                               <div class="form-group mt-3">
                                 <label className="text-light-dark font-size-12 font-weight-600">
-                                  TYPE OF MISC.{" "}
+                                  TYPE OF MISC.
                                 </label>
                                 <Select
                                   onChange={(e) =>
                                     setMiscData({ ...miscData, type: e })
                                   }
+                                  // closeMenuOnSelect={false}
                                   options={miscTypeList}
                                   value={miscData.type}
+                                  // isMulti
                                   placeholder="Required"
                                   styles={FONT_STYLE_SELECT}
                                 />
