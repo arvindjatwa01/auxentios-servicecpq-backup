@@ -64,37 +64,37 @@ function ServiceOnlyTemplateSegment(props){
   }, []);
 
   const fetchSegmentsOfBuilder = () => {
-    setSegmentLoadig(true);
-    if (activeElement.templateDBId) {
-      fetchSegments(activeElement.templateDBId)
-        .then((result) => {
-          if (result?.length > 0) {
-            setSegments(result);
-            setSegmentViewOnly(true);
-            let segmentToLoad = activeElement.sId ? result.filter(
-              (x) => x.id === activeElement.sId
-            )[0] : result[result.length - 1];
-            setSegmentData({
-              ...segmentToLoad,
-              header: formatSegmentHeader(segmentToLoad)
-                // "Segment " +
-                // segmentToLoad.segmentNumber +
-                // " - " +
-                // segmentToLoad.description,
-            });
-          } else {
-            loadNewSegmentUI();
-          }
-          setSegmentLoadig(false);
-        })
-        .catch((err) => {
-          loadNewSegmentUI();
-          handleSnack("error", "Error occurred while fetching segments!");
-          setSegmentLoadig(false);
-        });
-    } else {
-      handleSnack("error", "Not a valid builder!");
-    }
+    // setSegmentLoadig(true);
+    // if (activeElement.templateDBId) {
+    //   fetchSegments(activeElement.templateDBId)
+    //     .then((result) => {
+    //       if (result?.length > 0) {
+    //         setSegments(result);
+    //         setSegmentViewOnly(true);
+    //         let segmentToLoad = activeElement.sId ? result.filter(
+    //           (x) => x.id === activeElement.sId
+    //         )[0] : result[result.length - 1];
+    //         setSegmentData({
+    //           ...segmentToLoad,
+    //           header: formatSegmentHeader(segmentToLoad)
+    //             // "Segment " +
+    //             // segmentToLoad.segmentNumber +
+    //             // " - " +
+    //             // segmentToLoad.description,
+    //         });
+    //       } else {
+    //         loadNewSegmentUI();
+    //       }
+    //       setSegmentLoadig(false);
+    //     })
+    //     .catch((err) => {
+    //       loadNewSegmentUI();
+    //       handleSnack("error", "Error occurred while fetching segments!");
+    //       setSegmentLoadig(false);
+    //     });
+    // } else {
+    //   handleSnack("error", "Not a valid builder!");
+    // }
   };
 
   // Search Job Code

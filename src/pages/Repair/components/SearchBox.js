@@ -1,7 +1,7 @@
 const SearchBox = (props) => {
   return (
     <div className="customselectsearch">
-      <span class="fa fa-search fa-lg form-control-search"/>
+      <div className="form-control-search"><span class="fa fa-search fa-lg "/></div>
       <input
         type="text"
         className="form-control border-radius-10 text-primary"
