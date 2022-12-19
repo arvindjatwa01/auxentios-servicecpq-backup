@@ -40,7 +40,7 @@ import {
     updateCustomPortfolio,
     customitemCreation,
     createCustomPortfolio,
-    createCutomCoverage,
+    createCustomCoverage,
     updateCustomItemData,
     deleteCustomItem,
     customPriceCreation,

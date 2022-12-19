@@ -31,7 +31,12 @@ import { CommanComponents } from "components";
 import { SolutionBuilderModal, SolutionSelector } from "pages/SolutionModules";
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
-const  SolutionQuote=()=>{
+import LoadingProgress from "../Repair/components/Loader";
+import {
+  getRecentSolutionQuotes,
+} from "../../services/index";
+
+const SolutionQuote = () => {
 
   const [value, setValue] = React.useState('1');
   const [openSolutionSelector, setOpenSolutionSelector] = useState(false)
@@ -51,7 +56,13 @@ const  SolutionQuote=()=>{
   const [columnSearchText, setColumnSearchText] = useState('');
   const [typeOfSolutionBuild, setTypeOfSolutionBuild] = useState(-1)
   const [buildSolutionValue, setBuildSolutionValue] = useState(-1)
-  
+
+
+  // Solution Quotes States
+
+  const [headerLoading, setHeaderLoading] = useState(false);
+  const [recentSolutionQuoteData, setRecentSolutionQuoteData] = useState([]);
+
 
 
   const handleBuildSolution = (e) => {
@@ -188,236 +199,256 @@ const  SolutionQuote=()=>{
 
   }
 
-    return(
-      <>
+
+  useEffect(() => {
+
+    setHeaderLoading(true)
+    getRecentSolutionQuotes()
+      .then((res) => {
+        // setRecentPortfolioSolution(res);
+        setRecentSolutionQuoteData(res);
+      })
+    setHeaderLoading(false)
+  }, [])
+
+  return (
+    <>
       {/* <CommanComponents /> */}
       <div className="content-body" style={{ minHeight: '884px' }}>
         <div class="container-fluid ">
           <div className="d-flex align-items-center justify-content-between mt-2">
-            <h5 className="font-weight-600 mb-0" style={{fontSize:"18px"}}>Solution Quote</h5>
+            <h5 className="font-weight-600 mb-0" style={{ fontSize: "18px" }}>Solution Quote</h5>
             <div>
-              <Link to="/SolutionQuoteSearch"  style={{ cursor: 'pointer' }} className="btn bg-primary text-white pull-right">
-        Search Quote<ChevronRightIcon className=""/>
+              <Link to="/SolutionQuoteSearch" style={{ cursor: 'pointer' }} className="btn bg-primary text-white pull-right">
+                Search Quote<ChevronRightIcon className="" />
               </Link>
             </div>
           </div>
           <div className="card p-4 mt-5">
-           
+
             <div className="mt-5">
               {/* <h6 class="font-weight-600 text-grey mb-0">ANALYTICS</h6> */}
               <div className="recent-div p-3">
                 <h6 className="font-weight-600 text-grey mb-0">RECENT SOLUTION QUOTE</h6>
-                <div className="row">
-                  <div className="col-md-4">
-                    <div className="recent-items mt-3 block-div">
-                      <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
-                        <div className="d-flex align-items-center">
-                          <div className="white-space custom-checkbox">
-                            <FormGroup>
-                              <FormControlLabel  control={<Checkbox className="p-0 font-size-14 text-primary" defaultChecked />} label="" />
-                            </FormGroup>
+                {recentSolutionQuoteData.length === 0 ? (
+                  // <LoadingProgress />
+                  "No Record Found"
+                ) : (
+                  <div className="row">
+                    {recentSolutionQuoteData.map((quoteData, index) =>
+                      <div className="col-md-4">
+                        <div className="recent-items mt-3 block-div">
+                          <div className="d-flex justify-content-between align-items-center ">
+                            <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                            <div className="d-flex align-items-center">
+                              <div className="white-space custom-checkbox">
+                                <FormGroup>
+                                  <FormControlLabel control={<Checkbox className="p-0 font-size-14 text-primary" defaultChecked />} label="" />
+                                </FormGroup>
+                              </div>
+                              <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                              <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                              <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                              <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
+                            </div>
                           </div>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                          <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
+
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center mt-2">
+                          <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                          <p className="font-size-12 mb-0">Solution Option</p>
                         </div>
                       </div>
+                    )}
 
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center mt-2">
-                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Solution Option</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="recent-items mt-3 block-div">
-                      <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
-                        <div className="d-flex align-items-center">
-                          <div className="white-space custom-checkbox">
-                            <FormGroup>
-                              <FormControlLabel  control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
-                            </FormGroup>
+                    <div className="col-md-4">
+                      <div className="recent-items mt-3 block-div">
+                        <div className="d-flex justify-content-between align-items-center ">
+                          <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                          <div className="d-flex align-items-center">
+                            <div className="white-space custom-checkbox">
+                              <FormGroup>
+                                <FormControlLabel control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
+                              </FormGroup>
+                            </div>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                            <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                           </div>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                          <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                         </div>
-                      </div>
 
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center mt-2">
+                        <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                        <p className="font-size-12 mb-0">Solution Option</p>
+                      </div>
                     </div>
-                    <div className="d-flex justify-content-between align-items-center mt-2">
-                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Solution Option</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="recent-items mt-3 block-div">
-                      <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
-                        <div className="d-flex align-items-center">
-                          <div className="white-space custom-checkbox">
-                            <FormGroup>
-                              <FormControlLabel  control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
-                            </FormGroup>
+                    <div className="col-md-4">
+                      <div className="recent-items mt-3 block-div">
+                        <div className="d-flex justify-content-between align-items-center ">
+                          <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                          <div className="d-flex align-items-center">
+                            <div className="white-space custom-checkbox">
+                              <FormGroup>
+                                <FormControlLabel control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
+                              </FormGroup>
+                            </div>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                            <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                           </div>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                          <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                         </div>
-                      </div>
 
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center mt-2">
+                        <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                        <p className="font-size-12 mb-0">Solution Option</p>
+                      </div>
                     </div>
-                    <div className="d-flex justify-content-between align-items-center mt-2">
-                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Solution Option</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="recent-items mt-3 block-div">
-                      <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
-                        <div className="d-flex align-items-center">
-                          <div className="white-space custom-checkbox">
-                            <FormGroup>
-                              <FormControlLabel  control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
-                            </FormGroup>
+                    <div className="col-md-4">
+                      <div className="recent-items mt-3 block-div">
+                        <div className="d-flex justify-content-between align-items-center ">
+                          <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                          <div className="d-flex align-items-center">
+                            <div className="white-space custom-checkbox">
+                              <FormGroup>
+                                <FormControlLabel control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
+                              </FormGroup>
+                            </div>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                            <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                           </div>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                          <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                         </div>
-                      </div>
 
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center mt-2">
+                        <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                        <p className="font-size-12 mb-0">Solution Option</p>
+                      </div>
                     </div>
-                    <div className="d-flex justify-content-between align-items-center mt-2">
-                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Solution Option</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="recent-items mt-3 block-div">
-                      <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
-                        <div className="d-flex align-items-center">
-                          <div className="white-space custom-checkbox">
-                            <FormGroup>
-                              <FormControlLabel  control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
-                            </FormGroup>
+                    <div className="col-md-4">
+                      <div className="recent-items mt-3 block-div">
+                        <div className="d-flex justify-content-between align-items-center ">
+                          <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                          <div className="d-flex align-items-center">
+                            <div className="white-space custom-checkbox">
+                              <FormGroup>
+                                <FormControlLabel control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
+                              </FormGroup>
+                            </div>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                            <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                           </div>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                          <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                         </div>
-                      </div>
 
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center mt-2">
+                        <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                        <p className="font-size-12 mb-0">Solution Option</p>
+                      </div>
                     </div>
-                    <div className="d-flex justify-content-between align-items-center mt-2">
-                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Solution Option</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="recent-items mt-3 block-div">
-                      <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
-                        <div className="d-flex align-items-center">
-                          <div className="white-space custom-checkbox">
-                            <FormGroup>
-                              <FormControlLabel  control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
-                            </FormGroup>
+                    <div className="col-md-4">
+                      <div className="recent-items mt-3 block-div">
+                        <div className="d-flex justify-content-between align-items-center ">
+                          <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                          <div className="d-flex align-items-center">
+                            <div className="white-space custom-checkbox">
+                              <FormGroup>
+                                <FormControlLabel control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
+                              </FormGroup>
+                            </div>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                            <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                           </div>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                          <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                         </div>
-                      </div>
 
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center mt-2">
+                        <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                        <p className="font-size-12 mb-0">Solution Option</p>
+                      </div>
                     </div>
-                    <div className="d-flex justify-content-between align-items-center mt-2">
-                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Solution Option</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="recent-items mt-3 block-div">
-                      <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
-                        <div className="d-flex align-items-center">
-                          <div className="white-space custom-checkbox">
-                            <FormGroup>
-                              <FormControlLabel  control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
-                            </FormGroup>
+                    <div className="col-md-4">
+                      <div className="recent-items mt-3 block-div">
+                        <div className="d-flex justify-content-between align-items-center ">
+                          <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                          <div className="d-flex align-items-center">
+                            <div className="white-space custom-checkbox">
+                              <FormGroup>
+                                <FormControlLabel control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
+                              </FormGroup>
+                            </div>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                            <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                           </div>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                          <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                         </div>
-                      </div>
 
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center mt-2">
+                        <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                        <p className="font-size-12 mb-0">Solution Option</p>
+                      </div>
                     </div>
-                    <div className="d-flex justify-content-between align-items-center mt-2">
-                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Solution Option</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="recent-items mt-3 block-div">
-                      <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
-                        <div className="d-flex align-items-center">
-                          <div className="white-space custom-checkbox">
-                            <FormGroup>
-                              <FormControlLabel  control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
-                            </FormGroup>
+                    <div className="col-md-4">
+                      <div className="recent-items mt-3 block-div">
+                        <div className="d-flex justify-content-between align-items-center ">
+                          <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                          <div className="d-flex align-items-center">
+                            <div className="white-space custom-checkbox">
+                              <FormGroup>
+                                <FormControlLabel control={<Checkbox className="p-0 font-size-14" defaultChecked />} label="" />
+                              </FormGroup>
+                            </div>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                            <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                           </div>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                          <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                         </div>
-                      </div>
 
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center mt-2">
+                        <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                        <p className="font-size-12 mb-0">Solution Option</p>
+                      </div>
                     </div>
-                    <div className="d-flex justify-content-between align-items-center mt-2">
-                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Solution Option</p>
-                    </div>
-                  </div>
-                  <div className="col-md-4">
-                    <div className="recent-items mt-3 block-div">
-                      <div className="d-flex justify-content-between align-items-center ">
-                        <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
-                        <div className="d-flex align-items-center">
-                          <div className="white-space custom-checkbox">
-                            <FormGroup>
-                              <FormControlLabel  control={<Checkbox className="p-0 font-size-14 text-primary" defaultChecked />} label="" />
-                            </FormGroup>
+                    <div className="col-md-4">
+                      <div className="recent-items mt-3 block-div">
+                        <div className="d-flex justify-content-between align-items-center ">
+                          <p className="mb-0 overflow-hidden white-space"><FontAwesomeIcon className=" font-size-14" icon={faFileAlt} /><span className="font-weight-500 ml-2">Solution Quote</span></p>
+                          <div className="d-flex align-items-center">
+                            <div className="white-space custom-checkbox">
+                              <FormGroup>
+                                <FormControlLabel control={<Checkbox className="p-0 font-size-14 text-primary" defaultChecked />} label="" />
+                              </FormGroup>
+                            </div>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
+                            <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
+                            <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                           </div>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faShareAlt} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faFolderPlus} /></a>
-                          <a href="#" className="ml-3 font-size-14"><FontAwesomeIcon icon={faUpload} /></a>
-                          <a href="#" className="ml-2 p-0 more-icon-div"><MuiMenuComponent className=" p-0 font-size-14" options={activityOptions} /></a>
                         </div>
+
                       </div>
+                      <div className="d-flex justify-content-between align-items-center mt-2">
+                        <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                        <p className="font-size-12 mb-0">Solution Option</p>
+                      </div>
+                    </div>
 
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center mt-2">
-                      <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
-                      <p className="font-size-12 mb-0">Solution Option</p>
-                    </div>
+
                   </div>
-                  
-
-                </div>
+                )}
 
               </div>
             </div>
@@ -618,7 +649,7 @@ const  SolutionQuote=()=>{
         {modalComponent}
       </div>
     </>
-    )
+  )
 }
 
 export default SolutionQuote

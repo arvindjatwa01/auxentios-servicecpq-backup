@@ -85,11 +85,13 @@ export const getPrefixKeyValue = () => {
     }
   });
 };
+
+// Create Portfolio Coverage 
 export const createCoverage = (data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(COVERAGE_REST(),data, { headers: headersdata })
+        .post(COVERAGE_REST(), data, { headers: headersdata })
         .then((res) => {
           console.log("createCoverage > axios res=", res);
           resolve(res.data);
@@ -105,23 +107,68 @@ export const createCoverage = (data) => {
   });
 };
 
-export const createCutomCoverage = (data) => {
+// Update Portfolio Coverage 
+export const updateCoverage = (id, data) => {
   return new Promise((resolve, reject) => {
     try {
       axios
-        .post(CUSTOM_COVERAGE_REST(),data, { headers: headersdata })
+        .put(`${COVERAGE_REST()}/${id}`, data, { headers: headersdata })
         .then((res) => {
-          console.log("createCoverage > axios res=", res);
-          resolve(res.data);
+          console.log("updateCoverage > axios res=", res);
+          // resolve(res.data);
+          resolve(res);
         })
         .catch((err) => {
-          console.log("createCoverage > axios err=", err);
-          reject("Error in createCoverage axios!");
+          console.log("updateCoverage > axios err=", err);
+          reject("Error in updateCoverage axios!");
         });
     } catch (error) {
-      console.error("in coverageService > createCoverage, Err===", error);
+      console.error("in coverageService > updateCoverage, Err===", error);
       reject(SYSTEM_ERROR);
     }
   });
 };
 
+// Create Custom Portfolio  Coverage Data 
+export const createCustomCoverage = (data) => {
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .post(CUSTOM_COVERAGE_REST(), data, { headers: headersdata })
+        .then((res) => {
+          console.log("createCustomCoverage > axios res=", res);
+          resolve(res.data);
+        })
+        .catch((err) => {
+          console.log("createCustomCoverage > axios err=", err);
+          reject("Error in createCustomCoverage axios!");
+        });
+    } catch (error) {
+      console.error("in coverageService > createCustomCoverage, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
+
+
+// Update Custom Portfolio  Coverage Data 
+export const updateCustomCoverage = (id, data) => {
+  return new Promise((resolve, reject) => {
+    try {
+      axios
+        .put(`${CUSTOM_COVERAGE_REST()}/${id}`, data, { headers: headersdata })
+        .then((res) => {
+          console.log("updateCustomCoverage > axios res=", res);
+          // resolve(res.data);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log("updateCustomCoverage > axios err=", err);
+          reject("Error in updateCustomCoverage axios!");
+        });
+    } catch (error) {
+      console.error("in coverageService > updateCustomCoverage, Err===", error);
+      reject(SYSTEM_ERROR);
+    }
+  });
+};
