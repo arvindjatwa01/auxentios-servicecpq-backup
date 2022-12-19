@@ -5793,7 +5793,7 @@ export function SolutionTemplateResult(props) {
                                        <p className="font-size-12 font-weight-500 mb-2">
                                           PORTFOLIO NAME
                                        </p>
-                                       <h6 className="font-weight-500">
+                                       <h6 className="font-weight-500 text-primary font-size-17">
                                           {(generalComponentData.name == "" ||
                                              generalComponentData.name == null ||
                                              generalComponentData.name == "string" ||
@@ -5807,7 +5807,7 @@ export function SolutionTemplateResult(props) {
                                        <p className="font-size-12 font-weight-500 mb-2">
                                           PORTFOLIO DESCRIPTION (IF ANY)
                                        </p>
-                                       <h6 className="font-weight-500">
+                                       <h6 className="font-weight-500 text-primary font-size-17">
                                           {(generalComponentData.description == "" ||
                                              generalComponentData.description == null ||
                                              generalComponentData.description == "string" ||
@@ -5821,7 +5821,7 @@ export function SolutionTemplateResult(props) {
                                        <p className="font-size-12 font-weight-500 mb-2">
                                           REFERENCE
                                        </p>
-                                       <h6 className="font-weight-500">
+                                       <h6 className="font-weight-500 text-primary font-size-17">
                                           {(generalComponentData.externalReference == "" ||
                                              generalComponentData.externalReference == null ||
                                              generalComponentData.externalReference == "string" ||
@@ -5835,7 +5835,7 @@ export function SolutionTemplateResult(props) {
                                        <p className="font-size-12 font-weight-500 mb-2">
                                           CUSTOMER SEGMENT
                                        </p>
-                                       <h6 className="font-weight-500">
+                                       <h6 className="font-weight-500 text-primary font-size-17">
                                           {(generalComponentData?.customerSegment == "" ||
                                              generalComponentData?.customerSegment == null ||
                                              generalComponentData?.customerSegment == undefined ||
@@ -5853,7 +5853,7 @@ export function SolutionTemplateResult(props) {
                                        <p className="font-size-12 font-weight-500 mb-2">
                                           TEMPLATE FLAG
                                        </p>
-                                       <h6 className="font-weight-500">
+                                       <h6 className="font-weight-500 text-primary font-size-17">
                                           {flagTemplate ? "True" : "False"}
                                        </h6>
                                     </div>
@@ -5863,7 +5863,7 @@ export function SolutionTemplateResult(props) {
                                        <p className="font-size-12 font-weight-500 mb-2">
                                           COMMERCE FLAG
                                        </p>
-                                       <h6 className="font-weight-500">
+                                       <h6 className="font-weight-500 text-primary font-size-17">
                                           {flagCommerce ? "True" : "False"}
                                        </h6>
                                     </div>
@@ -6364,7 +6364,7 @@ export function SolutionTemplateResult(props) {
                                                 <p className="font-size-12 font-weight-500 mb-2">
                                                    RESPONSE TIME
                                                 </p>
-                                                <h6 className="font-weight-500">
+                                                <h6 className="font-weight-500 text-primary font-size-17">
                                                    {(stratgyResponseTimeKeyValue?.label == "" ||
                                                       stratgyResponseTimeKeyValue?.label == null ||
                                                       stratgyResponseTimeKeyValue?.label == "string" ||
@@ -6378,7 +6378,7 @@ export function SolutionTemplateResult(props) {
                                                 <p className="font-size-12 font-weight-500 mb-2">
                                                    PRODUCT HIERARCHY
                                                 </p>
-                                                <h6 className="font-weight-500">
+                                                <h6 className="font-weight-500 text-primary font-size-17">
                                                    {(stratgyHierarchyKeyValue?.label == "" ||
                                                       stratgyHierarchyKeyValue?.label == null ||
                                                       stratgyHierarchyKeyValue?.label == "string" ||
@@ -6392,7 +6392,7 @@ export function SolutionTemplateResult(props) {
                                                 <p className="font-size-12 font-weight-500 mb-2">
                                                    GEOGRAPHIC
                                                 </p>
-                                                <h6 className="font-weight-500">
+                                                <h6 className="font-weight-500 text-primary font-size-17">
                                                    {(stratgyGeographicKeyValue?.label == "" ||
                                                       stratgyGeographicKeyValue?.label == null ||
                                                       stratgyGeographicKeyValue?.label == "string" ||
@@ -6406,7 +6406,7 @@ export function SolutionTemplateResult(props) {
                                                 <p className="font-size-12 font-weight-500 mb-2">
                                                    SOLUTION TYPE
                                                 </p>
-                                                <h6 className="font-weight-500">
+                                                <h6 className="font-weight-500 text-primary font-size-17">
                                                    {(solutionTypeListKeyValue?.label == "" ||
                                                       solutionTypeListKeyValue?.label == null ||
                                                       solutionTypeListKeyValue?.label == "string" ||
@@ -6420,7 +6420,7 @@ export function SolutionTemplateResult(props) {
                                                 <p className="font-size-12 font-weight-500 mb-2">
                                                    SOLUTION LEVEL
                                                 </p>
-                                                <h6 className="font-weight-500">
+                                                <h6 className="font-weight-500 text-primary font-size-17">
                                                    {(solutionLevelListKeyValue?.label == "" ||
                                                       solutionLevelListKeyValue?.label == null ||
                                                       solutionLevelListKeyValue?.label == "string" ||
@@ -6719,7 +6719,7 @@ export function SolutionTemplateResult(props) {
                                              PREPARED BY
                                              {/* {console.log("new dataa : ", coverageData.machineType)} */}
                                           </p>
-                                          <h6 className="font-weight-500">
+                                          <h6 className="font-weight-500 text-primary font-size-17">
                                              {(administrative?.preparedBy == "" ||
                                                 administrative?.preparedBy == null ||
                                                 administrative?.preparedBy == "string" ||
@@ -6733,7 +6733,7 @@ export function SolutionTemplateResult(props) {
                                           <p className="font-size-12 font-weight-500 mb-2">
                                              APPROVED BY
                                           </p>
-                                          <h6 className="font-weight-500">
+                                          <h6 className="font-weight-500 text-primary font-size-17">
                                              {(administrative?.approvedBy == "" ||
                                                 administrative?.approvedBy == null ||
                                                 administrative?.approvedBy == "string" ||
@@ -6747,7 +6747,7 @@ export function SolutionTemplateResult(props) {
                                           <p className="font-size-12 font-weight-500 mb-2">
                                              PREPARED ON
                                           </p>
-                                          <h6 className="font-weight-500">
+                                          <h6 className="font-weight-500 text-primary font-size-17">
                                              {(
                                                 administrative.preparedOn == "" ||
                                                    administrative.preparedOn == "string" ||
@@ -6764,7 +6764,7 @@ export function SolutionTemplateResult(props) {
                                           <p className="font-size-12 font-weight-500 mb-2">
                                              REVISED BY
                                           </p>
-                                          <h6 className="font-weight-500">
+                                          <h6 className="font-weight-500 text-primary font-size-17">
                                              {(
                                                 administrative.revisedBy == "" ||
                                                    administrative.revisedBy == "string" ||
@@ -6779,7 +6779,7 @@ export function SolutionTemplateResult(props) {
                                           <p className="font-size-12 font-weight-500 mb-2">
                                              REVISED  ON
                                           </p>
-                                          <h6 className="font-weight-500">
+                                          <h6 className="font-weight-500 text-primary font-size-17">
                                              {(
                                                 administrative.revisedOn == "" ||
                                                    administrative.revisedOn == "string" ||
@@ -6796,7 +6796,7 @@ export function SolutionTemplateResult(props) {
                                           <p className="font-size-12 font-weight-500 mb-2">
                                              SALSE OFFICE/BRANCH
                                           </p>
-                                          <h6 className="font-weight-500">
+                                          <h6 className="font-weight-500 text-primary font-size-17">
                                              {(
                                                 administrative.salesOffice == "" ||
                                                    administrative.salesOffice == "string" ||
@@ -6811,7 +6811,7 @@ export function SolutionTemplateResult(props) {
                                           <p className="font-size-12 font-weight-500 mb-2">
                                              OFFER VALIDITY
                                           </p>
-                                          <h6 className="font-weight-500">
+                                          <h6 className="font-weight-500 text-primary font-size-17">
                                              {(
                                                 administrative.offerValidity == "" ||
                                                    administrative.offerValidity == "string" ||
@@ -7069,7 +7069,7 @@ export function SolutionTemplateResult(props) {
                                              <p className="font-size-12 font-weight-500 mb-2">
                                                 PRICE LIST
                                              </p>
-                                             <h6 className="font-weight-500 text-uppercase">
+                                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                 {(
                                                    priceListKeyValue1?.label == "" ||
                                                       priceListKeyValue1?.label == "string" ||
@@ -7084,7 +7084,7 @@ export function SolutionTemplateResult(props) {
                                              <p className="font-size-12 font-weight-500 mb-2">
                                                 PRICE METHOD
                                              </p>
-                                             <h6 className="font-weight-500 text-uppercase">
+                                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                 {(
                                                    priceMethodKeyValue1?.label == "" ||
                                                       priceMethodKeyValue1?.label == "string" ||
@@ -7099,7 +7099,7 @@ export function SolutionTemplateResult(props) {
                                              <p className="font-size-12 font-weight-500 mb-2">
                                                 PRICE DATE
                                              </p>
-                                             <h6 className="font-weight-500 text-uppercase">
+                                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                 {(
                                                    priceDetails?.priceDate == "" ||
                                                       priceDetails?.priceDate == "string" ||
@@ -7118,7 +7118,7 @@ export function SolutionTemplateResult(props) {
                                              <p className="font-size-12 font-weight-500 mb-2">
                                                 PRICE TYPE
                                              </p>
-                                             <h6 className="font-weight-500 text-uppercase">
+                                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                 {(
                                                    priceTypeKeyValue1?.label == "" ||
                                                       priceTypeKeyValue1?.label == "string" ||
@@ -7133,7 +7133,7 @@ export function SolutionTemplateResult(props) {
                                              <p className="font-size-12 font-weight-500 mb-2">
                                                 PRICE{" "}
                                              </p>
-                                             <h6 className="font-weight-500 text-uppercase">
+                                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                 {(
                                                    pricePriceData == "" ||
                                                       pricePriceData == "string" ||
@@ -7148,7 +7148,7 @@ export function SolutionTemplateResult(props) {
                                              <p className="font-size-12 font-weight-500 mb-2">
                                                 ADDITIONAL
                                              </p>
-                                             <h6 className="font-weight-500 text-uppercase">
+                                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                 {(
                                                    additionalPriceValue == "" ||
                                                       additionalPriceValue == "string" ||
@@ -7163,7 +7163,7 @@ export function SolutionTemplateResult(props) {
                                              <p className="font-size-12 font-weight-500 mb-2">
                                                 PRICE ESCALATON
                                              </p>
-                                             <h6 className="font-weight-500 text-uppercase">
+                                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                 {(escalationPriceValue == "" ||
                                                    escalationPriceValue == "string" ||
                                                    escalationPriceValue == undefined ||
@@ -7180,7 +7180,7 @@ export function SolutionTemplateResult(props) {
                                              <p className="font-size-12 font-weight-500 mb-2">
                                                 CALCULATED PRICE
                                              </p>
-                                             <h6 className="font-weight-500 text-uppercase">
+                                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                 {(priceCalculatedPrice == "" ||
                                                    priceCalculatedPrice == "string" ||
                                                    priceCalculatedPrice == undefined ||
@@ -7195,7 +7195,7 @@ export function SolutionTemplateResult(props) {
                                              <p className="font-size-12 font-weight-500 mb-2">
                                                 PRICE BREAK DOWN
                                              </p>
-                                             <h6 className="font-weight-500 text-uppercase">
+                                             <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                 {/* {(priceTypeKeyValue1?.label == "" ||
                                                 priceTypeKeyValue1?.label == "string" ||
                                                 priceTypeKeyValue1?.label == undefined ||

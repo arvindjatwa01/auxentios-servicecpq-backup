@@ -3220,7 +3220,7 @@ export const PortfolioSummary = () => {
                             <div className="form-group">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">{serviceOrBundlePrefix} NAME</p>
 
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(createServiceOrBundle.name == "" ||
                                   createServiceOrBundle.name == null ||
                                   createServiceOrBundle.name == undefined ||
@@ -3233,7 +3233,7 @@ export const PortfolioSummary = () => {
                             <div className="form-group">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">{serviceOrBundlePrefix} DESCRIPTION</p>
 
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(createServiceOrBundle.description == "" ||
                                   createServiceOrBundle.description == null ||
                                   createServiceOrBundle.description == undefined ||
@@ -3255,7 +3255,7 @@ export const PortfolioSummary = () => {
                           <div className="col-md-4 col-sm-3">
                             <div className="form-group">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">REFERENCE</p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
 
                                 {(createServiceOrBundle.reference == "" ||
                                   createServiceOrBundle.reference == null ||
@@ -3268,7 +3268,7 @@ export const PortfolioSummary = () => {
                           <div className="col-md-4 col-sm-3">
                             <div className="form-group">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">CUSTOMER SEGMENT</p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
 
                                 {(selectedCustomerSegmentOption.length == 0 ||
                                   selectedCustomerSegmentOption?.value == "" ||
@@ -3284,7 +3284,7 @@ export const PortfolioSummary = () => {
                           <div className="col-md-4 col-sm-3">
                             <div className="form-group">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">MACHINE/COMPONENT</p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
 
                                 {(createServiceOrBundle.machineComponent?.value == "" ||
                                   createServiceOrBundle.machineComponent?.value == null ||
@@ -3298,7 +3298,7 @@ export const PortfolioSummary = () => {
                           <div className="col-md-4 col-sm-3">
                             <div className="form-group">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">MAKE</p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
 
                                 {(createServiceOrBundle.make == "" ||
                                   createServiceOrBundle.make == null ||
@@ -3312,7 +3312,7 @@ export const PortfolioSummary = () => {
                           <div className="col-md-4 col-sm-3">
                             <div className="form-group">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">FAMILY</p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
 
                                 {(createServiceOrBundle.family == "" ||
                                   createServiceOrBundle.family == null ||
@@ -3326,7 +3326,7 @@ export const PortfolioSummary = () => {
                           <div className="col-md-4 col-sm-3">
                             <div className="form-group customselectmodelSerch">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">MODEL(S)</p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
 
                                 {(createServiceOrBundle.model == "" ||
                                   createServiceOrBundle.model == null ||
@@ -3340,7 +3340,7 @@ export const PortfolioSummary = () => {
                           <div className="col-md-4 col-sm-3">
                             <div className="form-group">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREFIX(S)</p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
 
                                 {(selectedPrefixOption.length == 0 ||
                                   selectedPrefixOption?.value == "" ||
@@ -3631,7 +3631,7 @@ export const PortfolioSummary = () => {
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED BY</p>
-                          <h6 className="font-weight-500 text-uppercase">
+                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                             {administrative.preparedBy}
                           </h6>
                         </div>
@@ -3639,7 +3639,7 @@ export const PortfolioSummary = () => {
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">APPROVED BY</p>
-                          <h6 className="font-weight-500 text-uppercase">
+                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                             {administrative.approvedBy}
                           </h6>
                         </div>
@@ -3647,7 +3647,7 @@ export const PortfolioSummary = () => {
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED ON</p>
-                          <h6 className="font-weight-500 text-uppercase">
+                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                             {getFormattedDateTimeByTimeStampForAdministrative(administrative.preparedOn)}
                           </h6>
                         </div>
@@ -3655,7 +3655,7 @@ export const PortfolioSummary = () => {
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED BY</p>
-                          <h6 className="font-weight-500 text-uppercase">
+                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                             {administrative.revisedBy}
                           </h6>
                         </div>
@@ -3663,7 +3663,7 @@ export const PortfolioSummary = () => {
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED ON</p>
-                          <h6 className="font-weight-500 text-uppercase">
+                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                             {getFormattedDateTimeByTimeStampForAdministrative(administrative.revisedOn)}
                           </h6>
                         </div>
@@ -3671,7 +3671,7 @@ export const PortfolioSummary = () => {
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">SALSE OFFICE/BRANCH</p>
-                          <h6 className="font-weight-500 text-uppercase">
+                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                             {administrative.branch}
                           </h6>
                         </div>
@@ -3679,7 +3679,7 @@ export const PortfolioSummary = () => {
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">OFFER VALIDITY</p>
-                          <h6 className="font-weight-500 text-uppercase">
+                          <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                             {administrative.offerValidity}
                           </h6>
                         </div>

@@ -384,6 +384,8 @@ export function CreatePortfolio(props) {
   const [priceEscalationHeadKeyValue1, setPriceEscalationKeyValue1] = useState([]);
   const [escalationPriceValue, setEscalationPriceValue] = useState()
   const [additionalPriceValue, setAdditionalPriceValue] = useState()
+  
+
   // const [priceData, setPriceListKeyValue1] = useState([]);
   // const [priceListKeyValue1, setPriceListKeyValue1] = useState([]);
   // const [priceListKeyValue1, setPriceListKeyValue1] = useState([]);
@@ -4236,6 +4238,7 @@ export function CreatePortfolio(props) {
       else if (value === "administrative" && viewOnlyTab.administrativeViewOnly) {
         setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: false });
       }
+     
 
     }
     // } else {
@@ -7501,7 +7504,7 @@ export function CreatePortfolio(props) {
                   <img style={{ width: "14px" }} src={folderaddIcon}></img>
                 </a>
               </div>
-              <div className="input-group icons border-radius-10 border">
+              {/* <div className="input-group icons border-radius-10 border">
                 <div className="input-group-prepend">
                   <span
                     className="input-group-text bg-transparent border-0 pr-0 "
@@ -7515,7 +7518,7 @@ export function CreatePortfolio(props) {
                   className="form-control search-form-control"
                   aria-label="Search Dashboard"
                 />
-              </div>
+              </div> */}
             </h5>
             <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
               {headerLoading ? (
@@ -7666,7 +7669,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               PORTFOLIO NAME
                             </p>
-                            <h6 className="font-weight-500">
+                            <h6 className="font-weight-500 text-primary font-size-17">
                               {generalComponentData.name == "" || generalComponentData.name == null ? "NA" : generalComponentData.name}
                             </h6>
                           </div>
@@ -7676,7 +7679,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               PORTFOLIO DESCRIPTION
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {generalComponentData.description == "" || generalComponentData.description == null ? "NA" : generalComponentData.description}
                             </h6>
                           </div>
@@ -7694,7 +7697,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               REFERENCE
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {generalComponentData.externalReference == "" ||
                                 generalComponentData.externalReference == null ||
                                 generalComponentData.externalReference == "string"
@@ -7707,7 +7710,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               CUSTOMER SEGMENT
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {generalComponentData?.customerSegment == "" ||
                                 generalComponentData?.customerSegment == null ||
                                 generalComponentData?.customerSegment == undefined ||
@@ -8145,7 +8148,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               CATEGORY USAGE
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {categoryUsageKeyValue1.length == 0 ||
                                 categoryUsageKeyValue1.value == "" ||
                                 categoryUsageKeyValue1.value == "string" ||
@@ -8161,7 +8164,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               STRATEGY TASK
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {stratgyTaskUsageKeyValue.length == 0 ||
                                 stratgyTaskUsageKeyValue.value == "" ||
                                 stratgyTaskUsageKeyValue.value == "string" ||
@@ -8186,7 +8189,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               TASK TYPE
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {stratgyTaskTypeKeyValue.length == 0 ||
                                 stratgyTaskTypeKeyValue.value == "" ||
                                 stratgyTaskTypeKeyValue.value == "string" ||
@@ -8202,7 +8205,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               RESPONSE TIME
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {stratgyResponseTimeKeyValue.length == 0 ||
                                 stratgyResponseTimeKeyValue.value == null ||
                                 stratgyResponseTimeKeyValue.value == "" ||
@@ -8218,7 +8221,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               PRODUCT HIERARCHY
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {stratgyHierarchyKeyValue.length == 0 ||
                                 stratgyHierarchyKeyValue.value == "" ||
                                 stratgyHierarchyKeyValue.value == "string" ||
@@ -8234,7 +8237,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               GEOGRAPHIC
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {stratgyGeographicKeyValue.length == 0 ||
                                 stratgyGeographicKeyValue.value == "" ||
                                 stratgyGeographicKeyValue.value == "string" ||
@@ -8503,7 +8506,7 @@ export function CreatePortfolio(props) {
                                 PREPARED BY
                                 {/* {console.log("new dataa : ", coverageData.machineType)} */}
                               </p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(
                                   administrative.preparedBy == "" ||
                                     administrative.preparedBy == "string" ||
@@ -8519,7 +8522,7 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 APPROVED BY
                               </p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(
                                   administrative.approvedBy == "" ||
                                     administrative.approvedBy == "string" ||
@@ -8536,7 +8539,7 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 PREPARED ON
                               </p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(
                                   administrative.preparedOn == "" ||
                                     administrative.preparedOn == "string" ||
@@ -8554,7 +8557,7 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 REVISED BY
                               </p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(
                                   administrative.revisedBy == "" ||
                                     administrative.revisedBy == "string" ||
@@ -8569,7 +8572,7 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 REVISED  ON
                               </p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(
                                   administrative.revisedOn == "" ||
                                     administrative.revisedOn == "string" ||
@@ -8586,7 +8589,7 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 SALSE OFFICE/BRANCH
                               </p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(
                                   administrative.salesOffice == "" ||
                                     administrative.salesOffice == "string" ||
@@ -8601,7 +8604,7 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 OFFER VALIDITY
                               </p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(
                                   administrative.offerValidity == "" ||
                                     administrative.offerValidity == "string" ||
@@ -8617,229 +8620,227 @@ export function CreatePortfolio(props) {
 
                   </TabPanel>
                   <TabPanel value={"price"}>
-                    <div className="row input-fields">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PRICE LIST
-                          </label>
-                          <Select
-                            // defaultValue={priceListKeyValue}
-                            onChange={(e) => setPriceListKeyValue1(e)}
-                            className="text-primary"
-                            options={priceListKeyValue}
-                            placeholder="placeholder (Optional)"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PRICE METHOD
-                          </label>
-                          <Select
-                            // defaultValue={selectedOption}
-                            className="text-primary"
-                            onChange={(e) => setPriceMethodKeyValue1(e)}
-                            options={priceMethodKeyValue}
-                            placeholder="required"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PRICE DATE
-                          </label>
-                          <div className="d-flex align-items-center date-box w-100">
-                            <div className="form-group w-100">
-                              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <DatePicker
-                                  variant="inline"
-                                  format="dd/MM/yyyy"
-                                  className="form-controldate border-radius-10"
-                                  label=""
-                                  name="preparedOn"
-                                  value={setPriceDetails.priceDate}
-                                  onChange={(e) =>
-                                    setPriceDetails({
-                                      ...priceDetails,
-                                      priceDate: e,
-                                    })
-                                  }
-                                />
-                              </MuiPickersUtilsProvider>
+                        <div className="row input-fields">
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                PRICE LIST
+                              </label>
+                              <Select
+                                // defaultValue={priceListKeyValue}
+                                onChange={(e) => setPriceListKeyValue1(e)}
+                                className="text-primary"
+                                options={priceListKeyValue}
+                                placeholder="placeholder (Optional)"
+                              />
                             </div>
                           </div>
-                          {/* <Select
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                PRICE METHOD
+                              </label>
+                              <Select
+                                // defaultValue={selectedOption}
+                                className="text-primary"
+                                onChange={(e) => setPriceMethodKeyValue1(e)}
+                                options={priceMethodKeyValue}
+                                placeholder="required"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                PRICE DATE
+                              </label>
+                              <div className="d-flex align-items-center date-box w-100">
+                                <div className="form-group w-100">
+                                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                    <DatePicker
+                                      variant="inline"
+                                      format="dd/MM/yyyy"
+                                      className="form-controldate border-radius-10"
+                                      label=""
+                                      name="preparedOn"
+                                      value={setPriceDetails.priceDate}
+                                      onChange={(e) =>
+                                        setPriceDetails({
+                                          ...priceDetails,
+                                          priceDate: e,
+                                        })
+                                      }
+                                    />
+                                  </MuiPickersUtilsProvider>
+                                </div>
+                              </div>
+                              {/* <Select
                             defaultValue={selectedOption}
                             onChange={setSelectedOption}
                             className="text-primary"
                             options={options}
                             placeholder="placeholder (Optional)"
                           /> */}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                    <hr />
-                    {/* <h6>PRICES</h6> */}
-                    <div className="row input-fields">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PRICE TYPE
-                          </label>
-                          <Select
-                            // defaultValue={priceTypeKeyValue}
-                            className="text-primary"
-                            onChange={(e) => setPriceTypeKeyValue1(e)}
-                            options={priceTypeKeyValue}
-                            placeholder="placeholder (Optional)"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-14 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PRICE{" "}
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control text-primary border-radius-10"
-                            id="exampleInputEmail1"
-                            aria-describedby="emailHelp"
-                            placeholder="Optional"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group date-box">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            ADDITIONAL
-                          </label>
-                          <div className=" d-flex form-control-date">
-                            {/* <Select className="select-input"
+                        <hr />
+                        {/* <h6>PRICES</h6> */}
+                        <div className="row input-fields">
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                PRICE TYPE
+                              </label>
+                              <Select
+                                // defaultValue={priceTypeKeyValue}
+                                className="text-primary"
+                                onChange={(e) => setPriceTypeKeyValue1(e)}
+                                options={priceTypeKeyValue}
+                                placeholder="placeholder (Optional)"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-14 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                PRICE{" "}
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control text-primary border-radius-10"
+                                id="exampleInputEmail1"
+                                aria-describedby="emailHelp"
+                                placeholder="Optional"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group date-box">
+                              <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                ADDITIONAL
+                              </label>
+                              <div className=" d-flex form-control-date">
+                                {/* <Select className="select-input"
                             defaultValue={selectedOption}
                             onChange={setSelectedOption}
                             options={options}
                             placeholder="placeholder "
                           /> */}
-                            <div className="">
-                              <Select
-                                onChange={(e) => setPriceAdditionalHeadKeyValue1(e)}
-                                className="text-primary"
-                                isClearable={true}
-                                // value={options}
-                                options={priceHeadTypeKeyValue}
-                                placeholder="Select"
+                                <div className="">
+                                  <Select
+                                    onChange={(e) => setPriceAdditionalHeadKeyValue1(e)}
+                                    className="text-primary"
+                                    isClearable={true}
+                                    // value={options}
+                                    options={priceHeadTypeKeyValue}
+                                    placeholder="Select"
+                                  />
+                                </div>
+                                <input
+                                  type="text"
+                                  className="form-control rounded-top-left-0 text-primary rounded-bottom-left-0"
+                                  id="exampleInputEmail1"
+                                  aria-describedby="emailHelp"
+                                  placeholder="optional"
+                                  value={additionalPriceValue}
+                                  onChange={(e) => setAdditionalPriceValue(e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group date-box">
+                              <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                PRICE ESCALATON
+                              </label>
+                              <div className=" d-flex align-items-center form-control-date">
+                                <Select
+                                  className="select-input text-primary"
+                                  // defaultValue={selectedOption}
+                                  onChange={(e) => setPriceEscalationKeyValue1(e)}
+                                  options={priceHeadTypeKeyValue}
+                                  placeholder="Select "
+                                />
+                                <input
+                                  type="text"
+                                  className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                  id="exampleInputEmail1"
+                                  aria-describedby="emailHelp"
+                                  placeholder="optional"
+                                  value={escalationPriceValue}
+                                  onChange={(e) => setEscalationPriceValue(e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <hr />
+                        <div className="row input-fields">
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                CALCULATED PRICE
+                              </label>
+                              <input
+                                type="text"
+                                className="form-control border-radius-10 text-primary"
+                                id="exampleInputEmail1"
+                                placeholder="required"
                               />
                             </div>
-                            <input
-                              type="text"
-                              className="form-control rounded-top-left-0 text-primary rounded-bottom-left-0"
-                              id="exampleInputEmail1"
-                              aria-describedby="emailHelp"
-                              placeholder="optional"
-                              value={additionalPriceValue}
-                              onChange={(e) => setAdditionalPriceValue(e.target.value)}
-                            />
                           </div>
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group date-box">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PRICE ESCALATON
-                          </label>
-                          <div className=" d-flex align-items-center form-control-date">
-                            <Select
-                              className="select-input text-primary"
-                              // defaultValue={selectedOption}
-                              onChange={(e) => setPriceEscalationKeyValue1(e)}
-                              options={priceHeadTypeKeyValue}
-                              placeholder="Select "
-                            />
-                            <input
-                              type="text"
-                              className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
-                              id="exampleInputEmail1"
-                              aria-describedby="emailHelp"
-                              placeholder="optional"
-                              value={escalationPriceValue}
-                              onChange={(e) => setEscalationPriceValue(e.target.value)}
-                            />
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group date-box">
+                              <label
+                                className="text-light-dark font-size-12 font-weight-500"
+                                htmlFor="exampleInputEmail1"
+                              >
+                                PRICE BREAK DOWN
+                              </label>
+                              <div className=" d-flex form-control-date">
+                                <Select
+                                  className="select-input text-primary"
+                                  defaultValue={selectedOption}
+                                  onChange={setSelectedOption}
+                                  options={options}
+                                  placeholder="placeholder "
+                                />
+                                <input
+                                  type="text"
+                                  className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
+                                  id="exampleInputEmail1"
+                                  aria-describedby="emailHelp"
+                                  placeholder="optional"
+                                />
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    </div>
-
-
-                    <hr />
-                    <div className="row input-fields">
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            CALCULATED PRICE
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control border-radius-10 text-primary"
-                            id="exampleInputEmail1"
-                            placeholder="required"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4 col-sm-4">
-                        <div className="form-group date-box">
-                          <label
-                            className="text-light-dark font-size-12 font-weight-500"
-                            htmlFor="exampleInputEmail1"
-                          >
-                            PRICE BREAK DOWN
-                          </label>
-                          <div className=" d-flex form-control-date">
-                            <Select
-                              className="select-input text-primary"
-                              defaultValue={selectedOption}
-                              onChange={setSelectedOption}
-                              options={options}
-                              placeholder="placeholder "
-                            />
-                            <input
-                              type="text"
-                              className="form-control text-primary rounded-top-left-0 rounded-bottom-left-0"
-                              id="exampleInputEmail1"
-                              aria-describedby="emailHelp"
-                              placeholder="optional"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      {/* <div className="col-md-4 col-sm-4">
+                          {/* <div className="col-md-4 col-sm-4">
                       <div className="form-group date-box">
                         <label
                           className="text-light-dark font-size-12 font-weight-500"
@@ -8865,18 +8866,20 @@ export function CreatePortfolio(props) {
                         </div>
                       </div>
                     </div> */}
-                    </div>
-                    <div className="row" style={{ justifyContent: "right" }}>
-                      <button
-                        type="button"
-                        onClick={handleNextClick}
-                        className="btn btn-light"
-                        id="price"
-                      >
-                        {" "}
-                        Save & Next
-                      </button>
-                    </div>
+                        </div>
+                        <div className="row" style={{ justifyContent: "right" }}>
+                          <button
+                            type="button"
+                            onClick={handleNextClick}
+                            className="btn btn-light"
+                            id="price"
+                          >
+                            {" "}
+                            Save & Next
+                          </button>
+                        </div>
+                      
+
                   </TabPanel>
 
                   <TabPanel value={"priceAgreement"} className="customTabPanel">

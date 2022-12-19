@@ -358,6 +358,9 @@ h5 {
   font-size: 16px;
 }
 
+.font-size-17 {
+  font-size: 17px;
+}
 .font-size-18 {
   font-size: 18px !important;
 }
@@ -728,7 +731,7 @@ button:focus {
 
 .main-menu:hover,
 nav.main-menu.expanded {
-  width: 288px;
+  width: 285px;
   overflow: visible;
 }
 
@@ -3345,7 +3348,8 @@ button.bg-primary:hover {
   min-height: 44px !important;
 } */
 .rdt_TableRow {
-  font-size: 12px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
   color: #808080 !important;
   min-height: 44px !important;
   border-bottom-style: solid !important;
