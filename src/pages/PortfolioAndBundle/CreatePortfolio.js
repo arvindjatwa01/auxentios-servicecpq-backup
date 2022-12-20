@@ -109,6 +109,7 @@ import {
   getSearchCoverageForFamily,
   itemCreation,
   createCoverage,
+  updateCoverage,
   getItemPrice,
   updateItemData,
   deleteItem,
@@ -381,14 +382,16 @@ export function CreatePortfolio(props) {
   })
   const [priceTypeKeyValue1, setPriceTypeKeyValue1] = useState([]);
   const [priceAdditionalHeadKeyValue1, setPriceAdditionalHeadKeyValue1] = useState([]);
-  const [priceEscalationHeadKeyValue1, setPriceEscalationKeyValue1] = useState([]);
+  const [priceEscalationHeadKeyValue1, setPriceEscalationHeadKeyValue1] = useState([]);
   const [escalationPriceValue, setEscalationPriceValue] = useState()
   const [additionalPriceValue, setAdditionalPriceValue] = useState()
-  
 
-  // const [priceData, setPriceListKeyValue1] = useState([]);
-  // const [priceListKeyValue1, setPriceListKeyValue1] = useState([]);
-  // const [priceListKeyValue1, setPriceListKeyValue1] = useState([]);
+  const [pricePriceData, setPricePriceData] = useState("");
+  const [priceCalculatedPrice, setPriceCalculatedPrice] = useState("");
+  const [additionalPriceDataId, setAdditionalPriceDataId] = useState("");
+  const [escalationPriceDataId, setEscalationPriceDataId] = useState("");
+  const [portfolioPriceDataIdForExiting, setPortfolioPriceDataIdForExiting] = useState("");
+
 
 
   const handleOption = (e) => {
@@ -488,6 +491,7 @@ export function CreatePortfolio(props) {
     taskType: "",
   });
   const [showRelatedModel, setShowRelatedModel] = useState(false);
+  const [showEditIncludeSerialNoModel, setShowEditIncludeSerialNoModel] = useState(false);
   const [editSerialNo, setEditSerialNo] = useState({
     coverageId: "",
     make: "",
@@ -498,6 +502,7 @@ export function CreatePortfolio(props) {
     endSerialNo: "",
     fleet: "",
     fleetSize: "",
+    serialNo: "",
   });
 
   const [itemHeaderSearch, setItemHeaderSearch] = useState({
@@ -691,6 +696,64 @@ export function CreatePortfolio(props) {
       })
       .catch((err) => { });
   };
+
+  const UpdateSelectCoverageData = async () => {
+    console.log("edit serial No : ", editSerialNo);
+
+    const _selectedMasterData = [...selectedMasterData]
+    const obj = _selectedMasterData[includedModelIndex]
+
+    const editCoverageData = {
+      coverageId: editSerialNo?.coverageId,
+      serviceId: 0,
+      modelNo: editSerialNo?.modelNo,
+      serialNumber: editSerialNo?.serialNo,
+      startSerialNumber: editSerialNo?.startSerialNo,
+      endSerialNumber: editSerialNo?.endSerialNo,
+      serialNumberPrefix: editSerialNo?.serialNoPrefix,
+      family: editSerialNo?.family,
+      make: editSerialNo?.make,
+      fleet: editSerialNo?.fleet,
+      fleetSize: editSerialNo?.fleetSize,
+      location: editSerialNo?.location,
+      startDate: "",
+      endDate: "",
+      actions: "",
+    }
+    // console.log("e54398u891");
+    console.log("editCoverageData : ", editCoverageData);
+
+    const updatePortfolioCoverage = await updateCoverage(
+      editSerialNo.coverageId,
+      editCoverageData
+    );
+
+    console.log("updatePortfolioCoverage 2423 : ", updatePortfolioCoverage)
+
+    if (updatePortfolioCoverage.status === 200) {
+      toast("😎 Updated Successfully", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+
+
+      const tempObj = {
+        ...obj,
+        make: updatePortfolioCoverage.data.make,
+        model: updatePortfolioCoverage.data.modelNo,
+        prefix: updatePortfolioCoverage.data.serialNumberPrefix,
+        family: updatePortfolioCoverage.data.family,
+      }
+      _selectedMasterData[includedModelIndex] = tempObj
+      setSelectedMasterData(_selectedMasterData)
+      setShowEditIncludeSerialNoModel(false)
+    }
+  }
 
   const handleClosePortfolioMenu = () => {
     setPortfolioMenuOpen(!portfolioMenuOpen);
@@ -2498,6 +2561,14 @@ export function CreatePortfolio(props) {
 
       } else if (e.target.id == "price") {
 
+        if ((priceMethodKeyValue1.length === 0 ||
+          priceMethodKeyValue1?.value === "" ||
+          priceMethodKeyValue1?.value === null ||
+          priceMethodKeyValue1?.value === undefined)
+        ) {
+          throw "Please fill required field properly";
+        }
+
         if (state && state.type === "new") {
 
           let priceEscalation = {
@@ -3229,15 +3300,6 @@ export function CreatePortfolio(props) {
 
   const populateHeader = (result) => {
     console.log("result ----", result);
-    var statusVal;
-    if (result.status == "" || result.status == "EMPTY" || result.status == null) {
-      statusVal = "DRAFT";
-    } else {
-      statusVal = result.status;
-    }
-    setValue2({ label: statusVal, value: statusVal })
-    setValue3({ label: result.supportLevel, value: result.supportLevel })
-
 
     setViewOnlyTab({
       generalViewOnly: true,
@@ -3248,30 +3310,95 @@ export function CreatePortfolio(props) {
       priceAgreementViewOnly: true,
       coverageViewOnly: true,
     });
+
+
+    // For set Status state 
+    var statusVal, statusLabel;
+    if (result.status == "" || result.status == "EMPTY" || result.status == null) {
+      statusVal = "DRAFT";
+      statusLabel = "Draft";
+    } else {
+      statusVal = result.status;
+      statusLabel = result.status;
+    }
+    setValue2({ label: statusLabel, value: statusVal })
+
+    // For set SupportLevel state
+    var supportLevelVal, supportLevelLabel;
+    if (result.supportLevel == "" || result.supportLevel == "EMPTY" || result.supportLevel == null) {
+      supportLevelVal = "STANDARD";
+      supportLevelLabel = "Standard (Bronze)";
+    } else {
+      supportLevelVal = result.supportLevel;
+      supportLevelLabel = result.supportLevel;
+    }
+    setValue3({ label: supportLevelLabel, value: supportLevelVal })
+
+
+    // set General Tab states Data 
     setGeneralComponentData({
       name: result.name,
       description: result.description,
       serviceDescription: "",
       externalReference: result.externalReference,
       customerSegment: { label: result.customerSegment, value: result.customerSegment },
-      // customerSegment: null,
       items: result.items,
       coverages: result.coverages,
     })
 
-    setPortfolioId(result.portfolioId);
-    setPortfolioCoverage(result.coverages);
+    // set Validity Tab States Data
+    setValidityData({
+      fromDate: result.validFrom,
+      toDate: result.validTo,
+      from: null,
+      to: null,
+      fromInput: "",
+      toInput: "",
+    })
 
-    // categoryUsageKeyValue1
-    setCategoryUsageKeyValue1({ label: result.usageCategory, value: result.usageCategory })
-    setStratgyTaskUsageKeyValue({ label: result.strategyTask, value: result.strategyTask })
-    setStratgyTaskTypeKeyValue({ label: result.taskType, value: result.taskType })
-    setStratgyResponseTimeKeyValue({ label: result.responseTime, value: result.responseTime })
-    setStratgyHierarchyKeyValue({ label: result.productHierarchy, value: result.productHierarchy })
-    setStratgyGeographicKeyValue({ label: result.geographic, value: result.geographic })
+    // set Category Usage Key-Value 
+    setCategoryUsageKeyValue1({
+      label: result.usageCategory,
+      value: result.usageCategory
+    });
 
-    // Administrative Data
+    // set StratgyTask Usage Key-Value 
+    setStratgyTaskUsageKeyValue({
+      label: result.strategyTask,
+      value: result.strategyTask
+    });
 
+    // set Stratgy Task-Type Key-Value
+    setStratgyTaskTypeKeyValue({
+      label: result.taskType,
+      value: result.taskType
+    });
+
+    // set Stratgy Response-Time Key-Value
+    setStratgyResponseTimeKeyValue({
+      label: result.responseTime,
+      value: result.responseTime
+    });
+
+    // set Stratgy Product-Hierarchy Key-Value
+    setStratgyHierarchyKeyValue({
+      label: result.productHierarchy,
+      value: result.productHierarchy
+    })
+
+    // set Stratgy Geographic Key-Value
+    setStratgyGeographicKeyValue({
+      label: result.geographic,
+      value: result.geographic
+    })
+
+    // set Stratgy Machine-Type Key-Value
+    setMachineTypeKeyValue({
+      label: result.machineType,
+      value: result.machineType
+    });
+
+    // set Administrative Tab state Value
     setAdministrative({
       preparedBy: result.preparedBy,
       approvedBy: result.approvedBy,
@@ -3282,23 +3409,15 @@ export function CreatePortfolio(props) {
       offerValidity: result.offerValidity,
     });
 
-    //validity Data
-    setValidityData({
-      fromDate: result.validFrom,
-      toDate: result.validTo,
-      from: null,
-      to: null,
-      fromInput: "",
-      toInput: "",
-      dateFlag: false,
-      inputFlag: false,
-    });
+    // set Portfolio Id 
+    setPortfolioId(result.portfolioId);
 
-
-    setSelectedMasterData(result.coverages);
 
     let itemsArrData = [];
+    let customItemArr = [];
+    let createdCoverages = [];
 
+    // Set Data By Item Relation Data Data
     for (let b = 0; b < result.itemRelations.length; b++) {
       let expendedArrObj = [];
       let obj = result.items.find(obj => obj.itemId == result.itemRelations[b].portfolioItemId);
@@ -3326,11 +3445,114 @@ export function CreatePortfolio(props) {
       obj.associatedServiceOrBundle = expendedArrObj;
       itemsArrData.push(obj);
     }
+    setBundleItems(itemsArrData);
+
+    // for Update Item in Portfolio Item Data BY Id 
+    for (let i = 0; i < result.items.length; i++) {
+      customItemArr.push({ itemId: result.items[i].itemId })
+    }
+    setPortfolioItems(customItemArr)
+
+    // for Update Coverage in Portfolio Coverage Data BY Id
+    for (let k = 0; k < result.coverages.length; k++) {
+      createdCoverages.push({ coverageId: result.coverages[k].coverageId })
+    }
+    setPortfolioCoverage(createdCoverages)
+
+
+    // set Coverage Master Data 
+    setSelectedMasterData(result.coverages);
+
+    if (Object.keys(result.additionalPrice).length > 0) {
+      setAdditionalPriceValue(result.additionalPrice.additionalPercentage);
+      setPriceAdditionalHeadKeyValue1(
+        {
+          label: result.additionalPrice.priceHeadType,
+          value: result.additionalPrice.priceHeadType
+        }
+      );
+      setAdditionalPriceDataId(result.additionalPrice.additionalPriceId);
+      setPortfolioAdditionalPriceDataId({
+        additionalPriceId: result.additionalPrice.additionalPriceId,
+      })
+    }
+
+    if (Object.keys(result.escalationPrice).length > 0) {
+      setEscalationPriceValue(result.escalationPrice.escalationPercentage);
+      setPriceEscalationHeadKeyValue1({
+        label: result.escalationPrice.priceHeadType,
+        value: result.escalationPrice.priceHeadType
+      });
+      setEscalationPriceDataId(result.escalationPrice.escalationPriceId);
+      setPortfolioEscalationPriceDataId({
+        escalationPriceId: result.escalationPrice.escalationPriceId,
+      })
+    }
+
+    if (Object.keys(result.portfolioPrice).length > 0) {
+
+      setPriceListKeyValue1({
+        label: result.portfolioPrice.priceList,
+        value: result.portfolioPrice.priceList
+      });
+
+      setPriceMethodKeyValue1({
+        label: result.portfolioPrice.priceMethod,
+        value: result.portfolioPrice.priceMethod
+      });
+
+      setPriceDetails({
+        ...priceDetails,
+        priceDate: result.portfolioPrice.priceDate,
+      });
+
+      setPriceTypeKeyValue1({
+        label: result.portfolioPrice.priceType,
+        value: result.portfolioPrice.priceType
+      });
+
+      setPricePriceData(result.portfolioPrice.price)
+      setPriceCalculatedPrice(result.portfolioPrice.calculatedPrice);
+      setPortfolioPriceDataIdForExiting(result.portfolioPrice.portfolioPriceId);
+      setPortfolioPriceDataId({
+        portfolioPriceId: result.portfolioPrice.portfolioPriceId,
+      })
+    }
+
+    // let itemsArrData = [];
+
+    // for (let b = 0; b < result.itemRelations.length; b++) {
+    //   let expendedArrObj = [];
+    //   let obj = result.items.find(obj => obj.itemId == result.itemRelations[b].portfolioItemId);
+    //   for (let c = 0; c < result.itemRelations[b].bundles.length; c++) {
+
+    //     let bundleObj = result.items.find((objBundle, i) => {
+    //       if (objBundle.itemId == result.itemRelations[b].bundles[c]) {
+
+    //         return objBundle; // stop searching
+    //       }
+    //     });
+    //     expendedArrObj.push(bundleObj);
+    //   }
+
+    //   for (let d = 0; d < result.itemRelations[b].services.length; d++) {
+
+    //     let serviceObj = result.items.find((objService, i) => {
+    //       if (objService.itemId == result.itemRelations[b].services[d]) {
+
+    //         return objService; // stop searching
+    //       }
+    //     });
+    //     expendedArrObj.push(serviceObj);
+    //   }
+    //   obj.associatedServiceOrBundle = expendedArrObj;
+    //   itemsArrData.push(obj);
+    // }
 
     // setPortfolioitems(result.items)
 
     // setBundleItems(result.items)
-    setBundleItems(itemsArrData)
+
 
   }
   // console.log("generalComponentData ---- : ", generalComponentData)
@@ -4070,8 +4292,20 @@ export function CreatePortfolio(props) {
     setSelectedMasterData(updated);
     setFilterMasterData(updated);
   };
-  const handleEditIncludeSerialNo = (e, row) => {
+  const handleEditIncludeSerialNo = async (i, e, row) => {
+
+    var editSerialNo = "";
+
     console.log("handleEditIncludeSerialNo row:", row);
+
+    const _selectedMasterData = [...selectedMasterData]
+    const objMaster = _selectedMasterData[i]
+
+    if (objMaster.associatedIncludedModelData) {
+      editSerialNo = objMaster.associatedIncludedModelData[0].serialNumber?.value;
+    }
+
+
     let obj = {
       coverageId: row.id,
       make: row.make,
@@ -4082,8 +4316,13 @@ export function CreatePortfolio(props) {
       endSerialNo: row.endSerialNo,
       fleet: row.fleet,
       fleetSize: row.fleetSize,
+      serialNo: editSerialNo,
     };
+
+
     setEditSerialNo(obj);
+    setIncludedModelIndex(i)
+    setShowEditIncludeSerialNoModel(true);
   };
 
   const handleTempbundleItemSelection = (e, row) => {
@@ -4238,8 +4477,9 @@ export function CreatePortfolio(props) {
       else if (value === "administrative" && viewOnlyTab.administrativeViewOnly) {
         setViewOnlyTab({ ...viewOnlyTab, administrativeViewOnly: false });
       }
-     
-
+      else if (value === "price" && viewOnlyTab.priceViewOnly) {
+        setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: false });
+      }
     }
     // } else {
     //   if (value === "general" && viewOnlyTab.generalViewOnly)
@@ -4580,10 +4820,10 @@ export function CreatePortfolio(props) {
         <div>
           <Link
             to="#"
-            onClick={(e) => handleEditIncludeSerialNo(e, row)}
+            onClick={(e) => handleEditIncludeSerialNo(i, e, row)}
             className="btn-svg text-white cursor mx-2"
-            data-toggle="modal"
-            data-target="#AddCoverage"
+          // data-toggle="modal"
+          // data-target="#AddCoverage"
           >
             <svg
               version="1.1"
@@ -8620,6 +8860,10 @@ export function CreatePortfolio(props) {
 
                   </TabPanel>
                   <TabPanel value={"price"}>
+
+                    {!viewOnlyTab.priceViewOnly ?
+                      <>
+
                         <div className="row input-fields">
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group">
@@ -8635,6 +8879,9 @@ export function CreatePortfolio(props) {
                                 className="text-primary"
                                 options={priceListKeyValue}
                                 placeholder="placeholder (Optional)"
+
+                                value={priceListKeyValue1}
+
                               />
                             </div>
                           </div>
@@ -8652,6 +8899,9 @@ export function CreatePortfolio(props) {
                                 onChange={(e) => setPriceMethodKeyValue1(e)}
                                 options={priceMethodKeyValue}
                                 placeholder="required"
+
+                                value={priceMethodKeyValue1}
+
                               />
                             </div>
                           </div>
@@ -8672,7 +8922,7 @@ export function CreatePortfolio(props) {
                                       className="form-controldate border-radius-10"
                                       label=""
                                       name="preparedOn"
-                                      value={setPriceDetails.priceDate}
+                                      value={priceDetails.priceDate}
                                       onChange={(e) =>
                                         setPriceDetails({
                                           ...priceDetails,
@@ -8690,6 +8940,7 @@ export function CreatePortfolio(props) {
                             options={options}
                             placeholder="placeholder (Optional)"
                           /> */}
+
                             </div>
                           </div>
                         </div>
@@ -8710,6 +8961,7 @@ export function CreatePortfolio(props) {
                                 onChange={(e) => setPriceTypeKeyValue1(e)}
                                 options={priceTypeKeyValue}
                                 placeholder="placeholder (Optional)"
+                                value={priceTypeKeyValue1}
                               />
                             </div>
                           </div>
@@ -8727,6 +8979,7 @@ export function CreatePortfolio(props) {
                                 id="exampleInputEmail1"
                                 aria-describedby="emailHelp"
                                 placeholder="Optional"
+                                disabled
                               />
                             </div>
                           </div>
@@ -8753,6 +9006,7 @@ export function CreatePortfolio(props) {
                                     // value={options}
                                     options={priceHeadTypeKeyValue}
                                     placeholder="Select"
+                                    value={priceAdditionalHeadKeyValue1}
                                   />
                                 </div>
                                 <input
@@ -8767,6 +9021,7 @@ export function CreatePortfolio(props) {
                               </div>
                             </div>
                           </div>
+
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group date-box">
                               <label
@@ -8779,9 +9034,12 @@ export function CreatePortfolio(props) {
                                 <Select
                                   className="select-input text-primary"
                                   // defaultValue={selectedOption}
-                                  onChange={(e) => setPriceEscalationKeyValue1(e)}
+
+                                  onChange={(e) => setPriceEscalationHeadKeyValue1(e)}
                                   options={priceHeadTypeKeyValue}
                                   placeholder="Select "
+                                  value={priceEscalationHeadKeyValue1}
+
                                 />
                                 <input
                                   type="text"
@@ -8796,6 +9054,7 @@ export function CreatePortfolio(props) {
                             </div>
                           </div>
                         </div>
+
                         <hr />
                         <div className="row input-fields">
                           <div className="col-md-4 col-sm-4">
@@ -8811,6 +9070,7 @@ export function CreatePortfolio(props) {
                                 className="form-control border-radius-10 text-primary"
                                 id="exampleInputEmail1"
                                 placeholder="required"
+                                disabled
                               />
                             </div>
                           </div>
@@ -8878,7 +9138,155 @@ export function CreatePortfolio(props) {
                             Save & Next
                           </button>
                         </div>
-                      
+
+                      </> :
+                      <>
+                        <div className="row">
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                PRICE LIST
+                              </p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(
+                                  priceListKeyValue1?.label == "" ||
+                                    priceListKeyValue1?.label == "string" ||
+                                    priceListKeyValue1?.label == undefined ||
+                                    priceListKeyValue1?.label == null
+                                    ? "NA" : priceListKeyValue1?.label)}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                PRICE METHOD
+                              </p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(
+                                  priceMethodKeyValue1?.label == "" ||
+                                    priceMethodKeyValue1?.label == "string" ||
+                                    priceMethodKeyValue1?.label == undefined ||
+                                    priceMethodKeyValue1?.label == null
+                                    ? "NA" : priceMethodKeyValue1?.label)}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                PRICE DATE
+                              </p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(
+                                  priceDetails?.priceDate == "" ||
+                                    priceDetails?.priceDate == "string" ||
+                                    priceDetails?.priceDate == undefined ||
+                                    priceDetails?.priceDate == null
+                                    ? "NA"
+                                    : getFormattedDateTimeByTimeStamp(priceDetails?.priceDate))}
+                              </h6>
+                            </div>
+                          </div>
+                        </div>
+                        <hr />
+                        <div className="row">
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                PRICE TYPE
+                              </p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(
+                                  priceTypeKeyValue1?.label == "" ||
+                                    priceTypeKeyValue1?.label == "string" ||
+                                    priceTypeKeyValue1?.label == undefined ||
+                                    priceTypeKeyValue1?.label == null
+                                    ? "NA" : priceTypeKeyValue1?.label)}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                PRICE{" "}
+                              </p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(
+                                  pricePriceData == "" ||
+                                    pricePriceData == "string" ||
+                                    pricePriceData == undefined ||
+                                    pricePriceData == null
+                                    ? "NA" : parseInt(pricePriceData))}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group date-box">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                ADDITIONAL
+                              </p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(
+                                  additionalPriceValue == "" ||
+                                    additionalPriceValue == "string" ||
+                                    additionalPriceValue == undefined ||
+                                    additionalPriceValue == null
+                                    ? "NA" : parseInt(additionalPriceValue))}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group date-box">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                PRICE ESCALATON
+                              </p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(escalationPriceValue == "" ||
+                                  escalationPriceValue == "string" ||
+                                  escalationPriceValue == undefined ||
+                                  escalationPriceValue == null
+                                  ? "NA" : parseInt(escalationPriceValue))}
+                              </h6>
+                            </div>
+                          </div>
+                        </div>
+                        <hr />
+                        <div className="row">
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                CALCULATED PRICE
+                              </p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {(priceCalculatedPrice == "" ||
+                                  priceCalculatedPrice == "string" ||
+                                  priceCalculatedPrice == undefined ||
+                                  priceCalculatedPrice == null
+                                  ? "NA" : parseInt(priceCalculatedPrice)
+                                )}
+                              </h6>
+                            </div>
+                          </div>
+                          <div className="col-md-4 col-sm-4">
+                            <div className="form-group date-box">
+                              <p className="font-size-12 font-weight-500 mb-2">
+                                PRICE BREAK DOWN
+                              </p>
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
+                                {/* {(priceTypeKeyValue1?.label == "" ||
+                              priceTypeKeyValue1?.label == "string" ||
+                              priceTypeKeyValue1?.label == undefined ||
+                              priceTypeKeyValue1?.label == null
+                              ? "NA" : priceTypeKeyValue1?.label
+                           )} */} NA
+                              </h6>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    }
+
 
                   </TabPanel>
 
@@ -11501,7 +11909,11 @@ export function CreatePortfolio(props) {
               >
                 Close
               </button>
-              <button type="button" className="btn btn-primary w-100">
+              <button
+                type="button"
+                className="btn btn-primary w-100"
+                onClick={(e) => UpdateSelectCoverageData(selectedMasterData[includedModelIndex])}
+              >
                 Save changes
               </button>
             </div>
@@ -11511,6 +11923,8 @@ export function CreatePortfolio(props) {
       <ToastContainer />
       {/* <div className="modal fade" id="relatedTable" tabindex="-1" role="dialog" aria-labelledby="exampleReleted" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered modal-lg" role="document"> */}
+
+      {/* Model Box For Coverage Included Serial No */}
       <Modal
         show={showRelatedModel}
         onHide={() => setShowRelatedModel(false)}
@@ -11547,6 +11961,346 @@ export function CreatePortfolio(props) {
             Close
           </Button>
           <Button variant="primary" onClick={() => handleIncludeSerialNumberSaveChanges(selectedMasterData[includedModelIndex])}>Save changes</Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Model Box For Update/Edit Coverage Data */}
+
+      <Modal
+        show={showEditIncludeSerialNoModel}
+        onHide={() => setShowEditIncludeSerialNoModel(false)}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header className="align-items-center">
+          <div>
+            <Modal.Title>Edit Coverage</Modal.Title>
+          </div>
+          {/* <div>
+            <Link
+              to="#"
+              className=" btn bg-primary text-white"
+              onClick={() => AddNewRowData(selectedMasterData[includedModelIndex])}
+            >
+              Add New
+            </Link>
+          </div> */}
+        </Modal.Header>
+        <Modal.Body className="included_table">
+          <div className="row input-fields">
+            <div className="col-md-4 col-sm-4">
+              <div className="form-group w-100">
+                <label
+                  className="text-light-dark font-size-14 font-weight-500"
+                  htmlFor="exampleInputEmail1"
+                >
+                  Coverage ID
+                </label>
+                <input
+                  type="text"
+                  className="form-control border-radius-10 text-primary"
+                  disabled
+                  placeholder="(AUTO GENERATE)"
+                  value={editSerialNo.coverageId}
+                  defaultValue={editSerialNo.coverageId}
+                />
+              </div>
+            </div>
+            {/* <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">Service ID</label>
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                  </div>
+                </div> */}
+            <div className="col-md-4 col-sm-4">
+              <div className="form-group">
+                <label
+                  className="text-light-dark font-size-14 font-weight-500"
+                  htmlFor="exampleInputEmail1"
+                >
+                  Make
+                </label>
+                <input
+                  type="text"
+                  className="form-control text-primary border-radius-10"
+                  name="make"
+                  placeholder="Auto Fill Search Model...."
+                  value={editSerialNo.make}
+                  defaultValue={editSerialNo.make}
+                  disabled
+                />
+                {/* <Select
+                      options={categoryList}
+                      placeholder={editSerialNo.make}
+                      value={editSerialNo.make}
+                      defaultValue={editSerialNo.make}
+                      onChange={(e) =>
+                        setEditSerialNo({ ...editSerialNo, make: e.value })
+                      }
+                    /> */}
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div className="form-group">
+                <label
+                  className="text-light-dark font-size-14 font-weight-500"
+                  htmlFor="exampleInputEmail1"
+                >
+                  Family
+                </label>
+                <input
+                  type="text"
+                  className="form-control text-primary border-radius-10"
+                  name="family"
+                  placeholder="Auto Fill Search Model...."
+                  value={editSerialNo.family}
+                  defaultValue={editSerialNo.family}
+                  disabled
+                />
+                {/* <Select
+                      options={categoryList}
+                      placeholder={editSerialNo.family}
+                      value={editSerialNo.family}
+                      defaultValue={editSerialNo.family}
+                      onChange={(e) =>
+                        setEditSerialNo({ ...editSerialNo, family: e.value })
+                      }
+                    // onChange={(e) => HandleCatUsage(e)}
+                    /> */}
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div className="form-group">
+                <label
+                  className="text-light-dark font-size-14 font-weight-500"
+                  htmlFor="exampleInputEmail1"
+                >
+                  Model No
+                </label>
+                <input
+                  type="text"
+                  className="form-control text-primary border-radius-10"
+                  name="model"
+                  placeholder="Model(Required*)"
+                  value={editSerialNo.modelNo}
+                  defaultValue={editSerialNo.modelNo}
+                  // onChange={handleAddServiceBundleChange}
+                  onChange={(e) => handleModelInputSearch(e)}
+                />
+                {/* <Select
+                      options={categoryList}
+                      placeholder={editSerialNo.modelNo}
+                      value={editSerialNo.modelNo}
+                      defaultValue={editSerialNo.modelNo}
+                      onChange={(e) =>
+                        setEditSerialNo({ ...editSerialNo, modelNo: e.value })
+                      }
+                    /> */}
+                {
+                  <ul
+                    className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
+                    id="style"
+                  >
+                    {querySearchModelResult.map((currentItem, j) => (
+                      <li
+                        className="list-group-item"
+                        key={j}
+                        onClick={(e) => handleSearchModelListClick(
+                          e,
+                          currentItem
+                        )}
+                      // onClick={(e) =>
+                      //   handleSearchListClick(
+                      //     e,
+                      //     currentItem,
+                      //   )
+                      // }
+                      >
+                        {currentItem.model}
+                      </li>
+                    ))}
+                  </ul>
+                }
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div className="form-group">
+                <label
+                  className="text-light-dark font-size-14 font-weight-500"
+                  htmlFor="exampleInputEmail1"
+                >
+                  Serial No Prefix
+                </label>
+                <Select
+                  // options={categoryList}
+                  options={querySearchModelPrefixOption}
+                  placeholder={editSerialNo.serialNoPrefix}
+                  value={editSerialNo.serialNoPrefix}
+                  defaultValue={editSerialNo.serialNoPrefix}
+                  // onChange={(e) =>
+                  //   setEditSerialNo({
+                  //     ...editSerialNo,
+                  //     serialNoPrefix: e.value,
+                  //   })
+                  // }
+                  className="text-primary"
+                  onChange={(e) => selectPrefixOption(e)}
+                // onChange={(e) => HandleCatUsage(e)}
+                />
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div className="form-group">
+                <label
+                  className="text-light-dark font-size-14 font-weight-500"
+                  htmlFor="exampleInputEmail1"
+                >
+                  Start Serial No
+                </label>
+                <input
+                  type="text"
+                  className="form-control border-radius-10 text-primary"
+                  placeholder="(Optional)"
+                  value={editSerialNo.startSerialNo}
+                  defaultValue={editSerialNo.startSerialNo}
+                  onChange={(e) =>
+                    setEditSerialNo({
+                      ...editSerialNo,
+                      startSerialNo: e.target.value,
+                    })
+                  }
+                />
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div className="form-group">
+                <label
+                  className="text-light-dark font-size-14 font-weight-500"
+                  htmlFor="exampleInputEmail1"
+                >
+                  End Serial No
+                </label>
+                <input
+                  type="text"
+                  className="form-control border-radius-10 text-primary"
+                  placeholder="(Optional)"
+                  value={editSerialNo.endSerialNo}
+                  defaultValue={editSerialNo.endSerialNo}
+                  onChange={(e) =>
+                    setEditSerialNo({
+                      ...editSerialNo,
+                      endSerialNo: e.target.value,
+                    })
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="col-md-4 col-sm-4">
+              <div className="form-group">
+                <label
+                  className="text-light-dark font-size-14 font-weight-500"
+                  htmlFor="exampleInputEmail1"
+                >
+                  Fleet
+                </label>
+                <input
+                  type="text"
+                  className="form-control border-radius-10 text-primary"
+                  placeholder="(Optional)"
+                  value={editSerialNo.fleet}
+                  defaultValue={editSerialNo.fleet}
+                  onChange={(e) =>
+                    setEditSerialNo({
+                      ...editSerialNo,
+                      fleet: e.target.value,
+                    })
+                  }
+                />
+              </div>
+            </div>
+            <div className="col-md-4 col-sm-4">
+              <div className="form-group">
+                <label
+                  className="text-light-dark font-size-14 font-weight-500"
+                  htmlFor="exampleInputEmail1"
+                >
+                  Fleet Size
+                </label>
+                <input
+                  type="text"
+                  className="form-control border-radius-10 text-primary"
+                  placeholder="(Optional)"
+                  value={editSerialNo.fleetSize}
+                  defaultValue={editSerialNo.fleetSize}
+                  onChange={(e) =>
+                    setEditSerialNo({
+                      ...editSerialNo,
+                      fleetSize: e.target.value,
+                    })
+                  }
+                />
+                {/* <Select
+                      value={editSerialNo.fleetSize}
+                      defaultValue={editSerialNo.fleetSize}
+                      placeholder={editSerialNo.fleetSize}
+                      onChange={(e) =>
+                        setEditSerialNo({ ...editSerialNo, fleetSize: e.value })
+                      }
+                      options={categoryList}
+                    // onChange={(e) => HandleCatUsage(e)}
+                    /> */}
+              </div>
+            </div>
+            {/* <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Location
+                    </label>
+                    <Select
+                      // value={}
+                      options={categoryList}
+                      onChange={(e) => HandleCatUsage(e)}
+                    />
+
+                  </div>
+                </div>
+
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">Start Date </label>
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">End Date </label>
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">Actions </label>
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                  </div>
+                </div> */}
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="primary"
+            className="btn border w-100"
+            onClick={() => setShowEditIncludeSerialNoModel(false)}>
+            Close
+          </Button>
+          <Button
+            variant="primary"
+            className="btn btn-primary w-100"
+            onClick={(e) => UpdateSelectCoverageData(selectedMasterData[includedModelIndex])}>Save changes</Button>
         </Modal.Footer>
       </Modal>
 

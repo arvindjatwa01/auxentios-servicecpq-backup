@@ -95,7 +95,7 @@ import {
     getSearchCoverageForFamily,
     itemCreation,
     createCoverage,
-    createCutomCoverage,
+    createCustomCoverage,
     getItemPrice,
     getCustomItemData,
     getcustomItemPriceById,
@@ -1399,7 +1399,7 @@ export function PortfolioTemplatesResult(props) {
                     actions: "",
                     createdAt: "",
                 };
-                const res = await createCutomCoverage(reqObj);
+                const res = await createCustomCoverage(reqObj);
                 console.log("createCoverage res:", res);
                 cvgIds.push({ coverageId: res.customCoverageId });
             }

@@ -105,7 +105,7 @@ import {
     createCoverage,
     updateItemData,
     customitemCreation,
-    createCutomCoverage,
+    createCustomCoverage,
     getItemPrice,
     itemPriceDataId,
     customPriceCreation,
@@ -1383,7 +1383,7 @@ export function CustomizedPortfolio(props) {
                     actions: "",
                     createdAt: "",
                 };
-                const res = await createCutomCoverage(reqObj);
+                const res = await createCustomCoverage(reqObj);
                 // console.log("createCoverage res:", res);
                 cvgIds.push({ coverageId: res.customCoverageId });
             }
