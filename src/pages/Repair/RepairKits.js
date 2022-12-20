@@ -32,7 +32,6 @@ import {
 import { repairActions } from "./dropdowns/repairSlice";
 
 export const RepairKits = () => {
-  const [show, setShow] = React.useState(false);
   const [recentKits, setRecentKits] = useState([]);
   // Snack Bar State
   const [severity, setSeverity] = useState("");

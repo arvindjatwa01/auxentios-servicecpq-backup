@@ -198,6 +198,9 @@ export const UPDATE_KIT_PRICE = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/pr
 export const UPDATE_KIT_COVERAGE = (kitId) => REPAIR_BUILDER_URI + `kit/${kitId}/coverage`
 export const UPDATE_KIT_STATUS = (kitId, status) => REPAIR_BUILDER_URI + `kit/${kitId}/status/${status}`;
 
+//Standard Jobs or Service Only Template
+export const SEARCH_TEMPLATE = (query) => REPAIR_BUILDER_URI + `standard-job/search?search=${query}`;
+export const FETCH_TEMPLATE = (templateId) => REPAIR_BUILDER_URI + `standard-job/${templateId}`;
 /* ===================== Quote Service ============================= */
 
 export const QUOTE_CREATION = () => SOLUTION_BUILDER_URI + "/quote";

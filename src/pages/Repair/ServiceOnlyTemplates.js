@@ -66,6 +66,11 @@ import {
 } from "./dropdowns/repairSlice";
 import QuerySearchComp from "./components/QuerySearchComp";
 import ServiceOnlyTemplateSegment from "./ServiceOnlySegment";
+import ServiceOnlyTemplateOperation from "./ServiceOnlyOperation";
+import { fetchTemplateDetails } from "services/templateService";
+import LoadingProgress from "./components/Loader";
+import { ReadOnlyField } from "./components/ReadOnlyField";
+import { customerSearch } from "services/searchServices";
 
 function ServiceOnlyTemplates(props) {
   const history = useHistory();
@@ -98,7 +103,7 @@ function ServiceOnlyTemplates(props) {
     { value: "MIDLIFE", label: "Midlife" },
     { value: "END_OF_LIFE", label: "End of Life" },
   ];
-  const [selKITStatus, setSelKITStatus] = useState({
+  const [selTemplateStatus, setSelTemplateStatus] = useState({
     value: "DRAFT",
     label: "Draft",
   });
@@ -118,7 +123,7 @@ function ServiceOnlyTemplates(props) {
   const handleBuilderStatus = async (e) => {
     await updateKITStatus(templateDBId, e.value)
       .then((result) => {
-        setSelKITStatus(e);
+        setSelTemplateStatus(e);
         handleSnack("success", "Status has been updated!");
       })
       .catch((err) => {
@@ -129,6 +134,8 @@ function ServiceOnlyTemplates(props) {
   const [searchCoverageModelResults, setSearchCoverageModelResults] = useState(
     []
   );
+  const [searchCustResults, setSearchCustResults] = useState([]);
+  const [noOptionsCust, setNoOptionsCust] = useState(false);
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -201,7 +208,7 @@ function ServiceOnlyTemplates(props) {
     generalViewOnly: false,
     estViewOnly: false,
     priceViewOnly: false,
-    usageViewOnly: false
+    usageViewOnly: false,
   });
   // Logic to make the header tabs editable
   const makeHeaderEditable = () => {
@@ -266,7 +273,7 @@ function ServiceOnlyTemplates(props) {
       setHeaderLoading(true);
       setTemplateId(state.templateId);
       setTemplateDBId(state.templateDBId);
-      // fetchAllDetails(state.kitDBId);
+      fetchAllDetails(state.templateDBId);
     }
     var versionHistoryData = {
       builderId: "",
@@ -274,11 +281,97 @@ function ServiceOnlyTemplates(props) {
       editable: false,
     };
     localStorage.setItem("exitingType", JSON.stringify(versionHistoryData));
-  });
+  }, []);
+  const fetchAllDetails = (id) => {
+    console.log(id);
+    if (id) {
+      setHeaderLoading(true);
+      fetchTemplateDetails(id)
+        .then((result) => {
+          populateHeader(result);
+          setHeaderLoading(false);
+          // fetchPartlist(result.id);
+        })
+        .catch((err) => {
+          setHeaderLoading(false);
+          handleSnack("error", "Error occurred while fetching details");
+        });
+    }
+  };
+
+  const populateHeader = (result) => {
+    setViewOnlyTab({
+      generalViewOnly: result.estimationDate ? true : false,
+      estViewOnly: result.preparedBy ? true : false,
+      priceViewOnly:
+        result.priceMethod !== "EMPTY" &&
+        result.priceMethod !== null &&
+        result.priceMethod !== ""
+          ? true
+          : false,
+    });
+    setRating(result.rating);
+    setSelTemplateStatus(
+      builderStatusOptions.filter((x) => x.value === result.status)[0]
+    );
+    setVersion(
+      versionOptions.find((element) => element.value === result.version)
+    );
+    // let versions = result.versionList?.map((versionNo) => ({
+    //   value: versionNo,
+    //   label: "Version " + versionNo,
+    // }));
+    // setBuilderVersionOptions(versions);
+    // setSelectedVersion({
+    //   label: "Version " + result.versionNumber,
+    //   value: result.versionNumber,
+    // });
+
+    setGeneralData({
+      description: result.description,
+      estimationDate: result.estimationDate
+        ? result.estimationDate
+        : new Date(),
+      estimationNo: result.estimationNumber,
+      reference: result.reference,
+      validity: validityOptions.find(
+        (element) => element.value == result.validityDays
+      ),
+      version: result.version,
+      application: APPLICATION_OPTIONS.find(
+        (element) => element.value === result.application
+      ),
+      owner: result.owner,
+      nextRivisionDate: result.nextRivisionDate
+        ? result.nextRivisionDate
+        : new Date(), // Change it to created date + 1 year once API is ready
+    });
+    setEstimationData({
+      approvedBy: result.approver,
+      preparedBy: result.preparedBy,
+      preparedOn: result.preparedOn ? result.preparedOn : new Date(),
+      revisedBy: result.revisedBy,
+      revisedOn: result.revisedOn ? result.revisedOn : new Date(),
+      salesOffice: salesOfficeOptions.find(
+        (element) => element.value === result.salesOffice
+      ),
+    });
+    setPricingData({
+      priceDate: result.priceDate ? result.priceDate : new Date(),
+      priceMethod: priceMethodOptions.find(
+        (element) => element.value === result.priceMethod
+      ),
+      netPrice: result.netPrice ? result.netPrice : 0.0,
+      adjustedPrice: result.adjustedPrice ? result.adjustedPrice : 0.0,
+      currency: currencyOptions.find(
+        (element) => element.value === result.currency
+      ),
+    });
+    setSelectedCoverageData(result.coverages ? result.coverages : []);
+  };
 
   const currencyOptions = [{ value: "USD", label: "USD" }];
 
-  const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -337,23 +430,7 @@ function ServiceOnlyTemplates(props) {
     },
   ]);
   const [selectedCoverageData, setSelectedCoverageData] = useState([]);
-  const [count, setCount] = useState(1);
-  const [selectedMasterData, setSelectedMasterData] = useState([]);
-  const handleEditIncludeSerialNo = (e, row) => {
-    console.log("handleEditIncludeSerialNo row:", row);
-    let obj = {
-      coverageId: row.id,
-      make: row.make,
-      family: row.family,
-      modelNo: row.model,
-      serialNoPrefix: row.prefix,
-      startSerialNo: row.startSerialNo,
-      endSerialNo: row.endSerialNo,
-      fleet: row.fleet,
-      fleetSize: row.fleetSize,
-    };
-    setEditSerialNo(obj);
-  };
+
   // Select model from the search result
   const handleCoverageModelSelect = (type, currentItem) => {
     if (type === "model") {
@@ -364,50 +441,8 @@ function ServiceOnlyTemplates(props) {
       setSearchCoverageModelResults([]);
     }
   };
-  const handleSearchListClick = (e, currentItem, obj1, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.inputSearch = currentItem;
-    obj.selectedOption = currentItem;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-    $(`.scrollbar-${id}`).css("display", "none");
-  };
 
-  const handleFamily = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    console.log("handleFamily e:", e);
-    let obj = tempArray[id];
-    obj.selectFamily = e;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-  };
-  const handleOperator = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.selectOperator = e;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-  };
   const [filterMasterData, setFilterMasterData] = useState([]);
-  const handleMasterCheck = (e, row) => {
-    if (e.target.checked) {
-      var _masterData = [...masterData];
-      const updated = _masterData.map((currentItem, i) => {
-        if (row.id == currentItem.id) {
-          return { ...currentItem, ["check1"]: e.target.checked };
-        } else return currentItem;
-      });
-      setMasterData([...updated]);
-      setFilterMasterData([...filterMasterData, { ...row }]);
-    } else {
-      var _filterMasterData = [...filterMasterData];
-      const updated = _filterMasterData.filter((currentItem, i) => {
-        if (row.id !== currentItem.id) return currentItem;
-      });
-      setFilterMasterData(updated);
-    }
-  };
 
   //Individual estimation details field value change
   const handleEstimationDataChange = (e) => {
@@ -629,6 +664,36 @@ function ServiceOnlyTemplates(props) {
     setSelectedCoverageData(updated);
   };
 
+  // Search Customer with customer ID
+  const handleCustSearch = async (searchCustfieldName, searchText) => {
+    setSearchCustResults([]);
+    generalData.customerID = searchText;
+    if (searchText) {
+      await customerSearch(searchCustfieldName + "~" + searchText)
+        .then((result) => {
+          if (result && result.length > 0) {
+            setSearchCustResults(result);
+            setNoOptionsCust(false);
+          } else {
+            setNoOptionsCust(true);
+          }
+        })
+        .catch((e) => {
+          handleSnack("error", "Error occurred while searching the customer!");
+        });
+    }
+  };
+
+  // Select the customer from search result
+  const handleCustSelect = (type, currentItem) => {
+    setGeneralData({
+      ...generalData,
+      customerID: currentItem.customerId,
+      customerName: currentItem.fullName,
+    });
+    setSearchCustResults([]);
+  };
+
   const initialCoverageRowData = {
     id: "",
     make: "",
@@ -816,7 +881,7 @@ function ServiceOnlyTemplates(props) {
                     className="customselectbtn"
                     onChange={(e) => handleBuilderStatus(e)}
                     options={builderStatusOptions}
-                    value={selKITStatus}
+                    value={selTemplateStatus}
                   />
                 </div>
                 <Rating value={rating} readOnly size="small" sx={{ ml: 2 }} />
@@ -862,7 +927,16 @@ function ServiceOnlyTemplates(props) {
                       Header
                     </span>
                     <a href="#" className="btn-sm text-white">
-                      <i class="fa fa-pencil" aria-hidden="true"></i>
+                      <i
+                        class="fa fa-pencil"
+                        style={{ cursor: "pointer" }}
+                        onClick={() =>
+                          selTemplateStatus?.value === "DRAFT" ||
+                          selTemplateStatus?.value === "REVISED"
+                            ? makeHeaderEditable()
+                            : handleSnack("info", "Builder is active!")
+                        }
+                      ></i>
                     </a>{" "}
                     <a href="#" className="text-white btn-sm">
                       <i class="fa fa-bookmark-o" aria-hidden="true"></i>
@@ -877,1116 +951,1017 @@ function ServiceOnlyTemplates(props) {
                   className="mt-4"
                   sx={{ width: "100%", typography: "body1" }}
                 >
-                  <TabContext value={value}>
-                    <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                      <TabList
-                        className="custom-tabs-div"
-                        onChange={handleChange}
-                        aria-label="lab API tabs example"
-                      >
-                        <Tab label="Estimation Details" value="estimation" />
-                        <Tab label="General Details" value="general" />
-                        <Tab label="Price" value="price" />
-                        <Tab label="Coverage" value="coverage" />
-                        <Tab label="Usage Details" value="usage" />
-                      </TabList>
-                    </Box>
-                    <TabPanel value="estimation">
-                      {!viewOnlyTab.estViewOnly ? (
-                        <>
-                          <div className="row input-fields">
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  PREPARED BY
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control border-radius-10 text-primary"
-                                  placeholder="Required"
-                                  value={estimationData.preparedBy}
-                                  name="preparedBy"
-                                  onChange={handleEstimationDataChange}
-                                />
+                  {headerLoading ? (
+                    <LoadingProgress />
+                  ) : (
+                    <TabContext value={value}>
+                      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                        <TabList
+                          className="custom-tabs-div"
+                          onChange={handleChange}
+                          aria-label="lab API tabs example"
+                        >
+                          <Tab label="Estimation Details" value="estimation" />
+                          <Tab label="General Details" value="general" />
+                          <Tab label="Price" value="price" />
+                          <Tab label="Coverage" value="coverage" />
+                          <Tab label="Usage Details" value="usage" />
+                        </TabList>
+                      </Box>
+                      <TabPanel value="estimation">
+                        {!viewOnlyTab.estViewOnly ? (
+                          <>
+                            <div className="row input-fields">
+                              <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    PREPARED BY
+                                  </label>
+                                  <input
+                                    type="text"
+                                    className="form-control border-radius-10 text-primary"
+                                    placeholder="Required"
+                                    value={estimationData.preparedBy}
+                                    name="preparedBy"
+                                    onChange={handleEstimationDataChange}
+                                  />
+                                </div>
                               </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  APPROVED BY
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control border-radius-10 text-primary"
-                                  value={estimationData.approvedBy}
-                                  name="approvedBy"
-                                  onChange={handleEstimationDataChange}
-                                  placeholder="Placeholder (Optional)"
-                                />
+                              <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    APPROVED BY
+                                  </label>
+                                  <input
+                                    type="text"
+                                    className="form-control border-radius-10 text-primary"
+                                    value={estimationData.approvedBy}
+                                    name="approvedBy"
+                                    onChange={handleEstimationDataChange}
+                                    placeholder="Placeholder (Optional)"
+                                  />
+                                </div>
                               </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="align-items-center date-box">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  PREPARED ON
-                                </label>
-                                <LocalizationProvider
-                                  dateAdapter={AdapterDateFns}
-                                >
-                                  <MobileDatePicker
-                                    inputFormat="dd/MM/yyyy"
-                                    className="form-controldate border-radius-10"
-                                    minDate={estimationData.preparedOn}
-                                    maxDate={new Date()}
-                                    closeOnSelect
-                                    value={estimationData.preparedOn}
+                              <div className="col-md-6 col-sm-6">
+                                <div className="align-items-center date-box">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    PREPARED ON
+                                  </label>
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDateFns}
+                                  >
+                                    <MobileDatePicker
+                                      inputFormat="dd/MM/yyyy"
+                                      className="form-controldate border-radius-10"
+                                      minDate={estimationData.preparedOn}
+                                      maxDate={new Date()}
+                                      closeOnSelect
+                                      value={estimationData.preparedOn}
+                                      onChange={(e) =>
+                                        setEstimationData({
+                                          ...estimationData,
+                                          preparedOn: e,
+                                        })
+                                      }
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          variant="standard"
+                                          inputProps={{
+                                            ...params.inputProps,
+                                            style: FONT_STYLE,
+                                          }}
+                                        />
+                                      )}
+                                    />
+                                  </LocalizationProvider>
+                                </div>
+                              </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    REVISED BY
+                                  </label>
+                                  <input
+                                    type="text"
+                                    className="form-control border-radius-10 text-primary"
+                                    value={estimationData.revisedBy}
+                                    name="revisedBy"
+                                    onChange={handleEstimationDataChange}
+                                    placeholder="Placeholder (Optional)"
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div className="align-items-center date-box">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    REVISED ON
+                                  </label>
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDateFns}
+                                  >
+                                    <MobileDatePicker
+                                      inputFormat="dd/MM/yyyy"
+                                      className="form-controldate border-radius-10"
+                                      minDate={estimationData.revisedOn}
+                                      maxDate={new Date()}
+                                      closeOnSelect
+                                      value={estimationData.revisedOn}
+                                      onChange={(e) =>
+                                        setEstimationData({
+                                          ...estimationData,
+                                          revisedOn: e,
+                                        })
+                                      }
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          variant="standard"
+                                          inputProps={{
+                                            ...params.inputProps,
+                                            style: FONT_STYLE,
+                                          }}
+                                        />
+                                      )}
+                                    />
+                                  </LocalizationProvider>
+                                </div>
+                              </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    SALES OFFICE / BRANCH
+                                  </label>
+                                  <Select
                                     onChange={(e) =>
                                       setEstimationData({
                                         ...estimationData,
-                                        preparedOn: e,
+                                        salesOffice: e,
                                       })
                                     }
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
-                                        variant="standard"
-                                        inputProps={{
-                                          ...params.inputProps,
-                                          style: FONT_STYLE,
-                                        }}
-                                      />
-                                    )}
+                                    options={salesOfficeOptions}
+                                    placeholder="Required"
+                                    value={estimationData.salesOffice}
+                                    styles={FONT_STYLE_SELECT}
                                   />
-                                </LocalizationProvider>
+                                </div>
                               </div>
                             </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  REVISED BY
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control border-radius-10 text-primary"
-                                  value={estimationData.revisedBy}
-                                  name="revisedBy"
-                                  onChange={handleEstimationDataChange}
-                                  placeholder="Placeholder (Optional)"
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="align-items-center date-box">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  REVISED ON
-                                </label>
-                                <LocalizationProvider
-                                  dateAdapter={AdapterDateFns}
-                                >
-                                  <MobileDatePicker
-                                    inputFormat="dd/MM/yyyy"
-                                    className="form-controldate border-radius-10"
-                                    minDate={estimationData.revisedOn}
-                                    maxDate={new Date()}
-                                    closeOnSelect
-                                    value={estimationData.revisedOn}
-                                    onChange={(e) =>
-                                      setEstimationData({
-                                        ...estimationData,
-                                        revisedOn: e,
-                                      })
-                                    }
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
-                                        variant="standard"
-                                        inputProps={{
-                                          ...params.inputProps,
-                                          style: FONT_STYLE,
-                                        }}
-                                      />
-                                    )}
-                                  />
-                                </LocalizationProvider>
-                              </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  SALES OFFICE / BRANCH
-                                </label>
-                                <Select
-                                  onChange={(e) =>
-                                    setEstimationData({
-                                      ...estimationData,
-                                      salesOffice: e,
-                                    })
-                                  }
-                                  options={salesOfficeOptions}
-                                  placeholder="Required"
-                                  value={estimationData.salesOffice}
-                                  styles={FONT_STYLE_SELECT}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            className="row"
-                            style={{ justifyContent: "right" }}
-                          >
-                            <button
-                              type="button"
-                              className="btn btn-light bg-primary text-white"
-                              onClick={updateEstData}
-                              disabled={
-                                !estimationData.preparedBy ||
-                                !estimationData.preparedOn ||
-                                !estimationData.salesOffice
-                              }
+                            <div
+                              className="row"
+                              style={{ justifyContent: "right" }}
                             >
-                              Save & Next
-                            </button>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="row mt-3">
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                PREPARED BY
-                              </p>
-                              <h6 className="font-weight-500">
-                                {estimationData.preparedBy}
-                              </h6>
+                              <button
+                                type="button"
+                                className="btn btn-light bg-primary text-white"
+                                onClick={updateEstData}
+                                disabled={
+                                  !estimationData.preparedBy ||
+                                  !estimationData.preparedOn ||
+                                  !estimationData.salesOffice
+                                }
+                              >
+                                Save & Next
+                              </button>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                APPROVED BY
-                              </p>
-                              <h6 className="font-weight-500">
-                                {estimationData.approvedBy}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                PREPARED ON
-                              </p>
-                              <h6 className="font-weight-500">
+                          </>
+                        ) : (
+                          <div className="row mt-3">
+                            <ReadOnlyField
+                              label="PREPARED BY"
+                              value={estimationData.preparedBy}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="APPROVED BY"
+                              value={estimationData.approvedBy}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="PREPARED ON"
+                              value={
                                 <Moment format="DD/MM/YYYY">
                                   {estimationData.preparedOn}
                                 </Moment>
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                REVISED BY{" "}
-                              </p>
-                              <h6 className="font-weight-500">
-                                {estimationData.revisedBy}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                REVISED ON
-                              </p>
-                              <h6 className="font-weight-500">
+                              }
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="REVISED BY"
+                              value={estimationData.revisedBy}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="REVISED ON"
+                              value={
                                 <Moment format="DD/MM/YYYY">
                                   {estimationData.revisedOn}
                                 </Moment>
-                              </h6>
-                            </div>
+                              }
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="SALES OFFICE / BRANCH"
+                              value={estimationData.salesOffice?.value}
+                              className="col-md-4 col-sm-4"
+                            />
                           </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                SALES OFFICE / BRANCH
-                              </p>
-                              <h6 className="font-weight-500">
-                                {estimationData.salesOffice?.value}
-                              </h6>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </TabPanel>
-                    <TabPanel value="general">
-                      {!viewOnlyTab.generalViewOnly ? (
-                        <>
-                          <div className="row input-fields">
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  ESTIMATION #
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  className="form-control border-radius-10 text-primary"
-                                  id="estNoId"
-                                  value={generalData.estimationNo}
-                                />
+                        )}
+                      </TabPanel>
+                      <TabPanel value="general">
+                        {!viewOnlyTab.generalViewOnly ? (
+                          <>
+                            <div className="row input-fields">
+                              <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    ESTIMATION #
+                                  </label>
+                                  <input
+                                    type="text"
+                                    disabled
+                                    className="form-control border-radius-10 text-primary"
+                                    id="estNoId"
+                                    value={generalData.estimationNo}
+                                  />
+                                </div>
                               </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  DESCRIPTION
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control border-radius-10 text-primary"
-                                  id="desc-id"
-                                  placeholder="Required"
-                                  maxLength={140}
-                                  value={generalData.description}
-                                  onChange={(e) =>
-                                    setGeneralData({
-                                      ...generalData,
-                                      description: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="align-items-center date-box">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  <span className=" mr-2">ESTIMATION DATE</span>
-                                </label>
-                                <LocalizationProvider
-                                  dateAdapter={AdapterDateFns}
-                                >
-                                  <MobileDatePicker
-                                    inputFormat="dd/MM/yyyy"
-                                    className="form-controldate border-radius-10"
-                                    minDate={generalData.estimationDate}
-                                    maxDate={new Date()}
-                                    closeOnSelect
-                                    value={generalData.estimationDate}
+                              <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    DESCRIPTION
+                                  </label>
+                                  <input
+                                    type="text"
+                                    className="form-control border-radius-10 text-primary"
+                                    id="desc-id"
+                                    placeholder="Required"
+                                    maxLength={140}
+                                    value={generalData.description}
                                     onChange={(e) =>
                                       setGeneralData({
                                         ...generalData,
-                                        estimationDate: e,
+                                        description: e.target.value,
                                       })
                                     }
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
-                                        variant="standard"
-                                        inputProps={{
-                                          ...params.inputProps,
-                                          style: FONT_STYLE,
-                                        }}
-                                      />
-                                    )}
                                   />
-                                </LocalizationProvider>
+                                </div>
+                              </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div className="align-items-center date-box">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    <span className=" mr-2">
+                                      ESTIMATION DATE
+                                    </span>
+                                  </label>
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDateFns}
+                                  >
+                                    <MobileDatePicker
+                                      inputFormat="dd/MM/yyyy"
+                                      className="form-controldate border-radius-10"
+                                      minDate={generalData.estimationDate}
+                                      maxDate={new Date()}
+                                      closeOnSelect
+                                      value={generalData.estimationDate}
+                                      onChange={(e) =>
+                                        setGeneralData({
+                                          ...generalData,
+                                          estimationDate: e,
+                                        })
+                                      }
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          variant="standard"
+                                          inputProps={{
+                                            ...params.inputProps,
+                                            style: FONT_STYLE,
+                                          }}
+                                        />
+                                      )}
+                                    />
+                                  </LocalizationProvider>
+                                </div>
+                              </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    REFERENCE
+                                  </label>
+                                  <input
+                                    type="text"
+                                    className="form-control border-radius-10 text-primary"
+                                    id="desc-id"
+                                    placeholder="Required"
+                                    maxLength={140}
+                                    value={generalData.reference}
+                                    onChange={(e) =>
+                                      setGeneralData({
+                                        ...generalData,
+                                        reference: e.target.value,
+                                      })
+                                    }
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    VALIDITY
+                                  </label>
+                                  <Select
+                                    // defaultValue={selectedOption}
+                                    onChange={(e) =>
+                                      setGeneralData({
+                                        ...generalData,
+                                        validity: e,
+                                      })
+                                    }
+                                    options={validityOptions}
+                                    placeholder="Required"
+                                    value={generalData.validity}
+                                    styles={FONT_STYLE_SELECT}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    VERSION
+                                  </label>
+                                  <input
+                                    type="text"
+                                    className="form-control border-radius-10 text-primary"
+                                    placeholder="Placeholder (Optional)"
+                                    disabled
+                                    value={generalData.version}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    CUSTOMER ID
+                                  </label>
+                                  <SearchBox
+                                    value={generalData.customerID}
+                                    onChange={(e) =>
+                                      handleCustSearch(e.target.value)
+                                    }
+                                    type="customerId"
+                                    result={searchCustResults}
+                                    onSelect={handleCustSelect}
+                                    noOptions={noOptionsCust}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    CUSTOMER NAME
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={generalData.customerName}
+                                    name="customerName"
+                                    onChange={(e) =>
+                                      setGeneralData({
+                                        ...generalData,
+                                        customerName: e.target.value,
+                                      })
+                                    }
+                                    className="form-control border-radius-10 text-primary"
+                                    placeholder="Placeholder (Optional)"
+                                  />
+                                </div>
                               </div>
                             </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  REFERENCE
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control border-radius-10 text-primary"
-                                  id="desc-id"
-                                  placeholder="Required"
-                                  maxLength={140}
-                                  value={generalData.reference}
-                                  onChange={(e) =>
-                                    setGeneralData({
-                                      ...generalData,
-                                      reference: e.target.value,
-                                    })
-                                  }
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  VALIDITY
-                                </label>
-                                <Select
-                                  // defaultValue={selectedOption}
-                                  onChange={(e) =>
-                                    setGeneralData({
-                                      ...generalData,
-                                      validity: e,
-                                    })
-                                  }
-                                  options={validityOptions}
-                                  placeholder="Required"
-                                  value={generalData.validity}
-                                  styles={FONT_STYLE_SELECT}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6 col-sm-6">
-                              <div className="form-group">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  VERSION
-                                </label>
-                                <input
-                                  type="text"
-                                  className="form-control border-radius-10 text-primary"
-                                  placeholder="Placeholder (Optional)"
-                                  disabled
-                                  value={generalData.version}
-                                />
-                              </div>
-                            </div>
-                            {/* <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                CUSTOMER ID
-                              </label>
-                              <SearchBox
-                                value={generalData.customerID}
-                                onChange={(e) =>
-                                  handleCustSearch(e.target.value)
-                                }
-                                type="customerId"
-                                result={searchCustResults}
-                                onSelect={handleCustSelect}
-                                noOptions={noOptionsCust}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                CUSTOMER NAME
-                              </label>
-                              <input
-                                type="text"
-                                value={generalData.customerName}
-                                name="customerName"
-                                onChange={handleCustomerDataChange}
-                                className="form-control border-radius-10 text-primary"
-                                id="customerNameid"
-                                placeholder="Placeholder (Optional)"
-                              />
-                            </div>
-                          </div> */}
-                          </div>
-                          <div
-                            className="row"
-                            style={{ justifyContent: "right" }}
-                          >
-                            <button
-                              type="button"
-                              className="btn btn-light bg-primary text-white"
-                              onClick={updateGeneralData}
-                              disabled={
-                                !generalData.estimationDate ||
-                                !generalData.description ||
-                                !generalData.estimationNo ||
-                                !generalData.reference ||
-                                !generalData.validity
-                              }
+                            <div
+                              className="row"
+                              style={{ justifyContent: "right" }}
                             >
-                              Save & Next
-                            </button>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="row mt-3">
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                ESTIMATION DATE{" "}
-                              </p>
-                              <h6 className="font-weight-500">
+                              <button
+                                type="button"
+                                className="btn btn-light bg-primary text-white"
+                                onClick={updateGeneralData}
+                                disabled={
+                                  !generalData.estimationDate ||
+                                  !generalData.description ||
+                                  !generalData.estimationNo ||
+                                  !generalData.reference ||
+                                  !generalData.validity
+                                }
+                              >
+                                Save & Next
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="row mt-3">
+                            <ReadOnlyField
+                              label="ESTIMATION DATE"
+                              value={
                                 <Moment format="DD/MM/YYYY">
                                   {generalData.estimationDate}
                                 </Moment>
-                              </h6>
-                            </div>
+                              }
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="ESTIMATION #"
+                              value={generalData.estimationNo}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="DESCRIPTION"
+                              value={generalData.description}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="REFERENCE"
+                              value={generalData.reference}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="VALIDTITY (DAYs)"
+                              value={generalData.validity?.value}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="VERSION"
+                              value={generalData.version}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="CUSTOMER ID"
+                              value={generalData.customerID}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="CUSTOMER NAME"
+                              value={generalData.customerName}
+                              className="col-md-4 col-sm-4"
+                            />
                           </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                ESTIMATION #
-                              </p>
-                              <h6 className="font-weight-500">
-                                {generalData.estimationNo}{" "}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                DESCRIPTION
-                              </p>
-                              <h6 className="font-weight-500">
-                                {generalData.description}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                REFERENCE{" "}
-                              </p>
-                              <h6 className="font-weight-500">
-                                {generalData.reference}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                VALIDTITY (DAYs)
-                              </p>
-                              <h6 className="font-weight-500">
-                                {generalData.validity?.value}{" "}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                VERSION
-                              </p>
-                              <h6 className="font-weight-500">
-                                {generalData.version}
-                              </h6>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </TabPanel>
-                    <TabPanel value="price">
-                      {!viewOnlyTab.priceViewOnly ? (
-                        <React.Fragment>
-                          <div className="row input-fields">
-                            <div className="col-md-4 col-sm-4">
-                              <div className="align-items-center date-box">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  PRICE DATE
-                                </label>
-                                <LocalizationProvider
-                                  dateAdapter={AdapterDateFns}
-                                >
-                                  <MobileDatePicker
-                                    inputFormat="dd/MM/yyyy"
-                                    className="form-controldate border-radius-10"
-                                    minDate={pricingData.priceDate}
-                                    maxDate={new Date()}
-                                    closeOnSelect
-                                    value={pricingData.priceDate}
+                        )}
+                      </TabPanel>
+                      <TabPanel value="price">
+                        {!viewOnlyTab.priceViewOnly ? (
+                          <React.Fragment>
+                            <div className="row input-fields">
+                              <div className="col-md-4 col-sm-4">
+                                <div className="align-items-center date-box">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    PRICE DATE
+                                  </label>
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDateFns}
+                                  >
+                                    <MobileDatePicker
+                                      inputFormat="dd/MM/yyyy"
+                                      className="form-controldate border-radius-10"
+                                      minDate={pricingData.priceDate}
+                                      maxDate={new Date()}
+                                      closeOnSelect
+                                      value={pricingData.priceDate}
+                                      onChange={(e) =>
+                                        setPricingData({
+                                          ...pricingData,
+                                          priceDate: e,
+                                        })
+                                      }
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          variant="standard"
+                                          inputProps={{
+                                            ...params.inputProps,
+                                            style: FONT_STYLE,
+                                          }}
+                                        />
+                                      )}
+                                    />
+                                  </LocalizationProvider>
+                                </div>
+                              </div>
+
+                              <div className="col-md-4 col-sm-4">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    PRICE METHOD
+                                  </label>
+                                  <Select
                                     onChange={(e) =>
                                       setPricingData({
                                         ...pricingData,
-                                        priceDate: e,
+                                        priceMethod: e,
                                       })
                                     }
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
-                                        variant="standard"
-                                        inputProps={{
-                                          ...params.inputProps,
-                                          style: FONT_STYLE,
-                                        }}
-                                      />
-                                    )}
+                                    options={priceMethodOptions}
+                                    placeholder="Required"
+                                    value={pricingData.priceMethod}
+                                    styles={FONT_STYLE_SELECT}
                                   />
-                                </LocalizationProvider>
+                                </div>
                               </div>
-                            </div>
-
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  PRICE METHOD
-                                </label>
-                                <Select
-                                  onChange={(e) =>
-                                    setPricingData({
-                                      ...pricingData,
-                                      priceMethod: e,
-                                    })
-                                  }
-                                  options={priceMethodOptions}
-                                  placeholder="Required"
-                                  value={pricingData.priceMethod}
-                                  styles={FONT_STYLE_SELECT}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  ADJUSTED PRICE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled={
-                                    !(
+                              <div className="col-md-4 col-sm-4">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    ADJUSTED PRICE
+                                  </label>
+                                  <input
+                                    type="text"
+                                    disabled={
+                                      !(
+                                        pricingData.priceMethod?.value ===
+                                        "FLAT_RATE"
+                                      )
+                                    }
+                                    className="form-control border-radius-10 text-primary"
+                                    placeholder="Optional"
+                                    value={
                                       pricingData.priceMethod?.value ===
                                       "FLAT_RATE"
-                                    )
-                                  }
-                                  className="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={
-                                    pricingData.priceMethod?.value ===
-                                    "FLAT_RATE"
-                                      ? pricingData.adjustedPrice
-                                      : 0
-                                  }
-                                  onChange={(e) =>
-                                    setPricingData({
-                                      ...pricingData,
-                                      adjustedPrice: e.target.value,
-                                    })
-                                  }
-                                />
+                                        ? pricingData.adjustedPrice
+                                        : 0
+                                    }
+                                    onChange={(e) =>
+                                      setPricingData({
+                                        ...pricingData,
+                                        adjustedPrice: e.target.value,
+                                      })
+                                    }
+                                  />
+                                </div>
                               </div>
-                            </div>
 
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  CURRENCY
-                                </label>
-                                <Select
-                                  onChange={(e) =>
-                                    setPricingData({
-                                      ...pricingData,
-                                      currency: e,
-                                    })
-                                  }
-                                  options={currencyOptions}
-                                  placeholder="Required"
-                                  value={pricingData.currency}
-                                  styles={FONT_STYLE_SELECT}
-                                />
+                              <div className="col-md-4 col-sm-4">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    CURRENCY
+                                  </label>
+                                  <Select
+                                    onChange={(e) =>
+                                      setPricingData({
+                                        ...pricingData,
+                                        currency: e,
+                                      })
+                                    }
+                                    options={currencyOptions}
+                                    placeholder="Required"
+                                    value={pricingData.currency}
+                                    styles={FONT_STYLE_SELECT}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-4 col-sm-4">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    NET PRICE (PARTS)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    disabled
+                                    className="form-control border-radius-10 text-primary"
+                                    placeholder="Optional"
+                                    value={pricingData.netPriceParts}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-4 col-sm-4">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    NET PRICE (LABOR)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    disabled
+                                    className="form-control border-radius-10 text-primary"
+                                    placeholder="Optional"
+                                    value={pricingData.netPriceLabor}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-4 col-sm-4">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    NET PRICE (MISC)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    disabled
+                                    className="form-control border-radius-10 text-primary"
+                                    placeholder="Optional"
+                                    value={pricingData.netPriceMisc}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-4 col-sm-4">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    NET PRICE
+                                  </label>
+                                  <input
+                                    type="text"
+                                    disabled
+                                    className="form-control border-radius-10 text-primary"
+                                    placeholder="Optional"
+                                    value={pricingData.netPrice}
+                                  />
+                                </div>
                               </div>
                             </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  NET PRICE (PARTS)
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  className="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={pricingData.netPriceParts}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  NET PRICE (LABOR)
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  className="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={pricingData.netPriceLabor}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  NET PRICE (MISC)
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  className="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={pricingData.netPriceMisc}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <label className="text-light-dark font-size-12 font-weight-500">
-                                  NET PRICE
-                                </label>
-                                <input
-                                  type="text"
-                                  disabled
-                                  className="form-control border-radius-10 text-primary"
-                                  placeholder="Optional"
-                                  value={pricingData.netPrice}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            className="row"
-                            style={{ justifyContent: "right" }}
-                          >
-                            <button
-                              type="button"
-                              className="btn btn-light bg-primary text-white"
-                              onClick={updatePriceData}
-                              disabled={
-                                !(pricingData.priceDate &&
-                                pricingData.priceMethod &&
-                                pricingData.currency &&
-                                pricingData.priceMethod?.value === "FLAT_RATE"
-                                  ? pricingData.adjustedPrice > 0
-                                  : true)
-                              }
+                            <div
+                              className="row"
+                              style={{ justifyContent: "right" }}
                             >
-                              Save
-                            </button>
-                          </div>
-                        </React.Fragment>
-                      ) : (
-                        <div className="row mt-3">
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                NET PRICE
-                              </p>
-                              <h6 className="font-weight-500">
-                                {pricingData.netPrice}
-                              </h6>
+                              <button
+                                type="button"
+                                className="btn btn-light bg-primary text-white"
+                                onClick={updatePriceData}
+                                disabled={
+                                  !(pricingData.priceDate &&
+                                  pricingData.priceMethod &&
+                                  pricingData.currency &&
+                                  pricingData.priceMethod?.value === "FLAT_RATE"
+                                    ? pricingData.adjustedPrice > 0
+                                    : true)
+                                }
+                              >
+                                Save
+                              </button>
                             </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                PRICE DATE
-                              </p>
-                              <h6 className="font-weight-500">
+                          </React.Fragment>
+                        ) : (
+                          <div className="row mt-3">
+                            <ReadOnlyField
+                              label="NET PRICE"
+                              value={pricingData.netPrice}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="PRICE DATE"
+                              value={
                                 <Moment format="DD/MM/YYYY">
                                   {pricingData.priceDate}
                                 </Moment>
-                              </h6>
-                            </div>
-                          </div>
-                          {/* <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            COST PRICE
-                          </p>
-                          <h6 className="font-weight-500">{01.09.2021}</h6>
-                        </div>
-                      </div> */}
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                PRICE METHOD
-                              </p>
-                              <h6 className="font-weight-500">
-                                {pricingData.priceMethod?.label}
-                              </h6>
-                            </div>
-                          </div>
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                ADJUSTED PRICE{" "}
-                              </p>
-                              <h6 className="font-weight-500">
-                                {pricingData.adjustedPrice}
-                              </h6>
-                            </div>
-                          </div>
-
-                          <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                CURRENCY{" "}
-                              </p>
-                              <h6 className="font-weight-500">
-                                {pricingData.currency?.label}
-                              </h6>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </TabPanel>
-                    <TabPanel value="coverage">
-                      <ul
-                        class="submenu templateResultheading accordion"
-                        style={{ display: "block" }}
-                      >
-                        <li>
-                          <a className="cursor result">Search Coverage</a>
-                        </li>
-                      </ul>
-                      <div
-                        className="custom-table card p-3"
-                        style={{ width: "100%", backgroundColor: "#fff" }}
-                      >
-                        <div
-                          className="row align-items-center m-0"
-                          style={{ flexFlow: "unset" }}
-                        >
-                          <QuerySearchComp
-                            setMasterData={setMasterData}
-                            setFilterMasterData={setFilterMasterData}
-                            setSelectedMasterData={setSelectedCoverageData}
-                            compoFlag="coverage"
-                            options={[
-                              { label: "Make", value: "make" },
-                              { label: "Model", value: "model" },
-                              { label: "Prefix", value: "prefix" },
-                              { label: "Family", value: "family" },
-                            ]}
-                          />
-                          <div className=" ml-3">
-                            <Link
-                              to="#"
-                              onClick={() => setUploadOpen(true)}
-                              className="btn bg-primary text-white"
-                            >
-                              <FileUploadOutlinedIcon />{" "}
-                              <span className="ml-1">Upload</span>
-                            </Link>
-                          </div>
-                        </div>
-                        {masterData?.length > 0 ? (
-                          <>
-                            <hr />
-                            <DataTable
-                              className=""
-                              title=""
-                              columns={masterColumns}
-                              data={masterData}
-                              customStyles={customStyles}
-                              selectableRows
-                              onSelectedRowsChange={(state) =>
-                                setFilterMasterData(state.selectedRows)
                               }
-                              pagination
+                              className="col-md-4 col-sm-4"
                             />
-                            <div>
-                              <div className="text-right">
-                                <input
-                                  // onClick={() => {
-                                  //   setSelectedMasterData(filterMasterData);
-                                  //   setMasterData([]);
-                                  // }}
-                                  onClick={handleCoverageCheckBoxData}
-                                  className="btn bg-primary text-white"
-                                  value="+ Add Selected"
-                                  disabled={filterMasterData.length == 0}
-                                />
+                            <ReadOnlyField
+                              label="PRICE METHOD"
+                              value={pricingData.priceMethod?.label}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="ADJUSTED PRICE"
+                              value={pricingData.adjustedPrice}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="CURRENCY"
+                              value={pricingData.currency?.label}
+                              className="col-md-4 col-sm-4"
+                            />
+                          </div>
+                        )}
+                      </TabPanel>
+                      <TabPanel value="coverage">
+                        <ul
+                          class="submenu templateResultheading accordion"
+                          style={{ display: "block" }}
+                        >
+                          <li>
+                            <a className="cursor result">Search Coverage</a>
+                          </li>
+                        </ul>
+                        <div
+                          className="custom-table card p-3"
+                          style={{ width: "100%", backgroundColor: "#fff" }}
+                        >
+                          <div
+                            className="row align-items-center m-0"
+                            style={{ flexFlow: "unset" }}
+                          >
+                            <QuerySearchComp
+                              setMasterData={setMasterData}
+                              setFilterMasterData={setFilterMasterData}
+                              setSelectedMasterData={setSelectedCoverageData}
+                              compoFlag="coverage"
+                              options={[
+                                { label: "Make", value: "make" },
+                                { label: "Model", value: "model" },
+                                { label: "Prefix", value: "prefix" },
+                                { label: "Family", value: "family" },
+                              ]}
+                            />
+                            <div className=" ml-3">
+                              <Link
+                                to="#"
+                                onClick={() => setUploadOpen(true)}
+                                className="btn bg-primary text-white"
+                              >
+                                <FileUploadOutlinedIcon />{" "}
+                                <span className="ml-1">Upload</span>
+                              </Link>
+                            </div>
+                          </div>
+                          {masterData && masterData?.length > 0 ? (
+                            <>
+                              <hr />
+                              <DataTable
+                                className=""
+                                title=""
+                                columns={masterColumns}
+                                data={masterData}
+                                customStyles={customStyles}
+                                selectableRows
+                                onSelectedRowsChange={(state) =>
+                                  setFilterMasterData(state.selectedRows)
+                                }
+                                pagination
+                              />
+                              <div>
+                                <div className="text-right">
+                                  <input
+                                    // onClick={() => {
+                                    //   setSelectedMasterData(filterMasterData);
+                                    //   setMasterData([]);
+                                    // }}
+                                    onClick={handleCoverageCheckBoxData}
+                                    className="btn bg-primary text-white"
+                                    value="+ Add Selected"
+                                    disabled={filterMasterData.length == 0}
+                                  />
 
-                                {/* <Link to="#"
+                                  {/* <Link to="#"
                           onClick={() => {
                             setSelectedMasterData(filterMasterData)
                             setMasterData([])
                           }}
                           className="btn bg-primary text-white"
                         >+ Add Selected</Link> */}
+                                </div>
+                              </div>
+                            </>
+                          ) : (
+                            <></>
+                          )}
+                          {selectedCoverageData.length > 0 ? (
+                            <>
+                              <hr />
+                              <label htmlFor="Included-model">
+                                <h5 className="font-weight-400 text-black mb-2 mt-1">
+                                  Included models
+                                </h5>
+                              </label>
+                              <DataTable
+                                className="mt-3"
+                                title=""
+                                columns={selectedMasterColumns}
+                                data={selectedCoverageData}
+                                customStyles={customStyles}
+                                pagination
+                              />
+                            </>
+                          ) : (
+                            <></>
+                          )}
+                        </div>
+                      </TabPanel>
+                      <TabPanel value="usage">
+                        {!viewOnlyTab.usageViewOnly ? (
+                          <React.Fragment>
+                            <div className="row input-fields">
+                              <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    APPLICATION
+                                  </label>
+                                  <Select
+                                    // defaultValue={selectedOption}
+                                    onChange={(e) =>
+                                      setUsageData({
+                                        ...usageData,
+                                        application: e,
+                                      })
+                                    }
+                                    options={APPLICATION_OPTIONS}
+                                    placeholder="Required"
+                                    value={usageData.application}
+                                    styles={FONT_STYLE_SELECT}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div class="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    OWNER
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control border-radius-10 text-primary"
+                                    placeholder="Placeholder (Optional)"
+                                    value={usageData.owner}
+                                    onChange={(e) =>
+                                      setUsageData({
+                                        ...usageData,
+                                        owner: e.target.value,
+                                      })
+                                    }
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div class="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    ARTICLE #
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control border-radius-10 text-primary"
+                                    placeholder="Placeholder (Optional)"
+                                    value={usageData.articleNumber}
+                                    onChange={(e) =>
+                                      setUsageData({
+                                        ...usageData,
+                                        articleNumber: e.target.value,
+                                      })
+                                    }
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    LIFE STAGE
+                                  </label>
+                                  <Select
+                                    // defaultValue={selectedOption}
+                                    onChange={(e) =>
+                                      setUsageData({
+                                        ...usageData,
+                                        lifeStage: e,
+                                      })
+                                    }
+                                    options={LIFE_STAGE_OPTIONS}
+                                    placeholder="OPTIONAL"
+                                    value={usageData.lifeStage}
+                                    styles={FONT_STYLE_SELECT}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div class="form-group">
+                                  <label
+                                    className="text-light-dark font-size-12 font-weight-500"
+                                    for="exampleInputEmail1"
+                                  >
+                                    START USAGE
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control border-radius-10 text-primary"
+                                    placeholder="Placeholder (Optional)"
+                                    value={usageData.startUsage}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div class="form-group">
+                                  <label
+                                    className="text-light-dark font-size-12 font-weight-500"
+                                    for="exampleInputEmail1"
+                                  >
+                                    END USAGE
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control border-radius-10 text-primary"
+                                    placeholder="Placeholder (Optional)"
+                                    value={usageData.endUsage}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    USAGE INTERVAL
+                                  </label>
+                                  <input
+                                    type="text"
+                                    class="form-control border-radius-10 text-primary"
+                                    placeholder="Placeholder (Optional)"
+                                    value={usageData.usageInterval}
+                                  />
+                                </div>
+                              </div>
+                              <div className="col-md-6 col-sm-6">
+                                <div className="align-items-center date-box">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    <span className=" mr-2">
+                                      NEXT REVISION DATE
+                                    </span>
+                                  </label>
+                                  <LocalizationProvider
+                                    dateAdapter={AdapterDateFns}
+                                  >
+                                    <MobileDatePicker
+                                      inputFormat="dd/MM/yyyy"
+                                      className="form-controldate border-radius-10"
+                                      minDate={new Date()}
+                                      closeOnSelect
+                                      value={generalData.nextRivisionDate}
+                                      onChange={(e) =>
+                                        setGeneralData({
+                                          ...generalData,
+                                          estimationDate: e,
+                                        })
+                                      }
+                                      renderInput={(params) => (
+                                        <TextField
+                                          {...params}
+                                          variant="standard"
+                                          inputProps={{
+                                            ...params.inputProps,
+                                            style: FONT_STYLE,
+                                          }}
+                                        />
+                                      )}
+                                    />
+                                  </LocalizationProvider>
+                                </div>
                               </div>
                             </div>
-                          </>
+                            <div
+                              className="row"
+                              style={{ justifyContent: "right" }}
+                            >
+                              <button
+                                type="button"
+                                className="btn btn-light bg-primary text-white"
+                              >
+                                Save
+                              </button>
+                            </div>
+                          </React.Fragment>
                         ) : (
-                          <></>
-                        )}
-                        {selectedCoverageData.length > 0 ? (
-                          <>
-                            <hr />
-                            <label htmlFor="Included-model">
-                              <h5 className="font-weight-400 text-black mb-2 mt-1">
-                                Included models
-                              </h5>
-                            </label>
-                            <DataTable
-                              className="mt-3"
-                              title=""
-                              columns={selectedMasterColumns}
-                              data={selectedCoverageData}
-                              customStyles={customStyles}
-                              pagination
+                          <div className="row mt-3">
+                            <ReadOnlyField
+                              label="APPLICATION"
+                              value={usageData.application?.label}
+                              className="col-md-4 col-sm-4"
                             />
-                          </>
-                        ) : (
-                          <></>
-                        )}
-                      </div>
-                    </TabPanel>
-                    <TabPanel value="usage">
-                    {!viewOnlyTab.usageViewOnly ? (
-                      <React.Fragment>
-                      <div className="row input-fields">
-                        <div className="col-md-6 col-sm-6">
-                          <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              APPLICATION
-                            </label>
-                            <Select
-                              // defaultValue={selectedOption}
-                              onChange={(e) =>
-                                setUsageData({
-                                  ...usageData,
-                                  application: e,
-                                })
-                              }
-                              options={APPLICATION_OPTIONS}
-                              placeholder="Required"
-                              value={usageData.application}
-                              styles={FONT_STYLE_SELECT}
-                            />
-                          </div>
-                        </div>
-                        <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              OWNER
-                            </label>
-                            <input
-                              type="text"
-                              class="form-control border-radius-10 text-primary"
-                              placeholder="Placeholder (Optional)"
+                            <ReadOnlyField
+                              label="OWNER"
                               value={usageData.owner}
-                              onChange={(e) =>
-                                setUsageData({
-                                  ...usageData,
-                                  owner: e.target.value,
-                                })
-                              }
+                              className="col-md-4 col-sm-4"
                             />
-                          </div>
-                        </div>
-                        <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              ARTICLE #
-                            </label>
-                            <input
-                              type="text"
-                              class="form-control border-radius-10 text-primary"
-                              placeholder="Placeholder (Optional)"
+                            <ReadOnlyField
+                              label="ARTICLE #"
                               value={usageData.articleNumber}
-                              onChange={(e) =>
-                                setUsageData({
-                                  ...usageData,
-                                  articleNumber: e.target.value,
-                                })
-                              }
+                              className="col-md-4 col-sm-4"
                             />
-                          </div>
-                        </div>
-                        <div className="col-md-6 col-sm-6">
-                          <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              LIFE STAGE
-                            </label>
-                            <Select
-                              // defaultValue={selectedOption}
-                              onChange={(e) =>
-                                setUsageData({
-                                  ...usageData,
-                                  lifeStage: e,
-                                })
-                              }
-                              options={LIFE_STAGE_OPTIONS}
-                              placeholder="OPTIONAL"
-                              value={usageData.lifeStage}
-                              styles={FONT_STYLE_SELECT}
+                            <ReadOnlyField
+                              label="LIFE STAGE"
+                              value={usageData.lifeStage?.label}
+                              className="col-md-4 col-sm-4"
                             />
-                          </div>
-                        </div>
-                        <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
-                              START USAGE
-                            </label>
-                            <input
-                              type="text"
-                              class="form-control border-radius-10 text-primary"
-                              placeholder="Placeholder (Optional)"
+                            <ReadOnlyField
+                              label="START USAGE"
                               value={usageData.startUsage}
+                              className="col-md-4 col-sm-4"
                             />
-                          </div>
-                        </div>
-                        <div className="col-md-6 col-sm-6">
-                          <div class="form-group">
-                            <label
-                              className="text-light-dark font-size-12 font-weight-500"
-                              for="exampleInputEmail1"
-                            >
-                              END USAGE
-                            </label>
-                            <input
-                              type="text"
-                              class="form-control border-radius-10 text-primary"
-                              placeholder="Placeholder (Optional)"
+                            <ReadOnlyField
+                              label="END USAGE"
                               value={usageData.endUsage}
+                              className="col-md-4 col-sm-4"
                             />
-                          </div>
-                        </div>
-                        <div className="col-md-6 col-sm-6">
-                          <div className="form-group">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              USAGE INTERVAL
-                            </label>
-                            <input
-                              type="text"
-                              class="form-control border-radius-10 text-primary"
-                              placeholder="Placeholder (Optional)"
+                            <ReadOnlyField
+                              label="USAGE INTERVAL"
                               value={usageData.usageInterval}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="COMPONENT"
+                              value={usageData.component}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="NEXT RIVISION DATE"
+                              value={
+                                <Moment format="DD/MM/YYYY">
+                                  {usageData.nextRevisionDate}
+                                </Moment>
+                              }
+                              className="col-md-4 col-sm-4"
                             />
                           </div>
-                        </div>
-                        <div className="col-md-6 col-sm-6">
-                          <div className="align-items-center date-box">
-                            <label className="text-light-dark font-size-12 font-weight-500">
-                              <span className=" mr-2">NEXT REVISION DATE</span>
-                            </label>
-                            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                              <MobileDatePicker
-                                inputFormat="dd/MM/yyyy"
-                                className="form-controldate border-radius-10"
-                                minDate={new Date()}
-                                closeOnSelect
-                                value={generalData.nextRivisionDate}
-                                onChange={(e) =>
-                                  setGeneralData({
-                                    ...generalData,
-                                    estimationDate: e,
-                                  })
-                                }
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    variant="standard"
-                                    inputProps={{
-                                      ...params.inputProps,
-                                      style: FONT_STYLE,
-                                    }}
-                                  />
-                                )}
-                              />
-                            </LocalizationProvider>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row" style={{ justifyContent: "right" }}>
-                        <button
-                          type="button"
-                          className="btn btn-light bg-primary text-white"
-                        >
-                          Save
-                        </button>
-                      </div>
-                      </React.Fragment>):
-                      <div className="row mt-3">
-                        <div class="col-md-4 col-sm-4">
-                          <div class="form-group">
-                            <p class="font-size-12 font-weight-500 mb-2">
-                              APPLICATION{" "}
-                            </p>
-                            <h6 class="font-weight-500">
-                              {usageData.application?.label}
-                            </h6>
-                          </div>
-                        </div>
-                        <div class="col-md-4 col-sm-4">
-                          <div class="form-group">
-                            <p class="font-size-12 font-weight-500 mb-2">
-                              OWNER
-                            </p>
-                            <h6 class="font-weight-500">{usageData.owner} </h6>
-                          </div>
-                        </div>
-                        <div class="col-md-4 col-sm-4">
-                          <div class="form-group">
-                            <p class="font-size-12 font-weight-500 mb-2">
-                              ARTICLE #
-                            </p>
-                            <h6 class="font-weight-500">
-                              {usageData.articleNumber}
-                            </h6>
-                          </div>
-                        </div>
-                        <div class="col-md-4 col-sm-4">
-                          <div class="form-group">
-                            <p class="font-size-12 font-weight-500 mb-2">
-                              LIFE STAGE
-                            </p>
-                            <h6 class="font-weight-500">
-                              {usageData.lifeStage?.label}
-                            </h6>
-                          </div>
-                        </div>
-                        <div class="col-md-4 col-sm-4">
-                          <div class="form-group">
-                            <p class="font-size-12 font-weight-500 mb-2">
-                              START USAGE
-                            </p>
-                            <h6 class="font-weight-500">
-                              {usageData.startUsage}
-                            </h6>
-                          </div>
-                        </div>
-                        <div class="col-md-4 col-sm-4">
-                          <div class="form-group">
-                            <p class="font-size-12 font-weight-500 mb-2">
-                              END USAGE
-                            </p>
-                            <h6 class="font-weight-500">
-                              {usageData.endUsage}{" "}
-                            </h6>
-                          </div>
-                        </div>
-                        <div class="col-md-4 col-sm-4">
-                          <div class="form-group">
-                            <p class="font-size-12 font-weight-500 mb-2">
-                              USAGE INTERVAL
-                            </p>
-                            <h6 class="font-weight-500">
-                              {usageData.usageInterval}
-                            </h6>
-                          </div>
-                        </div>
-                        <div class="col-md-4 col-sm-4">
-                          <div class="form-group">
-                            <p class="font-size-12 font-weight-500 mb-2">
-                              COMPONENT
-                            </p>
-                            <h6 class="font-weight-500">
-                              {usageData.component}
-                            </h6>
-                          </div>
-                        </div>
-                        <div class="col-md-4 col-sm-4">
-                          <div class="form-group">
-                            <p class="font-size-12 font-weight-500 mb-2">
-                              NEXT RIVISION DATE
-                            </p>
-                            <h6 class="font-weight-500">
-                              <Moment format="DD/MM/YYYY">
-                                {usageData.nextRevisionDate}
-                              </Moment>
-                            </h6>
-                          </div>
-                        </div>
-                      </div>}
-                      
-                    </TabPanel>
-                  </TabContext>
+                        )}
+                      </TabPanel>
+                    </TabContext>
+                  )}
                 </Box>
               </div>
               <div className="Add-new-segment-div p-3 border-radius-10 mb-2">
@@ -2009,7 +1984,14 @@ function ServiceOnlyTemplates(props) {
               templateDetails={{
                 activeElement,
                 setActiveElement,
-                // fetchAllDetails,
+              }}
+            />
+          )}
+          {activeElement.name === "operation" && (
+            <ServiceOnlyTemplateOperation
+              templateDetails={{
+                activeElement,
+                setActiveElement,
               }}
             />
           )}

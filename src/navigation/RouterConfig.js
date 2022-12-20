@@ -41,7 +41,7 @@ import { CommanComponents } from "../components/CommanComponents";
 import AddPartlist from "pages/Repair/AddPartlist";
 import WithSpareParts from "pages/Repair/WithSpareParts";
 import WithoutSparePartsHeader from "pages/Repair/WithoutSparePartsHeader";
-import WithoutRepairOption01 from "pages/Repair/WithoutRepairOption01";
+// import WithoutRepairOption01 from "pages/Repair/WithoutRepairOption01";
 import SolutionTemplates from "pages/SolutionModules/SolutionTemplates";
 import QuoteSpareParts from "pages/SolutionModules/QuoteSpareParts";
 import QuoteSearchQuote from "pages/SolutionModules/QuoteSearchQuote";
@@ -125,7 +125,7 @@ export const RouterConfig = () => {
         <Route exact path={RIPAIR_SEGMENT01_TRANSMISSION} component={Segment01Transmission} />
         <Route exact path={RIPAIR_SEGMENT01_DISASSEMBLE} component={Segment01Disassemble} />
         <Route exact path={RIPAIR_OPTION01} component={RepairOption01} />
-        <Route exact path={WITHOUT_REPAIR_OPTION01} component={WithoutRepairOption01} />
+        {/* <Route exact path={WITHOUT_REPAIR_OPTION01} component={WithoutRepairOption01} /> */}
         <Route exact path={RIPAIR_SERVICE_ESTIMATE} component={RepairServiceEstimate} />
         <Route exact path={WITHOUTSPARE_REPAIR_OPTION} component={WithoutSpareParts} />
         <Route exact path={WITH_SPARE_PARTS} component={WithSpareParts} />

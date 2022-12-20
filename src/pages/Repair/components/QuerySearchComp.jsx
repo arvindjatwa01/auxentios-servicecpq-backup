@@ -3,7 +3,6 @@ import Select from "react-select";
 import { Link } from "react-router-dom";
 import $ from "jquery";
 import SearchIcon from "@mui/icons-material/Search";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   getSearchCoverageForFamily,
@@ -32,22 +31,6 @@ const QuerySearchComp = (props) => {
     { label: "Family", value: "family" },
   ];
 
-  const handleItemType = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.itemType = e;
-    tempArray[id] = obj;
-    console.log("tempArray : ", tempArray);
-    setQuerySearchSelector(tempArray);
-  };
-  const handleitemTypeOperator = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.itemTypeOperator = e;
-    tempArray[id] = obj;
-    setQuerySearchSelector(tempArray);
-  };
-
   const handleOperator = (e, id) => {
     let tempArray = [...querySearchSelector];
     let obj = tempArray[id];
@@ -74,7 +57,7 @@ const QuerySearchComp = (props) => {
         $(`.scrollbar-${id}`).css("display", "block");
       })
       .catch((err) => {
-        console.log("err in api call", err);
+        props.handleSnack("error", "Error occurred while searching");
       });
     obj.inputSearch = e.target.value;
   };
@@ -110,35 +93,29 @@ const QuerySearchComp = (props) => {
     props?.setMasterData([]);
     props?.setFilterMasterData([]);
     props?.setSelectedMasterData([]);
-    props?.setOpenedModelBoxData([]);
-    props.setTempBundleService1([]);
   };
 
   const handleQuerySearchClick = async () => {
-    // let searchStr;
     try {
       $(".scrollbar").css("display", "none");
-      console.log("handleQuerySearchClick", querySearchSelector);
-      // props.setQuerySearchSelectItem({querySearchSelector});
       if (
-        querySearchSelector[0]?.selectFamily?.value == "" ||
-        querySearchSelector[0]?.inputSearch == "" ||
+        querySearchSelector[0]?.selectFamily?.value === "" ||
+        querySearchSelector[0]?.inputSearch === "" ||
         querySearchSelector[0]?.selectFamily?.value === undefined
       ) {
-        throw "Please fill data properly";
+        props.handleSnack("warning", "Please fill the search criteria");
       }
 
       var searchStr = `${querySearchSelector[0]?.selectFamily?.value}:${querySearchSelector[0]?.inputSearch}`;
-      console.log("searchStr  try : ", searchStr);
-      // var searchStr = `bundleFlag:${querySearchSelector[0]?.itemType.value} ${querySearchSelector[0]?.itemTypeOperator.value} ${querySearchSelector[0]?.selectFamily?.value}~${querySearchSelector[0]?.inputSearch}`;
+      // console.log("searchStr  try : ", searchStr);
 
       for (let i = 1; i < querySearchSelector.length; i++) {
         if (
-          querySearchSelector[i]?.selectOperator?.value == "" ||
-          querySearchSelector[i]?.selectFamily?.value == "" ||
-          querySearchSelector[i]?.inputSearch == ""
+          querySearchSelector[i]?.selectOperator?.value === "" ||
+          querySearchSelector[i]?.selectFamily?.value === "" ||
+          querySearchSelector[i]?.inputSearch === ""
         ) {
-          throw "Please fill data properly";
+          props.handleSnack("warning", "Please fill the search criteria");
         }
         searchStr =
           searchStr +
@@ -149,21 +126,10 @@ const QuerySearchComp = (props) => {
           "~" +
           querySearchSelector[i].inputSearch;
       }
-      const res1 = await getSearchQueryCoverage(searchStr);
-      props?.setMasterData(res1);
+      const res = await getSearchQueryCoverage(searchStr);
+      props?.setMasterData(res);
     } catch (error) {
-      // console.log("searchStr catch : ", searchStr);
-      console.log("error in getSearchQueryCoverage", error);
-      toast("😐" + error, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      return;
+      props.handleSnack("error", "Error occurred while searching");     
     }
   };
 
@@ -217,11 +183,6 @@ const QuerySearchComp = (props) => {
                         <ul
                           className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
                         >
-                          {console.log(
-                            "Obje obj.selectOptions : ",
-                            obj.selectOptions
-                          )}
-
                           {obj.selectOptions.map((currentItem, j) => (
                             <li
                               className="list-group-item"

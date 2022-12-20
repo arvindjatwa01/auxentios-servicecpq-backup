@@ -888,35 +888,7 @@ function Kits(props) {
     //   cell: (row) => <div><img className="mr-2" src={penIcon} /><img className="mr-2" src={deleticon} /><img src={link1Icon} /></div>,
     // },
   ];
-  const handleQuerySearchClick = () => {
-    $(".scrollbar").css("display", "none");
-    console.log("handleQuerySearchClick", querySearchSelector);
-    var searchStr =
-      querySearchSelector[0].selectFamily.value +
-      "~" +
-      querySearchSelector[0].inputSearch;
-
-    for (let i = 1; i < querySearchSelector.length; i++) {
-      searchStr =
-        searchStr +
-        " " +
-        querySearchSelector[i].selectOperator.value +
-        " " +
-        querySearchSelector[i].selectFamily.value +
-        "~" +
-        querySearchSelector[i].inputSearch;
-    }
-
-    console.log("searchStr", searchStr);
-    getSearchQueryCoverage(searchStr)
-      .then((res) => {
-        console.log("search Query Result :", res);
-        setMasterData(res);
-      })
-      .catch((err) => {
-        console.log("error in getSearchQueryCoverage", err);
-      });
-  };
+  
   const handleDeletQuerySearch = () => {
     setQuerySearchSelector([]);
     setCount(0);
@@ -1478,7 +1450,7 @@ function Kits(props) {
         setSelectedCoverageData(res.coverages);
       })
       .catch((e) => {
-        handleSnack("err", "Error occurred while updating the data");
+        handleSnack("error", "Error occurred while updating the data");
       });
   };
   const [show, setShow] = React.useState(false);
@@ -2898,6 +2870,7 @@ function Kits(props) {
                             { label: "Prefix", value: "prefix" },
                             { label: "Family", value: "family" },
                           ]}
+                          handleSnack={handleSnack}
                         />
                         <div className=" ml-3">
                           <Link

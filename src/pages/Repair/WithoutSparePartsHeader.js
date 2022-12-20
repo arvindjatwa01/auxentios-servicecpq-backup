@@ -37,7 +37,6 @@ import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
 import shareIcon from "../../assets/icons/svg/share.svg";
 import uploadIcon from "../../assets/icons/svg/upload.svg";
 import SearchBox from "./components/SearchBox";
-import WithoutRepairOption01 from "./WithoutRepairOption01";
 import WithoutSpareParts from "./WithoutSpareParts";
 import { Rating, TextField } from "@mui/material";
 import { customerSearch, machineSearch } from "services/searchServices";
@@ -53,6 +52,8 @@ import {
 import LoadingProgress from "./components/Loader";
 import { MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import WithoutSparePartsOperation from "./WithoutSparePartsOperation";
+import { ReadOnlyField } from "./components/ReadOnlyField";
 
 function WithoutSparePartsHeader(props) {
   const history = useHistory();
@@ -1060,76 +1061,41 @@ function WithoutSparePartsHeader(props) {
                           </>
                         ) : (
                           <div className="row mt-3">
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  SOURCE
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {customerData.source}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  CUSTOMER ID
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {customerData.customerID}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  CUSTOMER NAME
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {customerData.customerName}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  CUSTOMER EMAIL
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {customerData.contactEmail}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  CONTACT NAME
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {customerData.contactName}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  CONTACT PHONE
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {customerData.contactPhone}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  CUSTOMER GROUP
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {customerData.customerGroup}
-                                </h6>
-                              </div>
-                            </div>
+                            <ReadOnlyField
+                              label="SOURCE"
+                              value={customerData.source}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="CUSTOMER ID"
+                              value={customerData.customerID}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="CUSTOMER NAME"
+                              value={customerData.customerName}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="CUSTOMER EMAIL"
+                              value={customerData.contactEmail}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="CONTACT NAME"
+                              value={customerData.contactName}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="CONTACT PHONE"
+                              value={customerData.contactPhone}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="CUSTOMER GROUP"
+                              value={customerData.customerGroup}
+                              className="col-md-4 col-sm-4"
+                            />
                           </div>
                         )}
                       </TabPanel>
@@ -1298,87 +1264,46 @@ function WithoutSparePartsHeader(props) {
                           </>
                         ) : (
                           <div className="row mt-3">
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  Make
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {machineData.make}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  Family
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {machineData.family}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  MODEL
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {machineData.model}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  SERIAL NO
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {machineData.serialNo}{" "}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  SMU (Service Meter Unit)
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {machineData.smu}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  {" "}
-                                  UNIT NO / FLEET NO
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {machineData.fleetNo}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  REGISTRATION NO
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {machineData.registrationNo}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  CHASSIS NO
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {machineData.chasisNo}
-                                </h6>
-                              </div>
-                            </div>
+                            <ReadOnlyField
+                              label="MAKE"
+                              value={machineData.make}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="FAMILY"
+                              value={machineData.family}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="MODEL"
+                              value={machineData.model}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="SERIAL NO"
+                              value={machineData.serialNo}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="SMU (Service Meter Unit)"
+                              value={machineData.smu}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="UNIT NO / FLEET NO"
+                              value={machineData.fleetNo}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="REGISTRATION NO"
+                              value={machineData.registrationNo}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="CHASSIS NO"
+                              value={machineData.chasisNo}
+                              className="col-md-4 col-sm-4"
+                            />
                           </div>
                         )}
                       </TabPanel>
@@ -1577,70 +1502,45 @@ function WithoutSparePartsHeader(props) {
                           </>
                         ) : (
                           <div className="row mt-3">
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  PREPARED BY
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {estimationData.preparedBy}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  APPROVED BY
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {estimationData.approvedBy}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  PREPARED ON
-                                </p>
-                                <h6 className="font-weight-500">
-                                  <Moment format="DD/MM/YYYY">
-                                    {estimationData.preparedOn}
-                                  </Moment>
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  REVISED BY{" "}
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {estimationData.revisedBy}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  REVISED ON
-                                </p>
-                                <h6 className="font-weight-500">
-                                  <Moment format="DD/MM/YYYY">
-                                    {estimationData.revisedOn}
-                                  </Moment>
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  SALES OFFICE / BRANCH
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {estimationData.salesOffice?.value}
-                                </h6>
-                              </div>
-                            </div>
+                            <ReadOnlyField
+                              label="PREPARED BY"
+                              value={estimationData.preparedBy}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="APPROVED BY"
+                              value={estimationData.approvedBy}
+                              className="col-md-4 col-sm-4"
+                            />
+
+                            <ReadOnlyField
+                              label="PREPARED ON"
+                              value={
+                                <Moment format="DD/MM/YYYY">
+                                  {estimationData.preparedOn}
+                                </Moment>
+                              }
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="REVISED BY"
+                              value={estimationData.revisedBy}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="REVISED ON"
+                              value={
+                                <Moment format="DD/MM/YYYY">
+                                  {estimationData.revisedOn}
+                                </Moment>
+                              }
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="SALES OFFICE / BRANCH"
+                              value={estimationData.salesOffice?.label}
+                              className="col-md-4 col-sm-4"
+                            />
                           </div>
                         )}
                       </TabPanel>
@@ -1818,68 +1718,42 @@ function WithoutSparePartsHeader(props) {
                           </>
                         ) : (
                           <div className="row mt-3">
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  ESTIMATION DATE{" "}
-                                </p>
-                                <h6 className="font-weight-500">
-                                  <Moment format="DD/MM/YYYY">
-                                    {generalData.estimationDate}
-                                  </Moment>
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  ESTIMATION #
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {generalData.estimationNo}{" "}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  DESCRIPTION
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {generalData.description}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  REFERENCE{" "}
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {generalData.reference}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  VALIDTITY (DAYs)
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {generalData.validity?.value}{" "}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  VERSION
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {parseFloat(selectedVersion.value).toFixed(1)}
-                                </h6>
-                              </div>
-                            </div>
+                            <ReadOnlyField
+                              label="ESTIMATION DATE"
+                              value={
+                                <Moment format="DD/MM/YYYY">
+                                  {generalData.estimationDate}
+                                </Moment>
+                              }
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="ESTIMATION #"
+                              value={generalData.estimationNo}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="DESCRIPTION"
+                              value={generalData.description}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="REFERENCE"
+                              value={generalData.reference}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="VALIDTITY (DAYs)"
+                              value={generalData.validity?.label}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="VERSION"
+                              value={parseFloat(selectedVersion.value).toFixed(
+                                1
+                              )}
+                              className="col-md-4 col-sm-4"
+                            />
                           </div>
                         )}
                       </TabPanel>
@@ -2060,67 +1934,35 @@ function WithoutSparePartsHeader(props) {
                           </>
                         ) : (
                           <div className="row mt-3">
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  NET PRICE
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {pricingData.netPrice}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  PRICE DATE
-                                </p>
-                                <h6 className="font-weight-500">
-                                  <Moment format="DD/MM/YYYY">
-                                    {pricingData.priceDate}
-                                  </Moment>
-                                </h6>
-                              </div>
-                            </div>
-                            {/* <div className="col-md-4 col-sm-4">
-                            <div className="form-group">
-                              <p className="font-size-12 font-weight-500 mb-2">
-                                COST PRICE
-                              </p>
-                              <h6 className="font-weight-500">01.09.2021</h6>
-                            </div>
-                          </div> */}
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  PRICE METHOD
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {pricingData.priceMethod?.label}{" "}
-                                </h6>
-                              </div>
-                            </div>
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  ADJUSTED PRICE{" "}
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {pricingData.adjustedPrice}
-                                </h6>
-                              </div>
-                            </div>
-
-                            <div className="col-md-4 col-sm-4">
-                              <div className="form-group">
-                                <p className="font-size-12 font-weight-500 mb-2">
-                                  CURRENCY{" "}
-                                </p>
-                                <h6 className="font-weight-500">
-                                  {pricingData.currency?.label}
-                                </h6>
-                              </div>
-                            </div>
+                            <ReadOnlyField
+                              label="NET PRICE"
+                              value={pricingData.netPrice}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="PRICE DATE"
+                              value={
+                                <Moment format="DD/MM/YYYY">
+                                  {pricingData.priceDate}
+                                </Moment>
+                              }
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="PRICE METHOD"
+                              value={pricingData.priceMethod?.label}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="ADJUSTED PRICE"
+                              value={pricingData.adjustedPrice}
+                              className="col-md-4 col-sm-4"
+                            />
+                            <ReadOnlyField
+                              label="CURRENCY"
+                              value={pricingData.currency?.label}
+                              className="col-md-4 col-sm-4"
+                            />
                           </div>
                         )}
                       </TabPanel>
@@ -2161,7 +2003,7 @@ function WithoutSparePartsHeader(props) {
             />
           )}
           {activeElement.name === "operation" && (
-            <WithoutRepairOption01
+            <WithoutSparePartsOperation
               builderDetails={{ activeElement, setActiveElement }}
             />
           )}
