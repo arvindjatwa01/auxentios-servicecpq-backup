@@ -889,7 +889,7 @@ export const PortfolioSummary = () => {
         preparedOn: data.itemHeaderModel.preparedOn,
         revisedBy: data.itemHeaderModel.revisedBy,
         revisedOn: data.itemHeaderModel.revisedOn,
-        branch: data.itemHeaderModel.salesOffice,
+        salesOffice: data.itemHeaderModel.salesOffice,
         offerValidity: data.itemHeaderModel.offerValidity,
       });
     } else if (data.itemHeaderModel.bundleFlag === "BUNDLE_ITEM") {
@@ -919,7 +919,7 @@ export const PortfolioSummary = () => {
         preparedOn: data.itemHeaderModel.preparedOn,
         revisedBy: data.itemHeaderModel.revisedBy,
         revisedOn: data.itemHeaderModel.revisedOn,
-        branch: data.itemHeaderModel.salesOffice,
+        salesOffice: data.itemHeaderModel.salesOffice,
         offerValidity: data.itemHeaderModel.offerValidity,
       });
 
@@ -1144,7 +1144,7 @@ export const PortfolioSummary = () => {
         //     preparedOn: administrative.preparedOn,
         //     revisedBy: administrative.revisedBy,
         //     revisedOn: administrative.revisedOn,
-        //     salesOffice: administrative.branch,
+        //     salesOffice: administrative.salesOffice,
         //     offerValidity: administrative.offerValidity
         //   },
         //   itemBodyModel: {
@@ -1227,7 +1227,7 @@ export const PortfolioSummary = () => {
             preparedOn: administrative.preparedOn,
             revisedBy: administrative.revisedBy,
             revisedOn: administrative.revisedOn,
-            salesOffice: administrative.branch,
+            salesOffice: administrative.salesOffice,
             offerValidity: administrative.offerValidity
           },
           itemBodyModel: {
@@ -1255,22 +1255,22 @@ export const PortfolioSummary = () => {
 
         console.log("reqObj 1234567888 : ", reqObj)
 
-
+        const res = await updateItemData(createServiceOrBundle.id, reqObj);
         // const res = await updateItemData(createServiceOrBundle.id, reqObj);
-        // if (res.status === 200) {
-        //   toast("😎" + `${serviceOrBundlePrefix} updated`, {
-        //     position: "top-right",
-        //     autoClose: 3000,
-        //     hideProgressBar: false,
-        //     closeOnClick: true,
-        //     pauseOnHover: true,
-        //     draggable: true,
-        //     progress: undefined,
-        //   });
-        //   setBundleTabs("4");
-        //   // setAddportFolioItem({});
+        if (res.status === 200) {
+          toast("😎" + `${serviceOrBundlePrefix} updated`, {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          setBundleTabs("4");
+          // setAddportFolioItem({});
 
-        // }
+        }
 
       } else {
 
@@ -1307,7 +1307,7 @@ export const PortfolioSummary = () => {
             preparedOn: administrative.preparedOn,
             revisedBy: administrative.revisedBy,
             revisedOn: administrative.revisedOn,
-            salesOffice: administrative.branch,
+            salesOffice: administrative.salesOffice,
             offerValidity: administrative.offerValidity
           },
           itemBodyModel: {
@@ -1444,8 +1444,8 @@ export const PortfolioSummary = () => {
         (administrative.revisedBy != "" &&
           administrative.revisedBy != undefined &&
           !validator.emailValidation(administrative.revisedBy)) ||
-        (administrative.branch == "" ||
-          administrative.branch == undefined)
+        (administrative.salesOffice == "" ||
+          administrative.salesOffice == undefined)
         // || (administrative.offerValidity == "" ||
         // administrative.offerValidity == undefined)
       ) {
@@ -1499,7 +1499,7 @@ export const PortfolioSummary = () => {
             preparedOn: administrative.preparedOn,
             revisedBy: administrative.revisedBy,
             revisedOn: administrative.revisedOn,
-            salesOffice: administrative.branch,
+            salesOffice: administrative.salesOffice,
             offerValidity: administrative.offerValidity
           },
           itemBodyModel: {
@@ -1567,8 +1567,8 @@ export const PortfolioSummary = () => {
         (administrative.revisedBy != "" &&
           administrative.revisedBy != undefined &&
           !validator.emailValidation(administrative.revisedBy)) ||
-        (administrative.branch == "" ||
-          administrative.branch == undefined)
+        (administrative.salesOffice == "" ||
+          administrative.salesOffice == undefined)
         // || (administrative.offerValidity == "" ||
         // administrative.offerValidity == undefined)
       ) {
@@ -1623,7 +1623,7 @@ export const PortfolioSummary = () => {
             preparedOn: administrative.preparedOn,
             revisedBy: administrative.revisedBy,
             revisedOn: administrative.revisedOn,
-            salesOffice: administrative.branch,
+            salesOffice: administrative.salesOffice,
             offerValidity: administrative.offerValidity
           },
           itemBodyModel: {
@@ -1729,7 +1729,7 @@ export const PortfolioSummary = () => {
         preparedOn: new Date(),
         revisedBy: "",
         revisedOn: new Date(),
-        branch: "",
+        salesOffice: "",
         offerValidity: "",
       });
 
@@ -1763,7 +1763,7 @@ export const PortfolioSummary = () => {
         preparedOn: new Date(),
         revisedBy: "",
         revisedOn: new Date(),
-        branch: "",
+        salesOffice: "",
         offerValidity: "",
       });
     }
@@ -2145,7 +2145,7 @@ export const PortfolioSummary = () => {
     preparedOn: new Date(),
     revisedBy: null,
     revisedOn: new Date(),
-    branch: null,
+    salesOffice: null,
     offerValidity: null,
   });
   const handleAdministrativreChange = (e) => {
@@ -3245,7 +3245,7 @@ export const PortfolioSummary = () => {
                           <div className="col-md-4 col-sm-3">
                             <div className="form-group">
                               <p className="text-light-dark font-size-12 font-weight-500 mb-2">BUNDLE/SERVICE</p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {serviceOrBundlePrefix === "SERVICE"
                                   ? "SERVICE"
                                   : "BUNDLE_ITEM"}
@@ -3632,7 +3632,13 @@ export const PortfolioSummary = () => {
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED BY</p>
                           <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {administrative.preparedBy}
+                            {(
+                              administrative.preparedBy == "" ||
+                                administrative.preparedBy == "string" ||
+                                administrative.preparedBy == undefined ||
+                                administrative.preparedBy == null
+                                ? "NA" : administrative.preparedBy
+                            )}
                           </h6>
                         </div>
                       </div>
@@ -3640,7 +3646,13 @@ export const PortfolioSummary = () => {
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">APPROVED BY</p>
                           <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {administrative.approvedBy}
+                            {(
+                              administrative.approvedBy == "" ||
+                                administrative.approvedBy == "string" ||
+                                administrative.approvedBy == undefined ||
+                                administrative.approvedBy == null
+                                ? "NA" : administrative.approvedBy
+                            )}
                           </h6>
                         </div>
                       </div>
@@ -3648,7 +3660,14 @@ export const PortfolioSummary = () => {
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">PREPARED ON</p>
                           <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {getFormattedDateTimeByTimeStampForAdministrative(administrative.preparedOn)}
+                            {(
+                              administrative.preparedOn == "" ||
+                                administrative.preparedOn == "string" ||
+                                administrative.preparedOn == undefined ||
+                                administrative.preparedOn == null
+                                ? "NA" :
+                                getFormattedDateTimeByTimeStampForAdministrative(administrative.preparedOn)
+                            )}
                           </h6>
                         </div>
                       </div>
@@ -3656,7 +3675,12 @@ export const PortfolioSummary = () => {
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED BY</p>
                           <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {administrative.revisedBy}
+                            {(
+                              administrative.revisedBy == "" ||
+                                administrative.revisedBy == "string" ||
+                                administrative.revisedBy == undefined ||
+                                administrative.revisedBy == null ?
+                                "NA" : administrative.revisedBy)}
                           </h6>
                         </div>
                       </div>
@@ -3664,15 +3688,27 @@ export const PortfolioSummary = () => {
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">REVISED ON</p>
                           <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {getFormattedDateTimeByTimeStampForAdministrative(administrative.revisedOn)}
+                            {(
+                              administrative.revisedOn == "" ||
+                                administrative.revisedOn == "string" ||
+                                administrative.revisedOn == undefined ||
+                                administrative.revisedOn == null
+                                ? "NA" :
+                                getFormattedDateTimeByTimeStampForAdministrative(administrative.revisedOn)
+                            )}
                           </h6>
                         </div>
                       </div>
                       <div className="col-md-4 col-sm-4">
                         <div className="form-group">
-                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">SALSE OFFICE/BRANCH</p>
+                          <p className="text-light-dark font-size-12 font-weight-500 mb-2">SALES OFFICE/BRANCH</p>
                           <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {administrative.branch}
+                            {(
+                              administrative.salesOffice == "" ||
+                                administrative.salesOffice == "string" ||
+                                administrative.salesOffice == undefined ||
+                                administrative.salesOffice == null
+                                ? "NA" : administrative.salesOffice)}
                           </h6>
                         </div>
                       </div>
@@ -3680,7 +3716,12 @@ export const PortfolioSummary = () => {
                         <div className="form-group">
                           <p className="text-light-dark font-size-12 font-weight-500 mb-2">OFFER VALIDITY</p>
                           <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
-                            {administrative.offerValidity}
+                            {(
+                              administrative.offerValidity == "" ||
+                                administrative.offerValidity == "string" ||
+                                administrative.offerValidity == undefined ||
+                                administrative.offerValidity == null
+                                ? "NA" : administrative.offerValidity)}
                           </h6>
                         </div>
                       </div>
@@ -3828,8 +3869,8 @@ export const PortfolioSummary = () => {
                           <input
                             type="text"
                             className="form-control border-radius-10 text-primary"
-                            name="branch"
-                            value={administrative.branch}
+                            name="salesOffice"
+                            value={administrative.salesOffice}
                             onChange={handleAdministrativreChange}
                             placeholder="Required"
                           />
