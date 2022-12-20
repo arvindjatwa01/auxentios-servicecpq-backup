@@ -113,7 +113,8 @@ import {
    getSearchCoverageForFamily,
    itemCreation,
    createCoverage,
-   createCutomCoverage,
+   createCustomCoverage,
+   updateCustomCoverage,
    getItemPrice,
    getcustomItemPriceById,
    updateCustomPriceData,
@@ -446,6 +447,7 @@ export function SolutionTemplateResult(props) {
    const [anchorEl, setAnchorEl] = React.useState(null);
 
    const [showRelatedModel, setShowRelatedModel] = useState(false);
+   const [showEditIncludeSerialNoModel, setShowEditIncludeSerialNoModel] = useState(false);
    const [editSerialNo, setEditSerialNo] = useState({
       coverageId: "",
       make: "",
@@ -547,6 +549,60 @@ export function SolutionTemplateResult(props) {
          customerSegment: e,
       });
    };
+
+   const UpdateSelectCoverageData = async (exitsData) => {
+
+      const _selectedMasterData = [...selectedMasterData]
+      const obj = _selectedMasterData[includedModelIndex]
+      console.log("edit serial No : ", obj);
+
+      const editCoverageData = {
+         coverageId: editSerialNo?.coverageId,
+         serviceId: 0,
+         modelNo: editSerialNo?.modelNo,
+         serialNumber: editSerialNo?.serialNo,
+         startSerialNumber: editSerialNo?.startSerialNo,
+         endSerialNumber: editSerialNo?.endSerialNo,
+         serialNumberPrefix: editSerialNo?.serialNoPrefix,
+         family: editSerialNo?.family,
+         make: editSerialNo?.make,
+         fleet: editSerialNo?.fleet,
+         fleetSize: editSerialNo?.fleetSize,
+         location: editSerialNo?.location,
+         startDate: "",
+         endDate: "",
+         actions: "",
+      }
+      // console.log("e54398u891");
+
+
+      const updateCustomCoverageData = await updateCustomCoverage(
+         editSerialNo.coverageId,
+         editCoverageData
+      );
+
+      if (updateCustomCoverageData.status === 200) {
+         toast("😎 Updated Successfully", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+         });
+         const tempObj = {
+            ...obj,
+            make: updateCustomCoverageData.data.make,
+            model: updateCustomCoverageData.data.modelNo,
+            prefix: updateCustomCoverageData.data.serialNumberPrefix,
+            family: updateCustomCoverageData.data.family,
+         }
+         _selectedMasterData[includedModelIndex] = tempObj
+         setSelectedMasterData(_selectedMasterData)
+         setShowEditIncludeSerialNoModel(false)
+      }
+   }
 
    const handleRemove = (index) => {
       var temp = priceAgreementRows.slice();
@@ -2770,7 +2826,7 @@ export function SolutionTemplateResult(props) {
                   actions: "",
                   createdAt: "",
                };
-               const res = await createCutomCoverage(reqObj);
+               const res = await createCustomCoverage(reqObj);
                console.log("createCoverage res:", res);
                cvgIds.push({ coverageId: res.customCoverageId });
             }
@@ -4050,20 +4106,33 @@ export function SolutionTemplateResult(props) {
       setFilterMasterData(updated);
    };
 
-   const handleEditIncludeSerialNo = (e, row) => {
-      console.log("handleEditIncludeSerialNo row:", row);
+   const handleEditIncludeSerialNo = (i, e, row) => {
+      console.log("handleEditIncludeSerialNo 3423434 row:", row);
+      var editSerialNo = "";
+
+
+      const _selectedMasterData = [...selectedMasterData]
+      const objMaster = _selectedMasterData[i]
+
+      if (objMaster.associatedIncludedModelData) {
+         editSerialNo = objMaster.associatedIncludedModelData[0].serialNumber?.value;
+      }
+
       let obj = {
-         coverageId: row.id,
+         coverageId: row.customCoverageId ? row.customCoverageId : row.id,
          make: row.make,
          family: row.family,
-         modelNo: row.model,
-         serialNoPrefix: row.prefix,
-         startSerialNo: row.startSerialNo,
-         endSerialNo: row.endSerialNo,
+         modelNo: row.modelNo ? row.modelNo : row.model,
+         serialNoPrefix: row.serialNumberPrefix ? row.serialNumberPrefix : row.prefix,
+         startSerialNo: row.startSerialNumber ? row.startSerialNumber : row.startSerialNo,
+         endSerialNo: row.endSerialNumber ? row.endSerialNumber : row.endSerialNo,
          fleet: row.fleet,
          fleetSize: row.fleetSize,
+         serialNo: editSerialNo,
       };
       setEditSerialNo(obj);
+      setIncludedModelIndex(i)
+      setShowEditIncludeSerialNoModel(true);
    };
 
    const handleTempbundleItemSelection = (e, row) => {
@@ -4333,14 +4402,14 @@ export function SolutionTemplateResult(props) {
          wrap: true,
          sortable: true,
          format: (row) => row.action,
-         cell: (row) => (
+         cell: (row, i) => (
             <div>
                <Link
                   to="#"
-                  onClick={(e) => handleEditIncludeSerialNo(e, row)}
+                  onClick={(e) => handleEditIncludeSerialNo(i, e, row)}
                   className="btn-svg text-white cursor mx-2"
-                  data-toggle="modal"
-                  data-target="#AddCoverage"
+               // data-toggle="modal"
+               // data-target="#AddCoverage"
                >
                   <svg
                      version="1.1"
@@ -4384,7 +4453,7 @@ export function SolutionTemplateResult(props) {
                <Link
                   to="#"
                   className="btn-svg text-white cursor "
-                  onClick={() => ShowRelatedIncludeModelBox(row)}
+                  onClick={() => ShowRelatedIncludeModelBox(i, row)}
                >
                   <svg
                      data-name="Layer 1"
@@ -5385,7 +5454,7 @@ export function SolutionTemplateResult(props) {
                   endDate: "",
                   actions: "",
                }
-               const cvgRes = await createCutomCoverage(reqObj);
+               const cvgRes = await createCustomCoverage(reqObj);
                console.log("createCoverage res:", cvgRes);
                cvgIds.push({ coverageId: cvgRes.customCoverageId });
             } else {
@@ -8418,6 +8487,8 @@ export function SolutionTemplateResult(props) {
                      <button type="button" className="btn btn-primary w-100" onClick={() => setVersionPopup(false)}>Cancel</button>
                   </Modal.Footer>
                </Modal>
+
+               {/* Model Box For Coverage Included Serial No */}
                <Modal
                   show={showRelatedModel}
                   onHide={() => setShowRelatedModel(false)}
@@ -8456,6 +8527,338 @@ export function SolutionTemplateResult(props) {
                      <Button variant="primary">Save changes</Button>
                   </Modal.Footer>
                </Modal>
+
+               {/* Model Box For Update/Edit Coverage Data */}
+
+               <Modal
+                  show={showEditIncludeSerialNoModel}
+                  onHide={() => setShowEditIncludeSerialNoModel(false)}
+                  size="lg"
+                  aria-labelledby="contained-modal-title-vcenter"
+                  centered
+               >
+                  <Modal.Header className="align-items-center">
+                     <div>
+                        <Modal.Title>Edit Coverage</Modal.Title>
+                     </div>
+                  </Modal.Header>
+                  <Modal.Body className="included_table">
+                     <div className="row input-fields">
+                        <div className="col-md-4 col-sm-4">
+                           <div className="form-group w-100">
+                              <label
+                                 className="text-light-dark font-size-14 font-weight-500"
+                                 htmlFor="exampleInputEmail1"
+                              >
+                                 Coverage ID
+                              </label>
+                              <input
+                                 type="text"
+                                 className="form-control border-radius-10 text-primary"
+                                 disabled
+                                 placeholder="(AUTO GENERATE)"
+                                 value={editSerialNo.coverageId}
+                                 defaultValue={editSerialNo.coverageId}
+                              />
+                           </div>
+                        </div>
+                        {/* <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">Service ID</label>
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                  </div>
+                </div> */}
+                        <div className="col-md-4 col-sm-4">
+                           <div className="form-group">
+                              <label
+                                 className="text-light-dark font-size-14 font-weight-500"
+                                 htmlFor="exampleInputEmail1"
+                              >
+                                 Make
+                              </label>
+                              <input
+                                 type="text"
+                                 className="form-control text-primary border-radius-10"
+                                 name="make"
+                                 placeholder="Auto Fill Search Model...."
+                                 value={editSerialNo.make}
+                                 defaultValue={editSerialNo.make}
+                                 disabled
+                              />
+                              {/* <Select
+                      options={categoryList}
+                      placeholder={editSerialNo.make}
+                      value={editSerialNo.make}
+                      defaultValue={editSerialNo.make}
+                      onChange={(e) =>
+                        setEditSerialNo({ ...editSerialNo, make: e.value })
+                      }
+                    /> */}
+                           </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                           <div className="form-group">
+                              <label
+                                 className="text-light-dark font-size-14 font-weight-500"
+                                 htmlFor="exampleInputEmail1"
+                              >
+                                 Family
+                              </label>
+                              <input
+                                 type="text"
+                                 className="form-control text-primary border-radius-10"
+                                 name="family"
+                                 placeholder="Auto Fill Search Model...."
+                                 value={editSerialNo.family}
+                                 defaultValue={editSerialNo.family}
+                                 disabled
+                              />
+                              {/* <Select
+                      options={categoryList}
+                      placeholder={editSerialNo.family}
+                      value={editSerialNo.family}
+                      defaultValue={editSerialNo.family}
+                      onChange={(e) =>
+                        setEditSerialNo({ ...editSerialNo, family: e.value })
+                      }
+                    // onChange={(e) => HandleCatUsage(e)}
+                    /> */}
+                           </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                           <div className="form-group">
+                              <label
+                                 className="text-light-dark font-size-14 font-weight-500"
+                                 htmlFor="exampleInputEmail1"
+                              >
+                                 Model No
+                              </label>
+                              <input
+                                 type="text"
+                                 className="form-control text-primary border-radius-10"
+                                 name="model"
+                                 placeholder="Model(Required*)"
+                                 value={editSerialNo.modelNo}
+                                 defaultValue={editSerialNo.modelNo}
+                                 // onChange={handleAddServiceBundleChange}
+                                 onChange={(e) => handleModelInputSearch(e)}
+                              />
+                              {/* <Select
+                      options={categoryList}
+                      placeholder={editSerialNo.modelNo}
+                      value={editSerialNo.modelNo}
+                      defaultValue={editSerialNo.modelNo}
+                      onChange={(e) =>
+                        setEditSerialNo({ ...editSerialNo, modelNo: e.value })
+                      }
+                    /> */}
+                              {
+                                 <ul
+                                    className={`list-group custommodelselectsearch customselectsearch-list scrollbar scrollbar-model style`}
+                                    id="style"
+                                 >
+                                    {querySearchModelResult.map((currentItem, j) => (
+                                       <li
+                                          className="list-group-item"
+                                          key={j}
+                                          onClick={(e) => handleSearchModelListClick(
+                                             e,
+                                             currentItem
+                                          )}
+                                       // onClick={(e) =>
+                                       //   handleSearchListClick(
+                                       //     e,
+                                       //     currentItem,
+                                       //   )
+                                       // }
+                                       >
+                                          {currentItem.model}
+                                       </li>
+                                    ))}
+                                 </ul>
+                              }
+                           </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                           <div className="form-group">
+                              <label
+                                 className="text-light-dark font-size-14 font-weight-500"
+                                 htmlFor="exampleInputEmail1"
+                              >
+                                 Serial No Prefix
+                              </label>
+                              <Select
+                                 // options={categoryList}
+                                 options={querySearchModelPrefixOption}
+                                 placeholder={editSerialNo.serialNoPrefix}
+                                 value={editSerialNo.serialNoPrefix}
+                                 defaultValue={editSerialNo.serialNoPrefix}
+                                 // onChange={(e) =>
+                                 //   setEditSerialNo({
+                                 //     ...editSerialNo,
+                                 //     serialNoPrefix: e.value,
+                                 //   })
+                                 // }
+                                 className="text-primary"
+                                 onChange={(e) => selectPrefixOption(e)}
+                              // onChange={(e) => HandleCatUsage(e)}
+                              />
+                           </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                           <div className="form-group">
+                              <label
+                                 className="text-light-dark font-size-14 font-weight-500"
+                                 htmlFor="exampleInputEmail1"
+                              >
+                                 Start Serial No
+                              </label>
+                              <input
+                                 type="text"
+                                 className="form-control border-radius-10 text-primary"
+                                 placeholder="(Optional)"
+                                 value={editSerialNo.startSerialNo}
+                                 defaultValue={editSerialNo.startSerialNo}
+                                 onChange={(e) =>
+                                    setEditSerialNo({
+                                       ...editSerialNo,
+                                       startSerialNo: e.target.value,
+                                    })
+                                 }
+                              />
+                           </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                           <div className="form-group">
+                              <label
+                                 className="text-light-dark font-size-14 font-weight-500"
+                                 htmlFor="exampleInputEmail1"
+                              >
+                                 End Serial No
+                              </label>
+                              <input
+                                 type="text"
+                                 className="form-control border-radius-10 text-primary"
+                                 placeholder="(Optional)"
+                                 value={editSerialNo.endSerialNo}
+                                 defaultValue={editSerialNo.endSerialNo}
+                                 onChange={(e) =>
+                                    setEditSerialNo({
+                                       ...editSerialNo,
+                                       endSerialNo: e.target.value,
+                                    })
+                                 }
+                              />
+                           </div>
+                        </div>
+
+                        <div className="col-md-4 col-sm-4">
+                           <div className="form-group">
+                              <label
+                                 className="text-light-dark font-size-14 font-weight-500"
+                                 htmlFor="exampleInputEmail1"
+                              >
+                                 Fleet
+                              </label>
+                              <input
+                                 type="text"
+                                 className="form-control border-radius-10 text-primary"
+                                 placeholder="(Optional)"
+                                 value={editSerialNo.fleet}
+                                 defaultValue={editSerialNo.fleet}
+                                 onChange={(e) =>
+                                    setEditSerialNo({
+                                       ...editSerialNo,
+                                       fleet: e.target.value,
+                                    })
+                                 }
+                              />
+                           </div>
+                        </div>
+                        <div className="col-md-4 col-sm-4">
+                           <div className="form-group">
+                              <label
+                                 className="text-light-dark font-size-14 font-weight-500"
+                                 htmlFor="exampleInputEmail1"
+                              >
+                                 Fleet Size
+                              </label>
+                              <input
+                                 type="text"
+                                 className="form-control border-radius-10 text-primary"
+                                 placeholder="(Optional)"
+                                 value={editSerialNo.fleetSize}
+                                 defaultValue={editSerialNo.fleetSize}
+                                 onChange={(e) =>
+                                    setEditSerialNo({
+                                       ...editSerialNo,
+                                       fleetSize: e.target.value,
+                                    })
+                                 }
+                              />
+                              {/* <Select
+                      value={editSerialNo.fleetSize}
+                      defaultValue={editSerialNo.fleetSize}
+                      placeholder={editSerialNo.fleetSize}
+                      onChange={(e) =>
+                        setEditSerialNo({ ...editSerialNo, fleetSize: e.value })
+                      }
+                      options={categoryList}
+                    // onChange={(e) => HandleCatUsage(e)}
+                    /> */}
+                           </div>
+                        </div>
+                        {/* <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label
+                      className="text-light-dark font-size-14 font-weight-500"
+                      htmlFor="exampleInputEmail1"
+                    >
+                      Location
+                    </label>
+                    <Select
+                      // value={}
+                      options={categoryList}
+                      onChange={(e) => HandleCatUsage(e)}
+                    />
+
+                  </div>
+                </div>
+
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">Start Date </label>
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">End Date </label>
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                  </div>
+                </div>
+                <div className="col-md-4 col-sm-4">
+                  <div className="form-group">
+                    <label className="text-light-dark font-size-14 font-weight-500" htmlFor="exampleInputEmail1">Actions </label>
+                    <input type="email" className="form-control border-radius-10" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="(Optional)" />
+                  </div>
+                </div> */}
+                     </div>
+                  </Modal.Body>
+                  <Modal.Footer>
+                     <Button
+                        variant="primary"
+                        className="btn border w-100"
+                        onClick={() => setShowEditIncludeSerialNoModel(false)}>
+                        Close
+                     </Button>
+                     <Button
+                        variant="primary"
+                        className="btn btn-primary w-100"
+                        onClick={(e) => UpdateSelectCoverageData(selectedMasterData[includedModelIndex])}>Save changes</Button>
+                  </Modal.Footer>
+               </Modal>
+
                <div class="modal fade" id="versionpopup2" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                   <div class="modal-dialog modal-dialog-centered" role="document">
                      <div class="modal-content">

@@ -13,7 +13,7 @@ export { getAllPortfolios, getSolutionPortfolioById } from './solutionBuilderSer
 export { createPortfolio, getPortfolio, updatePortfolio, portfolioSearch } from './servicePortfolioServices'
 export { createCustomPortfolio, updateCustomPortfolio, getCustomPortfolio, solutionPortfolioSearch, getSearchForRecentSolutionPortfolio, getSearchForRecentSolutionBundleService, copyPortfolioICustomPortfolio } from './customPortfolioSolutions'
 export { getPortfolioCommonConfig, getPortfolioPriceTypeCommonConfig, getPortfolioPriceHeadTypeCommonConfig, getSolutionPriceCommonConfig, additionalPriceCreation, escalationPriceCreation, portfolioPriceCreation, portfolioItemPriceSjid, getItemPriceData, getCustomItemPriceData, updatePortfolioPrice, updateEscalationPriceById, updateAdditionalPriceById, getPortfolioPriceById } from './pricingCommonConfig'
-export { getMakeKeyValue, getModelKeyValue, getPrefixKeyValue, createCoverage, createCutomCoverage } from './coverageService'
+export { getMakeKeyValue, getModelKeyValue, getPrefixKeyValue, createCoverage, updateCoverage, updateCustomCoverage, createCustomCoverage } from './coverageService'
 export { getUsageCategoryKeyValue, getStrategyTaskKeyValue, getTaskTypeKeyValue, getProductHierarchyKeyValue, getGergraphicKeyValue, getMachineTypeKeyValue, getLifeStageKeyValue, getTypeKeyValue, getResponseTimeTaskKeyValue, getValidityKeyValue, getSolutionTypeKeyValue, getSolutionLevelKeyValue, getAuditRestServiceData } from './commonSolutionBuilderServices'
 export { getSearchQueryCoverage, getSearchCoverageForFamily, getSearchForPortfolio, getSearchForRecentPortfolio, getSearchForRecentBundleService, getSearchStandardJobId, getSearchKitId } from "./searchQueryService"
 export { itemCreation, itemSearchSuggestion, itemSearch, getItemPrice, updateItemData, deleteItem, itemPriceDataId, updateItemPriceData, createItemPriceData } from './portFolioItemService';
@@ -21,3 +21,4 @@ export { getComponentCodeSuggetions } from './masterComponentCode';
 export { customitemCreation, getcustomItemPrice, updateCustomItemData, deleteCustomItem, customPriceCreation, getSearchCustomPortfolio, getCustomItemData, getcustomItemPriceById, updateCustomPriceData, customPortfolioItemPriceSJID } from './customPortfolioItemService'
 export { quoteCreation, getQuoteMasterData, getSearchQuoteData, updateMasterQuoteData, deleteMasterQuote, convertPortfolioToQuoteData, getConvertQuoteData } from "./quoteService";
 
+export { getRecentSolutionQuotes } from "./solutionQuoteServices";
