@@ -385,6 +385,7 @@ export function CreatePortfolio(props) {
   const [priceEscalationHeadKeyValue1, setPriceEscalationHeadKeyValue1] = useState([]);
   const [escalationPriceValue, setEscalationPriceValue] = useState()
   const [additionalPriceValue, setAdditionalPriceValue] = useState()
+
   const [pricePriceData, setPricePriceData] = useState("");
   const [priceCalculatedPrice, setPriceCalculatedPrice] = useState("");
   const [additionalPriceDataId, setAdditionalPriceDataId] = useState("");
@@ -4479,7 +4480,6 @@ export function CreatePortfolio(props) {
       else if (value === "price" && viewOnlyTab.priceViewOnly) {
         setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: false });
       }
-
     }
     // } else {
     //   if (value === "general" && viewOnlyTab.generalViewOnly)
@@ -7744,7 +7744,7 @@ export function CreatePortfolio(props) {
                   <img style={{ width: "14px" }} src={folderaddIcon}></img>
                 </a>
               </div>
-              <div className="input-group icons border-radius-10 border">
+              {/* <div className="input-group icons border-radius-10 border">
                 <div className="input-group-prepend">
                   <span
                     className="input-group-text bg-transparent border-0 pr-0 "
@@ -7758,7 +7758,7 @@ export function CreatePortfolio(props) {
                   className="form-control search-form-control"
                   aria-label="Search Dashboard"
                 />
-              </div>
+              </div> */}
             </h5>
             <Box className="mt-4" sx={{ width: "100%", typography: "body1" }}>
               {headerLoading ? (
@@ -7909,7 +7909,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               PORTFOLIO NAME
                             </p>
-                            <h6 className="font-weight-500">
+                            <h6 className="font-weight-500 text-primary font-size-17">
                               {generalComponentData.name == "" || generalComponentData.name == null ? "NA" : generalComponentData.name}
                             </h6>
                           </div>
@@ -7919,7 +7919,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               PORTFOLIO DESCRIPTION
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {generalComponentData.description == "" || generalComponentData.description == null ? "NA" : generalComponentData.description}
                             </h6>
                           </div>
@@ -7937,7 +7937,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               REFERENCE
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {generalComponentData.externalReference == "" ||
                                 generalComponentData.externalReference == null ||
                                 generalComponentData.externalReference == "string"
@@ -7950,7 +7950,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               CUSTOMER SEGMENT
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {generalComponentData?.customerSegment == "" ||
                                 generalComponentData?.customerSegment == null ||
                                 generalComponentData?.customerSegment == undefined ||
@@ -8388,7 +8388,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               CATEGORY USAGE
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {categoryUsageKeyValue1.length == 0 ||
                                 categoryUsageKeyValue1.value == "" ||
                                 categoryUsageKeyValue1.value == "string" ||
@@ -8404,7 +8404,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               STRATEGY TASK
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {stratgyTaskUsageKeyValue.length == 0 ||
                                 stratgyTaskUsageKeyValue.value == "" ||
                                 stratgyTaskUsageKeyValue.value == "string" ||
@@ -8429,7 +8429,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               TASK TYPE
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {stratgyTaskTypeKeyValue.length == 0 ||
                                 stratgyTaskTypeKeyValue.value == "" ||
                                 stratgyTaskTypeKeyValue.value == "string" ||
@@ -8445,7 +8445,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               RESPONSE TIME
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {stratgyResponseTimeKeyValue.length == 0 ||
                                 stratgyResponseTimeKeyValue.value == null ||
                                 stratgyResponseTimeKeyValue.value == "" ||
@@ -8461,7 +8461,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               PRODUCT HIERARCHY
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {stratgyHierarchyKeyValue.length == 0 ||
                                 stratgyHierarchyKeyValue.value == "" ||
                                 stratgyHierarchyKeyValue.value == "string" ||
@@ -8477,7 +8477,7 @@ export function CreatePortfolio(props) {
                             <p className="font-size-12 font-weight-500 mb-2">
                               GEOGRAPHIC
                             </p>
-                            <h6 className="font-weight-500 text-uppercase">
+                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                               {stratgyGeographicKeyValue.length == 0 ||
                                 stratgyGeographicKeyValue.value == "" ||
                                 stratgyGeographicKeyValue.value == "string" ||
@@ -8746,7 +8746,7 @@ export function CreatePortfolio(props) {
                                 PREPARED BY
                                 {/* {console.log("new dataa : ", coverageData.machineType)} */}
                               </p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(
                                   administrative.preparedBy == "" ||
                                     administrative.preparedBy == "string" ||
@@ -8762,7 +8762,7 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 APPROVED BY
                               </p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(
                                   administrative.approvedBy == "" ||
                                     administrative.approvedBy == "string" ||
@@ -8779,7 +8779,7 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 PREPARED ON
                               </p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(
                                   administrative.preparedOn == "" ||
                                     administrative.preparedOn == "string" ||
@@ -8797,7 +8797,7 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 REVISED BY
                               </p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(
                                   administrative.revisedBy == "" ||
                                     administrative.revisedBy == "string" ||
@@ -8812,7 +8812,7 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 REVISED  ON
                               </p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(
                                   administrative.revisedOn == "" ||
                                     administrative.revisedOn == "string" ||
@@ -8829,7 +8829,7 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 SALSE OFFICE/BRANCH
                               </p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(
                                   administrative.salesOffice == "" ||
                                     administrative.salesOffice == "string" ||
@@ -8844,7 +8844,7 @@ export function CreatePortfolio(props) {
                               <p className="font-size-12 font-weight-500 mb-2">
                                 OFFER VALIDITY
                               </p>
-                              <h6 className="font-weight-500 text-uppercase">
+                              <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                 {(
                                   administrative.offerValidity == "" ||
                                     administrative.offerValidity == "string" ||
@@ -8860,8 +8860,10 @@ export function CreatePortfolio(props) {
 
                   </TabPanel>
                   <TabPanel value={"price"}>
+
                     {!viewOnlyTab.priceViewOnly ?
                       <>
+
                         <div className="row input-fields">
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group">
@@ -8877,7 +8879,9 @@ export function CreatePortfolio(props) {
                                 className="text-primary"
                                 options={priceListKeyValue}
                                 placeholder="placeholder (Optional)"
+
                                 value={priceListKeyValue1}
+
                               />
                             </div>
                           </div>
@@ -8895,7 +8899,9 @@ export function CreatePortfolio(props) {
                                 onChange={(e) => setPriceMethodKeyValue1(e)}
                                 options={priceMethodKeyValue}
                                 placeholder="required"
+
                                 value={priceMethodKeyValue1}
+
                               />
                             </div>
                           </div>
@@ -8934,6 +8940,7 @@ export function CreatePortfolio(props) {
                             options={options}
                             placeholder="placeholder (Optional)"
                           /> */}
+
                             </div>
                           </div>
                         </div>
@@ -9014,6 +9021,7 @@ export function CreatePortfolio(props) {
                               </div>
                             </div>
                           </div>
+
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group date-box">
                               <label
@@ -9026,10 +9034,12 @@ export function CreatePortfolio(props) {
                                 <Select
                                   className="select-input text-primary"
                                   // defaultValue={selectedOption}
+
                                   onChange={(e) => setPriceEscalationHeadKeyValue1(e)}
                                   options={priceHeadTypeKeyValue}
                                   placeholder="Select "
                                   value={priceEscalationHeadKeyValue1}
+
                                 />
                                 <input
                                   type="text"
@@ -9044,7 +9054,6 @@ export function CreatePortfolio(props) {
                             </div>
                           </div>
                         </div>
-
 
                         <hr />
                         <div className="row input-fields">
@@ -9129,6 +9138,7 @@ export function CreatePortfolio(props) {
                             Save & Next
                           </button>
                         </div>
+
                       </> :
                       <>
                         <div className="row">
@@ -9276,6 +9286,7 @@ export function CreatePortfolio(props) {
                         </div>
                       </>
                     }
+
 
                   </TabPanel>
 

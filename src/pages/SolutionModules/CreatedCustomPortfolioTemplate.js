@@ -5123,7 +5123,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         PORTFOLIO ID
                                                     </p>
-                                                    <h6 className="font-weight-500">
+                                                    <h6 className="font-weight-500 text-primary font-size-17">
                                                         CVA - Premium plan
                                                     </h6>
                                                 </div>
@@ -5133,7 +5133,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         PORTFOLIO DESCRIPTION
                                                     </p>
-                                                    <h6 className="font-weight-500">
+                                                    <h6 className="font-weight-500 text-primary font-size-17">
                                                         Premium Customer Value Agreement D8T and D6T
                                                     </h6>
                                                 </div>
@@ -5143,7 +5143,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         SERVICE PROGRAM DESCRIPTION (IF ANY)
                                                     </p>
-                                                    <h6 className="font-weight-500">NA</h6>
+                                                    <h6 className="font-weight-500 text-primary font-size-17">NA</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-3">
@@ -5151,7 +5151,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         REFERENCE
                                                     </p>
-                                                    <h6 className="font-weight-500">NA</h6>
+                                                    <h6 className="font-weight-500 text-primary font-size-17">NA</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-3">
@@ -5159,7 +5159,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         CUSTOMER SEGMENT
                                                     </p>
-                                                    <h6 className="font-weight-500">Construction</h6>
+                                                    <h6 className="font-weight-500 text-primary font-size-17">Construction</h6>
                                                 </div>
                                             </div>
                                         </div>
@@ -5556,7 +5556,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         STRATEGY TASK
                                                     </p>
-                                                    <h6 className="font-weight-500">PM</h6>
+                                                    <h6 className="font-weight-500 text-primary font-size-17">PM</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-4">
@@ -5564,7 +5564,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         CATEGORY USAGE
                                                     </p>
-                                                    <h6 className="font-weight-500">Contract</h6>
+                                                    <h6 className="font-weight-500 text-primary font-size-17">Contract</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-4">
@@ -5572,7 +5572,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         OPTIONALS
                                                     </p>
-                                                    <h6 className="font-weight-500">Misc</h6>
+                                                    <h6 className="font-weight-500 text-primary font-size-17">Misc</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-4">
@@ -5580,7 +5580,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         RESPONSE TIME
                                                     </p>
-                                                    <h6 className="font-weight-500">
+                                                    <h6 className="font-weight-500 text-primary font-size-17">
                                                         Fast - 24x7 available,response within 4 hours of
                                                         call
                                                     </h6>
@@ -5591,7 +5591,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         PRODUCT HIERARCHY
                                                     </p>
-                                                    <h6 className="font-weight-500">End Product</h6>
+                                                    <h6 className="font-weight-500 text-primary font-size-17">End Product</h6>
                                                 </div>
                                             </div>
                                             <div className="col-md-4 col-sm-4">
@@ -5599,7 +5599,7 @@ export function CreatedCustomPortfolioTemplate(props) {
                                                     <p className="font-size-12 font-weight-500 mb-2">
                                                         GEOGRAPHIC
                                                     </p>
-                                                    <h6 className="font-weight-500">Field Support</h6>
+                                                    <h6 className="font-weight-500 text-primary font-size-17">Field Support</h6>
                                                 </div>
                                             </div>
                                         </div>

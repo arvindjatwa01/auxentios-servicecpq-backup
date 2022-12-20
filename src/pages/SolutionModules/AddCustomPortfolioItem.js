@@ -901,7 +901,7 @@ const AddCustomPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">NAME</p>
-                      <h6 className="font-weight-500 text-uppercase">
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                         {(addPortFolioItem.name == "" ||
                           addPortFolioItem.name == null ||
                           addPortFolioItem.name == "string" ||
@@ -915,7 +915,7 @@ const AddCustomPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">DESCRIPTION</p>
-                      <h6 className="font-weight-500 text-uppercase">
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                         {(addPortFolioItem.description == "" ||
                           addPortFolioItem.description == null ||
                           addPortFolioItem.description == undefined ||
@@ -928,7 +928,7 @@ const AddCustomPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">USAGE IN</p>
-                      <h6 className="font-weight-500 text-uppercase">
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                         {(addPortFolioItem.usageIn == "" ||
                           addPortFolioItem.usageIn == null ||
                           addPortFolioItem.usageIn == undefined ||
@@ -945,7 +945,7 @@ const AddCustomPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">STRATEGY TASK</p>
-                      <h6 className="font-weight-500 text-uppercase">
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                         {(addPortFolioItem.strategyTask == "" ||
                           addPortFolioItem.strategyTask == null ||
                           addPortFolioItem.strategyTask == undefined ||
@@ -959,7 +959,7 @@ const AddCustomPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">TASK TYPE</p>
-                      <h6 className="font-weight-500 text-uppercase">
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                         {(addPortFolioItem.taskType == "" ||
                           addPortFolioItem.taskType == null ||
                           addPortFolioItem.taskType == undefined ||
@@ -973,7 +973,7 @@ const AddCustomPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="font-size-12 text-light-dark font-weight-500 mb-2">FREQUENCY</p>
-                      <h6 className="font-weight-500 text-uppercase">
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                         {(addPortFolioItem.frequency == "" ||
                           addPortFolioItem.frequency == null ||
                           addPortFolioItem.frequency == undefined ||
@@ -989,7 +989,7 @@ const AddCustomPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">UNIT</p>
-                      <h6 className="font-weight-500 text-uppercase">
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                         {(addPortFolioItem.unit == "" ||
                           addPortFolioItem.unit == null ||
                           addPortFolioItem.unit == undefined ||
@@ -1005,7 +1005,7 @@ const AddCustomPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">RECOMMENDED VALUE</p>
-                      <h6 className="font-weight-500 text-uppercase">
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                         {addPortFolioItem.recommendedValue == "" ||
                           addPortFolioItem.recommendedValue == null ||
                           addPortFolioItem.recommendedValue == undefined ||
@@ -1018,7 +1018,7 @@ const AddCustomPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">QUANTITY</p>
-                      <h6 className="font-weight-500 text-uppercase">
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                         {/* {addPortFolioItem.quantity} */}
                         {(addPortFolioItem.quantity == "" ||
                           addPortFolioItem.quantity == null ||
@@ -1031,7 +1031,7 @@ const AddCustomPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">NO. OF EVENTS</p>
-                      <h6 className="font-weight-500 text-uppercase">
+                      <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                         {(addPortFolioItem.numberOfEvents == "" ||
                           addPortFolioItem.numberOfEvents == null ||
                           addPortFolioItem.numberOfEvents == undefined ||
@@ -1348,7 +1348,7 @@ const AddCustomPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">TEMPLATE ID</p>
-                      <h6 className="font-weight-500">
+                      <h6 className="font-weight-500 text-primary font-size-17">
                         {(addPortFolioItem?.templateId == "" ||
                           addPortFolioItem?.templateId == null ||
                           addPortFolioItem?.templateId == undefined ||
@@ -1360,7 +1360,7 @@ const AddCustomPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">TEMPLATE DESCRIPTION</p>
-                      <h6 className="font-weight-500">
+                      <h6 className="font-weight-500 text-primary font-size-17">
                         {(addPortFolioItem?.templateId == "" ||
                           addPortFolioItem?.templateId == null ||
                           addPortFolioItem?.templateId == undefined ||
@@ -1487,7 +1487,7 @@ const AddCustomPortfolioItem = (props) => {
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">RELATED KIT</p>
                       {/* <h6 className="font-weight-500">CVA</h6> */}
-                      <h6 className="font-weight-500">
+                      <h6 className="font-weight-500 text-primary font-size-17">
                         {(addPortFolioItem?.repairOption == "" ||
                           addPortFolioItem?.repairOption == null ||
                           addPortFolioItem?.repairOption == undefined ||
@@ -1499,7 +1499,7 @@ const AddCustomPortfolioItem = (props) => {
                   <div className="col-md-6 col-sm-6">
                     <div className="form-group">
                       <p className="text-light-dark font-size-12 font-weight-500 mb-2">KIT DESCRIPTION</p>
-                      <h6 className="font-weight-500">
+                      <h6 className="font-weight-500 text-primary font-size-17">
                         {(addPortFolioItem?.repairOption == "" ||
                           addPortFolioItem?.repairOption == null ||
                           addPortFolioItem?.repairOption == undefined ||

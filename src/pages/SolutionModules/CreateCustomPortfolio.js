@@ -9197,7 +9197,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             SOLUTION NAME
                                                         </p>
-                                                        <h6 className="font-weight-500 text-uppercase">
+                                                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                             {(generalComponentData.name == "" ||
                                                                 generalComponentData.name == null ||
                                                                 generalComponentData.name == "string" ||
@@ -9211,7 +9211,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             SOLUTION DESCRIPTION
                                                         </p>
-                                                        <h6 className="font-weight-500 text-uppercase">
+                                                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                             {(generalComponentData.description == "" ||
                                                                 generalComponentData.description == null ||
                                                                 generalComponentData.description == "string" ||
@@ -9225,7 +9225,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             REFERENCE
                                                         </p>
-                                                        <h6 className="font-weight-500 text-uppercase">
+                                                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                             {(generalComponentData.externalReference == "" ||
                                                                 generalComponentData.externalReference == null ||
                                                                 generalComponentData.externalReference == "string" ||
@@ -9239,7 +9239,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             CUSTOMER SEGMENT
                                                         </p>
-                                                        <h6 className="font-weight-500 text-uppercase">
+                                                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                             {(generalComponentData?.customerSegment == "" ||
                                                                 generalComponentData?.customerSegment == null ||
                                                                 generalComponentData?.customerSegment?.label == null ||
@@ -9255,7 +9255,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             FLAG FOR TEMPLATE
                                                         </p>
-                                                        <h6 className="font-weight-500 text-uppercase">
+                                                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                             {flagTemplate ? "True" : "False"}
                                                         </h6>
                                                     </div>
@@ -9265,7 +9265,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             CUSTOMER SEGMENT
                                                         </p>
-                                                        <h6 className="font-weight-500 text-uppercase">
+                                                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                             {flagCommerce ? "True" : "False"}
                                                         </h6>
                                                     </div>
@@ -9764,7 +9764,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             RESPONSE TIME
                                                         </p>
-                                                        <h6 className="font-weight-500 text-uppercase">
+                                                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                             {(stratgyResponseTimeKeyValue?.length == 0 ||
                                                                 stratgyResponseTimeKeyValue?.value == null ||
                                                                 stratgyResponseTimeKeyValue?.value == "string" ||
@@ -9779,7 +9779,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             PRODUCT HIERARCHY
                                                         </p>
-                                                        <h6 className="font-weight-500 text-uppercase">
+                                                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                             {(stratgyHierarchyKeyValue?.length == 0 ||
                                                                 stratgyHierarchyKeyValue?.value == "" ||
                                                                 stratgyHierarchyKeyValue?.value == null ||
@@ -9794,7 +9794,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             GEOGRAPHIC
                                                         </p>
-                                                        <h6 className="font-weight-500 text-uppercase">
+                                                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                             {(stratgyGeographicKeyValue?.length == 0 ||
                                                                 stratgyGeographicKeyValue?.value == "" ||
                                                                 stratgyGeographicKeyValue?.value == null ||
@@ -9809,7 +9809,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             SOLUTION TYPE
                                                         </p>
-                                                        <h6 className="font-weight-500 text-uppercase">
+                                                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                             {(solutionTypeListKeyValue?.length == 0 ||
                                                                 solutionTypeListKeyValue?.value == "" ||
                                                                 solutionTypeListKeyValue?.value == "string" ||
@@ -9824,7 +9824,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             SOLUTION LEVEL
                                                         </p>
-                                                        <h6 className="font-weight-500 text-uppercase">
+                                                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                             {(solutionLevelListKeyValue?.length == 0 ||
                                                                 solutionLevelListKeyValue?.value == "" ||
                                                                 solutionLevelListKeyValue?.value == null ||
@@ -9843,7 +9843,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             STRATEGY TASK
                                                         </p>
-                                                        <h6 className="font-weight-500 text-uppercase">PM</h6>
+                                                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">PM</h6>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4 col-sm-4">
@@ -9851,7 +9851,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             CATEGORY USAGE
                                                         </p>
-                                                        <h6 className="font-weight-500 text-uppercase">Contract</h6>
+                                                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">Contract</h6>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4 col-sm-4">
@@ -9859,7 +9859,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             OPTIONALS
                                                         </p>
-                                                        <h6 className="font-weight-500 text-uppercase">Misc</h6>
+                                                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">Misc</h6>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4 col-sm-4">
@@ -9867,7 +9867,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             RESPONSE TIME
                                                         </p>
-                                                        <h6 className="font-weight-500 text-uppercase">
+                                                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                             Fast - 24x7 available,response within 4 hours of
                                                             call
                                                         </h6>
@@ -9878,7 +9878,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             PRODUCT HIERARCHY
                                                         </p>
-                                                        <h6 className="font-weight-500 text-uppercase">End Product</h6>
+                                                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">End Product</h6>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-4 col-sm-4">
@@ -9886,7 +9886,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             GEOGRAPHIC
                                                         </p>
-                                                        <h6 className="font-weight-500 text-uppercase">Field Support</h6>
+                                                        <h6 className="font-weight-500 text-uppercase text-primary font-size-17">Field Support</h6>
                                                     </div>
                                                 </div>
                                             </div>
@@ -10079,7 +10079,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             PREPARED BY
                                                         </p>
-                                                        <h6 className="font-weight-500">
+                                                        <h6 className="font-weight-500 text-primary font-size-17">
                                                             {(administrative.preparedBy == "" ||
                                                                 administrative.preparedBy == null ||
                                                                 administrative.preparedBy == "string" ||
@@ -10093,7 +10093,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             APPROVED BY
                                                         </p>
-                                                        <h6 className="font-weight-500">
+                                                        <h6 className="font-weight-500 text-primary font-size-17">
                                                             {(administrative.approvedBy == "" ||
                                                                 administrative.approvedBy == null ||
                                                                 administrative.approvedBy == "string" ||
@@ -10107,7 +10107,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             PREPARED ON
                                                         </p>
-                                                        <h6 className="font-weight-500">
+                                                        <h6 className="font-weight-500 text-primary font-size-17">
                                                             {(administrative.preparedOn == "" ||
                                                                 administrative.preparedOn == null ||
                                                                 administrative.preparedOn == "string" ||
@@ -10121,7 +10121,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             REVISED BY
                                                         </p>
-                                                        <h6 className="font-weight-500">
+                                                        <h6 className="font-weight-500 text-primary font-size-17">
                                                             {(administrative.revisedBy == "" ||
                                                                 administrative.revisedBy == null ||
                                                                 administrative.revisedBy == undefined ||
@@ -10135,7 +10135,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             REVISED  ON
                                                         </p>
-                                                        <h6 className="font-weight-500">
+                                                        <h6 className="font-weight-500 text-primary font-size-17">
                                                             {(administrative.revisedOn == "" ||
                                                                 administrative.revisedOn == null ||
                                                                 administrative.revisedOn == "string" ||
@@ -10149,7 +10149,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             SALSE OFFICE/BRANCH
                                                         </p>
-                                                        <h6 className="font-weight-500">
+                                                        <h6 className="font-weight-500 text-primary font-size-17">
                                                             {(administrative.salesOffice == "" ||
                                                                 administrative.salesOffice == null ||
                                                                 administrative.salesOffice == "string" ||
@@ -10163,7 +10163,7 @@ export function CreateCustomPortfolio(props) {
                                                         <p className="font-size-12 font-weight-500 mb-2">
                                                             OFFER VALIDITY
                                                         </p>
-                                                        <h6 className="font-weight-500">
+                                                        <h6 className="font-weight-500 text-primary font-size-17">
                                                             {(administrative.offerValidity == "" ||
                                                                 administrative.offerValidity == null ||
                                                                 administrative.offerValidity == "string" ||
@@ -10451,7 +10451,7 @@ export function CreateCustomPortfolio(props) {
                                                             <p className="font-size-12 font-weight-500 mb-2">
                                                                 PRICE LIST
                                                             </p>
-                                                            <h6 className="font-weight-500 text-uppercase">
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                                 {(
                                                                     priceListKeyValue1?.label == "" ||
                                                                         priceListKeyValue1?.label == "string" ||
@@ -10466,7 +10466,7 @@ export function CreateCustomPortfolio(props) {
                                                             <p className="font-size-12 font-weight-500 mb-2">
                                                                 PRICE METHOD
                                                             </p>
-                                                            <h6 className="font-weight-500 text-uppercase">
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                                 {(
                                                                     priceMethodKeyValue1?.label == "" ||
                                                                         priceMethodKeyValue1?.label == "string" ||
@@ -10481,7 +10481,7 @@ export function CreateCustomPortfolio(props) {
                                                             <p className="font-size-12 font-weight-500 mb-2">
                                                                 PRICE DATE
                                                             </p>
-                                                            <h6 className="font-weight-500 text-uppercase">
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                                 {(
                                                                     priceDetails?.priceDate == "" ||
                                                                         priceDetails?.priceDate == "string" ||
@@ -10500,7 +10500,7 @@ export function CreateCustomPortfolio(props) {
                                                             <p className="font-size-12 font-weight-500 mb-2">
                                                                 PRICE TYPE
                                                             </p>
-                                                            <h6 className="font-weight-500 text-uppercase">
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                                 {(
                                                                     priceTypeKeyValue1?.label == "" ||
                                                                         priceTypeKeyValue1?.label == "string" ||
@@ -10515,7 +10515,7 @@ export function CreateCustomPortfolio(props) {
                                                             <p className="font-size-12 font-weight-500 mb-2">
                                                                 PRICE{" "}
                                                             </p>
-                                                            <h6 className="font-weight-500 text-uppercase">
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                                 {(
                                                                     pricePriceData == "" ||
                                                                         pricePriceData == "string" ||
@@ -10530,7 +10530,7 @@ export function CreateCustomPortfolio(props) {
                                                             <p className="font-size-12 font-weight-500 mb-2">
                                                                 ADDITIONAL
                                                             </p>
-                                                            <h6 className="font-weight-500 text-uppercase">
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                                 {(
                                                                     additionalPriceValue == "" ||
                                                                         additionalPriceValue == "string" ||
@@ -10545,7 +10545,7 @@ export function CreateCustomPortfolio(props) {
                                                             <p className="font-size-12 font-weight-500 mb-2">
                                                                 PRICE ESCALATON
                                                             </p>
-                                                            <h6 className="font-weight-500 text-uppercase">
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                                 {(escalationPriceValue == "" ||
                                                                     escalationPriceValue == "string" ||
                                                                     escalationPriceValue == undefined ||
@@ -10562,7 +10562,7 @@ export function CreateCustomPortfolio(props) {
                                                             <p className="font-size-12 font-weight-500 mb-2">
                                                                 CALCULATED PRICE
                                                             </p>
-                                                            <h6 className="font-weight-500 text-uppercase">
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                                 {(priceCalculatedPrice == "" ||
                                                                     priceCalculatedPrice == "string" ||
                                                                     priceCalculatedPrice == undefined ||
@@ -10577,7 +10577,7 @@ export function CreateCustomPortfolio(props) {
                                                             <p className="font-size-12 font-weight-500 mb-2">
                                                                 PRICE BREAK DOWN
                                                             </p>
-                                                            <h6 className="font-weight-500 text-uppercase">
+                                                            <h6 className="font-weight-500 text-uppercase text-primary font-size-17">
                                                                 {/* {(priceTypeKeyValue1?.label == "" ||
                                                         priceTypeKeyValue1?.label == "string" ||
                                                         priceTypeKeyValue1?.label == undefined ||
