@@ -107,6 +107,8 @@ const AddPortfolioItem = (props) => {
     offerValidity: "",
   });
 
+  const [bundleFlagType, setBundleFlagType] = useState("");
+
   const frequencyOptions = [
     { label: "Cyclic", value: "Cyclic" },
     { label: "once", value: "once" },
@@ -174,6 +176,7 @@ const AddPortfolioItem = (props) => {
 
   useEffect(() => {
     if (props.passItemEditRowData) {
+      console.log("props.passItemEditRowData : ", props.passItemEditRowData)
       // setIt accordingly for fields
       const {
         itemName,
@@ -196,7 +199,7 @@ const AddPortfolioItem = (props) => {
         name: props.passItemEditRowData.itemName,
         description: itemBodyDescription,
         usageIn: { label: usageIn, value: usageIn },
-        taskType: { label: taskType, value: taskType },
+        taskType: { label: taskType[0], value: taskType[0] },
         frequency: { label: frequency, value: frequency },
         unit: { label: unit, value: unit },
         recommendedValue: recommendedValue,
@@ -211,22 +214,26 @@ const AddPortfolioItem = (props) => {
         repairOption: repairOption,
       });
 
-      if (props.passItemEditRowData.itemBodyModel.itemPrices.length > 0) {
-        ItemPriceDataFetchById();
+      setBundleFlagType(props.passItemEditRowData.itemHeaderModel.bundleFlag)
+
+      if ((props.passItemEditRowData.itemBodyModel.itemPrices != null)) {
+        if (props.passItemEditRowData.itemBodyModel.itemPrices.length > 0) {
+          ItemPriceDataFetchById();
+        }
       }
+      // if (props.passItemEditRowData.itemBodyModel.itemPrices.length > 0) {
+      //   ItemPriceDataFetchById();
+      // }
 
     }
   }, []);
 
   const ItemPriceDataFetchById = async () => {
 
-    console.log("props.passItemEditRowData : ", props.passItemEditRowData)
-    // console.log("props.passItemEditRowData : ", props.passItemEditRowData.itemBodyModel.itemPrices[0].itemPriceDataId)
-
+    // console.log("props.passItemEditRowData : ", props.passItemEditRowData)
     const priceId = props.passItemEditRowData.itemBodyModel.itemPrices[0].itemPriceDataId;
 
     const priceDataId = props.passItemEditRowData.itemBodyModel.itemPrices[0].itemPriceDataId;
-    // getItemPriceData
 
     const res = await getItemPriceData(priceDataId)
     setEditAbleItemPrice(res.data)
@@ -251,12 +258,12 @@ const AddPortfolioItem = (props) => {
       name: props.passItemEditRowData.itemName,
       description: itemBodyDescription,
       usageIn: { label: usageIn, value: usageIn },
-      taskType: { label: taskType, value: taskType },
+      taskType: { label: taskType[0], value: taskType[0] },
       frequency: { label: frequency, value: frequency },
       unit: { label: unit, value: unit },
       recommendedValue: recommendedValue,
       quantity: res.data.quantity,
-      numberOfEvents: numberOfEvents,
+      numberOfEvents: res.data.numberOfEvents,
       strategyTask: { label: props.passItemEditRowData.itemHeaderModel.itemHeaderStrategy, value: props.passItemEditRowData.itemHeaderModel.itemHeaderStrategy },
       templateId: (res.data.standardJobId == "" || res.data.standardJobId == "string") ? "" : res.data.standardJobId,
       templateDescription: {
@@ -271,23 +278,6 @@ const AddPortfolioItem = (props) => {
 
     });
 
-    // setAddportFolioItem({
-    //   templateId: res.data.standardJobId != "" || res.data.standardJobId != "string" ? res.data.standardJobId : "",
-    //   templateDescription: {
-    //     label: res.data.templateDescription,
-    //     value: res.data.templateDescription,
-    //   },
-    //   repairOption: res.data.repairKitId != "" || res.data.repairKitId != "string" ? res.data.repairKitId : "",
-    //   // kitDescription: {
-    //   //   label: res.data.templateDescription,
-    //   //   value: res.data.templateDescription,
-    //   // },
-    //   kitDescription: res.data.repairKitId != "" || res.data.repairKitId != "string" ? {
-    //     label: "rty",
-    //     value: "rty",
-    //   } : "",
-
-    // })
 
     console.log("price Result fetch Data : ", res);
   }
@@ -541,9 +531,9 @@ const AddPortfolioItem = (props) => {
         props.getAddportfolioItemDataFun(addPortFolioItem, itemPriceData.data);
       } else {
         if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditPort") {
-          props.handleItemEditSave(addPortFolioItem, editAbleItemPrice);
+          props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
         } else if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditBundle") {
-          props.handleItemEditSave(addPortFolioItem, editAbleItemPrice);
+          props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
         } else {
           const rObj = {
             itemPriceDataId: 0,
@@ -607,9 +597,9 @@ const AddPortfolioItem = (props) => {
       props.getAddportfolioItemDataFun(addPortFolioItem);
     } else {
       if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditPort") {
-        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice);
+        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
       } else if (props.compoFlag === "itemEdit" && props.compoFlagTest === "itemEditBundle") {
-        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice);
+        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
       } else {
 
         if (addPortFolioItem.repairOption == "") {
