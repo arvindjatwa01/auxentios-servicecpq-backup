@@ -463,7 +463,7 @@ function WithoutSpareParts(props) {
                 <span className="mr-2">
                   <FontAwesomeIcon icon={faPlus} />
                 </span>
-                Add Operation
+                Add Job Operation
                 {/* <span className="ml-2">
                   <FontAwesomeIcon icon={faAngleDown} />
                 </span> */}

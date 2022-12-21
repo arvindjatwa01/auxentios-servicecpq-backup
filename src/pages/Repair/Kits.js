@@ -15,12 +15,11 @@ import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import shareIcon from "../../assets/icons/svg/share.svg";
 import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
 import uploadIcon from "../../assets/icons/svg/upload.svg";
+import penIcon from "../../assets/images/pen.png";
 import deleteIcon from "../../assets/icons/svg/delete.svg";
 import copyIcon from "../../assets/icons/svg/Copy.svg";
 // import { Link } from 'react-router-dom'
-import { CommanComponents } from "components";
-import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
-import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
+
 import CreateNewFolderOutlinedIcon from "@mui/icons-material/CreateNewFolderOutlined";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
@@ -53,25 +52,9 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import FormControl from "@mui/material/FormControl";
 import { Link, useHistory } from "react-router-dom";
 import SelectFilter from "react-select";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, getGridStringOperators, GridActionsCellItem, useGridApiContext } from "@mui/x-data-grid";
 import {
-  createPortfolio,
-  getPortfolio,
-  getPortfolioSchema,
-  getMakeKeyValue,
-  getModelKeyValue,
-  getPrefixKeyValue,
-  updatePortfolio,
-  getUsageCategoryKeyValue,
-  getTaskTypeKeyValue,
-  getResponseTimeTaskKeyValue,
-  getValidityKeyValue,
-  getStrategyTaskKeyValue,
-  getProductHierarchyKeyValue,
-  getGergraphicKeyValue,
-  getMachineTypeKeyValue,
-  getTypeKeyValue,
-  getPortfolioCommonConfig,
+
   getSearchQueryCoverage,
   getSearchCoverageForFamily,
   itemCreation,
@@ -94,14 +77,45 @@ import {
 import { useAppSelector } from "app/hooks";
 import LoadingProgress from "./components/Loader";
 import SearchBox from "./components/SearchBox";
-import { customerSearch, machineSearch } from "services/searchServices";
+import { customerSearch, machineSearch, sparePartSearch } from "services/searchServices";
 import Validator from "utils/validator";
 import Moment from "react-moment";
-import { FONT_STYLE, FONT_STYLE_SELECT } from "./CONSTANTS";
-import { Rating, TextField } from "@mui/material";
+import { FONT_STYLE, FONT_STYLE_SELECT, GRID_STYLE, SPAREPART_SEARCH_Q_OPTIONS } from "./CONSTANTS";
+import { debounce, Rating, TextareaAutosize, TextField, Tooltip } from "@mui/material";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import QuerySearchComp from "./components/QuerySearchComp";
+import { ReadOnlyField } from "./components/ReadOnlyField";
+import AddNewSparepartModal from "./components/AddNewSparePart";
+import SearchComponent from "./components/SearchComponent";
+
+function CommentEditInputCell(props) {
+  const { id, value, field } = props;
+  // console.log(id, value, field);
+  const apiRef = useGridApiContext();
+
+  const handleCommentChange = async (event) => {
+    // console.log("newValue", event);
+    // Explore debounce option
+    apiRef.current.setEditCellValue(
+      { id, field, value: event.target.value },
+      event
+    );
+  };
+
+  return (
+    <Box sx={{ display: "flex", alignItems: "center" }}>
+      <TextareaAutosize
+        // ref={handleRef}
+        name="comment"
+        style={{ width: "100%" }}
+        value={value}
+        onChange={handleCommentChange}
+      />
+    </Box>
+  );
+}
+
 function Kits(props) {
   const history = useHistory();
   const { state } = props.location;
@@ -111,20 +125,56 @@ function Kits(props) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
+  const [pageSize, setPageSize] = useState(5);
+  const [page, setPage] = useState(0);
+  const [addPartOpen, setAddPartOpen] = useState(false);
+  const [searchResultOpen, setSearchResultOpen] = useState(false);
+  const [partsLoading, setPartsLoading] = useState(false);
+  const [bulkUpdateProgress, setBulkUpdateProgress] = useState(false);
+  const [file, setFile] = useState(null);
+  const [fileUploadOpen, setFileUploadOpen] = useState(false);
   const [searchCustResults, setSearchCustResults] = useState([]);
   const [searchModelResults, setSearchModelResults] = useState([]);
-  const [searchCoverageModelResults, setSearchCoverageModelResults] = useState(
-    []
-  );
+  const [searchCoverageModelResults, setSearchCoverageModelResults] = useState([]);
+  const [totalPartsCount, setTotalPartsCount] = useState(0);
+  const [filterQuery, setFilterQuery] = useState("");
+  const [selectedMasterData, setSelectedMasterData] = useState([]);
+  const [masterData, setMasterData] = useState([]);
 
+  // Select parts to add
+  const onRowsSelectionHandler = (ids) => {
+    setSelectedMasterData([]);
+    const selectedRowsData = ids.map((id) =>
+      masterData.find((row) => row.id === id)
+    );
+    // console.log(selectedRowsData);
+    setSelectedMasterData(selectedRowsData);
+  };
+  const initialSparePart = {
+    groupNumber: "",
+    partType: "",
+    partNumber: "",
+    quantity: "",
+    unitPrice: 0.0,
+    extendedPrice: 0.0,
+    unitOfMeasure: "",
+    currency: "USD",
+    usagePercentage: 0,
+    totalPrice: 0.0,
+    comment: "",
+    description: "",
+  };
+  const [sparePart, setSparePart] = useState(initialSparePart);
+  const [spareparts, setSpareparts] = useState([]);
   const [searchSerialResults, setSearchSerialResults] = useState([]);
   const [noOptionsCust, setNoOptionsCust] = useState(false);
   const [noOptionsModel, setNoOptionsModel] = useState(false);
   const [noOptionsModelCoverage, setNoOptionsModelCoverage] = useState(false);
-
+  const [addPartModalTitle, setAddPartModalTitle] = useState("Add Part");
+  const [partFieldViewonly, setPartFieldViewonly] = useState(false);
+  const [rowsToUpdate, setRowsToUpdate] = useState([]);
   const [noOptionsSerial, setNoOptionsSerial] = useState(false);
-
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [severity, setSeverity] = useState("");
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
@@ -143,6 +193,8 @@ function Kits(props) {
   const activityOptions = ["Create Versions", "Show Errors", "Review"];
 
   const handleVersionKit = (e) => {
+    handleSnack("info", "Version Update API needs to be created for KIT!");
+    setGeneralData({...generalData, version: e.value})
     setVersion(e);
   };
   const [kitDBId, setKITDBId] = useState("");
@@ -167,13 +219,45 @@ function Kits(props) {
         handleSnack("error", `Failed to update the status!`);
       });
   };
+  const [partListNo, setPartListNo] = useState("");
+  const handleReadFile = (file) => {
+    // e.preventDefault();
+    if (file) {
+      setFile(file);
+    }
+  };
   const builderStatusOptions = [
     { value: "DRAFT", label: "Draft" },
     { value: "ACTIVE", label: "Active" },
     { value: "REVISED", label: "Revised" },
     { value: "ARCHIVED", label: "Archived" },
   ];
-
+  const handleUploadClick = () => {
+    if (Object.values(viewOnlyTab).every((item) => item === true))
+      setFileUploadOpen(true);
+    else handleSnack("info", "Please save all the header details!");
+  };
+  //Uplaod spare parts through excel sheet
+  const handleUploadFile = async () => {
+    // console.log("Upload");
+    const form = new FormData();
+    form.append("file", file);
+    // await uploadPartsToPartlist(partListNo, form)
+    //   .then((result) => {
+    //     // fetchPartsOfPartlist(partListNo, page, pageSize);
+    //     handleSnack(
+    //       "success",
+    //       `New parts have been uploaded to the partlist: ${partListId}`
+    //     );
+    //     if (result) {
+    //       fetchAllDetails(builderId, generalData.version);
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     handleSnack("error", `Failed to upload the parts!`);
+    //   });
+    setFileUploadOpen(false);
+  };
   const [rating, setRating] = useState(null);
   const [headerLoading, setHeaderLoading] = useState(false);
   const [kitId, setKITId] = useState("");
@@ -194,7 +278,11 @@ function Kits(props) {
     };
     localStorage.setItem("exitingType", JSON.stringify(versionHistoryData));
   }, []);
-
+  // Close SparePart search modal
+  const handleSearchResClose = () => {
+    setSearchResultOpen(false);
+    setSelectedMasterData([]);
+  };
   const fetchAllDetails = (id) => {
     console.log(id);
     if (id) {
@@ -325,6 +413,9 @@ function Kits(props) {
     }
   };
 
+  const filterOperators = getGridStringOperators().filter(({ value }) =>
+  ["equals", "contains"].includes(value)
+);
   // Select the customer from search result
   const handleCustSelect = (type, currentItem) => {
     setCustomerData({
@@ -384,57 +475,13 @@ function Kits(props) {
     }
   };
 
-  // Machine search based on model and serial number
-  const handleMachineSearch = async (searchMachinefieldName, searchText) => {
-    // console.log("cleared the result", searchText);
-    let searchQueryMachine = "";
-    setSearchModelResults([]);
-    setSearchSerialResults([]);
-
-    if (searchMachinefieldName === "model") {
-      machineData.model = searchText;
-      searchQueryMachine = searchText
-        ? searchMachinefieldName + "~" + searchText
-        : "";
-    } else if (searchMachinefieldName === "serialNo") {
-      machineData.serialNo = searchText;
-      searchQueryMachine = searchText
-        ? machineData.model
-          ? `model:${machineData.model} AND equipmentNumber~` + searchText
-          : "equipmentNumber~" + searchText
-        : "";
-    }
-    // console.log("search query", searchQueryMachine);
-    if (searchQueryMachine) {
-      await machineSearch(searchQueryMachine)
-        .then((result) => {
-          if (result) {
-            if (searchMachinefieldName === "model") {
-              if (result && result.length > 0) {
-                setSearchModelResults(result);
-                setNoOptionsModel(false);
-              } else {
-                setNoOptionsModel(true);
-              }
-            } else if (searchMachinefieldName === "serialNo") {
-              if (result && result.length > 0) {
-                setSearchSerialResults(result);
-                setNoOptionsSerial(false);
-              } else {
-                setNoOptionsSerial(true);
-              }
-            }
-          }
-        })
-        .catch((e) => {
-          handleSnack("error", "Error occurred while searching the machine!");
-        });
-    } else {
-      searchMachinefieldName === "model"
-        ? setSearchModelResults([])
-        : setSearchSerialResults([]);
-    }
-  };
+    //Close Add part modal
+    const handleAddPartClose = () => {
+      setAddPartOpen(false);
+      setSparePart(initialSparePart);
+      setPartFieldViewonly(false);
+      setAddPartModalTitle("Add Part");
+    };
   // Coverage search based on model and serial number
   const handleCoverageModelSearch = async (searchfieldName, searchText) => {
     let searchQueryCoverage = "";
@@ -545,39 +592,32 @@ function Kits(props) {
     }
   };
 
-  //Individual machine field value change
-  const handleMachineDataChange = (e) => {
-    var value = e.target.value;
-    var name = e.target.name;
-    setMachineData({
-      ...machineData,
-      [name]: value,
-    });
+  const fetchPartsOfPartlist = async (partlistId, pageNo, rowsPerPage) => {
+    setPartsLoading(true);
+    setPage(pageNo);
+    setPageSize(rowsPerPage);
+    let sort = sortDetail.sortColumn
+      ? `&sortColumn=${sortDetail.sortColumn}&orderBY=${sortDetail.orderBy}`
+      : "";
+    let filter = filterQuery ? `&search=${filterQuery}` : "";
+    const query = `pageNumber=${pageNo}&pageSize=${rowsPerPage}${sort}${filter}`;
+    // await fetchPartsFromPartlist(partlistId, query)
+    //   .then((partsResult) => {
+    //     setTotalPartsCount(partsResult.totalRows);
+    //     // partsResult.result.map((element, i) => {
+    //     //   // setSlPart((pageNo*rowsPerPage - rowsPerPage) + i)
+    //     //   console.log(pageNo,rowsPerPage, i)
+    //     //   element.rowNum = (((pageNo+1)*rowsPerPage - rowsPerPage) + (i+1)) * 10
+
+    //     // })
+    //     setSpareparts(partsResult.result);
+    //   })
+    //   .catch((err) => {
+    //     handleSnack("error", "Error occured while fetching parts");
+    //   });
+    setPartsLoading(false);
   };
-  const updateMachineData = () => {
-    let data = {
-      id: kitDBId,
-      make: machineData.make,
-      family: machineData.family,
-      model: machineData.model,
-      fleetNo: machineData.fleetNo,
-      smu: machineData.smu,
-      registrationNo: machineData.registrationNo,
-      chasisNo: machineData.chasisNo,
-      serialNo: machineData.serialNo,
-      productGroup: machineData.productGroup,
-      productSegment: machineData.productSegment,
-    };
-    updateKITMachine(kitDBId, data)
-      .then((result) => {
-        setValue("estimation");
-        setViewOnlyTab({ ...viewOnlyTab, machineViewOnly: true });
-        handleSnack("success", "Machine details updated!");
-      })
-      .catch((err) => {
-        handleSnack("error", "Error occurred while updating the machine data!");
-      });
-  };
+  const [sortDetail, setSortDetail] = useState({ sortColumn: "", orderBy: "" });
 
   //Individual estimation details field value change
   const handleEstimationDataChange = (e) => {
@@ -653,7 +693,7 @@ function Kits(props) {
     updateKITPrice(kitDBId, data)
       .then((result) => {
         // setValue("price");
-        fetchAllDetails(kitDBId, generalData.version);
+        // fetchAllDetails(kitDBId, generalData.version);
         setViewOnlyTab({ ...viewOnlyTab, priceViewOnly: true });
 
         handleSnack("success", "Pricing details updated!");
@@ -665,6 +705,13 @@ function Kits(props) {
         );
       });
   };
+
+    // Once parts are selected to add clear the search results
+    const clearFilteredData = () => {
+      setMasterData([]);
+      setSelectedMasterData([]);
+    };
+
   // Logic to make the header tabs editable
   const makeHeaderEditable = () => {
     if (value === "customer" && viewOnlyTab.custViewOnly)
@@ -792,163 +839,287 @@ function Kits(props) {
     { value: "Construction", label: "Construction" },
   ];
 
+  // Search table column for spareparts
+  const columnsPartListSearch = [
+    { headerName: "GroupNumber", field: "groupNumber", flex: 1, width: 70 },
+    { headerName: "Type", field: "partType", flex: 1, width: 130 },
+    { headerName: "PartNumber", field: "partNumber", flex: 1, width: 130 },
+    {
+      headerName: "Description",
+      field: "partDescription",
+      flex: 1,
+      width: 130,
+    },
+    { headerName: "Currency", field: "currency", flex: 1, width: 130 },
+    // { headerName: "Unit Price", field: "listPrice", flex: 1, width: 130 },
+    { headerName: "Status", field: "status", flex: 1, width: 130 },
+  ];
+
+  //Columns to display spare parts for the partlist
+  const columnsPartList = [
+    // { headerName: 'Sl#', field: 'rowNum', flex: 1, },
+    { headerName: "GroupNumber", field: "groupNumber", flex: 1 },
+    { headerName: "Type", field: "partType", flex: 1 },
+    { headerName: "Desc", field: "description", flex: 1 },
+    { headerName: "PartNumber", field: "partNumber", flex: 1 },
+    {
+      headerName: "Qty",
+      field: "quantity",
+      flex: 1,
+      editable: true,
+      filterable: false,
+    },
+    {
+      headerName: "Unit Of Measures",
+      field: "unitOfMeasure",
+      flex: 1,
+      filterable: false,
+    },
+    {
+      headerName: "Unit Price",
+      field: "unitPrice",
+      flex: 1,
+      filterable: false,
+    },
+    {
+      headerName: "Extended Price",
+      field: "extendedPrice",
+      flex: 1,
+      filterable: false,
+    },
+    { headerName: "Currency", field: "currency", flex: 1, filterable: false },
+    {
+      headerName: "% Usage",
+      field: "usagePercentage",
+      flex: 1,
+      editable: true,
+      filterable: false,
+    },
+    {
+      headerName: "Total Price",
+      field: "totalPrice",
+      flex: 1,
+      filterable: false,
+    },
+    {
+      headerName: "Comment",
+      field: "comment",
+      flex: 1,
+      editable: true,
+      renderEditCell: CommentEditInputCell,
+      filterable: false,
+    },
+    // {
+    //   headerName: "Tag",
+    //   field: "tag",
+    //   flex: 1,
+    //   editable: true,
+    //   renderCell: renderTag,
+    //   renderEditCell: TagComponent
+    // },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 100,
+      cellClassName: "actions",
+      getActions: (params) => {
+        return [
+          <GridActionsCellItem
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Edit">
+                  <img className="m-1" src={penIcon} alt="Edit" />
+                </Tooltip>
+              </div>
+            }
+            label="Edit"
+            className="textPrimary"
+            onClick={() => openSparePartRow(params.row)}
+            color="inherit"
+          />,
+          <GridActionsCellItem
+            icon={
+              <div className=" cursor">
+                <Tooltip title="Edit">
+                  <img className="m-1" src={deleteIcon} alt="Delete" />
+                </Tooltip>
+              </div>
+            }
+            label="Delete"
+            onClick={() => handleDeleteSparePart(params.row.id)}
+            color="inherit"
+          />,
+        ];
+      },
+    },
+  ];
+// Open spare part modal to view or edit
+const openSparePartRow = (row) => {
+  // console.log(row);
+  setSparePart(row);
+  setAddPartModalTitle(row?.groupNumber + " | " + row?.partNumber);
+  setPartFieldViewonly(true);
+  setAddPartOpen(true);
+};
+  const handleDeleteSparePart = (sparePartId) => {
+    // RemoveSparepart(partListNo, sparePartId)
+    //   .then((res) => {
+    //     handleSnack("success", res);
+    //     fetchAllDetails(builderId, generalData.version);
+    //     // fetchPartsOfPartlist(partListNo, page, pageSize);
+    //   })
+    //   .catch((e) => {
+    //     console.log(e);
+    //     handleSnack("error", "Error occurred while removing the spare part");
+    //   });
+  };
+  function sortPartsTable(sortEvent) {
+    // console.log("sorting called");
+    if (sortEvent.length > 0) {
+      setSortDetail({
+        sortColumn: sortEvent[0].field,
+        orderBy: sortEvent[0].sort === "asc" ? "ASC" : "DESC",
+      });
+    } else {
+      setSortDetail({ sortColumn: "", orderBy: "" });
+    }
+  }
+  const onPartsFilterChange = React.useCallback((filterModel) => {
+    // console.log(filterModel);
+    filterModel.items.map((indFilter) => {
+      if (indFilter.operatorValue === "equals")
+        debounce(
+          setFilterQuery(indFilter.columnField + ":" + indFilter.value),
+          200
+        );
+      else if (indFilter.operatorValue === "contains")
+        setFilterQuery(indFilter.columnField + "~" + indFilter.value);
+    });
+  }, []);
+
+  
+  // Add the sparepart edited rows to the state variable to update later
+  const processRowUpdate = React.useCallback(
+    (newRow, oldRow) =>
+      new Promise((resolve, reject) => {
+        if (
+          newRow.usagePercentage > 0 &&
+          newRow.usagePercentage < 100 &&
+          newRow.unitPrice > 0
+        ) {
+          if (
+            newRow.quantity !== oldRow.quantity ||
+            newRow.usagePercentage !== oldRow.usagePercentage ||
+            newRow.comment !== oldRow.comment
+          ) {
+            // console.log(newRow, newRow.quantity !== oldRow.quantity);
+            const index = rowsToUpdate.findIndex(
+              (object) => object.id === newRow.id
+            );
+            newRow.extendedPrice = parseFloat(
+              newRow.quantity * newRow.unitPrice
+            ).toFixed(2);
+            newRow.totalPrice =
+              newRow.usagePercentage > 0
+                ? parseFloat(
+                    newRow.extendedPrice * 0.01 * newRow.usagePercentage
+                  ).toFixed(2)
+                : parseFloat(newRow.extendedPrice).toFixed(2);
+            if (index === -1) {
+              // console.log("add");
+              setRowsToUpdate((prevRows) => [...prevRows, newRow]);
+            } else {
+              rowsToUpdate[index] = newRow;
+            }
+
+            // Save the arguments to resolve or reject the promise later
+            resolve(newRow);
+          } else {
+            // console.log(oldRow);
+            resolve(oldRow); // Nothing was changed
+          }
+        } else {
+          handleSnack("warning", "Usage percentage should be a valid value!");
+          resolve(oldRow);
+        }
+      }),
+    []
+  );
   const masterColumns = [
     {
-      name: (
-        <>
-          <div>Make</div>
-        </>
-      ),
+      name: "Make",
       selector: (row) => row.make,
       wrap: true,
       sortable: true,
       format: (row) => row.make,
     },
     {
-      name: (
-        <>
-          <div>Family</div>
-        </>
-      ),
+      name: "Family",
       selector: (row) => row.family,
       wrap: true,
       sortable: true,
       format: (row) => row.family,
     },
     {
-      name: (
-        <>
-          <div>Model</div>
-        </>
-      ),
+      name: "Model",
       selector: (row) => row.model,
       wrap: true,
       sortable: true,
       format: (row) => row.model,
     },
     {
-      name: (
-        <>
-          <div>Prefix</div>
-        </>
-      ),
+      name: "Prefix",
       selector: (row) => row.prefix,
       wrap: true,
       sortable: true,
       format: (row) => row.prefix,
-    },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Serial No</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.bundleId,
-    //   sortable: true,
-    //   maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
-    //   // cell: row => row.bundleId,
-    //   // cell: (row) => <button onClick={() => alert()}>1</button>,
-    //   // cell: (row) => <Checkbox className="text-black" {...label} />,
-    //   format: (row) => row.bundleId,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>
-    //         <img className="mr-2" src={boxicon}></img>Start Serial No
-    //       </div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.bundleDescription,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.bundleDescription,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>End Serial No</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.strategy,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.strategy,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Action</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.action,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.action,
-    //   cell: (row) => <div><img className="mr-2" src={penIcon} /><img className="mr-2" src={deleticon} /><img src={link1Icon} /></div>,
-    // },
+    },    
   ];
-  
-  const handleDeletQuerySearch = () => {
-    setQuerySearchSelector([]);
-    setCount(0);
-    setMasterData([]);
-    setFilterMasterData([]);
-    setSelectedCoverageData([]);
+
+ 
+  const handleQuerySearchClick = async () => {
+    $(".scrollbar").css("display", "none");
+    // console.log("handleQuerySearchClick", querySearchSelector);
+    var searchStr = "";
+    querySearchSelector.map(function (item, i) {
+      if (i === 0 && item.selectCategory.value && item.inputSearch) {
+        searchStr =
+          item.selectCategory.value +
+          ":" +
+          encodeURI('"' + item.inputSearch + '"');
+      } else if (
+        item.selectCategory.value &&
+        item.inputSearch &&
+        item.selectOperator.value
+      ) {
+        searchStr =
+          searchStr +
+          " " +
+          item.selectOperator.value +
+          " " +
+          item.selectCategory.value +
+          ":" +
+          encodeURI('"' + item.inputSearch + '"');
+      }
+      return searchStr;
+    });
+
+    try {
+      if (searchStr) {
+        const res = await sparePartSearch(searchStr);
+        // console.log("search Query Result :", res);
+        setMasterData(res);
+        setSearchResultOpen(true);
+      } else {
+        handleSnack("info", "Please fill the search criteria!");
+      }
+    } catch (err) {
+      handleSnack("error", "Error occurred while fetching spare parts!");
+    }
   };
-  const addSearchQuerryHtml = () => {
-    setQuerySearchSelector([
-      ...querySearchSelector,
-      {
-        id: count,
-        selectOperator: "",
-        selectFamily: "",
-        inputSearch: "",
-        selectOptions: [],
-        selectedOption: "",
-      },
-    ]);
-    setCount(count + 1);
-  };
-  const handleSearchListClick = (e, currentItem, obj1, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.inputSearch = currentItem;
-    obj.selectedOption = currentItem;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-    $(`.scrollbar-${id}`).css("display", "none");
-  };
-  const handleInputSearch = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    getSearchCoverageForFamily(tempArray[id].selectFamily.value, e.target.value)
-      .then((res) => {
-        obj.selectOptions = res;
-        tempArray[id] = obj;
-        setQuerySearchSelector([...tempArray]);
-        $(`.scrollbar-${id}`).css("display", "block");
-      })
-      .catch((err) => {
-        console.log("err in api call", err);
-      });
-    obj.inputSearch = e.target.value;
-  };
-  const handleFamily = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    console.log("handleFamily e:", e);
-    let obj = tempArray[id];
-    obj.selectFamily = e;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-  };
-  const handleOperator = (e, id) => {
-    let tempArray = [...querySearchSelector];
-    let obj = tempArray[id];
-    obj.selectOperator = e;
-    tempArray[id] = obj;
-    setQuerySearchSelector([...tempArray]);
-  };
+
+
   const customStyles = {
     rows: {
       style: {
@@ -972,90 +1143,35 @@ function Kits(props) {
   };
   const selectedMasterColumns = [
     {
-      name: (
-        <>
-          <div>Make</div>
-        </>
-      ),
+      name: "Make",
       selector: (row) => row.make,
       wrap: true,
       sortable: true,
       format: (row) => row.make,
     },
     {
-      name: (
-        <>
-          <div>Family</div>
-        </>
-      ),
+      name: "Family",
       selector: (row) => row.family,
       wrap: true,
       sortable: true,
       format: (row) => row.family,
     },
     {
-      name: (
-        <>
-          <div>Model</div>
-        </>
-      ),
+      name: "Model",
       selector: (row) => row.model,
       wrap: true,
       sortable: true,
       format: (row) => row.model,
     },
     {
-      name: (
-        <>
-          <div>Prefix</div>
-        </>
-      ),
+      name: "Prefix",
       selector: (row) => row.prefix,
       wrap: true,
       sortable: true,
       format: (row) => row.prefix,
     },
-    // {
-    //   name: (
-    //     <>
-    //       <div>Serial No</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.bundleId,
-    //   sortable: true,
-    //   maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
-    //   format: (row) => row.bundleId,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>
-    //         <img className="mr-2" src={boxicon}></img>Start Serial No
-    //       </div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.bundleDescription,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.bundleDescription,
-    // },
-    // {
-    //   name: (
-    //     <>
-    //       <div>End Serial No</div>
-    //     </>
-    //   ),
-    //   selector: (row) => row.strategy,
-    //   wrap: true,
-    //   sortable: true,
-    //   format: (row) => row.strategy,
-    // },
     {
-      name: (
-        <>
-          <div>Action</div>
-        </>
-      ),
+      name: "Action",
       selector: (row) => row.action,
       wrap: true,
       sortable: true,
@@ -1129,11 +1245,10 @@ function Kits(props) {
     fleet: "",
     fleetSize: "",
   };
-  const [coverageRowData, setCoverageRowData] = useState(
-    initialCoverageRowData
-  );
+  const [coverageRowData, setCoverageRowData] = useState(initialCoverageRowData);
 
   const handleEditCoverageRow = (e, row) => {
+    console.log(row);
     setCoverageRowData(initialCoverageRowData);
     let obj = {
       id: row.id,
@@ -1141,12 +1256,94 @@ function Kits(props) {
       family: row.family,
       model: row.model,
       prefix: row.prefix,
-      startSerialNumber: row.startSerialNumber,
-      endSerialNumber: row.endSerialNumber,
-      fleet: row.fleet,
-      fleetSize: row.fleetSize,
+      startSerialNumber: row.startSerialNumber? row.startSerialNumber: "",
+      endSerialNumber: row.endSerialNumber? row.endSerialNumber: "",
+      fleet: row.fleet? row.fleet : "",
+      fleetSize: row.fleetSize? row.fleetSize : "",
     };
+    console.log(obj);
     setCoverageRowData(obj);
+  };
+
+  // Add the selected parts from search result to partlist
+  const addSelectedPartsToPartList = async () => {
+    setPartsLoading(true);
+    handleSearchResClose();
+    if (Object.values(viewOnlyTab).every((item) => item === true)) {
+      const parts = [];
+      selectedMasterData.map((item) => {
+        let data = {
+          partlistId: partListNo,
+          groupNumber: item.groupNumber,
+          partNumber: item.partNumber,
+          partType: item.partType,
+          quantity: 1,
+          // unitPrice: item.listPrice,
+          // extendedPrice: 0,
+          currency: pricingData.currency?.value,
+          // totalPrice: 0,
+          comment: "",
+          description: item.partDescription,
+          unitOfMeasure: item.salesUnit,
+        };
+        parts.push(data);
+      });
+
+      // await addMultiPartsToPartList(partListNo, parts)
+      //   .then((result) => {
+      //     handleSnack(
+      //       "success",
+      //       `👏 New parts have been added with default quantity as 1!`
+      //     );
+      //     if (result) {
+      //       fetchAllDetails(builderId, generalData.version);
+      //     }
+      //     // fetchPartsOfPartlist(partListNo, page, pageSize);
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //     if (err && err.message === "Price not found") {
+      //       handleSnack("error", `😐 ${err.message}!`);
+      //     } else {
+      //       handleSnack("error", `😐 Error occurred while adding the parts!`);
+      //     }
+      //   });
+    } else {
+      handleSnack("info", "Please save all the header details!");
+    }
+    setPartsLoading(false);
+  };
+  const handleIndPartAdd = () => {
+    let data = {
+      ...(sparePart.id && { id: sparePart.id }),
+      groupNumber: sparePart.groupNumber,
+      partNumber: sparePart.partNumber,
+      partType: sparePart.partType,
+      quantity: sparePart.quantity,
+      // unitPrice: sparePart.unitPrice,
+      // extendedPrice: sparePart.extendedPrice,
+      currency: sparePart.currency,
+      usagePercentage: sparePart.usagePercentage,
+      // totalPrice: sparePart.totalPrice,
+      comment: sparePart.comment,
+      description: sparePart.description,
+      unitOfMeasure: sparePart.unitOfMeasure,
+    };
+    // addPartToPartList(partListNo, data)
+    //   .then((result) => {
+        handleAddPartClose();
+    //     if (addPartModalTitle === "Add Part")
+    //       handleSnack("success", `👏 New Spare Part has been added!`);
+    //     else
+    //       handleSnack("success", `👏 Selected part detail has been updated!`);
+    //     if (result) {
+    //       fetchAllDetails(builderId, generalData.version);
+    //     }
+    //     // fetchPartsOfPartlist(partListNo, page, pageSize);
+    //   })
+    //   .catch((err) => {
+    //     handleSnack("error", `😐 Error occurred while adding spare part`);
+    //   });
   };
 
   const [querySearchSelector, setQuerySearchSelector] = useState([
@@ -1160,211 +1357,11 @@ function Kits(props) {
     },
   ]);
 
-  const columns = [
-    {
-      name: (
-        <>
-          <div>
-            <Checkbox className="text-white" {...label} />
-          </div>
-        </>
-      ),
-      selector: (row) => row.standardJobId,
-      wrap: true,
-      sortable: true,
-      maxWidth: "50px",
-      minWidth: "50px",
-      cell: (row) => <Checkbox className="text-black" {...label} />,
-    },
-    {
-      name: (
-        <>
-          <div>
-            <img className="mr-2" src={boxicon}></img>Group Number
-          </div>
-        </>
-      ),
-      selector: (row) => row.bundleDescription,
-      wrap: true,
-      sortable: true,
-      maxWidth: "150px",
-      minWidth: "150px",
-      format: (row) => row.bundleDescription,
-    },
-    {
-      name: (
-        <>
-          <div>
-            <img className="mr-2" src={boxicon}></img>Type
-          </div>
-        </>
-      ),
-      selector: (row) => row.bundleDescription,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.bundleDescription,
-    },
-    {
-      name: (
-        <>
-          <div>
-            <img className="mr-2" src={boxicon}></img>Part Number
-          </div>
-        </>
-      ),
-      selector: (row) => row.strategy,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.strategy,
-      cell: (row) => (
-        <a href="#" data-toggle="modal" data-target="#Recommended">
-          3
-        </a>
-      ),
-    },
-    {
-      name: (
-        <>
-          <div>Qty</div>
-        </>
-      ),
-      selector: (row) => row.strategy,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.strategy,
-    },
-    {
-      name: (
-        <>
-          <div>Unit of Measures</div>
-        </>
-      ),
-      selector: (row) => row.strategy,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.strategy,
-    },
-    {
-      name: (
-        <>
-          <div>Unit Price</div>
-        </>
-      ),
-      selector: (row) => row.strategy,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.strategy,
-      cell: (row) => (
-        <a href="#" data-toggle="modal" data-target="#Substitute">
-          3
-        </a>
-      ),
-    },
-    {
-      name: (
-        <>
-          <div>Extended Price</div>
-        </>
-      ),
-      selector: (row) => row.frequency,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.frequency,
-    },
-    {
-      name: (
-        <>
-          <div>Currency</div>
-        </>
-      ),
-      selector: (row) => row.frequency,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.frequency,
-    },
-    {
-      name: (
-        <>
-          <div>% Usage</div>
-        </>
-      ),
-      selector: (row) => row.quantity,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.quantity,
-    },
-    {
-      name: (
-        <>
-          <div>Total Price</div>
-        </>
-      ),
-      selector: (row) => row.part,
-      wrap: true,
-      sortable: true,
-      format: (row) => row.part,
-    },
-    {
-      name: (
-        <>
-          <div>Comments</div>
-        </>
-      ),
-      selector: (row) => row.bundleId,
-      sortable: true,
-      maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
-      // cell: row => row.bundleId,
-      // cell: (row) => <button onClick={() => alert()}>1</button>,
-      // cell: (row) => <Checkbox className="text-black" {...label} />,
-      format: (row) => row.bundleId,
-    },
-    {
-      name: (
-        <>
-          <div>Action</div>
-        </>
-      ),
-      selector: (row) => row.bundleId,
-      sortable: true,
-      maxWidth: "300px", // when using custom you should use width or maxWidth, otherwise, the table will default to flex grow behavior
-      // cell: row => row.bundleId,
-      // cell: (row) => <button onClick={() => alert()}>1</button>,
-      // cell: (row) => <Checkbox className="text-black" {...label} />,
-      cell: (row) => (
-        <a onClick={() => setOpen2(true)} href="#">
-          <FontAwesomeIcon icon={faPen} />
-        </a>
-      ),
-      format: (row) => row.bundleId,
-    },
-  ];
-  const data = [
-    {
-      id: 1,
-      caseId: 13322,
-      BundleId: "Pc",
-      Bundledescription: "Ex2487518",
-      S1: "CAT DEO",
-      strategy: "3",
-      Standardjob: "$43.09",
-      repairoption: "$100",
-      frequency: "USD",
-      quantity: "80%",
-      part$: "$80",
-      srevic$: "80% usage observed on previous work.",
-      Total$: "80% usage observed on previous work.",
-    },
-  ];
+
   const handleClose = () => setOpen(false);
-  const handleClose2 = () => setOpen2(false);
   const [open, setOpen] = React.useState(false);
-  const [open2, setOpen2] = React.useState(false);
-  const [open3, setOpen3] = React.useState(false);
-  const [showRelatedModel, setShowRelatedModel] = useState(false);
-  const [masterData, setMasterData] = useState([]);
   const [selectedCoverageData, setSelectedCoverageData] = useState([]);
   const [filterMasterData, setFilterMasterData] = useState([]);
-  const [count, setCount] = useState(1);
   const handleClick = (event) => {
     console.log("event", event);
     setAnchorEl(event.currentTarget);
@@ -1375,66 +1372,7 @@ function Kits(props) {
   const handleCreate = () => {
     history.push("/quoteTemplate");
   };
-  const columns2 = [
-    { field: "GroupNumber", headerName: "ID#", flex: 1, width: 70 },
-    { field: "Type", headerName: "Description", flex: 1, width: 130 },
-    { field: "Partnumber", headerName: "Customer#", flex: 1, width: 130 },
-    { field: "PriceExtended", headerName: "Make", flex: 1, width: 130 },
-    { field: "Pricecurrency", headerName: "Model", flex: 1, width: 130 },
-    { field: "Usage", headerName: "Family", flex: 1, width: 130 },
-    { field: "TotalPrice", headerName: "Serial#", flex: 1, width: 130 },
-    { field: "Comments", headerName: "Created by", flex: 1, width: 130 },
-    { field: "Created", headerName: "Created On", flex: 1, width: 130 },
-    { field: "Total", headerName: "Total $", flex: 1, width: 130 },
-    { field: "Status", headerName: "Status", flex: 1, width: 130 },
-  ];
-  const rows = [
-    {
-      id: 1,
-      GroupNumber: "Snow",
-      Type: "Jon",
-      Partnumber: 35,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Inconsistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Created: "Created On",
-      Total: "25",
-      Status: "Status",
-      Actions: "Action",
-    },
-    {
-      id: 2,
-      GroupNumber: "Lannister",
-      Type: "Cersei",
-      Partnumber: 42,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Consistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Created: "Created On",
-      Total: "25",
-      Status: "Status",
-      Actions: "Action",
-    },
-    {
-      id: 3,
-      GroupNumber: "Lannister",
-      Type: "Jaime",
-      Partnumber: 45,
-      PriceExtended: "pending",
-      Pricecurrency: "Open",
-      Usage: "Consistent",
-      TotalPrice: "Inconsistent",
-      Comments: "Inconsistent",
-      Created: "Created On",
-      Total: "25",
-      Status: "Status",
-      Actions: "Action",
-    },
-  ];
+
   const handleRowClick = (e) => {
     setShow(true);
   };
@@ -1780,320 +1718,41 @@ function Kits(props) {
                       </>
                     ) : (
                       <div className="row mt-3">
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              SOURCE
-                            </p>
-                            <h6 className="font-weight-500">
-                              {customerData.source}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              CUSTOMER ID
-                            </p>
-                            <h6 className="font-weight-500">
-                              {customerData.customerID}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              CUSTOMER NAME
-                            </p>
-                            <h6 className="font-weight-500">
-                              {customerData.customerName}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              CUSTOMER EMAIL
-                            </p>
-                            <h6 className="font-weight-500">
-                              {customerData.contactEmail}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              CONTACT NAME
-                            </p>
-                            <h6 className="font-weight-500">
-                              {customerData.contactName}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              CONTACT PHONE
-                            </p>
-                            <h6 className="font-weight-500">
-                              {customerData.contactPhone}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              CUSTOMER GROUP
-                            </p>
-                            <h6 className="font-weight-500">
-                              {customerData.customerGroup}
-                            </h6>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </TabPanel>
-                  <TabPanel value="machine">
-                    {!viewOnlyTab.machineViewOnly ? (
-                      <>
-                        <div className="row input-fields">
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                Make
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                id="make-id"
-                                name="make"
-                                value={machineData.make}
-                                onChange={handleMachineDataChange}
-                                placeholder="Auto Filled"
-                                disabled
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                Family
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                id="family-id"
-                                name="family"
-                                value={machineData.family}
-                                onChange={handleMachineDataChange}
-                                placeholder="Auto Filled"
-                                disabled
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                MODEL
-                              </label>
-                              <SearchBox
-                                value={machineData.model}
-                                onChange={(e) =>
-                                  handleMachineSearch("model", e.target.value)
-                                }
-                                type="model"
-                                result={searchModelResults}
-                                onSelect={handleModelSelect}
-                                noOptions={noOptionsModel}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                SERIAL #
-                              </label>
-                              <SearchBox
-                                value={machineData.serialNo}
-                                onChange={(e) =>
-                                  handleMachineSearch(
-                                    "serialNo",
-                                    e.target.value
-                                  )
-                                }
-                                type="equipmentNumber"
-                                result={searchSerialResults}
-                                onSelect={handleModelSelect}
-                                noOptions={noOptionsSerial}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                SMU (Service Meter Unit)
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                id="smu-id"
-                                name="smu"
-                                value={machineData.smu}
-                                onChange={handleMachineDataChange}
-                                placeholder="Placeholder (Optional)"
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                UNIT NO / FLEET NO
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                onChange={handleMachineDataChange}
-                                value={machineData.fleetNo}
-                                name="fleetNo"
-                                id="fleet-id"
-                                placeholder="Placeholder (Optional)"
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                REGISTRATION NO
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                onChange={handleMachineDataChange}
-                                value={machineData.registrationNo}
-                                name="registrationNo"
-                                id="registration-id"
-                                placeholder="Placeholder (Optional)"
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6 col-sm-6">
-                            <div className="form-group">
-                              <label className="text-light-dark font-size-12 font-weight-500">
-                                CHASIS NO
-                              </label>
-                              <input
-                                type="text"
-                                className="form-control border-radius-10 text-primary"
-                                id="chasis-id"
-                                onChange={handleMachineDataChange}
-                                value={machineData.chasisNo}
-                                name="chasisNo"
-                                placeholder="Placeholder (Optional)"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          className="row"
-                          style={{ justifyContent: "right" }}
-                        >
-                          <button
-                            type="button"
-                            className="btn btn-light bg-primary text-white"
-                            disabled={
-                              !(machineData.model && machineData.serialNo) ||
-                              noOptionsModel ||
-                              noOptionsSerial
-                            }
-                            onClick={updateMachineData}
-                          >
-                            Save & Next
-                          </button>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="row mt-3">
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              Make
-                            </p>
-                            <h6 className="font-weight-500">
-                              {machineData.make}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              Family
-                            </p>
-                            <h6 className="font-weight-500">
-                              {machineData.family}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              MODEL
-                            </p>
-                            <h6 className="font-weight-500">
-                              {machineData.model}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              SERIAL NO
-                            </p>
-                            <h6 className="font-weight-500">
-                              {machineData.serialNo}{" "}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              SMU (Service Meter Unit)
-                            </p>
-                            <h6 className="font-weight-500">
-                              {machineData.smu}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              {" "}
-                              UNIT NO / FLEET NO
-                            </p>
-                            <h6 className="font-weight-500">
-                              {machineData.fleetNo}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              REGISTRATION NO
-                            </p>
-                            <h6 className="font-weight-500">
-                              {machineData.registrationNo}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              CHASSIS NO
-                            </p>
-                            <h6 className="font-weight-500">
-                              {machineData.chasisNo}
-                            </h6>
-                          </div>
-                        </div>
+                        <ReadOnlyField
+                          label="SOURCE"
+                          value={customerData.source}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="CUSTOMER ID"
+                          value={customerData.customerID}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="CUSTOMER NAME"
+                          value={customerData.customerName}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="CUSTOMER EMAIL"
+                          value={customerData.contactEmail}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="CONTACT NAME"
+                          value={customerData.contactName}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="CONTACT PHONE"
+                          value={customerData.contactPhone}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="CUSTOMER GROUP"
+                          value={customerData.customerGroup}
+                          className="col-md-4 col-sm-4"
+                        />
                       </div>
                     )}
                   </TabPanel>
@@ -2272,70 +1931,45 @@ function Kits(props) {
                       </>
                     ) : (
                       <div className="row mt-3">
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              PREPARED BY
-                            </p>
-                            <h6 className="font-weight-500">
-                              {estimationData.preparedBy}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              APPROVED BY
-                            </p>
-                            <h6 className="font-weight-500">
-                              {estimationData.approvedBy}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              PREPARED ON
-                            </p>
-                            <h6 className="font-weight-500">
-                              <Moment format="DD/MM/YYYY">
-                                {estimationData.preparedOn}
-                              </Moment>
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              REVISED BY{" "}
-                            </p>
-                            <h6 className="font-weight-500">
-                              {estimationData.revisedBy}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              REVISED ON
-                            </p>
-                            <h6 className="font-weight-500">
-                              <Moment format="DD/MM/YYYY">
-                                {estimationData.revisedOn}
-                              </Moment>
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              SALES OFFICE / BRANCH
-                            </p>
-                            <h6 className="font-weight-500">
-                              {estimationData.salesOffice?.value}
-                            </h6>
-                          </div>
-                        </div>
+                        <ReadOnlyField
+                          label="PREPARED BY"
+                          value={estimationData.preparedBy}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="APPROVED BY"
+                          value={estimationData.approvedBy}
+                          className="col-md-4 col-sm-4"
+                        />
+
+                        <ReadOnlyField
+                          label="PREPARED ON"
+                          value={
+                            <Moment format="DD/MM/YYYY">
+                              {estimationData.preparedOn}
+                            </Moment>
+                          }
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="REVISED BY"
+                          value={estimationData.revisedBy}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="REVISED ON"
+                          value={
+                            <Moment format="DD/MM/YYYY">
+                              {estimationData.revisedOn}
+                            </Moment>
+                          }
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="SALES OFFICE / BRANCH"
+                          value={estimationData.salesOffice?.label}
+                          className="col-md-4 col-sm-4"
+                        />
                       </div>
                     )}
                   </TabPanel>
@@ -2567,68 +2201,59 @@ function Kits(props) {
                       </>
                     ) : (
                       <div className="row mt-3">
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              ESTIMATION DATE{" "}
-                            </p>
-                            <h6 className="font-weight-500">
-                              <Moment format="DD/MM/YYYY">
-                                {generalData.estimationDate}
-                              </Moment>
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              ESTIMATION #
-                            </p>
-                            <h6 className="font-weight-500">
-                              {generalData.estimationNo}{" "}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              DESCRIPTION
-                            </p>
-                            <h6 className="font-weight-500">
-                              {generalData.description}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              REFERENCE{" "}
-                            </p>
-                            <h6 className="font-weight-500">
-                              {generalData.reference}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              VALIDTITY (DAYs)
-                            </p>
-                            <h6 className="font-weight-500">
-                              {generalData.validity?.value}{" "}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              VERSION
-                            </p>
-                            <h6 className="font-weight-500">
-                              {generalData.version}
-                            </h6>
-                          </div>
-                        </div>
+                        <ReadOnlyField
+                          label="ESTIMATION DATE"
+                          value={
+                            <Moment format="DD/MM/YYYY">
+                              {generalData.estimationDate}
+                            </Moment>
+                          }
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="ESTIMATION #"
+                          value={generalData.estimationNo}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="DESCRIPTION"
+                          value={generalData.description}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="REFERENCE"
+                          value={generalData.reference}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="VALIDTITY (DAYs)"
+                          value={generalData.validity?.label}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="VERSION"
+                          value={generalData.version}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="APPLICATION"
+                          value={generalData.application?.label}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="OWNER"
+                          value={generalData.owner}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="NEXT REVISION DATE"
+                          value={
+                            <Moment format="DD/MM/YYYY">
+                              {generalData.nextRivisionDate}
+                            </Moment>
+                          }
+                          className="col-md-4 col-sm-4"
+                        />
                       </div>
                     )}
                   </TabPanel>
@@ -2685,7 +2310,6 @@ function Kits(props) {
                               </LocalizationProvider>
                             </div>
                           </div>
-
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
@@ -2734,7 +2358,6 @@ function Kits(props) {
                               />
                             </div>
                           </div>
-
                           <div className="col-md-4 col-sm-4">
                             <div className="form-group">
                               <label className="text-light-dark font-size-12 font-weight-500">
@@ -2778,67 +2401,35 @@ function Kits(props) {
                       </React.Fragment>
                     ) : (
                       <div className="row mt-3">
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              NET PRICE
-                            </p>
-                            <h6 className="font-weight-500">
-                              {pricingData.netPrice}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              PRICE DATE
-                            </p>
-                            <h6 className="font-weight-500">
-                              <Moment format="DD/MM/YYYY">
-                                {pricingData.priceDate}
-                              </Moment>
-                            </h6>
-                          </div>
-                        </div>
-                        {/* <div className="col-md-4 col-sm-4">
-                        <div className="form-group">
-                          <p className="font-size-12 font-weight-500 mb-2">
-                            COST PRICE
-                          </p>
-                          <h6 className="font-weight-500">{01.09.2021}</h6>
-                        </div>
-                      </div> */}
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              PRICE METHOD
-                            </p>
-                            <h6 className="font-weight-500">
-                              {pricingData.priceMethod?.label}
-                            </h6>
-                          </div>
-                        </div>
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              ADJUSTED PRICE{" "}
-                            </p>
-                            <h6 className="font-weight-500">
-                              {pricingData.adjustedPrice}
-                            </h6>
-                          </div>
-                        </div>
-
-                        <div className="col-md-4 col-sm-4">
-                          <div className="form-group">
-                            <p className="font-size-12 font-weight-500 mb-2">
-                              CURRENCY{" "}
-                            </p>
-                            <h6 className="font-weight-500">
-                              {pricingData.currency?.label}
-                            </h6>
-                          </div>
-                        </div>
+                        <ReadOnlyField
+                          label="NET PRICE"
+                          value={pricingData.netPrice}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="PRICE DATE"
+                          value={
+                            <Moment format="DD/MM/YYYY">
+                              {pricingData.priceDate}
+                            </Moment>
+                          }
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="PRICE METHOD"
+                          value={pricingData.priceMethod?.label}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="ADJUSTED PRICE"
+                          value={pricingData.adjustedPrice}
+                          className="col-md-4 col-sm-4"
+                        />
+                        <ReadOnlyField
+                          label="CURRENCY"
+                          value={pricingData.currency?.label}
+                          className="col-md-4 col-sm-4"
+                        />
                       </div>
                     )}
                   </TabPanel>
@@ -2872,7 +2463,7 @@ function Kits(props) {
                           ]}
                           handleSnack={handleSnack}
                         />
-                        <div className=" ml-3">
+                        {/* <div className=" ml-3">
                           <Link
                             to="#"
                             onClick={() => setOpen3(true)}
@@ -2881,7 +2472,7 @@ function Kits(props) {
                             <FileUploadOutlinedIcon />{" "}
                             <span className="ml-1">Upload</span>
                           </Link>
-                        </div>
+                        </div> */}
                       </div>
                       {masterData?.length > 0 ? (
                         <>
@@ -3197,418 +2788,243 @@ function Kits(props) {
                     <h5 className="mr-2 mb-0 text-black">
                       <span>Parts Table</span>
                     </h5>
-                    <Select
-                      className="customselectbtn1 col-auto"
-                      onChange={(e) => handleVersionKit(e)}
-                      options={versionOptions}
-                      value={version}
-                    />
-                    <p className=" mb-0">
-                      <a href="#" className="ml-3">
-                        <FontAwesomeIcon icon={faPen} />
-                      </a>
-                    </p>
+                    <span style={{backgroundColor: "#DCCB4C", borderRadius: 10, paddingInline: 10}}>{generalData.version}</span>
                   </div>
-                  <div className="d-flex justify-content-between align-items-center w-100 ">
-                    <div className="row align-items-center m-0">
-                      {querySearchSelector.map((obj, i) => {
-                        return (
-                          <>
-                            <div className="customselect d-flex align-items-center mr-3 my-2">
-                              {i > 0 ? (
-                                <SelectFilter
-                                  isClearable={true}
-                                  defaultValue={{ label: "And", value: "AND" }}
-                                  options={[
-                                    { label: "And", value: "AND", id: i },
-                                    { label: "Or", value: "OR", id: i },
-                                  ]}
-                                  placeholder="&amp;"
-                                  onChange={(e) => handleOperator(e, i)}
-                                  // value={querySearchOperator[i]}
-                                  value={obj.selectOperator}
-                                />
-                              ) : (
-                                <></>
-                              )}
-
-                              <div>
-                                <SelectFilter
-                                  // isClearable={true}
-                                  options={[
-                                    { label: "Make", value: "make", id: i },
-                                    { label: "Family", value: "family", id: i },
-                                    { label: "Model", value: "model", id: i },
-                                    { label: "Prefix", value: "prefix", id: i },
-                                  ]}
-                                  onChange={(e) => handleFamily(e, i)}
-                                  value={obj.selectFamily}
-                                />
-                              </div>
-                              <div className="customselectsearch">
-                                <input
-                                  className="custom-input-sleact"
-                                  type="text"
-                                  placeholder="Search string"
-                                  value={obj.inputSearch}
-                                  onChange={(e) => handleInputSearch(e, i)}
-                                  id={"inputSearch-" + i}
-                                  autoComplete="off"
-                                />
-
-                                {
-                                  <ul
-                                    className={`list-group customselectsearch-list scrollbar scrollbar-${i} style`}
-                                  >
-                                    {obj.selectOptions.map((currentItem, j) => (
-                                      <li
-                                        className="list-group-item"
-                                        key={j}
-                                        onClick={(e) =>
-                                          handleSearchListClick(
-                                            e,
-                                            currentItem,
-                                            obj,
-                                            i
-                                          )
-                                        }
-                                      >
-                                        {currentItem}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                }
-                              </div>
-                            </div>
-                          </>
-                        );
-                      })}
-                      <div onClick={(e) => addSearchQuerryHtml(e)}>
-                        <Link
-                          to="#"
-                          className="btn-sm text-black border mr-2"
-                          style={{ border: "1px solid #872FF7" }}
-                        >
-                          +
-                        </Link>
-                      </div>
-                      <div onClick={handleDeletQuerySearch}>
-                        <Link to="#" className="btn-sm border">
-                          <svg
-                            data-name="Layer 41"
-                            id="Layer_41"
-                            fill="black"
-                            viewBox="0 0 50 50"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <title />
-                            <path
-                              className="cls-1"
-                              d="M44,10H35V8.6A6.6,6.6,0,0,0,28.4,2H21.6A6.6,6.6,0,0,0,15,8.6V10H6a2,2,0,0,0,0,4H9V41.4A6.6,6.6,0,0,0,15.6,48H34.4A6.6,6.6,0,0,0,41,41.4V14h3A2,2,0,0,0,44,10ZM19,8.6A2.6,2.6,0,0,1,21.6,6h6.8A2.6,2.6,0,0,1,31,8.6V10H19V8.6ZM37,41.4A2.6,2.6,0,0,1,34.4,44H15.6A2.6,2.6,0,0,1,13,41.4V14H37V41.4Z"
-                            />
-                            <path
-                              class="cls-1"
-                              d="M20,18.5a2,2,0,0,0-2,2v18a2,2,0,0,0,4,0v-18A2,2,0,0,0,20,18.5Z"
-                            />
-                            <path
-                              class="cls-1"
-                              d="M30,18.5a2,2,0,0,0-2,2v18a2,2,0,1,0,4,0v-18A2,2,0,0,0,30,18.5Z"
-                            />
-                          </svg>
-                          {/* <DeleteIcon className="font-size-16" /> */}
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
+                  <SearchComponent
+                    querySearchSelector={querySearchSelector}
+                    setQuerySearchSelector={setQuerySearchSelector}
+                    clearFilteredData={clearFilteredData}
+                    handleSnack={handleSnack}
+                    searchAPI={sparePartSearch}
+                    searchClick={handleQuerySearchClick}
+                    options={SPAREPART_SEARCH_Q_OPTIONS}
+                    background={"white"}
+                    type=""
+                    buttonText="ADD PART"
+                  />
                 </div>
               </div>
-              <div className="col-4">
-                <div className="text-right pl-3 py-3">
-                  <a
-                    className="btn bg-primary text-white"
-                    data-toggle="modal"
-                    data-target="#Datatable"
-                  >
-                    <SearchIcon />
-                    <span className="ml-1">Search</span>
-                  </a>
-                  <a
-                    onClick={() => setOpen3(true)}
-                    style={{ cursor: "pointer" }}
-                    className="btn bg-primary text-white mx-2"
-                  >
-                    Upload
-                  </a>
-                  <a
-                    onClick={() => setOpen2(true)}
-                    href="#"
+              {(selKITStatus?.value === "DRAFT" ||
+                selKITStatus?.value === "REVISED") && (
+                <div className="col-4">
+                  <div className="text-right pl-3 py-3">
+                    <button
+                      onClick={handleUploadClick}
+                      style={{ cursor: "pointer" }}
+                      className="btn bg-primary text-white mx-2"
+                    >
+                      Upload
+                    </button>
+                    {/* <button
+                    onClick={() => setAddPartOpen(true)}
                     className="btn bg-primary text-white "
                   >
                     + Add Part
-                  </a>
+                  </button> */}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
-            <DataTable
-              className="mr-2"
-              title=""
-              columns={columns}
-              data={data}
-              customStyles={customStyles}
+            <DataGrid
+              sx={GRID_STYLE}
+              rows={spareparts}
+              autoHeight
+              columns={columnsPartList.map((column) => ({
+                ...column,
+                filterOperators,
+              }))}
+              editMode="row"
+              page={page}
+              pageSize={pageSize}
+              // onPageChange={(newPage) =>
+              //   fetchPartsOfPartlist(partListNo, newPage, pageSize)
+              // }
+              // onPageSizeChange={(newPageSize) =>
+              //   fetchPartsOfPartlist(partListNo, page, newPageSize)
+              // }
+              onRowEditStart={(e) => setBulkUpdateProgress(true)}
+              sortingMode="server"
+              onSortModelChange={(e) => sortPartsTable(e)}
+              filterMode="server"
+              onFilterModelChange={onPartsFilterChange}
+              onRowEditStop={(e) => setBulkUpdateProgress(false)}
+              paginationMode="server"
+              autoHeight
+              loading={partsLoading}
+              rowsPerPageOptions={[5, 10, 20]}
               pagination
+              rowCount={totalPartsCount}
+              experimentalFeatures={{ newEditingApi: true }}
+              processRowUpdate={(newRow, oldRow) =>
+                processRowUpdate(newRow, oldRow)
+              }
+              // getEstimatedRowHeight={() => 200}
+              // getRowHeight={() => "auto"}
+              onProcessRowUpdateError={(error) => console.log(error)}
             />
             <div className=" my-3 text-right">
-              <a href="#" className="btn text-white bg-primary">
-                Save
-              </a>
+              {(selKITStatus?.value === "DRAFT" ||
+                selKITStatus?.value === "REVISED") && (
+                <button
+                  className="btn text-white bg-primary"
+                  onClick={() => setConfirmationOpen(true)}
+                  disabled={bulkUpdateProgress}
+                >
+                  Save
+                </button>
+              )}
             </div>
           </div>
+          {/* Open Modal to add individual spare part to the part list */}
+          <AddNewSparepartModal
+            sparePart={sparePart}
+            setSparePart={setSparePart}
+            handleIndPartAdd={handleIndPartAdd}
+            searchAPI={sparePartSearch}
+            addPartOpen={addPartOpen}
+            handleAddPartClose={handleAddPartClose}
+            title={addPartModalTitle}
+            partFieldViewonly={partFieldViewonly}
+            setPartFieldViewonly={setPartFieldViewonly}
+            handleSnack={handleSnack}
+          />
+
           <Modal
-            show={open2}
-            onHide={handleClose2}
-            size="lg"
+            show={fileUploadOpen}
+            onHide={() => setFileUploadOpen(false)}
+            size="md"
             aria-labelledby="contained-modal-title-vcenter"
             centered
           >
             <Modal.Header>
-              <Modal.Title>
-                1000-Engine|23-Replace Engine|Replace Engine
-              </Modal.Title>
+              <Modal.Title>Import Files</Modal.Title>
             </Modal.Header>
-            <Modal.Body className="p-0 bg-white">
-              <div className="ligt-greey-bg p-3">
-                <div>
-                  <span className="mr-3">
-                    <i class="fa fa-pencil font-size-12" aria-hidden="true"></i>
-                    <span className="ml-2">Edit</span>
-                  </span>
-                  <span className="mr-3">
-                    <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                    <span
-                      className="ml-2 cursor"
-                      data-toggle="modal"
-                      data-target="#Recommended"
-                    >
-                      Substitute parts
-                    </span>
-                  </span>
-                  <span className="mr-3">
-                    <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                    <span
-                      className="ml-2 cursor"
-                      data-toggle="modal"
-                      data-target="#Substitute"
-                    >
-                      Recommended price
-                    </span>
-                  </span>
-                  <span className="mr-3">
-                    <MonetizationOnOutlinedIcon className=" font-size-16" />
-                    <span className="ml-2"> Adjust price</span>
-                  </span>
-                  {/* <span className="mr-3">
-                    <FormatListBulletedOutlinedIcon className=" font-size-16" />
-                    <span className="ml-2">Related part list(s)</span>
-                  </span>
-                  <span className="mr-3">
-                    <AccessAlarmOutlinedIcon className=" font-size-16" />
-                    <span className="ml-2">Related service estimate(s)</span>
-                  </span>
-                  <span>
-                    <SellOutlinedIcon className=" font-size-16" />
-                    <span className="ml-2">Split price</span>
-                  </span> */}
+            <Modal.Body className="p-0">
+              <div className="p-3">
+                <div className="add-new-recod">
+                  <div>
+                    <FontAwesomeIcon
+                      className="cloudupload"
+                      icon={faCloudUploadAlt}
+                    />
+                    <h6 className="font-weight-500 mt-3">
+                      Drag and drop files to upload <br /> or
+                    </h6>
+                    <FileUploader
+                      handleChange={handleReadFile}
+                      name="file"
+                      types={["xls", "xlsx"]}
+                      onClick={(event) => {
+                        event.currentTarget.value = null;
+                      }}
+                    />
+                  </div>
                 </div>
+                <p className="mt-3">
+                  Single upload file should not be more than 10MB. Only the
+                  .xls, .xlsx file types are allowed
+                </p>
               </div>
-              <div>
-                <div className="p-3">
-                  <div className="row mt-4">
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          GROUP NUMBER
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="1000 ENGINE"
-                        />
+              <div className="recent-div p-3">
+                <h6 className="font-weight-600 text-grey mb-0">RECENT</h6>
+                <div className="recent-items mt-3">
+                  <div className="d-flex justify-content-between align-items-center ">
+                    <p className="mb-0 ">
+                      <FontAwesomeIcon
+                        className=" font-size-14"
+                        icon={faFileAlt}
+                      />
+                      <span className="font-weight-500 ml-2">
+                        Engine Partlist
+                      </span>
+                    </p>
+                    <div className="d-flex align-items-center">
+                      <div className="white-space custom-checkbox">
+                        <FormGroup>
+                          <FormControlLabel
+                            control={<Checkbox defaultChecked />}
+                            label=""
+                          />
+                        </FormGroup>
                       </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          TYPE
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="0123 REPLACE"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          PART NUMBER
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="Replace left side of the Engine"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          QTY
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="List Price"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          UNIT OF MEASURES
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="$35000"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          UNIT PRICE
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="$35000"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          EXTENDED PRICE
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="$10000"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          CURRENCY
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="$5000"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          % USAGE
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="EA"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          TOTAL PRICE
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="$480000"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          COMMENTS
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="PAYER TYPE"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6 col-sm-6">
-                      <div class="form-group w-100">
-                        <label className="text-light-dark font-size-12 font-weight-500">
-                          DESCRIPTION
-                        </label>
-                        <input
-                          type="email"
-                          class="form-control border-radius-10"
-                          id="exampleInputEmail1"
-                          aria-describedby="emailHelp"
-                          placeholder="PAYER TYPE"
-                        />
-                      </div>
+                      <a href="#" className="ml-3 font-size-14">
+                        <FontAwesomeIcon icon={faShareAlt} />
+                      </a>
+                      <a href="#" className="ml-3 font-size-14">
+                        <FontAwesomeIcon icon={faFolderPlus} />
+                      </a>
+                      <a href="#" className="ml-3 font-size-14">
+                        <FontAwesomeIcon icon={faUpload} />
+                      </a>
+                      <a href="#" className="ml-2">
+                        <MuiMenuComponent options={activityOptions} />
+                      </a>
                     </div>
                   </div>
                 </div>
-                <div className="m-3 text-right">
-                  <a
-                    href="#"
-                    onClick={handleClose2}
-                    className="btn border mr-3 "
-                  >
-                    {" "}
-                    Cancel
-                  </a>
-                  <a href="#" className="btn text-white bg-primary">
-                    Save
-                  </a>
+                <div className="d-flex justify-content-between align-items-center mt-2">
+                  <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                  <p className="font-size-12 mb-0">Part List </p>
+                </div>
+                <div className="recent-items mt-3">
+                  <div className="d-flex justify-content-between align-items-center ">
+                    <p className="mb-0 ">
+                      <FontAwesomeIcon
+                        className=" font-size-14"
+                        icon={faFileAlt}
+                      />
+                      <span className="font-weight-500 ml-2">
+                        Engine Partlist
+                      </span>
+                    </p>
+                    <div className="d-flex align-items-center">
+                      <div className="white-space custom-checkbox">
+                        <FormGroup>
+                          <FormControlLabel control={<Checkbox />} label="" />
+                        </FormGroup>
+                      </div>
+                      <a href="#" className="ml-3 font-size-14">
+                        <FontAwesomeIcon icon={faShareAlt} />
+                      </a>
+                      <a href="#" className="ml-3 font-size-14">
+                        <FontAwesomeIcon icon={faFolderPlus} />
+                      </a>
+                      <a href="#" className="ml-3 font-size-14">
+                        <FontAwesomeIcon icon={faUpload} />
+                      </a>
+                      <a href="#" className="ml-2">
+                        <MuiMenuComponent options={activityOptions} />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <div className="d-flex justify-content-between align-items-center mt-2">
+                  <p className="font-size-12 mb-0">2:38pm, 19 Aug 21 </p>
+                  <p className="font-size-12 mb-0">Part List </p>
                 </div>
               </div>
             </Modal.Body>
+            <div className="row m-0 p-3">
+              <div className="col-md-6 col-sm-6">
+                <button
+                  className="btn border w-100 bg-white"
+                  onClick={() => setFileUploadOpen(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+              <div className="col-md-6 col-sm-6">
+                <button
+                  className="btn btn-primary w-100"
+                  onClick={handleUploadFile}
+                  style={{ cursor: "pointer" }}
+                >
+                  <FontAwesomeIcon className="mr-2" icon={faCloudUploadAlt} />
+                  Upload
+                </button>
+              </div>
+            </div>
           </Modal>
 
           {/* comment below code on 12/08 */}
@@ -4234,60 +3650,59 @@ function Kits(props) {
             </div>
           </div>
         </div>
-        <div
-          class="modal fade"
-          id="Datatable"
-          tabindex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-          style={{ zIndex: "1200" }}
+        <Modal
+          show={searchResultOpen}
+          onHide={handleSearchResClose}
+          size="xl"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
         >
-          <div
-            class="modal-dialog modal-dialog-centered modal-xl"
-            role="document"
-          >
-            <div class="modal-content">
-              <div class="modal-header p-3">
-                <div className="d-flex">
-                  <h5>Search Result</h5>
-                </div>
-              </div>
-              <div>
-                <div className="card w-100 p-2">
-                  <div
-                    className=""
-                    style={{
-                      height: 400,
-                      width: "100%",
-                      backgroundColor: "#fff",
-                    }}
-                  >
-                    <DataGrid
-                      sx={{
-                        "& .MuiDataGrid-columnHeaders": {
-                          backgroundColor: "#872ff7",
-                          color: "#fff",
-                        },
-                      }}
-                      rows={rows}
-                      columns={columns2}
-                      pageSize={5}
-                      rowsPerPageOptions={[5]}
-                      checkboxSelection
-                      onCellClick={(e) => handleRowClick(e)}
-                    />
-                  </div>
-                </div>
-                <div className="m-2 text-right">
-                  <a href="#" className="btn text-white bg-primary">
-                    + Add Selected
-                  </a>
-                </div>
+          <Modal.Header>
+            <Modal.Title>Search Results</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="p-0 bg-white">
+            <div className="card w-100 p-2">
+              <div
+                className=""
+                style={{
+                  height: 400,
+                  width: "100%",
+                  backgroundColor: "#fff",
+                }}
+              >
+                <DataGrid
+                  sx={{
+                    "& .MuiDataGrid-columnHeaders": {
+                      backgroundColor: "#872ff7",
+                      color: "#fff",
+                    },
+                  }}
+                  rows={masterData}
+                  columns={columnsPartListSearch}
+                  pageSize={5}
+                  rowsPerPageOptions={[5]}
+                  checkboxSelection
+                  onSelectionModelChange={(ids) => onRowsSelectionHandler(ids)}
+                  onCellClick={(e) => handleRowClick(e)}
+                />
               </div>
             </div>
-          </div>
-        </div>
+            <div className="m-2 text-right">
+              <button
+                className="btn text-white bg-primary mr-2"
+                onClick={handleSearchResClose}
+              > 
+                Cancel
+              </button>
+              <button
+                className="btn text-white bg-primary"
+                onClick={addSelectedPartsToPartList}
+              >
+                + Add Selected
+              </button>
+            </div>
+          </Modal.Body>
+        </Modal>
       </div>
     </>
   );

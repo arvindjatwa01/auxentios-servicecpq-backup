@@ -1043,7 +1043,7 @@ function PartList(props) {
     },
   ];
 
-  //Remove Labor Item
+  //Remove Spare Part
   const handleDeleteSparePart = (sparePartId) => {
     RemoveSparepart(partListNo, sparePartId)
       .then((res) => {

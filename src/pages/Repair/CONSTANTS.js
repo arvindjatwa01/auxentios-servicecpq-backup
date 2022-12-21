@@ -85,55 +85,76 @@ export const PARTLIST_BUILDER_SEARCH_Q_OPTIONS = [
   { label: "Status", value: "status" },
 ];
 
+
 export const KIT_SEARCH_Q_OPTIONS = [
   {
-    label: "ID",
-    value: "kitId",
+    label: "Model",
+    value: "model",
   },
   {
-    label: "Description",
-    value: "description",
+    label: "Status",
+    value: "status",
   },
   {
-    label: "Customer ID",
-    value: "customerId",
+    label: "Expiry Date",
+    value: "expiryDate",
   },
-  { label: "Model", value: "model" },
+  { label: "Next Rivision Date", value: "nextRevisionDate" },
   {
-    label: "Make",
-    value: "make",
+    label: "Application",
+    value: "application",
   },
   {
-    label: "Family",
-    value: "family",
+    label: "Reference",
+    value: "reference",
   },
-  { label: "SerialNo", value: "serialNo" },
-  { label: "Status", value: "status" },
+  { label: "Customer", value: "customerId" },
 ];
 export const TEMPLATE_SEARCH_Q_OPTIONS = [
-  {
-    label: "ID",
-    value: "standardJobId",
-  },
-  {
-    label: "Description",
-    value: "description",
-  },
-  {
-    label: "Customer ID",
-    value: "customerId",
-  },
   { label: "Model", value: "model" },
-  {
-    label: "Make",
-    value: "make",
-  },
   {
     label: "Family",
     value: "family",
   },
-  { label: "SerialNo", value: "serialNo" },
-  { label: "Status", value: "status" },
+  {
+    label: "Prefix",
+    value: "prefix",
+  },
+  {
+    label: "Status",
+    value: "status",
+  },
+  {
+    label: "Expiry Date",
+    value: "expiryDate",
+  },
+  { label: "Next Rivision Date", value: "nextRevisionDate" },
+  {
+    label: "Application",
+    value: "application",
+  },
+  {
+    label: "Usage Interval",
+    value: "usageInterval",
+  },
+  {
+    label: "Application",
+    value: "application",
+  },
+  {
+    label: "Reference",
+    value: "reference",
+  },
+];
+
+export const OPTIONS_USAGE = [
+  { value: "HOUR", label: "Hours" },
+  { value: "KM", label: "Kms" },
+  { value: "MILE", label: "Miles" },
+  { value: "DAY", label: "Day" },
+  { value: "MONTH", label: "Month" },
+  { value: "QUARTER", label: "Quarter" },
+  { value: "YEAR", label: "Year" },
 ];
 
 export const CONSUMABLE_SEARCH_Q_OPTIONS = [

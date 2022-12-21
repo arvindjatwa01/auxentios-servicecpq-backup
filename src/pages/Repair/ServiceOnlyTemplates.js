@@ -2,51 +2,26 @@ import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Select from "react-select";
-import DeleteIcon from "@mui/icons-material/Delete";
-import Checkbox from "@mui/material/Checkbox";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { MuiMenuComponent } from "pages/Operational";
-import searchstatusIcon from "../../assets/icons/svg/search-status.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import shareIcon from "../../assets/icons/svg/share.svg";
-import SearchIcon from "@mui/icons-material/Search";
 import folderaddIcon from "../../assets/icons/svg/folder-add.svg";
 import uploadIcon from "../../assets/icons/svg/upload.svg";
-import cpqIcon from "../../assets/icons/svg/CPQ.svg";
 import deleteIcon from "../../assets/icons/svg/delete.svg";
 import copyIcon from "../../assets/icons/svg/Copy.svg";
-// import {Link} from 'react-router-dom'
-import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
-import { CommanComponents } from "components";
-import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
-import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
-import CreateNewFolderOutlinedIcon from "@mui/icons-material/CreateNewFolderOutlined";
 import FileUploadOutlinedIcon from "@mui/icons-material/FileUploadOutlined";
-import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
-import ThumbDownOffAltOutlinedIcon from "@mui/icons-material/ThumbDownOffAltOutlined";
-import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
-import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
-import boxicon from "../../assets/icons/png/box.png";
 import DataTable from "react-data-table-component";
-import MenuItem from "@mui/material/MenuItem";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import Menu from "@mui/material/Menu";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { Link, useHistory } from "react-router-dom";
 import $ from "jquery";
 import {
   getSearchQueryCoverage,
-  getSearchCoverageForFamily,
-  itemCreation,
 } from "../../services/index";
 import SearchBox from "./components/SearchBox";
-import { FONT_STYLE, FONT_STYLE_SELECT } from "./CONSTANTS";
+import { FONT_STYLE, FONT_STYLE_SELECT, OPTIONS_USAGE } from "./CONSTANTS";
 import { LocalizationProvider, MobileDatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { Rating, TextField } from "@mui/material";
@@ -168,10 +143,12 @@ function ServiceOnlyTemplates(props) {
     lifeStage: "",
     startUsage: "",
     endUsage: "",
+    unit: OPTIONS_USAGE[0],
     usageInterval: "",
     component: "",
     nextRevisionDate: new Date(),
   });
+
   const [estimationData, setEstimationData] = useState({
     preparedBy: "user1",
     approvedBy: "user1",
@@ -998,7 +975,7 @@ function ServiceOnlyTemplates(props) {
                                     value={estimationData.approvedBy}
                                     name="approvedBy"
                                     onChange={handleEstimationDataChange}
-                                    placeholder="Placeholder (Optional)"
+                                    placeholder="Optional"
                                   />
                                 </div>
                               </div>
@@ -1048,7 +1025,7 @@ function ServiceOnlyTemplates(props) {
                                     value={estimationData.revisedBy}
                                     name="revisedBy"
                                     onChange={handleEstimationDataChange}
-                                    placeholder="Placeholder (Optional)"
+                                    placeholder="Optional"
                                   />
                                 </div>
                               </div>
@@ -1293,7 +1270,7 @@ function ServiceOnlyTemplates(props) {
                                   <input
                                     type="text"
                                     className="form-control border-radius-10 text-primary"
-                                    placeholder="Placeholder (Optional)"
+                                    placeholder="Optional"
                                     disabled
                                     value={generalData.version}
                                   />
@@ -1332,7 +1309,7 @@ function ServiceOnlyTemplates(props) {
                                       })
                                     }
                                     className="form-control border-radius-10 text-primary"
-                                    placeholder="Placeholder (Optional)"
+                                    placeholder="Optional"
                                   />
                                 </div>
                               </div>
@@ -1762,7 +1739,7 @@ function ServiceOnlyTemplates(props) {
                                   <input
                                     type="text"
                                     class="form-control border-radius-10 text-primary"
-                                    placeholder="Placeholder (Optional)"
+                                    placeholder="Optional"
                                     value={usageData.owner}
                                     onChange={(e) =>
                                       setUsageData({
@@ -1781,7 +1758,7 @@ function ServiceOnlyTemplates(props) {
                                   <input
                                     type="text"
                                     class="form-control border-radius-10 text-primary"
-                                    placeholder="Placeholder (Optional)"
+                                    placeholder="Optional"
                                     value={usageData.articleNumber}
                                     onChange={(e) =>
                                       setUsageData({
@@ -1806,55 +1783,109 @@ function ServiceOnlyTemplates(props) {
                                       })
                                     }
                                     options={LIFE_STAGE_OPTIONS}
-                                    placeholder="OPTIONAL"
+                                    placeholder="Optional"
                                     value={usageData.lifeStage}
                                     styles={FONT_STYLE_SELECT}
                                   />
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
-                                <div class="form-group">
-                                  <label
-                                    className="text-light-dark font-size-12 font-weight-500"
-                                    for="exampleInputEmail1"
-                                  >
-                                    START USAGE
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
+                                    Start Usage
                                   </label>
-                                  <input
-                                    type="text"
-                                    class="form-control border-radius-10 text-primary"
-                                    placeholder="Placeholder (Optional)"
-                                    value={usageData.startUsage}
-                                  />
-                                </div>
-                              </div>
-                              <div className="col-md-6 col-sm-6">
-                                <div class="form-group">
-                                  <label
-                                    className="text-light-dark font-size-12 font-weight-500"
-                                    for="exampleInputEmail1"
+                                  <div
+                                    className=" d-flex form-control-date border left-select-div"
+                                    style={{ borderRadius: "5px" }}
                                   >
-                                    END USAGE
-                                  </label>
-                                  <input
-                                    type="text"
-                                    class="form-control border-radius-10 text-primary"
-                                    placeholder="Placeholder (Optional)"
-                                    value={usageData.endUsage}
-                                  />
+                                    <input
+                                      className="form-control border-none text-primary"
+                                      type="text"
+                                      id="startUsage"
+                                      value={usageData.startUsage}
+                                      placeholder="Optional"
+                                      onChange={(e) =>
+                                        setUsageData({
+                                          ...usageData,
+                                          startUsage: e.target.value,
+                                        })
+                                      }
+                                    />
+
+                                    <Select
+                                      defaultValue={OPTIONS_USAGE[0]}
+                                      isClearable={true}
+                                      options={OPTIONS_USAGE}
+                                      className="text-primary"
+                                      value={usageData.unit}
+                                      onChange={(e) =>
+                                        setUsageData({ ...usageData, unit: e })
+                                      }
+                                    />
+                                  </div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
                                 <div className="form-group">
                                   <label className="text-light-dark font-size-12 font-weight-500">
+                                    End Usage
+                                  </label>
+
+                                  <div
+                                    className=" d-flex form-control-date"
+                                    style={{ overflow: "hidden" }}
+                                  >
+                                    <input
+                                      className="form-control border-radius-10 text-primary"
+                                      type="text"
+                                      id="endUsage"
+                                      value={usageData.endUsage}
+                                      placeholder="Optional"
+                                      onChange={(e) => {
+                                        setUsageData({
+                                          ...usageData,
+                                          endUsage: e.target.value,
+                                        });
+                                      }}
+                                    />
+                                    <span
+                                      className="hours-div"
+                                      style={{ minWidth: 100 }}
+                                    >
+                                      {usageData.unit?.value}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="col-md-6 col-sm-6">
+                                <div className="form-group">
+                                  <label className="text-light-dark font-size-12 font-weight-500">
                                     USAGE INTERVAL
                                   </label>
-                                  <input
-                                    type="text"
-                                    class="form-control border-radius-10 text-primary"
-                                    placeholder="Placeholder (Optional)"
-                                    value={usageData.usageInterval}
-                                  />
+                                  <div
+                                    className=" d-flex form-control-date"
+                                    style={{ overflow: "hidden" }}
+                                  >
+                                    <input
+                                      type="text"
+                                      class="form-control border-radius-10 text-primary"
+                                      placeholder="Optional"
+                                      value={usageData.usageInterval}
+                                      onChange={(e) =>
+                                        setUsageData({
+                                          ...usageData,
+                                          usageInterval: e.target.interval,
+                                        })
+                                      }
+                                    />
+                                    <span
+                                      className="hours-div"
+                                      style={{ minWidth: 100 }}
+                                    >
+                                      {usageData.unit?.value}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                               <div className="col-md-6 col-sm-6">
@@ -1930,17 +1961,17 @@ function ServiceOnlyTemplates(props) {
                             />
                             <ReadOnlyField
                               label="START USAGE"
-                              value={usageData.startUsage}
+                              value={usageData.startUsage? usageData.startUsage+" "+usageData.unit?.label: "NA"}
                               className="col-md-4 col-sm-4"
                             />
                             <ReadOnlyField
                               label="END USAGE"
-                              value={usageData.endUsage}
+                              value={usageData.endUsage? usageData.endUsage+" "+usageData.unit?.label : "NA"}
                               className="col-md-4 col-sm-4"
                             />
                             <ReadOnlyField
                               label="USAGE INTERVAL"
-                              value={usageData.usageInterval}
+                              value={usageData.usageInterval? usageData.usageInterval+" "+usageData.unit?.label : "NA"}
                               className="col-md-4 col-sm-4"
                             />
                             <ReadOnlyField
@@ -2272,7 +2303,7 @@ function ServiceOnlyTemplates(props) {
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
-                        placeholder="(Optional)"
+                        placeholder="Optional"
                         value={coverageRowData.startSerialNumber}
                         defaultValue={coverageRowData.startSerialNumber}
                         onChange={(e) =>
@@ -2295,7 +2326,7 @@ function ServiceOnlyTemplates(props) {
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
-                        placeholder="(Optional)"
+                        placeholder="Optional"
                         value={coverageRowData.endSerialNumber}
                         defaultValue={coverageRowData.endSerialNumber}
                         onChange={(e) =>
@@ -2319,7 +2350,7 @@ function ServiceOnlyTemplates(props) {
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
-                        placeholder="(Optional)"
+                        placeholder="Optional"
                         value={coverageRowData.fleet}
                         defaultValue={coverageRowData.fleet}
                         onChange={(e) =>
@@ -2342,7 +2373,7 @@ function ServiceOnlyTemplates(props) {
                       <input
                         type="text"
                         className="form-control border-radius-10 text-primary"
-                        placeholder="(Optional)"
+                        placeholder="Optional"
                         value={coverageRowData.fleetSize}
                         defaultValue={coverageRowData.fleetSize}
                         onChange={(e) =>
