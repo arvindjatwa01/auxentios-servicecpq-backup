@@ -81,7 +81,7 @@ export function SolutionServicePortfolio(props) {
 
     const history = useHistory()
     const { state } = props.location;
-    console.log("props are : ", state)
+    console.log("props are : ", props)
 
     const [age, setAge] = React.useState('5');
     const [age1, setAge1] = React.useState('5');
@@ -277,7 +277,7 @@ export function SolutionServicePortfolio(props) {
 
 
     const fetchAllDetails = async (quoteDataId) => {
-        console.log("quoteDataId --- ",quoteDataId)
+        console.log("quoteDataId --- ", quoteDataId)
         if (quoteDataId) {
             setHeaderLoading(true);
             await getConvertQuoteData(quoteDataId)
@@ -295,6 +295,20 @@ export function SolutionServicePortfolio(props) {
         console.log("result ----", result);
 
         setSubQuoteItems(result.data.sbQuoteItems)
+    }
+
+
+    // Go To Solutions Function 
+    const goToSolution = () => {
+        let portfolioDetails = {
+            portfolioId: "",
+            type: "new",
+        };
+        // history.push("/portfolioBuilder/new")
+        history.push({
+            pathname: "/solutionBuilder/create",
+            state: portfolioDetails,
+        });
     }
     const fileTypes = ["JPG", "PNG", "GIF"];
 
@@ -571,6 +585,7 @@ export function SolutionServicePortfolio(props) {
                             </div> */}
 
                             <div className="d-flex justify-content-center align-items-center">
+                                <a href={undefined} className="cursor btn ml-3 font-size-14 bg-primary text-white" onClick={goToSolution}>GO TO SOLUTION</a>
                                 <a href="#" className="ml-3 font-size-14"><img src={shareIcon}></img></a>
                                 <a href="#" className="ml-3 font-size-14"><img src={folderaddIcon}></img></a>
                                 <a href="#" className="ml-3 font-size-14"><img src={uploadIcon}></img></a>

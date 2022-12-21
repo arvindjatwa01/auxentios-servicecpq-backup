@@ -147,6 +147,7 @@ import {
     customPortfolioItemPriceSJID,
     getcustomItemPriceById,
     updateCustomPriceData,
+    convertPortfolioToQuoteData,
 } from "../../services/index";
 import {
     selectCategoryList,
@@ -255,6 +256,7 @@ export function CreateCustomPortfolio(props) {
     const [open1, setOpen1] = useState(false);
     const [openCoverage, setOpenCoveragetable] = useState(false);
     const [versionPopup, setVersionPopup] = useState(false)
+    const [convertToPopup, setConvertToPopup] = useState(false)
 
     const [productHierarchyKeyValue, setProductHierarchyKeyValue] = useState([]);
     const [geographicKeyValue, setGeographicKeyValue] = useState([]);
@@ -1547,54 +1549,54 @@ export function CreateCustomPortfolio(props) {
         }
     };
 
-    const handleItemEditSave = async (addPortFolioItem, compoFlag) => {
+    const handleItemEditSave = async (addPortFolioItem, editAbleItemPriceData, compoFlagData) => {
         console.log("addPortFolioItem ", addPortFolioItem)
-        console.log("compoFlag ------4234343 ", compoFlag)
+        console.log("editAbleItemPriceData ------4234343 ", editAbleItemPriceData)
         try {
             setEditItemShow(false); //hide screen
-            if ((compoFlag?.customItemPriceDataId == "" ||
-                compoFlag.customItemPriceDataId == null ||
-                compoFlag.customItemPriceDataId == "string" ||
-                compoFlag.customItemPriceDataId == undefined)
+            if ((editAbleItemPriceData?.customItemPriceDataId == "" ||
+                editAbleItemPriceData.customItemPriceDataId == null ||
+                editAbleItemPriceData.customItemPriceDataId == "string" ||
+                editAbleItemPriceData.customItemPriceDataId == undefined)
             ) {
                 // throw "Something went Wrong"
             } else {
                 let priceUpdateData = {
-                    customItemPriceDataId: compoFlag.customItemPriceDataId,
+                    customItemPriceDataId: editAbleItemPriceData.customItemPriceDataId,
                     quantity: parseInt(addPortFolioItem.quantity),
-                    startUsage: compoFlag.startUsage,
-                    endUsage: compoFlag.endUsage,
+                    startUsage: editAbleItemPriceData.startUsage,
+                    endUsage: editAbleItemPriceData.endUsage,
                     standardJobId: addPortFolioItem.templateId,
                     repairKitId: addPortFolioItem.repairOption,
                     templateDescription: addPortFolioItem.templateDescription?.value,
-                    repairOption: compoFlag.repairOption,
-                    additional: compoFlag.additional,
-                    partListId: compoFlag.partListId,
-                    serviceEstimateId: compoFlag.serviceEstimateId,
+                    repairOption: editAbleItemPriceData.repairOption,
+                    additional: editAbleItemPriceData.additional,
+                    partListId: editAbleItemPriceData.partListId,
+                    serviceEstimateId: editAbleItemPriceData.serviceEstimateId,
                     numberOfEvents: addPortFolioItem.numberOfEvents,
-                    priceMethod: compoFlag.priceMethod,
-                    priceType: compoFlag.priceType,
-                    listPrice: compoFlag.listPrice,
-                    priceEscalation: compoFlag.priceEscalation,
-                    calculatedPrice: compoFlag.calculatedPrice,
-                    flatPrice: compoFlag.flatPrice,
-                    discountType: compoFlag.discountType,
-                    year: compoFlag.year,
-                    noOfYear: compoFlag.noOfYear,
-                    sparePartsPrice: compoFlag.sparePartsPrice,
-                    sparePartsPriceBreakDownPercentage: compoFlag.sparePartsPriceBreakDownPercentage,
-                    servicePrice: compoFlag.servicePrice,
-                    labourPrice: compoFlag.labourPrice,
-                    labourPriceBreakDownPercentage: compoFlag.labourPriceBreakDownPercentage,
-                    miscPrice: compoFlag.miscPrice,
-                    miscPriceBreakDownPercentage: compoFlag.miscPriceBreakDownPercentage,
-                    totalPrice: compoFlag.totalPrice,
-                    netService: compoFlag.netService,
+                    priceMethod: editAbleItemPriceData.priceMethod,
+                    priceType: editAbleItemPriceData.priceType,
+                    listPrice: editAbleItemPriceData.listPrice,
+                    priceEscalation: editAbleItemPriceData.priceEscalation,
+                    calculatedPrice: editAbleItemPriceData.calculatedPrice,
+                    flatPrice: editAbleItemPriceData.flatPrice,
+                    discountType: editAbleItemPriceData.discountType,
+                    year: editAbleItemPriceData.year,
+                    noOfYear: editAbleItemPriceData.noOfYear,
+                    sparePartsPrice: editAbleItemPriceData.sparePartsPrice,
+                    sparePartsPriceBreakDownPercentage: editAbleItemPriceData.sparePartsPriceBreakDownPercentage,
+                    servicePrice: editAbleItemPriceData.servicePrice,
+                    labourPrice: editAbleItemPriceData.labourPrice,
+                    labourPriceBreakDownPercentage: editAbleItemPriceData.labourPriceBreakDownPercentage,
+                    miscPrice: editAbleItemPriceData.miscPrice,
+                    miscPriceBreakDownPercentage: editAbleItemPriceData.miscPriceBreakDownPercentage,
+                    totalPrice: editAbleItemPriceData.totalPrice,
+                    netService: editAbleItemPriceData.netService,
                     customPortfolio: {
-                        // compoFlag.customPortfolio,
+                        // editAbleItemPriceData.customPortfolio,
                         portfolioId: portfolioId
                     },
-                    tenantId: compoFlag.tenantId,
+                    tenantId: editAbleItemPriceData.tenantId,
                     partsRequired: true,
                     serviceRequired: false,
                     labourRequired: true,
@@ -1602,7 +1604,7 @@ export function CreateCustomPortfolio(props) {
                 }
 
                 const updateCustomPriceId = await updateCustomPriceData(
-                    compoFlag.customItemPriceDataId,
+                    editAbleItemPriceData.customItemPriceDataId,
                     priceUpdateData
                 );
             }
@@ -1614,7 +1616,7 @@ export function CreateCustomPortfolio(props) {
                     customItemHeaderId: 0,
                     itemHeaderDescription: addPortFolioItem.description,
                     // itemHeaderDescription: data.headerdescription,
-                    bundleFlag: "PORTFOLIO",
+                    bundleFlag: compoFlagData,
                     portfolioItemId: 0,
                     reference: createServiceOrBundle.externalReference,
                     itemHeaderMake: createServiceOrBundle?.make,
@@ -1664,7 +1666,7 @@ export function CreateCustomPortfolio(props) {
                     unit: addPortFolioItem.unit != "" ? addPortFolioItem.unit?.value : "",
                     frequency: addPortFolioItem.frequency != "" ? addPortFolioItem.frequency?.value : "once",
                     recommendedValue: parseInt(addPortFolioItem.recommendedValue),
-                    customItemPrices: compoFlag?.customItemPriceDataId != "" ? [
+                    customItemPrices: editAbleItemPriceData?.customItemPriceDataId != "" ? [
                         {
                             customItemPriceDataId: itemPriceData.customItemPriceDataId
                         }
@@ -8452,12 +8454,21 @@ export function CreateCustomPortfolio(props) {
 
         console.log("quote Data 1 : ", quoteData)
         setQuoteDataShow(false)
-        setQuoteData({
-            contact: "",
-            description: "",
-            reference: ""
+        // setQuoteData({
+        //     contact: "",
+        //     description: "",
+        //     reference: ""
+        // });
+        let quotesDetails = {
+            quoteId: quoteData.contact,
+            type: "fetch",
+        };
+
+        history.push({
+            pathname: "/SolutionServicePortfolio",
+            state: quotesDetails,
         });
-        console.log("quote Data 2 : ", quoteData)
+        console.log("quote Data 2 : ", quotesDetails)
         // history.push("/quoteTemplate");
     };
 
@@ -8505,16 +8516,41 @@ export function CreateCustomPortfolio(props) {
             }
         }
 
-        console.log("Quote Object is : ", quoteObj)
+        // console.log("Quote Object is : ", quoteObj)
 
-        const quoteRes = await quoteCreation(quoteObj);
-        console.log("quoteRes : ", quoteRes);
+        // const quoteRes = await quoteCreation(quoteObj);
+        // console.log("quoteRes : ", quoteRes);
 
-        console.log("quote Response data is : ", quoteRes.data)
-        setQuoteData({ ...quoteData, contact: quoteRes.data.quoteMasterId })
+        // console.log("quote Response data is : ", quoteRes.data)
+        // setQuoteData({ ...quoteData, contact: quoteRes.data.quoteMasterId })
 
-        console.log("quoteData : ", quoteData);
-        setQuoteDataShow(true);
+        // console.log("quoteData : ", quoteData);
+        // setQuoteDataShow(true);
+
+        // =================== Convert to Quote ================== //
+        if ((portfolioId == "" ||
+            portfolioId == null ||
+            portfolioId == "string" ||
+            portfolioId == undefined)) {
+            toast("😐" + "Create Portfolio first", {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            setConvertToPopup(false);
+        } else {
+
+            console.log("Quote Object is : ", portfolioId)
+
+            const quoteRes = await convertPortfolioToQuoteData(portfolioId);
+            console.log("quoteRes data is : ", quoteRes)
+            setQuoteData({ ...quoteData, contact: quoteRes.data.quoteId })
+            setQuoteDataShow(true);
+        }
     }
 
     const handleComponentChange = async (e) => {
@@ -8933,7 +8969,12 @@ export function CreateCustomPortfolio(props) {
                                         <MenuItem className="custommenu">Templates</MenuItem>
                                         <MenuItem className="custommenu">Standard Job</MenuItem>
                                         <MenuItem className="custommenu">Kit</MenuItem>
-                                        <MenuItem className="custommenu" data-toggle="modal" data-target="#quotecreat">
+                                        <MenuItem
+                                            className="custommenu"
+                                            onClick={() => setConvertToPopup(true)}
+                                        // data-toggle="modal"
+                                        // data-target="#quotecreat"
+                                        >
                                             Quote
                                         </MenuItem>
                                         <Divider />
@@ -15524,6 +15565,175 @@ export function CreateCustomPortfolio(props) {
                         variant="primary"
                         className="btn btn-primary w-100"
                         onClick={(e) => UpdateSelectCoverageData(selectedMasterData[includedModelIndex])}>Save changes</Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* Model Box for Convert to Quote */}
+            <Modal
+                show={convertToPopup}
+                onHide={() => setConvertToPopup(false)}
+                size="md"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header closeButton className="border-none">
+                    <Modal.Title>Quote Create</Modal.Title>
+                </Modal.Header>
+                <p className="d-block px-3">
+                    It is a long established fact that a reader will be distracted by
+                    the readable content of a page when looking at its layout.
+                </p>
+                <hr className="my-1" />
+                <Modal.Body>
+                    <div className="row">
+                        <div className="col-md-12 col-sm-12">
+                            <div className="form-group">
+                                <label
+                                    className="text-light-dark font-size-12 font-weight-500"
+                                    htmlFor="exampleInputEmail1"
+                                >
+                                    Quote Type
+                                </label>
+                                <Select
+                                    defaultValue={selectedOption}
+                                    onChange={setSelectedOption}
+                                    options={options}
+                                    placeholder="Cyclical"
+                                />
+                            </div>
+                        </div>
+                        <div className="col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label
+                                    className="text-light-dark font-size-12 font-weight-500"
+                                    htmlFor="exampleInputEmail1"
+                                >
+                                    Quote ID
+                                </label>
+                                <input
+                                    type="email"
+                                    class="form-control"
+                                    id="exampleInputEmail1"
+                                    aria-describedby="emailHelp"
+                                    // placeholder="Enter email"
+                                    name="contact"
+                                    value={quoteData.contact}
+                                    // onChange={handleQuoteInputChange}
+                                    placeholder="(Auto-generated)"
+                                    disabled={true}
+                                />
+                            </div>
+                        </div>
+                        <div className="col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label
+                                    className="text-light-dark font-size-12 font-weight-500"
+                                    htmlFor="exampleInputEmail1"
+                                >
+                                    Description
+                                </label>
+                                <textarea
+                                    class="form-control"
+                                    id="exampleFormControlTextarea1"
+                                    rows="3"
+                                    name="description"
+                                    value={quoteData.description}
+                                    onChange={handleQuoteInputChange}
+                                ></textarea>
+                            </div>
+                        </div>
+                        <div className="col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label
+                                    className="text-light-dark font-size-12 font-weight-500"
+                                    htmlFor="exampleInputEmail1"
+                                >
+                                    Reference
+                                </label>
+                                <input
+                                    type="email"
+                                    class="form-control"
+                                    id="exampleInputEmail1"
+                                    aria-describedby="emailHelp"
+                                    placeholder="Enter email"
+                                    name="reference"
+                                    value={quoteData.reference}
+                                    onChange={handleQuoteInputChange}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    {quoteDataShow ? <>
+                        <div className="row">
+                            <div class="col-md-12 col-sm-12">
+                                <div class="form-group mt-3">
+                                    <p class="font-size-12 font-weight-500 mb-2">QUOTE TYPE </p>
+                                    <h6 class="font-weight-500">
+                                        {/* Repair Quote with Spare Parts */}SOLUTION
+                                    </h6>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-sm-12">
+                                <div class="form-group mt-3">
+                                    <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
+                                    {/* <h6 class="font-weight-500">SB12345</h6> */}
+                                    <h6 class="font-weight-500">{quoteData.contact}</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-sm-12">
+                                <div class="form-group mt-3">
+                                    <p class="font-size-12 font-weight-500 mb-2">
+                                        QUOTE DESCRIPTION
+                                    </p>
+                                    {/* <h6 class="font-weight-500">Holder text</h6> */}
+                                    <h6 class="font-weight-500">{quoteData.description}</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-sm-12">
+                                <div class="form-group mt-3">
+                                    <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
+                                    {/* <h6 class="font-weight-500">Holder text</h6> */}
+                                    <h6 class="font-weight-500">{quoteData.reference}</h6>
+                                </div>
+                            </div>
+                        </div></> : <></>}
+                </Modal.Body>
+                <Modal.Footer style={{ display: "unset" }}>
+                    {quoteDataShow ? <>
+                        <div className="mb-2">
+                            <a
+                                // href="#"
+                                href={undefined}
+                                onClick={() => handleCreate()}
+                                data-dismiss="modal"
+                                className="btn cursor bg-primary d-block text-white"
+
+                            >
+                                Done
+                            </a>
+                            {/* <a
+                                    href="#"
+                                    data-dismiss="modal"
+                                    onClick={() => setQuoteDataShow(false)}
+                                    className="btn bg-primary d-block text-white"
+                                >
+                                    Done
+                                </a> */}
+                        </div>
+                    </> : <></>}
+                    <div className="d-flex align-items-center justify-content-between">
+                        <button class="btn  btn-primary" onClick={() => handleCreateQuote()}>Create</button>
+                        <button
+                            type="button"
+                            class="btn pull-right border"
+                            data-dismiss="modal"
+                            onClick={() => setConvertToPopup(false)}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                    {/* <button type="button" className="btn  btn-primary w-100" onClick={createNewVersion}>Create </button>
+                    <button type="button" className="btn btn-primary w-100" onClick={() => setVersionPopup(false)}>Cancel</button> */}
                 </Modal.Footer>
             </Modal>
 

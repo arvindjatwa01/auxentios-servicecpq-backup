@@ -1237,7 +1237,7 @@ export const PortfolioSummary = () => {
             spareParts: ["WITH_SPARE_PARTS"],
             labours: ["WITH_LABOUR"],
             miscellaneous: ["LUBRICANTS"],
-            taskType: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.taskType?.value : ["PM1"],
+            taskType: serviceOrBundlePrefix === "BUNDLE" ? [addPortFolioItem.taskType?.value] : ["PM1"],
             solutionCode: "",
             usageIn: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.usageIn?.value : "",
             recommendedValue: serviceOrBundlePrefix === "BUNDLE" ? parseInt(addPortFolioItem.recommendedValue) : 0,
@@ -1245,7 +1245,7 @@ export const PortfolioSummary = () => {
             year: priceCalculator.priceYear ? priceCalculator.priceYear.value : "",
             avgUsage: 0,
             unit: serviceOrBundlePrefix === "BUNDLE" ? addPortFolioItem.unit?.value : "",
-            itemPrices: serviceOrBundlePrefix === "BUNDLE" ? [
+            itemPrices: serviceOrBundlePrefix === "BUNDLE" && itemPriceData?.itemPriceDataId ? [
               {
                 itemPriceDataId: itemPriceData.itemPriceDataId
               }

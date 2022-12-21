@@ -212,4 +212,5 @@ export const GET_COVERT_QUOTE_DETAILS = QUOTE_REST_SERVICE;
 export const SOLUTION_QUOTE_URL = () => QUOTE_REST_SERVICE + "solution-builder";
 
 
-export const SEARCH_QUOTE_URL = () => SOLUTION_BUILDER_URI + "/quote/search?search=";
+// export const SEARCH_QUOTE_URL = () => SOLUTION_BUILDER_URI + "/quote/search?search=";
+export const SEARCH_QUOTE_URL = () => QUOTE_REST_SERVICE + "search?search=";

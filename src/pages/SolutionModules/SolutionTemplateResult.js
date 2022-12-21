@@ -243,6 +243,7 @@ export function SolutionTemplateResult(props) {
    const [open1, setOpen1] = React.useState(false);
    const [openCoverage, setOpenCoveragetable] = React.useState(false);
    const [versionPopup, setVersionPopup] = useState(false)
+   const [convertToPopup, setConvertToPopup] = useState(false)
 
    const [productHierarchyKeyValue, setProductHierarchyKeyValue] = useState([]);
    const [geographicKeyValue, setGeographicKeyValue] = useState([]);
@@ -677,16 +678,39 @@ export function SolutionTemplateResult(props) {
          }
       }
 
+      // =================== Convert to Quote ================== //
+      if ((portfolioId == "" ||
+         portfolioId == null ||
+         portfolioId == "string" ||
+         portfolioId == undefined)) {
+         toast("😐" + "Create Portfolio first", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+         });
+         setConvertToPopup(false);
+      } else {
+
+         console.log("Quote Object is : ", portfolioId)
+
+         const quoteRes = await convertPortfolioToQuoteData(portfolioId);
+         setQuoteData({ ...quoteData, contact: quoteRes.data.quoteId })
+         setQuoteDataShow(true);
+      }
       // console.log("Quote Object is : ", CreatedCustomPortfolioDetails.customPortfolioId)
 
-      const quoteRes = await convertPortfolioToQuoteData(portfolioId);
-      // console.log("quoteRes : ", quoteRes);
+      // const quoteRes = await convertPortfolioToQuoteData(portfolioId);
+      // // console.log("quoteRes : ", quoteRes);
 
-      // console.log("quote Response data is : ", quoteRes.data)
-      setQuoteData({ ...quoteData, contact: quoteRes.data.quoteId })
+      // // console.log("quote Response data is : ", quoteRes.data)
+      // setQuoteData({ ...quoteData, contact: quoteRes.data.quoteId })
 
-      // console.log("quoteData : ", quoteData);
-      setQuoteDataShow(true);
+      // // console.log("quoteData : ", quoteData);
+      // setQuoteDataShow(true);
    }
 
    const ExpandedComponent = ({ data }) => (
@@ -5627,7 +5651,12 @@ export function SolutionTemplateResult(props) {
                               <MenuItem className="custommenu">Templates</MenuItem>
                               {/* <MenuItem className="custommenu">Standard Job</MenuItem>
                                         <MenuItem className="custommenu">Kit</MenuItem> */}
-                              <MenuItem className="custommenu" data-toggle="modal" data-target="#quotecreat">
+                              <MenuItem
+                                 className="custommenu"
+                                 // data-toggle="modal"
+                                 // data-target="#quotecreat"
+                                 onClick={() => setConvertToPopup(true)}
+                              >
                                  Quote
                               </MenuItem>
                               <Divider />
@@ -8856,6 +8885,174 @@ export function SolutionTemplateResult(props) {
                         variant="primary"
                         className="btn btn-primary w-100"
                         onClick={(e) => UpdateSelectCoverageData(selectedMasterData[includedModelIndex])}>Save changes</Button>
+                  </Modal.Footer>
+               </Modal>
+
+               {/* Model Box for Convert to Quote */}
+               <Modal
+                  show={convertToPopup}
+                  onHide={() => setConvertToPopup(false)}
+                  size="md"
+                  aria-labelledby="contained-modal-title-vcenter"
+                  centered
+               >
+                  <Modal.Header closeButton className="border-none">
+                     <Modal.Title>Quote Create</Modal.Title>
+                  </Modal.Header>
+                  <p className="d-block px-3">
+                     It is a long established fact that a reader will be distracted by
+                     the readable content of a page when looking at its layout.
+                  </p>
+                  <hr className="my-1" />
+                  <Modal.Body>
+                     <div className="row">
+                        <div className="col-md-12 col-sm-12">
+                           <div className="form-group">
+                              <label
+                                 className="text-light-dark font-size-12 font-weight-500"
+                                 htmlFor="exampleInputEmail1"
+                              >
+                                 Quote Type
+                              </label>
+                              <Select
+                                 defaultValue={selectedOption}
+                                 onChange={setSelectedOption}
+                                 options={options}
+                                 placeholder="Cyclical"
+                              />
+                           </div>
+                        </div>
+                        <div className="col-md-12 col-sm-12">
+                           <div class="form-group">
+                              <label
+                                 className="text-light-dark font-size-12 font-weight-500"
+                                 htmlFor="exampleInputEmail1"
+                              >
+                                 Quote ID
+                              </label>
+                              <input
+                                 type="email"
+                                 class="form-control"
+                                 id="exampleInputEmail1"
+                                 aria-describedby="emailHelp"
+                                 // placeholder="Enter email"
+                                 name="contact"
+                                 value={quoteData.contact}
+                                 // onChange={handleQuoteInputChange}
+                                 placeholder="(Auto-generated)"
+                                 disabled={true}
+                              />
+                           </div>
+                        </div>
+                        <div className="col-md-12 col-sm-12">
+                           <div class="form-group">
+                              <label
+                                 className="text-light-dark font-size-12 font-weight-500"
+                                 htmlFor="exampleInputEmail1"
+                              >
+                                 Description
+                              </label>
+                              <textarea
+                                 class="form-control"
+                                 id="exampleFormControlTextarea1"
+                                 rows="3"
+                                 name="description"
+                                 value={quoteData.description}
+                                 onChange={handleQuoteInputChange}
+                              ></textarea>
+                           </div>
+                        </div>
+                        <div className="col-md-12 col-sm-12">
+                           <div class="form-group">
+                              <label
+                                 className="text-light-dark font-size-12 font-weight-500"
+                                 htmlFor="exampleInputEmail1"
+                              >
+                                 Reference
+                              </label>
+                              <input
+                                 type="email"
+                                 class="form-control"
+                                 id="exampleInputEmail1"
+                                 aria-describedby="emailHelp"
+                                 placeholder="Enter email"
+                                 name="reference"
+                                 value={quoteData.reference}
+                                 onChange={handleQuoteInputChange}
+                              />
+                           </div>
+                        </div>
+                     </div>
+                     {quoteDataShow ? <>
+                        <div className="row">
+                           <div class="col-md-12 col-sm-12">
+                              <div class="form-group mt-3">
+                                 <p class="font-size-12 font-weight-500 mb-2">QUOTE TYPE </p>
+                                 <h6 class="font-weight-500">
+                                    {/* Repair Quote with Spare Parts */}SOLUTION
+                                 </h6>
+                              </div>
+                           </div>
+                           <div class="col-md-12 col-sm-12">
+                              <div class="form-group mt-3">
+                                 <p class="font-size-12 font-weight-500 mb-2">Quote ID </p>
+                                 {/* <h6 class="font-weight-500">SB12345</h6> */}
+                                 <h6 class="font-weight-500">{quoteData.contact}</h6>
+                              </div>
+                           </div>
+                           <div class="col-md-12 col-sm-12">
+                              <div class="form-group mt-3">
+                                 <p class="font-size-12 font-weight-500 mb-2">
+                                    QUOTE DESCRIPTION
+                                 </p>
+                                 {/* <h6 class="font-weight-500">Holder text</h6> */}
+                                 <h6 class="font-weight-500">{quoteData.description}</h6>
+                              </div>
+                           </div>
+                           <div class="col-md-12 col-sm-12">
+                              <div class="form-group mt-3">
+                                 <p class="font-size-12 font-weight-500 mb-2">REFERENCE</p>
+                                 {/* <h6 class="font-weight-500">Holder text</h6> */}
+                                 <h6 class="font-weight-500">{quoteData.reference}</h6>
+                              </div>
+                           </div>
+                        </div></> : <></>}
+                  </Modal.Body>
+                  <Modal.Footer style={{ display: "unset" }}>
+                     {quoteDataShow ? <>
+                        <div className="mb-2">
+                           <a
+                              // href="#"
+                              href={undefined}
+                              onClick={() => handleCreate()}
+                              data-dismiss="modal"
+                              className="btn cursor bg-primary d-block text-white"
+                           >
+                              Done
+                           </a>
+                           {/* <a
+                                    href="#"
+                                    data-dismiss="modal"
+                                    onClick={() => setQuoteDataShow(false)}
+                                    className="btn bg-primary d-block text-white"
+                                >
+                                    Done
+                                </a> */}
+                        </div>
+                     </> : <></>}
+                     <div className="d-flex align-items-center justify-content-between">
+                        <button class="btn  btn-primary" onClick={() => handleCreateQuote()}>Create</button>
+                        <button
+                           type="button"
+                           class="btn pull-right border"
+                           data-dismiss="modal"
+                           onClick={() => setConvertToPopup(false)}
+                        >
+                           Cancel
+                        </button>
+                     </div>
+                     {/* <button type="button" className="btn  btn-primary w-100" onClick={createNewVersion}>Create </button>
+                    <button type="button" className="btn btn-primary w-100" onClick={() => setVersionPopup(false)}>Cancel</button> */}
                   </Modal.Footer>
                </Modal>
 

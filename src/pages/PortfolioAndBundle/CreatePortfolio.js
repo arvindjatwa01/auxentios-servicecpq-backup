@@ -3143,6 +3143,7 @@ export function CreatePortfolio(props) {
             (escalationPriceDataId !== "")
           ) {
 
+            console.log("price create on if 1 : ", state.type + " , portfolioId : " + portfolioId)
             // update Exiting Escalation Price
             let exitingEscalationPriceObj = {
               escalationPriceId: escalationPriceDataId,
@@ -3274,6 +3275,9 @@ export function CreatePortfolio(props) {
             };
           } else {
 
+            // const { portfolioId, ...res } = generalComponentData;
+            console.log("price create on else 1 : ", state.type + " , portfolioId : " + portfolioId)
+
             let priceEscalation = {
               priceMethod: priceMethodKeyValue1.value,
               priceHeadType: priceEscalationHeadKeyValue1.value,
@@ -3316,7 +3320,7 @@ export function CreatePortfolio(props) {
             setPortfolioPriceDataIdForExiting(portfolioPriceAPIData.data.portfolioPriceId);
             setEscalationPriceDataId(escalationPrice.data.escalationPriceId);
             setAdditionalPriceDataId(additionalPrice.data.additionalPriceId);
-            const { portfolioId, ...res } = generalComponentData;
+            // 
 
 
             let reqObj = {
@@ -3390,6 +3394,9 @@ export function CreatePortfolio(props) {
               portfolioId,
               reqObj
             )
+
+            console.log("price create on else 1A : ", state.type + " , portfolioId : " + portfolioId)
+
             if (priceObjRes.status === 200) {
               toast("👏 Portfolio updated", {
                 position: "top-right",
