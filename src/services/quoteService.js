@@ -65,10 +65,11 @@ export const getSearchQuoteData = (searchStr) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .get(SEARCH_QUOTE_URL + searchStr, { headers: headersdata })
+                .get(SEARCH_QUOTE_URL() + searchStr, { headers: headersdata })
                 .then((res) => {
                     console.log("getSearchQuoteData > axios res=", res);
-                    resolve(res.data);
+                    // resolve(res.data);
+                    resolve(res);
                 })
                 .catch((err) => {
                     console.log("getSearchQuoteData > axios err=", err);
@@ -149,7 +150,8 @@ export const getConvertQuoteData = (id) => {
     return new Promise((resolve, reject) => {
         try {
             axios
-                .get(GET_COVERT_QUOTE_DETAILS + "/" + id, { headers: headersdata })
+                // .get(GET_COVERT_QUOTE_DETAILS + "/" + id, { headers: headersdata })
+                .get(GET_COVERT_QUOTE_DETAILS + id, { headers: headersdata })
                 .then((res) => {
                     console.log("getConvertQuoteData > axios res=", res);
                     resolve(res);

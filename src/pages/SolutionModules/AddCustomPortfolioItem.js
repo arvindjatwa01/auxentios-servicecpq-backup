@@ -86,6 +86,7 @@ const AddCustomPortfolioItem = (props) => {
     strategyTask: "",
     kitDescription: "",
   });
+  const [bundleFlagType, setBundleFlagType] = useState("");
 
   const [typeKeyValue, setTypeKeyValue] = useState([]);
   const [machineTypeKeyValue, setMachineTypeKeyValue] = useState([]);
@@ -221,6 +222,7 @@ const AddCustomPortfolioItem = (props) => {
         repairOption: repairOption,
       });
 
+      setBundleFlagType(props.passItemEditRowData.customItemHeaderModel.bundleFlag);
       console.log("2132546576786787 : ", props.passItemEditRowData.customItemBodyModel.customItemPrices)
       if ((props.passItemEditRowData.customItemBodyModel.customItemPrices != null)) {
         if (props.passItemEditRowData.customItemBodyModel.customItemPrices.length > 0) {
@@ -317,13 +319,6 @@ const AddCustomPortfolioItem = (props) => {
   };
 
   const TabsEnableDisabledFun = () => {
-    // console.log("Hello");
-    // console.log("tabs : ", tabs);
-    // console.log("props.compoFlag : ", props.compoFlag);
-    // console.log(
-    //   "addPortFolioItem.templateId : ",
-    //   addPortFolioItem.templateId === ""
-    // );
 
     if (tabs == 1) {
       if ((props.compoFlag === "ITEM") &&
@@ -358,7 +353,12 @@ const AddCustomPortfolioItem = (props) => {
           progress: undefined,
         });
       } else {
-        setTabs((prev) => `${parseInt(prev) + 1}`);
+        if (props.compoFlag == "itemEdit") {
+          setTabs((prev) => `${parseInt(prev) + 1}`);
+        } else {
+          setTabs((prev) => `${parseInt(prev) + 1}`)
+          setAddPortFolioItem({ ...addPortFolioItem, templateId: "", repairOption: "" });
+        }
       }
     } else if (tabs == 2 && addPortFolioItem.templateId == "") {
       setTabs((prev) => `${parseInt(prev) + 1}`);
@@ -368,7 +368,8 @@ const AddCustomPortfolioItem = (props) => {
         props.getAddportfolioItemDataFun(addPortFolioItem);
       } else {
         if (props.compoFlag === "itemEdit") {
-          props.handleItemEditSave(addPortFolioItem, editAbleItemPrice);
+          // props.handleItemEditSave(addPortFolioItem, editAbleItemPrice);
+          props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
         }
         // props.getAddportfolioItemData(addPortFolioItem);
         props.setBundleTabs("3");
@@ -450,16 +451,28 @@ const AddCustomPortfolioItem = (props) => {
   };
 
   const handleAddPortfolioSave = () => {
-    if (props.compoFlag === "itemEdit") {
-      props.handleItemEditSave(addPortFolioItem);
-    } else if (props.compoFlag === "ITEM") {
+
+    if (props.compoFlag === "ITEM") {
       props.setTabs("2");
       props.getAddportfolioItemDataFun(addPortFolioItem);
-      console.log("addPortFolioItem : ", addPortFolioItem);
     } else {
-      props.getAddportfolioItemData(addPortFolioItem);
-      props.setBundleTabs("3");
+      if (props.compoFlag === "itemEdit") {
+        props.handleItemEditSave(addPortFolioItem, editAbleItemPrice, bundleFlagType);
+      } else {
+        props.getAddportfolioItemData(addPortFolioItem);
+        props.setBundleTabs("3");
+      }
     }
+
+    // if (props.compoFlag === "itemEdit") {
+    //   props.handleItemEditSave(addPortFolioItem);
+    // } else if (props.compoFlag === "ITEM") {
+
+    //   console.log("addPortFolioItem : ", addPortFolioItem);
+    // } else {
+    //   props.getAddportfolioItemData(addPortFolioItem);
+    //   props.setBundleTabs("3");
+    // }
   };
 
   return (
