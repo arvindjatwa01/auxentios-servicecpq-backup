@@ -222,6 +222,24 @@ export const FONT_STYLE = {
   padding: 0,
 };
 
+export const FONT_STYLE_UNIT_SELECT = {
+  placeholder: (provided) => ({
+    ...provided,
+    ...FONT_STYLE,
+  }),
+  control: (provided) => ({
+    ...provided,
+    borderRadius: 10,
+    border: 'none !important',
+    backgroundColor: '#F5F5F5 !important',
+    minWidth:'80px !important'
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    ...FONT_STYLE,
+    minWidth:'80px !important'
+  }),
+};
 export const FONT_STYLE_SELECT = {
   placeholder: (provided) => ({
     ...provided,

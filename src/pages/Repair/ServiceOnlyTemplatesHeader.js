@@ -1783,9 +1783,9 @@ function ServiceOnlyTemplates(props) {
                                   <label className="text-light-dark font-size-12 font-weight-500">
                                     START USAGE
                                   </label>
-                                  <div className=" d-flex form-control-date border-radius-10 left-select-div">
+                                  <div className="d-flex form-control-date border-radius-10">
                                     <input
-                                      className="form-control border-none border-radius-10 text-primary"
+                                      className="form-control border-radius-10 text-primary"
                                       type="text"
                                       id="startUsage"
                                       value={usageData.startUsage}
@@ -1801,6 +1801,7 @@ function ServiceOnlyTemplates(props) {
                                     <Select
                                       defaultValue={OPTIONS_USAGE[0]}
                                       // isClearable={true}
+                                      styles={FONT_STYLE_UNIT_SELECT}
                                       options={OPTIONS_USAGE}
                                       className="text-primary"
                                       value={usageData.unit}
